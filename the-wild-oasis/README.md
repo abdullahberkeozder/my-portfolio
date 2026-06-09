@@ -48,12 +48,29 @@ npm install
 ```
 
 3. **Set up environment variables**
-   Create a `.env.local` file in the root directory:
+
+Create a `.env.local` file in the root directory (copy from `.env.example`):
+
+```bash
+cp .env.example .env.local
+```
+
+Then edit `.env.local` and add your Supabase credentials:
 
 ```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_KEY=your_supabase_key
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_anon_key_here
 ```
+
+**How to get your Supabase credentials:**
+
+1. Go to [Supabase Dashboard](https://app.supabase.com/)
+2. Select your project
+3. Go to Settings → API
+4. Copy the Project URL and Anon Key
+5. Paste them in `.env.local`
+
+⚠️ **Important:** Never commit `.env.local` to GitHub. It's already listed in `.gitignore`.
 
 4. **Start the development server**
 
@@ -63,7 +80,30 @@ npm run dev
 
 The application will be available at `http://localhost:5173`
 
-## 📦 Available Scripts
+## � Security Best Practices
+
+### Environment Variables
+
+- **Never commit** `.env.local` or `.env` files to GitHub
+- Always use `.env.example` as a template for other developers
+- Credentials are loaded at build time via `import.meta.env.VITE_*`
+- All sensitive values are kept in local machine only
+
+### Supabase Security
+
+- Use Supabase's Row Level Security (RLS) policies
+- Never expose service role keys in frontend code
+- Always use anon keys for public data access
+- Implement proper authentication before sensitive operations
+
+### Additional Tips
+
+- Rotate API keys regularly
+- Use different keys for development and production
+- Monitor Supabase logs for suspicious activity
+- Keep dependencies updated
+
+## �📦 Available Scripts
 
 - `npm run dev` - Start development server
 - `npm run build` - Build for production

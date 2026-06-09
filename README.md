@@ -13,6 +13,7 @@ I'm a passionate full-stack developer with a focus on building scalable, user-fr
 A comprehensive hotel and cabin management system showcasing real-world full-stack development practices.
 
 **Highlights:**
+
 - Complete booking management system
 - Real-time data synchronization
 - Modern React patterns with hooks and context
@@ -27,6 +28,7 @@ A comprehensive hotel and cabin management system showcasing real-world full-sta
 ## 🛠️ Technology Stack
 
 ### Frontend
+
 - **React 18** - UI framework
 - **Vite** - Next generation build tool
 - **React Router** - Client-side routing
@@ -34,10 +36,12 @@ A comprehensive hotel and cabin management system showcasing real-world full-sta
 - **React Query** - Server state management
 
 ### Backend & Database
+
 - **Supabase** - PostgreSQL + Auth
 - **RESTful APIs** - Service layer
 
 ### Tools & Libraries
+
 - **React Hook Form** - Form management
 - **React Hot Toast** - Notifications
 - **date-fns** - Date utilities
@@ -95,17 +99,20 @@ See individual project README files for detailed setup instructions.
 ## 📊 Skills & Expertise
 
 **Frontend Development**
+
 - React, React Hooks, Context API
 - TypeScript, JavaScript ES6+
 - Responsive Design, Mobile-First
 - CSS Modules, Styled Components, Tailwind CSS
 
 **Backend & Database**
+
 - Supabase, Firebase
 - RESTful APIs, GraphQL basics
 - PostgreSQL, NoSQL
 
 **Tools & Platforms**
+
 - Git & GitHub
 - Vite, Webpack
 - npm, yarn
