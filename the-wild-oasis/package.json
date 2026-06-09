@@ -1,0 +1,52 @@
+{
+  "name": "the-wild-oasis",
+  "description": "A comprehensive hotel and cabin management system built with React and Supabase. Features booking management, cabin administration, guest services, and real-time updates.",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "author": "Abdullah Berke Özder",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abdullahberkeozder/my-portfolio.git"
+  },
+  "keywords": [
+    "react",
+    "vite",
+    "hotel-management",
+    "booking-system",
+    "supabase",
+    "react-query",
+    "styled-components"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^4.44.0",
+    "@tanstack/react-query-devtools": "^4.44.0",
+    "date-fns": "^4.4.0",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.77.0",
+    "react-hot-toast": "^2.6.0",
+    "react-router": "^7.16.0",
+    "styled-components": "^6.4.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.3",
+    "eslint": "^8.57.1",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "vite": "^4.4.5",
+    "vite-plugin-eslint": "^1.8.1"
+  }
+}
