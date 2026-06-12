@@ -133,9 +133,9 @@ See individual project README files for detailed setup instructions.
 ## 🔗 Connect With Me
 
 - **GitHub:** [@abdullahberkeozder](https://github.com/abdullahberkeozder)
-- **LinkedIn:** [Your LinkedIn Profile]
-- **Email:** [Your Email]
-- **Portfolio Website:** [Your Website]
+- **LinkedIn:** [Abdullah Özder](https://www.linkedin.com/in/abdullah-ozder/)
+- **Email:** abdullahberkeozder@gmail.com
+- **Portfolio Website:** -
 
 ---
 
