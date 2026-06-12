@@ -48,7 +48,7 @@ const variations = {
   `,
 };
 
-const Button = styled.button`
+const StyledButton = styled.button`
   font-size: 1.4rem;
   padding: 1.2rem 1.6rem;
   font-weight: 500;
@@ -59,9 +59,27 @@ const Button = styled.button`
   box-shadow: var(--shadow-sm);
   cursor: pointer;
 
+  ${(props) =>
+    variations[props.$variation] || variations.primary}
+  ${(props) => sizes[props.$size] || sizes.medium}
+
   &:hover {
     background-color: var(--color-brand-700);
   }
 `;
+
+function Button({
+  variation = "primary",
+  size = "medium",
+  ...props
+}) {
+  return (
+    <StyledButton
+      $variation={variation}
+      $size={size}
+      {...props}
+    />
+  );
+}
 
 export default Button;
