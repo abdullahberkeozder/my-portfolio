@@ -16,7 +16,7 @@ frontend and talks to Supabase directly through the publishable key.
 Add these variables in the hosting provider dashboard:
 
 ```text
-VITE_SUPABASE_URL=https://qhevdwblchkotttcqoou.supabase.co
+VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_supabase_publishable_key
 ```
 

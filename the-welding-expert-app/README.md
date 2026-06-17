@@ -1,162 +1,133 @@
-# The Wild Oasis 🏨
+# The Welding Expert App
 
-A comprehensive hotel and cabin management system designed for booking management, cabin administration, and guest services.
+The Welding Expert App is a React and Supabase application for a local welding and metalwork service. It separates the customer-facing booking experience from the admin panel used to review requests and manage availability.
 
-## 🎯 Features
+## Features
 
-- **Dashboard:** Real-time overview of bookings and business metrics
-- **Booking Management:** Create, update, and delete guest bookings with full details
-- **Cabin Management:** Manage cabin inventory, pricing, and capacity
-- **Guest Management:** Complete guest information and contact management
-- **Settings:** Configure hotel policies and pricing rules
-- **User Authentication:** Secure login and account management
-- **Real-time Updates:** Instant data synchronization across the platform
+- Customer appointment page with weekly availability
+- Two-hour booking slots between 09:00 and 21:00
+- Future date selection for appointment planning
+- WhatsApp, email, and in-system request options
+- Admin dashboard for appointment request review
+- Admin availability management for days and slots
+- Gallery page for work examples, before/after content, and testimonials
+- Public business information, service overview, FAQ, and address section
+- Supabase schema with RLS policies and admin profile approval flow
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-| Technology            | Purpose                       |
-| --------------------- | ----------------------------- |
-| **React 18**          | UI Framework                  |
-| **Vite**              | Build tool & dev server       |
-| **React Router 7**    | Client-side routing           |
-| **React Query**       | Server state management       |
-| **Styled Components** | CSS-in-JS styling             |
-| **Supabase**          | Backend & PostgreSQL Database |
-| **React Hook Form**   | Form management               |
-| **React Hot Toast**   | Notifications                 |
-| **date-fns**          | Date manipulation             |
+| Area | Tools |
+| --- | --- |
+| Frontend | React 18, Vite, React Router |
+| Data fetching | TanStack React Query |
+| Styling | Styled Components |
+| Forms | React Hook Form, controlled form state |
+| Notifications | React Hot Toast |
+| Backend | Supabase Auth, PostgreSQL, RLS |
+| Documentation | SQL schema, deployment notes, research review |
 
-## 📋 Prerequisites
+## Routes
 
-- Node.js (v16 or higher)
-- npm or yarn
-- Supabase account (for backend)
+| Route | Purpose |
+| --- | --- |
+| `/appointment` | Public customer booking page |
+| `/gallery` | Work examples, gallery, and references |
+| `/login` | Admin login |
+| `/signup` | Admin signup request |
+| `/admin/dashboard` | Admin overview |
+| `/admin/bookings` | Appointment request management |
+| `/admin/availability` | Weekly availability and slot management |
 
-## 🚀 Installation
+Legacy redirects are kept for `/dashboard` and `/bookings`.
 
-1. **Clone the repository**
-
-```bash
-git clone https://github.com/abdullahberkeozder/my-portfolio.git
-cd the-wild-oasis
-```
-
-2. **Install dependencies**
+## Getting Started
 
 ```bash
 npm install
-```
-
-3. **Set up environment variables**
-
-Create a `.env.local` file in the root directory (copy from `.env.example`):
-
-```bash
-cp .env.example .env.local
-```
-
-Then edit `.env.local` and add your Supabase credentials:
-
-```env
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your_anon_key_here
-```
-
-**How to get your Supabase credentials:**
-
-1. Go to [Supabase Dashboard](https://app.supabase.com/)
-2. Select your project
-3. Go to Settings → API
-4. Copy the Project URL and Anon Key
-5. Paste them in `.env.local`
-
-⚠️ **Important:** Never commit `.env.local` to GitHub. It's already listed in `.gitignore`.
-
-4. **Start the development server**
-
-```bash
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173`
+The default Vite development URL is usually:
 
-## � Security Best Practices
-
-### Environment Variables
-
-- **Never commit** `.env.local` or `.env` files to GitHub
-- Always use `.env.example` as a template for other developers
-- Credentials are loaded at build time via `import.meta.env.VITE_*`
-- All sensitive values are kept in local machine only
-
-### Supabase Security
-
-- Use Supabase's Row Level Security (RLS) policies
-- Never expose service role keys in frontend code
-- Always use anon keys for public data access
-- Implement proper authentication before sensitive operations
-
-### Additional Tips
-
-- Rotate API keys regularly
-- Use different keys for development and production
-- Monitor Supabase logs for suspicious activity
-- Keep dependencies updated
-
-## �📦 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-
-## 📁 Project Structure
-
-```
-src/
-├── components/       # Reusable UI components
-├── features/         # Feature-specific modules
-│   ├── cabins/      # Cabin management
-│   ├── bookings/    # Booking management
-│   ├── settings/    # Settings management
-│   └── authentication/
-├── pages/           # Page components
-├── ui/              # UI components
-├── hooks/           # Custom React hooks
-├── services/        # API calls to Supabase
-├── utils/           # Utility functions
-├── styles/          # Global styles
-└── data/            # Mock data for development
+```text
+http://localhost:5173
 ```
 
-## 🔐 Authentication
+## Environment Variables
 
-The application uses Supabase authentication for secure user management.
+Create a local `.env.local` file based on `.env.example`:
 
-## 🗄️ Database
+```env
+VITE_SUPABASE_URL=your_supabase_url_here
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+```
 
-The project uses **Supabase** (PostgreSQL) for data storage with tables for:
+Only use a publishable or anon Supabase key in the browser. Do not place a Supabase secret key or service role key in any frontend environment file.
 
-- Cabins, Guests, Bookings, and Settings
+## Supabase Setup
 
-## 🎨 Styling
+Run the schema in:
 
-The project uses **Styled Components** for component-scoped styling with a consistent design system.
+```text
+supabase/welding_appointments_schema.sql
+```
 
-## 📱 Core Pages
+The schema creates:
 
-- **Dashboard** - Business metrics and activity overview
-- **Cabins** - Manage cabin inventory and pricing
-- **Bookings** - Handle guest bookings and check-ins
-- **Users** - User account management
-- **Settings** - Configure business policies
+- `appointment_availability_days`
+- `appointment_availability_slots`
+- `appointment_requests`
+- `admin_profiles`
+- Admin helper function and RLS policies
+- Initial sample availability data
 
-## 📝 License
+After an admin signs up, approve the admin profile in Supabase SQL Editor:
 
-MIT License
+```sql
+update public.admin_profiles
+set role = 'admin', is_active = true
+where user_id = (
+  select id from auth.users
+  where email = 'admin@example.com'
+);
+```
 
-## 👤 Author
+## Available Scripts
 
-**Abdullah Berke Özder**
+```bash
+npm run dev
+npm run build
+npm run preview
+npm run lint
+```
 
-- GitHub: [@abdullahberkeozder](https://github.com/abdullahberkeozder)
+## Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for Vercel and Netlify guidance.
+
+Recommended production setup:
+
+- Add `VITE_SUPABASE_URL`
+- Add `VITE_SUPABASE_ANON_KEY`
+- Configure SPA fallback for React Router
+- Never add Supabase secret keys to a frontend deployment
+
+## Research Notes
+
+See [PROJECT_RESEARCH_REVIEW.md](./PROJECT_RESEARCH_REVIEW.md) for product, UX, local SEO, Supabase, and deployment recommendations.
+
+## Security Checklist
+
+- `.env.local` is ignored
+- `node_modules`, `dist`, `build`, screenshots, and logs are ignored
+- RLS is enabled for public Supabase tables
+- Public users can only read visible availability and create appointment requests
+- Admin-only operations require an active admin profile
+
+## Future Improvements
+
+- Move gallery and testimonials to Supabase tables
+- Add Supabase Storage for portfolio images
+- Add LocalBusiness JSON-LD and page-level SEO metadata
+- Add conflict protection for duplicate appointment slots
+- Add route-level code splitting
