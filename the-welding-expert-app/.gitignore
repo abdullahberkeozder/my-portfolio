@@ -7,12 +7,21 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-build
-dist
-dist-ssr
-screenshots
+node_modules/
+build/
+dist/
+dist-ssr/
+screenshots/
+.vite/
+coverage/
+
+.env
+.env.*
+!.env.example
 *.local
+
+.vercel/
+.netlify/
 
 # Editor directories and files
 .vscode/*

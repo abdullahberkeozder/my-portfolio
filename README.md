@@ -1,161 +1,94 @@
-# Portfolio 🚀
+# Abdullah Berke Ozder - Portfolio
 
-Welcome to my portfolio! This repository showcases my best full-stack and frontend projects, demonstrating my expertise in modern web development with React, TypeScript, and various backend technologies.
+This repository contains my frontend and full-stack practice projects. The focus is on React applications, clean UI architecture, Supabase-backed workflows, responsive interfaces, and production-minded project documentation.
 
-## 👨‍💻 About Me
+## Featured Projects
 
-I'm a passionate full-stack developer with a focus on building scalable, user-friendly web applications. I specialize in React, modern JavaScript frameworks, and cloud technologies. I love clean code, problem-solving, and continuous learning.
+### The Welding Expert App
 
-## 📚 Featured Projects
+A customer appointment and admin availability system for a local welding and metalwork business.
 
-### [🏨 The Wild Oasis](./the-wild-oasis/)
+**Highlights**
 
-A comprehensive hotel and cabin management system showcasing real-world full-stack development practices.
+- Public customer booking page with weekly availability
+- Two-hour appointment slot model for realistic service planning
+- WhatsApp, email, and in-system appointment request flows
+- Admin dashboard for requests and availability management
+- Supabase schema with Row Level Security policies
+- Gallery page for before/after work examples and testimonials
+- Deployment and research documentation
 
-**Highlights:**
+**Tech Stack**
 
-- Complete booking management system
-- Real-time data synchronization
-- Modern React patterns with hooks and context
-- Responsive design with styled-components
+React, Vite, React Router, React Query, Styled Components, Supabase, React Hook Form, React Hot Toast
 
-**Tech Stack:** React 18 • Vite • React Query • Styled Components • Supabase • React Hook Form
+Project folder: [the-welding-expert-app](./the-welding-expert-app/)
 
-📍 [View Project →](./the-wild-oasis/)
+### The Wild Oasis
 
----
+A hotel and cabin management project focused on bookings, cabins, authentication, and dashboard workflows.
 
-## 🛠️ Technology Stack
+**Highlights**
 
-### Frontend
+- Booking management workflow
+- Dashboard and business metrics
+- Cabin management UI
+- Supabase-backed data layer
+- Responsive React interface
 
-- **React 18** - UI framework
-- **Vite** - Next generation build tool
-- **React Router** - Client-side routing
-- **Styled Components** - CSS-in-JS
-- **React Query** - Server state management
+Project folder: [the-wild-oasis](./the-wild-oasis/)
 
-### Backend & Database
+## Core Skills Demonstrated
 
-- **Supabase** - PostgreSQL + Auth
-- **RESTful APIs** - Service layer
+- React application architecture
+- Client-side routing with React Router
+- Server state management with React Query
+- Supabase database, auth, and RLS setup
+- Responsive UI with Styled Components
+- Form handling and validation
+- Deployment preparation and environment variable hygiene
+- Git and project documentation workflow
 
-### Tools & Libraries
+## Repository Structure
 
-- **React Hook Form** - Form management
-- **React Hot Toast** - Notifications
-- **date-fns** - Date utilities
-- **ESLint** - Code quality
-
----
-
-## 📋 Project Structure
-
+```text
+my-portfolio/
+  the-welding-expert-app/
+    src/
+    public/
+    supabase/
+    README.md
+    DEPLOYMENT.md
+    PROJECT_RESEARCH_REVIEW.md
+  the-wild-oasis/
+  README.md
 ```
-portfolio/
-├── the-wild-oasis/          # Hotel management system
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── README.md
-├── README.md                # This file
-├── LICENSE                  # MIT License
-└── CONTRIBUTING.md          # Contribution guidelines
-```
 
----
+## Running a Project Locally
 
-## 🚀 Quick Start
-
-Each project has its own setup instructions. To get started with any project:
+Each project has its own setup instructions. For example:
 
 ```bash
-# Navigate to the project
-cd the-wild-oasis
-
-# Install dependencies
+cd the-welding-expert-app
 npm install
-
-# Start development server
 npm run dev
 ```
 
-See individual project README files for detailed setup instructions.
+Environment variables are intentionally not committed. Copy the relevant `.env.example` file and create a local `.env.local` file for development.
 
----
+## Security Notes
 
-## 🎓 What I'm Showcasing
+- Real `.env` files are ignored.
+- Supabase secret or service role keys must never be committed.
+- Browser applications should only use publishable or anon keys protected by RLS.
+- Deployment platforms should receive environment variables through their secure dashboard.
 
-- ✅ Modern React patterns and best practices
-- ✅ State management with React Query
-- ✅ Responsive design and UI/UX
-- ✅ Real-time data handling
-- ✅ Clean code architecture
-- ✅ Git workflow and version control
-- ✅ Deployment and DevOps practices
+## Contact
 
----
+- GitHub: [abdullahberkeozder](https://github.com/abdullahberkeozder)
+- LinkedIn: [Abdullah Ozder](https://www.linkedin.com/in/abdullah-ozder/)
+- Email: abdullahberkeozder@gmail.com
 
-## 📊 Skills & Expertise
+## License
 
-**Frontend Development**
-
-- React, React Hooks, Context API
-- TypeScript, JavaScript ES6+
-- Responsive Design, Mobile-First
-- CSS Modules, Styled Components, Tailwind CSS
-
-**Backend & Database**
-
-- Supabase, Firebase
-- RESTful APIs, GraphQL basics
-- PostgreSQL, NoSQL
-
-**Tools & Platforms**
-
-- Git & GitHub
-- Vite, Webpack
-- npm, yarn
-- VS Code
-
----
-
-## 💡 Key Highlights
-
-- **Production-Ready Code** - Enterprise-level code quality
-- **Performance Optimized** - Efficient rendering and data fetching
-- **User-Focused Design** - Intuitive UI with excellent UX
-- **Maintainable Architecture** - Clean, scalable codebase
-- **Security Conscious** - Secure authentication and data handling
-
----
-
-## 🔗 Connect With Me
-
-- **GitHub:** [@abdullahberkeozder](https://github.com/abdullahberkeozder)
-- **LinkedIn:** [Abdullah Özder](https://www.linkedin.com/in/abdullah-ozder/)
-- **Email:** abdullahberkeozder@gmail.com
-- **Portfolio Website:** -
-
----
-
-## 📄 License
-
-All projects in this portfolio are open source and available under the MIT License. See the [LICENSE](./LICENSE) file for more details.
-
----
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
-
----
-
-## 📈 Latest Updates
-
-- ✨ June 2026 - Added The Wild Oasis project
-- 🎨 Portfolio repository initialization
-
----
-
-**Last Updated:** June 2026
+Projects in this repository are shared for portfolio and learning purposes.
