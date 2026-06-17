@@ -2,6 +2,20 @@
 
 The Welding Expert App is a React and Supabase application for a local welding and metalwork service. It separates the customer-facing booking experience from the admin panel used to review requests and manage availability.
 
+## Screenshots
+
+### Customer Booking Page
+
+![Customer booking page](./docs/readme-assets/appointment-page.png)
+
+### Work Gallery Page
+
+![Work gallery page](./docs/readme-assets/gallery-page.png)
+
+### Mobile Booking Experience
+
+![Mobile booking page](./docs/readme-assets/appointment-mobile.png)
+
 ## Features
 
 - Customer appointment page with weekly availability

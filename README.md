@@ -8,6 +8,8 @@ This repository contains my frontend and full-stack practice projects. The focus
 
 A customer appointment and admin availability system for a local welding and metalwork business.
 
+![The Welding Expert customer booking page](./the-welding-expert-app/docs/readme-assets/appointment-page.png)
+
 **Highlights**
 
 - Public customer booking page with weekly availability
