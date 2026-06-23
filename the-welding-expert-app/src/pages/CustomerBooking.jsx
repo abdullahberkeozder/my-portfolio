@@ -34,10 +34,10 @@ const CLOSING_HOUR = 21;
 const SLOT_DURATION_HOURS = 2;
 
 const serviceTypes = [
-  "Kapi / korkuluk tamiri",
-  "Ozel metal imalat",
-  "Mentese ve kaynak onarimi",
-  "Yerinde kesif ve teklif",
+  "Kapı / korkuluk tamiri",
+  "Özel metal imalat",
+  "Menteşe ve kaynak onarımı",
+  "Yerinde keşif ve teklif",
 ];
 
 const dayFormatter = new Intl.DateTimeFormat("tr-TR", {
@@ -57,60 +57,61 @@ const longDateFormatter = new Intl.DateTimeFormat("tr-TR", {
 });
 
 const statusLabel = {
-  available: "Musait",
-  limited: "Kisitli",
-  closed: "Kapali",
+  available: "Müsait",
+  limited: "Kısıtlı",
+  closed: "Kapalı",
+  unavailable: "Kullanılamaz",
 };
 
 const aboutHighlights = [
-  "Yerinde kesif ve net teklif",
-  "Kapi, korkuluk, ferforje ve onarim isleri",
-  "Randevulu calisma ve zamaninda teslim",
+  "Yerinde keşif ve net teklif",
+  "Kapı, korkuluk, ferforje ve onarım işleri",
+  "Randevulu çalışma ve zamanında teslim",
 ];
 
 const serviceOverview = [
   {
-    title: "Kapi ve korkuluk tamiri",
-    text: "Apartman, balkon, bahce ve is yeri korkuluklarinda kaynak onarimi, saglamlastirma ve parca degisimi.",
-    serviceType: "Kapi / korkuluk tamiri",
-    points: ["Yerinde kontrol", "Kaynak onarimi", "Saglamlik kontrolu"],
+    title: "Kapı ve korkuluk tamiri",
+    text: "Apartman, balkon, bahçe ve iş yeri korkuluklarında kaynak onarımı, sağlamlaştırma ve parça değişimi.",
+    serviceType: "Kapı / korkuluk tamiri",
+    points: ["Yerinde kontrol", "Kaynak onarımı", "Sağlamlık kontrolü"],
   },
   {
-    title: "Ozel metal imalat",
-    text: "Olcuye gore masa ayagi, raf tasiyici, metal cerceve ve atolyeye ozel parca imalati.",
-    serviceType: "Ozel metal imalat",
-    points: ["Olcu alma", "Malzeme secimi", "Temiz teslim"],
+    title: "Özel metal imalat",
+    text: "Ölçüye göre masa ayağı, raf taşıyıcı, metal çerçeve ve atölyeye özel parça imalatı.",
+    serviceType: "Özel metal imalat",
+    points: ["Ölçü alma", "Malzeme seçimi", "Temiz teslim"],
   },
   {
-    title: "Mentese ve kaynak onarimi",
-    text: "Kopan, catlayan veya gevseyen metal parcalarda pratik ve dayanikli kaynak uygulamalari.",
-    serviceType: "Mentese ve kaynak onarimi",
-    points: ["Hizli tespit", "Parca sabitleme", "Kullanim testi"],
+    title: "Menteşe ve kaynak onarımı",
+    text: "Kopan, çatlayan veya gevşeyen metal parçalarda pratik ve dayanıklı kaynak uygulamaları.",
+    serviceType: "Menteşe ve kaynak onarımı",
+    points: ["Hızlı tespit", "Parça sabitleme", "Kullanım testi"],
   },
   {
-    title: "Yerinde kesif ve teklif",
-    text: "Isin kapsami, sure ve malzeme ihtiyaci netlestirilir; uygun tarih icin randevu planlanir.",
-    serviceType: "Yerinde kesif ve teklif",
-    points: ["Fotografla on bilgi", "Net zaman planlama", "Teklif paylasimi"],
+    title: "Yerinde keşif ve teklif",
+    text: "İşin kapsamı, süresi ve malzeme ihtiyacı netleştirilir; uygun tarih için randevu planlanır.",
+    serviceType: "Yerinde keşif ve teklif",
+    points: ["Fotoğrafla ön bilgi", "Net zaman planlama", "Teklif paylaşımı"],
   },
 ];
 
 const processSteps = [
   {
-    title: "Talep olusturun",
-    text: "Randevu takviminden 2 saatlik uygun araligi secin ve isinizi kisaca anlatin.",
+    title: "Talep oluşturun",
+    text: "Takvimden iki saatlik uygun bir aralık seçin ve ihtiyacınızı kısaca anlatın.",
   },
   {
-    title: "Detaylar netlessin",
-    text: "Gerekirse fotograf, olcu veya adres bilgisi WhatsApp uzerinden paylasilir.",
+    title: "Ayrıntıları netleştirelim",
+    text: "Gerekirse fotoğraf, ölçü veya adres bilgilerini WhatsApp üzerinden paylaşın.",
   },
   {
-    title: "Kesif ve teklif",
-    text: "Isin kapsamina gore yerinde kesif ya da dogrudan teklif ile ilerlenir.",
+    title: "Keşif ve teklif",
+    text: "İşin kapsamına göre yerinde keşif yapılır veya doğrudan teklif hazırlanır.",
   },
   {
     title: "Uygulama ve teslim",
-    text: "Onaylanan randevu saatinde kaynak isi tamamlanir ve kullanima hazir teslim edilir.",
+    text: "Onaylanan randevu saatinde çalışma yapılır ve kullanıma hazır biçimde teslim edilir.",
   },
 ];
 
@@ -118,27 +119,27 @@ const faqItems = [
   {
     question: "Yerinde servis veriyor musunuz?",
     answer:
-      "Evet. Ankara merkez ve yakin ilceler icin yerinde kesif ve kaynak onarimi planlanabilir.",
+      "Evet. Ankara merkez ve yakın ilçeler için yerinde keşif ve kaynak onarımı planlanabilir.",
   },
   {
-    question: "Randevu araliklari neden 2 saatlik?",
+    question: "Randevu aralıkları neden iki saatlik?",
     answer:
-      "Kaynak islerinde hazirlik, uygulama ve kontrol sureci oldugu icin ortalama is suresi 2 saat kabul edilir.",
+      "Kaynak işlerinde hazırlık, uygulama ve kontrol aşamaları bulunduğu için ortalama çalışma süresi iki saat kabul edilir.",
   },
   {
-    question: "Fiyat nasil belirlenir?",
+    question: "Fiyat nasıl belirlenir?",
     answer:
-      "Fiyat; iscilik, malzeme, yerinde servis ihtiyaci ve isin zorluguna gore netlestirilir.",
+      "Fiyat; işçilik, malzeme, yerinde servis ihtiyacı ve işin zorluğuna göre netleştirilir.",
   },
   {
-    question: "Atolyeye gelebilir miyim?",
+    question: "Atölyeye gelebilir miyim?",
     answer:
-      "Evet, ancak atolyede gorusme icin de randevu almaniz daha saglikli olur.",
+      "Evet. Atölye görüşmeleri için önceden randevu almanız önerilir.",
   },
 ];
 
 const businessAddress =
-  "Ostim OSB, 100. Yil Bulvari No:45, Yenimahalle / Ankara";
+  "Ostim OSB, 100. Yıl Bulvarı No:45, Yenimahalle / Ankara";
 const mapQuery = encodeURIComponent(businessAddress);
 
 const Page = styled.main`
@@ -642,6 +643,25 @@ const MutedText = styled.p`
   font-size: 1.4rem;
 `;
 
+const AvailabilityNotice = styled.div`
+  border: 1px solid
+    ${(props) =>
+      props.$error ? "var(--color-red-100)" : "var(--color-grey-200)"};
+  border-radius: var(--border-radius-sm);
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: ${(props) =>
+    props.$error ? "var(--color-red-700)" : "var(--color-grey-600)"};
+  background: ${(props) =>
+    props.$error ? "var(--color-red-100)" : "var(--color-grey-50)"};
+  font-size: 1.3rem;
+  font-weight: 700;
+`;
+
 const DateToolbar = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -810,6 +830,13 @@ const StatusBadge = styled.span`
     css`
       color: var(--color-grey-600);
       background: var(--color-grey-100);
+    `}
+
+  ${(props) =>
+    props.$status === "unavailable" &&
+    css`
+      color: var(--color-red-700);
+      background: var(--color-red-100);
     `}
 
   & svg {
@@ -1219,7 +1246,7 @@ function startOfWeek(date) {
   return weekStart;
 }
 
-function buildBusinessSlots() {
+function buildUnavailableSlots() {
   return Array.from(
     { length: (CLOSING_HOUR - OPENING_HOUR) / SLOT_DURATION_HOURS },
     (_, index) => {
@@ -1233,22 +1260,37 @@ function buildBusinessSlots() {
         time,
         endTime,
         label: `${time} - ${endTime}`,
-        isAvailable: true,
+        isAvailable: false,
         note: null,
       };
     },
   );
 }
 
-function buildFallbackDay(date) {
+function buildUnavailableDay(date, reason) {
   const dateValue = formatDateKey(date);
+  const stateCopy = {
+    loading: {
+      statusText: "Yükleniyor",
+      note: "Müsaitlik bilgileri yükleniyor. Lütfen bekleyin.",
+    },
+    error: {
+      statusText: "Bağlantı hatası",
+      note: "Müsaitlik bilgileri şu anda alınamıyor. Lütfen tekrar deneyin.",
+    },
+    missing: {
+      statusText: "Planlanmadı",
+      note: "Bu tarih için henüz müsaitlik planı oluşturulmadı.",
+    },
+  }[reason];
 
   return {
     id: dateValue,
     dateValue,
-    status: "available",
-    note: "09:00 - 21:00 arasi randevu alinabilir.",
-    slots: buildBusinessSlots(),
+    status: "unavailable",
+    statusText: stateCopy.statusText,
+    note: stateCopy.note,
+    slots: buildUnavailableSlots(),
     dayName: dayFormatter.format(date),
     dateLabel: compactDateFormatter.format(date),
     fullDate: longDateFormatter.format(date),
@@ -1261,10 +1303,12 @@ function mapAvailabilityFromSupabase(days) {
     const slots = [...(day.appointment_availability_slots || [])]
       .filter((slot) => {
         const hour = Number(slot.slot_time.slice(0, 2));
+        const minute = slot.slot_time.slice(3, 5);
 
         return (
           hour >= OPENING_HOUR &&
           hour + SLOT_DURATION_HOURS <= CLOSING_HOUR &&
+          minute === "00" &&
           (hour - OPENING_HOUR) % SLOT_DURATION_HOURS === 0
         );
       })
@@ -1288,7 +1332,7 @@ function mapAvailabilityFromSupabase(days) {
       id: day.id,
       dateValue: day.work_date,
       status: day.status,
-      note: day.note || "09:00 - 21:00 arasi randevu alinabilir.",
+      note: day.note || "09:00 - 21:00 arasında randevu alınabilir.",
       slots,
       dayName: dayFormatter.format(date),
       dateLabel: compactDateFormatter.format(date),
@@ -1299,7 +1343,9 @@ function mapAvailabilityFromSupabase(days) {
 
 function getStatusIcon(status) {
   if (status === "closed") return <HiOutlineXCircle />;
-  if (status === "limited") return <HiOutlineInformationCircle />;
+  if (status === "limited" || status === "unavailable") {
+    return <HiOutlineInformationCircle />;
+  }
   return <HiOutlineCheckCircle />;
 }
 
@@ -1314,14 +1360,14 @@ function buildCustomerMessage({
   if (!selectedDay || !selectedSlot) return "";
 
   return [
-    "Merhaba, kaynak hizmeti icin randevu almak istiyorum.",
+    "Merhaba, kaynak hizmeti için randevu almak istiyorum.",
     customerName ? `Ad: ${customerName}` : "",
     customerPhone ? `Telefon: ${customerPhone}` : "",
-    `Gun: ${selectedDay.fullDate}`,
-    `Saat araligi: ${selectedSlot.label}`,
-    `Islem: ${selectedService}`,
+    `Gün: ${selectedDay.fullDate}`,
+    `Saat aralığı: ${selectedSlot.label}`,
+    `İşlem: ${selectedService}`,
     notes ? `Not: ${notes}` : "",
-    "Bu gun ve saat sizin icin musaitse teyit edebilir misiniz?",
+    "Bu gün ve saat sizin için müsaitse teyit edebilir misiniz?",
   ]
     .filter(Boolean)
     .join("\n");
@@ -1347,7 +1393,10 @@ function CustomerBooking() {
 
   const {
     data: availabilityDays = [],
+    isLoading: isLoadingAvailability,
+    isFetching: isFetchingAvailability,
     isError: availabilityError,
+    refetch: refetchAvailability,
   } = useQuery({
     queryKey: ["appointment-availability-days", weekStartKey, weekEndKey],
     queryFn: () =>
@@ -1359,19 +1408,29 @@ function CustomerBooking() {
   });
 
   const weekDays = useMemo(() => {
+    const unavailableReason = isLoadingAvailability
+      ? "loading"
+      : availabilityError
+        ? "error"
+        : "missing";
     const daysByDate = new Map(
-      mapAvailabilityFromSupabase(availabilityDays).map((day) => [
-        day.dateValue,
-        day,
-      ]),
+      availabilityError || isLoadingAvailability
+        ? []
+        : mapAvailabilityFromSupabase(availabilityDays).map((day) => [
+            day.dateValue,
+            day,
+          ]),
     );
 
     return Array.from({ length: 7 }, (_, index) => {
       const date = addDays(weekStart, index);
       const dateValue = formatDateKey(date);
-      return daysByDate.get(dateValue) || buildFallbackDay(date);
+      return (
+        daysByDate.get(dateValue) ||
+        buildUnavailableDay(date, unavailableReason)
+      );
     });
-  }, [availabilityDays, weekStart]);
+  }, [availabilityDays, availabilityError, isLoadingAvailability, weekStart]);
 
   const selectedDay = weekDays.find(
     (day) => day.dateValue === selectedDate,
@@ -1379,11 +1438,19 @@ function CustomerBooking() {
   const selectedDateIsPast = selectedDate < todayKey;
   const availableSlots =
     selectedDay?.slots.filter((slot) => slot.isAvailable) || [];
+  const selectedSlotIsAvailable = Boolean(
+    selectedSlot &&
+      selectedDay?.slots.some(
+        (slot) => slot.time === selectedSlot.time && slot.isAvailable,
+      ),
+  );
   const canSend = Boolean(
     selectedDay &&
-      selectedSlot &&
+      selectedSlotIsAvailable &&
       !selectedDateIsPast &&
-      selectedDay.status !== "closed",
+      ["available", "limited"].includes(selectedDay.status) &&
+      !availabilityError &&
+      !isLoadingAvailability,
   );
   const canSubmitToSystem = Boolean(
     canSend && customerName.trim() && customerPhone.trim(),
@@ -1408,7 +1475,7 @@ function CustomerBooking() {
   const { mutate: submitRequest, isLoading } = useMutation({
     mutationFn: createAppointmentRequest,
     onSuccess: () => {
-      toast.success("Randevu talebiniz sisteme kaydedildi.");
+      toast.success("Randevu talebiniz alındı.");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -1441,8 +1508,8 @@ function CustomerBooking() {
       requested_time: selectedSlot.time,
       channel: "system",
       status: "new",
-      message,
-      notes: notes.trim() || null,
+      message: null,
+      customer_note: notes.trim() || null,
     });
   }
 
@@ -1458,42 +1525,41 @@ function CustomerBooking() {
               </BrandMark>
               <div>
                 <strong>Welding Expert</strong>
-                <MutedText>Randevu talep ekrani</MutedText>
+                <MutedText>Randevu ve hizmet talebi</MutedText>
               </div>
             </Brand>
             <HeaderText>
               <PublicTitle>
-                Kaynak ve metal isleri icin guvenilir randevu
+                Kaynak ve metal işleri için güvenilir randevu
               </PublicTitle>
               <Lead>
-                Kapi, korkuluk, ferforje ve metal onarim isleri icin hizmet
-                detaylarini inceleyin; size uygun 2 saatlik randevu araligini
-                takvimden secin.
+                Kapı, korkuluk, ferforje ve metal onarım hizmetlerini inceleyin;
+                size uygun iki saatlik randevu aralığını takvimden seçin.
               </Lead>
               <HeaderActions>
                 <HeaderLink href="#appointment-calendar">
                   <HiOutlineCalendarDays />
-                  Randevu sec
+                  Randevu seç
                 </HeaderLink>
                 <HeaderLink
                   href="#location"
                   $secondary>
                   <HiOutlineMapPin />
-                  Adresi gor
+                  Adresi gör
                 </HeaderLink>
                 <HeaderLink
                   as={Link}
                   to="/gallery"
                   $secondary>
                   <HiOutlinePhoto />
-                  Is ornekleri
+                  İş örnekleri
                 </HeaderLink>
               </HeaderActions>
             </HeaderText>
           </div>
           <HeaderBadge>
             <HiOutlineCheckCircle />
-            Musteri ekrani
+            Müşteri ekranı
           </HeaderBadge>
         </PublicHeader>
 
@@ -1503,19 +1569,19 @@ function CustomerBooking() {
           <AboutCopy>
             <Eyebrow>Biz kimiz</Eyebrow>
             <AboutTitle>
-              Kaynak islerinde guvenilir, planli ve temiz iscilik
+               Kaynak işlerinde güvenilir, planlı ve temiz işçilik
             </AboutTitle>
             <AboutText>
-              Mehmet Kara, Ankara ve cevresinde kapi, korkuluk, ferforje,
-              metal onarim ve ozel imalat isleri yapan deneyimli bir kaynak
-              ustasidir. Isin basinda olcu ve ihtiyaci netlestirir, uygun
-              malzeme ve zaman planini musteriyle paylasir.
+              Mehmet Kara, Ankara ve çevresinde kapı, korkuluk, ferforje, metal
+              onarım ve özel imalat işleri yapan deneyimli bir kaynak ustasıdır.
+              İşin başında ölçü ve ihtiyacı netleştirir; uygun malzeme ve zaman
+              planını müşteriyle paylaşır.
             </AboutText>
             <AboutText>
-              Amacimiz sadece kaynak yapmak degil; ev, atolye veya is yeriniz
-              icin saglam, kullanisli ve uzun omurlu bir cozum teslim etmektir.
-              Bu nedenle randevulu calisir, isi yerinde degerlendirir ve
-              mumkun olan en net surecte ilerleriz.
+              Amacımız yalnızca kaynak yapmak değil; eviniz, atölyeniz veya iş
+              yeriniz için sağlam, kullanışlı ve uzun ömürlü bir çözüm teslim
+              etmektir. Bu nedenle randevulu çalışır, işi yerinde değerlendirir
+              ve süreci baştan sona açık biçimde planlarız.
             </AboutText>
             <HighlightList>
               {aboutHighlights.map((highlight) => (
@@ -1532,31 +1598,31 @@ function CustomerBooking() {
               <HiOutlineShieldCheck />
               <div>
                 <ProfileName>Mehmet Kara</ProfileName>
-                <ProfileRole>Kaynak ustasi ve metal isleri sorumlusu</ProfileRole>
+                <ProfileRole>Kaynak ustası ve metal işleri sorumlusu</ProfileRole>
               </div>
             </ProfileLine>
 
             <SelectedLine>
               <HiOutlineMapPin />
-              <span>Ankara merkez ve yakin ilceler</span>
+              <span>Ankara merkez ve yakın ilçeler</span>
             </SelectedLine>
             <SelectedLine>
               <HiOutlineClock />
-              <span>Hafta ici ve hafta sonu randevulu servis</span>
+              <span>Hafta içi ve hafta sonu randevulu servis</span>
             </SelectedLine>
 
             <AboutStats>
               <AboutStat>
-                <AboutStatValue>12+</AboutStatValue>
-                <AboutStatLabel>Yil tecrube</AboutStatLabel>
+                <AboutStatValue>Yerinde</AboutStatValue>
+                <AboutStatLabel>Servis seçeneği</AboutStatLabel>
               </AboutStat>
               <AboutStat>
-                <AboutStatValue>450+</AboutStatValue>
-                <AboutStatLabel>Tamamlanan is</AboutStatLabel>
+                <AboutStatValue>Atölye</AboutStatValue>
+                <AboutStatLabel>Üretim ve onarım</AboutStatLabel>
               </AboutStat>
               <AboutStat>
                 <AboutStatValue>09-21</AboutStatValue>
-                <AboutStatLabel>Randevu araligi</AboutStatLabel>
+                <AboutStatLabel>Randevu saatleri</AboutStatLabel>
               </AboutStat>
             </AboutStats>
           </AboutPanel>
@@ -1565,10 +1631,10 @@ function CustomerBooking() {
         <Section id="services">
           <SectionHeader>
             <Eyebrow>Hizmetlerimiz</Eyebrow>
-            <AboutTitle>En cok talep edilen kaynak ve metal isleri</AboutTitle>
+            <AboutTitle>En çok talep edilen kaynak ve metal işleri</AboutTitle>
             <AboutText>
-              Hizmet kartlarindan birini sectiginizde randevu formundaki is
-              tipi de otomatik guncellenir.
+              İhtiyacınıza uygun hizmeti seçtiğinizde randevu formu otomatik
+              olarak güncellenir.
             </AboutText>
           </SectionHeader>
 
@@ -1599,11 +1665,11 @@ function CustomerBooking() {
 
         <Section id="process">
           <SectionHeader>
-            <Eyebrow>Nasil calisiyoruz</Eyebrow>
-            <AboutTitle>Talep ile teslim arasindaki surec net</AboutTitle>
+            <Eyebrow>Nasıl çalışıyoruz</Eyebrow>
+            <AboutTitle>Talep ile teslim arasındaki süreç net</AboutTitle>
             <AboutText>
-              Kaynak islerinde belirsizlik yerine once ihtiyaci netlestirir,
-              sonra uygun randevu ve uygulama planini olustururuz.
+              Önce ihtiyacı netleştirir, ardından uygun randevu ve uygulama
+              planını birlikte oluştururuz.
             </AboutText>
           </SectionHeader>
 
@@ -1622,23 +1688,43 @@ function CustomerBooking() {
           <Panel>
             <PanelHeader>
               <div>
-                <Heading as="h2">Haftalik takvim</Heading>
+                <Heading as="h2">Haftalık randevu takvimi</Heading>
                 <MutedText>
-                  Tarih secin, haftayi degistirin ve uygun saatlerden birini
-                  isaretleyin.
+                  Tarihi belirleyin ve doğrulanmış müsait saatlerden birini
+                  seçin.
                 </MutedText>
-                {availabilityError && (
-                  <MutedText>
-                    Supabase musaitlik kaydi okunamazsa varsayilan 09:00-21:00
-                    takvimi 2 saatlik araliklarla gosterilir.
-                  </MutedText>
-                )}
               </div>
             </PanelHeader>
 
+            {isLoadingAvailability && (
+              <AvailabilityNotice aria-live="polite">
+                Müsaitlik bilgileri yükleniyor. Saatler doğrulanana kadar seçim
+                yapılamaz.
+              </AvailabilityNotice>
+            )}
+
+            {availabilityError && (
+              <AvailabilityNotice
+                role="alert"
+                $error>
+                <span>
+                  Müsaitlik bilgileri şu anda alınamıyor. Güvenlik nedeniyle
+                  saatler seçime kapatıldı.
+                </span>
+                <Button
+                  type="button"
+                  size="small"
+                  variation="secondary"
+                  disabled={isFetchingAvailability}
+                  onClick={() => refetchAvailability()}>
+                  {isFetchingAvailability ? "Deneniyor..." : "Tekrar dene"}
+                </Button>
+              </AvailabilityNotice>
+            )}
+
             <DateToolbar>
               <DatePicker>
-                Tarih sec
+                Tarih seç
                 <DateInput
                   type="date"
                   min={todayKey}
@@ -1652,7 +1738,7 @@ function CustomerBooking() {
                   type="button"
                   disabled={weekStartKey <= todayKey}
                   onClick={() => handleWeekChange(-1)}
-                  aria-label="Onceki hafta">
+                  aria-label="Önceki hafta">
                   <HiOutlineChevronLeft />
                 </IconButton>
                 <WeekLabel>
@@ -1672,7 +1758,9 @@ function CustomerBooking() {
               {weekDays.map((day) => {
                 const isSelected = selectedDate === day.dateValue;
                 const isPast = day.dateValue < todayKey;
-                const isClosed = day.status === "closed";
+                const isClosed = ["closed", "unavailable"].includes(
+                  day.status,
+                );
                 const freeSlotCount = day.slots.filter(
                   (slot) => slot.isAvailable,
                 ).length;
@@ -1689,12 +1777,14 @@ function CustomerBooking() {
                     <DayDate>{day.dateLabel}</DayDate>
                     <StatusBadge $status={day.status}>
                       {getStatusIcon(day.status)}
-                      {statusLabel[day.status]}
+                      {day.statusText || statusLabel[day.status]}
                     </StatusBadge>
                     <DaySlotCount>
                       {isPast
-                        ? "Gecmis tarih"
-                        : `${freeSlotCount} musait aralik`}
+                        ? "Geçmiş tarih"
+                        : day.status === "unavailable"
+                          ? "Seçime kapalı"
+                          : `${freeSlotCount} müsait aralık`}
                     </DaySlotCount>
                   </DayButton>
                 );
@@ -1704,20 +1794,24 @@ function CustomerBooking() {
             <SlotPanel>
               <div>
                 <Heading as="h2">
-                  {selectedDay ? selectedDay.fullDate : "Gun secin"}
+                  {selectedDay ? selectedDay.fullDate : "Gün seçin"}
                 </Heading>
                 <MutedText>
                   {selectedDay?.note ||
-                    "Ortalama is suresi 2 saat kabul edilir. Uygun araligi secin."}
+                    "Ortalama iş süresi iki saattir. Uygun bir aralık seçin."}
                 </MutedText>
               </div>
 
-              {selectedDay?.status === "closed" ||
+              {["closed", "unavailable"].includes(selectedDay?.status) ||
               selectedDateIsPast ||
               availableSlots.length === 0 ? (
                 <EmptySlots>
-                  <span>Bu gun icin secilebilir saat yok.</span>
-                  <span>Baska bir tarih deneyin.</span>
+                  <span>Bu tarih için seçilebilir saat bulunmuyor.</span>
+                  <span>
+                    {selectedDay?.status === "unavailable"
+                      ? "Müsaitlik doğrulanmadan randevu seçilemez."
+                      : "Başka bir tarih deneyin."}
+                  </span>
                 </EmptySlots>
               ) : (
                 <SlotGrid>
@@ -1739,17 +1833,17 @@ function CustomerBooking() {
 
           <SummaryPanel>
             <SummaryBlock>
-              <Heading as="h2">Talep ozeti</Heading>
+              <Heading as="h2">Talep özeti</Heading>
               <SelectedBox>
                 <SelectedLine>
                   <HiOutlineCalendarDays />
                   <span>
-                    {selectedDay ? selectedDay.fullDate : "Gun secilmedi"}
+                    {selectedDay ? selectedDay.fullDate : "Gün seçilmedi"}
                   </span>
                 </SelectedLine>
                 <SelectedLine>
                   <HiOutlineClock />
-                  <span>{selectedSlot?.label || "Saat secilmedi"}</span>
+                  <span>{selectedSlot?.label || "Saat seçilmedi"}</span>
                 </SelectedLine>
                 <SelectedLine>
                   <HiOutlineWrenchScrewdriver />
@@ -1758,7 +1852,7 @@ function CustomerBooking() {
               </SelectedBox>
 
               <div>
-                <Heading as="h3">Is tipi</Heading>
+                <Heading as="h3">Hizmet türü</Heading>
                 <ServiceList>
                   {serviceTypes.map((service) => (
                     <ServiceOption
@@ -1774,7 +1868,7 @@ function CustomerBooking() {
             </SummaryBlock>
 
             <SummaryBlock>
-              <Heading as="h2">Iletisim secenekleri</Heading>
+              <Heading as="h2">İletişim seçenekleri</Heading>
               <ChannelGrid>
                 <ChannelLink
                   href={canSend ? whatsappUrl : undefined}
@@ -1790,17 +1884,17 @@ function CustomerBooking() {
                   $color="var(--color-brand-600)"
                   $disabled={!canSend}>
                   <HiOutlineEnvelope />
-                  Email gonder
+                  E-posta gönder
                 </ChannelLink>
               </ChannelGrid>
 
               <MutedText>
-                Sisteme talep birakmak icin ad ve telefon bilgilerinizi girin.
+                Sisteme talep bırakmak için ad ve telefon bilgilerinizi girin.
               </MutedText>
 
               <FieldGrid>
                 <Field>
-                  Adiniz
+                  Adınız
                   <Input
                     value={customerName}
                     onChange={(event) => setCustomerName(event.target.value)}
@@ -1816,7 +1910,7 @@ function CustomerBooking() {
                   />
                 </Field>
                 <Field>
-                  Email
+                  E-posta
                   <Input
                     value={customerEmail}
                     onChange={(event) => setCustomerEmail(event.target.value)}
@@ -1824,11 +1918,12 @@ function CustomerBooking() {
                   />
                 </Field>
                 <Field>
-                  Notunuz
+                  İşle ilgili notunuz
                   <Textarea
                     value={notes}
                     onChange={(event) => setNotes(event.target.value)}
-                    placeholder="Orn: balkon korkulugu tamiri yaptirmak istiyorum."
+                    maxLength={1000}
+                    placeholder="Örn. Balkon korkuluğu tamiri yaptırmak istiyorum."
                   />
                 </Field>
               </FieldGrid>
@@ -1837,14 +1932,15 @@ function CustomerBooking() {
                 size="large"
                 disabled={!canSubmitToSystem || isLoading}
                 onClick={handleSystemSubmit}>
-                {isLoading ? "Kaydediliyor..." : "Sisteme talep birak"}
+                {isLoading ? "Kaydediliyor..." : "Randevu talebi oluştur"}
               </Button>
 
               <SelectedLine>
                 <HiOutlineUser />
                 <span>
-                  WhatsApp ve email secenekleri secilen gun/saat ile hazir
-                  mesaj acar. Sistem kaydi icin ad ve telefon gerekir.
+                  WhatsApp ve e-posta seçenekleri, seçtiğiniz tarih ve saatle
+                  hazırlanmış bir mesaj açar. Sistem kaydı için ad ve telefon
+                  bilgisi gerekir.
                 </span>
               </SelectedLine>
             </SummaryBlock>
@@ -1854,11 +1950,11 @@ function CustomerBooking() {
         <LocationSection id="location">
           <LocationInfo>
             <SectionHeader>
-              <Eyebrow>Adres ve hizmet bolgesi</Eyebrow>
-              <AboutTitle>Atolye ve yerinde servis bilgileri</AboutTitle>
+              <Eyebrow>Adres ve hizmet bölgesi</Eyebrow>
+              <AboutTitle>Atölye ve yerinde servis bilgileri</AboutTitle>
               <AboutText>
-                Atolye gorusmeleri randevu ile yapilir. Yerinde servis icin
-                Ankara merkez ve yakin ilceler planlamaya dahil edilir.
+                Atölye görüşmeleri randevuyla yapılır. Yerinde servis için
+                Ankara merkez ve yakın ilçeler planlamaya dahildir.
               </AboutText>
             </SectionHeader>
 
@@ -1880,7 +1976,7 @@ function CustomerBooking() {
               </ContactItem>
               <ContactItem href="#appointment-calendar">
                 <HiOutlineClock />
-                <span>Randevu araligi: 09:00 - 21:00</span>
+                <span>Randevu saatleri: 09:00 - 21:00</span>
               </ContactItem>
             </ContactList>
           </LocationInfo>
@@ -1891,7 +1987,7 @@ function CustomerBooking() {
                 <HiOutlineMapPin />
               </PinIcon>
               <PinCard>
-                <CardTitle>Welding Expert Atolye</CardTitle>
+                <CardTitle>Welding Expert Atölye</CardTitle>
                 <CardText>{businessAddress}</CardText>
               </PinCard>
             </MapPin>
@@ -1899,15 +1995,15 @@ function CustomerBooking() {
               href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
               target="_blank"
               rel="noreferrer">
-              Google Maps uzerinde ac
+              Google Maps üzerinde aç
             </MapOpenLink>
           </MapBox>
         </LocationSection>
 
         <Section id="faq">
           <SectionHeader>
-            <Eyebrow>Sik sorulanlar</Eyebrow>
-            <AboutTitle>Randevu almadan once bilinmesi faydali olanlar</AboutTitle>
+            <Eyebrow>Sık sorulan sorular</Eyebrow>
+            <AboutTitle>Randevu öncesinde merak edilenler</AboutTitle>
           </SectionHeader>
 
           <FaqGrid>
@@ -1921,8 +2017,8 @@ function CustomerBooking() {
         </Section>
 
         <Footer>
-          <span>Welding Expert Appointments</span>
-          <span>Kaynak, metal onarim ve yerinde kesif hizmetleri</span>
+          <span>Welding Expert Randevu Sistemi</span>
+          <span>Kaynak, metal onarım ve yerinde keşif hizmetleri</span>
         </Footer>
       </Shell>
     </Page>

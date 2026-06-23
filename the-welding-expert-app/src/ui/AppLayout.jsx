@@ -1,22 +1,42 @@
-import { Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import styled from "styled-components";
 
 const StyledAppLayout = styled.div`
   display: grid;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar main";
   grid-template-columns: 26rem minmax(0, 1fr);
   grid-template-rows: auto 1fr;
   height: 100vh;
   overflow: hidden;
+
+  @media (max-width: 900px) {
+    grid-template-areas:
+      "header"
+      "main";
+    grid-template-columns: minmax(0, 1fr);
+  }
 `;
 
 const Main = styled.main`
+  grid-area: main;
   background-color: var(--color-grey-50);
   padding: 4rem 4.8rem 6.4rem;
   overflow-y: auto;
   overflow-x: hidden;
   min-width: 0;
+
+  @media (max-width: 900px) {
+    padding: 3.2rem 2.4rem 5.6rem;
+  }
+
+  @media (max-width: 560px) {
+    padding: 2.4rem 1.6rem 4rem;
+  }
 `;
 
 const Container = styled.div`
@@ -29,10 +49,34 @@ const Container = styled.div`
 `;
 
 function AppLayout() {
+  const [isNavigationOpen, setIsNavigationOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setIsNavigationOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!isNavigationOpen) return undefined;
+
+    function closeOnEscape(event) {
+      if (event.key === "Escape") setIsNavigationOpen(false);
+    }
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [isNavigationOpen]);
+
   return (
     <StyledAppLayout>
-      <Header />
-      <Sidebar />
+      <Header
+        isNavigationOpen={isNavigationOpen}
+        onToggleNavigation={() => setIsNavigationOpen((open) => !open)}
+      />
+      <Sidebar
+        isOpen={isNavigationOpen}
+        onClose={() => setIsNavigationOpen(false)}
+      />
       <Main>
         <Container>
           <Outlet />

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import styled from "styled-components";
 
@@ -24,6 +24,7 @@ const StyledLink = styled(Link)`
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -31,7 +32,16 @@ function LoginForm() {
     mutationFn: login,
     onSuccess: (user) => {
       queryClient.setQueryData(["user"], user);
-      navigate("/admin/bookings", { replace: true });
+      queryClient.removeQueries({ queryKey: ["admin-profile"] });
+
+      const requestedLocation = location.state?.from;
+      const destination = requestedLocation
+        ? `${requestedLocation.pathname}${requestedLocation.search || ""}${
+            requestedLocation.hash || ""
+          }`
+        : "/admin/bookings";
+
+      navigate(destination, { replace: true });
     },
     onError: (error) => {
       toast.error(error.message);
@@ -48,7 +58,7 @@ function LoginForm() {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <FormRow label="Email">
+      <FormRow label="E-posta">
         <Input
           type="email"
           id="email"
@@ -58,7 +68,7 @@ function LoginForm() {
           onChange={(e) => setEmail(e.target.value)}
         />
       </FormRow>
-      <FormRow label="Sifre">
+      <FormRow label="Şifre">
         <Input
           type="password"
           id="password"
@@ -71,11 +81,11 @@ function LoginForm() {
         <Button
           size="large"
           disabled={isLoading}>
-          {isLoading ? "Giris yapiliyor..." : "Giris yap"}
+          {isLoading ? "Giriş yapılıyor..." : "Giriş yap"}
         </Button>
       </FormRow>
       <LinkRow>
-        <StyledLink to="/signup">Yeni admin hesabi olustur</StyledLink>
+        <StyledLink to="/signup">Yeni admin hesabı oluştur</StyledLink>
       </LinkRow>
     </Form>
   );

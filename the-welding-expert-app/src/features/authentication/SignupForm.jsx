@@ -37,7 +37,7 @@ function SignupForm() {
     mutationFn: signup,
     onSuccess: () => {
       toast.success(
-        "Uyelik olusturuldu. Admin yetkisi icin Supabase uzerinden onay gerekiyor.",
+        "Üyelik oluşturuldu. Admin yetkisi için yönetici onayı gerekiyor.",
       );
       setFullName("");
       setEmail("");
@@ -55,12 +55,12 @@ function SignupForm() {
     if (!fullName || !email || !password) return;
 
     if (password.length < 6) {
-      toast.error("Sifre en az 6 karakter olmali.");
+      toast.error("Şifre en az 6 karakter olmalı.");
       return;
     }
 
     if (password !== passwordConfirm) {
-      toast.error("Sifreler eslesmiyor.");
+      toast.error("Şifreler eşleşmiyor.");
       return;
     }
 
@@ -70,8 +70,8 @@ function SignupForm() {
   return (
     <Form onSubmit={handleSubmit}>
       <HelperText>
-        Yeni hesaplar once beklemede kalir. Supabase SQL Editor uzerinden
-        kullaniciya admin rolu verdikten sonra panel verileri acilir.
+        Yeni hesaplar önce onay bekler. Aktif bir admin hesabı üyeliği
+        onayladıktan sonra yönetim paneline erişim açılır.
       </HelperText>
 
       <FormRow label="Ad soyad">
@@ -83,7 +83,7 @@ function SignupForm() {
         />
       </FormRow>
 
-      <FormRow label="Email">
+      <FormRow label="E-posta">
         <Input
           id="email"
           type="email"
@@ -93,7 +93,7 @@ function SignupForm() {
         />
       </FormRow>
 
-      <FormRow label="Sifre">
+      <FormRow label="Şifre">
         <Input
           id="password"
           type="password"
@@ -103,7 +103,7 @@ function SignupForm() {
         />
       </FormRow>
 
-      <FormRow label="Sifre tekrar">
+      <FormRow label="Şifre tekrar">
         <Input
           id="passwordConfirm"
           type="password"
@@ -117,12 +117,12 @@ function SignupForm() {
         <Button
           size="large"
           disabled={isLoading}>
-          {isLoading ? "Olusturuluyor..." : "Uye ol"}
+          {isLoading ? "Oluşturuluyor..." : "Üye ol"}
         </Button>
       </FormRow>
 
       <LinkRow>
-        <StyledLink to="/login">Zaten hesabim var</StyledLink>
+        <StyledLink to="/login">Zaten hesabım var</StyledLink>
       </LinkRow>
     </Form>
   );
