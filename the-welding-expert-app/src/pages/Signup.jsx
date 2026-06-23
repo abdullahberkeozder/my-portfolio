@@ -19,7 +19,7 @@ function Signup() {
   return (
     <SignupLayout>
       <Logo />
-      <Heading as="h1">Admin uyeligi olustur</Heading>
+      <Heading as="h1">Admin üyeliği oluştur</Heading>
       <SignupForm />
     </SignupLayout>
   );

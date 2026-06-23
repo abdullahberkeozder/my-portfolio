@@ -11,64 +11,64 @@ import {
 
 const workExamples = [
   {
-    title: "Balkon korkulugu saglamlastirma",
-    category: "Korkuluk onarimi",
+    title: "Balkon korkuluğu sağlamlaştırma",
+    category: "Korkuluk onarımı",
     location: "Yenimahalle / Ankara",
-    beforeLabel: "Kesif",
+    beforeLabel: "Keşif",
     afterLabel: "Uygulama",
     beforeImage:
       "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=900&q=80",
     afterImage:
       "https://images.unsplash.com/photo-1698664683348-f9f35b809821?auto=format&fit=crop&w=900&q=80",
-    text: "Gevseyen baglanti noktalarinda kaynak onarimi yapildi, son kontrol ile kullanim guvenligi artirildi.",
-    points: ["Yerinde kesif", "Kaynak onarimi", "Saglamlik kontrolu"],
+    text: "Gevşeyen bağlantı noktalarında kaynak onarımı yapıldı; son kontrolle kullanım güvenliği artırıldı.",
+    points: ["Yerinde keşif", "Kaynak onarımı", "Sağlamlık kontrolü"],
   },
   {
-    title: "Atolye tipi metal cerceve imalati",
-    category: "Ozel imalat",
+    title: "Atölye tipi metal çerçeve imalatı",
+    category: "Özel imalat",
     location: "Ostim / Ankara",
-    beforeLabel: "Hazirlik",
+    beforeLabel: "Hazırlık",
     afterLabel: "Montaj",
     beforeImage:
       "https://images.unsplash.com/photo-1735494033576-9c882e80504c?auto=format&fit=crop&w=900&q=80",
     afterImage:
       "https://images.unsplash.com/photo-1526634140919-468dc3ae3870?auto=format&fit=crop&w=900&q=80",
-    text: "Olcuye gore metal cerceve hazirlandi, kaynak sonrasi capak temizligi ve yuzey kontrolu tamamlandi.",
-    points: ["Olcu alma", "Parca hazirlama", "Temiz teslim"],
+    text: "Ölçüye göre metal çerçeve hazırlandı; kaynak sonrası çapak temizliği ve yüzey kontrolü tamamlandı.",
+    points: ["Ölçü alma", "Parça hazırlama", "Temiz teslim"],
   },
   {
-    title: "Kapi mentesesi ve kasa tamiri",
-    category: "Tamir ve bakim",
-    location: "Cankaya / Ankara",
+    title: "Kapı menteşesi ve kasa tamiri",
+    category: "Tamir ve bakım",
+    location: "Çankaya / Ankara",
     beforeLabel: "Problem",
     afterLabel: "Teslim",
     beforeImage:
       "https://images.unsplash.com/photo-1698664683348-f9f35b809821?auto=format&fit=crop&w=900&q=80",
     afterImage:
       "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=900&q=80",
-    text: "Acilan kaynak ve esneyen mentese bolgesi yeniden sabitlendi, kapi hareketi test edilerek teslim edildi.",
-    points: ["Hizli tespit", "Mentese sabitleme", "Kullanim testi"],
+    text: "Açılan kaynak ve esneyen menteşe bölgesi yeniden sabitlendi; kapı hareketi test edilerek teslim edildi.",
+    points: ["Hızlı tespit", "Menteşe sabitleme", "Kullanım testi"],
   },
 ];
 
 const galleryItems = [
   {
-    title: "Yerinde kaynak onarimi",
+    title: "Yerinde kaynak onarımı",
     image:
       "https://images.unsplash.com/photo-1698664683348-f9f35b809821?auto=format&fit=crop&w=900&q=80",
   },
   {
-    title: "Metal kesim ve hazirlik",
+    title: "Metal kesim ve hazırlık",
     image:
       "https://images.unsplash.com/photo-1735494033576-9c882e80504c?auto=format&fit=crop&w=900&q=80",
   },
   {
-    title: "Korkuluk ve profil isi",
+    title: "Korkuluk ve profil işi",
     image:
       "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=900&q=80",
   },
   {
-    title: "Atolye kaynak uygulamasi",
+    title: "Atölye kaynak uygulaması",
     image:
       "https://images.unsplash.com/photo-1526634140919-468dc3ae3870?auto=format&fit=crop&w=900&q=80",
   },
@@ -77,18 +77,18 @@ const galleryItems = [
 const testimonials = [
   {
     name: "Murat A.",
-    job: "Apartman korkulugu onarimi",
-    text: "Randevu saatinde geldi, once sorunu anlatti sonra temiz bir sekilde tamiri tamamladi.",
+    job: "Apartman korkuluğu onarımı",
+    text: "Randevu saatinde geldi, önce sorunu anlattı ve ardından tamiri temiz bir şekilde tamamladı.",
   },
   {
     name: "Selin K.",
-    job: "Metal masa ayagi imalati",
-    text: "Olcu konusunda dikkatliydi. Teslim edilen is hem saglam hem de bekledigimizden daha duzgun oldu.",
+    job: "Metal masa ayağı imalatı",
+    text: "Ölçü konusunda dikkatliydi. Teslim edilen iş hem sağlam hem de beklediğimizden daha düzgün oldu.",
   },
   {
     name: "Emre T.",
-    job: "Kapi mentesesi tamiri",
-    text: "Kisa surede cozum uretti. Is bittikten sonra kullanimi test edip oyle teslim etti.",
+    job: "Kapı menteşesi tamiri",
+    text: "Kısa sürede çözüm üretti. İş bittikten sonra kullanımı test ederek teslim etti.",
   },
 ];
 
@@ -536,23 +536,22 @@ function Gallery() {
         <TopBar>
           <BackLink to="/appointment">
             <HiOutlineArrowLeft />
-            Randevu sayfasina don
+            Randevu sayfasına dön
           </BackLink>
         </TopBar>
 
         <Hero>
           <HeroContent>
-            <Eyebrow>Is ornekleri / galeri</Eyebrow>
-            <HeroTitle>Kaynak ve metal islerinde once-sonra calismalari</HeroTitle>
+            <Eyebrow>İş örnekleri / galeri</Eyebrow>
+            <HeroTitle>Kaynak ve metal işlerinde önce-sonra çalışmaları</HeroTitle>
             <HeroText>
-              Buradaki gorseller simdilik ornek olarak kullanildi. Kendi
-              islerinden fotograf yuklediginde bu sayfa referans vitrini gibi
-              calisacak.
+              Kaynak uygulamalarını keşif, hazırlık ve teslim aşamalarıyla
+              inceleyin. Benzer bir iş için doğrudan randevu talebi oluşturun.
             </HeroText>
             <HeroActions>
               <ActionLink to="/appointment">
                 <HiOutlineCalendarDays />
-                Randevu sec
+                Randevu seç
               </ActionLink>
               <ActionLink
                 to="/appointment#services"
@@ -564,18 +563,18 @@ function Gallery() {
           </HeroContent>
         </Hero>
 
-        <StatsGrid aria-label="Galeri ozeti">
+        <StatsGrid aria-label="Galeri özeti">
           <StatCard>
-            <StatValue>12+</StatValue>
-            <StatLabel>Yil tecrube</StatLabel>
+            <StatValue>Yerinde</StatValue>
+            <StatLabel>Servis seçeneği</StatLabel>
           </StatCard>
           <StatCard>
-            <StatValue>450+</StatValue>
-            <StatLabel>Tamamlanan is</StatLabel>
+            <StatValue>Atölye</StatValue>
+            <StatLabel>Üretim ve onarım</StatLabel>
           </StatCard>
           <StatCard>
             <StatValue>2 saat</StatValue>
-            <StatLabel>Standart randevu araligi</StatLabel>
+            <StatLabel>Standart randevu aralığı</StatLabel>
           </StatCard>
           <StatCard>
             <StatValue>09-21</StatValue>
@@ -585,11 +584,11 @@ function Gallery() {
 
         <Section>
           <SectionHeader>
-            <Eyebrow>Once / sonra</Eyebrow>
-            <SectionTitle>Isin kapsamindan teslim anina kadar net gorunum</SectionTitle>
+            <Eyebrow>Önce / sonra</Eyebrow>
+            <SectionTitle>Keşiften teslim anına kadar çalışma süreci</SectionTitle>
             <MutedText>
-              Gercek is fotograflarin hazir oldugunda burada her kart icin
-              kesif, uygulama ve teslim surecini gosterebilirsin.
+              Her kartta işin başlangıç durumu, uygulama adımları ve teslim
+              sonrası görünümü birlikte sunulur.
             </MutedText>
           </SectionHeader>
 
@@ -628,10 +627,10 @@ function Gallery() {
         <Section>
           <SectionHeader>
             <Eyebrow>Galeri</Eyebrow>
-            <SectionTitle>Atolye, yerinde servis ve metal islerinden kareler</SectionTitle>
+            <SectionTitle>Atölye, yerinde servis ve metal işlerinden kareler</SectionTitle>
             <MutedText>
-              Bu alan daha sonra kendi fotograf arsivinle buyuyebilir; her
-              kareye is turu, konum veya teslim notu eklenebilir.
+              Farklı hizmet türleri, uygulama ayrıntıları ve teslim edilen
+              işlerden seçilmiş görseller.
             </MutedText>
           </SectionHeader>
 
@@ -649,10 +648,10 @@ function Gallery() {
         <Section>
           <SectionHeader>
             <Eyebrow>Yorumlar / referanslar</Eyebrow>
-            <SectionTitle>Musterilerin calisma sureciyle ilgili notlari</SectionTitle>
+            <SectionTitle>Müşterilerin çalışma süreciyle ilgili görüşleri</SectionTitle>
             <MutedText>
-              Simdilik ornek referans metinleri var. Gercek musteri yorumlari
-              geldikce bu alan guven olusturan en guclu bolumlerden biri olur.
+              Randevu, uygulama ve teslim süreciyle ilgili müşteri geri
+              bildirimleri.
             </MutedText>
           </SectionHeader>
 
@@ -674,10 +673,10 @@ function Gallery() {
 
         <Cta>
           <div>
-            <SectionTitle>Benzer bir is icin uygun randevu secin</SectionTitle>
+            <SectionTitle>Benzer bir iş için uygun randevuyu seçin</SectionTitle>
             <MutedText>
-              Isin fotograflarini WhatsApp uzerinden paylasarak daha net teklif
-              alabilirsiniz.
+              İşin fotoğraflarını WhatsApp üzerinden paylaşarak daha doğru bir
+              ön değerlendirme alabilirsiniz.
             </MutedText>
           </div>
           <ActionLink to="/appointment#appointment-calendar">

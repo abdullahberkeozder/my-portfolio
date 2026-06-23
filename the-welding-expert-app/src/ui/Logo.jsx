@@ -47,7 +47,7 @@ function Logo() {
       </Mark>
       <div>
         <Name>Welding Expert</Name>
-        <Caption>Appointments</Caption>
+        <Caption>Randevu yönetimi</Caption>
       </div>
     </StyledLogo>
   );

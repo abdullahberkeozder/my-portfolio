@@ -1,83 +1,134 @@
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
 import {
+  HiOutlineArrowPath,
+  HiOutlineArrowTopRightOnSquare,
   HiOutlineCalendarDays,
   HiOutlineCheckCircle,
   HiOutlineClock,
-  HiOutlineEnvelope,
-  HiOutlineMapPin,
-  HiOutlinePhone,
+  HiOutlinePhoto,
   HiOutlineUserGroup,
-  HiOutlineWrenchScrewdriver,
 } from "react-icons/hi2";
 
+import Button from "../ui/Button";
 import Heading from "../ui/Heading";
+import Spinner from "../ui/Spinner";
+import { getAppointmentRequests } from "../services/apiAppointmentRequests";
+import { getAvailabilityDays } from "../services/apiAvailability";
 
-const weekAvailability = [
-  {
-    day: "Monday",
-    date: "17 Jun",
-    status: "Limited",
-    slots: ["18:00", "20:00", "22:00"],
-  },
-  {
-    day: "Tuesday",
-    date: "18 Jun",
-    status: "Busy",
-    slots: ["Full day field work"],
-  },
-  {
-    day: "Wednesday",
-    date: "19 Jun",
-    status: "Limited",
-    slots: ["18:00", "20:00", "22:00"],
-  },
-  {
-    day: "Thursday",
-    date: "20 Jun",
-    status: "Limited",
-    slots: ["18:00", "20:00", "22:00"],
-  },
-  {
-    day: "Friday",
-    date: "21 Jun",
-    status: "Limited",
-    slots: ["09:30", "12:00", "14:30"],
-  },
-  {
-    day: "Saturday",
-    date: "22 Jun",
-    status: "Available",
-    slots: ["18:00", "20:00", "22:00"],
-  },
-  {
-    day: "Sunday",
-    date: "23 Jun",
-    status: "Closed",
-    slots: ["Emergency only"],
-  },
-];
+const DAY_STATUS_LABELS = {
+  available: "Müsait",
+  limited: "Kısıtlı",
+  closed: "Kapalı",
+  missing: "Planlanmadı",
+};
 
-const recentRequests = [
-  {
-    customer: "Murat Demir",
-    work: "Balcony railing repair",
-    time: "Today, 14:30",
-    status: "Confirmed",
-  },
-  {
-    customer: "Elif Kaya",
-    work: "Steel door hinge welding",
-    time: "Tomorrow, 10:00",
-    status: "Waiting",
-  },
-  {
-    customer: "Atlas Workshop",
-    work: "Custom table frame",
-    time: "Friday, 12:00",
-    status: "Quote needed",
-  },
-];
+const REQUEST_STATUS_LABELS = {
+  new: "Yeni",
+  contacted: "İletişime geçildi",
+  confirmed: "Onaylandı",
+  cancelled: "İptal edildi",
+  completed: "Tamamlandı",
+};
+
+const OPENING_HOUR = 9;
+const CLOSING_HOUR = 21;
+const SLOT_DURATION_HOURS = 2;
+
+const dayFormatter = new Intl.DateTimeFormat("tr-TR", {
+  weekday: "long",
+});
+
+const dateFormatter = new Intl.DateTimeFormat("tr-TR", {
+  day: "numeric",
+  month: "short",
+});
+
+const requestDateFormatter = new Intl.DateTimeFormat("tr-TR", {
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+});
+
+function padNumber(value) {
+  return String(value).padStart(2, "0");
+}
+
+function formatDateKey(date) {
+  return [
+    date.getFullYear(),
+    padNumber(date.getMonth() + 1),
+    padNumber(date.getDate()),
+  ].join("-");
+}
+
+function parseDateKey(dateKey) {
+  return new Date(`${dateKey}T00:00:00`);
+}
+
+function addDays(date, amount) {
+  const nextDate = new Date(date);
+  nextDate.setDate(nextDate.getDate() + amount);
+  return nextDate;
+}
+
+function isStandardSlot(slotTime) {
+  const hour = Number(slotTime.slice(0, 2));
+  const minute = slotTime.slice(3, 5);
+
+  return (
+    hour >= OPENING_HOUR &&
+    hour + SLOT_DURATION_HOURS <= CLOSING_HOUR &&
+    minute === "00" &&
+    (hour - OPENING_HOUR) % SLOT_DURATION_HOURS === 0
+  );
+}
+
+function formatRequestDate(request) {
+  if (!request.requested_date) return "Tarih belirtilmedi";
+
+  return `${requestDateFormatter.format(
+    parseDateKey(request.requested_date),
+  )}, ${request.requested_time?.slice(0, 5) || "Saat yok"}`;
+}
+
+function buildWeekAvailability(days, startDate) {
+  const daysByDate = new Map(days.map((day) => [day.work_date, day]));
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = addDays(startDate, index);
+    const dateKey = formatDateKey(date);
+    const databaseDay = daysByDate.get(dateKey);
+
+    if (!databaseDay) {
+      return {
+        dateKey,
+        day: dayFormatter.format(date),
+        date: dateFormatter.format(date),
+        status: "missing",
+        slots: [],
+      };
+    }
+
+    const availableSlots = [
+      ...(databaseDay.appointment_availability_slots || []),
+    ]
+      .filter(
+        (slot) => slot.is_available && isStandardSlot(slot.slot_time),
+      )
+      .sort((a, b) => a.slot_time.localeCompare(b.slot_time))
+      .map((slot) => slot.slot_time.slice(0, 5));
+
+    return {
+      dateKey,
+      day: dayFormatter.format(date),
+      date: dateFormatter.format(date),
+      status: databaseDay.status || "available",
+      slots: databaseDay.status === "closed" ? [] : availableSlots,
+    };
+  });
+}
 
 const Page = styled.div`
   display: flex;
@@ -347,21 +398,17 @@ const StatusBadge = styled.span`
   font-size: 1.1rem;
   font-weight: 700;
   color: ${(props) =>
-    props.$status === "Available"
+    props.$status === "available"
       ? "var(--color-green-700)"
-      : props.$status === "Limited"
+      : props.$status === "limited"
         ? "var(--color-yellow-700)"
-        : props.$status === "Busy"
-          ? "var(--color-blue-700)"
-          : "var(--color-grey-600)"};
+        : "var(--color-grey-600)"};
   background: ${(props) =>
-    props.$status === "Available"
+    props.$status === "available"
       ? "var(--color-green-100)"
-      : props.$status === "Limited"
+      : props.$status === "limited"
         ? "var(--color-yellow-100)"
-        : props.$status === "Busy"
-          ? "var(--color-blue-100)"
-          : "var(--color-grey-100)"};
+        : "var(--color-grey-100)"};
 `;
 
 const SlotList = styled.ul`
@@ -443,50 +490,181 @@ const ContactLink = styled.a`
   }
 `;
 
+const DashboardState = styled.section`
+  min-height: 28rem;
+  border: 1px solid var(--color-grey-100);
+  border-radius: var(--border-radius-md);
+  padding: 3.2rem;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: var(--color-grey-0);
+`;
+
+const StateContent = styled.div`
+  max-width: 52rem;
+  display: grid;
+  justify-items: center;
+  gap: 1.2rem;
+`;
+
+const EmptyState = styled.div`
+  border: 1px dashed var(--color-grey-200);
+  border-radius: var(--border-radius-sm);
+  padding: 1.6rem;
+  color: var(--color-grey-500);
+  font-size: 1.4rem;
+  font-weight: 600;
+`;
+
 function Dashboard() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const endDate = addDays(today, 6);
+  const todayKey = formatDateKey(today);
+  const endDateKey = formatDateKey(endDate);
+
+  const requestsQuery = useQuery({
+    queryKey: ["appointment-requests"],
+    queryFn: getAppointmentRequests,
+  });
+
+  const availabilityQuery = useQuery({
+    queryKey: ["appointment-availability-days", todayKey, endDateKey],
+    queryFn: () =>
+      getAvailabilityDays({
+        startDate: todayKey,
+        endDate: endDateKey,
+      }),
+  });
+
+  const isLoading = requestsQuery.isLoading || availabilityQuery.isLoading;
+  const isError = requestsQuery.isError || availabilityQuery.isError;
+
+  if (isLoading) {
+    return (
+      <Page>
+        <DashboardState>
+          <StateContent>
+            <Spinner />
+            <Heading as="h2">Kontrol merkezi hazırlanıyor</Heading>
+            <MutedText>
+              Randevu talepleri ve müsaitlik bilgileri yükleniyor.
+            </MutedText>
+          </StateContent>
+        </DashboardState>
+      </Page>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Page>
+        <DashboardState>
+          <StateContent>
+            <Heading as="h2">Kontrol merkezi verileri alınamadı</Heading>
+            <MutedText>
+              Supabase bağlantısını kontrol edip yeniden deneyin. Admin paneli
+              örnek veri göstermeyecektir.
+            </MutedText>
+            <Button
+              type="button"
+              onClick={() => {
+                requestsQuery.refetch();
+                availabilityQuery.refetch();
+              }}>
+              <HiOutlineArrowPath />
+              Tekrar dene
+            </Button>
+          </StateContent>
+        </DashboardState>
+      </Page>
+    );
+  }
+
+  const requests = requestsQuery.data || [];
+  const availabilityDays = availabilityQuery.data || [];
+  const weekAvailability = buildWeekAvailability(availabilityDays, today);
+  const openSlotCount = availabilityDays.reduce((total, day) => {
+    if (day.status === "closed") return total;
+
+    return (
+      total +
+      (day.appointment_availability_slots || []).filter(
+        (slot) => slot.is_available && isStandardSlot(slot.slot_time),
+      ).length
+    );
+  }, 0);
+  const newRequestCount = requests.filter(
+    (request) => request.status === "new",
+  ).length;
+  const confirmedThisWeek = requests.filter(
+    (request) =>
+      request.status === "confirmed" &&
+      request.requested_date >= todayKey &&
+      request.requested_date <= endDateKey,
+  ).length;
+  const customerCount = new Set(
+    requests.map(
+      (request) =>
+        request.customer_phone ||
+        request.customer_email ||
+        request.customer_name?.trim().toLocaleLowerCase("tr-TR"),
+    ).filter(Boolean),
+  ).size;
+  const nextAppointment = requests
+    .filter(
+      (request) =>
+        request.status === "confirmed" && request.requested_date >= todayKey,
+    )
+    .sort((a, b) =>
+      `${a.requested_date}T${a.requested_time}`.localeCompare(
+        `${b.requested_date}T${b.requested_time}`,
+      ),
+    )[0];
+  const recentRequests = requests.slice(0, 5);
+
   return (
     <Page>
       <Hero>
         <HeroCopy>
-          <Eyebrow>Admin panel</Eyebrow>
-          <HeroTitle>
-            Manage welding appointments from one place
-          </HeroTitle>
+          <Eyebrow>İş takip paneli</Eyebrow>
+          <HeroTitle>Randevuları ve müşteri taleplerini tek yerden yönetin</HeroTitle>
           <HeroText>
-            Review customer requests, keep the public appointment page ready,
-            and follow every welding job from first contact to confirmation.
+            Yeni talepleri değerlendirin, müsaitlik takvimini güncel tutun ve
+            onaylanan işleri yaklaşan tarihlere göre takip edin.
           </HeroText>
           <Actions>
             <ActionLink to="/appointment">
               <HiOutlineCalendarDays />
-              Open customer page
+              Müşteri ekranını aç
             </ActionLink>
             <ActionLink
               to="/admin/bookings"
               $secondary>
               <HiOutlineClock />
-              Review requests
+              Talepleri incele
             </ActionLink>
           </Actions>
         </HeroCopy>
 
         <HeroPanel>
           <HeroPanelItem>
-            <HiOutlineMapPin />
+            <HiOutlineCalendarDays />
             <div>
-              <PanelLabel>Service area</PanelLabel>
+              <PanelLabel>Sıradaki onaylı randevu</PanelLabel>
               <PanelValue>
-                Ankara and nearby districts
+                {nextAppointment
+                  ? formatRequestDate(nextAppointment)
+                  : "Planlanmış randevu yok"}
               </PanelValue>
             </div>
           </HeroPanelItem>
           <HeroPanelItem>
-            <HiOutlineWrenchScrewdriver />
+            <HiOutlineClock />
             <div>
-              <PanelLabel>Primary jobs</PanelLabel>
-              <PanelValue>
-                Repairs, gates, railings, custom frames
-              </PanelValue>
+              <PanelLabel>İşlem bekleyen talepler</PanelLabel>
+              <PanelValue>{newRequestCount} yeni talep</PanelValue>
             </div>
           </HeroPanelItem>
         </HeroPanel>
@@ -498,8 +676,8 @@ function Dashboard() {
             <HiOutlineCheckCircle />
           </StatIcon>
           <div>
-            <StatLabel>Open slots</StatLabel>
-            <StatValue>10</StatValue>
+            <StatLabel>Açık randevu aralığı</StatLabel>
+            <StatValue>{openSlotCount}</StatValue>
           </div>
         </StatCard>
         <StatCard>
@@ -507,8 +685,8 @@ function Dashboard() {
             <HiOutlineCalendarDays />
           </StatIcon>
           <div>
-            <StatLabel>This week</StatLabel>
-            <StatValue>7 jobs</StatValue>
+            <StatLabel>Onaylanan iş / 7 gün</StatLabel>
+            <StatValue>{confirmedThisWeek}</StatValue>
           </div>
         </StatCard>
         <StatCard>
@@ -516,8 +694,8 @@ function Dashboard() {
             <HiOutlineClock />
           </StatIcon>
           <div>
-            <StatLabel>Waiting quotes</StatLabel>
-            <StatValue>3</StatValue>
+            <StatLabel>Yeni talep</StatLabel>
+            <StatValue>{newRequestCount}</StatValue>
           </div>
         </StatCard>
         <StatCard>
@@ -525,8 +703,8 @@ function Dashboard() {
             <HiOutlineUserGroup />
           </StatIcon>
           <div>
-            <StatLabel>Customers</StatLabel>
-            <StatValue>24</StatValue>
+            <StatLabel>Toplam müşteri</StatLabel>
+            <StatValue>{customerCount}</StatValue>
           </div>
         </StatCard>
       </StatsGrid>
@@ -534,10 +712,9 @@ function Dashboard() {
       <Section>
         <SectionHeader>
           <div>
-            <Heading as="h2">Weekly availability</Heading>
+            <Heading as="h2">Önümüzdeki 7 günün müsaitliği</Heading>
             <MutedText>
-              Free days and appointment windows customers
-              can see.
+              Müşteri ekranında görünen açık ve kapalı randevu aralıkları.
             </MutedText>
           </div>
         </SectionHeader>
@@ -545,19 +722,23 @@ function Dashboard() {
         <WeekGrid>
           {weekAvailability.map((day) => (
             <DayCard
-              key={day.day}
-              $closed={day.status === "Closed"}>
+              key={day.dateKey}
+              $closed={["closed", "missing"].includes(day.status)}>
               <div>
                 <DayName>{day.day}</DayName>
                 <DayDate>{day.date}</DayDate>
               </div>
               <StatusBadge $status={day.status}>
-                {day.status}
+                {DAY_STATUS_LABELS[day.status]}
               </StatusBadge>
               <SlotList>
-                {day.slots.map((slot) => (
+                {day.slots.slice(0, 3).map((slot) => (
                   <Slot key={slot}>{slot}</Slot>
                 ))}
+                {day.slots.length > 3 && (
+                  <Slot>+{day.slots.length - 3} saat daha</Slot>
+                )}
+                {day.slots.length === 0 && <Slot>Uygun saat yok</Slot>}
               </SlotList>
             </DayCard>
           ))}
@@ -568,55 +749,69 @@ function Dashboard() {
         <Section>
           <SectionHeader>
             <div>
-              <Heading as="h2">Customer requests</Heading>
+              <Heading as="h2">Son müşteri talepleri</Heading>
               <MutedText>
-                Appointments and quote requests waiting for
-                action.
+                En son oluşturulan beş talep ve güncel durumları.
               </MutedText>
             </div>
           </SectionHeader>
 
-          <RequestList>
-            {recentRequests.map((request) => (
-              <RequestCard
-                key={`${request.customer}-${request.time}`}>
-                <RequestTop>
-                  <RequestTitle>
-                    {request.customer}
-                  </RequestTitle>
-                  <RequestStatus>
-                    {request.status}
-                  </RequestStatus>
-                </RequestTop>
-                <MutedText>{request.work}</MutedText>
-                <Slot>{request.time}</Slot>
-              </RequestCard>
-            ))}
-          </RequestList>
+          {recentRequests.length === 0 ? (
+            <EmptyState>Henüz müşteri talebi bulunmuyor.</EmptyState>
+          ) : (
+            <RequestList>
+              {recentRequests.map((request) => (
+                <RequestCard key={request.id}>
+                  <RequestTop>
+                    <RequestTitle>
+                      {request.customer_name || "İsimsiz müşteri"}
+                    </RequestTitle>
+                    <RequestStatus>
+                      {REQUEST_STATUS_LABELS[request.status] || "Yeni"}
+                    </RequestStatus>
+                  </RequestTop>
+                  <MutedText>
+                    {request.service_type || "Hizmet türü belirtilmedi"}
+                  </MutedText>
+                  <Slot>{formatRequestDate(request)}</Slot>
+                </RequestCard>
+              ))}
+            </RequestList>
+          )}
         </Section>
 
         <Section>
           <SectionHeader>
             <div>
-              <Heading as="h2">Contact shortcuts</Heading>
-              <MutedText>
-                Direct channels for fast customer
-                communication.
-              </MutedText>
+              <Heading as="h2">Hızlı işlemler</Heading>
+              <MutedText>Sık kullanılan yönetim ekranlarına ulaşın.</MutedText>
             </div>
           </SectionHeader>
 
           <ContactGrid>
             <ContactLink
-              href="https://wa.me/905551112233"
-              target="_blank"
-              rel="noreferrer">
-              <HiOutlinePhone />
-              WhatsApp
+              as={Link}
+              to="/admin/bookings">
+              <HiOutlineUserGroup />
+              Talepleri yönet
             </ContactLink>
-            <ContactLink href="mailto:info@theweldingexpert.com">
-              <HiOutlineEnvelope />
-              Email
+            <ContactLink
+              as={Link}
+              to="/admin/availability">
+              <HiOutlineClock />
+              Müsaitliği düzenle
+            </ContactLink>
+            <ContactLink
+              as={Link}
+              to="/appointment">
+              <HiOutlineArrowTopRightOnSquare />
+              Müşteri ekranını aç
+            </ContactLink>
+            <ContactLink
+              as={Link}
+              to="/gallery">
+              <HiOutlinePhoto />
+              Galeriyi görüntüle
             </ContactLink>
           </ContactGrid>
         </Section>

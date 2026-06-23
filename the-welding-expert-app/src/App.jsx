@@ -13,12 +13,14 @@ import GlobalStyles from "./styles/GlobalStyles";
 import Dashboard from "./pages/Dashboard";
 import Bookings from "./pages/Bookings";
 import Availability from "./pages/Availability";
+import AdminUsers from "./pages/AdminUsers";
 import CustomerBooking from "./pages/CustomerBooking";
 import Gallery from "./pages/Gallery";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import PageNotFound from "./pages/PageNotFound";
 import AppLayout from "./ui/AppLayout";
+import ProtectedRoute from "./ui/ProtectedRoute";
 import { Toaster } from "react-hot-toast";
 
 const queryClient = new QueryClient({
@@ -56,30 +58,36 @@ function App() {
               element={<Gallery />}
             />
 
-            <Route
-              path="admin"
-              element={<AppLayout />}>
+            <Route element={<ProtectedRoute />}>
               <Route
-                index
-                element={
-                  <Navigate
-                    replace
-                    to="dashboard"
-                  />
-                }
-              />
-              <Route
-                path="dashboard"
-                element={<Dashboard />}
-              />
-              <Route
-                path="bookings"
-                element={<Bookings />}
-              />
-              <Route
-                path="availability"
-                element={<Availability />}
-              />
+                path="admin"
+                element={<AppLayout />}>
+                <Route
+                  index
+                  element={
+                    <Navigate
+                      replace
+                      to="dashboard"
+                    />
+                  }
+                />
+                <Route
+                  path="dashboard"
+                  element={<Dashboard />}
+                />
+                <Route
+                  path="bookings"
+                  element={<Bookings />}
+                />
+                <Route
+                  path="availability"
+                  element={<Availability />}
+                />
+                <Route
+                  path="users"
+                  element={<AdminUsers />}
+                />
+              </Route>
             </Route>
 
             <Route

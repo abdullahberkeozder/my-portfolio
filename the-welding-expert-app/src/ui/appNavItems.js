@@ -20,7 +20,7 @@ const appNavItems = [
   },
   {
     href: "#process",
-    label: "Surec",
+    label: "Süreç",
     Icon: HiOutlineClock,
   },
   {

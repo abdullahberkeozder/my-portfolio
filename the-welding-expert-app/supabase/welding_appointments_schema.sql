@@ -48,6 +48,9 @@ create table if not exists public.appointment_requests (
   channel text not null default 'system',
   status text not null default 'new',
   message text,
+  customer_note text,
+  admin_note text,
+  -- Deprecated compatibility column. New code uses customer_note/admin_note.
   notes text,
   constraint appointment_requests_channel_check
     check (channel in ('system', 'whatsapp', 'email')),
@@ -55,16 +58,47 @@ create table if not exists public.appointment_requests (
     check (status in ('new', 'contacted', 'confirmed', 'cancelled', 'completed'))
 );
 
+alter table public.appointment_requests
+  add column if not exists customer_note text;
+
+alter table public.appointment_requests
+  add column if not exists admin_note text;
+
+-- Preserve existing data while separating notes where their origin can be
+-- inferred from the customer-facing message snapshot.
+update public.appointment_requests
+set
+  customer_note = case
+    when customer_note is not null then customer_note
+    when notes is not null
+      and position(lower(trim(notes)) in lower(coalesce(message, ''))) > 0
+      then notes
+    else null
+  end,
+  admin_note = case
+    when admin_note is not null then admin_note
+    when notes is not null
+      and position(lower(trim(notes)) in lower(coalesce(message, ''))) = 0
+      then notes
+    else null
+  end
+where notes is not null
+  and (customer_note is null or admin_note is null);
+
 create table if not exists public.admin_profiles (
   user_id uuid primary key references auth.users(id) on delete cascade,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   full_name text,
+  email text,
   role text not null default 'pending',
   is_active boolean not null default true,
   constraint admin_profiles_role_check
     check (role in ('pending', 'admin'))
 );
+
+alter table public.admin_profiles
+  add column if not exists email text;
 
 create index if not exists appointment_availability_days_work_date_idx
   on public.appointment_availability_days(work_date);
@@ -80,6 +114,113 @@ create index if not exists appointment_requests_requested_date_idx
 
 create index if not exists admin_profiles_role_idx
   on public.admin_profiles(role);
+
+create or replace function public.create_appointment_request(
+  p_customer_name text,
+  p_customer_phone text,
+  p_service_type text,
+  p_requested_date date,
+  p_requested_time time without time zone,
+  p_customer_email text default null,
+  p_message text default null,
+  p_notes text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_slot_id uuid;
+  v_request_id uuid;
+begin
+  if char_length(trim(coalesce(p_customer_name, ''))) not between 2 and 120
+    or char_length(trim(coalesce(p_customer_phone, ''))) not between 6 and 30
+    or char_length(trim(coalesce(p_service_type, ''))) not between 2 and 120
+  then
+    raise exception 'invalid_customer_details' using errcode = 'P0001';
+  end if;
+
+  if p_customer_email is not null
+    and char_length(trim(p_customer_email)) > 254
+  then
+    raise exception 'invalid_customer_email' using errcode = 'P0001';
+  end if;
+
+  if char_length(coalesce(p_message, '')) > 2000
+    or char_length(coalesce(p_notes, '')) > 1000
+  then
+    raise exception 'appointment_text_too_long' using errcode = 'P0001';
+  end if;
+
+  if p_requested_date is null or p_requested_date < current_date then
+    raise exception 'appointment_date_unavailable' using errcode = 'P0001';
+  end if;
+
+  if p_requested_time is null
+    or p_requested_time < time '09:00'
+    or p_requested_time > time '19:00'
+    or extract(minute from p_requested_time) <> 0
+    or extract(second from p_requested_time) <> 0
+    or mod(extract(hour from p_requested_time)::integer - 9, 2) <> 0
+  then
+    raise exception 'invalid_appointment_time' using errcode = 'P0001';
+  end if;
+
+  select slot.id
+  into v_slot_id
+  from public.appointment_availability_slots as slot
+  join public.appointment_availability_days as day
+    on day.id = slot.day_id
+  where day.work_date = p_requested_date
+    and day.is_visible = true
+    and day.status <> 'closed'
+    and slot.slot_time = p_requested_time
+    and slot.is_available = true
+    and not exists (
+      select 1
+      from public.appointment_requests as existing_request
+      where existing_request.requested_date = p_requested_date
+        and existing_request.requested_time = p_requested_time
+        and existing_request.status = 'confirmed'
+    )
+  for update of slot;
+
+  if v_slot_id is null then
+    raise exception 'appointment_slot_unavailable' using errcode = 'P0001';
+  end if;
+
+  insert into public.appointment_requests (
+    customer_name,
+    customer_phone,
+    customer_email,
+    service_type,
+    requested_date,
+    requested_time,
+    channel,
+    status,
+    message,
+    customer_note,
+    notes
+  )
+  values (
+    trim(p_customer_name),
+    trim(p_customer_phone),
+    nullif(trim(coalesce(p_customer_email, '')), ''),
+    trim(p_service_type),
+    p_requested_date,
+    p_requested_time,
+    'system',
+    'new',
+    nullif(trim(coalesce(p_message, '')), ''),
+    nullif(trim(coalesce(p_notes, '')), ''),
+    nullif(trim(coalesce(p_notes, '')), '')
+  )
+  returning id into v_request_id;
+
+  return v_request_id;
+end;
+$$;
 
 create or replace function public.is_admin(check_user_id uuid)
 returns boolean
@@ -97,6 +238,79 @@ as $$
   );
 $$;
 
+create or replace function public.close_slot_on_appointment_confirmation()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_slot_id uuid;
+begin
+  if new.status = 'confirmed'
+    and old.status is distinct from 'confirmed'
+  then
+    select slot.id
+    into v_slot_id
+    from public.appointment_availability_slots as slot
+    join public.appointment_availability_days as day
+      on day.id = slot.day_id
+    where day.work_date = new.requested_date
+      and day.is_visible = true
+      and day.status <> 'closed'
+      and slot.slot_time = new.requested_time
+      and slot.is_available = true
+      and not exists (
+        select 1
+        from public.appointment_requests as existing_request
+        where existing_request.id <> new.id
+          and existing_request.requested_date = new.requested_date
+          and existing_request.requested_time = new.requested_time
+          and existing_request.status = 'confirmed'
+      )
+    for update of slot;
+
+    if v_slot_id is null then
+      raise exception 'appointment_slot_unavailable' using errcode = 'P0001';
+    end if;
+
+    update public.appointment_availability_slots
+    set is_available = false
+    where id = v_slot_id;
+  end if;
+
+  return new;
+end;
+$$;
+
+create or replace function public.protect_customer_note()
+returns trigger
+language plpgsql
+set search_path = public, pg_temp
+as $$
+begin
+  if new.customer_note is distinct from old.customer_note then
+    raise exception 'customer_note_immutable' using errcode = 'P0001';
+  end if;
+
+  return new;
+end;
+$$;
+
+create or replace function public.sync_legacy_admin_note()
+returns trigger
+language plpgsql
+set search_path = public, pg_temp
+as $$
+begin
+  if new.notes is distinct from old.notes then
+    new.admin_note = new.notes;
+  end if;
+
+  return new;
+end;
+$$;
+
 create or replace function public.handle_new_admin_user()
 returns trigger
 language plpgsql
@@ -104,13 +318,17 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.admin_profiles (user_id, full_name, role)
+  insert into public.admin_profiles (user_id, full_name, email, role)
   values (
     new.id,
     coalesce(new.raw_user_meta_data ->> 'full_name', split_part(new.email, '@', 1)),
+    new.email,
     'pending'
   )
-  on conflict (user_id) do nothing;
+  on conflict (user_id) do update
+  set
+    email = excluded.email,
+    full_name = coalesce(public.admin_profiles.full_name, excluded.full_name);
 
   return new;
 end;
@@ -144,12 +362,46 @@ create trigger set_appointment_requests_updated_at
 before update on public.appointment_requests
 for each row execute function public.set_updated_at();
 
+drop trigger if exists protect_appointment_customer_note
+on public.appointment_requests;
+
+create trigger protect_appointment_customer_note
+before update of customer_note on public.appointment_requests
+for each row execute function public.protect_customer_note();
+
+drop trigger if exists sync_legacy_appointment_admin_note
+on public.appointment_requests;
+
+create trigger sync_legacy_appointment_admin_note
+before update of notes on public.appointment_requests
+for each row execute function public.sync_legacy_admin_note();
+
+drop trigger if exists close_slot_on_appointment_confirmation
+on public.appointment_requests;
+
+create trigger close_slot_on_appointment_confirmation
+before update of status on public.appointment_requests
+for each row execute function public.close_slot_on_appointment_confirmation();
+
 drop trigger if exists set_admin_profiles_updated_at
 on public.admin_profiles;
 
 create trigger set_admin_profiles_updated_at
 before update on public.admin_profiles
 for each row execute function public.set_updated_at();
+
+insert into public.admin_profiles (user_id, full_name, email, role, is_active)
+select
+  users.id,
+  coalesce(users.raw_user_meta_data ->> 'full_name', split_part(users.email, '@', 1)),
+  users.email,
+  'pending',
+  true
+from auth.users as users
+on conflict (user_id) do update
+set
+  email = excluded.email,
+  full_name = coalesce(public.admin_profiles.full_name, excluded.full_name);
 
 alter table public.appointment_availability_days enable row level security;
 alter table public.appointment_availability_slots enable row level security;
@@ -158,12 +410,42 @@ alter table public.admin_profiles enable row level security;
 
 grant select on public.appointment_availability_days to anon, authenticated;
 grant select on public.appointment_availability_slots to anon, authenticated;
-grant insert on public.appointment_requests to anon, authenticated;
+revoke insert on public.appointment_requests from anon, authenticated;
 grant select, update, delete on public.appointment_requests to authenticated;
 grant insert, update, delete on public.appointment_availability_days to authenticated;
 grant insert, update, delete on public.appointment_availability_slots to authenticated;
 grant select, update, delete on public.admin_profiles to authenticated;
+revoke all on function public.create_appointment_request(
+  text,
+  text,
+  text,
+  date,
+  time without time zone,
+  text,
+  text,
+  text
+) from public;
+grant execute on function public.create_appointment_request(
+  text,
+  text,
+  text,
+  date,
+  time without time zone,
+  text,
+  text,
+  text
+) to anon, authenticated;
 grant execute on function public.is_admin(uuid) to anon, authenticated;
+revoke all on function public.close_slot_on_appointment_confirmation()
+from public;
+
+revoke all on function public.protect_customer_note()
+from public;
+
+revoke all on function public.sync_legacy_admin_note()
+from public;
+
+notify pgrst, 'reload schema';
 
 drop policy if exists "Customers can view visible availability days"
 on public.appointment_availability_days;
@@ -212,17 +494,6 @@ with check (public.is_admin(auth.uid()));
 
 drop policy if exists "Customers can create appointment requests"
 on public.appointment_requests;
-
-create policy "Customers can create appointment requests"
-on public.appointment_requests
-for insert
-to anon, authenticated
-with check (
-  status = 'new'
-  and channel in ('system', 'whatsapp', 'email')
-  and length(trim(customer_name)) > 1
-  and length(trim(customer_phone)) > 5
-);
 
 drop policy if exists "Admins can read appointment requests"
 on public.appointment_requests;
@@ -275,7 +546,7 @@ insert into public.appointment_availability_days (work_date, status, note)
 select
   day_value::date,
   'available',
-  'Ortalama is suresi 2 saat kabul edilir. 09:00 - 21:00 arasi randevu alinabilir.'
+  'Ortalama iş süresi iki saattir. 09:00 - 21:00 arasında randevu alınabilir.'
 from generate_series(
   current_date,
   current_date + interval '180 days',
