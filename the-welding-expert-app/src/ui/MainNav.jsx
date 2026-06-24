@@ -86,6 +86,12 @@ const ADMIN_LINKS = [
     roles: ROUTE_ROLES.availability,
   },
   {
+    to: "/admin/gallery",
+    label: "İş galerisi",
+    icon: HiOutlinePhoto,
+    roles: ROUTE_ROLES.gallery,
+  },
+  {
     to: "/admin/users",
     label: "Ekip ve yetkiler",
     icon: HiOutlineUserGroup,

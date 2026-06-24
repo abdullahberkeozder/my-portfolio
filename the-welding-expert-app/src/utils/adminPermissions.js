@@ -25,6 +25,7 @@ export const ROUTE_ROLES = {
   dashboard: ADMIN_ROLES,
   bookings: ["owner", "admin", "operator"],
   availability: ["owner", "admin", "operator"],
+  gallery: ["owner", "admin"],
   users: ["owner"],
 };
 

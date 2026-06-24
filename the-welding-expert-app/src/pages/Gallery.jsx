@@ -1,4 +1,6 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
 import {
   HiOutlineArrowLeft,
@@ -9,71 +11,9 @@ import {
   HiOutlineSparkles,
 } from "react-icons/hi2";
 
-const workExamples = [
-  {
-    title: "Ev salon duvarı boya uygulaması",
-    category: "Boya ve badana",
-    location: "Yenimahalle / Ankara",
-    beforeLabel: "Astar ve Alçı",
-    afterLabel: "Boya Sonrası",
-    beforeImage: "/images/shelf_before.png",
-    afterImage: "/images/painting.png",
-    text: "Duvardaki pürüzler giderildi, alçı astarı çekildi ve oda krem rengi boya ile pürüzsüz boyandı.",
-    points: ["Yüzey zımparalama", "Astar çekilmesi", "Çift kat temiz boyama"],
-  },
-  {
-    title: "Paslı bahçe korkuluğu ve kapı tamiri",
-    category: "Kaynak ve metal",
-    location: "Ostim / Ankara",
-    beforeLabel: "Paslı Durum",
-    afterLabel: "Onarım Sonrası",
-    beforeImage: "/images/railing_before.png",
-    afterImage: "/images/railing_after.png",
-    text: "Paslanmış ve kopmuş bahçe kapısı menteşeleri kaynakla sabitlendi, pas koruyucu astar boya atıldı.",
-    points: ["Menteşe kaynaklama", "Pas zımparalama", "Siyah boyama ve cila"],
-  },
-  {
-    title: "Arka bahçe düzenleme ve çim budama",
-    category: "Bahçe ve peyzaj",
-    location: "Çankaya / Ankara",
-    beforeLabel: "Bakımsız",
-    afterLabel: "Düzenli",
-    beforeImage: "/images/hinge_before.png",
-    afterImage: "/images/landscaping.png",
-    text: "Yabani otlar temizlendi, çimler biçildi, ağaçlar budandı ve bahçe sınır telleri yeniden çekildi.",
-    points: ["Yabani ot temizliği", "Çimlerin biçilmesi", "Kenar çit kontrolü"],
-  },
-  {
-    title: "Mutfak tezgah arkası fayans kaplama",
-    category: "İnşaat ve tadilat",
-    location: "Yenimahalle / Ankara",
-    beforeLabel: "Tadilat Öncesi",
-    afterLabel: "Fayans Teslim",
-    beforeImage: "/images/shelf_before.png",
-    afterImage: "/images/renovation.png",
-    text: "Eski mutfak duvarı düzeltildi, harç hazırlandı ve dekoratif fayanslar örülerek derz dolguları yapıldı.",
-    points: ["Duvar hazırlığı", "Hassas dizim ve harç", "Derz dolgusu ve temizlik"],
-  },
-];
+import Spinner from "../ui/Spinner";
+import { getGalleryItems } from "../services/apiGallery";
 
-const galleryItems = [
-  {
-    title: "İç mekan duvar boyama",
-    image: "/images/painting.png",
-  },
-  {
-    title: "Bahçe peyzaj ve budama",
-    image: "/images/landscaping.png",
-  },
-  {
-    title: "Lokal duvar ve tuğla örme",
-    image: "/images/renovation.png",
-  },
-  {
-    title: "Bahçe kapısı kaynak onarımı",
-    image: "/images/railing_after.png",
-  },
-];
 
 const testimonials = [
   {
@@ -377,6 +317,21 @@ const MutedText = styled.p`
   font-size: var(--font-size-body);
 `;
 
+const GalleryNotice = styled.div`
+  border: 1px dashed var(--color-grey-200);
+  border-radius: var(--border-radius-md);
+  padding: 2.4rem;
+  display: grid;
+  gap: 0.6rem;
+  color: var(--color-grey-600);
+  background: var(--color-grey-50);
+
+  & strong {
+    color: var(--color-grey-900);
+    font-size: var(--font-size-base);
+  }
+`;
+
 const WorkGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -677,6 +632,40 @@ const Cta = styled.section`
 `;
 
 function Gallery() {
+  const {
+    data: allItems = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["gallery-items-public"],
+    queryFn: () => getGalleryItems({ publishedOnly: true }),
+  });
+
+  // Önce/sonra: before_image_url olan öğeler
+  const workExamples = useMemo(
+    () => allItems.filter((i) => i.before_image_url),
+    [allItems],
+  );
+
+  // Galeri fotoğraf gridi: tüm öğeler
+  const galleryItems = useMemo(() => allItems, [allItems]);
+
+  if (isLoading) {
+    return (
+      <Page>
+        <Shell>
+          <TopBar>
+            <BackLink to="/appointment">
+              <HiOutlineArrowLeft />
+              Randevu sayfasına dön
+            </BackLink>
+          </TopBar>
+          <Spinner />
+        </Shell>
+      </Page>
+    );
+  }
+
   return (
     <Page>
       <Shell>
@@ -734,88 +723,109 @@ function Gallery() {
           </StatCard>
         </StatsGrid>
 
-        <Section>
-          <SectionHeader>
-            <Eyebrow>Önce / sonra</Eyebrow>
-            <SectionTitle>Keşiften teslim anına kadar çalışma süreci</SectionTitle>
-            <MutedText>
-              Her kartta işin başlangıç durumu, uygulama adımları ve teslim
-              sonrası görünümü birlikte sunulur.
-            </MutedText>
-          </SectionHeader>
+        {isError && (
+          <GalleryNotice role="alert">
+            <strong>İş galerisi şu anda yüklenemiyor.</strong>
+            <span>Lütfen bağlantınızı kontrol edip daha sonra tekrar deneyin.</span>
+          </GalleryNotice>
+        )}
 
-          <ScrollWrapper $bg="var(--color-grey-0)">
-            <WorkGrid aria-label="Önce ve sonra iş örnekleri">
-              {workExamples.map((item) => (
-                <WorkCard key={item.title}>
-                  <CompareGrid>
-                    <CompareMedia>
-                      <MediaImage
-                        src={item.beforeImage}
-                        alt={`${item.title}: ${item.beforeLabel.toLocaleLowerCase("tr-TR")} aşaması`}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                      <ImageLabel>{item.beforeLabel}</ImageLabel>
-                    </CompareMedia>
-                    <CompareMedia>
-                      <MediaImage
-                        src={item.afterImage}
-                        alt={`${item.title}: ${item.afterLabel.toLocaleLowerCase("tr-TR")} aşaması`}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                      <ImageLabel>{item.afterLabel}</ImageLabel>
-                    </CompareMedia>
-                  </CompareGrid>
-                  <WorkBody>
-                    <MetaRow>
-                      <Pill>{item.category}</Pill>
-                      <Pill>{item.location}</Pill>
-                    </MetaRow>
-                    <CardTitle>{item.title}</CardTitle>
-                    <CardText>{item.text}</CardText>
-                    <MiniList>
-                      {item.points.map((point) => (
-                        <MiniItem key={point}>
-                          <HiOutlineCheckCircle />
-                          {point}
-                        </MiniItem>
-                      ))}
-                    </MiniList>
-                  </WorkBody>
-                </WorkCard>
-              ))}
-            </WorkGrid>
-          </ScrollWrapper>
-        </Section>
+        {!isError && galleryItems.length === 0 && (
+          <GalleryNotice>
+            <strong>Yeni iş örnekleri hazırlanıyor.</strong>
+            <span>Yayınlanan çalışmalar kısa süre içinde burada gösterilecek.</span>
+          </GalleryNotice>
+        )}
 
-        <Section>
-          <SectionHeader>
-            <Eyebrow>Galeri</Eyebrow>
-            <SectionTitle>Umut Usta Yerinde Servis ve Bakım Uygulamaları</SectionTitle>
-            <MutedText>
-              Boya, kaynak, bahçe düzenleme ve ev tadilatı gibi farklı hizmet
-              türleri, uygulama ayrıntıları ve teslim edilen işlerden görseller.
-            </MutedText>
-          </SectionHeader>
+        {!isError && workExamples.length > 0 && (
+          <Section>
+            <SectionHeader>
+              <Eyebrow>Önce / sonra</Eyebrow>
+              <SectionTitle>Keşiften teslim anına kadar çalışma süreci</SectionTitle>
+              <MutedText>
+                Her kartta işin başlangıç durumu, uygulama adımları ve teslim
+                sonrası görünümü birlikte sunulur.
+              </MutedText>
+            </SectionHeader>
 
-          <ScrollWrapper $breakpoint="560px" $bg="var(--color-grey-0)">
-            <PhotoGrid aria-label="Umut Usta çalışma galerisi">
-              {galleryItems.map((item) => (
-                <PhotoTile key={item.title}>
-                  <MediaImage
-                    src={item.image}
-                    alt={item.title}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <PhotoCaption>{item.title}</PhotoCaption>
-                </PhotoTile>
-              ))}
-            </PhotoGrid>
-          </ScrollWrapper>
-        </Section>
+            <ScrollWrapper $bg="var(--color-grey-0)">
+              <WorkGrid aria-label="Önce ve sonra iş örnekleri">
+                {workExamples.map((item) => (
+                  <WorkCard key={item.id}>
+                    <CompareGrid>
+                      <CompareMedia>
+                        <MediaImage
+                          src={item.before_image_url}
+                          alt={`${item.title}: ${(item.before_label || "öncesi").toLocaleLowerCase("tr-TR")} aşaması`}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <ImageLabel>{item.before_label || "Öncesi"}</ImageLabel>
+                      </CompareMedia>
+                      <CompareMedia>
+                        <MediaImage
+                          src={item.image_url}
+                          alt={`${item.title}: ${(item.after_label || "sonrası").toLocaleLowerCase("tr-TR")} aşaması`}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <ImageLabel>{item.after_label || "Sonrası"}</ImageLabel>
+                      </CompareMedia>
+                    </CompareGrid>
+                    <WorkBody>
+                      <MetaRow>
+                        <Pill>{item.category}</Pill>
+                        {item.location && <Pill>{item.location}</Pill>}
+                        {item.price_tagline && <Pill>{item.price_tagline}</Pill>}
+                      </MetaRow>
+                      <CardTitle>{item.title}</CardTitle>
+                      {item.description && <CardText>{item.description}</CardText>}
+                      {item.points && item.points.length > 0 && (
+                        <MiniList>
+                          {item.points.map((point) => (
+                            <MiniItem key={point}>
+                              <HiOutlineCheckCircle />
+                              {point}
+                            </MiniItem>
+                          ))}
+                        </MiniList>
+                      )}
+                    </WorkBody>
+                  </WorkCard>
+                ))}
+              </WorkGrid>
+            </ScrollWrapper>
+          </Section>
+        )}
+
+        {!isError && galleryItems.length > 0 && (
+          <Section>
+            <SectionHeader>
+              <Eyebrow>Galeri</Eyebrow>
+              <SectionTitle>Umut Usta Yerinde Servis ve Bakım Uygulamaları</SectionTitle>
+              <MutedText>
+                Boya, kaynak, bahçe düzenleme ve ev tadilatı gibi farklı hizmet
+                türleri, uygulama ayrıntıları ve teslim edilen işlerden görseller.
+              </MutedText>
+            </SectionHeader>
+
+            <ScrollWrapper $breakpoint="560px" $bg="var(--color-grey-0)">
+              <PhotoGrid aria-label="Umut Usta çalışma galerisi">
+                {galleryItems.map((item) => (
+                  <PhotoTile key={item.id}>
+                    <MediaImage
+                      src={item.image_url}
+                      alt={item.title}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <PhotoCaption>{item.title}</PhotoCaption>
+                  </PhotoTile>
+                ))}
+              </PhotoGrid>
+            </ScrollWrapper>
+          </Section>
+        )}
 
         <Section>
           <SectionHeader>
