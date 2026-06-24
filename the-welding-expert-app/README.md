@@ -25,6 +25,7 @@ The Welding Expert App is a React and Supabase application for a local welding a
 - Live operations dashboard backed by Supabase data
 - Appointment request and availability management
 - Owner-controlled team accounts, roles, and access states
+- Owner/Admin gallery publishing with Supabase Storage uploads
 - Role-aware navigation, protected routes, and database policies
 - Atomic appointment confirmation and slot closing
 - Gallery page for work examples, before/after content, and testimonials
@@ -55,6 +56,7 @@ The Welding Expert App is a React and Supabase application for a local welding a
 | `/admin/dashboard` | Role-aware operations overview |
 | `/admin/bookings` | Appointment request management |
 | `/admin/availability` | Weekly availability and slot management |
+| `/admin/gallery` | Owner/Admin work gallery management |
 | `/admin/users` | Owner-only team and permission management |
 
 Legacy redirects are kept for `/dashboard` and `/bookings`.
@@ -90,10 +92,11 @@ Run the schema in:
 ```text
 supabase/welding_appointments_schema.sql
 supabase/role_based_access_control.sql
+supabase/gallery_management_setup.sql
 ```
 
-Run them in this order. The second file migrates the original single-admin
-model to Owner-controlled multi-user access.
+Run them in this order. The role migration upgrades the original single-admin
+model, and the gallery migration secures gallery records and Storage access.
 
 The schema creates:
 
@@ -101,6 +104,8 @@ The schema creates:
 - `appointment_availability_slots`
 - `appointment_requests`
 - `admin_profiles`
+- `gallery_items`
+- Public `gallery` Storage bucket with an 8 MB image limit
 - Owner, Admin, Operator, and Technician roles
 - Pending, active, suspended, and rejected account states
 - Role-aware helper functions and RLS policies
@@ -130,6 +135,11 @@ account.
 | Admin | Yes | Manage | Manage | No |
 | Operator | Yes | Manage | Manage | No |
 | Technician | Yes | Assigned-work foundation | No | No |
+
+Owner and Admin accounts can also create, edit, publish, unpublish, order, and
+delete gallery items. Gallery uploads accept JPEG, PNG, and WebP files. Public
+visitors can read published records and images but cannot view draft records
+or modify gallery content.
 
 Account state is stored separately from role: `pending`, `active`,
 `suspended`, or `rejected`. Only an active Owner can approve accounts, assign
@@ -181,8 +191,8 @@ See [PROJECT_RESEARCH_REVIEW.md](./PROJECT_RESEARCH_REVIEW.md) for product, UX, 
 
 ## Future Improvements
 
-- Move gallery and testimonials to Supabase tables
-- Add Supabase Storage for portfolio images
+- Move testimonials to a Supabase table
+- Add image resizing and thumbnail generation for gallery uploads
 - Add LocalBusiness JSON-LD and page-level SEO metadata
 - Add a dedicated assigned-work view for Technician accounts
 - Expand integration coverage for admin booking and availability workflows

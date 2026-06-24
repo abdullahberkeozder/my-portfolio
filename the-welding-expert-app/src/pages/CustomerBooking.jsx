@@ -311,24 +311,26 @@ const HeroImage = styled.img`
 const Brand = styled.div`
   display: flex;
   align-items: center;
-  gap: 1.2rem;
+  gap: 1.6rem;
 `;
 
 const BrandMark = styled.div`
-  width: 4.8rem;
-  height: 4.8rem;
-  border-radius: var(--border-radius-sm);
+  width: 6.4rem;
+  height: 6.4rem;
+  border-radius: var(--border-radius-md);
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-grey-0);
   border: 1px solid var(--color-grey-200);
+  padding: 0.6rem;
+  box-shadow: var(--shadow-sm);
 
   & img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 `;
 
@@ -2009,7 +2011,7 @@ function CustomerBooking() {
           <div>
             <Brand>
               <BrandMark>
-                <img src="/logo.png" alt="Umut Usta Logo" />
+                <img src="/umut-usta-logo.png" alt="" aria-hidden="true" />
               </BrandMark>
               <div>
                 <strong>Umut Usta</strong>

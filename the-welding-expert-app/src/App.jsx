@@ -11,6 +11,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Bookings = lazy(() => import("./pages/Bookings"));
 const Availability = lazy(() => import("./pages/Availability"));
 const AdminUsers = lazy(() => import("./pages/AdminUsers"));
+const GalleryAdmin = lazy(() => import("./pages/GalleryAdmin"));
 const CustomerBooking = lazy(() => import("./pages/CustomerBooking"));
 const Gallery = lazy(() => import("./pages/Gallery"));
 const Login = lazy(() => import("./pages/Login"));
@@ -47,6 +48,9 @@ function AppRoutes() {
             <Route
               element={<ProtectedRoute allowedRoles={ROUTE_ROLES.availability} />}>
               <Route path="availability" element={<Availability />} />
+            </Route>
+            <Route element={<ProtectedRoute allowedRoles={ROUTE_ROLES.gallery} />}>
+              <Route path="gallery" element={<GalleryAdmin />} />
             </Route>
             <Route element={<ProtectedRoute allowedRoles={ROUTE_ROLES.users} />}>
               <Route path="users" element={<AdminUsers />} />

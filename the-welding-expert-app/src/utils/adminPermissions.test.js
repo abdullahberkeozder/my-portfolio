@@ -46,4 +46,19 @@ describe("admin permissions", () => {
       ),
     ).toBe(false);
   });
+
+  it("limits gallery management to owners and admins", () => {
+    for (const role of ["owner", "admin"]) {
+      expect(
+        hasAllowedRole({ role, status: "active" }, ROUTE_ROLES.gallery),
+      ).toBe(true);
+    }
+
+    expect(
+      hasAllowedRole(
+        { role: "operator", status: "active" },
+        ROUTE_ROLES.gallery,
+      ),
+    ).toBe(false);
+  });
 });
