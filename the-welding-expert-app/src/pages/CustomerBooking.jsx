@@ -65,7 +65,7 @@ const statusLabel = {
 
 const aboutHighlights = [
   "Yerinde keşif ve net teklif",
-  "Kapı, korkuluk, ferforje ve onarım işleri",
+  "Boya, kaynak, montaj ve onarım işleri",
   "Randevulu çalışma ve zamanında teslim",
 ];
 
@@ -127,12 +127,12 @@ const faqItems = [
   {
     question: "Yerinde servis veriyor musunuz?",
     answer:
-      "Evet. Ankara merkez ve yakın ilçeler için yerinde keşif ve kaynak onarımı planlanabilir.",
+      "Evet. Ankara merkez ve yakın ilçeler için yerinde keşif, onarım ve bakım hizmetleri planlanabilir.",
   },
   {
     question: "Randevu aralıkları neden iki saatlik?",
     answer:
-      "Kaynak işlerinde hazırlık, uygulama ve kontrol aşamaları bulunduğu için ortalama çalışma süresi iki saat kabul edilir.",
+      "Bakım ve onarım işlerinde hazırlık, uygulama ve kontrol aşamaları bulunduğu için ortalama çalışma süresi iki saat kabul edilir.",
   },
   {
     question: "Fiyat nasıl belirlenir?",
@@ -1797,7 +1797,7 @@ function buildCustomerMessage({
   if (!selectedDay || !selectedSlot) return "";
 
   return [
-    "Merhaba, kaynak hizmeti için randevu almak istiyorum.",
+    "Merhaba Umut Usta, ev/ofis bakım onarım hizmeti için randevu almak istiyorum.",
     customerName ? `Ad: ${customerName}` : "",
     customerPhone ? `Telefon: ${customerPhone}` : "",
     `Gün: ${selectedDay.fullDate}`,
@@ -1930,12 +1930,12 @@ function CustomerBooking() {
   const whatsappUrl = `https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent(
     message,
   )}`;
-  const quickMessage = "Merhaba Mehmet Usta, yaptırmak istediğim bir kaynak/metal işi var. Fotoğrafını gönderip fiyat teklifi/keşif bilgisi alabilir miyim?";
+  const quickMessage = "Merhaba Umut Usta, yaptırmak istediğim bir ev/ofis bakım onarım işi var. Fotoğrafını gönderip fiyat teklifi/keşif bilgisi alabilir miyim?";
   const quickWhatsappUrl = `https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent(
     quickMessage,
   )}`;
   const mailUrl = `mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent(
-    "Kaynak randevu talebi",
+    "Bakım ve onarım randevu talebi",
   )}&body=${encodeURIComponent(message)}`;
 
   const { mutate: submitRequest, isLoading } = useMutation({
@@ -2000,12 +2000,12 @@ function CustomerBooking() {
             </Brand>
             <HeaderText>
               <PublicTitle>
-                Ankara&apos;da kaynak ve metal işleri için güvenilir randevu
-              </PublicTitle>
-              <Lead>
-                Kapı, korkuluk, ferforje ve metal onarım hizmetlerini inceleyin;
-                size uygun iki saatlik randevu aralığını takvimden seçin.
-              </Lead>
+              Ankara&apos;da ev ve ofis bakım onarım işleriniz için güvenilir randevu
+            </PublicTitle>
+            <Lead>
+              Boya, kaynak, montaj ve bakım hizmetlerini inceleyin; size uygun
+              iki saatlik randevu aralığını takvimden seçin.
+            </Lead>
               <TrustList aria-label="Hizmet güvenceleri">
                 <TrustItem>
                   <HiOutlineMapPin />
@@ -2061,19 +2061,19 @@ function CustomerBooking() {
           <AboutCopy>
             <Eyebrow>Biz kimiz</Eyebrow>
             <AboutTitle>
-               Kaynak işlerinde güvenilir, planlı ve temiz işçilik
+              Bakım ve onarım işlerinizde güvenilir, planlı ve temiz işçilik
             </AboutTitle>
             <AboutText>
-              Mehmet Kara, Ankara ve çevresinde kapı, korkuluk, ferforje, metal
-              onarım ve özel imalat işleri yapan deneyimli bir kaynak ustasıdır.
-              İşin başında ölçü ve ihtiyacı netleştirir; uygun malzeme ve zaman
-              planını müşteriyle paylaşır.
+              Umut Usta, Ankara ve çevresinde boya, kaynak, montaj, bakım ve
+              onarım işlerinizi profesyonel standartlarda yapan deneyimli bir ustadır.
+              İşin başında ihtiyacınızı netleştirir; uygun malzeme ve zaman
+              planını sizinle paylaşır.
             </AboutText>
             <AboutText>
-              Amacımız yalnızca kaynak yapmak değil; eviniz, atölyeniz veya iş
-              yeriniz için sağlam, kullanışlı ve uzun ömürlü bir çözüm teslim
-              etmektir. Bu nedenle randevulu çalışır, işi yerinde değerlendirir
-              ve süreci baştan sona açık biçimde planlarız.
+              Amacımız yalnızca işi bitirmek değil; eviniz, ofisiniz veya iş
+              yeriniz için sağlam, kullanışlı ve uzun ömürlü çözümler teslim
+              etmektir. Bu nedenle planlı çalışır, yerinde keşif yapar ve süreci
+              baştan sona şeffaf bir şekilde yönetiriz.
             </AboutText>
             <HighlightList>
               {aboutHighlights.map((highlight) => (
@@ -2089,8 +2089,8 @@ function CustomerBooking() {
             <ProfileLine>
               <HiOutlineShieldCheck />
               <div>
-                <ProfileName>Mehmet Kara</ProfileName>
-                <ProfileRole>Kaynak ustası ve metal işleri sorumlusu</ProfileRole>
+                <ProfileName>Umut Usta</ProfileName>
+                <ProfileRole>Ev & Ofis Bakım ve Onarım Uzmanı</ProfileRole>
               </div>
             </ProfileLine>
 

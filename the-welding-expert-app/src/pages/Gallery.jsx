@@ -693,11 +693,11 @@ function Gallery() {
             fetchpriority="high"
           />
           <HeroContent>
-            <Eyebrow>İş örnekleri / galeri</Eyebrow>
-            <HeroTitle>Kaynak ve metal işlerinde önce-sonra çalışmaları</HeroTitle>
+            <HeroTitle>Umut Usta Önce-Sonra Çalışmaları ve Galeri</HeroTitle>
             <HeroText>
-              Kaynak uygulamalarını keşif, hazırlık ve teslim aşamalarıyla
-              inceleyin. Benzer bir iş için doğrudan randevu talebi oluşturun.
+              Boya, kaynak, montaj, bakım ve onarım çalışmalarını keşif,
+              hazırlık ve teslim aşamalarıyla inceleyin. Benzer bir iş için
+              doğrudan randevu talebi oluşturun.
             </HeroText>
             <HeroActions>
               <ActionLink to="/appointment">
@@ -792,15 +792,15 @@ function Gallery() {
         <Section>
           <SectionHeader>
             <Eyebrow>Galeri</Eyebrow>
-            <SectionTitle>Atölye, yerinde servis ve metal işlerinden kareler</SectionTitle>
+            <SectionTitle>Umut Usta Yerinde Servis ve Bakım Uygulamaları</SectionTitle>
             <MutedText>
-              Farklı hizmet türleri, uygulama ayrıntıları ve teslim edilen
-              işlerden seçilmiş görseller.
+              Boya, kaynak, montaj ve onarım gibi farklı hizmet türleri,
+              uygulama ayrıntıları ve teslim edilen işlerden görseller.
             </MutedText>
           </SectionHeader>
 
           <ScrollWrapper $breakpoint="560px" $bg="var(--color-grey-0)">
-            <PhotoGrid aria-label="Kaynak ve metal işi galerisi">
+            <PhotoGrid aria-label="Umut Usta çalışma galerisi">
               {galleryItems.map((item) => (
                 <PhotoTile key={item.title}>
                   <MediaImage
