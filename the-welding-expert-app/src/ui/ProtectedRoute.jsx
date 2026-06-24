@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import PropTypes from "prop-types";
 import {
   Link,
   Navigate,
@@ -17,8 +18,13 @@ import {
 import Button from "./Button";
 import Spinner from "./Spinner";
 import { getAdminProfile, logout } from "../services/apiAuth";
+import {
+  ADMIN_ROLES,
+  hasAllowedRole,
+  STATUS_LABELS,
+} from "../utils/adminPermissions";
 
-const Gate = styled.main`
+const Gate = styled.div`
   min-height: 100vh;
   padding: 2.4rem;
   display: grid;
@@ -87,7 +93,7 @@ const LoadingCard = styled.div`
   font-weight: 700;
 `;
 
-function ProtectedRoute() {
+function ProtectedRoute({ allowedRoles = ADMIN_ROLES }) {
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -115,11 +121,9 @@ function ProtectedRoute() {
   if (isLoading) {
     return (
       <Gate>
-        <LoadingCard
-          role="status"
-          aria-live="polite">
+        <LoadingCard role="status" aria-live="polite">
           <Spinner />
-          <span>Admin yetkisi kontrol ediliyor...</span>
+          <span>Ekip yetkisi kontrol ediliyor...</span>
         </LoadingCard>
       </Gate>
     );
@@ -134,21 +138,15 @@ function ProtectedRoute() {
           </StatusIcon>
           <Title>Yetki bilgisi doğrulanamadı</Title>
           <Description>
-            Supabase oturum veya admin profil bilgisi şu anda okunamıyor. Admin
-            paneli güvenlik nedeniyle açılmadı.
+            Oturum veya ekip profil bilgisi okunamadığı için yönetim paneli
+            güvenlik amacıyla açılmadı.
           </Description>
           <Actions>
-            <Button
-              type="button"
-              disabled={isFetching}
-              onClick={() => refetch()}>
+            <Button type="button" disabled={isFetching} onClick={() => refetch()}>
               {isFetching ? "Kontrol ediliyor..." : "Tekrar dene"}
             </Button>
-            <Button
-              as={Link}
-              to="/appointment"
-              variation="secondary">
-              Müşteri ekranına dön
+            <Button as={Link} to="/appointment" variation="secondary">
+              Randevu sayfasına dön
             </Button>
           </Actions>
         </GateCard>
@@ -157,25 +155,20 @@ function ProtectedRoute() {
   }
 
   if (!admin?.user) {
-    return (
-      <Navigate
-        replace
-        to="/login"
-        state={{ from: location }}
-      />
-    );
+    return <Navigate replace to="/login" state={{ from: location }} />;
   }
 
-  if (!admin.isAdmin) {
-    const isInactiveAdmin =
-      admin.profile?.role === "admin" && !admin.profile?.is_active;
+  if (!admin.isAuthorized) {
+    const accountStatus = admin.profile?.status;
+    const isSuspended = accountStatus === "suspended";
+    const isRejected = accountStatus === "rejected";
     const hasProfile = Boolean(admin.profile);
 
     return (
       <Gate>
         <GateCard>
-          <StatusIcon $danger={isInactiveAdmin}>
-            {isInactiveAdmin ? (
+          <StatusIcon $danger={isSuspended || isRejected}>
+            {isSuspended || isRejected ? (
               <HiOutlineNoSymbol />
             ) : hasProfile ? (
               <HiOutlineClock />
@@ -184,24 +177,26 @@ function ProtectedRoute() {
             )}
           </StatusIcon>
           <Title>
-            {isInactiveAdmin
-              ? "Admin hesabı pasif"
-              : hasProfile
-                ? "Admin onayı bekleniyor"
-                : "Admin profili bulunamadı"}
+            {isSuspended
+              ? "Ekip hesabı askıya alındı"
+              : isRejected
+                ? "Ekip erişimi kaldırıldı"
+                : hasProfile
+                  ? "Ekip onayı bekleniyor"
+                  : "Ekip profili bulunamadı"}
           </Title>
           <Description>
-            {isInactiveAdmin
-              ? "Bu hesabın admin paneli erişimi pasifleştirildi. Tekrar erişim için aktif bir adminle iletişime geçin."
-              : hasProfile
-                ? "Hesabınız oluşturuldu ancak henüz aktif admin olarak onaylanmadı. Onay verilene kadar admin sayfaları görüntülenemez."
-                : "Oturumunuz açık ancak bu kullanıcıya ait bir admin profili bulunmuyor."}
+            {isSuspended
+              ? "Bu hesabın erişimi geçici olarak askıya alındı. İşletme sahibiyle iletişime geçin."
+              : isRejected
+                ? "Bu hesap ekipten çıkarıldığı için yönetim paneline erişemez."
+                : hasProfile
+                  ? `Hesabınız oluşturuldu ancak henüz işletme sahibi tarafından onaylanmadı. Durum: ${STATUS_LABELS[accountStatus] || "Onay bekliyor"}.`
+                  : "Oturumunuz açık ancak bu kullanıcıya ait bir ekip profili bulunmuyor."}
           </Description>
           <Actions>
-            <Button
-              as={Link}
-              to="/appointment">
-              Müşteri ekranına dön
+            <Button as={Link} to="/appointment">
+              Randevu sayfasına dön
             </Button>
             <Button
               type="button"
@@ -216,7 +211,33 @@ function ProtectedRoute() {
     );
   }
 
+  if (!hasAllowedRole(admin.profile, allowedRoles)) {
+    return (
+      <Gate>
+        <GateCard>
+          <StatusIcon $danger>
+            <HiOutlineLockClosed />
+          </StatusIcon>
+          <Title>Bu alan için yetkiniz bulunmuyor</Title>
+          <Description>
+            Hesabınız aktif ancak bu sayfa rolünüze açık değil. Yetki değişikliği
+            için işletme sahibiyle iletişime geçin.
+          </Description>
+          <Actions>
+            <Button as={Link} to="/admin/dashboard">
+              Kontrol merkezine dön
+            </Button>
+          </Actions>
+        </GateCard>
+      </Gate>
+    );
+  }
+
   return <Outlet />;
 }
+
+ProtectedRoute.propTypes = {
+  allowedRoles: PropTypes.arrayOf(PropTypes.oneOf(ADMIN_ROLES)),
+};
 
 export default ProtectedRoute;

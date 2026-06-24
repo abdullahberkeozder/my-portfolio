@@ -18,6 +18,7 @@ const HelperText = styled.p`
   color: var(--color-grey-600);
   background: var(--color-brand-50);
   font-size: var(--font-size-sm);
+  line-height: 1.6;
 `;
 
 const LinkRow = styled.p`
@@ -48,7 +49,7 @@ function SignupForm() {
     mutationFn: signup,
     onSuccess: () => {
       toast.success(
-        "Üyelik oluşturuldu. Admin yetkisi için yönetici onayı gerekiyor.",
+        "Hesap isteğiniz alındı. Rolünüzü işletme sahibi belirleyecek.",
       );
       setFullName("");
       setEmail("");
@@ -78,8 +79,8 @@ function SignupForm() {
   return (
     <Form onSubmit={handleSubmit}>
       <HelperText>
-        Yeni hesaplar güvenlik nedeniyle onay bekler. Aktif bir yönetici hesabı
-        üyeliğinizi onayladığında panel erişiminiz açılır.
+        Yeni hesaplar güvenlik nedeniyle onay bekler. İşletme sahibi rolünüzü
+        belirleyip hesabınızı etkinleştirdiğinde panel erişiminiz açılır.
       </HelperText>
 
       <FormRow label="Ad soyad">
@@ -99,7 +100,7 @@ function SignupForm() {
           type="email"
           value={email}
           autoComplete="username"
-          placeholder="admin@ornek.com"
+          placeholder="ekip@ornek.com"
           required
           onChange={(event) => setEmail(event.target.value)}
         />
@@ -131,12 +132,12 @@ function SignupForm() {
 
       <FormRow>
         <Button size="large" disabled={isLoading}>
-          {isLoading ? "Hesap oluşturuluyor..." : "Hesap oluştur"}
+          {isLoading ? "İstek gönderiliyor..." : "Erişim isteği gönder"}
         </Button>
       </FormRow>
 
       <LinkRow>
-        Zaten hesabınız var mı?
+        Zaten ekip hesabınız var mı?
         <StyledLink to="/login">Giriş yap</StyledLink>
       </LinkRow>
     </Form>

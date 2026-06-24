@@ -4,9 +4,9 @@ import AuthLayout from "../ui/AuthLayout";
 function Signup() {
   return (
     <AuthLayout
-      eyebrow="Yeni yönetici hesabı"
-      title="Admin üyeliği oluştur"
-      description="Bilgilerinizi girin. Hesabınız, yetkili bir yönetici tarafından onaylandıktan sonra kullanıma açılır.">
+      eyebrow="Yeni ekip hesabı"
+      title="Ekip erişimi isteyin"
+      description="Bilgilerinizi girin. İşletme sahibi hesabınızı onaylayıp çalışma rolünüzü belirledikten sonra panel erişiminiz açılır.">
       <SignupForm />
     </AuthLayout>
   );

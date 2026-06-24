@@ -16,6 +16,8 @@ import Heading from "../ui/Heading";
 import Spinner from "../ui/Spinner";
 import { getAppointmentRequests } from "../services/apiAppointmentRequests";
 import { getAvailabilityDays } from "../services/apiAvailability";
+import { getAdminProfile } from "../services/apiAuth";
+import { ROUTE_ROLES } from "../utils/adminPermissions";
 
 const DAY_STATUS_LABELS = {
   available: "Müsait",
@@ -520,6 +522,14 @@ const EmptyState = styled.div`
 `;
 
 function Dashboard() {
+  const { data: admin } = useQuery({
+    queryKey: ["admin-profile"],
+    queryFn: getAdminProfile,
+    retry: false,
+  });
+  const canManageOperations = ROUTE_ROLES.bookings.includes(
+    admin?.profile?.role,
+  );
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const endDate = addDays(today, 6);
@@ -641,12 +651,12 @@ function Dashboard() {
               <HiOutlineCalendarDays />
               Müşteri ekranını aç
             </ActionLink>
-            <ActionLink
-              to="/admin/bookings"
-              $secondary>
-              <HiOutlineClock />
-              Talepleri incele
-            </ActionLink>
+            {canManageOperations && (
+              <ActionLink to="/admin/bookings" $secondary>
+                <HiOutlineClock />
+                Talepleri incele
+              </ActionLink>
+            )}
           </Actions>
         </HeroCopy>
 
@@ -791,18 +801,18 @@ function Dashboard() {
           </SectionHeader>
 
           <ContactGrid>
-            <ContactLink
-              as={Link}
-              to="/admin/bookings">
-              <HiOutlineUserGroup />
-              Talepleri yönet
-            </ContactLink>
-            <ContactLink
-              as={Link}
-              to="/admin/availability">
-              <HiOutlineClock />
-              Müsaitliği düzenle
-            </ContactLink>
+            {canManageOperations && (
+              <ContactLink as={Link} to="/admin/bookings">
+                <HiOutlineUserGroup />
+                Talepleri yönet
+              </ContactLink>
+            )}
+            {canManageOperations && (
+              <ContactLink as={Link} to="/admin/availability">
+                <HiOutlineClock />
+                Müsaitliği düzenle
+              </ContactLink>
+            )}
             <ContactLink
               as={Link}
               to="/appointment">

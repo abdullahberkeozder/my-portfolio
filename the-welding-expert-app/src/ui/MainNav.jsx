@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -8,6 +9,9 @@ import {
   HiOutlinePhoto,
   HiOutlineUserGroup,
 } from "react-icons/hi2";
+
+import { getAdminProfile } from "../services/apiAuth";
+import { ROUTE_ROLES } from "../utils/adminPermissions";
 
 const NavList = styled.ul`
   display: flex;
@@ -21,7 +25,6 @@ const StyledNavLink = styled(NavLink)`
     display: flex;
     align-items: center;
     gap: 1.2rem;
-
     color: var(--color-grey-600);
     font-size: 1.6rem;
     font-weight: 500;
@@ -39,7 +42,6 @@ const StyledNavLink = styled(NavLink)`
     }
   }
 
-  /* This works because react-router places the active class on the active NavLink */
   &:hover,
   &:active,
   &.active:link,
@@ -64,46 +66,85 @@ const StyledNavLink = styled(NavLink)`
   }
 `;
 
+const ADMIN_LINKS = [
+  {
+    to: "/admin/dashboard",
+    label: "Kontrol merkezi",
+    icon: HiOutlineHome,
+    roles: ROUTE_ROLES.dashboard,
+  },
+  {
+    to: "/admin/bookings",
+    label: "Randevu talepleri",
+    icon: HiOutlineCalendarDays,
+    roles: ROUTE_ROLES.bookings,
+  },
+  {
+    to: "/admin/availability",
+    label: "Müsaitlik takvimi",
+    icon: HiOutlineClock,
+    roles: ROUTE_ROLES.availability,
+  },
+  {
+    to: "/admin/users",
+    label: "Ekip ve yetkiler",
+    icon: HiOutlineUserGroup,
+    roles: ROUTE_ROLES.users,
+  },
+];
+
+const PUBLIC_LINKS = [
+  {
+    to: "/appointment",
+    label: "Randevu sayfası",
+    icon: HiOutlineArrowTopRightOnSquare,
+  },
+  {
+    to: "/gallery",
+    label: "İş galerisi",
+    icon: HiOutlinePhoto,
+  },
+];
+
 function MainNav() {
+  const { data: admin } = useQuery({
+    queryKey: ["admin-profile"],
+    queryFn: getAdminProfile,
+    retry: false,
+  });
+  const role = admin?.profile?.role;
+  const visibleAdminLinks = ADMIN_LINKS.filter((link) =>
+    link.roles.includes(role),
+  );
+
   return (
     <nav aria-label="Yönetim menüsü">
       <NavList>
-        <li>
-          <StyledNavLink to="/admin/dashboard">
-            <HiOutlineHome />
-            <span>Kontrol merkezi</span>
-          </StyledNavLink>
-        </li>
-        <li>
-          <StyledNavLink to="/admin/bookings">
-            <HiOutlineCalendarDays />
-            <span>Randevu talepleri</span>
-          </StyledNavLink>
-        </li>
-        <li>
-          <StyledNavLink to="/admin/availability">
-            <HiOutlineClock />
-            <span>Müsaitlik takvimi</span>
-          </StyledNavLink>
-        </li>
-        <li>
-          <StyledNavLink to="/admin/users">
-            <HiOutlineUserGroup />
-            <span>Admin hesapları</span>
-          </StyledNavLink>
-        </li>
-        <li>
-          <StyledNavLink to="/appointment">
-            <HiOutlineArrowTopRightOnSquare />
-            <span>Müşteri ekranı</span>
-          </StyledNavLink>
-        </li>
-        <li>
-          <StyledNavLink to="/gallery">
-            <HiOutlinePhoto />
-            <span>İş galerisi</span>
-          </StyledNavLink>
-        </li>
+        {visibleAdminLinks.map((link) => {
+          const Icon = link.icon;
+
+          return (
+            <li key={link.to}>
+              <StyledNavLink to={link.to}>
+                <Icon />
+                <span>{link.label}</span>
+              </StyledNavLink>
+            </li>
+          );
+        })}
+
+        {PUBLIC_LINKS.map((link) => {
+          const Icon = link.icon;
+
+          return (
+            <li key={link.to}>
+              <StyledNavLink to={link.to}>
+                <Icon />
+                <span>{link.label}</span>
+              </StyledNavLink>
+            </li>
+          );
+        })}
       </NavList>
     </nav>
   );

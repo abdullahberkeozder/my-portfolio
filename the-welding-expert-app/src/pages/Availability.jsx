@@ -773,7 +773,7 @@ function Availability() {
     retry: false,
   });
 
-  const isAdmin = admin?.isAdmin;
+  const isAdmin = admin?.isAuthorized;
 
   const {
     data: availabilityDays = [],
