@@ -4,7 +4,6 @@ import {
   HiOutlineArrowLeft,
   HiOutlineCalendarDays,
   HiOutlineShieldCheck,
-  HiOutlineWrenchScrewdriver,
 } from "react-icons/hi2";
 
 const Page = styled.main`
@@ -62,16 +61,18 @@ const BrandMark = styled.span`
   width: 4.8rem;
   height: 4.8rem;
   flex: 0 0 4.8rem;
-  border-radius: 50%;
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-accent-400);
-  background: var(--color-surface-steel);
+  background: var(--color-grey-0);
+  border: 1px solid var(--color-grey-200);
 
-  & svg {
-    width: 2.6rem;
-    height: 2.6rem;
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 `;
 
@@ -197,7 +198,7 @@ function AuthLayout({ eyebrow, title, description, children }) {
         <BrandPanel>
           <Brand>
             <BrandMark>
-              <HiOutlineWrenchScrewdriver />
+              <img src="/logo.png" alt="Umut Usta Logo" />
             </BrandMark>
             <div>
               <BrandName>Umut Usta</BrandName>

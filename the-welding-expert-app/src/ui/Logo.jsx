@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { HiOutlineWrenchScrewdriver } from "react-icons/hi2";
 
 const StyledLogo = styled.div`
   display: flex;
@@ -8,20 +7,13 @@ const StyledLogo = styled.div`
   padding: 0.8rem 0.4rem;
 `;
 
-const Mark = styled.div`
-  width: 4.4rem;
-  height: 4.4rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-accent-400);
-  background: var(--color-grey-900);
-
-  & svg {
-    width: 2.4rem;
-    height: 2.4rem;
-  }
+const LogoImage = styled.img`
+  width: 4.2rem;
+  height: 4.2rem;
+  border-radius: var(--border-radius-sm);
+  object-fit: cover;
+  background: var(--color-grey-0);
+  border: 1px solid var(--color-grey-150);
 `;
 
 const Name = styled.p`
@@ -42,9 +34,7 @@ const Caption = styled.span`
 function Logo() {
   return (
     <StyledLogo>
-      <Mark>
-        <HiOutlineWrenchScrewdriver />
-      </Mark>
+      <LogoImage src="/logo.png" alt="Umut Usta Logo" />
       <div>
         <Name>Umut Usta</Name>
         <Caption>Randevu yönetimi</Caption>
