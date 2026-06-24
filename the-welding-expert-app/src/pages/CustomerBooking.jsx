@@ -621,12 +621,15 @@ const ServiceCard = styled.button`
   align-content: start;
   text-align: left;
   background: ${(props) =>
-    props.$active ? "var(--color-brand-50)" : "var(--color-grey-0)"};
-  box-shadow: ${(props) => (props.$active ? "var(--shadow-sm)" : "none")};
+    props.$active ? "var(--color-selection-soft)" : "var(--color-grey-0)"};
+  box-shadow: ${(props) =>
+    props.$active
+      ? "inset 4px 0 0 var(--color-action-primary), var(--shadow-sm)"
+      : "none"};
 
   &:hover {
     border-color: var(--color-selection);
-    background: var(--color-brand-50);
+    background: var(--color-selection-soft);
   }
 
   @media (max-width: 640px) {
@@ -915,8 +918,11 @@ const DayButton = styled.button`
   gap: 0.7rem;
   text-align: left;
   background: ${(props) =>
-    props.$selected ? "var(--color-brand-50)" : "var(--color-grey-0)"};
-  box-shadow: ${(props) => (props.$selected ? "var(--shadow-md)" : "none")};
+    props.$selected ? "var(--color-grey-0)" : "var(--color-grey-0)"};
+  box-shadow: ${(props) =>
+    props.$selected
+      ? "inset 0 4px 0 var(--color-action-primary), var(--shadow-md)"
+      : "none"};
 
   ${(props) =>
     props.$disabled &&
@@ -1035,15 +1041,22 @@ const SlotButton = styled.button`
       props.$active ? "var(--color-selection)" : "var(--color-grey-200)"};
   border-radius: var(--border-radius-sm);
   color: ${(props) =>
-    props.$active ? "var(--color-brand-700)" : "var(--color-grey-700)"};
+    props.$active ? "var(--color-grey-0)" : "var(--color-grey-700)"};
   background: ${(props) =>
-    props.$active ? "var(--color-brand-50)" : "var(--color-grey-0)"};
+    props.$active ? "var(--color-surface-dark)" : "var(--color-grey-0)"};
+  box-shadow: ${(props) =>
+    props.$active
+      ? "inset 0 -3px 0 var(--color-action-primary)"
+      : "none"};
   font-size: 1.3rem;
   font-weight: 800;
 
   &:hover {
     border-color: var(--color-selection);
-    background: var(--color-brand-50);
+    background: ${(props) =>
+      props.$active
+        ? "var(--color-surface-dark)"
+        : "var(--color-selection-soft)"};
   }
 
   &:disabled {
@@ -1166,9 +1179,13 @@ const ServiceOption = styled.button`
   padding: 0.8rem 1rem;
   text-align: left;
   color: ${(props) =>
-    props.$active ? "var(--color-brand-700)" : "var(--color-grey-700)"};
+    props.$active
+      ? "var(--color-selection-strong)"
+      : "var(--color-grey-700)"};
   background: ${(props) =>
-    props.$active ? "var(--color-brand-50)" : "var(--color-grey-0)"};
+    props.$active ? "var(--color-selection-soft)" : "var(--color-grey-0)"};
+  box-shadow: ${(props) =>
+    props.$active ? "inset 4px 0 0 var(--color-action-primary)" : "none"};
   font-size: 1.3rem;
   font-weight: 700;
 `;
@@ -2172,6 +2189,7 @@ function CustomerBooking() {
 
               <Button
                 size="large"
+                variation="cta"
                 disabled={!canSubmitToSystem || isLoading}
                 onClick={handleSystemSubmit}>
                 {isLoading ? "Kaydediliyor..." : "Randevu talebi oluştur"}

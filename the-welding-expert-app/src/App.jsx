@@ -1,150 +1,85 @@
-import {
-  BrowserRouter,
-  Navigate,
-  Route,
-  Routes,
-} from "react-router-dom";
-import {
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { lazy, Suspense } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "react-hot-toast";
 
 import GlobalStyles from "./styles/GlobalStyles";
-import Dashboard from "./pages/Dashboard";
-import Bookings from "./pages/Bookings";
-import Availability from "./pages/Availability";
-import AdminUsers from "./pages/AdminUsers";
-import CustomerBooking from "./pages/CustomerBooking";
-import Gallery from "./pages/Gallery";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import PageNotFound from "./pages/PageNotFound";
-import AppLayout from "./ui/AppLayout";
-import ProtectedRoute from "./ui/ProtectedRoute";
-import { Toaster } from "react-hot-toast";
+import RouteFallback from "./ui/RouteFallback";
+
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Bookings = lazy(() => import("./pages/Bookings"));
+const Availability = lazy(() => import("./pages/Availability"));
+const AdminUsers = lazy(() => import("./pages/AdminUsers"));
+const CustomerBooking = lazy(() => import("./pages/CustomerBooking"));
+const Gallery = lazy(() => import("./pages/Gallery"));
+const Login = lazy(() => import("./pages/Login"));
+const Signup = lazy(() => import("./pages/Signup"));
+const PageNotFound = lazy(() => import("./pages/PageNotFound"));
+const AppLayout = lazy(() => import("./ui/AppLayout"));
+const ProtectedRoute = lazy(() => import("./ui/ProtectedRoute"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000, // 1 minute
-      cacheTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 60 * 1000,
+      cacheTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
     },
   },
 });
 
+function AppRoutes() {
+  return (
+    <Suspense fallback={<RouteFallback />}>
+      <Routes>
+        <Route index element={<Navigate replace to="/appointment" />} />
+        <Route path="appointment" element={<CustomerBooking />} />
+        <Route path="gallery" element={<Gallery />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="admin" element={<AppLayout />}>
+            <Route index element={<Navigate replace to="dashboard" />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="bookings" element={<Bookings />} />
+            <Route path="availability" element={<Availability />} />
+            <Route path="users" element={<AdminUsers />} />
+          </Route>
+        </Route>
+
+        <Route path="dashboard" element={<Navigate replace to="/admin/dashboard" />} />
+        <Route path="bookings" element={<Navigate replace to="/admin/bookings" />} />
+        <Route path="login" element={<Login />} />
+        <Route path="signup" element={<Signup />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    </Suspense>
+  );
+}
+
 function App() {
   return (
-    <>
-      <QueryClientProvider client={queryClient}>
-        <GlobalStyles />
-        <BrowserRouter>
-          <Routes>
-            <Route
-              index
-              element={
-                <Navigate
-                  replace
-                  to="/appointment"
-                />
-              }
-            />
-            <Route
-              path="appointment"
-              element={<CustomerBooking />}
-            />
-            <Route
-              path="gallery"
-              element={<Gallery />}
-            />
-
-            <Route element={<ProtectedRoute />}>
-              <Route
-                path="admin"
-                element={<AppLayout />}>
-                <Route
-                  index
-                  element={
-                    <Navigate
-                      replace
-                      to="dashboard"
-                    />
-                  }
-                />
-                <Route
-                  path="dashboard"
-                  element={<Dashboard />}
-                />
-                <Route
-                  path="bookings"
-                  element={<Bookings />}
-                />
-                <Route
-                  path="availability"
-                  element={<Availability />}
-                />
-                <Route
-                  path="users"
-                  element={<AdminUsers />}
-                />
-              </Route>
-            </Route>
-
-            <Route
-              path="dashboard"
-              element={
-                <Navigate
-                  replace
-                  to="/admin/dashboard"
-                />
-              }
-            />
-            <Route
-              path="bookings"
-              element={
-                <Navigate
-                  replace
-                  to="/admin/bookings"
-                />
-              }
-            />
-
-            <Route
-              path="login"
-              element={<Login />}
-            />
-            <Route
-              path="signup"
-              element={<Signup />}
-            />
-            <Route
-              path="*"
-              element={<PageNotFound />}
-            />
-          </Routes>
-        </BrowserRouter>
-        <Toaster
-          position="top-center"
-          gutter={12}
-          containerStyle={{ margin: "8px" }}
-          toastOptions={{
-            success: {
-              duration: 3000,
-            },
-            error: {
-              duration: 5000,
-            },
-            style: {
-              fontSize: "16px",
-              maxWidth: "500px",
-              padding: "12px 16px",
-              backgroundColor: "var(--color-grey-0)",
-              color: "var(--color-grey-700)",
-            },
-          }}
-        />
-      </QueryClientProvider>
-    </>
+    <QueryClientProvider client={queryClient}>
+      <GlobalStyles />
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+      <Toaster
+        position="top-center"
+        gutter={12}
+        containerStyle={{ margin: "8px" }}
+        toastOptions={{
+          success: { duration: 3000 },
+          error: { duration: 5000 },
+          style: {
+            fontSize: "16px",
+            maxWidth: "500px",
+            padding: "12px 16px",
+            backgroundColor: "var(--color-grey-0)",
+            color: "var(--color-grey-700)",
+          },
+        }}
+      />
+    </QueryClientProvider>
   );
 }
 

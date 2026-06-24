@@ -204,7 +204,7 @@ const DayCard = styled.article`
   gap: 0.8rem;
   align-content: start;
   background: ${(props) =>
-    props.$closed ? "#fff7f7" : "var(--color-grey-0)"};
+    props.$closed ? "var(--color-status-danger-bg)" : "var(--color-grey-0)"};
 `;
 
 const DayTitle = styled.div`
@@ -254,8 +254,8 @@ const StatusBadge = styled.span`
   ${(props) =>
     props.$tone === "amber" &&
     css`
-      color: #92400e;
-      background: #fef3c7;
+      color: var(--color-status-warning-text);
+      background: var(--color-status-warning-bg);
     `}
 
   ${(props) =>
@@ -313,7 +313,7 @@ const SmallButton = styled.button`
     css`
       color: var(--color-red-700);
       border-color: var(--color-red-100);
-      background: #fff7f7;
+      background: var(--color-status-danger-bg);
     `}
 
   ${(props) =>
@@ -347,11 +347,15 @@ const SlotSelect = styled.button`
   border-radius: var(--border-radius-sm);
   border: 1px solid
     ${(props) =>
-      props.$selected ? "var(--color-brand-600)" : "var(--color-grey-200)"};
+      props.$selected ? "var(--color-surface-dark)" : "var(--color-grey-200)"};
   color: ${(props) =>
-    props.$selected ? "var(--color-brand-700)" : "var(--color-grey-500)"};
+    props.$selected ? "var(--color-grey-0)" : "var(--color-grey-500)"};
   background: ${(props) =>
-    props.$selected ? "var(--color-brand-50)" : "var(--color-grey-0)"};
+    props.$selected ? "var(--color-surface-dark)" : "var(--color-grey-0)"};
+  box-shadow: ${(props) =>
+    props.$selected
+      ? "inset 0 -3px 0 var(--color-action-primary)"
+      : "none"};
   font-size: 1.1rem;
   font-weight: 900;
   cursor: pointer;

@@ -45,8 +45,8 @@ const StyledNavLink = styled(NavLink)`
   &.active:link,
   &.active:visited {
     color: var(--color-grey-800);
-    background-color: var(--color-brand-50);
-    border-left-color: var(--color-brand-600);
+    background-color: var(--color-selection-soft);
+    border-left-color: var(--color-action-primary);
   }
 
   & svg {
@@ -60,7 +60,7 @@ const StyledNavLink = styled(NavLink)`
   &:active svg,
   &.active:link svg,
   &.active:visited svg {
-    color: var(--color-brand-600);
+    color: var(--color-selection);
   }
 `;
 

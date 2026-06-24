@@ -51,8 +51,8 @@ const CloseButton = styled.button`
     background: var(--color-grey-0);
 
     &:hover {
-      color: var(--color-brand-700);
-      background: var(--color-brand-50);
+      color: var(--color-selection-strong);
+      background: var(--color-selection-soft);
     }
 
     & svg {

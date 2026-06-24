@@ -51,12 +51,11 @@ const NavLink = styled.a`
   justify-content: center;
   gap: 0.7rem;
   color: ${(props) =>
-    props.$active ? "var(--color-brand-700)" : "var(--color-grey-700)"};
-  background: ${(props) =>
-    props.$active ? "var(--color-brand-50)" : "var(--color-grey-0)"};
-  border: 1px solid
-    ${(props) =>
-      props.$active ? "var(--color-brand-200)" : "transparent"};
+    props.$active ? "var(--color-grey-900)" : "var(--color-grey-700)"};
+  background: var(--color-grey-0);
+  border: 1px solid transparent;
+  box-shadow: ${(props) =>
+    props.$active ? "inset 0 -3px 0 var(--color-action-primary)" : "none"};
   font-size: 1.3rem;
   font-weight: 800;
   white-space: nowrap;
@@ -66,15 +65,16 @@ const NavLink = styled.a`
   }
 
   &:hover {
-    color: var(--color-brand-700);
-    background: var(--color-brand-50);
-    border-color: var(--color-brand-200);
+    color: var(--color-selection-strong);
+    background: var(--color-selection-soft);
+    border-color: var(--color-selection-border);
   }
 
   & svg {
     width: 1.8rem;
     height: 1.8rem;
-    color: var(--color-selection);
+    color: ${(props) =>
+      props.$active ? "var(--color-selection-strong)" : "var(--color-grey-500)"};
   }
 `;
 

@@ -25,52 +25,50 @@ const GlobalStyles = createGlobalStyle`
   --line-height-tight: 1.15;
   --line-height-body: 1.6;
 
-  /* Indigo */
-  --color-brand-50: #eef2ff;
-  --color-brand-100: #e0e7ff;
-  --color-brand-200: #c7d2fe;
-  --color-brand-500: #6366f1;
-  --color-brand-600: #4f46e5;
-  --color-brand-700: #4338ca;
-  --color-brand-800: #3730a3;
-  --color-brand-900: #312e81;
+  /* Industrial steel blue */
+  --color-brand-50: #f1f7fa;
+  --color-brand-100: #e1eef4;
+  --color-brand-200: #bad6e3;
+  --color-brand-500: #2f7fa3;
+  --color-brand-600: #176b91;
+  --color-brand-700: #125675;
+  --color-brand-800: #0e435c;
+  --color-brand-900: #0b3448;
 
   /* Grey */
   --color-grey-0: #fff;
-  --color-grey-50: #f9fafb;
-  --color-grey-100: #f3f4f6;
-  --color-grey-200: #e5e7eb;
-  --color-grey-300: #d1d5db;
-  --color-grey-400: #9ca3af;
-  --color-grey-500: #6b7280;
-  --color-grey-600: #4b5563;
-  --color-grey-700: #374151;
-  --color-grey-800: #1f2937;
-  --color-grey-900: #111827;
+  --color-grey-50: #f5f6f7;
+  --color-grey-100: #eceff1;
+  --color-grey-200: #d8dde2;
+  --color-grey-300: #c3cbd1;
+  --color-grey-400: #929da5;
+  --color-grey-500: #6b767d;
+  --color-grey-600: #4f5d66;
+  --color-grey-700: #37444c;
+  --color-grey-800: #28343d;
+  --color-grey-900: #172026;
 
   --color-blue-100: #e0f2fe;
   --color-blue-700: #0369a1;
   --color-green-100: #dcfce7;
-  --color-green-700: #15803d;
-  --color-green-800: #166534;
+  --color-green-700: #2e7d4f;
+  --color-green-800: #23633e;
   --color-yellow-100: #fef9c3;
   --color-yellow-700: #a16207;
   --color-silver-100: #e5e7eb;
   --color-silver-700: #374151;
-  --color-indigo-100: #e0e7ff;
-  --color-indigo-700: #4338ca;
-
   --color-red-100: #fee2e2;
-  --color-red-700: #b91c1c;
-  --color-red-800: #991b1b;
+  --color-red-50: #fff4f2;
+  --color-red-700: #b42318;
+  --color-red-800: #8f1c14;
 
   /* Welding brand and inverse surfaces */
   --color-accent-50: #fffbeb;
-  --color-accent-400: #facc15;
-  --color-accent-500: #eab308;
+  --color-accent-400: #f4c430;
+  --color-accent-500: #dfaf16;
   --color-rust-700: #92400e;
-  --color-surface-dark: #111827;
-  --color-surface-steel: #374151;
+  --color-surface-dark: #111518;
+  --color-surface-steel: #28343d;
   --color-text-inverse: #f9fafb;
   --color-text-inverse-muted: #d1d5db;
 
@@ -78,7 +76,14 @@ const GlobalStyles = createGlobalStyle`
   --color-action-primary: var(--color-accent-400);
   --color-action-primary-hover: var(--color-accent-500);
   --color-selection: var(--color-brand-600);
+  --color-selection-strong: var(--color-brand-800);
+  --color-selection-soft: var(--color-brand-50);
+  --color-selection-border: var(--color-brand-200);
+  --color-focus-ring: var(--color-brand-600);
   --color-status-available: var(--color-green-700);
+  --color-status-warning-bg: var(--color-yellow-100);
+  --color-status-warning-text: var(--color-yellow-700);
+  --color-status-danger-bg: var(--color-red-50);
   --color-channel-whatsapp: #16a34a;
 
   --backdrop-color: rgba(255, 255, 255, 0.1);
@@ -156,13 +161,13 @@ input:focus,
 button:focus,
 textarea:focus,
 select:focus {
-  outline: 2px solid var(--color-brand-600);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
 a:focus-visible,
 summary:focus-visible {
-  outline: 2px solid var(--color-brand-600);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
   border-radius: var(--border-radius-tiny);
 }
@@ -231,9 +236,6 @@ FOR DARK MODE
 --color-yellow-700: #fef9c3;
 --color-silver-100: #374151;
 --color-silver-700: #f3f4f6;
---color-indigo-100: #3730a3;
---color-indigo-700: #e0e7ff;
-
 --color-red-100: #fee2e2;
 --color-red-700: #b91c1c;
 --color-red-800: #991b1b;
