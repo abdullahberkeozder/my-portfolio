@@ -34,9 +34,10 @@ const CLOSING_HOUR = 21;
 const SLOT_DURATION_HOURS = 2;
 
 const serviceTypes = [
-  "Kapı / korkuluk tamiri",
-  "Özel metal imalat",
-  "Menteşe ve kaynak onarımı",
+  "Duvar boya ve badana",
+  "Kapı, korkuluk ve kaynak",
+  "Bahçe peyzaj ve düzenleme",
+  "Küçük inşaat ve ev tadilatı",
   "Yerinde keşif ve teklif",
 ];
 
@@ -71,34 +72,42 @@ const aboutHighlights = [
 
 const serviceOverview = [
   {
-    title: "Kapı ve korkuluk tamiri",
-    text: "Apartman, balkon, bahçe ve iş yeri korkuluklarında kaynak onarımı, sağlamlaştırma ve parça değişimi.",
-    serviceType: "Kapı / korkuluk tamiri",
-    points: ["Yerinde kontrol", "Kaynak onarımı", "Sağlamlık kontrolü"],
+    title: "Duvar boya ve badana",
+    text: "Ev, ofis ve apartman içi/dışı duvarlarınız için pürüzsüz boya uygulaması, alçı sıva ve temiz işçilik.",
+    serviceType: "Duvar boya ve badana",
+    points: ["Pürüzsüz alçı sıva", "Kaliteli marka boyalar", "Sıfır kirlilik, temiz teslim"],
+    imageUrl: "/images/painting.png",
+    priceTagline: "Oda başı: 950 TL'den başlayan fiyatlar",
+  },
+  {
+    title: "Kapı, korkuluk ve kaynak",
+    text: "Menteşe onarımı, apartman kapıları, bahçe ve balkon korkuluklarının demir kaynak işleri.",
+    serviceType: "Kapı, korkuluk ve kaynak",
+    points: ["Yerinde sağlamlaştırma", "Kopan menteşe kaynağı", "Paslanmaz koruyucu boya"],
     imageUrl: "/images/railing_repair.png",
-    priceTagline: "Başlangıç: 1.200 TL",
+    priceTagline: "Küçük tamirler: 750 TL'den başlayan fiyatlar",
   },
   {
-    title: "Özel metal imalat",
-    text: "Ölçüye göre masa ayağı, raf taşıyıcı, metal çerçeve ve atölyeye özel parça imalatı.",
-    serviceType: "Özel metal imalat",
-    points: ["Ölçü alma", "Malzeme seçimi", "Temiz teslim"],
-    imageUrl: "/images/custom_metal.png",
-    priceTagline: "Başlangıç: 1.800 TL",
+    title: "Bahçe peyzaj ve düzenleme",
+    text: "Bahçe tasarımı, çim biçme, ağaç budama, toprak havalandırma ve bahçe çit montajı.",
+    serviceType: "Bahçe peyzaj ve düzenleme",
+    points: ["Bahçe peyzaj planı", "Ağaç ve çim budama", "Çit ve sınır telleri montajı"],
+    imageUrl: "/images/landscaping.png",
+    priceTagline: "Metrekare başı veya günlük fiyatlandırma",
   },
   {
-    title: "Menteşe ve kaynak onarımı",
-    text: "Kopan, çatlayan veya gevşeyen metal parçalarda pratik ve dayanıklı kaynak uygulamaları.",
-    serviceType: "Menteşe ve kaynak onarımı",
-    points: ["Hızlı tespit", "Parça sabitleme", "Kullanım testi"],
-    imageUrl: "/images/hinge_repair.png",
-    priceTagline: "Başlangıç: 750 TL",
+    title: "Küçük inşaat ve ev tadilatı",
+    text: "Lokal duvar örme, seramik/fayans döşeme, alçıpan montajı ve ev içi ufak tadilat işleri.",
+    serviceType: "Küçük inşaat ve ev tadilatı",
+    points: ["Ufak tuğla/duvar örme", "Fayans ve seramik işleri", "Alçıpan ve asma tavan tamiri"],
+    imageUrl: "/images/renovation.png",
+    priceTagline: "Hacim ve iş kapsamına göre fiyatlandırma",
   },
   {
     title: "Yerinde keşif ve teklif",
-    text: "İşin kapsamı, süresi ve malzeme ihtiyacı netleştirilir; uygun tarih için randevu planlanır.",
+    text: "İşin kapsamını, süresini, malzeme ihtiyacını ve net fiyat teklifini yerinde belirleyelim.",
     serviceType: "Yerinde keşif ve teklif",
-    points: ["Fotoğrafla ön bilgi", "Net zaman planlama", "Teklif paylaşımı"],
+    points: ["Fotoğrafla ön bilgilendirme", "Zamanında yerinde keşif", "Net ve şeffaf malzeme teklifi"],
     imageUrl: "/images/estimate.png",
     priceTagline: "Ücretsiz Keşif",
   },
@@ -2125,7 +2134,7 @@ function CustomerBooking() {
         <Section id="services">
           <SectionHeader>
             <Eyebrow>Hizmetlerimiz</Eyebrow>
-            <AboutTitle>En çok talep edilen kaynak ve metal işleri</AboutTitle>
+            <AboutTitle>En çok talep edilen ev ve bahçe işleri</AboutTitle>
             <AboutText>
               İhtiyacınıza uygun hizmeti seçtiğinizde randevu formu otomatik
               olarak güncellenir.

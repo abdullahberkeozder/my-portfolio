@@ -11,56 +11,67 @@ import {
 
 const workExamples = [
   {
-    title: "Balkon korkuluğu sağlamlaştırma",
-    category: "Korkuluk onarımı",
+    title: "Ev salon duvarı boya uygulaması",
+    category: "Boya ve badana",
     location: "Yenimahalle / Ankara",
-    beforeLabel: "Eski Durum",
-    afterLabel: "Yeni Durum",
+    beforeLabel: "Astar ve Alçı",
+    afterLabel: "Boya Sonrası",
+    beforeImage: "/images/shelf_before.png",
+    afterImage: "/images/painting.png",
+    text: "Duvardaki pürüzler giderildi, alçı astarı çekildi ve oda krem rengi boya ile pürüzsüz boyandı.",
+    points: ["Yüzey zımparalama", "Astar çekilmesi", "Çift kat temiz boyama"],
+  },
+  {
+    title: "Paslı bahçe korkuluğu ve kapı tamiri",
+    category: "Kaynak ve metal",
+    location: "Ostim / Ankara",
+    beforeLabel: "Paslı Durum",
+    afterLabel: "Onarım Sonrası",
     beforeImage: "/images/railing_before.png",
     afterImage: "/images/railing_after.png",
-    text: "Gevşeyen ve paslanan bağlantı noktalarında kaynak onarımı ve sağlamlaştırma yapıldı.",
-    points: ["Yerinde tespit", "Kaynak onarımı", "Boyama ve teslim"],
+    text: "Paslanmış ve kopmuş bahçe kapısı menteşeleri kaynakla sabitlendi, pas koruyucu astar boya atıldı.",
+    points: ["Menteşe kaynaklama", "Pas zımparalama", "Siyah boyama ve cila"],
   },
   {
-    title: "Atölye tipi metal raf ünitesi imalatı",
-    category: "Özel imalat",
-    location: "Ostim / Ankara",
-    beforeLabel: "Hazırlık",
-    afterLabel: "Teslim",
-    beforeImage: "/images/shelf_before.png",
-    afterImage: "/images/shelf_after.png",
-    text: "Ölçüye göre profil demir kesildi, kaynakla çerçeve haline getirilip raflar monte edildi.",
-    points: ["Ölçü alma", "Hassas montaj", "Fırın boya işlemi"],
-  },
-  {
-    title: "Kapı menteşesi ve kilit tamiri",
-    category: "Tamir ve bakım",
+    title: "Arka bahçe düzenleme ve çim budama",
+    category: "Bahçe ve peyzaj",
     location: "Çankaya / Ankara",
-    beforeLabel: "Arıza",
-    afterLabel: "Onarım",
+    beforeLabel: "Bakımsız",
+    afterLabel: "Düzenli",
     beforeImage: "/images/hinge_before.png",
-    afterImage: "/images/hinge_after.png",
-    text: "Kopan eski menteşe sökülüp temizlendi; yeni menteşe kaynaklanarak kapı gövdesi dengelendi.",
-    points: ["Menteşe hizalama", "Sağlam kaynak", "Kilit mekanizma ayarı"],
+    afterImage: "/images/landscaping.png",
+    text: "Yabani otlar temizlendi, çimler biçildi, ağaçlar budandı ve bahçe sınır telleri yeniden çekildi.",
+    points: ["Yabani ot temizliği", "Çimlerin biçilmesi", "Kenar çit kontrolü"],
+  },
+  {
+    title: "Mutfak tezgah arkası fayans kaplama",
+    category: "İnşaat ve tadilat",
+    location: "Yenimahalle / Ankara",
+    beforeLabel: "Tadilat Öncesi",
+    afterLabel: "Fayans Teslim",
+    beforeImage: "/images/shelf_before.png",
+    afterImage: "/images/renovation.png",
+    text: "Eski mutfak duvarı düzeltildi, harç hazırlandı ve dekoratif fayanslar örülerek derz dolguları yapıldı.",
+    points: ["Duvar hazırlığı", "Hassas dizim ve harç", "Derz dolgusu ve temizlik"],
   },
 ];
 
 const galleryItems = [
   {
-    title: "Yerinde bahçe kapısı tamiri",
+    title: "İç mekan duvar boyama",
+    image: "/images/painting.png",
+  },
+  {
+    title: "Bahçe peyzaj ve budama",
+    image: "/images/landscaping.png",
+  },
+  {
+    title: "Lokal duvar ve tuğla örme",
+    image: "/images/renovation.png",
+  },
+  {
+    title: "Bahçe kapısı kaynak onarımı",
     image: "/images/railing_after.png",
-  },
-  {
-    title: "Metal raf ve montaj işleri",
-    image: "/images/shelf_after.png",
-  },
-  {
-    title: "Menteşe ve kilit onarımları",
-    image: "/images/hinge_after.png",
-  },
-  {
-    title: "Hassas ölçüm ve keşif",
-    image: "/images/estimate.png",
   },
 ];
 
@@ -685,9 +696,9 @@ function Gallery() {
           <HeroContent>
             <HeroTitle>Umut Usta Önce-Sonra Çalışmaları ve Galeri</HeroTitle>
             <HeroText>
-              Boya, kaynak, montaj, bakım ve onarım çalışmalarını keşif,
-              hazırlık ve teslim aşamalarıyla inceleyin. Benzer bir iş için
-              doğrudan randevu talebi oluşturun.
+              Boya, kaynak, bahçe düzenleme, küçük tadilat ve bakım onarım
+              çalışmalarını keşif, hazırlık ve teslim aşamalarıyla inceleyin.
+              Benzer bir iş için doğrudan randevu talebi oluşturun.
             </HeroText>
             <HeroActions>
               <ActionLink to="/appointment">
@@ -784,8 +795,8 @@ function Gallery() {
             <Eyebrow>Galeri</Eyebrow>
             <SectionTitle>Umut Usta Yerinde Servis ve Bakım Uygulamaları</SectionTitle>
             <MutedText>
-              Boya, kaynak, montaj ve onarım gibi farklı hizmet türleri,
-              uygulama ayrıntıları ve teslim edilen işlerden görseller.
+              Boya, kaynak, bahçe düzenleme ve ev tadilatı gibi farklı hizmet
+              türleri, uygulama ayrıntıları ve teslim edilen işlerden görseller.
             </MutedText>
           </SectionHeader>
 
