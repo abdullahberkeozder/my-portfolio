@@ -25,77 +25,77 @@ const GlobalStyles = createGlobalStyle`
   --line-height-tight: 1.15;
   --line-height-body: 1.6;
 
-  /* Industrial steel blue */
-  --color-brand-50: #f1f7fa;
-  --color-brand-100: #e1eef4;
-  --color-brand-200: #bad6e3;
-  --color-brand-500: #2f7fa3;
-  --color-brand-600: #176b91;
-  --color-brand-700: #125675;
-  --color-brand-800: #0e435c;
-  --color-brand-900: #0b3448;
+  /* TaskRabbit Green Skala */
+  --color-brand-50: #e8f5e9;
+  --color-brand-100: #c8e6c9;
+  --color-brand-200: #a5d6a7;
+  --color-brand-500: #4caf50;
+  --color-brand-600: #0d8050;
+  --color-brand-700: #0b6c43;
+  --color-brand-800: #085434;
+  --color-brand-900: #053722;
 
-  /* Grey */
+  /* Warm Greys */
   --color-grey-0: #fff;
-  --color-grey-50: #f5f6f7;
-  --color-grey-100: #eceff1;
-  --color-grey-200: #d8dde2;
-  --color-grey-300: #c3cbd1;
-  --color-grey-400: #929da5;
-  --color-grey-500: #6b767d;
-  --color-grey-600: #4f5d66;
-  --color-grey-700: #37444c;
-  --color-grey-800: #28343d;
-  --color-grey-900: #172026;
+  --color-grey-50: #fbfbf9;
+  --color-grey-100: #f2f2ee;
+  --color-grey-200: #e4e4db;
+  --color-grey-300: #cfcfc3;
+  --color-grey-400: #a3a398;
+  --color-grey-500: #7c7c72;
+  --color-grey-600: #5e5e56;
+  --color-grey-700: #43433d;
+  --color-grey-800: #2a2a26;
+  --color-grey-900: #1c1c1a;
 
   --color-blue-100: #e0f2fe;
   --color-blue-700: #0369a1;
-  --color-green-100: #dcfce7;
-  --color-green-700: #2e7d4f;
-  --color-green-800: #23633e;
-  --color-yellow-100: #fef9c3;
-  --color-yellow-700: #a16207;
-  --color-silver-100: #e5e7eb;
-  --color-silver-700: #374151;
+  --color-green-100: #e8f5e9;
+  --color-green-700: #0d8050;
+  --color-green-800: #0b6c43;
+  --color-yellow-100: #fffbeb;
+  --color-yellow-700: #dfaf16;
+  --color-silver-100: #e4e4db;
+  --color-silver-700: #43433d;
   --color-red-100: #fee2e2;
   --color-red-50: #fff4f2;
   --color-red-700: #b42318;
   --color-red-800: #8f1c14;
 
-  /* Welding brand and inverse surfaces */
-  --color-accent-50: #fffbeb;
-  --color-accent-400: #f4c430;
-  --color-accent-500: #dfaf16;
-  --color-rust-700: #92400e;
-  --color-surface-dark: #111518;
-  --color-surface-steel: #28343d;
-  --color-text-inverse: #f9fafb;
-  --color-text-inverse-muted: #d1d5db;
+  /* Accent and surfaces */
+  --color-accent-50: #fffbf0;
+  --color-accent-400: #f28b24;
+  --color-accent-500: #e07a16;
+  --color-rust-700: #a0522d;
+  --color-surface-dark: #1b3b2b;
+  --color-surface-steel: #2a2a26;
+  --color-text-inverse: #fbfbf9;
+  --color-text-inverse-muted: #cfcfc3;
 
   /* Semantic color roles */
-  --color-action-primary: var(--color-accent-400);
-  --color-action-primary-hover: var(--color-accent-500);
+  --color-action-primary: var(--color-brand-600);
+  --color-action-primary-hover: var(--color-brand-700);
   --color-selection: var(--color-brand-600);
   --color-selection-strong: var(--color-brand-800);
   --color-selection-soft: var(--color-brand-50);
   --color-selection-border: var(--color-brand-200);
   --color-focus-ring: var(--color-brand-600);
-  --color-status-available: var(--color-green-700);
+  --color-status-available: var(--color-brand-700);
   --color-status-warning-bg: var(--color-yellow-100);
   --color-status-warning-text: var(--color-yellow-700);
   --color-status-danger-bg: var(--color-red-50);
   --color-channel-whatsapp: #16a34a;
 
-  --backdrop-color: rgba(255, 255, 255, 0.1);
+  --backdrop-color: rgba(27, 59, 43, 0.1);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0px 0.6rem 2.4rem rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 2.4rem 3.2rem rgba(0, 0, 0, 0.12);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0px 6px 20px rgba(27, 59, 43, 0.04), 0px 2px 8px rgba(27, 59, 43, 0.02);
+  --shadow-lg: 0px 12px 32px rgba(27, 59, 43, 0.08), 0px 4px 12px rgba(27, 59, 43, 0.04);
 
-  --border-radius-tiny: 3px;
-  --border-radius-sm: 5px;
-  --border-radius-md: 7px;
-  --border-radius-lg: 9px;
+  --border-radius-tiny: 4px;
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
 
   /* For dark mode */
   --image-grayscale: 0;
