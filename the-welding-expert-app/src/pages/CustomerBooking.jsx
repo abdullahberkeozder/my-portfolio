@@ -232,14 +232,16 @@ const PublicHeader = styled.header`
   min-width: 0;
   min-height: 42rem;
   overflow: hidden;
-  background: var(--color-surface-dark);
-  color: var(--color-grey-0);
+  background: var(--color-grey-50);
+  color: var(--color-grey-900);
+  border: 1px solid var(--color-grey-100);
   border-radius: var(--border-radius-md);
   padding: 3.2rem;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 2rem;
   align-items: center;
+  box-shadow: var(--shadow-md);
 
   &::after {
     content: "";
@@ -247,9 +249,9 @@ const PublicHeader = styled.header`
     inset: 0;
     background: linear-gradient(
       90deg,
-      rgba(17, 24, 39, 0.96) 0%,
-      rgba(17, 24, 39, 0.82) 48%,
-      rgba(17, 24, 39, 0.34) 100%
+      var(--color-grey-50) 0%,
+      rgba(251, 251, 249, 0.95) 50%,
+      rgba(251, 251, 249, 0.15) 100%
     );
   }
 
@@ -264,9 +266,9 @@ const PublicHeader = styled.header`
     &::after {
       background: linear-gradient(
         180deg,
-        rgba(17, 24, 39, 0.88) 0%,
-        rgba(17, 24, 39, 0.8) 62%,
-        rgba(17, 24, 39, 0.9) 100%
+        rgba(251, 251, 249, 0.96) 0%,
+        rgba(251, 251, 249, 0.88) 60%,
+        rgba(251, 251, 249, 0.96) 100%
       );
     }
   }
@@ -340,7 +342,7 @@ const PublicTitle = styled.h1`
 
 const Lead = styled.p`
   max-width: 70rem;
-  color: var(--color-grey-200);
+  color: var(--color-grey-600);
   font-size: 1.7rem;
 
   @media (max-width: 640px) {
@@ -353,8 +355,8 @@ const HeaderBadge = styled.div`
   align-items: center;
   gap: 0.8rem;
   justify-self: end;
-  color: var(--color-surface-dark);
-  background: var(--color-action-primary);
+  color: var(--color-brand-800);
+  background: var(--color-brand-100);
   border-radius: 999px;
   padding: 0.8rem 1.2rem;
   font-size: 1.3rem;
@@ -381,14 +383,14 @@ const TrustItem = styled.li`
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  color: var(--color-text-inverse-muted);
+  color: var(--color-grey-600);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
 
   & svg {
     width: 1.7rem;
     height: 1.7rem;
-    color: var(--color-accent-400);
+    color: var(--color-brand-600);
   }
 `;
 
@@ -415,36 +417,45 @@ const HeaderLink = styled.a`
   color: ${(props) => {
     if (props.$whatsapp) return "var(--color-grey-0)";
     return props.$secondary
-      ? "var(--color-text-inverse)"
-      : "var(--color-surface-dark)";
+      ? "var(--color-grey-700)"
+      : "var(--color-grey-0)";
   }};
   background: ${(props) => {
     if (props.$whatsapp) return "var(--color-channel-whatsapp)";
     return props.$secondary
-      ? "rgba(255, 255, 255, 0.12)"
+      ? "var(--color-grey-0)"
       : "var(--color-action-primary)";
   }};
   border: 1px solid ${(props) => {
     if (props.$whatsapp) return "var(--color-channel-whatsapp)";
     return props.$secondary
-      ? "rgba(255, 255, 255, 0.24)"
+      ? "var(--color-grey-200)"
       : "var(--color-action-primary)";
   }};
   font-size: 1.4rem;
   font-weight: 800;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
+    transform: translateY(-2px);
     background: ${(props) => {
       if (props.$whatsapp) return "#15803d";
       return props.$secondary
-        ? "rgba(255, 255, 255, 0.2)"
+        ? "var(--color-grey-50)"
         : "var(--color-action-primary-hover)";
     }};
     border-color: ${(props) => {
       if (props.$whatsapp) return "#15803d";
       return props.$secondary
-        ? "rgba(255, 255, 255, 0.24)"
+        ? "var(--color-grey-300)"
         : "var(--color-action-primary-hover)";
+    }};
+    box-shadow: ${(props) => {
+      if (props.$whatsapp) return "0 4px 14px rgba(22, 163, 74, 0.4)";
+      return props.$secondary
+        ? "var(--shadow-sm)"
+        : "0 4px 14px rgba(13, 128, 80, 0.4)";
     }};
   }
 
@@ -1187,13 +1198,79 @@ const SummaryBlock = styled.div`
   gap: 1.2rem;
 `;
 
-const SelectedBox = styled.div`
-  border: 1px solid var(--color-grey-100);
+
+const HorizontalSummary = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.6rem;
+  background: var(--color-grey-50);
+  border: 1px solid var(--color-grey-200);
   border-radius: var(--border-radius-md);
   padding: 1.6rem;
-  display: grid;
+  margin-top: 1.6rem;
+  align-items: stretch;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+`;
+
+const SummaryItem = styled.div`
+  display: flex;
+  align-items: center;
   gap: 1.2rem;
-  background: var(--color-grey-50);
+  padding: 1.2rem;
+  background: var(--color-grey-0);
+  border: 1px solid var(--color-grey-100);
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--color-brand-200);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+`;
+
+const SummaryIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: var(--color-brand-50);
+  color: var(--color-brand-600);
+  flex-shrink: 0;
+
+  & svg {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+`;
+
+const SummaryContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+`;
+
+const SummaryLabel = styled.span`
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-grey-500);
+  letter-spacing: 0.05em;
+`;
+
+const SummaryValue = styled.span`
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-grey-900);
+  line-height: 1.3;
 `;
 
 const SelectedLine = styled.div`
@@ -2143,42 +2220,63 @@ function CustomerBooking() {
                 </SlotGrid>
               )}
             </SlotPanel>
+
+            <div style={{ marginTop: "2rem" }}>
+              <Heading as="h2" style={{ fontSize: "1.8rem", marginBottom: "1.2rem" }}>
+                Talep Özeti
+              </Heading>
+              <HorizontalSummary>
+                <SummaryItem>
+                  <SummaryIcon>
+                    <HiOutlineCalendarDays />
+                  </SummaryIcon>
+                  <SummaryContent>
+                    <SummaryLabel>Seçilen Tarih</SummaryLabel>
+                    <SummaryValue>
+                      {selectedDay ? selectedDay.fullDate : "Gün seçilmedi"}
+                    </SummaryValue>
+                  </SummaryContent>
+                </SummaryItem>
+
+                <SummaryItem>
+                  <SummaryIcon>
+                    <HiOutlineClock />
+                  </SummaryIcon>
+                  <SummaryContent>
+                    <SummaryLabel>Seçilen Saat</SummaryLabel>
+                    <SummaryValue>
+                      {selectedSlot?.label || "Saat seçilmedi"}
+                    </SummaryValue>
+                  </SummaryContent>
+                </SummaryItem>
+
+                <SummaryItem>
+                  <SummaryIcon>
+                    <HiOutlineWrenchScrewdriver />
+                  </SummaryIcon>
+                  <SummaryContent>
+                    <SummaryLabel>Hizmet Türü</SummaryLabel>
+                    <SummaryValue>{selectedService}</SummaryValue>
+                  </SummaryContent>
+                </SummaryItem>
+              </HorizontalSummary>
+            </div>
           </Panel>
 
           <SummaryPanel>
             <SummaryBlock>
-              <Heading as="h2">Talep özeti</Heading>
-              <SelectedBox>
-                <SelectedLine>
-                  <HiOutlineCalendarDays />
-                  <span>
-                    {selectedDay ? selectedDay.fullDate : "Gün seçilmedi"}
-                  </span>
-                </SelectedLine>
-                <SelectedLine>
-                  <HiOutlineClock />
-                  <span>{selectedSlot?.label || "Saat seçilmedi"}</span>
-                </SelectedLine>
-                <SelectedLine>
-                  <HiOutlineWrenchScrewdriver />
-                  <span>{selectedService}</span>
-                </SelectedLine>
-              </SelectedBox>
-
-              <div>
-                <Heading as="h3">Hizmet türü</Heading>
-                <ServiceList>
-                  {serviceTypes.map((service) => (
-                    <ServiceOption
-                      key={service}
-                      type="button"
-                      $active={selectedService === service}
-                      onClick={() => setSelectedService(service)}>
-                      {service}
-                    </ServiceOption>
-                  ))}
-                </ServiceList>
-              </div>
+              <Heading as="h2">Hizmet türü</Heading>
+              <ServiceList>
+                {serviceTypes.map((service) => (
+                  <ServiceOption
+                    key={service}
+                    type="button"
+                    $active={selectedService === service}
+                    onClick={() => setSelectedService(service)}>
+                    {service}
+                  </ServiceOption>
+                ))}
+              </ServiceList>
             </SummaryBlock>
 
             <SummaryBlock>

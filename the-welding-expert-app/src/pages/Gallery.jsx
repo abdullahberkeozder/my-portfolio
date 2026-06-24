@@ -185,8 +185,10 @@ const Hero = styled.section`
   padding: 3.2rem;
   display: grid;
   align-items: end;
-  color: var(--color-text-inverse);
-  background: var(--color-surface-dark);
+  color: var(--color-grey-900);
+  background: var(--color-grey-50);
+  border: 1px solid var(--color-grey-100);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 
   &::after {
@@ -195,8 +197,9 @@ const Hero = styled.section`
     inset: 0;
     background: linear-gradient(
       90deg,
-      rgba(17, 24, 39, 0.9),
-      rgba(17, 24, 39, 0.46)
+      var(--color-grey-50) 0%,
+      rgba(251, 251, 249, 0.95) 50%,
+      rgba(251, 251, 249, 0.15) 100%
     );
   }
 
@@ -234,7 +237,7 @@ const HeroTitle = styled.h1`
 
 const HeroText = styled.p`
   max-width: 64rem;
-  color: var(--color-text-inverse-muted);
+  color: var(--color-grey-600);
   font-size: var(--font-size-md);
 `;
 
@@ -255,19 +258,37 @@ const ActionLink = styled(Link)`
   gap: 0.8rem;
   color: ${(props) =>
     props.$secondary
-      ? "var(--color-text-inverse)"
-      : "var(--color-surface-dark)"};
+      ? "var(--color-grey-700)"
+      : "var(--color-grey-0)"};
   background: ${(props) =>
     props.$secondary
-      ? "rgba(255, 255, 255, 0.12)"
-      : "var(--color-accent-400)"};
+      ? "var(--color-grey-0)"
+      : "var(--color-action-primary)"};
   border: 1px solid
     ${(props) =>
       props.$secondary
-        ? "rgba(255, 255, 255, 0.24)"
-        : "var(--color-accent-400)"};
+        ? "var(--color-grey-200)"
+        : "var(--color-action-primary)"};
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-extrabold);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+    background: ${(props) =>
+      props.$secondary
+        ? "var(--color-grey-50)"
+        : "var(--color-action-primary-hover)"};
+    border-color: ${(props) =>
+      props.$secondary
+        ? "var(--color-grey-300)"
+        : "var(--color-action-primary-hover)"};
+    box-shadow: ${(props) =>
+      props.$secondary
+        ? "var(--shadow-sm)"
+        : "0 4px 14px rgba(13, 128, 80, 0.4)"};
+  }
 
   & svg {
     width: 1.8rem;
