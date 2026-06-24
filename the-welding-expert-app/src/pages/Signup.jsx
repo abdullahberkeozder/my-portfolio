@@ -1,27 +1,14 @@
-import styled from "styled-components";
-
 import SignupForm from "../features/authentication/SignupForm";
-import Heading from "../ui/Heading";
-import Logo from "../ui/Logo";
-
-const SignupLayout = styled.main`
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: minmax(32rem, 52rem);
-  align-content: center;
-  justify-content: center;
-  gap: 3.2rem;
-  background-color: var(--color-grey-50);
-  padding: 2.4rem;
-`;
+import AuthLayout from "../ui/AuthLayout";
 
 function Signup() {
   return (
-    <SignupLayout>
-      <Logo />
-      <Heading as="h1">Admin üyeliği oluştur</Heading>
+    <AuthLayout
+      eyebrow="Yeni yönetici hesabı"
+      title="Admin üyeliği oluştur"
+      description="Bilgilerinizi girin. Hesabınız, yetkili bir yönetici tarafından onaylandıktan sonra kullanıma açılır.">
       <SignupForm />
-    </SignupLayout>
+    </AuthLayout>
   );
 }
 

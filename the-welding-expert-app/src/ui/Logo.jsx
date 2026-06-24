@@ -15,7 +15,7 @@ const Mark = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #facc15;
+  color: var(--color-accent-400);
   background: var(--color-grey-900);
 
   & svg {

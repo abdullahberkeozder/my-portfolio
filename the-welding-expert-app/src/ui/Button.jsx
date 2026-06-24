@@ -3,22 +3,22 @@ import styled, { css } from "styled-components";
 const sizes = {
   small: css`
     min-height: 3.6rem;
-    font-size: 1.3rem;
+    font-size: var(--font-size-sm);
     padding: 0.7rem 1rem;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     text-align: center;
   `,
   medium: css`
     min-height: 4.4rem;
-    font-size: 1.4rem;
+    font-size: var(--font-size-body);
     padding: 1rem 1.6rem;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
   `,
   large: css`
     min-height: 4.8rem;
-    font-size: 1.6rem;
+    font-size: var(--font-size-md);
     padding: 1.2rem 2.4rem;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
   `,
 };
 
@@ -53,7 +53,7 @@ const variations = {
     background-color: var(--color-green-700);
 
     &:hover {
-      background-color: #166534;
+      background-color: var(--color-green-800);
     }
   `,
   ghost: css`

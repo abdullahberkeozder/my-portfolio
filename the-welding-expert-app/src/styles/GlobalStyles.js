@@ -2,6 +2,29 @@ import { createGlobalStyle } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`
 :root {
+  /* Typography */
+  --font-family-sans: "Poppins", sans-serif;
+  --font-size-2xs: 1.1rem;
+  --font-size-xs: 1.2rem;
+  --font-size-sm: 1.3rem;
+  --font-size-body: 1.4rem;
+  --font-size-base: 1.5rem;
+  --font-size-md: 1.6rem;
+  --font-size-lead: 1.7rem;
+  --font-size-lg: 1.8rem;
+  --font-size-title: 2rem;
+  --font-size-xl: 2.4rem;
+  --font-size-heading: 2.8rem;
+  --font-size-page-title: 3rem;
+  --font-size-display: 4rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --line-height-tight: 1.15;
+  --line-height-body: 1.6;
+
   /* Indigo */
   --color-brand-50: #eef2ff;
   --color-brand-100: #e0e7ff;
@@ -29,6 +52,7 @@ const GlobalStyles = createGlobalStyle`
   --color-blue-700: #0369a1;
   --color-green-100: #dcfce7;
   --color-green-700: #15803d;
+  --color-green-800: #166534;
   --color-yellow-100: #fef9c3;
   --color-yellow-700: #a16207;
   --color-silver-100: #e5e7eb;
@@ -39,6 +63,23 @@ const GlobalStyles = createGlobalStyle`
   --color-red-100: #fee2e2;
   --color-red-700: #b91c1c;
   --color-red-800: #991b1b;
+
+  /* Welding brand and inverse surfaces */
+  --color-accent-50: #fffbeb;
+  --color-accent-400: #facc15;
+  --color-accent-500: #eab308;
+  --color-rust-700: #92400e;
+  --color-surface-dark: #111827;
+  --color-surface-steel: #374151;
+  --color-text-inverse: #f9fafb;
+  --color-text-inverse-muted: #d1d5db;
+
+  /* Semantic color roles */
+  --color-action-primary: var(--color-accent-400);
+  --color-action-primary-hover: var(--color-accent-500);
+  --color-selection: var(--color-brand-600);
+  --color-status-available: var(--color-green-700);
+  --color-channel-whatsapp: #16a34a;
 
   --backdrop-color: rgba(255, 255, 255, 0.1);
 
@@ -73,13 +114,13 @@ html {
 }
 
 body {
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-family-sans);
   color: var(--color-grey-700);
 
   transition: color 0.3s, background-color 0.3s;
   min-height: 100vh;
-  line-height: 1.5;
-  font-size: 1.6rem;
+  line-height: var(--line-height-body);
+  font-size: var(--font-size-md);
   overflow-x: hidden;
 }
 
@@ -89,6 +130,12 @@ textarea,
 select {
   font: inherit;
   color: inherit;
+}
+
+input,
+button,
+select {
+  min-height: 4.4rem;
 }
 
 button {
@@ -111,6 +158,13 @@ textarea:focus,
 select:focus {
   outline: 2px solid var(--color-brand-600);
   outline-offset: 2px;
+}
+
+a:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 2px;
+  border-radius: var(--border-radius-tiny);
 }
 
 /* Parent selector, finally 😃 */
@@ -147,6 +201,7 @@ h6 {
 }
 
 img {
+  display: block;
   max-width: 100%;
 
   /* For dark mode */
