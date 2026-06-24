@@ -652,19 +652,15 @@ const SectionHeader = styled.div`
 `;
 
 const ServicesGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1.4rem;
-
-  @media (max-width: 1120px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  justify-content: center;
 
   @media (max-width: 640px) {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(27rem, 88%);
+    flex-wrap: nowrap;
     overflow-x: auto;
+    justify-content: flex-start;
     overscroll-behavior-inline: contain;
     scroll-snap-type: inline mandatory;
     scrollbar-width: none;
@@ -679,6 +675,8 @@ const ServicesGrid = styled.div`
 const ServiceCard = styled.button`
   display: flex;
   flex-direction: column;
+  flex: 0 0 calc(25% - 1.1rem); /* 4 columns on desktop by default */
+  min-width: 25rem;
   border: 2px solid
     ${(props) =>
       props.$active ? "var(--color-action-primary)" : "transparent"};
@@ -703,7 +701,16 @@ const ServiceCard = styled.button`
     transform: translateY(-2px);
   }
 
+  @media (max-width: 1120px) {
+    flex: 0 0 calc(33.333% - 1rem); /* 3 columns */
+  }
+
+  @media (max-width: 860px) {
+    flex: 0 0 calc(50% - 0.7rem); /* 2 columns */
+  }
+
   @media (max-width: 640px) {
+    flex: 0 0 88%; /* horizontal swipe on mobile */
     scroll-snap-align: start;
   }
 `;
