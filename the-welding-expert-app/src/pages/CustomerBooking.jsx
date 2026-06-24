@@ -19,6 +19,7 @@ import {
   HiOutlineWrenchScrewdriver,
   HiOutlineXCircle,
 } from "react-icons/hi2";
+import { FaWhatsapp } from "react-icons/fa";
 
 import Button from "../ui/Button";
 import Heading from "../ui/Heading";
@@ -140,6 +141,29 @@ const faqItems = [
 const businessAddress =
   "Ostim OSB, 100. Yıl Bulvarı No:45, Yenimahalle / Ankara";
 const mapQuery = encodeURIComponent(businessAddress);
+
+const ScrollWrapper = styled.div`
+  position: relative;
+  width: 100%;
+
+  @media (max-width: ${(props) => props.$breakpoint || "640px"}) {
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 4rem;
+      background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        ${(props) => props.$bg || "var(--color-grey-50)"} 100%
+      );
+      pointer-events: none;
+      z-index: 2;
+    }
+  }
+`;
 
 const Page = styled.main`
   min-height: 100vh;
@@ -388,27 +412,40 @@ const HeaderLink = styled.a`
   align-items: center;
   justify-content: center;
   gap: 0.8rem;
-  color: ${(props) =>
-    props.$secondary
+  color: ${(props) => {
+    if (props.$whatsapp) return "var(--color-grey-0)";
+    return props.$secondary
       ? "var(--color-text-inverse)"
-      : "var(--color-surface-dark)"};
-  background: ${(props) =>
-    props.$secondary
+      : "var(--color-surface-dark)";
+  }};
+  background: ${(props) => {
+    if (props.$whatsapp) return "var(--color-channel-whatsapp)";
+    return props.$secondary
       ? "rgba(255, 255, 255, 0.12)"
-      : "var(--color-action-primary)"};
-  border: 1px solid
-    ${(props) =>
-      props.$secondary
-        ? "rgba(255, 255, 255, 0.24)"
-        : "var(--color-action-primary)"};
+      : "var(--color-action-primary)";
+  }};
+  border: 1px solid ${(props) => {
+    if (props.$whatsapp) return "var(--color-channel-whatsapp)";
+    return props.$secondary
+      ? "rgba(255, 255, 255, 0.24)"
+      : "var(--color-action-primary)";
+  }};
   font-size: 1.4rem;
   font-weight: 800;
 
   &:hover {
-    background: ${(props) =>
-      props.$secondary
+    background: ${(props) => {
+      if (props.$whatsapp) return "#15803d";
+      return props.$secondary
         ? "rgba(255, 255, 255, 0.2)"
-        : "var(--color-action-primary-hover)"};
+        : "var(--color-action-primary-hover)";
+    }};
+    border-color: ${(props) => {
+      if (props.$whatsapp) return "#15803d";
+      return props.$secondary
+        ? "rgba(255, 255, 255, 0.24)"
+        : "var(--color-action-primary-hover)";
+    }};
   }
 
   & svg {
@@ -625,11 +662,21 @@ const ServiceCard = styled.button`
   box-shadow: ${(props) =>
     props.$active
       ? "inset 4px 0 0 var(--color-action-primary), var(--shadow-sm)"
-      : "none"};
+      : "var(--shadow-sm)"};
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     border-color: var(--color-selection);
     background: var(--color-selection-soft);
+    transform: translateY(-4px);
+    box-shadow: ${(props) =>
+      props.$active
+        ? "inset 4px 0 0 var(--color-action-primary), var(--shadow-md)"
+        : "var(--shadow-md)"};
+  }
+
+  &:active {
+    transform: translateY(-1px);
   }
 
   @media (max-width: 640px) {
@@ -720,6 +767,14 @@ const ProcessCard = styled.article`
   display: grid;
   gap: 1rem;
   background: var(--color-grey-50);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    border-color: var(--color-brand-200);
+    background: var(--color-grey-0);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
 
   @media (max-width: 560px) {
     min-height: 21rem;
@@ -923,6 +978,7 @@ const DayButton = styled.button`
     props.$selected
       ? "inset 0 4px 0 var(--color-action-primary), var(--shadow-md)"
       : "none"};
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
   ${(props) =>
     props.$disabled &&
@@ -935,6 +991,17 @@ const DayButton = styled.button`
   &:hover {
     border-color: ${(props) =>
       props.$disabled ? "var(--color-grey-100)" : "var(--color-selection)"};
+    transform: ${(props) => (props.$disabled ? "none" : "translateY(-4px)")};
+    box-shadow: ${(props) =>
+      props.$disabled
+        ? "none"
+        : props.$selected
+          ? "inset 0 4px 0 var(--color-action-primary), var(--shadow-md)"
+          : "var(--shadow-md)"};
+  }
+
+  &:active {
+    transform: ${(props) => (props.$disabled ? "none" : "translateY(-1px)")};
   }
 
   @media (max-width: 980px) {
@@ -1050,13 +1117,23 @@ const SlotButton = styled.button`
       : "none"};
   font-size: 1.3rem;
   font-weight: 800;
+  transition: all 0.2s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     border-color: var(--color-selection);
     background: ${(props) =>
       props.$active
         ? "var(--color-surface-dark)"
         : "var(--color-selection-soft)"};
+    transform: translateY(-2px);
+    box-shadow: ${(props) =>
+      props.$active
+        ? "inset 0 -3px 0 var(--color-action-primary), var(--shadow-sm)"
+        : "var(--shadow-sm)"};
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
   }
 
   &:disabled {
@@ -1188,6 +1265,17 @@ const ServiceOption = styled.button`
     props.$active ? "inset 4px 0 0 var(--color-action-primary)" : "none"};
   font-size: 1.3rem;
   font-weight: 700;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--color-selection);
+    background: var(--color-selection-soft);
+    transform: translateX(4px);
+  }
+
+  &:active {
+    transform: translateX(1px);
+  }
 `;
 
 const ChannelGrid = styled.div`
@@ -1210,6 +1298,17 @@ const ChannelLink = styled.a`
   font-size: 1.4rem;
   font-weight: 800;
   pointer-events: ${(props) => (props.$disabled ? "none" : "auto")};
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    filter: brightness(1.05);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 
   & svg {
     width: 2rem;
@@ -1275,79 +1374,17 @@ const MapBox = styled.div`
   border-radius: var(--border-radius-md);
   overflow: hidden;
   position: relative;
-  background:
-    linear-gradient(90deg, transparent 49%, rgba(79, 70, 229, 0.18) 50%, transparent 51%),
-    linear-gradient(0deg, transparent 49%, rgba(79, 70, 229, 0.14) 50%, transparent 51%),
-    linear-gradient(135deg, transparent 42%, rgba(17, 24, 39, 0.12) 43%, rgba(17, 24, 39, 0.12) 47%, transparent 48%),
-    linear-gradient(35deg, transparent 45%, rgba(146, 64, 14, 0.18) 46%, rgba(146, 64, 14, 0.18) 50%, transparent 51%),
-    var(--color-grey-50);
-  background-size: 8rem 8rem, 8rem 8rem, 100% 100%, 100% 100%, auto;
+  box-shadow: var(--shadow-sm);
 
   @media (max-width: 520px) {
     min-height: 30rem;
   }
 `;
 
-const MapPin = styled.div`
-  position: absolute;
-  left: 50%;
-  top: 45%;
-  transform: translate(-50%, -50%);
-  display: grid;
-  justify-items: center;
-  gap: 0.8rem;
-`;
-
-const PinIcon = styled.span`
-  width: 5.2rem;
-  height: 5.2rem;
-  border-radius: 50% 50% 50% 0;
-  transform: rotate(-45deg);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-accent-400);
-  background: var(--color-surface-dark);
-  box-shadow: var(--shadow-md);
-
-  & svg {
-    width: 2.4rem;
-    height: 2.4rem;
-    transform: rotate(45deg);
-  }
-`;
-
-const PinCard = styled.div`
-  max-width: 30rem;
-  border: 1px solid var(--color-grey-100);
-  border-radius: var(--border-radius-md);
-  padding: 1.4rem;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: var(--shadow-md);
-  text-align: center;
-
-  @media (max-width: 520px) {
-    max-width: 24rem;
-    padding: 1.2rem;
-  }
-`;
-
-const MapOpenLink = styled.a`
-  position: absolute;
-  right: 1.4rem;
-  bottom: 1.4rem;
-  border-radius: var(--border-radius-sm);
-  padding: 1rem 1.2rem;
-  color: var(--color-grey-0);
-  background: var(--color-brand-600);
-  font-size: 1.3rem;
-  font-weight: 800;
-
-  @media (max-width: 520px) {
-    left: 1.2rem;
-    right: 1.2rem;
-    text-align: center;
-  }
+const MapIframe = styled.iframe`
+  width: 100%;
+  height: 100%;
+  border: 0;
 `;
 
 const FaqGrid = styled.div`
@@ -1691,6 +1728,10 @@ function CustomerBooking() {
   const whatsappUrl = `https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent(
     message,
   )}`;
+  const quickMessage = "Merhaba Mehmet Usta, yaptırmak istediğim bir kaynak/metal işi var. Fotoğrafını gönderip fiyat teklifi/keşif bilgisi alabilir miyim?";
+  const quickWhatsappUrl = `https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    quickMessage,
+  )}`;
   const mailUrl = `mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent(
     "Kaynak randevu talebi",
   )}&body=${encodeURIComponent(message)}`;
@@ -1781,6 +1822,14 @@ function CustomerBooking() {
                 <HeaderLink href="#appointment-calendar">
                   <HiOutlineCalendarDays />
                   Randevu seç
+                </HeaderLink>
+                <HeaderLink
+                  href={quickWhatsappUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  $whatsapp>
+                  <FaWhatsapp />
+                  Fotoğraf Gönder, Teklif Al
                 </HeaderLink>
                 <HeaderLink
                   href="#location"
@@ -1879,29 +1928,31 @@ function CustomerBooking() {
             </AboutText>
           </SectionHeader>
 
-          <ServicesGrid>
-            {serviceOverview.map((service) => (
-              <ServiceCard
-                key={service.title}
-                type="button"
-                $active={selectedService === service.serviceType}
-                onClick={() => setSelectedService(service.serviceType)}>
-                <ServiceIcon>
-                  <HiOutlineWrenchScrewdriver />
-                </ServiceIcon>
-                <CardTitle>{service.title}</CardTitle>
-                <CardText>{service.text}</CardText>
-                <MiniList>
-                  {service.points.map((point) => (
-                    <MiniItem key={point}>
-                      <HiOutlineCheckCircle />
-                      <span>{point}</span>
-                    </MiniItem>
-                  ))}
-                </MiniList>
-              </ServiceCard>
-            ))}
-          </ServicesGrid>
+          <ScrollWrapper>
+            <ServicesGrid>
+              {serviceOverview.map((service) => (
+                <ServiceCard
+                  key={service.title}
+                  type="button"
+                  $active={selectedService === service.serviceType}
+                  onClick={() => setSelectedService(service.serviceType)}>
+                  <ServiceIcon>
+                    <HiOutlineWrenchScrewdriver />
+                  </ServiceIcon>
+                  <CardTitle>{service.title}</CardTitle>
+                  <CardText>{service.text}</CardText>
+                  <MiniList>
+                    {service.points.map((point) => (
+                      <MiniItem key={point}>
+                        <HiOutlineCheckCircle />
+                        <span>{point}</span>
+                      </MiniItem>
+                    ))}
+                  </MiniList>
+                </ServiceCard>
+              ))}
+            </ServicesGrid>
+          </ScrollWrapper>
         </Section>
 
         <Section id="process">
@@ -1914,15 +1965,17 @@ function CustomerBooking() {
             </AboutText>
           </SectionHeader>
 
-          <ProcessGrid>
-            {processSteps.map((step, index) => (
-              <ProcessCard key={step.title}>
-                <StepNumber>{index + 1}</StepNumber>
-                <CardTitle>{step.title}</CardTitle>
-                <CardText>{step.text}</CardText>
-              </ProcessCard>
-            ))}
-          </ProcessGrid>
+          <ScrollWrapper $breakpoint="560px">
+            <ProcessGrid>
+              {processSteps.map((step, index) => (
+                <ProcessCard key={step.title}>
+                  <StepNumber>{index + 1}</StepNumber>
+                  <CardTitle>{step.title}</CardTitle>
+                  <CardText>{step.text}</CardText>
+                </ProcessCard>
+              ))}
+            </ProcessGrid>
+          </ScrollWrapper>
         </Section>
 
         <ContentGrid id="appointment-calendar">
@@ -1995,56 +2048,58 @@ function CustomerBooking() {
               </WeekControls>
             </DateToolbar>
 
-            <WeekGrid
-              ref={weekGridRef}
-              role="group"
-              aria-label="Haftanın günleri">
-              {weekDays.map((day) => {
-                const isSelected = selectedDate === day.dateValue;
-                const isPast = day.dateValue < todayKey;
-                const isClosed = ["closed", "unavailable"].includes(
-                  day.status,
-                );
-                const freeSlotCount = day.slots.filter(
-                  (slot) => slot.isAvailable,
-                ).length;
-                const dayStatusText =
-                  day.statusText || statusLabel[day.status];
+            <ScrollWrapper $breakpoint="980px" $bg="var(--color-grey-0)">
+              <WeekGrid
+                ref={weekGridRef}
+                role="group"
+                aria-label="Haftanın günleri">
+                {weekDays.map((day) => {
+                  const isSelected = selectedDate === day.dateValue;
+                  const isPast = day.dateValue < todayKey;
+                  const isClosed = ["closed", "unavailable"].includes(
+                    day.status,
+                  );
+                  const freeSlotCount = day.slots.filter(
+                    (slot) => slot.isAvailable,
+                  ).length;
+                  const dayStatusText =
+                    day.statusText || statusLabel[day.status];
 
-                return (
-                  <DayButton
-                    key={day.dateValue}
-                    ref={isSelected ? selectedDayButtonRef : null}
-                    type="button"
-                    disabled={isPast || isClosed}
-                    $disabled={isPast || isClosed}
-                    $selected={isSelected}
-                    aria-pressed={isSelected}
-                    aria-label={`${day.fullDate}, ${dayStatusText}, ${
-                      isPast
-                        ? "geçmiş tarih"
-                        : day.status === "unavailable"
-                          ? "seçime kapalı"
-                          : `${freeSlotCount} müsait aralık`
-                    }`}
-                    onClick={() => handleDateSelect(day.dateValue)}>
-                    <DayName>{day.dayName}</DayName>
-                    <DayDate>{day.dateLabel}</DayDate>
-                    <StatusBadge $status={day.status}>
-                      {getStatusIcon(day.status)}
-                      {dayStatusText}
-                    </StatusBadge>
-                    <DaySlotCount>
-                      {isPast
-                        ? "Geçmiş tarih"
-                        : day.status === "unavailable"
-                          ? "Seçime kapalı"
-                          : `${freeSlotCount} müsait aralık`}
-                    </DaySlotCount>
-                  </DayButton>
-                );
-              })}
-            </WeekGrid>
+                  return (
+                    <DayButton
+                      key={day.dateValue}
+                      ref={isSelected ? selectedDayButtonRef : null}
+                      type="button"
+                      disabled={isPast || isClosed}
+                      $disabled={isPast || isClosed}
+                      $selected={isSelected}
+                      aria-pressed={isSelected}
+                      aria-label={`${day.fullDate}, ${dayStatusText}, ${
+                        isPast
+                          ? "geçmiş tarih"
+                          : day.status === "unavailable"
+                            ? "seçime kapalı"
+                            : `${freeSlotCount} müsait aralık`
+                      }`}
+                      onClick={() => handleDateSelect(day.dateValue)}>
+                      <DayName>{day.dayName}</DayName>
+                      <DayDate>{day.dateLabel}</DayDate>
+                      <StatusBadge $status={day.status}>
+                        {getStatusIcon(day.status)}
+                        {dayStatusText}
+                      </StatusBadge>
+                      <DaySlotCount>
+                        {isPast
+                          ? "Geçmiş tarih"
+                          : day.status === "unavailable"
+                            ? "Seçime kapalı"
+                            : `${freeSlotCount} müsait aralık`}
+                      </DaySlotCount>
+                    </DayButton>
+                  );
+                })}
+              </WeekGrid>
+            </ScrollWrapper>
 
             <SlotPanel>
               <div>
@@ -2130,20 +2185,28 @@ function CustomerBooking() {
               <Heading as="h2">İletişim seçenekleri</Heading>
               <ChannelGrid>
                 <ChannelLink
+                  href={quickWhatsappUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  $color="var(--color-channel-whatsapp)">
+                  <FaWhatsapp />
+                  Doğrudan Soru Sor / Fotoğraf Gönder
+                </ChannelLink>
+                <ChannelLink
                   href={canSend ? whatsappUrl : undefined}
                   target="_blank"
                   rel="noreferrer"
-                  $color="var(--color-channel-whatsapp)"
+                  $color="var(--color-brand-600)"
                   $disabled={!canSend}>
                   <HiOutlinePhone />
-                  WhatsApp ile yaz
+                  {"Seçili Randevu ile WhatsApp'tan Yaz"}
                 </ChannelLink>
                 <ChannelLink
                   href={canSend ? mailUrl : undefined}
-                  $color="var(--color-brand-600)"
+                  $color="var(--color-brand-700)"
                   $disabled={!canSend}>
                   <HiOutlineEnvelope />
-                  E-posta gönder
+                  Seçili Randevu ile E-posta Gönder
                 </ChannelLink>
               </ChannelGrid>
 
@@ -2242,21 +2305,13 @@ function CustomerBooking() {
           </LocationInfo>
 
           <MapBox>
-            <MapPin>
-              <PinIcon>
-                <HiOutlineMapPin />
-              </PinIcon>
-              <PinCard>
-                <CardTitle>Welding Expert Atölye</CardTitle>
-                <CardText>{businessAddress}</CardText>
-              </PinCard>
-            </MapPin>
-            <MapOpenLink
-              href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
-              target="_blank"
-              rel="noreferrer">
-              Google Maps üzerinde aç
-            </MapOpenLink>
+            <MapIframe
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(businessAddress)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Welding Expert Atölye Konumu"
+            />
           </MapBox>
         </LocationSection>
 
