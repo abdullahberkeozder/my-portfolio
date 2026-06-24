@@ -1,7 +1,15 @@
 import { render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
-
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
+
+vi.mock("./services/apiAuth", () => ({
+  getAdminProfile: vi.fn(),
+  getCurrentUser: vi.fn(),
+  login: vi.fn(),
+  logout: vi.fn(),
+  signup: vi.fn(),
+}));
+
 
 describe("lazy application routes", () => {
   beforeEach(() => {
