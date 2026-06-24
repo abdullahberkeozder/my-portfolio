@@ -75,7 +75,7 @@ const serviceOverview = [
     text: "Apartman, balkon, bahçe ve iş yeri korkuluklarında kaynak onarımı, sağlamlaştırma ve parça değişimi.",
     serviceType: "Kapı / korkuluk tamiri",
     points: ["Yerinde kontrol", "Kaynak onarımı", "Sağlamlık kontrolü"],
-    imageUrl: "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&w=600&q=80",
+    imageUrl: "/images/railing_repair.png",
     priceTagline: "Başlangıç: 1.200 TL",
   },
   {
@@ -83,7 +83,7 @@ const serviceOverview = [
     text: "Ölçüye göre masa ayağı, raf taşıyıcı, metal çerçeve ve atölyeye özel parça imalatı.",
     serviceType: "Özel metal imalat",
     points: ["Ölçü alma", "Malzeme seçimi", "Temiz teslim"],
-    imageUrl: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80",
+    imageUrl: "/images/custom_metal.png",
     priceTagline: "Başlangıç: 1.800 TL",
   },
   {
@@ -91,7 +91,7 @@ const serviceOverview = [
     text: "Kopan, çatlayan veya gevşeyen metal parçalarda pratik ve dayanıklı kaynak uygulamaları.",
     serviceType: "Menteşe ve kaynak onarımı",
     points: ["Hızlı tespit", "Parça sabitleme", "Kullanım testi"],
-    imageUrl: "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=600&q=80",
+    imageUrl: "/images/hinge_repair.png",
     priceTagline: "Başlangıç: 750 TL",
   },
   {
@@ -99,7 +99,7 @@ const serviceOverview = [
     text: "İşin kapsamı, süresi ve malzeme ihtiyacı netleştirilir; uygun tarih için randevu planlanır.",
     serviceType: "Yerinde keşif ve teklif",
     points: ["Fotoğrafla ön bilgi", "Net zaman planlama", "Teklif paylaşımı"],
-    imageUrl: "https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?auto=format&fit=crop&w=600&q=80",
+    imageUrl: "/images/estimate.png",
     priceTagline: "Ücretsiz Keşif",
   },
 ];
@@ -1986,7 +1986,7 @@ function CustomerBooking() {
       <Shell>
         <PublicHeader>
           <HeroImage
-            src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1600&q=80"
+            src="/images/hero.png"
             alt="Umut Usta'nın düzenli atölyesindeki aletler ve çalışma tezgahı"
             fetchpriority="high"
           />
