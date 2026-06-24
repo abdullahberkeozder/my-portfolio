@@ -36,6 +36,7 @@ The Welding Expert App is a React and Supabase application for a local welding a
 | Data fetching | TanStack React Query |
 | Styling | Styled Components |
 | Forms | React Hook Form, controlled form state |
+| Testing | Vitest, Testing Library, jsdom |
 | Notifications | React Hot Toast |
 | Backend | Supabase Auth, PostgreSQL, RLS |
 | Documentation | SQL schema, deployment notes, research review |
@@ -113,7 +114,15 @@ npm run dev
 npm run build
 npm run preview
 npm run lint
+npm run test
+npm run test:run
 ```
+
+`npm run test` starts Vitest in watch mode. `npm run test:run` runs the full
+suite once and is used by the GitHub Actions workflow.
+
+The application uses route-level lazy loading. Customer, gallery,
+authentication, and admin pages are emitted as separate production chunks.
 
 ## Deployment
 
@@ -144,4 +153,4 @@ See [PROJECT_RESEARCH_REVIEW.md](./PROJECT_RESEARCH_REVIEW.md) for product, UX, 
 - Add Supabase Storage for portfolio images
 - Add LocalBusiness JSON-LD and page-level SEO metadata
 - Add conflict protection for duplicate appointment slots
-- Add route-level code splitting
+- Expand integration coverage for admin booking and availability workflows

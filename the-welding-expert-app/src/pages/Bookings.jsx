@@ -240,8 +240,8 @@ const StatusBadge = styled.span`
   ${(props) =>
     props.$tone === "amber" &&
     css`
-      color: #92400e;
-      background: #fef3c7;
+      color: var(--color-status-warning-text);
+      background: var(--color-status-warning-bg);
     `}
 
   ${(props) =>
@@ -350,7 +350,7 @@ const SmallButton = styled.button`
 const DangerButton = styled(SmallButton)`
   color: var(--color-red-700);
   border-color: var(--color-red-100);
-  background: #fff7f7;
+  background: var(--color-status-danger-bg);
 `;
 
 const EmptyState = styled.div`

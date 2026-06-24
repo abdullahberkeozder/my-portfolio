@@ -24,11 +24,19 @@ const sizes = {
 
 const variations = {
   primary: css`
-    color: var(--color-brand-50);
-    background-color: var(--color-brand-600);
+    color: var(--color-grey-0);
+    background-color: var(--color-selection);
 
     &:hover {
-      background-color: var(--color-brand-700);
+      background-color: var(--color-selection-strong);
+    }
+  `,
+  cta: css`
+    color: var(--color-surface-dark);
+    background-color: var(--color-action-primary);
+
+    &:hover {
+      background-color: var(--color-action-primary-hover);
     }
   `,
   secondary: css`
@@ -57,12 +65,12 @@ const variations = {
     }
   `,
   ghost: css`
-    color: var(--color-brand-700);
+    color: var(--color-selection-strong);
     background-color: transparent;
     box-shadow: none;
 
     &:hover {
-      background-color: var(--color-brand-50);
+      background-color: var(--color-selection-soft);
     }
   `,
 };
@@ -94,7 +102,7 @@ const StyledButton = styled.button`
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-brand-600);
+    outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
   }
 

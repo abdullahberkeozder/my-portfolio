@@ -454,8 +454,8 @@ const RequestTitle = styled.h3`
 
 const RequestStatus = styled.span`
   white-space: nowrap;
-  color: var(--color-indigo-700);
-  background: var(--color-indigo-100);
+  color: var(--color-selection-strong);
+  background: var(--color-selection-soft);
   border-radius: 999px;
   padding: 0.3rem 0.8rem;
   font-size: 1.1rem;
