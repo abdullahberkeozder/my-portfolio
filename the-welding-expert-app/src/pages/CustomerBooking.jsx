@@ -75,24 +75,32 @@ const serviceOverview = [
     text: "Apartman, balkon, bahçe ve iş yeri korkuluklarında kaynak onarımı, sağlamlaştırma ve parça değişimi.",
     serviceType: "Kapı / korkuluk tamiri",
     points: ["Yerinde kontrol", "Kaynak onarımı", "Sağlamlık kontrolü"],
+    imageUrl: "https://images.unsplash.com/photo-1579758682665-53a1a614eea6?q=80&w=600&auto=format&fit=crop",
+    priceTagline: "Başlangıç: 1.200 TL",
   },
   {
     title: "Özel metal imalat",
     text: "Ölçüye göre masa ayağı, raf taşıyıcı, metal çerçeve ve atölyeye özel parça imalatı.",
     serviceType: "Özel metal imalat",
     points: ["Ölçü alma", "Malzeme seçimi", "Temiz teslim"],
+    imageUrl: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=80&w=600&auto=format&fit=crop",
+    priceTagline: "Başlangıç: 1.800 TL",
   },
   {
     title: "Menteşe ve kaynak onarımı",
     text: "Kopan, çatlayan veya gevşeyen metal parçalarda pratik ve dayanıklı kaynak uygulamaları.",
     serviceType: "Menteşe ve kaynak onarımı",
     points: ["Hızlı tespit", "Parça sabitleme", "Kullanım testi"],
+    imageUrl: "https://images.unsplash.com/photo-1535813547-99c456a41d4a?q=80&w=600&auto=format&fit=crop",
+    priceTagline: "Başlangıç: 750 TL",
   },
   {
     title: "Yerinde keşif ve teklif",
     text: "İşin kapsamı, süresi ve malzeme ihtiyacı netleştirilir; uygun tarih için randevu planlanır.",
     serviceType: "Yerinde keşif ve teklif",
     points: ["Fotoğrafla ön bilgi", "Net zaman planlama", "Teklif paylaşımı"],
+    imageUrl: "https://images.unsplash.com/photo-1581094288338-2314dddb7ecc?q=80&w=600&auto=format&fit=crop",
+    priceTagline: "Ücretsiz Keşif",
   },
 ];
 
@@ -658,59 +666,69 @@ const ServicesGrid = styled.div`
 `;
 
 const ServiceCard = styled.button`
-  min-height: 24rem;
-  border: 1px solid
+  display: flex;
+  flex-direction: column;
+  border: 2px solid
     ${(props) =>
-      props.$active ? "var(--color-selection)" : "var(--color-grey-100)"};
+      props.$active ? "var(--color-action-primary)" : "transparent"};
   border-radius: var(--border-radius-md);
-  padding: 1.8rem;
-  display: grid;
-  gap: 1.4rem;
-  align-content: start;
+  overflow: hidden;
   text-align: left;
-  background: ${(props) =>
-    props.$active ? "var(--color-selection-soft)" : "var(--color-grey-0)"};
+  background: var(--color-grey-0);
   box-shadow: ${(props) =>
-    props.$active
-      ? "inset 4px 0 0 var(--color-action-primary), var(--shadow-sm)"
-      : "var(--shadow-sm)"};
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    props.$active ? "var(--shadow-lg)" : "var(--shadow-md)"};
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  padding: 0;
 
   &:hover {
-    border-color: var(--color-selection);
-    background: var(--color-selection-soft);
-    transform: translateY(-4px);
-    box-shadow: ${(props) =>
-      props.$active
-        ? "inset 4px 0 0 var(--color-action-primary), var(--shadow-md)"
-        : "var(--shadow-md)"};
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: ${(props) =>
+      props.$active ? "var(--color-action-primary)" : "var(--color-brand-200)"};
   }
 
   &:active {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
   }
 
   @media (max-width: 640px) {
-    min-height: 29rem;
-    padding: 1.6rem;
     scroll-snap-align: start;
   }
 `;
 
-const ServiceIcon = styled.span`
-  width: 4.4rem;
-  height: 4.4rem;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-accent-400);
-  background: var(--color-surface-dark);
+const CardImageContainer = styled.div`
+  width: 100%;
+  height: 15rem;
+  overflow: hidden;
+  position: relative;
+  background: var(--color-grey-100);
+`;
 
-  & svg {
-    width: 2.2rem;
-    height: 2.2rem;
+const CardImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+
+  ${ServiceCard}:hover & {
+    transform: scale(1.06);
   }
+`;
+
+const CardContent = styled.div`
+  padding: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+`;
+
+const CardPrice = styled.span`
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-accent-500);
+  margin-top: 0.2rem;
 `;
 
 const CardTitle = styled.h3`
@@ -2013,19 +2031,22 @@ function CustomerBooking() {
                   type="button"
                   $active={selectedService === service.serviceType}
                   onClick={() => setSelectedService(service.serviceType)}>
-                  <ServiceIcon>
-                    <HiOutlineWrenchScrewdriver />
-                  </ServiceIcon>
-                  <CardTitle>{service.title}</CardTitle>
-                  <CardText>{service.text}</CardText>
-                  <MiniList>
-                    {service.points.map((point) => (
-                      <MiniItem key={point}>
-                        <HiOutlineCheckCircle />
-                        <span>{point}</span>
-                      </MiniItem>
-                    ))}
-                  </MiniList>
+                  <CardImageContainer>
+                    <CardImage src={service.imageUrl} alt={service.title} />
+                  </CardImageContainer>
+                  <CardContent>
+                    <CardTitle>{service.title}</CardTitle>
+                    <CardPrice>{service.priceTagline}</CardPrice>
+                    <CardText>{service.text}</CardText>
+                    <MiniList>
+                      {service.points.map((point) => (
+                        <MiniItem key={point}>
+                          <HiOutlineCheckCircle />
+                          <span>{point}</span>
+                        </MiniItem>
+                      ))}
+                    </MiniList>
+                  </CardContent>
                 </ServiceCard>
               ))}
             </ServicesGrid>
