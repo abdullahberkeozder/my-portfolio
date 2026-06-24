@@ -16,10 +16,8 @@ const workExamples = [
     location: "Yenimahalle / Ankara",
     beforeLabel: "Eski Durum",
     afterLabel: "Yeni Durum",
-    beforeImage:
-      "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?auto=format&fit=crop&w=900&q=80",
-    afterImage:
-      "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&w=900&q=80",
+    beforeImage: "/images/railing_before.png",
+    afterImage: "/images/railing_after.png",
     text: "Gevşeyen ve paslanan bağlantı noktalarında kaynak onarımı ve sağlamlaştırma yapıldı.",
     points: ["Yerinde tespit", "Kaynak onarımı", "Boyama ve teslim"],
   },
@@ -29,10 +27,8 @@ const workExamples = [
     location: "Ostim / Ankara",
     beforeLabel: "Hazırlık",
     afterLabel: "Teslim",
-    beforeImage:
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=900&q=80",
-    afterImage:
-      "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=900&q=80",
+    beforeImage: "/images/shelf_before.png",
+    afterImage: "/images/shelf_after.png",
     text: "Ölçüye göre profil demir kesildi, kaynakla çerçeve haline getirilip raflar monte edildi.",
     points: ["Ölçü alma", "Hassas montaj", "Fırın boya işlemi"],
   },
@@ -42,10 +38,8 @@ const workExamples = [
     location: "Çankaya / Ankara",
     beforeLabel: "Arıza",
     afterLabel: "Onarım",
-    beforeImage:
-      "https://images.unsplash.com/photo-1509644851169-2acf02ef25b2?auto=format&fit=crop&w=900&q=80",
-    afterImage:
-      "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=900&q=80",
+    beforeImage: "/images/hinge_before.png",
+    afterImage: "/images/hinge_after.png",
     text: "Kopan eski menteşe sökülüp temizlendi; yeni menteşe kaynaklanarak kapı gövdesi dengelendi.",
     points: ["Menteşe hizalama", "Sağlam kaynak", "Kilit mekanizma ayarı"],
   },
@@ -54,23 +48,19 @@ const workExamples = [
 const galleryItems = [
   {
     title: "Yerinde bahçe kapısı tamiri",
-    image:
-      "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&w=900&q=80",
+    image: "/images/railing_after.png",
   },
   {
     title: "Metal raf ve montaj işleri",
-    image:
-      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=900&q=80",
+    image: "/images/shelf_after.png",
   },
   {
     title: "Menteşe ve kilit onarımları",
-    image:
-      "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=900&q=80",
+    image: "/images/hinge_after.png",
   },
   {
     title: "Hassas ölçüm ve keşif",
-    image:
-      "https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?auto=format&fit=crop&w=900&q=80",
+    image: "/images/estimate.png",
   },
 ];
 
@@ -688,7 +678,7 @@ function Gallery() {
 
         <Hero>
           <HeroImage
-            src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1600&q=80"
+            src="/images/hero.png"
             alt="Umut Usta'nın düzenli atölyesindeki aletler ve çalışma tezgahı"
             fetchpriority="high"
           />
