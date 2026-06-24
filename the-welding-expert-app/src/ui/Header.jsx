@@ -10,6 +10,7 @@ import {
 
 import Button from "./Button";
 import { getAdminProfile, logout } from "../services/apiAuth";
+import { ROLE_LABELS } from "../utils/adminPermissions";
 
 const StyledHeader = styled.header`
   grid-area: header;
@@ -162,6 +163,19 @@ const UserBox = styled.div`
   }
 `;
 
+const RoleBadge = styled.span`
+  border-radius: 999px;
+  padding: 0.5rem 0.8rem;
+  color: var(--color-selection-strong);
+  background: var(--color-selection-soft);
+  font-size: 1.2rem;
+  font-weight: 800;
+
+  @media (max-width: 860px) {
+    display: none;
+  }
+`;
+
 function Header({ isNavigationOpen, onToggleNavigation }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -212,6 +226,9 @@ function Header({ isNavigationOpen, onToggleNavigation }) {
               <HiOutlineUserCircle />
               <span>{admin.profile?.full_name || admin.user.email}</span>
             </UserBox>
+            <RoleBadge>
+              {ROLE_LABELS[admin.profile?.role] || admin.profile?.role}
+            </RoleBadge>
             <Button
               size="small"
               variation="secondary"

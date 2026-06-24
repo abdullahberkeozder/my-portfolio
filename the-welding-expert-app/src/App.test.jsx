@@ -12,7 +12,7 @@ describe("lazy application routes", () => {
     render(<App />);
 
     expect(
-      await screen.findByRole("heading", { name: "Admin girişi" }),
+      await screen.findByRole("heading", { name: "Yönetim paneli girişi" }),
     ).toBeInTheDocument();
   });
 

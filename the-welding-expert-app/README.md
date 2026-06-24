@@ -1,6 +1,6 @@
 # The Welding Expert App
 
-The Welding Expert App is a React and Supabase application for a local welding and metalwork service. It separates the customer-facing booking experience from the admin panel used to review requests and manage availability.
+The Welding Expert App is a React and Supabase application for a local welding and metalwork service. It combines a public, account-free booking experience with a role-based operations panel for owners and team members.
 
 ## Screenshots
 
@@ -22,11 +22,14 @@ The Welding Expert App is a React and Supabase application for a local welding a
 - Two-hour booking slots between 09:00 and 21:00
 - Future date selection for appointment planning
 - WhatsApp, email, and in-system request options
-- Admin dashboard for appointment request review
-- Admin availability management for days and slots
+- Live operations dashboard backed by Supabase data
+- Appointment request and availability management
+- Owner-controlled team accounts, roles, and access states
+- Role-aware navigation, protected routes, and database policies
+- Atomic appointment confirmation and slot closing
 - Gallery page for work examples, before/after content, and testimonials
 - Public business information, service overview, FAQ, and address section
-- Supabase schema with RLS policies and admin profile approval flow
+- Supabase schema with RLS policies and an account approval flow
 
 ## Tech Stack
 
@@ -47,11 +50,12 @@ The Welding Expert App is a React and Supabase application for a local welding a
 | --- | --- |
 | `/appointment` | Public customer booking page |
 | `/gallery` | Work examples, gallery, and references |
-| `/login` | Admin login |
-| `/signup` | Admin signup request |
-| `/admin/dashboard` | Admin overview |
+| `/login` | Team account login |
+| `/signup` | Team access request |
+| `/admin/dashboard` | Role-aware operations overview |
 | `/admin/bookings` | Appointment request management |
 | `/admin/availability` | Weekly availability and slot management |
+| `/admin/users` | Owner-only team and permission management |
 
 Legacy redirects are kept for `/dashboard` and `/bookings`.
 
@@ -85,7 +89,11 @@ Run the schema in:
 
 ```text
 supabase/welding_appointments_schema.sql
+supabase/role_based_access_control.sql
 ```
+
+Run them in this order. The second file migrates the original single-admin
+model to Owner-controlled multi-user access.
 
 The schema creates:
 
@@ -93,19 +101,40 @@ The schema creates:
 - `appointment_availability_slots`
 - `appointment_requests`
 - `admin_profiles`
-- Admin helper function and RLS policies
+- Owner, Admin, Operator, and Technician roles
+- Pending, active, suspended, and rejected account states
+- Role-aware helper functions and RLS policies
 - Initial sample availability data
 
-After an admin signs up, approve the admin profile in Supabase SQL Editor:
+The role migration promotes `abdullahberkeozder@gmail.com` to the initial
+Owner when that Auth user already exists. Change this bootstrap email in the
+migration before running it for another business. Verify the result in SQL
+Editor:
 
 ```sql
-update public.admin_profiles
-set role = 'admin', is_active = true
-where user_id = (
-  select id from auth.users
-  where email = 'admin@example.com'
-);
+select full_name, email, role, status
+from public.admin_profiles
+order by created_at;
 ```
+
+New registrations enter the system as pending team accounts. The Owner can
+approve them, assign roles, suspend access, reactivate accounts, or remove
+them from the team from **Admin > Ekip ve yetkiler**. Customers do not need an
+account.
+
+## Roles and Access
+
+| Role | Dashboard | Appointments | Availability | Team access |
+| --- | --- | --- | --- | --- |
+| Owner | Yes | Manage | Manage | Full control |
+| Admin | Yes | Manage | Manage | No |
+| Operator | Yes | Manage | Manage | No |
+| Technician | Yes | Assigned-work foundation | No | No |
+
+Account state is stored separately from role: `pending`, `active`,
+`suspended`, or `rejected`. Only an active Owner can approve accounts, assign
+roles, suspend access, reactivate members, or remove them from the team. The
+database prevents the final active Owner from losing access.
 
 ## Available Scripts
 
@@ -144,13 +173,16 @@ See [PROJECT_RESEARCH_REVIEW.md](./PROJECT_RESEARCH_REVIEW.md) for product, UX, 
 - `.env.local` is ignored
 - `node_modules`, `dist`, `build`, screenshots, and logs are ignored
 - RLS is enabled for public Supabase tables
-- Public users can only read visible availability and create appointment requests
-- Admin-only operations require an active admin profile
+- Public users can only read visible availability and submit requests through the secured RPC
+- Operational access requires an active team profile and an allowed role
+- Team account changes are performed through an Owner-only database function
+- The final active Owner cannot be suspended, rejected, or demoted
+- Customers do not need an Auth account
 
 ## Future Improvements
 
 - Move gallery and testimonials to Supabase tables
 - Add Supabase Storage for portfolio images
 - Add LocalBusiness JSON-LD and page-level SEO metadata
-- Add conflict protection for duplicate appointment slots
+- Add a dedicated assigned-work view for Technician accounts
 - Expand integration coverage for admin booking and availability workflows

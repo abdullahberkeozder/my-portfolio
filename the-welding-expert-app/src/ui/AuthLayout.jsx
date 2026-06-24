@@ -201,14 +201,14 @@ function AuthLayout({ eyebrow, title, description, children }) {
             </BrandMark>
             <div>
               <BrandName>Welding Expert</BrandName>
-              <BrandCaption>Randevu yönetimi</BrandCaption>
+              <BrandCaption>Ekip ve randevu yönetimi</BrandCaption>
             </div>
           </Brand>
 
           <BrandCopy>
             <BrandTitle>Günlük iş akışınız tek ekranda</BrandTitle>
             <BrandText>
-              Randevu taleplerini, müsait saatleri ve admin hesaplarını güvenli
+              Randevu taleplerini, müsait saatleri ve ekip hesaplarını güvenli
               yönetim panelinden takip edin.
             </BrandText>
             <BrandList>
@@ -218,14 +218,14 @@ function AuthLayout({ eyebrow, title, description, children }) {
               </BrandItem>
               <BrandItem>
                 <HiOutlineShieldCheck />
-                Onaylı admin erişimi
+                Owner kontrollü ekip erişimi
               </BrandItem>
             </BrandList>
           </BrandCopy>
 
           <CustomerLink to="/appointment">
             <HiOutlineArrowLeft />
-            Müşteri ekranına dön
+            Randevu sayfasına dön
           </CustomerLink>
         </BrandPanel>
 

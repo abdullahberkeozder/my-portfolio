@@ -1,4 +1,5 @@
 import supabase from "./supabase";
+import { isActiveTeamMember } from "../utils/adminPermissions";
 
 const AUTH_ERROR_MESSAGES = [
   ["invalid login credentials", "E-posta adresi veya şifre hatalı."],
@@ -78,7 +79,9 @@ export async function getAdminProfile() {
 
   const { data, error } = await supabase
     .from("admin_profiles")
-    .select("user_id, full_name, email, role, is_active")
+    .select(
+      "user_id, full_name, email, role, status, approved_by, approved_at, last_login_at",
+    )
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -89,7 +92,8 @@ export async function getAdminProfile() {
   return {
     user,
     profile: data,
-    isAdmin: data?.role === "admin" && data?.is_active,
+    isAuthorized: isActiveTeamMember(data),
+    isOwner: data?.role === "owner" && data?.status === "active",
   };
 }
 

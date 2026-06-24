@@ -47,7 +47,7 @@ function LoginForm() {
         ? `${requestedLocation.pathname}${requestedLocation.search || ""}${
             requestedLocation.hash || ""
           }`
-        : "/admin/bookings";
+        : "/admin/dashboard";
 
       navigate(destination, { replace: true });
     },
@@ -67,7 +67,7 @@ function LoginForm() {
           type="email"
           id="email"
           autoComplete="username"
-          placeholder="admin@ornek.com"
+          placeholder="ekip@ornek.com"
           value={email}
           required
           onChange={(event) => setEmail(event.target.value)}
@@ -89,8 +89,8 @@ function LoginForm() {
         </Button>
       </FormRow>
       <LinkRow>
-        Hesabınız yok mu?
-        <StyledLink to="/signup">Admin hesabı oluştur</StyledLink>
+        Ekip hesabınız yok mu?
+        <StyledLink to="/signup">Erişim isteyin</StyledLink>
       </LinkRow>
     </Form>
   );

@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 
 import GlobalStyles from "./styles/GlobalStyles";
 import RouteFallback from "./ui/RouteFallback";
+import { ROUTE_ROLES } from "./utils/adminPermissions";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Bookings = lazy(() => import("./pages/Bookings"));
@@ -40,9 +41,16 @@ function AppRoutes() {
           <Route path="admin" element={<AppLayout />}>
             <Route index element={<Navigate replace to="dashboard" />} />
             <Route path="dashboard" element={<Dashboard />} />
-            <Route path="bookings" element={<Bookings />} />
-            <Route path="availability" element={<Availability />} />
-            <Route path="users" element={<AdminUsers />} />
+            <Route element={<ProtectedRoute allowedRoles={ROUTE_ROLES.bookings} />}>
+              <Route path="bookings" element={<Bookings />} />
+            </Route>
+            <Route
+              element={<ProtectedRoute allowedRoles={ROUTE_ROLES.availability} />}>
+              <Route path="availability" element={<Availability />} />
+            </Route>
+            <Route element={<ProtectedRoute allowedRoles={ROUTE_ROLES.users} />}>
+              <Route path="users" element={<AdminUsers />} />
+            </Route>
           </Route>
         </Route>
 
