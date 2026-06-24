@@ -308,16 +308,18 @@ const Brand = styled.div`
 const BrandMark = styled.div`
   width: 4.8rem;
   height: 4.8rem;
-  border-radius: 50%;
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-accent-400);
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--color-grey-0);
+  border: 1px solid var(--color-grey-200);
 
-  & svg {
-    width: 2.6rem;
-    height: 2.6rem;
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 `;
 
@@ -446,7 +448,7 @@ const HeaderLink = styled.a`
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     background: ${(props) => {
       if (props.$whatsapp) return "#15803d";
       return props.$secondary
@@ -460,10 +462,10 @@ const HeaderLink = styled.a`
         : "var(--color-action-primary-hover)";
     }};
     box-shadow: ${(props) => {
-      if (props.$whatsapp) return "0 4px 14px rgba(22, 163, 74, 0.4)";
+      if (props.$whatsapp) return "0 2px 6px rgba(22, 163, 74, 0.15)";
       return props.$secondary
         ? "var(--shadow-sm)"
-        : "0 4px 14px rgba(13, 128, 80, 0.4)";
+        : "0 2px 6px rgba(13, 128, 80, 0.15)";
     }};
   }
 
@@ -682,8 +684,8 @@ const ServiceCard = styled.button`
   padding: 0;
 
   &:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
     border-color: ${(props) =>
       props.$active ? "var(--color-action-primary)" : "var(--color-brand-200)"};
   }
@@ -801,8 +803,8 @@ const ProcessCard = styled.article`
   &:hover {
     border-color: var(--color-brand-200);
     background: var(--color-grey-0);
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
   }
 
   @media (max-width: 560px) {
@@ -1010,13 +1012,13 @@ const DayButton = styled.button`
   &:hover {
     border-color: ${(props) =>
       props.$disabled ? "var(--color-grey-100)" : "var(--color-selection)"};
-    transform: ${(props) => (props.$disabled ? "none" : "translateY(-4px)")};
+    transform: ${(props) => (props.$disabled ? "none" : "translateY(-2px)")};
     box-shadow: ${(props) =>
       props.$disabled
         ? "none"
         : props.$selected
-          ? "inset 0 4px 0 var(--color-action-primary), var(--shadow-md)"
-          : "var(--shadow-md)"};
+          ? "inset 0 4px 0 var(--color-action-primary), var(--shadow-sm)"
+          : "var(--shadow-sm)"};
   }
 
   &:active {
@@ -1144,7 +1146,7 @@ const SlotButton = styled.button`
       props.$active
         ? "var(--color-surface-dark)"
         : "var(--color-selection-soft)"};
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: ${(props) =>
       props.$active
         ? "inset 0 -3px 0 var(--color-action-primary), var(--shadow-sm)"
@@ -1209,8 +1211,8 @@ const SummaryItem = styled.div`
 
   &:hover {
     border-color: var(--color-brand-200);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
   }
 `;
 
@@ -1350,10 +1352,10 @@ const SelectionServiceCard = styled.button`
   cursor: pointer;
 
   &:hover {
-    border-color: var(--color-brand-500);
-    background: var(--color-brand-50);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    border-color: ${(props) => (props.$active ? "var(--color-action-primary)" : "var(--color-grey-300)")};
+    background: ${(props) => (props.$active ? "var(--color-brand-50)" : "var(--color-grey-50)")};
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
   }
 `;
 
@@ -1991,7 +1993,7 @@ function CustomerBooking() {
           <div>
             <Brand>
               <BrandMark>
-                <HiOutlineWrenchScrewdriver />
+                <img src="/logo.png" alt="Umut Usta Logo" />
               </BrandMark>
               <div>
                 <strong>Umut Usta</strong>

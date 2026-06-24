@@ -275,7 +275,7 @@ const ActionLink = styled(Link)`
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     background: ${(props) =>
       props.$secondary
         ? "var(--color-grey-50)"
@@ -287,7 +287,7 @@ const ActionLink = styled(Link)`
     box-shadow: ${(props) =>
       props.$secondary
         ? "var(--shadow-sm)"
-        : "0 4px 14px rgba(13, 128, 80, 0.4)"};
+        : "0 2px 6px rgba(13, 128, 80, 0.15)"};
   }
 
   & svg {
@@ -411,8 +411,8 @@ const WorkCard = styled.article`
 
   &:hover {
     border-color: var(--color-brand-200);
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
   }
 
   @media (max-width: 640px) {
@@ -624,8 +624,8 @@ const TestimonialCard = styled.article`
 
   &:hover {
     border-color: var(--color-brand-200);
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
   }
 
   @media (max-width: 640px) {
