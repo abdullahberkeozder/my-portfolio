@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import appNavItems from "./appNavItems";
@@ -21,6 +22,8 @@ const NavList = styled.ul`
   gap: 0.6rem;
   overflow-x: auto;
   padding-bottom: 0.2rem;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-inline: contain;
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
@@ -34,12 +37,13 @@ const NavItem = styled.li`
 
   @media (max-width: 860px) {
     flex: 0 0 auto;
+    scroll-snap-align: center;
   }
 `;
 
 const NavLink = styled.a`
   width: 100%;
-  min-height: 4.2rem;
+  min-height: 4.4rem;
   border-radius: var(--border-radius-sm);
   padding: 0.9rem 1rem;
   display: inline-flex;
@@ -70,16 +74,39 @@ const NavLink = styled.a`
   & svg {
     width: 1.8rem;
     height: 1.8rem;
-    color: var(--color-brand-600);
+    color: var(--color-selection);
   }
 `;
 
 function AppNav() {
   const activeId = useActiveSection(appNavItems);
+  const navListRef = useRef(null);
+  const activeLinkRef = useRef(null);
+
+  useEffect(() => {
+    if (!window.matchMedia("(max-width: 860px)").matches) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    const navList = navListRef.current;
+    const activeLink = activeLinkRef.current;
+
+    if (!navList || !activeLink) return;
+
+    const targetScrollLeft =
+      activeLink.offsetLeft - (navList.clientWidth - activeLink.offsetWidth) / 2;
+
+    navList.scrollTo({
+      left: targetScrollLeft,
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    });
+  }, [activeId]);
 
   return (
-    <NavShell aria-label="Sayfa bolumleri">
-      <NavList>
+    <NavShell aria-label="Sayfa bölümleri">
+      <NavList ref={navListRef}>
         {appNavItems.map((item) => {
           const sectionId = getSectionId(item);
           const isActive = sectionId === activeId;
@@ -88,6 +115,7 @@ function AppNav() {
             <NavItem key={item.href}>
               <NavLink
                 href={item.href}
+                ref={isActive ? activeLinkRef : null}
                 $active={isActive}
                 aria-current={isActive ? "location" : undefined}>
                 <item.Icon />

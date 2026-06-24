@@ -1,26 +1,14 @@
-import styled from "styled-components";
 import LoginForm from "../features/authentication/LoginForm";
-import Heading from "../ui/Heading";
-import Logo from "../ui/Logo";
-
-const LoginLayout = styled.main`
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: minmax(32rem, 48rem);
-  align-content: center;
-  justify-content: center;
-  gap: 3.2rem;
-  background-color: var(--color-grey-50);
-  padding: 2.4rem;
-`;
+import AuthLayout from "../ui/AuthLayout";
 
 function Login() {
   return (
-      <LoginLayout>
-        <Logo />
-      <Heading as="h1">Admin girişi</Heading>
+    <AuthLayout
+      eyebrow="Yönetim paneli"
+      title="Admin girişi"
+      description="Randevuları ve müsaitlik takvimini yönetmek için hesabınızla giriş yapın.">
       <LoginForm />
-    </LoginLayout>
+    </AuthLayout>
   );
 }
 

@@ -139,9 +139,9 @@ const Page = styled.div`
 const Hero = styled.section`
   background: linear-gradient(
     135deg,
-    #111827 0%,
-    #374151 55%,
-    #92400e 100%
+    var(--color-surface-dark) 0%,
+    var(--color-surface-steel) 55%,
+    var(--color-rust-700) 100%
   );
   color: var(--color-grey-0);
   border-radius: var(--border-radius-md);
@@ -167,7 +167,7 @@ const HeroCopy = styled.div`
 `;
 
 const Eyebrow = styled.p`
-  color: #facc15;
+  color: var(--color-accent-400);
   font-size: 1.3rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -186,7 +186,7 @@ const HeroTitle = styled.h1`
 
 const HeroText = styled.p`
   max-width: 62rem;
-  color: #e5e7eb;
+  color: var(--color-grey-200);
   font-size: 1.7rem;
 `;
 
@@ -207,16 +207,18 @@ const ActionLink = styled(Link)`
   font-size: 1.4rem;
   font-weight: 700;
   color: ${(props) =>
-    props.$secondary ? "#f9fafb" : "#111827"};
+    props.$secondary
+      ? "var(--color-text-inverse)"
+      : "var(--color-surface-dark)"};
   background: ${(props) =>
     props.$secondary
       ? "rgba(255, 255, 255, 0.12)"
-      : "#facc15"};
+      : "var(--color-accent-400)"};
   border: 1px solid
     ${(props) =>
       props.$secondary
         ? "rgba(255, 255, 255, 0.24)"
-        : "#facc15"};
+        : "var(--color-accent-400)"};
 
   & svg {
     width: 2rem;
@@ -244,14 +246,14 @@ const HeroPanelItem = styled.div`
     height: 4.4rem;
     padding: 1rem;
     border-radius: 50%;
-    color: #facc15;
+    color: var(--color-accent-400);
     background: rgba(255, 255, 255, 0.12);
   }
 `;
 
 const PanelLabel = styled.span`
   display: block;
-  color: #d1d5db;
+  color: var(--color-text-inverse-muted);
   font-size: 1.2rem;
   font-weight: 600;
   text-transform: uppercase;

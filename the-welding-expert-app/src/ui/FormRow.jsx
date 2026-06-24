@@ -2,47 +2,27 @@ import styled from "styled-components";
 
 const StyledFormRow = styled.div`
   display: grid;
-  align-items: center;
-  grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
-  gap: 1.6rem 2rem;
+  gap: 0.7rem;
 
-  padding: 1.2rem 0;
+  &:has(> button) {
+    margin-top: 0.4rem;
 
-  &:first-child {
-    padding-top: 0;
-  }
-
-  &:last-child {
-    padding-bottom: 0;
-  }
-
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--color-grey-100);
-  }
-
-  &:has(button) {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1.2rem;
-  }
-
-  @media (max-width: 560px) {
-    grid-template-columns: 1fr;
+    & > button {
+      width: 100%;
+    }
   }
 `;
 
 const Label = styled.label`
-  font-weight: 500;
+  color: var(--color-grey-700);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
 `;
 
 const Error = styled.span`
-  grid-column: 2 / -1;
-  font-size: 1.4rem;
+  font-size: var(--font-size-sm);
   color: var(--color-red-700);
 
-  @media (max-width: 560px) {
-    grid-column: 1;
-  }
 `;
 
 function FormRow({ label, error, children }) {

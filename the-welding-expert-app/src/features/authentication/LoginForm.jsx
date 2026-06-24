@@ -8,17 +8,25 @@ import Button from "../../ui/Button";
 import Form from "../../ui/Form";
 import Input from "../../ui/Input";
 import FormRow from "../../ui/FormRow";
+import PasswordInput from "../../ui/PasswordInput";
 import { login } from "../../services/apiAuth";
 
-const LinkRow = styled.div`
+const LinkRow = styled.p`
   display: flex;
-  justify-content: flex-end;
-  font-size: 1.4rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  color: var(--color-grey-500);
+  font-size: var(--font-size-sm);
 `;
 
 const StyledLink = styled(Link)`
   color: var(--color-brand-700);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
+
+  &:hover {
+    color: var(--color-brand-800);
+  }
 `;
 
 function LoginForm() {
@@ -43,16 +51,12 @@ function LoginForm() {
 
       navigate(destination, { replace: true });
     },
-    onError: (error) => {
-      toast.error(error.message);
-    },
+    onError: (error) => toast.error(error.message),
   });
 
   function handleSubmit(event) {
     event.preventDefault();
-
     if (!email || !password) return;
-
     mutate({ email, password });
   }
 
@@ -62,30 +66,31 @@ function LoginForm() {
         <Input
           type="email"
           id="email"
-          // This makes this form better for password managers
           autoComplete="username"
+          placeholder="admin@ornek.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          required
+          onChange={(event) => setEmail(event.target.value)}
         />
       </FormRow>
       <FormRow label="Şifre">
-        <Input
-          type="password"
+        <PasswordInput
           id="password"
           autoComplete="current-password"
+          placeholder="Şifrenizi girin"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          required
+          onChange={(event) => setPassword(event.target.value)}
         />
       </FormRow>
       <FormRow>
-        <Button
-          size="large"
-          disabled={isLoading}>
+        <Button size="large" disabled={isLoading}>
           {isLoading ? "Giriş yapılıyor..." : "Giriş yap"}
         </Button>
       </FormRow>
       <LinkRow>
-        <StyledLink to="/signup">Yeni admin hesabı oluştur</StyledLink>
+        Hesabınız yok mu?
+        <StyledLink to="/signup">Admin hesabı oluştur</StyledLink>
       </LinkRow>
     </Form>
   );

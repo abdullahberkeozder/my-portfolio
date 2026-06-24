@@ -124,7 +124,7 @@ const TopBar = styled.div`
 `;
 
 const BackLink = styled(Link)`
-  min-height: 4rem;
+  min-height: 4.4rem;
   border: 1px solid var(--color-grey-200);
   border-radius: var(--border-radius-sm);
   padding: 0.9rem 1.2rem;
@@ -133,8 +133,8 @@ const BackLink = styled(Link)`
   gap: 0.8rem;
   color: var(--color-grey-700);
   background: var(--color-grey-0);
-  font-size: 1.4rem;
-  font-weight: 800;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-extrabold);
 
   &:hover {
     color: var(--color-brand-700);
@@ -150,26 +150,32 @@ const BackLink = styled(Link)`
 
 const Eyebrow = styled.p`
   color: var(--color-brand-700);
-  font-size: 1.2rem;
-  font-weight: 800;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-extrabold);
   text-transform: uppercase;
 `;
 
 const Hero = styled.section`
+  position: relative;
   min-height: 38rem;
   border-radius: var(--border-radius-md);
   padding: 3.2rem;
   display: grid;
   align-items: end;
-  color: var(--color-grey-0);
-  background-image:
-    linear-gradient(90deg, rgba(17, 24, 39, 0.88), rgba(17, 24, 39, 0.48)),
-    url("https://images.unsplash.com/photo-1698664683348-f9f35b809821?auto=format&fit=crop&w=1600&q=80"),
-    radial-gradient(circle at 80% 22%, rgba(250, 204, 21, 0.36), transparent 16rem),
-    linear-gradient(135deg, #111827 0%, #4b5563 58%, #92400e 100%);
-  background-position: center;
-  background-size: cover;
+  color: var(--color-text-inverse);
+  background: var(--color-surface-dark);
   overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(17, 24, 39, 0.9),
+      rgba(17, 24, 39, 0.46)
+    );
+  }
 
   @media (max-width: 640px) {
     min-height: 34rem;
@@ -177,26 +183,36 @@ const Hero = styled.section`
   }
 `;
 
+const HeroImage = styled.img`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
 const HeroContent = styled.div`
+  position: relative;
+  z-index: 1;
   max-width: 72rem;
   display: grid;
   gap: 1.2rem;
 `;
 
 const HeroTitle = styled.h1`
-  font-size: 4.2rem;
+  font-size: var(--font-size-display);
   line-height: 1.05;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
 
   @media (max-width: 640px) {
-    font-size: 3rem;
+    font-size: var(--font-size-page-title);
   }
 `;
 
 const HeroText = styled.p`
   max-width: 64rem;
-  color: #e5e7eb;
-  font-size: 1.7rem;
+  color: var(--color-text-inverse-muted);
+  font-size: var(--font-size-md);
 `;
 
 const HeroActions = styled.div`
@@ -207,21 +223,28 @@ const HeroActions = styled.div`
 `;
 
 const ActionLink = styled(Link)`
-  min-height: 4.2rem;
+  min-height: 4.4rem;
   border-radius: var(--border-radius-sm);
   padding: 1rem 1.4rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.8rem;
-  color: ${(props) => (props.$secondary ? "#f9fafb" : "#111827")};
+  color: ${(props) =>
+    props.$secondary
+      ? "var(--color-text-inverse)"
+      : "var(--color-surface-dark)"};
   background: ${(props) =>
-    props.$secondary ? "rgba(255, 255, 255, 0.12)" : "#facc15"};
+    props.$secondary
+      ? "rgba(255, 255, 255, 0.12)"
+      : "var(--color-accent-400)"};
   border: 1px solid
     ${(props) =>
-      props.$secondary ? "rgba(255, 255, 255, 0.24)" : "#facc15"};
-  font-size: 1.4rem;
-  font-weight: 800;
+      props.$secondary
+        ? "rgba(255, 255, 255, 0.24)"
+        : "var(--color-accent-400)"};
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-extrabold);
 
   & svg {
     width: 1.8rem;
@@ -243,7 +266,7 @@ const StatsGrid = styled.div`
   }
 
   @media (max-width: 520px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 `;
 
@@ -252,18 +275,26 @@ const StatCard = styled.div`
   border-radius: var(--border-radius-md);
   padding: 1.6rem;
   background: var(--color-grey-0);
+
+  @media (max-width: 520px) {
+    padding: 1.2rem;
+  }
 `;
 
 const StatValue = styled.strong`
   display: block;
   color: var(--color-grey-900);
-  font-size: 2.4rem;
+  font-size: var(--font-size-xl);
+
+  @media (max-width: 520px) {
+    font-size: var(--font-size-title);
+  }
 `;
 
 const StatLabel = styled.span`
   color: var(--color-grey-500);
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
 `;
 
 const Section = styled.section`
@@ -287,18 +318,18 @@ const SectionHeader = styled.div`
 
 const SectionTitle = styled.h2`
   color: var(--color-grey-900);
-  font-size: 2.8rem;
-  line-height: 1.15;
-  font-weight: 800;
+  font-size: var(--font-size-heading);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-extrabold);
 
   @media (max-width: 640px) {
-    font-size: 2.4rem;
+    font-size: var(--font-size-xl);
   }
 `;
 
 const MutedText = styled.p`
   color: var(--color-grey-500);
-  font-size: 1.4rem;
+  font-size: var(--font-size-body);
 `;
 
 const WorkGrid = styled.div`
@@ -309,6 +340,21 @@ const WorkGrid = styled.div`
   @media (max-width: 1060px) {
     grid-template-columns: 1fr;
   }
+
+  @media (max-width: 640px) {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(28rem, 88%);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline mandatory;
+    scrollbar-width: none;
+    padding-bottom: 0.4rem;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 `;
 
 const WorkCard = styled.article`
@@ -317,6 +363,10 @@ const WorkCard = styled.article`
   overflow: hidden;
   display: grid;
   background: var(--color-grey-50);
+
+  @media (max-width: 640px) {
+    scroll-snap-align: start;
+  }
 `;
 
 const CompareGrid = styled.div`
@@ -325,16 +375,11 @@ const CompareGrid = styled.div`
   min-height: 22rem;
 `;
 
-const CompareImage = styled.div`
+const CompareMedia = styled.figure`
   min-height: 22rem;
   position: relative;
+  overflow: hidden;
   background-color: var(--color-grey-300);
-  background-image:
-    url(${(props) => props.$image}),
-    radial-gradient(circle at 70% 28%, rgba(250, 204, 21, 0.42), transparent 10rem),
-    linear-gradient(135deg, #111827 0%, #6b7280 52%, #92400e 100%);
-  background-position: center;
-  background-size: cover;
 
   &::after {
     content: "";
@@ -342,6 +387,13 @@ const CompareImage = styled.div`
     inset: 0;
     background: linear-gradient(180deg, rgba(17, 24, 39, 0.02), rgba(17, 24, 39, 0.5));
   }
+`;
+
+const MediaImage = styled.img`
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
 `;
 
 const ImageLabel = styled.span`
@@ -353,8 +405,8 @@ const ImageLabel = styled.span`
   padding: 0.5rem 0.8rem;
   color: var(--color-grey-0);
   background: rgba(17, 24, 39, 0.82);
-  font-size: 1.1rem;
-  font-weight: 800;
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-extrabold);
 `;
 
 const WorkBody = styled.div`
@@ -374,20 +426,20 @@ const Pill = styled.span`
   padding: 0.5rem 0.8rem;
   color: var(--color-brand-700);
   background: var(--color-brand-50);
-  font-size: 1.1rem;
-  font-weight: 800;
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-extrabold);
 `;
 
 const CardTitle = styled.h3`
   color: var(--color-grey-900);
-  font-size: 1.8rem;
+  font-size: var(--font-size-lg);
   line-height: 1.25;
   font-weight: 800;
 `;
 
 const CardText = styled.p`
   color: var(--color-grey-600);
-  font-size: 1.4rem;
+  font-size: var(--font-size-body);
   line-height: 1.6;
 `;
 
@@ -401,8 +453,8 @@ const MiniItem = styled.li`
   grid-template-columns: 1.8rem 1fr;
   gap: 0.6rem;
   color: var(--color-grey-700);
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
 
   & svg {
     width: 1.6rem;
@@ -422,22 +474,28 @@ const PhotoGrid = styled.div`
   }
 
   @media (max-width: 560px) {
-    grid-template-columns: 1fr;
-    grid-auto-rows: 22rem;
+    grid-template-columns: none;
+    grid-template-rows: 20rem;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(24rem, 84%);
+    grid-auto-rows: 20rem;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline mandatory;
+    scrollbar-width: none;
+    padding-bottom: 0.4rem;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 `;
 
-const PhotoTile = styled.article`
+const PhotoTile = styled.figure`
   position: relative;
   overflow: hidden;
   border-radius: var(--border-radius-md);
   background-color: var(--color-grey-300);
-  background-image:
-    url(${(props) => props.$image}),
-    radial-gradient(circle at 72% 22%, rgba(250, 204, 21, 0.36), transparent 12rem),
-    linear-gradient(135deg, #111827 0%, #6b7280 52%, #92400e 100%);
-  background-position: center;
-  background-size: cover;
 
   &:first-child {
     grid-row: span 2;
@@ -451,21 +509,23 @@ const PhotoTile = styled.article`
   }
 
   @media (max-width: 560px) {
+    scroll-snap-align: start;
+
     &:first-child {
       grid-row: span 1;
     }
   }
 `;
 
-const PhotoCaption = styled.div`
+const PhotoCaption = styled.figcaption`
   position: absolute;
   left: 1.4rem;
   right: 1.4rem;
   bottom: 1.4rem;
   z-index: 1;
   color: var(--color-grey-0);
-  font-size: 1.4rem;
-  font-weight: 800;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-extrabold);
 `;
 
 const TestimonialsGrid = styled.div`
@@ -476,6 +536,21 @@ const TestimonialsGrid = styled.div`
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
   }
+
+  @media (max-width: 640px) {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(26rem, 88%);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline mandatory;
+    scrollbar-width: none;
+    padding-bottom: 0.4rem;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 `;
 
 const TestimonialCard = styled.article`
@@ -485,6 +560,10 @@ const TestimonialCard = styled.article`
   display: grid;
   gap: 1.2rem;
   background: var(--color-grey-50);
+
+  @media (max-width: 640px) {
+    scroll-snap-align: start;
+  }
 `;
 
 const QuoteIcon = styled.span`
@@ -506,7 +585,7 @@ const QuoteIcon = styled.span`
 const CustomerName = styled.strong`
   display: block;
   color: var(--color-grey-900);
-  font-size: 1.5rem;
+  font-size: var(--font-size-base);
 `;
 
 const Cta = styled.section`
@@ -517,11 +596,11 @@ const Cta = styled.section`
   align-items: center;
   justify-content: space-between;
   gap: 1.4rem;
-  color: var(--color-grey-0);
-  background: #111827;
+  color: var(--color-text-inverse);
+  background: var(--color-surface-dark);
 
   & ${MutedText} {
-    color: #d1d5db;
+    color: var(--color-text-inverse-muted);
   }
 
   & ${SectionTitle} {
@@ -541,6 +620,11 @@ function Gallery() {
         </TopBar>
 
         <Hero>
+          <HeroImage
+            src="https://images.unsplash.com/photo-1698664683348-f9f35b809821?auto=format&fit=crop&w=1600&q=80"
+            alt="Metal üzerinde kaynak uygulaması yapan usta"
+            fetchpriority="high"
+          />
           <HeroContent>
             <Eyebrow>İş örnekleri / galeri</Eyebrow>
             <HeroTitle>Kaynak ve metal işlerinde önce-sonra çalışmaları</HeroTitle>
@@ -592,16 +676,28 @@ function Gallery() {
             </MutedText>
           </SectionHeader>
 
-          <WorkGrid>
+          <WorkGrid aria-label="Önce ve sonra iş örnekleri">
             {workExamples.map((item) => (
               <WorkCard key={item.title}>
                 <CompareGrid>
-                  <CompareImage $image={item.beforeImage}>
+                  <CompareMedia>
+                    <MediaImage
+                      src={item.beforeImage}
+                      alt={`${item.title}: ${item.beforeLabel.toLocaleLowerCase("tr-TR")} aşaması`}
+                      loading="lazy"
+                      decoding="async"
+                    />
                     <ImageLabel>{item.beforeLabel}</ImageLabel>
-                  </CompareImage>
-                  <CompareImage $image={item.afterImage}>
+                  </CompareMedia>
+                  <CompareMedia>
+                    <MediaImage
+                      src={item.afterImage}
+                      alt={`${item.title}: ${item.afterLabel.toLocaleLowerCase("tr-TR")} aşaması`}
+                      loading="lazy"
+                      decoding="async"
+                    />
                     <ImageLabel>{item.afterLabel}</ImageLabel>
-                  </CompareImage>
+                  </CompareMedia>
                 </CompareGrid>
                 <WorkBody>
                   <MetaRow>
@@ -634,11 +730,15 @@ function Gallery() {
             </MutedText>
           </SectionHeader>
 
-          <PhotoGrid>
+          <PhotoGrid aria-label="Kaynak ve metal işi galerisi">
             {galleryItems.map((item) => (
-              <PhotoTile
-                key={item.title}
-                $image={item.image}>
+              <PhotoTile key={item.title}>
+                <MediaImage
+                  src={item.image}
+                  alt={item.title}
+                  loading="lazy"
+                  decoding="async"
+                />
                 <PhotoCaption>{item.title}</PhotoCaption>
               </PhotoTile>
             ))}
@@ -655,7 +755,7 @@ function Gallery() {
             </MutedText>
           </SectionHeader>
 
-          <TestimonialsGrid>
+          <TestimonialsGrid aria-label="Müşteri yorumları">
             {testimonials.map((item) => (
               <TestimonialCard key={item.name}>
                 <QuoteIcon>

@@ -23,12 +23,18 @@ function useActiveSection(items) {
 
       const checkpoint = window.scrollY + window.innerHeight * 0.35;
       let currentId = sectionIds[0];
+      let currentTop = Number.NEGATIVE_INFINITY;
 
       sectionIds.forEach((sectionId) => {
         const section = document.getElementById(sectionId);
 
-        if (section && section.offsetTop <= checkpoint) {
+        if (
+          section &&
+          section.offsetTop <= checkpoint &&
+          section.offsetTop > currentTop
+        ) {
           currentId = sectionId;
+          currentTop = section.offsetTop;
         }
       });
 

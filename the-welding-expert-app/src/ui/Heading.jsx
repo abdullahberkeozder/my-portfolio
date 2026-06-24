@@ -1,33 +1,28 @@
 import styled, { css } from "styled-components";
 
-// const test = css`
-//   text-align: center;
-//   ${10 > 5 && "background-color: yellow"}
-// `;
-
 const Heading = styled.h1`
   ${(props) =>
     props.as === "h1" &&
     css`
-      font-size: 3rem;
-      font-weight: 600;
+      font-size: var(--font-size-page-title);
+      font-weight: var(--font-weight-bold);
     `}
 
   ${(props) =>
     props.as === "h2" &&
     css`
-      font-size: 2rem;
-      font-weight: 600;
+      font-size: var(--font-size-title);
+      font-weight: var(--font-weight-semibold);
     `}
     
     ${(props) =>
     props.as === "h3" &&
     css`
-      font-size: 2rem;
-      font-weight: 500;
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
     `}
     
-  line-height: 1.4;
+  line-height: var(--line-height-tight);
 `;
 
 export default Heading;

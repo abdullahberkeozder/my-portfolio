@@ -162,7 +162,7 @@ const ToolbarButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 0.7rem;
-  min-height: 4rem;
+  min-height: 4.4rem;
   border: 1px solid var(--color-grey-200);
   border-radius: var(--border-radius-sm);
   padding: 0.8rem 1.1rem;
@@ -268,7 +268,7 @@ const StatusBadge = styled.span`
 
 const Select = styled.select`
   width: 100%;
-  min-height: 3.4rem;
+  min-height: 4.4rem;
   border: 1px solid var(--color-grey-200);
   border-radius: var(--border-radius-sm);
   padding: 0.6rem 0.7rem;
@@ -298,7 +298,7 @@ const ActionRow = styled.div`
 `;
 
 const SmallButton = styled.button`
-  min-height: 3.2rem;
+  min-height: 4.4rem;
   border: 1px solid var(--color-grey-200);
   border-radius: var(--border-radius-sm);
   padding: 0.55rem 0.65rem;
@@ -338,12 +338,12 @@ const SlotList = styled.div`
 
 const SlotRow = styled.div`
   display: grid;
-  grid-template-columns: 2.8rem 1fr;
+  grid-template-columns: 4.4rem 1fr;
   gap: 0.5rem;
 `;
 
 const SlotSelect = styled.button`
-  min-height: 3.2rem;
+  min-height: 4.4rem;
   border-radius: var(--border-radius-sm);
   border: 1px solid
     ${(props) =>
@@ -358,7 +358,7 @@ const SlotSelect = styled.button`
 `;
 
 const SlotToggle = styled.button`
-  min-height: 3.2rem;
+  min-height: 4.4rem;
   border-radius: var(--border-radius-sm);
   border: 1px solid
     ${(props) =>
@@ -408,7 +408,7 @@ const AdvancedControls = styled.details`
   background: var(--color-grey-50);
 
   & summary {
-    min-height: 3.2rem;
+    min-height: 4.4rem;
     padding: 0.7rem 0.8rem;
     color: var(--color-grey-700);
     font-size: 1.15rem;

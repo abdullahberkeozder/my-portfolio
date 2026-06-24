@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -23,7 +23,6 @@ import {
 import Button from "../ui/Button";
 import Heading from "../ui/Heading";
 import AppNav from "../ui/AppNav";
-import AppScrollRail from "../ui/AppScrollRail";
 import { getAvailabilityDays } from "../services/apiAvailability";
 import { createAppointmentRequest } from "../services/apiAppointmentRequests";
 
@@ -149,7 +148,7 @@ const Page = styled.main`
   overflow-x: hidden;
 
   @media (max-width: 640px) {
-    padding: 2.4rem 1.6rem 4rem;
+    padding: 2.4rem 1.6rem 10rem;
   }
 `;
 
@@ -164,11 +163,52 @@ const Shell = styled.div`
   & > * {
     min-width: 0;
   }
+
+  @media (max-width: 640px) {
+    & > header {
+      order: 1;
+    }
+
+    & > nav {
+      order: 2;
+    }
+
+    & > #about {
+      order: 3;
+    }
+
+    & > #services {
+      order: 4;
+    }
+
+    & > #appointment-calendar {
+      order: 5;
+    }
+
+    & > #process {
+      order: 6;
+    }
+
+    & > #location {
+      order: 7;
+    }
+
+    & > #faq {
+      order: 8;
+    }
+
+    & > footer {
+      order: 9;
+    }
+  }
 `;
 
 const PublicHeader = styled.header`
+  position: relative;
   min-width: 0;
-  background: linear-gradient(135deg, #111827 0%, #374151 58%, #92400e 100%);
+  min-height: 42rem;
+  overflow: hidden;
+  background: var(--color-surface-dark);
   color: var(--color-grey-0);
   border-radius: var(--border-radius-md);
   padding: 3.2rem;
@@ -177,8 +217,34 @@ const PublicHeader = styled.header`
   gap: 2rem;
   align-items: center;
 
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(17, 24, 39, 0.96) 0%,
+      rgba(17, 24, 39, 0.82) 48%,
+      rgba(17, 24, 39, 0.34) 100%
+    );
+  }
+
+  & > *:not(img) {
+    position: relative;
+    z-index: 1;
+  }
+
   @media (max-width: 760px) {
     grid-template-columns: 1fr;
+
+    &::after {
+      background: linear-gradient(
+        180deg,
+        rgba(17, 24, 39, 0.88) 0%,
+        rgba(17, 24, 39, 0.8) 62%,
+        rgba(17, 24, 39, 0.9) 100%
+      );
+    }
   }
 
   @media (max-width: 640px) {
@@ -188,6 +254,15 @@ const PublicHeader = styled.header`
   @media (max-width: 420px) {
     padding: 2rem;
   }
+`;
+
+const HeroImage = styled.img`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 42%;
 `;
 
 const Brand = styled.div`
@@ -203,7 +278,7 @@ const BrandMark = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #facc15;
+  color: var(--color-accent-400);
   background: rgba(255, 255, 255, 0.12);
 
   & svg {
@@ -241,7 +316,7 @@ const PublicTitle = styled.h1`
 
 const Lead = styled.p`
   max-width: 70rem;
-  color: #e5e7eb;
+  color: var(--color-grey-200);
   font-size: 1.7rem;
 
   @media (max-width: 640px) {
@@ -254,8 +329,8 @@ const HeaderBadge = styled.div`
   align-items: center;
   gap: 0.8rem;
   justify-self: end;
-  color: var(--color-green-700);
-  background: var(--color-green-100);
+  color: var(--color-surface-dark);
+  background: var(--color-action-primary);
   border-radius: 999px;
   padding: 0.8rem 1.2rem;
   font-size: 1.3rem;
@@ -268,6 +343,28 @@ const HeaderBadge = styled.div`
 
   @media (max-width: 760px) {
     justify-self: start;
+  }
+`;
+
+const TrustList = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 1.6rem;
+  margin-top: 0.2rem;
+`;
+
+const TrustItem = styled.li`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-text-inverse-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+
+  & svg {
+    width: 1.7rem;
+    height: 1.7rem;
+    color: var(--color-accent-400);
   }
 `;
 
@@ -284,21 +381,35 @@ const HeaderActions = styled.div`
 `;
 
 const HeaderLink = styled.a`
-  min-height: 4.2rem;
+  min-height: 4.4rem;
   border-radius: var(--border-radius-sm);
   padding: 1rem 1.4rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.8rem;
-  color: ${(props) => (props.$secondary ? "#f9fafb" : "#111827")};
+  color: ${(props) =>
+    props.$secondary
+      ? "var(--color-text-inverse)"
+      : "var(--color-surface-dark)"};
   background: ${(props) =>
-    props.$secondary ? "rgba(255, 255, 255, 0.12)" : "#facc15"};
+    props.$secondary
+      ? "rgba(255, 255, 255, 0.12)"
+      : "var(--color-action-primary)"};
   border: 1px solid
     ${(props) =>
-      props.$secondary ? "rgba(255, 255, 255, 0.24)" : "#facc15"};
+      props.$secondary
+        ? "rgba(255, 255, 255, 0.24)"
+        : "var(--color-action-primary)"};
   font-size: 1.4rem;
   font-weight: 800;
+
+  &:hover {
+    background: ${(props) =>
+      props.$secondary
+        ? "rgba(255, 255, 255, 0.2)"
+        : "var(--color-action-primary-hover)"};
+  }
 
   & svg {
     width: 1.8rem;
@@ -312,10 +423,7 @@ const HeaderLink = styled.a`
 
 const AboutSection = styled.section`
   scroll-margin-top: 9rem;
-  background: var(--color-grey-0);
-  border: 1px solid var(--color-grey-100);
-  border-radius: var(--border-radius-md);
-  padding: 2.8rem;
+  padding: 3.2rem 0;
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(28rem, 0.9fr);
   gap: 2.8rem;
@@ -326,7 +434,7 @@ const AboutSection = styled.section`
   }
 
   @media (max-width: 640px) {
-    padding: 2rem;
+    padding: 1.6rem 0;
     gap: 2rem;
   }
 `;
@@ -379,7 +487,7 @@ const HighlightItem = styled.li`
   & svg {
     width: 1.8rem;
     height: 1.8rem;
-    color: var(--color-green-700);
+    color: var(--color-surface-steel);
   }
 `;
 
@@ -408,8 +516,8 @@ const ProfileLine = styled.div`
     height: 4.4rem;
     padding: 1rem;
     border-radius: 50%;
-    color: #facc15;
-    background: #111827;
+    color: var(--color-accent-400);
+    background: var(--color-surface-dark);
   }
 `;
 
@@ -431,7 +539,7 @@ const AboutStats = styled.div`
   gap: 1rem;
 
   @media (max-width: 520px) {
-    grid-template-columns: 1fr;
+    gap: 0.6rem;
   }
 `;
 
@@ -440,6 +548,10 @@ const AboutStat = styled.div`
   border-radius: var(--border-radius-sm);
   padding: 1.2rem;
   background: var(--color-grey-0);
+
+  @media (max-width: 520px) {
+    padding: 0.9rem;
+  }
 `;
 
 const AboutStatValue = styled.strong`
@@ -456,15 +568,12 @@ const AboutStatLabel = styled.span`
 
 const Section = styled.section`
   scroll-margin-top: 9rem;
-  background: var(--color-grey-0);
-  border: 1px solid var(--color-grey-100);
-  border-radius: var(--border-radius-md);
-  padding: 2.8rem;
+  padding: 3.2rem 0;
   display: grid;
   gap: 2rem;
 
   @media (max-width: 640px) {
-    padding: 2rem;
+    padding: 1.6rem 0;
   }
 `;
 
@@ -485,7 +594,18 @@ const ServicesGrid = styled.div`
   }
 
   @media (max-width: 640px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(27rem, 88%);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline mandatory;
+    scrollbar-width: none;
+    padding-bottom: 0.4rem;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 `;
 
@@ -493,7 +613,7 @@ const ServiceCard = styled.button`
   min-height: 24rem;
   border: 1px solid
     ${(props) =>
-      props.$active ? "var(--color-brand-600)" : "var(--color-grey-100)"};
+      props.$active ? "var(--color-selection)" : "var(--color-grey-100)"};
   border-radius: var(--border-radius-md);
   padding: 1.8rem;
   display: grid;
@@ -505,13 +625,14 @@ const ServiceCard = styled.button`
   box-shadow: ${(props) => (props.$active ? "var(--shadow-sm)" : "none")};
 
   &:hover {
-    border-color: var(--color-brand-600);
+    border-color: var(--color-selection);
     background: var(--color-brand-50);
   }
 
   @media (max-width: 640px) {
-    min-height: auto;
+    min-height: 29rem;
     padding: 1.6rem;
+    scroll-snap-align: start;
   }
 `;
 
@@ -522,8 +643,8 @@ const ServiceIcon = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #facc15;
-  background: #111827;
+  color: var(--color-accent-400);
+  background: var(--color-surface-dark);
 
   & svg {
     width: 2.2rem;
@@ -560,7 +681,7 @@ const MiniItem = styled.li`
   & svg {
     width: 1.6rem;
     height: 1.6rem;
-    color: var(--color-green-700);
+    color: var(--color-grey-500);
   }
 `;
 
@@ -574,7 +695,18 @@ const ProcessGrid = styled.div`
   }
 
   @media (max-width: 560px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(24rem, 84%);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline mandatory;
+    scrollbar-width: none;
+    padding-bottom: 0.4rem;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 `;
 
@@ -585,6 +717,11 @@ const ProcessCard = styled.article`
   display: grid;
   gap: 1rem;
   background: var(--color-grey-50);
+
+  @media (max-width: 560px) {
+    min-height: 21rem;
+    scroll-snap-align: start;
+  }
 `;
 
 const StepNumber = styled.span`
@@ -594,8 +731,8 @@ const StepNumber = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-grey-0);
-  background: var(--color-brand-600);
+  color: var(--color-accent-400);
+  background: var(--color-surface-dark);
   font-size: 1.4rem;
   font-weight: 800;
 `;
@@ -692,7 +829,7 @@ const DatePicker = styled.label`
 
 const DateInput = styled.input`
   width: 100%;
-  min-height: 4.2rem;
+  min-height: 4.4rem;
   border: 1px solid var(--color-grey-200);
   border-radius: var(--border-radius-sm);
   padding: 0.8rem 1rem;
@@ -714,8 +851,8 @@ const WeekControls = styled.div`
 `;
 
 const IconButton = styled.button`
-  width: 4.2rem;
-  height: 4.2rem;
+  width: 4.4rem;
+  height: 4.4rem;
   border: 1px solid var(--color-grey-200);
   border-radius: var(--border-radius-sm);
   display: inline-flex;
@@ -754,7 +891,15 @@ const WeekGrid = styled.div`
   @media (max-width: 980px) {
     grid-template-columns: repeat(7, minmax(13.6rem, 1fr));
     overflow-x: auto;
-    padding-bottom: 0.6rem;
+    padding: 0.2rem calc((100% - 13.6rem) / 2) 0.6rem;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: calc((100% - 13.6rem) / 2);
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 `;
 
@@ -762,7 +907,7 @@ const DayButton = styled.button`
   min-height: 13.8rem;
   border: 1px solid
     ${(props) =>
-      props.$selected ? "var(--color-brand-600)" : "var(--color-grey-100)"};
+      props.$selected ? "var(--color-selection)" : "var(--color-grey-100)"};
   border-radius: var(--border-radius-md);
   padding: 1.3rem;
   display: flex;
@@ -783,7 +928,12 @@ const DayButton = styled.button`
 
   &:hover {
     border-color: ${(props) =>
-      props.$disabled ? "var(--color-grey-100)" : "var(--color-brand-600)"};
+      props.$disabled ? "var(--color-grey-100)" : "var(--color-selection)"};
+  }
+
+  @media (max-width: 980px) {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
   }
 `;
 
@@ -814,7 +964,7 @@ const StatusBadge = styled.span`
   ${(props) =>
     props.$status === "available" &&
     css`
-      color: var(--color-green-700);
+      color: var(--color-status-available);
       background: var(--color-green-100);
     `}
 
@@ -879,10 +1029,10 @@ const SlotGrid = styled.div`
 `;
 
 const SlotButton = styled.button`
-  min-height: 4.2rem;
+  min-height: 4.4rem;
   border: 1px solid
     ${(props) =>
-      props.$active ? "var(--color-brand-600)" : "var(--color-grey-200)"};
+      props.$active ? "var(--color-selection)" : "var(--color-grey-200)"};
   border-radius: var(--border-radius-sm);
   color: ${(props) =>
     props.$active ? "var(--color-brand-700)" : "var(--color-grey-700)"};
@@ -892,7 +1042,7 @@ const SlotButton = styled.button`
   font-weight: 800;
 
   &:hover {
-    border-color: var(--color-brand-600);
+    border-color: var(--color-selection);
     background: var(--color-brand-50);
   }
 
@@ -1008,10 +1158,10 @@ const ServiceList = styled.div`
 `;
 
 const ServiceOption = styled.button`
-  min-height: 4rem;
+  min-height: 4.4rem;
   border: 1px solid
     ${(props) =>
-      props.$active ? "var(--color-brand-600)" : "var(--color-grey-200)"};
+      props.$active ? "var(--color-selection)" : "var(--color-grey-200)"};
   border-radius: var(--border-radius-sm);
   padding: 0.8rem 1rem;
   text-align: left;
@@ -1052,10 +1202,7 @@ const ChannelLink = styled.a`
 
 const LocationSection = styled.section`
   scroll-margin-top: 9rem;
-  background: var(--color-grey-0);
-  border: 1px solid var(--color-grey-100);
-  border-radius: var(--border-radius-md);
-  padding: 2.8rem;
+  padding: 3.2rem 0;
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(36rem, 1.1fr);
   gap: 2rem;
@@ -1066,7 +1213,7 @@ const LocationSection = styled.section`
   }
 
   @media (max-width: 640px) {
-    padding: 2rem;
+    padding: 1.6rem 0;
   }
 `;
 
@@ -1142,8 +1289,8 @@ const PinIcon = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #facc15;
-  background: #111827;
+  color: var(--color-accent-400);
+  background: var(--color-surface-dark);
   box-shadow: var(--shadow-md);
 
   & svg {
@@ -1214,6 +1361,41 @@ const Footer = styled.footer`
   gap: 1rem;
   color: var(--color-grey-500);
   font-size: 1.3rem;
+`;
+
+const MobileAvailabilityLink = styled.a`
+  display: none;
+
+  @media (max-width: 640px) {
+    position: fixed;
+    left: auto;
+    right: 1.6rem;
+    bottom: max(1.2rem, env(safe-area-inset-bottom));
+    z-index: 40;
+    width: min(19rem, calc(100% - 3.2rem));
+    min-height: 4.8rem;
+    border: 1px solid var(--color-action-primary-hover);
+    border-radius: var(--border-radius-md);
+    padding: 1rem 1.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    color: var(--color-surface-dark);
+    background: var(--color-action-primary);
+    box-shadow: var(--shadow-lg);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-extrabold);
+
+    &:hover {
+      background: var(--color-action-primary-hover);
+    }
+
+    & svg {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
 `;
 
 function padNumber(value) {
@@ -1382,6 +1564,8 @@ function CustomerBooking() {
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [notes, setNotes] = useState("");
+  const weekGridRef = useRef(null);
+  const selectedDayButtonRef = useRef(null);
 
   const weekStart = useMemo(
     () => startOfWeek(parseDateKey(selectedDate)),
@@ -1390,6 +1574,28 @@ function CustomerBooking() {
   const weekEnd = useMemo(() => addDays(weekStart, 6), [weekStart]);
   const weekStartKey = formatDateKey(weekStart);
   const weekEndKey = formatDateKey(weekEnd);
+
+  useEffect(() => {
+    if (!window.matchMedia("(max-width: 980px)").matches) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    const weekGrid = weekGridRef.current;
+    const selectedButton = selectedDayButtonRef.current;
+
+    if (!weekGrid || !selectedButton) return;
+
+    const targetScrollLeft =
+      selectedButton.offsetLeft -
+      (weekGrid.clientWidth - selectedButton.offsetWidth) / 2;
+
+    weekGrid.scrollTo({
+      left: targetScrollLeft,
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    });
+  }, [selectedDate, weekStartKey]);
 
   const {
     data: availabilityDays = [],
@@ -1515,9 +1721,13 @@ function CustomerBooking() {
 
   return (
     <Page>
-      <AppScrollRail />
       <Shell>
         <PublicHeader>
+          <HeroImage
+            src="https://images.unsplash.com/photo-1698664683348-f9f35b809821?auto=format&fit=crop&w=1600&q=82"
+            alt="Atölyede metal üzerinde kaynak uygulaması yapan usta"
+            fetchpriority="high"
+          />
           <div>
             <Brand>
               <BrandMark>
@@ -1530,12 +1740,26 @@ function CustomerBooking() {
             </Brand>
             <HeaderText>
               <PublicTitle>
-                Kaynak ve metal işleri için güvenilir randevu
+                Ankara&apos;da kaynak ve metal işleri için güvenilir randevu
               </PublicTitle>
               <Lead>
                 Kapı, korkuluk, ferforje ve metal onarım hizmetlerini inceleyin;
                 size uygun iki saatlik randevu aralığını takvimden seçin.
               </Lead>
+              <TrustList aria-label="Hizmet güvenceleri">
+                <TrustItem>
+                  <HiOutlineMapPin />
+                  Ankara&apos;da yerinde keşif
+                </TrustItem>
+                <TrustItem>
+                  <HiOutlineClock />
+                  Planlı 2 saatlik aralıklar
+                </TrustItem>
+                <TrustItem>
+                  <HiOutlineShieldCheck />
+                  İş öncesi net değerlendirme
+                </TrustItem>
+              </TrustList>
               <HeaderActions>
                 <HeaderLink href="#appointment-calendar">
                   <HiOutlineCalendarDays />
@@ -1558,8 +1782,8 @@ function CustomerBooking() {
             </HeaderText>
           </div>
           <HeaderBadge>
-            <HiOutlineCheckCircle />
-            Müşteri ekranı
+            <HiOutlineMapPin />
+            Ankara&apos;da yerinde servis
           </HeaderBadge>
         </PublicHeader>
 
@@ -1754,7 +1978,10 @@ function CustomerBooking() {
               </WeekControls>
             </DateToolbar>
 
-            <WeekGrid>
+            <WeekGrid
+              ref={weekGridRef}
+              role="group"
+              aria-label="Haftanın günleri">
               {weekDays.map((day) => {
                 const isSelected = selectedDate === day.dateValue;
                 const isPast = day.dateValue < todayKey;
@@ -1764,20 +1991,31 @@ function CustomerBooking() {
                 const freeSlotCount = day.slots.filter(
                   (slot) => slot.isAvailable,
                 ).length;
+                const dayStatusText =
+                  day.statusText || statusLabel[day.status];
 
                 return (
                   <DayButton
                     key={day.dateValue}
+                    ref={isSelected ? selectedDayButtonRef : null}
                     type="button"
                     disabled={isPast || isClosed}
                     $disabled={isPast || isClosed}
                     $selected={isSelected}
+                    aria-pressed={isSelected}
+                    aria-label={`${day.fullDate}, ${dayStatusText}, ${
+                      isPast
+                        ? "geçmiş tarih"
+                        : day.status === "unavailable"
+                          ? "seçime kapalı"
+                          : `${freeSlotCount} müsait aralık`
+                    }`}
                     onClick={() => handleDateSelect(day.dateValue)}>
                     <DayName>{day.dayName}</DayName>
                     <DayDate>{day.dateLabel}</DayDate>
                     <StatusBadge $status={day.status}>
                       {getStatusIcon(day.status)}
-                      {day.statusText || statusLabel[day.status]}
+                      {dayStatusText}
                     </StatusBadge>
                     <DaySlotCount>
                       {isPast
@@ -1821,6 +2059,10 @@ function CustomerBooking() {
                       type="button"
                       disabled={!slot.isAvailable}
                       $active={selectedSlot?.time === slot.time}
+                      aria-pressed={selectedSlot?.time === slot.time}
+                      aria-label={`${slot.label}, ${
+                        slot.isAvailable ? "müsait" : "dolu"
+                      }`}
                       onClick={() => setSelectedSlot(slot)}
                       title={slot.note || undefined}>
                       {slot.label}
@@ -1874,7 +2116,7 @@ function CustomerBooking() {
                   href={canSend ? whatsappUrl : undefined}
                   target="_blank"
                   rel="noreferrer"
-                  $color="#16a34a"
+                  $color="var(--color-channel-whatsapp)"
                   $disabled={!canSend}>
                   <HiOutlinePhone />
                   WhatsApp ile yaz
@@ -2021,6 +2263,11 @@ function CustomerBooking() {
           <span>Kaynak, metal onarım ve yerinde keşif hizmetleri</span>
         </Footer>
       </Shell>
+
+      <MobileAvailabilityLink href="#appointment-calendar">
+        <HiOutlineCalendarDays />
+        Müsaitliği gör
+      </MobileAvailabilityLink>
     </Page>
   );
 }

@@ -266,7 +266,7 @@ const ManagementPanel = styled.div`
 
 const Select = styled.select`
   width: 100%;
-  min-height: 4rem;
+  min-height: 4.4rem;
   border: 1px solid var(--color-grey-200);
   border-radius: var(--border-radius-sm);
   padding: 0.8rem 1rem;
@@ -304,7 +304,7 @@ const ActionLink = styled.a`
   align-items: center;
   justify-content: center;
   gap: 0.7rem;
-  min-height: 3.8rem;
+  min-height: 4.4rem;
   border: 1px solid var(--color-green-700);
   border-radius: var(--border-radius-sm);
   padding: 0.8rem 1rem;
@@ -325,7 +325,7 @@ const SmallButton = styled.button`
   align-items: center;
   justify-content: center;
   gap: 0.7rem;
-  min-height: 3.8rem;
+  min-height: 4.4rem;
   border: 1px solid var(--color-grey-200);
   border-radius: var(--border-radius-sm);
   padding: 0.8rem 1rem;
