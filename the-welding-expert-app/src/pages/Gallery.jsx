@@ -14,63 +14,63 @@ const workExamples = [
     title: "Balkon korkuluğu sağlamlaştırma",
     category: "Korkuluk onarımı",
     location: "Yenimahalle / Ankara",
-    beforeLabel: "Keşif",
-    afterLabel: "Uygulama",
+    beforeLabel: "Eski Durum",
+    afterLabel: "Yeni Durum",
     beforeImage:
-      "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?auto=format&fit=crop&w=900&q=80",
     afterImage:
-      "https://images.unsplash.com/photo-1698664683348-f9f35b809821?auto=format&fit=crop&w=900&q=80",
-    text: "Gevşeyen bağlantı noktalarında kaynak onarımı yapıldı; son kontrolle kullanım güvenliği artırıldı.",
-    points: ["Yerinde keşif", "Kaynak onarımı", "Sağlamlık kontrolü"],
+      "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&w=900&q=80",
+    text: "Gevşeyen ve paslanan bağlantı noktalarında kaynak onarımı ve sağlamlaştırma yapıldı.",
+    points: ["Yerinde tespit", "Kaynak onarımı", "Boyama ve teslim"],
   },
   {
-    title: "Atölye tipi metal çerçeve imalatı",
+    title: "Atölye tipi metal raf ünitesi imalatı",
     category: "Özel imalat",
     location: "Ostim / Ankara",
     beforeLabel: "Hazırlık",
-    afterLabel: "Montaj",
-    beforeImage:
-      "https://images.unsplash.com/photo-1735494033576-9c882e80504c?auto=format&fit=crop&w=900&q=80",
-    afterImage:
-      "https://images.unsplash.com/photo-1526634140919-468dc3ae3870?auto=format&fit=crop&w=900&q=80",
-    text: "Ölçüye göre metal çerçeve hazırlandı; kaynak sonrası çapak temizliği ve yüzey kontrolü tamamlandı.",
-    points: ["Ölçü alma", "Parça hazırlama", "Temiz teslim"],
-  },
-  {
-    title: "Kapı menteşesi ve kasa tamiri",
-    category: "Tamir ve bakım",
-    location: "Çankaya / Ankara",
-    beforeLabel: "Problem",
     afterLabel: "Teslim",
     beforeImage:
-      "https://images.unsplash.com/photo-1698664683348-f9f35b809821?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=900&q=80",
     afterImage:
-      "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=900&q=80",
-    text: "Açılan kaynak ve esneyen menteşe bölgesi yeniden sabitlendi; kapı hareketi test edilerek teslim edildi.",
-    points: ["Hızlı tespit", "Menteşe sabitleme", "Kullanım testi"],
+      "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=900&q=80",
+    text: "Ölçüye göre profil demir kesildi, kaynakla çerçeve haline getirilip raflar monte edildi.",
+    points: ["Ölçü alma", "Hassas montaj", "Fırın boya işlemi"],
+  },
+  {
+    title: "Kapı menteşesi ve kilit tamiri",
+    category: "Tamir ve bakım",
+    location: "Çankaya / Ankara",
+    beforeLabel: "Arıza",
+    afterLabel: "Onarım",
+    beforeImage:
+      "https://images.unsplash.com/photo-1509644851169-2acf02ef25b2?auto=format&fit=crop&w=900&q=80",
+    afterImage:
+      "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=900&q=80",
+    text: "Kopan eski menteşe sökülüp temizlendi; yeni menteşe kaynaklanarak kapı gövdesi dengelendi.",
+    points: ["Menteşe hizalama", "Sağlam kaynak", "Kilit mekanizma ayarı"],
   },
 ];
 
 const galleryItems = [
   {
-    title: "Yerinde kaynak onarımı",
+    title: "Yerinde bahçe kapısı tamiri",
     image:
-      "https://images.unsplash.com/photo-1698664683348-f9f35b809821?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&w=900&q=80",
   },
   {
-    title: "Metal kesim ve hazırlık",
+    title: "Metal raf ve montaj işleri",
     image:
-      "https://images.unsplash.com/photo-1735494033576-9c882e80504c?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=900&q=80",
   },
   {
-    title: "Korkuluk ve profil işi",
+    title: "Menteşe ve kilit onarımları",
     image:
-      "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=900&q=80",
   },
   {
-    title: "Atölye kaynak uygulaması",
+    title: "Hassas ölçüm ve keşif",
     image:
-      "https://images.unsplash.com/photo-1526634140919-468dc3ae3870?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1531834685032-c34bf0d84c77?auto=format&fit=crop&w=900&q=80",
   },
 ];
 
@@ -688,8 +688,8 @@ function Gallery() {
 
         <Hero>
           <HeroImage
-            src="https://images.unsplash.com/photo-1698664683348-f9f35b809821?auto=format&fit=crop&w=1600&q=80"
-            alt="Metal üzerinde kaynak uygulaması yapan usta"
+            src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1600&q=80"
+            alt="Umut Usta'nın düzenli atölyesindeki aletler ve çalışma tezgahı"
             fetchpriority="high"
           />
           <HeroContent>
