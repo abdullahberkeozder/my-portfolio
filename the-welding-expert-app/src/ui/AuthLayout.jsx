@@ -200,7 +200,7 @@ function AuthLayout({ eyebrow, title, description, children }) {
               <HiOutlineWrenchScrewdriver />
             </BrandMark>
             <div>
-              <BrandName>Welding Expert</BrandName>
+              <BrandName>Umut Usta</BrandName>
               <BrandCaption>Ekip ve randevu yönetimi</BrandCaption>
             </div>
           </Brand>

@@ -28,7 +28,7 @@ import { getAvailabilityDays } from "../services/apiAvailability";
 import { createAppointmentRequest } from "../services/apiAppointmentRequests";
 
 const BUSINESS_WHATSAPP_NUMBER = "905551112233";
-const BUSINESS_EMAIL = "info@theweldingexpert.com";
+const BUSINESS_EMAIL = "info@umutusta.com";
 const OPENING_HOUR = 9;
 const CLOSING_HOUR = 21;
 const SLOT_DURATION_HOURS = 2;
@@ -824,17 +824,7 @@ const StepNumber = styled.span`
   font-weight: 800;
 `;
 
-const ContentGrid = styled.div`
-  scroll-margin-top: 9rem;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 36rem;
-  gap: 2.4rem;
-  align-items: start;
 
-  @media (max-width: 1180px) {
-    grid-template-columns: 1fr;
-  }
-`;
 
 const Panel = styled.section`
   background: var(--color-grey-0);
@@ -1186,35 +1176,7 @@ const EmptySlots = styled.div`
   font-weight: 700;
 `;
 
-const SummaryPanel = styled.aside`
-  min-width: 0;
-  position: sticky;
-  top: 2rem;
-  background: var(--color-grey-0);
-  border: 1px solid var(--color-grey-100);
-  border-radius: var(--border-radius-md);
-  padding: 2.4rem;
-  display: grid;
-  gap: 1.8rem;
 
-  @media (max-width: 1180px) {
-    position: static;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @media (max-width: 760px) {
-    grid-template-columns: 1fr;
-  }
-
-  @media (max-width: 640px) {
-    padding: 2rem;
-  }
-`;
-
-const SummaryBlock = styled.div`
-  display: grid;
-  gap: 1.2rem;
-`;
 
 
 const HorizontalSummary = styled.div`
@@ -1291,6 +1253,185 @@ const SummaryValue = styled.span`
   line-height: 1.3;
 `;
 
+const WizardContainer = styled.div`
+  scroll-margin-top: 9rem;
+  max-width: 90rem;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  gap: 2.4rem;
+`;
+
+const WizardProgress = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: var(--color-grey-50);
+  border: 1px solid var(--color-grey-100);
+  border-radius: var(--border-radius-md);
+  padding: 1.6rem;
+  margin-bottom: 0.8rem;
+  gap: 1rem;
+`;
+
+const WizardStep = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  opacity: ${(props) => (props.$active || props.$completed ? "1" : "0.5")};
+  transition: opacity 0.3s ease;
+`;
+
+const WizardStepNumber = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  font-weight: 800;
+  background: ${(props) =>
+    props.$completed
+      ? "var(--color-brand-600)"
+      : props.$active
+        ? "var(--color-surface-dark)"
+        : "var(--color-grey-200)"};
+  color: ${(props) =>
+    props.$completed || props.$active ? "var(--color-grey-0)" : "var(--color-grey-600)"};
+`;
+
+const StepLabel = styled.span`
+  font-size: 1.3rem;
+  font-weight: ${(props) => (props.$active ? "800" : "600")};
+  color: ${(props) => (props.$active ? "var(--color-grey-900)" : "var(--color-grey-600)")};
+
+  @media (max-width: 480px) {
+    display: none;
+  }
+`;
+
+const StepDivider = styled.div`
+  flex: 1;
+  height: 2px;
+  background: ${(props) => (props.$completed ? "var(--color-brand-200)" : "var(--color-grey-200)")};
+  max-width: 8rem;
+
+  @media (max-width: 480px) {
+    max-width: 4rem;
+  }
+`;
+
+const ServiceSelectionGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.6rem;
+  margin: 1rem 0;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const SelectionServiceCard = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  padding: 2rem;
+  border: 2px solid
+    ${(props) =>
+      props.$active ? "var(--color-action-primary)" : "var(--color-grey-200)"};
+  border-radius: var(--border-radius-md);
+  background: ${(props) =>
+    props.$active ? "var(--color-brand-50)" : "var(--color-grey-0)"};
+  color: var(--color-grey-800);
+  transition: all 0.2s ease;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--color-brand-500);
+    background: var(--color-brand-50);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+`;
+
+const SelectionCardIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.8rem;
+  height: 4.8rem;
+  border-radius: 50%;
+  background: ${(props) => (props.$active ? "var(--color-brand-600)" : "var(--color-brand-50)")};
+  color: ${(props) => (props.$active ? "var(--color-grey-0)" : "var(--color-brand-600)")};
+  flex-shrink: 0;
+
+  & svg {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+`;
+
+const SelectionCardTitle = styled.h4`
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-grey-900);
+`;
+
+const SelectionCardPrice = styled.span`
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-accent-500);
+`;
+
+const WizardActions = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  border-top: 1px solid var(--color-grey-100);
+  padding-top: 2rem;
+  gap: 1.6rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: stretch;
+
+    & > button {
+      width: 100%;
+    }
+  }
+`;
+
+const ConfirmLayout = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.2rem;
+  margin-top: 1.6rem;
+  align-items: start;
+
+  @media (max-width: 820px) {
+    grid-template-columns: 1fr;
+    gap: 2.4rem;
+  }
+`;
+
+const FormBlock = styled.div`
+  background: var(--color-grey-50);
+  border: 1px solid var(--color-grey-200);
+  border-radius: var(--border-radius-md);
+  padding: 2.4rem;
+`;
+
+const DirectContactBlock = styled.div`
+  background: var(--color-grey-50);
+  border: 1px solid var(--color-grey-200);
+  border-radius: var(--border-radius-md);
+  padding: 2.4rem;
+`;
+
 const SelectedLine = styled.div`
   display: grid;
   grid-template-columns: 2.2rem 1fr;
@@ -1337,41 +1478,6 @@ const Textarea = styled.textarea`
   background: var(--color-grey-0);
 `;
 
-const ServiceList = styled.div`
-  display: grid;
-  gap: 0.8rem;
-`;
-
-const ServiceOption = styled.button`
-  min-height: 4.4rem;
-  border: 1px solid
-    ${(props) =>
-      props.$active ? "var(--color-selection)" : "var(--color-grey-200)"};
-  border-radius: var(--border-radius-sm);
-  padding: 0.8rem 1rem;
-  text-align: left;
-  color: ${(props) =>
-    props.$active
-      ? "var(--color-selection-strong)"
-      : "var(--color-grey-700)"};
-  background: ${(props) =>
-    props.$active ? "var(--color-selection-soft)" : "var(--color-grey-0)"};
-  box-shadow: ${(props) =>
-    props.$active ? "inset 4px 0 0 var(--color-action-primary)" : "none"};
-  font-size: 1.3rem;
-  font-weight: 700;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: var(--color-selection);
-    background: var(--color-selection-soft);
-    transform: translateX(4px);
-  }
-
-  &:active {
-    transform: translateX(1px);
-  }
-`;
 
 const ChannelGrid = styled.div`
   display: grid;
@@ -1709,6 +1815,7 @@ function CustomerBooking() {
   const [selectedDate, setSelectedDate] = useState(todayKey);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedService, setSelectedService] = useState(serviceTypes[0]);
+  const [bookingStep, setBookingStep] = useState(1);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
@@ -1887,7 +1994,7 @@ function CustomerBooking() {
                 <HiOutlineWrenchScrewdriver />
               </BrandMark>
               <div>
-                <strong>Welding Expert</strong>
+                <strong>Umut Usta</strong>
                 <MutedText>Randevu ve hizmet talebi</MutedText>
               </div>
             </Brand>
@@ -2030,7 +2137,13 @@ function CustomerBooking() {
                   key={service.title}
                   type="button"
                   $active={selectedService === service.serviceType}
-                  onClick={() => setSelectedService(service.serviceType)}>
+                  onClick={() => {
+                    setSelectedService(service.serviceType);
+                    setBookingStep(2);
+                    document
+                      .getElementById("appointment-calendar")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}>
                   <CardImageContainer>
                     <CardImage src={service.imageUrl} alt={service.title} />
                   </CardImageContainer>
@@ -2076,186 +2189,311 @@ function CustomerBooking() {
           </ScrollWrapper>
         </Section>
 
-        <ContentGrid id="appointment-calendar">
-          <Panel>
-            <PanelHeader>
-              <div>
-                <Heading as="h2">Haftalık randevu takvimi</Heading>
-                <MutedText>
-                  Tarihi belirleyin ve doğrulanmış müsait saatlerden birini
-                  seçin.
-                </MutedText>
-              </div>
-            </PanelHeader>
+        <WizardContainer id="appointment-calendar">
+          <WizardProgress>
+            <WizardStep $active={bookingStep === 1} $completed={bookingStep > 1}>
+              <WizardStepNumber $active={bookingStep === 1} $completed={bookingStep > 1}>
+                {bookingStep > 1 ? "✓" : "1"}
+              </WizardStepNumber>
+              <StepLabel $active={bookingStep === 1}>Hizmet Seçimi</StepLabel>
+            </WizardStep>
 
-            {isLoadingAvailability && (
-              <AvailabilityNotice aria-live="polite">
-                Müsaitlik bilgileri yükleniyor. Saatler doğrulanana kadar seçim
-                yapılamaz.
-              </AvailabilityNotice>
-            )}
+            <StepDivider $completed={bookingStep > 1} />
 
-            {availabilityError && (
-              <AvailabilityNotice
-                role="alert"
-                $error>
-                <span>
-                  Müsaitlik bilgileri şu anda alınamıyor. Güvenlik nedeniyle
-                  saatler seçime kapatıldı.
-                </span>
+            <WizardStep $active={bookingStep === 2} $completed={bookingStep > 2}>
+              <WizardStepNumber $active={bookingStep === 2} $completed={bookingStep > 2}>
+                {bookingStep > 2 ? "✓" : "2"}
+              </WizardStepNumber>
+              <StepLabel $active={bookingStep === 2}>Tarih & Saat</StepLabel>
+            </WizardStep>
+
+            <StepDivider $completed={bookingStep > 2} />
+
+            <WizardStep $active={bookingStep === 3}>
+              <WizardStepNumber $active={bookingStep === 3}>3</WizardStepNumber>
+              <StepLabel $active={bookingStep === 3}>İletişim & Onay</StepLabel>
+            </WizardStep>
+          </WizardProgress>
+
+          {bookingStep === 1 && (
+            <Panel>
+              <PanelHeader>
+                <div>
+                  <Heading as="h2">Hangi konuda yardıma ihtiyacınız var?</Heading>
+                  <MutedText>
+                    Size en uygun hizmet türünü seçerek devam edin.
+                  </MutedText>
+                </div>
+              </PanelHeader>
+
+              <ServiceSelectionGrid>
+                {serviceOverview.map((service) => (
+                  <SelectionServiceCard
+                    key={service.serviceType}
+                    type="button"
+                    $active={selectedService === service.serviceType}
+                    onClick={() => setSelectedService(service.serviceType)}>
+                    <SelectionCardIcon $active={selectedService === service.serviceType}>
+                      <HiOutlineWrenchScrewdriver />
+                    </SelectionCardIcon>
+                    <div>
+                      <SelectionCardTitle>{service.title}</SelectionCardTitle>
+                      <SelectionCardPrice>{service.priceTagline}</SelectionCardPrice>
+                    </div>
+                  </SelectionServiceCard>
+                ))}
+              </ServiceSelectionGrid>
+
+              <WizardActions>
+                <div />
                 <Button
                   type="button"
-                  size="small"
-                  variation="secondary"
-                  disabled={isFetchingAvailability}
-                  onClick={() => refetchAvailability()}>
-                  {isFetchingAvailability ? "Deneniyor..." : "Tekrar dene"}
+                  size="large"
+                  variation="cta"
+                  onClick={() => setBookingStep(2)}>
+                  Tarih ve Saat Seçimine İlerle →
                 </Button>
-              </AvailabilityNotice>
-            )}
+              </WizardActions>
+            </Panel>
+          )}
 
-            <DateToolbar>
-              <DatePicker>
-                Tarih seç
-                <DateInput
-                  type="date"
-                  min={todayKey}
-                  value={selectedDate}
-                  onChange={(event) => handleDateSelect(event.target.value)}
-                />
-              </DatePicker>
+          {bookingStep === 2 && (
+            <Panel>
+              <PanelHeader>
+                <div>
+                  <Heading as="h2">Haftalık randevu takvimi</Heading>
+                  <MutedText>
+                    Tarihi belirleyin ve doğrulanmış müsait saatlerden birini seçin.
+                  </MutedText>
+                </div>
+              </PanelHeader>
 
-              <WeekControls>
-                <IconButton
-                  type="button"
-                  disabled={weekStartKey <= todayKey}
-                  onClick={() => handleWeekChange(-1)}
-                  aria-label="Önceki hafta">
-                  <HiOutlineChevronLeft />
-                </IconButton>
-                <WeekLabel>
-                  {compactDateFormatter.format(weekStart)} -{" "}
-                  {compactDateFormatter.format(weekEnd)}
-                </WeekLabel>
-                <IconButton
-                  type="button"
-                  onClick={() => handleWeekChange(1)}
-                  aria-label="Sonraki hafta">
-                  <HiOutlineChevronRight />
-                </IconButton>
-              </WeekControls>
-            </DateToolbar>
+              {isLoadingAvailability && (
+                <AvailabilityNotice aria-live="polite">
+                  Müsaitlik bilgileri yükleniyor. Saatler doğrulanana kadar seçim
+                  yapılamaz.
+                </AvailabilityNotice>
+              )}
 
-            <ScrollWrapper $breakpoint="980px" $bg="var(--color-grey-0)">
-              <WeekGrid
-                ref={weekGridRef}
-                role="group"
-                aria-label="Haftanın günleri">
-                {weekDays.map((day) => {
-                  const isSelected = selectedDate === day.dateValue;
-                  const isPast = day.dateValue < todayKey;
-                  const isClosed = ["closed", "unavailable"].includes(
-                    day.status,
-                  );
-                  const freeSlotCount = day.slots.filter(
-                    (slot) => slot.isAvailable,
-                  ).length;
-                  const dayStatusText =
-                    day.statusText || statusLabel[day.status];
+              {availabilityError && (
+                <AvailabilityNotice role="alert" $error>
+                  <span>
+                    Müsaitlik bilgileri şu anda alınamıyor. Güvenlik nedeniyle
+                    saatler seçime kapatıldı.
+                  </span>
+                  <Button
+                    type="button"
+                    size="small"
+                    variation="secondary"
+                    disabled={isFetchingAvailability}
+                    onClick={() => refetchAvailability()}>
+                    {isFetchingAvailability ? "Deneniyor..." : "Tekrar dene"}
+                  </Button>
+                </AvailabilityNotice>
+              )}
 
-                  return (
-                    <DayButton
-                      key={day.dateValue}
-                      ref={isSelected ? selectedDayButtonRef : null}
-                      type="button"
-                      disabled={isPast || isClosed}
-                      $disabled={isPast || isClosed}
-                      $selected={isSelected}
-                      aria-pressed={isSelected}
-                      aria-label={`${day.fullDate}, ${dayStatusText}, ${
-                        isPast
-                          ? "geçmiş tarih"
-                          : day.status === "unavailable"
-                            ? "seçime kapalı"
-                            : `${freeSlotCount} müsait aralık`
-                      }`}
-                      onClick={() => handleDateSelect(day.dateValue)}>
-                      <DayName>{day.dayName}</DayName>
-                      <DayDate>{day.dateLabel}</DayDate>
-                      <StatusBadge $status={day.status}>
-                        {getStatusIcon(day.status)}
-                        {dayStatusText}
-                      </StatusBadge>
-                      <DaySlotCount>
-                        {isPast
-                          ? "Geçmiş tarih"
-                          : day.status === "unavailable"
-                            ? "Seçime kapalı"
-                            : `${freeSlotCount} müsait aralık`}
-                      </DaySlotCount>
-                    </DayButton>
-                  );
-                })}
-              </WeekGrid>
-            </ScrollWrapper>
+              <DateToolbar>
+                <DatePicker>
+                  Tarih seç
+                  <DateInput
+                    type="date"
+                    min={todayKey}
+                    value={selectedDate}
+                    onChange={(event) => handleDateSelect(event.target.value)}
+                  />
+                </DatePicker>
 
-            <SlotPanel>
-              <div>
-                <Heading as="h2">
-                  {selectedDay ? selectedDay.fullDate : "Gün seçin"}
+                <WeekControls>
+                  <IconButton
+                    type="button"
+                    disabled={weekStartKey <= todayKey}
+                    onClick={() => handleWeekChange(-1)}
+                    aria-label="Önceki hafta">
+                    <HiOutlineChevronLeft />
+                  </IconButton>
+                  <WeekLabel>
+                    {compactDateFormatter.format(weekStart)} -{" "}
+                    {compactDateFormatter.format(weekEnd)}
+                  </WeekLabel>
+                  <IconButton
+                    type="button"
+                    onClick={() => handleWeekChange(1)}
+                    aria-label="Sonraki hafta">
+                    <HiOutlineChevronRight />
+                  </IconButton>
+                </WeekControls>
+              </DateToolbar>
+
+              <ScrollWrapper $breakpoint="980px" $bg="var(--color-grey-0)">
+                <WeekGrid
+                  ref={weekGridRef}
+                  role="group"
+                  aria-label="Haftanın günleri">
+                  {weekDays.map((day) => {
+                    const isSelected = selectedDate === day.dateValue;
+                    const isPast = day.dateValue < todayKey;
+                    const isClosed = ["closed", "unavailable"].includes(day.status);
+                    const freeSlotCount = day.slots.filter((slot) => slot.isAvailable).length;
+                    const dayStatusText = day.statusText || statusLabel[day.status];
+
+                    return (
+                      <DayButton
+                        key={day.dateValue}
+                        ref={isSelected ? selectedDayButtonRef : null}
+                        type="button"
+                        disabled={isPast || isClosed}
+                        $disabled={isPast || isClosed}
+                        $selected={isSelected}
+                        aria-pressed={isSelected}
+                        aria-label={`${day.fullDate}, ${dayStatusText}, ${
+                          isPast
+                            ? "geçmiş tarih"
+                            : day.status === "unavailable"
+                              ? "seçime kapalı"
+                              : `${freeSlotCount} müsait aralık`
+                        }`}
+                        onClick={() => handleDateSelect(day.dateValue)}>
+                        <DayName>{day.dayName}</DayName>
+                        <DayDate>{day.dateLabel}</DayDate>
+                        <StatusBadge $status={day.status}>
+                          {getStatusIcon(day.status)}
+                          {dayStatusText}
+                        </StatusBadge>
+                        <DaySlotCount>
+                          {isPast
+                            ? "Geçmiş tarih"
+                            : day.status === "unavailable"
+                              ? "Seçime kapalı"
+                              : `${freeSlotCount} müsait aralık`}
+                        </DaySlotCount>
+                      </DayButton>
+                    );
+                  })}
+                </WeekGrid>
+              </ScrollWrapper>
+
+              <SlotPanel>
+                <div>
+                  <Heading as="h2">
+                    {selectedDay ? selectedDay.fullDate : "Gün seçin"}
+                  </Heading>
+                  <MutedText>
+                    {selectedDay?.note ||
+                      "Ortalama iş süresi iki saattir. Uygun bir aralık seçin."}
+                  </MutedText>
+                </div>
+
+                {["closed", "unavailable"].includes(selectedDay?.status) ||
+                selectedDateIsPast ||
+                availableSlots.length === 0 ? (
+                  <EmptySlots>
+                    <span>Bu tarih için seçilebilir saat bulunmuyor.</span>
+                    <span>
+                      {selectedDay?.status === "unavailable"
+                        ? "Müsaitlik doğrulanmadan randevu seçilemez."
+                        : "Başka bir tarih deneyin."}
+                    </span>
+                  </EmptySlots>
+                ) : (
+                  <SlotGrid>
+                    {selectedDay.slots.map((slot) => (
+                      <SlotButton
+                        key={`${selectedDay.dateValue}-${slot.time}`}
+                        type="button"
+                        disabled={!slot.isAvailable}
+                        $active={selectedSlot?.time === slot.time}
+                        aria-pressed={selectedSlot?.time === slot.time}
+                        aria-label={`${slot.label}, ${
+                          slot.isAvailable ? "müsait" : "dolu"
+                        }`}
+                        onClick={() => setSelectedSlot(slot)}
+                        title={slot.note || undefined}>
+                        {slot.label}
+                      </SlotButton>
+                    ))}
+                  </SlotGrid>
+                )}
+              </SlotPanel>
+
+              <div style={{ marginTop: "2rem" }}>
+                <Heading as="h2" style={{ fontSize: "1.8rem", marginBottom: "1.2rem" }}>
+                  Talep Özeti
                 </Heading>
-                <MutedText>
-                  {selectedDay?.note ||
-                    "Ortalama iş süresi iki saattir. Uygun bir aralık seçin."}
-                </MutedText>
+                <HorizontalSummary>
+                  <SummaryItem>
+                    <SummaryIcon>
+                      <HiOutlineCalendarDays />
+                    </SummaryIcon>
+                    <SummaryContent>
+                      <SummaryLabel>Seçilen Tarih</SummaryLabel>
+                      <SummaryValue>
+                        {selectedDay ? selectedDay.fullDate : "Gün seçilmedi"}
+                      </SummaryValue>
+                    </SummaryContent>
+                  </SummaryItem>
+
+                  <SummaryItem>
+                    <SummaryIcon>
+                      <HiOutlineClock />
+                    </SummaryIcon>
+                    <SummaryContent>
+                      <SummaryLabel>Seçilen Saat</SummaryLabel>
+                      <SummaryValue>
+                        {selectedSlot?.label || "Saat seçilmedi"}
+                      </SummaryValue>
+                    </SummaryContent>
+                  </SummaryItem>
+
+                  <SummaryItem>
+                    <SummaryIcon>
+                      <HiOutlineWrenchScrewdriver />
+                    </SummaryIcon>
+                    <SummaryContent>
+                      <SummaryLabel>Hizmet Türü</SummaryLabel>
+                      <SummaryValue>{selectedService}</SummaryValue>
+                    </SummaryContent>
+                  </SummaryItem>
+                </HorizontalSummary>
               </div>
 
-              {["closed", "unavailable"].includes(selectedDay?.status) ||
-              selectedDateIsPast ||
-              availableSlots.length === 0 ? (
-                <EmptySlots>
-                  <span>Bu tarih için seçilebilir saat bulunmuyor.</span>
-                  <span>
-                    {selectedDay?.status === "unavailable"
-                      ? "Müsaitlik doğrulanmadan randevu seçilemez."
-                      : "Başka bir tarih deneyin."}
-                  </span>
-                </EmptySlots>
-              ) : (
-                <SlotGrid>
-                  {selectedDay.slots.map((slot) => (
-                    <SlotButton
-                      key={`${selectedDay.dateValue}-${slot.time}`}
-                      type="button"
-                      disabled={!slot.isAvailable}
-                      $active={selectedSlot?.time === slot.time}
-                      aria-pressed={selectedSlot?.time === slot.time}
-                      aria-label={`${slot.label}, ${
-                        slot.isAvailable ? "müsait" : "dolu"
-                      }`}
-                      onClick={() => setSelectedSlot(slot)}
-                      title={slot.note || undefined}>
-                      {slot.label}
-                    </SlotButton>
-                  ))}
-                </SlotGrid>
-              )}
-            </SlotPanel>
+              <WizardActions>
+                <Button
+                  type="button"
+                  variation="secondary"
+                  onClick={() => setBookingStep(1)}>
+                  ← Hizmet Seçimine Geri Dön
+                </Button>
+                <Button
+                  type="button"
+                  size="large"
+                  variation="cta"
+                  disabled={!selectedDay || !selectedSlot}
+                  onClick={() => setBookingStep(3)}>
+                  İletişim Bilgilerine İlerle →
+                </Button>
+              </WizardActions>
+            </Panel>
+          )}
 
-            <div style={{ marginTop: "2rem" }}>
-              <Heading as="h2" style={{ fontSize: "1.8rem", marginBottom: "1.2rem" }}>
-                Talep Özeti
-              </Heading>
-              <HorizontalSummary>
+          {bookingStep === 3 && (
+            <Panel>
+              <PanelHeader>
+                <div>
+                  <Heading as="h2">İletişim ve Onay</Heading>
+                  <MutedText>
+                    Randevunuzu tamamlamak için iletişim bilgilerinizi doldurun veya hızlı paylaşım seçeneklerini kullanın.
+                  </MutedText>
+                </div>
+              </PanelHeader>
+
+              <HorizontalSummary style={{ marginTop: "0" }}>
                 <SummaryItem>
                   <SummaryIcon>
                     <HiOutlineCalendarDays />
                   </SummaryIcon>
                   <SummaryContent>
                     <SummaryLabel>Seçilen Tarih</SummaryLabel>
-                    <SummaryValue>
-                      {selectedDay ? selectedDay.fullDate : "Gün seçilmedi"}
-                    </SummaryValue>
+                    <SummaryValue>{selectedDay ? selectedDay.fullDate : "Gün seçilmedi"}</SummaryValue>
                   </SummaryContent>
                 </SummaryItem>
 
@@ -2265,9 +2503,7 @@ function CustomerBooking() {
                   </SummaryIcon>
                   <SummaryContent>
                     <SummaryLabel>Seçilen Saat</SummaryLabel>
-                    <SummaryValue>
-                      {selectedSlot?.label || "Saat seçilmedi"}
-                    </SummaryValue>
+                    <SummaryValue>{selectedSlot?.label || "Saat seçilmedi"}</SummaryValue>
                   </SummaryContent>
                 </SummaryItem>
 
@@ -2281,113 +2517,118 @@ function CustomerBooking() {
                   </SummaryContent>
                 </SummaryItem>
               </HorizontalSummary>
-            </div>
-          </Panel>
 
-          <SummaryPanel>
-            <SummaryBlock>
-              <Heading as="h2">Hizmet türü</Heading>
-              <ServiceList>
-                {serviceTypes.map((service) => (
-                  <ServiceOption
-                    key={service}
-                    type="button"
-                    $active={selectedService === service}
-                    onClick={() => setSelectedService(service)}>
-                    {service}
-                  </ServiceOption>
-                ))}
-              </ServiceList>
-            </SummaryBlock>
+              <ConfirmLayout>
+                <FormBlock>
+                  <Heading as="h3" style={{ fontSize: "1.6rem", marginBottom: "1.2rem" }}>
+                    Sistem Kayıt Formu
+                  </Heading>
+                  <MutedText style={{ marginBottom: "1.6rem" }}>
+                    Sisteme doğrudan talep bırakmak için aşağıdaki alanları doldurun.
+                  </MutedText>
 
-            <SummaryBlock>
-              <Heading as="h2">İletişim seçenekleri</Heading>
-              <ChannelGrid>
-                <ChannelLink
-                  href={quickWhatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  $color="var(--color-channel-whatsapp)">
-                  <FaWhatsapp />
-                  Doğrudan Soru Sor / Fotoğraf Gönder
-                </ChannelLink>
-                <ChannelLink
-                  href={canSend ? whatsappUrl : undefined}
-                  target="_blank"
-                  rel="noreferrer"
-                  $color="var(--color-brand-600)"
-                  $disabled={!canSend}>
-                  <HiOutlinePhone />
-                  {"Seçili Randevu ile WhatsApp'tan Yaz"}
-                </ChannelLink>
-                <ChannelLink
-                  href={canSend ? mailUrl : undefined}
-                  $color="var(--color-brand-700)"
-                  $disabled={!canSend}>
-                  <HiOutlineEnvelope />
-                  Seçili Randevu ile E-posta Gönder
-                </ChannelLink>
-              </ChannelGrid>
+                  <FieldGrid>
+                    <Field>
+                      Adınız
+                      <Input
+                        value={customerName}
+                        onChange={(event) => setCustomerName(event.target.value)}
+                        placeholder="Ad Soyad"
+                      />
+                    </Field>
+                    <Field>
+                      Telefon
+                      <Input
+                        value={customerPhone}
+                        onChange={(event) => setCustomerPhone(event.target.value)}
+                        placeholder="05xx xxx xx xx"
+                      />
+                    </Field>
+                    <Field>
+                      E-posta
+                      <Input
+                        value={customerEmail}
+                        onChange={(event) => setCustomerEmail(event.target.value)}
+                        placeholder="ornek@email.com"
+                      />
+                    </Field>
+                    <Field>
+                      İşle ilgili notunuz
+                      <Textarea
+                        value={notes}
+                        onChange={(event) => setNotes(event.target.value)}
+                        maxLength={1000}
+                        placeholder="Örn. Balkon korkuluğu tamiri yaptırmak istiyorum."
+                      />
+                    </Field>
+                  </FieldGrid>
 
-              <MutedText>
-                Sisteme talep bırakmak için ad ve telefon bilgilerinizi girin.
-              </MutedText>
+                  <Button
+                    size="large"
+                    variation="cta"
+                    style={{ width: "100%", marginTop: "2rem" }}
+                    disabled={!canSubmitToSystem || isLoading}
+                    onClick={handleSystemSubmit}>
+                    {isLoading ? "Kaydediliyor..." : "Randevu Talebi Oluştur"}
+                  </Button>
+                </FormBlock>
 
-              <FieldGrid>
-                <Field>
-                  Adınız
-                  <Input
-                    value={customerName}
-                    onChange={(event) => setCustomerName(event.target.value)}
-                    placeholder="Ad Soyad"
-                  />
-                </Field>
-                <Field>
-                  Telefon
-                  <Input
-                    value={customerPhone}
-                    onChange={(event) => setCustomerPhone(event.target.value)}
-                    placeholder="05xx xxx xx xx"
-                  />
-                </Field>
-                <Field>
-                  E-posta
-                  <Input
-                    value={customerEmail}
-                    onChange={(event) => setCustomerEmail(event.target.value)}
-                    placeholder="ornek@email.com"
-                  />
-                </Field>
-                <Field>
-                  İşle ilgili notunuz
-                  <Textarea
-                    value={notes}
-                    onChange={(event) => setNotes(event.target.value)}
-                    maxLength={1000}
-                    placeholder="Örn. Balkon korkuluğu tamiri yaptırmak istiyorum."
-                  />
-                </Field>
-              </FieldGrid>
+                <DirectContactBlock>
+                  <Heading as="h3" style={{ fontSize: "1.6rem", marginBottom: "1.2rem" }}>
+                    Hızlı İletişim Seçenekleri
+                  </Heading>
+                  <MutedText style={{ marginBottom: "1.6rem" }}>
+                    Bilgilerinizi sisteme kaydetmeden, doğrudan WhatsApp veya E-posta üzerinden randevulu mesaj hazırlayabilirsiniz.
+                  </MutedText>
 
-              <Button
-                size="large"
-                variation="cta"
-                disabled={!canSubmitToSystem || isLoading}
-                onClick={handleSystemSubmit}>
-                {isLoading ? "Kaydediliyor..." : "Randevu talebi oluştur"}
-              </Button>
+                  <ChannelGrid>
+                    <ChannelLink
+                      href={quickWhatsappUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      $color="var(--color-channel-whatsapp)">
+                      <FaWhatsapp />
+                      Doğrudan Soru Sor / Fotoğraf Gönder
+                    </ChannelLink>
+                    <ChannelLink
+                      href={canSend ? whatsappUrl : undefined}
+                      target="_blank"
+                      rel="noreferrer"
+                      $color="var(--color-brand-600)"
+                      $disabled={!canSend}>
+                      <HiOutlinePhone />
+                      {"Seçili Randevu ile WhatsApp'tan Yaz"}
+                    </ChannelLink>
+                    <ChannelLink
+                      href={canSend ? mailUrl : undefined}
+                      $color="var(--color-brand-700)"
+                      $disabled={!canSend}>
+                      <HiOutlineEnvelope />
+                      Seçili Randevu ile E-posta Gönder
+                    </ChannelLink>
+                  </ChannelGrid>
 
-              <SelectedLine>
-                <HiOutlineUser />
-                <span>
-                  WhatsApp ve e-posta seçenekleri, seçtiğiniz tarih ve saatle
-                  hazırlanmış bir mesaj açar. Sistem kaydı için ad ve telefon
-                  bilgisi gerekir.
-                </span>
-              </SelectedLine>
-            </SummaryBlock>
-          </SummaryPanel>
-        </ContentGrid>
+                  <div style={{ marginTop: "2.4rem", display: "flex", gap: "1rem", alignItems: "start" }}>
+                    <HiOutlineUser style={{ width: "2rem", height: "2rem", color: "var(--color-brand-600)", flexShrink: 0 }} />
+                    <span style={{ fontSize: "1.2rem", color: "var(--color-grey-500)", lineHeight: "1.4" }}>
+                      WhatsApp ve e-posta seçenekleri, seçtiğiniz tarih ve saatle hazırlanmış bir mesaj açar. Sistem kaydı için ad ve telefon bilgisi gerekir.
+                    </span>
+                  </div>
+                </DirectContactBlock>
+              </ConfirmLayout>
+
+              <WizardActions>
+                <Button
+                  type="button"
+                  variation="secondary"
+                  onClick={() => setBookingStep(2)}>
+                  ← Tarih & Saat Seçimine Geri Dön
+                </Button>
+                <div />
+              </WizardActions>
+            </Panel>
+          )}
+        </WizardContainer>
 
         <LocationSection id="location">
           <LocationInfo>
@@ -2429,7 +2670,7 @@ function CustomerBooking() {
               allowFullScreen=""
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Welding Expert Atölye Konumu"
+              title="Umut Usta Atölye Konumu"
             />
           </MapBox>
         </LocationSection>
@@ -2451,7 +2692,7 @@ function CustomerBooking() {
         </Section>
 
         <Footer>
-          <span>Welding Expert Randevu Sistemi</span>
+          <span>Umut Usta Randevu Sistemi</span>
           <span>Kaynak, metal onarım ve yerinde keşif hizmetleri</span>
         </Footer>
       </Shell>
