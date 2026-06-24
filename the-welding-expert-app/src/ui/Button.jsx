@@ -27,16 +27,20 @@ const variations = {
     color: var(--color-grey-0);
     background-color: var(--color-selection);
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: var(--color-selection-strong);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(23, 107, 145, 0.4);
     }
   `,
   cta: css`
     color: var(--color-surface-dark);
     background-color: var(--color-action-primary);
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: var(--color-action-primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(244, 196, 48, 0.5);
     }
   `,
   secondary: css`
@@ -44,24 +48,30 @@ const variations = {
     background: var(--color-grey-0);
     border: 1px solid var(--color-grey-200);
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: var(--color-grey-50);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
   `,
   danger: css`
     color: var(--color-red-100);
     background-color: var(--color-red-700);
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: var(--color-red-800);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(180, 35, 24, 0.4);
     }
   `,
   success: css`
     color: var(--color-grey-0);
     background-color: var(--color-green-700);
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: var(--color-green-800);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(46, 125, 79, 0.4);
     }
   `,
   ghost: css`
@@ -69,8 +79,9 @@ const variations = {
     background-color: transparent;
     box-shadow: none;
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: var(--color-selection-soft);
+      transform: translateY(-1px);
     }
   `,
 };

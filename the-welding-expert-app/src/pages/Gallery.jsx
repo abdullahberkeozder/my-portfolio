@@ -92,6 +92,29 @@ const testimonials = [
   },
 ];
 
+const ScrollWrapper = styled.div`
+  position: relative;
+  width: 100%;
+
+  @media (max-width: ${(props) => props.$breakpoint || "640px"}) {
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 4rem;
+      background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        ${(props) => props.$bg || "var(--color-grey-50)"} 100%
+      );
+      pointer-events: none;
+      z-index: 2;
+    }
+  }
+`;
+
 const Page = styled.main`
   min-height: 100vh;
   background: var(--color-grey-50);
@@ -363,6 +386,13 @@ const WorkCard = styled.article`
   overflow: hidden;
   display: grid;
   background: var(--color-grey-50);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    border-color: var(--color-brand-200);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
 
   @media (max-width: 640px) {
     scroll-snap-align: start;
@@ -497,6 +527,14 @@ const PhotoTile = styled.figure`
   border-radius: var(--border-radius-md);
   background-color: var(--color-grey-300);
 
+  & img {
+    transition: transform 0.4s ease;
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
+
   &:first-child {
     grid-row: span 2;
   }
@@ -506,6 +544,7 @@ const PhotoTile = styled.figure`
     position: absolute;
     inset: 0;
     background: linear-gradient(180deg, transparent, rgba(17, 24, 39, 0.72));
+    pointer-events: none;
   }
 
   @media (max-width: 560px) {
@@ -560,6 +599,13 @@ const TestimonialCard = styled.article`
   display: grid;
   gap: 1.2rem;
   background: var(--color-grey-50);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    border-color: var(--color-brand-200);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
 
   @media (max-width: 640px) {
     scroll-snap-align: start;
@@ -676,48 +722,50 @@ function Gallery() {
             </MutedText>
           </SectionHeader>
 
-          <WorkGrid aria-label="Önce ve sonra iş örnekleri">
-            {workExamples.map((item) => (
-              <WorkCard key={item.title}>
-                <CompareGrid>
-                  <CompareMedia>
-                    <MediaImage
-                      src={item.beforeImage}
-                      alt={`${item.title}: ${item.beforeLabel.toLocaleLowerCase("tr-TR")} aşaması`}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <ImageLabel>{item.beforeLabel}</ImageLabel>
-                  </CompareMedia>
-                  <CompareMedia>
-                    <MediaImage
-                      src={item.afterImage}
-                      alt={`${item.title}: ${item.afterLabel.toLocaleLowerCase("tr-TR")} aşaması`}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <ImageLabel>{item.afterLabel}</ImageLabel>
-                  </CompareMedia>
-                </CompareGrid>
-                <WorkBody>
-                  <MetaRow>
-                    <Pill>{item.category}</Pill>
-                    <Pill>{item.location}</Pill>
-                  </MetaRow>
-                  <CardTitle>{item.title}</CardTitle>
-                  <CardText>{item.text}</CardText>
-                  <MiniList>
-                    {item.points.map((point) => (
-                      <MiniItem key={point}>
-                        <HiOutlineCheckCircle />
-                        {point}
-                      </MiniItem>
-                    ))}
-                  </MiniList>
-                </WorkBody>
-              </WorkCard>
-            ))}
-          </WorkGrid>
+          <ScrollWrapper $bg="var(--color-grey-0)">
+            <WorkGrid aria-label="Önce ve sonra iş örnekleri">
+              {workExamples.map((item) => (
+                <WorkCard key={item.title}>
+                  <CompareGrid>
+                    <CompareMedia>
+                      <MediaImage
+                        src={item.beforeImage}
+                        alt={`${item.title}: ${item.beforeLabel.toLocaleLowerCase("tr-TR")} aşaması`}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <ImageLabel>{item.beforeLabel}</ImageLabel>
+                    </CompareMedia>
+                    <CompareMedia>
+                      <MediaImage
+                        src={item.afterImage}
+                        alt={`${item.title}: ${item.afterLabel.toLocaleLowerCase("tr-TR")} aşaması`}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <ImageLabel>{item.afterLabel}</ImageLabel>
+                    </CompareMedia>
+                  </CompareGrid>
+                  <WorkBody>
+                    <MetaRow>
+                      <Pill>{item.category}</Pill>
+                      <Pill>{item.location}</Pill>
+                    </MetaRow>
+                    <CardTitle>{item.title}</CardTitle>
+                    <CardText>{item.text}</CardText>
+                    <MiniList>
+                      {item.points.map((point) => (
+                        <MiniItem key={point}>
+                          <HiOutlineCheckCircle />
+                          {point}
+                        </MiniItem>
+                      ))}
+                    </MiniList>
+                  </WorkBody>
+                </WorkCard>
+              ))}
+            </WorkGrid>
+          </ScrollWrapper>
         </Section>
 
         <Section>
@@ -730,19 +778,21 @@ function Gallery() {
             </MutedText>
           </SectionHeader>
 
-          <PhotoGrid aria-label="Kaynak ve metal işi galerisi">
-            {galleryItems.map((item) => (
-              <PhotoTile key={item.title}>
-                <MediaImage
-                  src={item.image}
-                  alt={item.title}
-                  loading="lazy"
-                  decoding="async"
-                />
-                <PhotoCaption>{item.title}</PhotoCaption>
-              </PhotoTile>
-            ))}
-          </PhotoGrid>
+          <ScrollWrapper $breakpoint="560px" $bg="var(--color-grey-0)">
+            <PhotoGrid aria-label="Kaynak ve metal işi galerisi">
+              {galleryItems.map((item) => (
+                <PhotoTile key={item.title}>
+                  <MediaImage
+                    src={item.image}
+                    alt={item.title}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <PhotoCaption>{item.title}</PhotoCaption>
+                </PhotoTile>
+              ))}
+            </PhotoGrid>
+          </ScrollWrapper>
         </Section>
 
         <Section>
@@ -755,20 +805,22 @@ function Gallery() {
             </MutedText>
           </SectionHeader>
 
-          <TestimonialsGrid aria-label="Müşteri yorumları">
-            {testimonials.map((item) => (
-              <TestimonialCard key={item.name}>
-                <QuoteIcon>
-                  <HiOutlineChatBubbleLeftRight />
-                </QuoteIcon>
-                <CardText>{item.text}</CardText>
-                <div>
-                  <CustomerName>{item.name}</CustomerName>
-                  <MutedText>{item.job}</MutedText>
-                </div>
-              </TestimonialCard>
-            ))}
-          </TestimonialsGrid>
+          <ScrollWrapper $bg="var(--color-grey-0)">
+            <TestimonialsGrid aria-label="Müşteri yorumları">
+              {testimonials.map((item) => (
+                <TestimonialCard key={item.name}>
+                  <QuoteIcon>
+                    <HiOutlineChatBubbleLeftRight />
+                  </QuoteIcon>
+                  <CardText>{item.text}</CardText>
+                  <div>
+                    <CustomerName>{item.name}</CustomerName>
+                    <MutedText>{item.job}</MutedText>
+                  </div>
+                </TestimonialCard>
+              ))}
+            </TestimonialsGrid>
+          </ScrollWrapper>
         </Section>
 
         <Cta>
