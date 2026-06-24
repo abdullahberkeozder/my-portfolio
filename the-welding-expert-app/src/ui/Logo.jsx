@@ -46,7 +46,7 @@ function Logo() {
         <HiOutlineWrenchScrewdriver />
       </Mark>
       <div>
-        <Name>Welding Expert</Name>
+        <Name>Umut Usta</Name>
         <Caption>Randevu yönetimi</Caption>
       </div>
     </StyledLogo>

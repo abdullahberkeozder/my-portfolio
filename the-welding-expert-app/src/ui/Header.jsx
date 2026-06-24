@@ -206,7 +206,7 @@ function Header({ isNavigationOpen, onToggleNavigation }) {
           <HiOutlineBars3 />
         </MenuButton>
         <MobileTitle>
-          <strong>Welding Expert</strong>
+          <strong>Umut Usta</strong>
           <span>Yönetim paneli</span>
         </MobileTitle>
       </MobileStart>
