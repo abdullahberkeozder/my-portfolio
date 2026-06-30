@@ -911,6 +911,18 @@ export const DayButton = styled.button`
     transform: ${(props) => (props.$disabled ? "none" : "translateY(-1px)")};
   }
 
+  animation: ${(props) => (props.$selected ? "pulseSelected 0.3s cubic-bezier(0.16, 1, 0.3, 1)" : "none")};
+
+  @keyframes pulseSelected {
+    0% {
+      transform: scale(0.96);
+      box-shadow: inset 0 4px 0 var(--color-action-primary), 0 0 0 3px rgba(13, 128, 80, 0.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
   @media (max-width: 980px) {
     scroll-snap-align: center;
     scroll-snap-stop: always;
@@ -922,6 +934,7 @@ export const DayButton = styled.button`
     gap: 0.5rem;
   }
 `;
+
 
 export const DayName = styled.span`
   color: var(--color-grey-900);
@@ -1053,6 +1066,18 @@ export const SlotButton = styled.button`
   &:active:not(:disabled) {
     transform: translateY(0);
   }
+
+  animation: ${(props) => (props.$active ? "pulseActiveSlot 0.2s cubic-bezier(0.16, 1, 0.3, 1)" : "none")};
+
+  @keyframes pulseActiveSlot {
+    0% {
+      transform: scale(0.96);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
 
   &:disabled {
     color: var(--color-grey-400);
@@ -1724,5 +1749,51 @@ export const StepAnimationWrapper = styled.div`
     }
   }
 `;
+
+export const HeaderExtraLinks = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-top: 1.6rem;
+  font-size: 1.3rem;
+  color: var(--color-grey-500);
+
+  & .dot {
+    color: var(--color-grey-300);
+  }
+
+  @media (max-width: 520px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+
+    & .dot {
+      display: none;
+    }
+  }
+`;
+
+export const HeaderExtraLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-grey-600);
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-brand-700);
+    text-decoration: underline;
+  }
+
+  & svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    color: var(--color-brand-600);
+    flex-shrink: 0;
+  }
+`;
+
 
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { HiOutlineChevronDown } from "react-icons/hi2";
 
@@ -12,6 +12,52 @@ import {
   CardText,
 } from "../../../pages/CustomerBooking.styles";
 
+function FaqItem({ item, index, isOpen, onToggle }) {
+  const contentRef = useRef(null);
+
+  return (
+    <AccordionItem $isOpen={isOpen}>
+      <AccordionHeader
+        id={`faq-question-${index}`}
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        aria-controls={`faq-answer-${index}`}>
+        <CardTitle style={{ fontSize: "1.5rem", margin: 0 }}>
+          {item.question}
+        </CardTitle>
+        <AccordionIcon $isOpen={isOpen}>
+          <HiOutlineChevronDown />
+        </AccordionIcon>
+      </AccordionHeader>
+
+      <AccordionContent
+        id={`faq-answer-${index}`}
+        $isOpen={isOpen}
+        role="region"
+        aria-labelledby={`faq-question-${index}`}
+        ref={contentRef}
+        style={{
+          maxHeight: isOpen ? `${contentRef.current?.scrollHeight}px` : "0px",
+        }}>
+        <CardText style={{ fontSize: "1.4rem", margin: 0, paddingBottom: "1.4rem" }}>
+          {item.answer}
+        </CardText>
+      </AccordionContent>
+    </AccordionItem>
+  );
+}
+
+FaqItem.propTypes = {
+  item: PropTypes.shape({
+    question: PropTypes.string.isRequired,
+    answer: PropTypes.string.isRequired,
+  }).isRequired,
+  index: PropTypes.number.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onToggle: PropTypes.func.isRequired,
+};
+
 function FaqAccordion({ items }) {
   const [activeIndex, setActiveIndex] = useState(null);
 
@@ -21,37 +67,15 @@ function FaqAccordion({ items }) {
 
   return (
     <AccordionContainer>
-      {items.map((item, index) => {
-        const isOpen = activeIndex === index;
-
-        return (
-          <AccordionItem key={item.question} $isOpen={isOpen}>
-            <AccordionHeader
-              id={`faq-question-${index}`}
-              type="button"
-              onClick={() => handleToggle(index)}
-              aria-expanded={isOpen}
-              aria-controls={`faq-answer-${index}`}>
-              <CardTitle style={{ fontSize: "1.5rem", margin: 0 }}>
-                {item.question}
-              </CardTitle>
-              <AccordionIcon $isOpen={isOpen}>
-                <HiOutlineChevronDown />
-              </AccordionIcon>
-            </AccordionHeader>
-
-            <AccordionContent
-              id={`faq-answer-${index}`}
-              $isOpen={isOpen}
-              role="region"
-              aria-labelledby={`faq-question-${index}`}>
-              <CardText style={{ fontSize: "1.4rem", margin: 0, paddingBottom: "1.4rem" }}>
-                {item.answer}
-              </CardText>
-            </AccordionContent>
-          </AccordionItem>
-        );
-      })}
+      {items.map((item, index) => (
+        <FaqItem
+          key={item.question}
+          item={item}
+          index={index}
+          isOpen={activeIndex === index}
+          onToggle={() => handleToggle(index)}
+        />
+      ))}
     </AccordionContainer>
   );
 }
@@ -66,3 +90,4 @@ FaqAccordion.propTypes = {
 };
 
 export default FaqAccordion;
+

@@ -69,7 +69,10 @@ import {
   TrustItem,
   HeaderActions,
   HeaderLink,
+  HeaderExtraLinks,
+  HeaderExtraLink,
   HeaderBadge,
+
   AboutSection,
   AboutCopy,
   Eyebrow,
@@ -439,6 +442,12 @@ function CustomerBooking() {
     setSelectedSlot(null);
   }
 
+  function handleServiceChange(serviceValue) {
+    setSelectedService(serviceValue);
+    setSelectedSlot(null);
+  }
+
+
   function handleWeekChange(direction) {
     const nextWeekStart = addDays(weekStart, direction * 7);
     const nextSelectedDate = formatDateKey(nextWeekStart);
@@ -557,7 +566,7 @@ function CustomerBooking() {
               <HeaderActions>
                 <HeaderLink href="#appointment-calendar">
                   <HiOutlineCalendarDays />
-                  Randevu seç
+                  Randevu Seç
                 </HeaderLink>
                 <HeaderLink
                   href={quickWhatsappUrl}
@@ -567,21 +576,20 @@ function CustomerBooking() {
                   <FaWhatsapp />
                   Fotoğraf Gönder, Teklif Al
                 </HeaderLink>
-                <HeaderLink
-                  href="#location"
-                  $secondary>
+              </HeaderActions>
+              <HeaderExtraLinks>
+                <HeaderExtraLink href="#location">
                   <HiOutlineMapPin />
                   Adresi gör
-                </HeaderLink>
-                <HeaderLink
-                  as={Link}
-                  to="/gallery"
-                  $secondary>
+                </HeaderExtraLink>
+                <span className="dot">•</span>
+                <HeaderExtraLink as={Link} to="/gallery">
                   <HiOutlinePhoto />
                   İş örnekleri
-                </HeaderLink>
-              </HeaderActions>
+                </HeaderExtraLink>
+              </HeaderExtraLinks>
             </HeaderText>
+
           </div>
           <HeaderBadge>
             <HiOutlineMapPin />
@@ -672,12 +680,13 @@ function CustomerBooking() {
                   type="button"
                   $active={selectedService === service.serviceType}
                   onClick={() => {
-                    setSelectedService(service.serviceType);
+                    handleServiceChange(service.serviceType);
                     setBookingStep(2);
                     document
                       .getElementById("appointment-calendar")
                       ?.scrollIntoView({ behavior: "smooth" });
                   }}>
+
                   <CardImageContainer>
                     <CardImage src={service.imageUrl} alt={service.title} />
                   </CardImageContainer>
@@ -777,7 +786,8 @@ function CustomerBooking() {
                           key={service.serviceType}
                           type="button"
                           $active={selectedService === service.serviceType}
-                          onClick={() => setSelectedService(service.serviceType)}>
+                          onClick={() => handleServiceChange(service.serviceType)}>
+
                           <SelectionCardIcon $active={selectedService === service.serviceType}>
                             <HiOutlineWrenchScrewdriver />
                           </SelectionCardIcon>
@@ -926,10 +936,12 @@ function CustomerBooking() {
         </Footer>
       </Shell>
 
-      <StickyMobileCTA
-        quickWhatsappUrl={quickWhatsappUrl}
-        onScrollToCalendar={handleScrollToCalendar}
-      />
+      {bookingStep < 3 && !isSubmitted && (
+        <StickyMobileCTA
+          quickWhatsappUrl={quickWhatsappUrl}
+          onScrollToCalendar={handleScrollToCalendar}
+        />
+      )}
     </Page>
   );
 }

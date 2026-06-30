@@ -42,7 +42,9 @@ import {
   SummaryLabel,
   SummaryValue,
   WizardActions,
+  StepAnimationWrapper,
 } from "../../../pages/CustomerBooking.styles";
+
 
 const statusLabel = {
   available: "Müsait",
@@ -248,36 +250,38 @@ function BookingCalendar({
           </MutedText>
         </div>
 
-        {["closed", "unavailable"].includes(selectedDay?.status) ||
-        selectedDateIsPast ||
-        availableSlots.length === 0 ? (
-          <EmptySlots>
-            <span>Bu tarih için seçilebilir saat bulunmuyor.</span>
-            <span>
-              {selectedDay?.status === "unavailable"
-                ? "Müsaitlik doğrulanmadan randevu seçilemez."
-                : "Başka bir tarih deneyin."}
-            </span>
-          </EmptySlots>
-        ) : (
-          <SlotGrid>
-            {selectedDay.slots.map((slot) => (
-              <SlotButton
-                key={`${selectedDay.dateValue}-${slot.time}`}
-                type="button"
-                disabled={!slot.isAvailable}
-                $active={selectedSlot?.time === slot.time}
-                aria-pressed={selectedSlot?.time === slot.time}
-                aria-label={`${slot.label}, ${
-                  slot.isAvailable ? "müsait" : "dolu"
-                }`}
-                onClick={() => onSlotSelect(slot)}
-                title={slot.note || undefined}>
-                {slot.label}
-              </SlotButton>
-            ))}
-          </SlotGrid>
-        )}
+        <StepAnimationWrapper key={selectedDate}>
+          {["closed", "unavailable"].includes(selectedDay?.status) ||
+          selectedDateIsPast ||
+          availableSlots.length === 0 ? (
+            <EmptySlots>
+              <span>Bu tarih için seçilebilir saat bulunmuyor.</span>
+              <span>
+                {selectedDay?.status === "unavailable"
+                  ? "Müsaitlik doğrulanmadan randevu seçilemez."
+                  : "Başka bir tarih deneyin."}
+              </span>
+            </EmptySlots>
+          ) : (
+            <SlotGrid>
+              {selectedDay.slots.map((slot) => (
+                <SlotButton
+                  key={`${selectedDay.dateValue}-${slot.time}`}
+                  type="button"
+                  disabled={!slot.isAvailable}
+                  $active={selectedSlot?.time === slot.time}
+                  aria-pressed={selectedSlot?.time === slot.time}
+                  aria-label={`${slot.label}, ${
+                    slot.isAvailable ? "müsait" : "dolu"
+                  }`}
+                  onClick={() => onSlotSelect(slot)}
+                  title={slot.note || undefined}>
+                  {slot.label}
+                </SlotButton>
+              ))}
+            </SlotGrid>
+          )}
+        </StepAnimationWrapper>
       </SlotPanel>
 
       <div style={{ marginTop: "2rem" }}>
@@ -328,15 +332,23 @@ function BookingCalendar({
           onClick={() => onStepChange(1)}>
           ← Hizmet Seçimine Geri Dön
         </Button>
-        <Button
-          type="button"
-          size="large"
-          variation="cta"
-          disabled={!selectedDay || !selectedSlot}
-          onClick={() => onStepChange(3)}>
-          İletişim Bilgilerine İlerle →
-        </Button>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.6rem" }}>
+          {!selectedSlot && selectedDay && !["closed", "unavailable"].includes(selectedDay.status) && availableSlots.length > 0 && (
+            <span style={{ fontSize: "1.2rem", color: "var(--color-yellow-700)", fontWeight: "600", whiteSpace: "nowrap" }}>
+              * İlerlemek için yukarıdan bir saat aralığı seçin
+            </span>
+          )}
+          <Button
+            type="button"
+            size="large"
+            variation="cta"
+            disabled={!selectedDay || !selectedSlot}
+            onClick={() => onStepChange(3)}>
+            İletişim Bilgilerine İlerle →
+          </Button>
+        </div>
       </WizardActions>
+
     </Panel>
   );
 }
