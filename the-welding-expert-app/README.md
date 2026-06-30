@@ -6,14 +6,24 @@ The Welding Expert App is a React 18, Vite, and Supabase web application tailore
 
 ## 📸 Screenshots
 
-### Customer Landing & Booking
-![Customer booking page](./docs/readme-assets/appointment-page.png)
+<p align="center">
+  <strong>Masaüstü Randevu Arayüzü</strong><br>
+  <img src="./docs/readme-assets/appointment-page.png" alt="Customer Booking Page" width="90%" />
+</p>
 
-### Before/After Work Gallery
-![Work gallery page](./docs/readme-assets/gallery-page.png)
+<br>
 
-### Mobile View & Sticky CTA Action Bar
-![Mobile booking page](./docs/readme-assets/appointment-mobile.png)
+<p align="center">
+  <strong>Masaüstü Çalışma Galerisi (Önce / Sonra Karşılaştırmalı)</strong><br>
+  <img src="./docs/readme-assets/gallery-page.png" alt="Work Gallery Page" width="90%" />
+</p>
+
+<br>
+
+<p align="center">
+  <strong>Mobil Randevu Deneyimi & Yapışkan Alt Eylem Barı</strong><br>
+  <img src="./docs/readme-assets/appointment-mobile.png" alt="Mobile Booking Experience" width="320px" />
+</p>
 
 ---
 
