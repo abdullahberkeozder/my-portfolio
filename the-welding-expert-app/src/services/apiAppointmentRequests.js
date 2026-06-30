@@ -31,11 +31,18 @@ function getAppointmentRequestError(
   return fallbackMessage;
 }
 
-export async function getAppointmentRequests() {
-  const { data, error } = await supabase
+export async function getAppointmentRequests({ showArchived = false } = {}) {
+  let query = supabase
     .from(TABLE_NAME)
-    .select("*")
-    .order("created_at", { ascending: false });
+    .select("*");
+
+  if (showArchived) {
+    query = query.not("archived_at", "is", null);
+  } else {
+    query = query.is("archived_at", null);
+  }
+
+  const { data, error } = await query.order("created_at", { ascending: false });
 
   if (error) {
     console.error(error);
@@ -93,13 +100,29 @@ export async function updateAppointmentRequest({ id, updates }) {
 export async function deleteAppointmentRequest(id) {
   const { error } = await supabase
     .from(TABLE_NAME)
-    .delete()
+    .update({ archived_at: new Date().toISOString() })
     .eq("id", id);
 
   if (error) {
     console.error(error);
-    throw new Error("Randevu talebi silinemedi.");
+    throw new Error("Randevu talebi arşivlenemedi.");
   }
 
   return true;
+}
+
+export async function restoreAppointmentRequest(id) {
+  const { data, error } = await supabase
+    .from(TABLE_NAME)
+    .update({ archived_at: null })
+    .eq("id", id)
+    .select("*")
+    .single();
+
+  if (error) {
+    console.error(error);
+    throw new Error("Randevu talebi arşivden çıkarılamadı.");
+  }
+
+  return data;
 }

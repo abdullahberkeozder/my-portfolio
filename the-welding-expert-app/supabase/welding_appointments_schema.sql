@@ -50,6 +50,7 @@ create table if not exists public.appointment_requests (
   message text,
   customer_note text,
   admin_note text,
+  archived_at timestamp with time zone default null,
   -- Deprecated compatibility column. New code uses customer_note/admin_note.
   notes text,
   constraint appointment_requests_channel_check
@@ -63,6 +64,9 @@ alter table public.appointment_requests
 
 alter table public.appointment_requests
   add column if not exists admin_note text;
+
+alter table public.appointment_requests
+  add column if not exists archived_at timestamp with time zone default null;
 
 -- Preserve existing data while separating notes where their origin can be
 -- inferred from the customer-facing message snapshot.
@@ -251,6 +255,7 @@ begin
   if TG_OP = 'UPDATE' 
      and new.status = 'confirmed' 
      and old.status is distinct from 'confirmed'
+     and new.archived_at is null
   then
     select slot.id
     into v_slot_id
@@ -269,6 +274,7 @@ begin
           and existing_request.requested_date = new.requested_date
           and existing_request.requested_time = new.requested_time
           and existing_request.status = 'confirmed'
+          and existing_request.archived_at is null
       )
     for update of slot;
 
@@ -281,10 +287,13 @@ begin
     where id = v_slot_id;
   end if;
 
-  -- 2. Randevu onaylı durumdan başka duruma (iptal, yeni vb.) geçtiğinde (UPDATE): Slotu geri aç
+  -- 2. Randevu onaylı durumdan başka duruma (iptal, yeni vb.) geçtiğinde (UPDATE) VEYA onaylı randevu arşivlendiğinde (UPDATE): Slotu geri aç
   if TG_OP = 'UPDATE'
      and old.status = 'confirmed'
-     and new.status in ('cancelled', 'new', 'contacted')
+     and (
+       (new.status in ('cancelled', 'new', 'contacted') and old.archived_at is null)
+       or (old.archived_at is null and new.archived_at is not null)
+     )
   then
     update public.appointment_availability_slots as slot
     set is_available = true
@@ -294,9 +303,10 @@ begin
       and slot.slot_time = old.requested_time;
   end if;
 
-  -- 3. Onaylı randevu silindiğinde (DELETE): Slotu geri aç
+  -- 3. Onaylı ve arşivlenmemiş randevu silindiğinde (DELETE): Slotu geri aç
   if TG_OP = 'DELETE'
      and old.status = 'confirmed'
+     and old.archived_at is null
   then
     update public.appointment_availability_slots as slot
     set is_available = true
@@ -414,7 +424,7 @@ drop trigger if exists sync_appointment_status_with_slot
 on public.appointment_requests;
 
 create trigger sync_appointment_status_with_slot
-before update of status or delete on public.appointment_requests
+before update of status, archived_at or delete on public.appointment_requests
 for each row execute function public.handle_appointment_status_slot_sync();
 
 drop trigger if exists set_admin_profiles_updated_at
