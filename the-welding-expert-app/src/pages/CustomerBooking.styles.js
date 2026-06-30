@@ -299,10 +299,10 @@ export const HeaderLink = styled.a`
   justify-content: center;
   gap: 0.8rem;
   color: ${(props) => {
-    if (props.$whatsapp) return "var(--color-grey-0)";
+    if (props.$whatsapp) return "var(--color-text-inverse)";
     return props.$secondary
       ? "var(--color-grey-700)"
-      : "var(--color-grey-0)";
+      : "var(--color-text-inverse)";
   }};
   background: ${(props) => {
     if (props.$whatsapp) return "var(--color-channel-whatsapp)";
@@ -1039,9 +1039,9 @@ export const SlotButton = styled.button`
       props.$active ? "var(--color-selection)" : "var(--color-grey-200)"};
   border-radius: var(--border-radius-sm);
   color: ${(props) =>
-    props.$active ? "var(--color-grey-0)" : "var(--color-grey-700)"};
+    props.$active ? "var(--color-text-inverse)" : "var(--color-grey-700)"};
   background: ${(props) =>
-    props.$active ? "var(--color-surface-dark)" : "var(--color-grey-0)"};
+    props.$active ? "var(--color-action-primary)" : "var(--color-grey-0)"};
   box-shadow: ${(props) =>
     props.$active
       ? "inset 0 -3px 0 var(--color-action-primary)"
@@ -1222,10 +1222,10 @@ export const WizardStepNumber = styled.span`
     props.$completed
       ? "var(--color-brand-600)"
       : props.$active
-        ? "var(--color-surface-dark)"
+        ? "var(--color-action-primary)"
         : "var(--color-grey-200)"};
   color: ${(props) =>
-    props.$completed || props.$active ? "var(--color-grey-0)" : "var(--color-grey-600)"};
+    props.$completed || props.$active ? "var(--color-text-inverse)" : "var(--color-grey-600)"};
 
   @media (max-width: 480px) {
     width: 2.8rem;
@@ -1314,7 +1314,7 @@ export const SelectionCardIcon = styled.div`
   height: 4.8rem;
   border-radius: 50%;
   background: ${(props) => (props.$active ? "var(--color-brand-600)" : "var(--color-brand-50)")};
-  color: ${(props) => (props.$active ? "var(--color-grey-0)" : "var(--color-brand-600)")};
+  color: ${(props) => (props.$active ? "var(--color-text-inverse)" : "var(--color-brand-600)")};
   flex-shrink: 0;
 
   & svg {
@@ -1441,7 +1441,7 @@ export const ChannelLink = styled.a`
   justify-content: center;
   gap: 0.8rem;
   color: ${(props) =>
-    props.$disabled ? "var(--color-grey-500)" : "var(--color-grey-0)"};
+    props.$disabled ? "var(--color-grey-500)" : "var(--color-text-inverse)"};
   background: ${(props) =>
     props.$disabled ? "var(--color-grey-200)" : props.$color};
   font-size: 1.4rem;
@@ -1697,7 +1697,7 @@ export const StickyCTAButton = styled.a`
   text-align: center;
   line-height: 1.2;
 
-  color: var(--color-grey-0);
+  color: var(--color-text-inverse);
   background: ${(props) =>
     props.$whatsapp ? "var(--color-channel-whatsapp)" : "var(--color-surface-dark)"};
   border-color: ${(props) =>

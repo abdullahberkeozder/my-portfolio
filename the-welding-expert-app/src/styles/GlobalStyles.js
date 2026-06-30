@@ -234,19 +234,38 @@ img {
     --color-grey-800: #f3f4f6;
     --color-grey-900: #f9fafb;
 
+    --color-brand-50: rgba(16, 185, 129, 0.15); /* Beautiful transparent dark green */
+    --color-brand-100: rgba(16, 185, 129, 0.25);
+    --color-brand-200: #34d399; /* Bright mint green */
+    --color-brand-500: #10b981; /* Vibrant emerald */
+    --color-brand-600: #10b981;
+    --color-brand-700: #059669;
+    --color-brand-800: #047857;
+    --color-brand-900: #064e3b;
+
     --color-blue-100: #075985;
     --color-blue-700: #e0f2fe;
-    --color-green-100: #166534;
-    --color-green-700: #dcfce7;
-    --color-yellow-100: #854d0e;
-    --color-yellow-700: #fef9c3;
+    --color-green-100: #064e3b;
+    --color-green-700: #86efac;
+    --color-yellow-100: #78350f; /* Dark amber background */
+    --color-yellow-700: #fef3c7; /* Light yellow text */
     --color-silver-100: #374151;
     --color-silver-700: #f3f4f6;
-    --color-red-100: #fee2e2;
-    --color-red-700: #b91c1c;
-    --color-red-800: #991b1b;
+    --color-red-100: #7f1d1d; /* Accessible dark red bg */
+    --color-red-50: #450a0a;
+    --color-red-700: #fca5a5; /* Accessible light red text */
+    --color-red-800: #fee2e2;
 
-    --backdrop-color: rgba(0, 0, 0, 0.3);
+    /* Semantic color roles */
+    --color-action-primary: var(--color-brand-600);
+    --color-action-primary-hover: var(--color-brand-700);
+    --color-status-available: #86efac; /* Light green text */
+    --color-status-warning-bg: var(--color-yellow-100);
+    --color-status-warning-text: var(--color-yellow-700);
+    --color-status-danger-bg: var(--color-red-100);
+    --color-channel-whatsapp: #10b981;
+
+    --backdrop-color: rgba(0, 0, 0, 0.5);
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow-md: 0px 0.6rem 2.4rem rgba(0, 0, 0, 0.3);
@@ -256,6 +275,7 @@ img {
     --image-opacity: 90%;
   }
 }
+
 
 `;
 
