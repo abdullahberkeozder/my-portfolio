@@ -92,24 +92,24 @@ const NavLink = styled.a`
 `;
 
 const ToggleContainer = styled.button`
-  background: var(--color-grey-100);
-  border: 1px solid var(--color-grey-200);
-  width: 5.6rem;
-  height: 2.8rem;
+  background: ${(props) => (props.$isDark ? "#1e1b4b" : "#e0f2fe")};
+  border: 1px solid ${(props) => (props.$isDark ? "#312e81" : "#bae6fd")};
+  width: 8.8rem;
+  height: 3.2rem;
   border-radius: 9999px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0.5rem;
+  padding: 0 0.8rem;
   cursor: pointer;
   outline: none;
   flex-shrink: 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    border-color: var(--color-grey-300);
-    background: var(--color-grey-200);
+    border-color: ${(props) => (props.$isDark ? "#4338ca" : "#7dd3fc")};
   }
 
   &:focus-visible {
@@ -119,40 +119,39 @@ const ToggleContainer = styled.button`
 `;
 
 const ToggleHandle = styled.div`
-  width: 2.2rem;
-  height: 2.2rem;
+  width: 2.6rem;
+  height: 2.6rem;
   border-radius: 50%;
-  background: var(--color-brand-600);
+  background: ${(props) => (props.$isDark ? "linear-gradient(135deg, #e2e8f0, #94a3b8)" : "linear-gradient(135deg, #facc15, #f59e0b)")};
   position: absolute;
   top: 0.2rem;
-  left: ${(props) => (props.$isDark ? "2.9rem" : "0.3rem")};
-  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--shadow-sm);
+  left: ${(props) => (props.$isDark ? "5.8rem" : "0.2rem")};
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-inverse);
-
-  & svg {
-    width: 1.3rem;
-    height: 1.3rem;
-  }
-`;
-
-const ToggleIcon = styled.div`
-  color: var(--color-grey-400);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.8rem;
-  height: 1.8rem;
-  pointer-events: none;
+  color: #fff;
 
   & svg {
     width: 1.4rem;
     height: 1.4rem;
   }
 `;
+
+const ToggleLabel = styled.span`
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 1;
+  transform: translateY(0.5px);
+
+  color: ${(props) => (props.$active ? (props.$isDark ? "#ffffff" : "#0369a1") : (props.$isDark ? "#4338ca" : "#93c5fd"))};
+`;
+
 
 function AppNav() {
   const activeId = useActiveSection(appNavItems);
@@ -219,18 +218,16 @@ function AppNav() {
       </NavList>
       <ToggleContainer
         onClick={toggleTheme}
+        $isDark={isDark}
         aria-label={isDark ? "Açık temaya geç" : "Karanlık temaya geç"}
         title={isDark ? "Açık temaya geç" : "Karanlık temaya geç"}>
-        <ToggleIcon style={{ transform: "translateY(1px)" }}>
-          <HiOutlineSun />
-        </ToggleIcon>
-        <ToggleIcon style={{ transform: "translateY(1px)" }}>
-          <HiOutlineMoon />
-        </ToggleIcon>
+        <ToggleLabel $isDark={isDark} $active={!isDark}>Açık</ToggleLabel>
+        <ToggleLabel $isDark={isDark} $active={isDark}>Koyu</ToggleLabel>
         <ToggleHandle $isDark={isDark}>
           {isDark ? <HiOutlineMoon /> : <HiOutlineSun />}
         </ToggleHandle>
       </ToggleContainer>
+
     </NavShell>
   );
 }
