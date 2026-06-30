@@ -6,7 +6,7 @@ export const MAP_QUERY = encodeURIComponent(BUSINESS_ADDRESS);
 
 export const BUSINESS_GEO_LATITUDE = 39.931234;
 export const BUSINESS_GEO_LONGITUDE = 32.812345;
-export const BUSINESS_URL = "https://the-welding-expert-app.vercel.app";
+export const BUSINESS_URL = "https://umut-usta.vercel.app";
 
 export const OPENING_HOUR = 9;
 export const CLOSING_HOUR = 21;
