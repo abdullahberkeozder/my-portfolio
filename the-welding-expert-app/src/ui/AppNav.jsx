@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import { HiOutlineSun, HiOutlineMoon } from "react-icons/hi2";
 
 import appNavItems from "./appNavItems";
+
 import useActiveSection, { getSectionId } from "./useActiveSection";
 
 const NavShell = styled.nav`
@@ -10,16 +12,21 @@ const NavShell = styled.nav`
   z-index: 20;
   border: 1px solid var(--color-grey-100);
   border-radius: var(--border-radius-md);
-  padding: 0.8rem;
-  background: rgba(255, 255, 255, 0.94);
+  padding: 0.8rem 1.6rem;
+  background: var(--color-nav-bg);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(12px);
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.6rem;
 
   @media (max-width: 640px) {
     top: 0.4rem;
-    padding: 0.6rem;
+    padding: 0.6rem 1rem;
     border-radius: var(--border-radius-sm);
+    gap: 1rem;
   }
 `;
 
@@ -84,10 +91,89 @@ const NavLink = styled.a`
   }
 `;
 
+const ToggleContainer = styled.button`
+  background: var(--color-grey-100);
+  border: 1px solid var(--color-grey-200);
+  width: 5.6rem;
+  height: 2.8rem;
+  border-radius: 9999px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+  cursor: pointer;
+  outline: none;
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    border-color: var(--color-grey-300);
+    background: var(--color-grey-200);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+`;
+
+const ToggleHandle = styled.div`
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--color-brand-600);
+  position: absolute;
+  top: 0.2rem;
+  left: ${(props) => (props.$isDark ? "2.9rem" : "0.3rem")};
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-inverse);
+
+  & svg {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+`;
+
+const ToggleIcon = styled.div`
+  color: var(--color-grey-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  pointer-events: none;
+
+  & svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+`;
+
 function AppNav() {
   const activeId = useActiveSection(appNavItems);
   const navListRef = useRef(null);
   const activeLinkRef = useRef(null);
+
+  const [isDark, setIsDark] = useState(() => {
+    return document.documentElement.classList.contains("dark-mode");
+  });
+
+  function toggleTheme() {
+    const nextDark = !isDark;
+    setIsDark(nextDark);
+    if (nextDark) {
+      document.documentElement.classList.add("dark-mode");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark-mode");
+      localStorage.setItem("theme", "light");
+    }
+  }
 
   useEffect(() => {
     if (!window.matchMedia("(max-width: 860px)").matches) return;
@@ -131,8 +217,23 @@ function AppNav() {
           );
         })}
       </NavList>
+      <ToggleContainer
+        onClick={toggleTheme}
+        aria-label={isDark ? "Açık temaya geç" : "Karanlık temaya geç"}
+        title={isDark ? "Açık temaya geç" : "Karanlık temaya geç"}>
+        <ToggleIcon style={{ transform: "translateY(1px)" }}>
+          <HiOutlineSun />
+        </ToggleIcon>
+        <ToggleIcon style={{ transform: "translateY(1px)" }}>
+          <HiOutlineMoon />
+        </ToggleIcon>
+        <ToggleHandle $isDark={isDark}>
+          {isDark ? <HiOutlineMoon /> : <HiOutlineSun />}
+        </ToggleHandle>
+      </ToggleContainer>
     </NavShell>
   );
 }
+
 
 export default AppNav;

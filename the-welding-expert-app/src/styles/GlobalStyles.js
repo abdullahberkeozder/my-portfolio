@@ -87,6 +87,8 @@ const GlobalStyles = createGlobalStyle`
   --color-channel-whatsapp: #16a34a;
 
   --backdrop-color: rgba(27, 59, 43, 0.1);
+  --color-nav-bg: rgba(255, 255, 255, 0.94);
+
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0px 6px 20px rgba(27, 59, 43, 0.04), 0px 2px 8px rgba(27, 59, 43, 0.02);
@@ -220,8 +222,8 @@ img {
   filter: grayscale(var(--image-grayscale)) opacity(var(--image-opacity));
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+html.dark-mode {
+
     --color-grey-0: #18212f;
     --color-grey-50: #111827;
     --color-grey-100: #1f2937;
@@ -266,6 +268,8 @@ img {
     --color-channel-whatsapp: #10b981;
 
     --backdrop-color: rgba(0, 0, 0, 0.5);
+    --color-nav-bg: rgba(24, 33, 47, 0.94);
+
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow-md: 0px 0.6rem 2.4rem rgba(0, 0, 0, 0.3);
@@ -274,7 +278,7 @@ img {
     --image-grayscale: 10%;
     --image-opacity: 90%;
   }
-}
+
 
 
 `;
