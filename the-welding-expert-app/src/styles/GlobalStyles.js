@@ -112,8 +112,13 @@ const GlobalStyles = createGlobalStyle`
   padding: 0;
   margin: 0;
 
-  /* Premium, smooth slow fade dissolve transition when switching themes */
-  transition: background-color 1s ease, color 1s ease, border-color 1s ease, box-shadow 1s ease;
+  /* Premium, smooth melting-snow cross dissolve theme transition */
+  transition: background-color 2s cubic-bezier(0.4, 0, 0.2, 1),
+              color 2s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 2s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 2s cubic-bezier(0.4, 0, 0.2, 1),
+              fill 2s cubic-bezier(0.4, 0, 0.2, 1),
+              stroke 2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 html {
