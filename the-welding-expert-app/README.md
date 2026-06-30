@@ -1,198 +1,121 @@
-# The Welding Expert App
+# The Welding Expert App (Umut Usta Randevu Sistemi)
 
-The Welding Expert App is a React and Supabase application for a local welding and metalwork service. It combines a public, account-free booking experience with a role-based operations panel for owners and team members.
+The Welding Expert App is a React 18, Vite, and Supabase web application tailored for a local metalwork and home maintenance service. It delivers a fast, mobile-optimized booking experience for clients, coupled with a secure, role-based operations panel for the business owner and their team.
 
-## Screenshots
+---
 
-### Customer Booking Page
+## 📸 Screenshots
 
+### Customer Landing & Booking
 ![Customer booking page](./docs/readme-assets/appointment-page.png)
 
-### Work Gallery Page
-
+### Before/After Work Gallery
 ![Work gallery page](./docs/readme-assets/gallery-page.png)
 
-### Mobile Booking Experience
-
+### Mobile View & Sticky CTA Action Bar
 ![Mobile booking page](./docs/readme-assets/appointment-mobile.png)
 
-## Features
+---
 
-- Customer appointment page with weekly availability
-- Two-hour booking slots between 09:00 and 21:00
-- Future date selection for appointment planning
-- WhatsApp, email, and in-system request options
-- Live operations dashboard backed by Supabase data
-- Appointment request and availability management
-- Owner-controlled team accounts, roles, and access states
-- Owner/Admin gallery publishing with Supabase Storage uploads
-- Role-aware navigation, protected routes, and database policies
-- Atomic appointment confirmation and slot closing
-- Gallery page for work examples, before/after content, and testimonials
-- Public business information, service overview, FAQ, and address section
-- Supabase schema with RLS policies and an account approval flow
+## ✨ Features
 
-## Tech Stack
+### 👥 Customer Booking Portal
+* **Weekly Smart Availability Calendar:** Clients can view open days and choose 2-hour slots between 09:00 and 21:00.
+* **Fast Checkout/Booking Options:** Submit requests directly through the system database, start a pre-filled WhatsApp conversation, or send a mail package.
+* **Accordion SSS (FAQ):** A mobile-first, space-saving collapsible Q&A container.
+* **Sticky Mobile CTA:** A persistent bottom action bar on mobile screens providing quick access to WhatsApp support and smooth scroll navigation to the calendar.
 
-| Area | Tools |
+### 🛡️ Admin Operations Panel (`/admin`)
+* **Live Operational Dashboard:** Visual analytics, statistics, and a weekly slot status calendar.
+* **30-Second Auto-Refresh (Polling):** Queries are refreshed in the background every 30 seconds to catch new incoming client requests instantly.
+* **Advanced Request Management:** Search through client requests by name, phone, email, notes, or admin comments, and filter by status using tabs.
+* **Soft-Delete (Archiving):** Restrict physical deletion of requests. Cancelling/deleting an item marks it as archived, freeing up any locked slot in the calendar. Admins can view the archive and restore items at any time.
+* **Dynamic Slot Manager:** Easily declare days as *Available*, *Limited*, or *Closed*, and toggle individual slots.
+* **Team & Permission Control:** Owner-only control panel to approve pending accounts, assign roles (`Owner`, `Admin`, `Operator`, `Technician`), suspend, or demote members safely.
+
+### ⚡ Technical & Infrastructure
+* **Two-Way Database Slot Sync Trigger:** Confirmed requests lock their slot automatically. Cancelling, archiving, or deleting a confirmed request immediately re-opens the slot.
+* **Localized Dynamic SEO & Schemas:** Inject page title, descriptions, canonical paths, and Google rich snippets (`LocalBusiness` JSON-LD) into client-facing pages dynamically.
+* **SPA Redirection:** Handlers included for Netlify (`_redirects`) and Vercel (`vercel.json`) to prevent React Router route breakage.
+* **Clean Code Structure:** Separated styling blocks into `.styles.js` files and broke giant pages down into compact, unit-tested subcomponents.
+
+---
+
+## 🛠️ Tech Stack
+
+| Component | Technology |
 | --- | --- |
-| Frontend | React 18, Vite, React Router |
-| Data fetching | TanStack React Query |
-| Styling | Styled Components |
-| Forms | React Hook Form, controlled form state |
-| Testing | Vitest, Testing Library, jsdom |
-| Notifications | React Hot Toast |
-| Backend | Supabase Auth, PostgreSQL, RLS |
-| Documentation | SQL schema, deployment notes, research review |
+| **Frontend** | React 18, Vite, React Router DOM |
+| **State & Data Fetching** | TanStack React Query (v4) |
+| **Styling** | Styled Components (Vanilla CSS properties) |
+| **Notifications** | React Hot Toast |
+| **Validation** | React Hook Form |
+| **Testing** | Vitest, React Testing Library, jsdom |
+| **Backend** | Supabase Auth, PostgreSQL DB, Storage Buckets, RLS Policies |
 
-## Routes
+---
 
-| Route | Purpose |
-| --- | --- |
-| `/appointment` | Public customer booking page |
-| `/gallery` | Work examples, gallery, and references |
-| `/login` | Team account login |
-| `/signup` | Team access request |
-| `/admin/dashboard` | Role-aware operations overview |
-| `/admin/bookings` | Appointment request management |
-| `/admin/availability` | Weekly availability and slot management |
-| `/admin/gallery` | Owner/Admin work gallery management |
-| `/admin/users` | Owner-only team and permission management |
+## 🛣️ Application Routes
 
-Legacy redirects are kept for `/dashboard` and `/bookings`.
+| Route | View Group | Description |
+| --- | --- | --- |
+| `/appointment` | Public | Main booking landing page |
+| `/gallery` | Public | Before/After comparisons, portfolio & testimonials |
+| `/login` | Public | Team access login |
+| `/signup` | Public | Register a pending team profile |
+| `/admin/dashboard` | Protected (Team) | Operations overview & status cards |
+| `/admin/bookings` | Protected (Team) | Advanced request manager (Search & Status Filters) |
+| `/admin/availability` | Protected (Team) | Weekly schedule slot planner |
+| `/admin/gallery` | Protected (Owner/Admin) | Portfolio item publisher & image uploader |
+| `/admin/users` | Protected (Owner-only) | Team accounts & permission controller |
 
-## Getting Started
+*Note: Legacy routes `/dashboard` and `/bookings` redirect automatically to their protected `/admin` equivalents.*
 
+---
+
+## 🚀 Getting Started
+
+### 1. Installation
+Install dependencies and launch the Vite development server:
 ```bash
 npm install
 npm run dev
 ```
+Open `http://localhost:5173` in your browser.
 
-The default Vite development URL is usually:
-
-```text
-http://localhost:5173
-```
-
-## Environment Variables
-
-Create a local `.env.local` file based on `.env.example`:
-
+### 2. Environment Variables
+Create a `.env.local` file in the root directory:
 ```env
-VITE_SUPABASE_URL=your_supabase_url_here
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-supabase-public-anon-key
 ```
 
-Only use a publishable or anon Supabase key in the browser. Do not place a Supabase secret key or service role key in any frontend environment file.
+### 3. Supabase Migrations
+Execute the SQL scripts in the following order inside the **Supabase SQL Editor**:
+1. `supabase/welding_appointments_schema.sql` (Base schema, tables, triggers, and sample data)
+2. `supabase/role_based_access_control.sql` (Role definitions, policies, Owner bootstrap)
+3. `supabase/gallery_management_setup.sql` (Storage bucket creation, policy grants, index keys)
+4. `supabase/sync_appointment_status_with_slot.sql` (Re-open cancelled slot trigger)
+5. `supabase/archive_appointment_requests.sql` (Archiving column addition, trigger logic updates)
 
-## Supabase Setup
+*Tip: Promote your first profile to Owner by editing the bootstrap email address inside `role_based_access_control.sql` before running.*
 
-Run the schema in:
+---
 
-```text
-supabase/welding_appointments_schema.sql
-supabase/role_based_access_control.sql
-supabase/gallery_management_setup.sql
-```
+## 🖼️ Seeding Portfolio Work Examples
+The project includes a ready-to-use seed file to populate your work gallery with real examples:
+1. Go to the **Supabase Storage** panel.
+2. Inside the **`gallery`** bucket, upload the 9 images from `public/images/`:
+   * `hinge_before.png`, `hinge_after.png` (Hinge replacement)
+   * `railing_before.png`, `railing_after.png` (Railing renovation)
+   * `shelf_before.png`, `shelf_after.png` (Custom heavy shelves)
+   * `landscaping.png`, `painting.png`, `renovation.png` (General works)
+3. Open **`supabase/seed_portfolio_images.sql`**, copy the statements, and run them in the **Supabase SQL Editor**. (The project reference prefix `qhevdwblchkotttcqoou` is pre-configured).
 
-Run them in this order. The role migration upgrades the original single-admin
-model, and the gallery migration secures gallery records and Storage access.
+---
 
-The schema creates:
-
-- `appointment_availability_days`
-- `appointment_availability_slots`
-- `appointment_requests`
-- `admin_profiles`
-- `gallery_items`
-- Public `gallery` Storage bucket with an 8 MB image limit
-- Owner, Admin, Operator, and Technician roles
-- Pending, active, suspended, and rejected account states
-- Role-aware helper functions and RLS policies
-- Initial sample availability data
-
-The role migration promotes `abdullahberkeozder@gmail.com` to the initial
-Owner when that Auth user already exists. Change this bootstrap email in the
-migration before running it for another business. Verify the result in SQL
-Editor:
-
-```sql
-select full_name, email, role, status
-from public.admin_profiles
-order by created_at;
-```
-
-New registrations enter the system as pending team accounts. The Owner can
-approve them, assign roles, suspend access, reactivate accounts, or remove
-them from the team from **Admin > Ekip ve yetkiler**. Customers do not need an
-account.
-
-## Roles and Access
-
-| Role | Dashboard | Appointments | Availability | Team access |
-| --- | --- | --- | --- | --- |
-| Owner | Yes | Manage | Manage | Full control |
-| Admin | Yes | Manage | Manage | No |
-| Operator | Yes | Manage | Manage | No |
-| Technician | Yes | Assigned-work foundation | No | No |
-
-Owner and Admin accounts can also create, edit, publish, unpublish, order, and
-delete gallery items. Gallery uploads accept JPEG, PNG, and WebP files. Public
-visitors can read published records and images but cannot view draft records
-or modify gallery content.
-
-Account state is stored separately from role: `pending`, `active`,
-`suspended`, or `rejected`. Only an active Owner can approve accounts, assign
-roles, suspend access, reactivate members, or remove them from the team. The
-database prevents the final active Owner from losing access.
-
-## Available Scripts
-
-```bash
-npm run dev
-npm run build
-npm run preview
-npm run lint
-npm run test
-npm run test:run
-```
-
-`npm run test` starts Vitest in watch mode. `npm run test:run` runs the full
-suite once and is used by the GitHub Actions workflow.
-
-The application uses route-level lazy loading. Customer, gallery,
-authentication, and admin pages are emitted as separate production chunks.
-
-## Deployment
-
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for Vercel and Netlify guidance.
-
-Recommended production setup:
-
-- Add `VITE_SUPABASE_URL`
-- Add `VITE_SUPABASE_ANON_KEY`
-- Configure SPA fallback for React Router
-- Never add Supabase secret keys to a frontend deployment
-
-## Research Notes
-
-See [PROJECT_RESEARCH_REVIEW.md](./PROJECT_RESEARCH_REVIEW.md) for product, UX, local SEO, Supabase, and deployment recommendations.
-
-## Security Checklist
-
-- `.env.local` is ignored
-- `node_modules`, `dist`, `build`, screenshots, and logs are ignored
-- RLS is enabled for public Supabase tables
-- Public users can only read visible availability and submit requests through the secured RPC
-- Operational access requires an active team profile and an allowed role
-- Team account changes are performed through an Owner-only database function
-- The final active Owner cannot be suspended, rejected, or demoted
-- Customers do not need an Auth account
-
-## Future Improvements
-
-- Move testimonials to a Supabase table
-- Add image resizing and thumbnail generation for gallery uploads
-- Add LocalBusiness JSON-LD and page-level SEO metadata
-- Add a dedicated assigned-work view for Technician accounts
-- Expand integration coverage for admin booking and availability workflows
+## 🔒 Security Measures
+* **Row Level Security (RLS):** Enabled on all tables. Anonymous clients can only insert requests via the database function RPC, and select day/slot metrics.
+* **Immutable Client Notes:** Trigger policies prevent update attempts on a customer's original message/note.
+* **Owner Protection Policies:** The final active `Owner` user is guarded database-side; they cannot be demoted, suspended, or rejected, preventing lockout.
+* **Sanitized Client Pages:** Booking and Gallery views remain completely accessible without authentication.
