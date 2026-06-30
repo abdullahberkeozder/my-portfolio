@@ -23,6 +23,12 @@ import {
   CLOSING_HOUR,
   SLOT_DURATION_HOURS,
 } from "../config/business";
+import {
+  formatDateKey,
+  parseDateKey,
+  addDays,
+} from "../utils/dateHelpers";
+
 
 const DAY_STATUS_LABELS = {
   available: "Müsait",
@@ -55,27 +61,6 @@ const requestDateFormatter = new Intl.DateTimeFormat("tr-TR", {
   month: "short",
 });
 
-function padNumber(value) {
-  return String(value).padStart(2, "0");
-}
-
-function formatDateKey(date) {
-  return [
-    date.getFullYear(),
-    padNumber(date.getMonth() + 1),
-    padNumber(date.getDate()),
-  ].join("-");
-}
-
-function parseDateKey(dateKey) {
-  return new Date(`${dateKey}T00:00:00`);
-}
-
-function addDays(date, amount) {
-  const nextDate = new Date(date);
-  nextDate.setDate(nextDate.getDate() + amount);
-  return nextDate;
-}
 
 function isStandardSlot(slotTime) {
   const hour = Number(slotTime.slice(0, 2));

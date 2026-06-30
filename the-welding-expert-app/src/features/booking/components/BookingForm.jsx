@@ -121,8 +121,15 @@ function BookingForm({
                 value={customerPhone}
                 onChange={(event) => onPhoneChange(event.target.value)}
                 placeholder="05xx xxx xx xx"
+                maxLength={14}
               />
+              {customerPhone && !/^[0][5]\d{9}$/.test(customerPhone.replace(/\D/g, "")) && (
+                <span style={{ color: "var(--color-red-700)", fontSize: "1.1rem", fontWeight: "600", marginTop: "0.4rem", display: "block" }}>
+                  Geçersiz format. Lütfen 05xx xxx xx xx şeklinde 11 haneli numaranızı girin.
+                </span>
+              )}
             </Field>
+
             <Field>
               E-posta
               <Input

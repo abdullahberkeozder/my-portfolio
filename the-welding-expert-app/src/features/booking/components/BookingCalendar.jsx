@@ -105,6 +105,10 @@ function BookingCalendar({
     });
   }, [selectedDate, weekStartKey]);
 
+  const totalWeekSlots = weekDays.reduce((acc, day) => {
+    return acc + (day.slots?.filter((slot) => slot.isAvailable).length || 0);
+  }, 0);
+
   return (
     <Panel>
       <PanelHeader>
@@ -137,6 +141,12 @@ function BookingCalendar({
             onClick={() => refetchAvailability()}>
             {isFetchingAvailability ? "Deneniyor..." : "Tekrar dene"}
           </Button>
+        </AvailabilityNotice>
+      )}
+
+      {!isLoadingAvailability && !availabilityError && totalWeekSlots === 0 && (
+        <AvailabilityNotice role="status" style={{ background: "var(--color-yellow-100)", color: "var(--color-yellow-700)", border: "1px solid rgba(133, 77, 14, 0.15)" }}>
+          Bu hafta için planlanmış müsait randevu bulunmuyor. Diğer haftaları inceleyebilir veya hızlı yanıt için doğrudan WhatsApp üzerinden yazabilirsiniz.
         </AvailabilityNotice>
       )}
 
