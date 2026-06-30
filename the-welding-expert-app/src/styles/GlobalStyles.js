@@ -119,6 +119,12 @@ html {
   overflow-x: hidden;
 }
 
+@media (max-width: 380px) {
+  html {
+    font-size: 58.5%;
+  }
+}
+
 body {
   font-family: var(--font-family-sans);
   color: var(--color-grey-700);
