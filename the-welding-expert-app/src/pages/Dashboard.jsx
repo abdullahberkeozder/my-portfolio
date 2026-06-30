@@ -18,6 +18,11 @@ import { getAppointmentRequests } from "../services/apiAppointmentRequests";
 import { getAvailabilityDays } from "../services/apiAvailability";
 import { getAdminProfile } from "../services/apiAuth";
 import { ROUTE_ROLES } from "../utils/adminPermissions";
+import {
+  OPENING_HOUR,
+  CLOSING_HOUR,
+  SLOT_DURATION_HOURS,
+} from "../config/business";
 
 const DAY_STATUS_LABELS = {
   available: "Müsait",
@@ -34,9 +39,6 @@ const REQUEST_STATUS_LABELS = {
   completed: "Tamamlandı",
 };
 
-const OPENING_HOUR = 9;
-const CLOSING_HOUR = 21;
-const SLOT_DURATION_HOURS = 2;
 
 const dayFormatter = new Intl.DateTimeFormat("tr-TR", {
   weekday: "long",

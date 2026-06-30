@@ -27,6 +27,7 @@ function FaqAccordion({ items }) {
         return (
           <AccordionItem key={item.question} $isOpen={isOpen}>
             <AccordionHeader
+              id={`faq-question-${index}`}
               type="button"
               onClick={() => handleToggle(index)}
               aria-expanded={isOpen}
