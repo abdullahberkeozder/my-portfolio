@@ -238,7 +238,7 @@ as $$
   );
 $$;
 
-create or replace function public.close_slot_on_appointment_confirmation()
+create or replace function public.handle_appointment_status_slot_sync()
 returns trigger
 language plpgsql
 security definer
@@ -247,8 +247,10 @@ as $$
 declare
   v_slot_id uuid;
 begin
-  if new.status = 'confirmed'
-    and old.status is distinct from 'confirmed'
+  -- 1. Randevu onaylandığında (UPDATE): Slotu kapat
+  if TG_OP = 'UPDATE' 
+     and new.status = 'confirmed' 
+     and old.status is distinct from 'confirmed'
   then
     select slot.id
     into v_slot_id
@@ -279,7 +281,36 @@ begin
     where id = v_slot_id;
   end if;
 
-  return new;
+  -- 2. Randevu onaylı durumdan başka duruma (iptal, yeni vb.) geçtiğinde (UPDATE): Slotu geri aç
+  if TG_OP = 'UPDATE'
+     and old.status = 'confirmed'
+     and new.status in ('cancelled', 'new', 'contacted')
+  then
+    update public.appointment_availability_slots as slot
+    set is_available = true
+    from public.appointment_availability_days as day
+    where day.id = slot.day_id
+      and day.work_date = old.requested_date
+      and slot.slot_time = old.requested_time;
+  end if;
+
+  -- 3. Onaylı randevu silindiğinde (DELETE): Slotu geri aç
+  if TG_OP = 'DELETE'
+     and old.status = 'confirmed'
+  then
+    update public.appointment_availability_slots as slot
+    set is_available = true
+    from public.appointment_availability_days as day
+    where day.id = slot.day_id
+      and day.work_date = old.requested_date
+      and slot.slot_time = old.requested_time;
+  end if;
+
+  if TG_OP = 'DELETE' then
+    return old;
+  else
+    return new;
+  end if;
 end;
 $$;
 
@@ -379,9 +410,12 @@ for each row execute function public.sync_legacy_admin_note();
 drop trigger if exists close_slot_on_appointment_confirmation
 on public.appointment_requests;
 
-create trigger close_slot_on_appointment_confirmation
-before update of status on public.appointment_requests
-for each row execute function public.close_slot_on_appointment_confirmation();
+drop trigger if exists sync_appointment_status_with_slot
+on public.appointment_requests;
+
+create trigger sync_appointment_status_with_slot
+before update of status or delete on public.appointment_requests
+for each row execute function public.handle_appointment_status_slot_sync();
 
 drop trigger if exists set_admin_profiles_updated_at
 on public.admin_profiles;
@@ -436,7 +470,7 @@ grant execute on function public.create_appointment_request(
   text
 ) to anon, authenticated;
 grant execute on function public.is_admin(uuid) to anon, authenticated;
-revoke all on function public.close_slot_on_appointment_confirmation()
+revoke all on function public.handle_appointment_status_slot_sync()
 from public;
 
 revoke all on function public.protect_customer_note()
@@ -552,11 +586,7 @@ from generate_series(
   current_date + interval '180 days',
   interval '1 day'
 ) as generated_days(day_value)
-on conflict (work_date) do update
-set
-  status = excluded.status,
-  note = excluded.note,
-  is_visible = true;
+on conflict (work_date) do nothing;
 
 insert into public.appointment_availability_slots (day_id, slot_time)
 select d.id, make_time(hour_value, 0, 0)
