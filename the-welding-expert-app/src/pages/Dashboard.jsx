@@ -538,7 +538,8 @@ function Dashboard() {
 
   const requestsQuery = useQuery({
     queryKey: ["appointment-requests"],
-    queryFn: getAppointmentRequests,
+    queryFn: () => getAppointmentRequests(),
+    refetchInterval: 30000,
   });
 
   const availabilityQuery = useQuery({
@@ -548,6 +549,7 @@ function Dashboard() {
         startDate: todayKey,
         endDate: endDateKey,
       }),
+    refetchInterval: 30000,
   });
 
   const isLoading = requestsQuery.isLoading || availabilityQuery.isLoading;
