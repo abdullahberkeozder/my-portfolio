@@ -1,14 +1,18 @@
 import LoginForm from "../features/authentication/LoginForm";
 import AuthLayout from "../ui/AuthLayout";
+import SEO from "../ui/SEO";
 
 function Login() {
   return (
-    <AuthLayout
-      eyebrow="Ekip yönetimi"
-      title="Yönetim paneli girişi"
-      description="Randevuları ve iş takvimini yönetmek için ekip hesabınızla giriş yapın.">
-      <LoginForm />
-    </AuthLayout>
+    <>
+      <SEO title="Giriş Yap | Umut Usta Yönetim" description="Yönetim paneli girişi." />
+      <AuthLayout
+        eyebrow="Ekip yönetimi"
+        title="Yönetim paneli girişi"
+        description="Randevuları ve iş takvimini yönetmek için ekip hesabınızla giriş yapın.">
+        <LoginForm />
+      </AuthLayout>
+    </>
   );
 }
 

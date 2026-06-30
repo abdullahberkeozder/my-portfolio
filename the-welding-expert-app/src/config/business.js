@@ -64,7 +64,7 @@ export const serviceOverview = [
     text: "Yapılacak işlerin yerinde incelenmesi, malzeme seçimi, detaylı iş planı ve maliyet teklifi sunumu.",
     serviceType: "Yerinde keşif ve teklif",
     points: ["Ücretsiz ön inceleme seçeneği", "Detaylı malzeme listesi", "Yazılı fiyat ve süre teklifi"],
-    imageUrl: "/images/quote.png",
+    imageUrl: "/images/estimate.png",
     priceTagline: "Keşif randevusu: Ücretsiz",
   },
 ];

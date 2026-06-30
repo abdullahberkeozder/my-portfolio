@@ -12,6 +12,7 @@ import {
 } from "react-icons/hi2";
 
 import Spinner from "../ui/Spinner";
+import SEO from "../ui/SEO";
 import { getGalleryItems } from "../services/apiGallery";
 
 
@@ -668,6 +669,11 @@ function Gallery() {
 
   return (
     <Page>
+      <SEO
+        title="Galeri | Umut Usta Ankara Bakım Onarım İşleri"
+        description="Umut Usta'nın tamamladığı metal kaynak, korkuluk montajı, bahçe düzenleme ve ev bakım işleri galerisini inceleyin."
+        canonicalPath="/gallery"
+      />
       <Shell>
         <TopBar>
           <BackLink to="/appointment">
