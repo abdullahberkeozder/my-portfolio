@@ -54,7 +54,7 @@ const GlobalStyles = createGlobalStyle`
   --color-green-700: #0d8050;
   --color-green-800: #0b6c43;
   --color-yellow-100: #fffbeb;
-  --color-yellow-700: #dfaf16;
+  --color-yellow-700: #854d0e; /* Accessible dark amber */
   --color-silver-100: #e4e4db;
   --color-silver-700: #43433d;
   --color-red-100: #fee2e2;
@@ -65,7 +65,7 @@ const GlobalStyles = createGlobalStyle`
   /* Accent and surfaces */
   --color-accent-50: #fffbf0;
   --color-accent-400: #f28b24;
-  --color-accent-500: #e07a16;
+  --color-accent-500: #9a3412; /* Accessible dark rust/orange */
   --color-rust-700: #a0522d;
   --color-surface-dark: #1b3b2b;
   --color-surface-steel: #2a2a26;

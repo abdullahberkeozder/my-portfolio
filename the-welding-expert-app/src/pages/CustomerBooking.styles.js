@@ -1710,4 +1710,19 @@ export const StickyCTAButton = styled.a`
   }
 `;
 
+export const StepAnimationWrapper = styled.div`
+  animation: fadeInStep 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  @keyframes fadeInStep {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
 
