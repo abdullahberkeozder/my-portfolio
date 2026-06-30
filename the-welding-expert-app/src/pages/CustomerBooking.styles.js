@@ -114,9 +114,9 @@ export const PublicHeader = styled.header`
     inset: 0;
     background: linear-gradient(
       90deg,
-      var(--color-grey-50) 0%,
-      rgba(251, 251, 249, 0.95) 50%,
-      rgba(251, 251, 249, 0.15) 100%
+      var(--color-hero-grad-start) 0%,
+      var(--color-hero-grad-middle) 50%,
+      var(--color-hero-grad-end) 100%
     );
   }
 
@@ -131,9 +131,9 @@ export const PublicHeader = styled.header`
     &::after {
       background: linear-gradient(
         180deg,
-        rgba(251, 251, 249, 0.96) 0%,
-        rgba(251, 251, 249, 0.88) 60%,
-        rgba(251, 251, 249, 0.96) 100%
+        var(--color-hero-grad-start) 0%,
+        var(--color-hero-grad-middle) 60%,
+        var(--color-hero-grad-start) 100%
       );
     }
   }
@@ -145,9 +145,9 @@ export const PublicHeader = styled.header`
     &::after {
       background: linear-gradient(
         180deg,
-        rgba(251, 251, 249, 0.7) 0%,
-        rgba(251, 251, 249, 0.92) 50%,
-        rgba(251, 251, 249, 0.98) 100%
+        var(--color-hero-grad-end) 0%,
+        var(--color-hero-grad-middle) 50%,
+        var(--color-hero-grad-start) 100%
       );
     }
   }
@@ -299,10 +299,10 @@ export const HeaderLink = styled.a`
   justify-content: center;
   gap: 0.8rem;
   color: ${(props) => {
-    if (props.$whatsapp) return "var(--color-grey-0)";
+    if (props.$whatsapp) return "var(--color-text-inverse)";
     return props.$secondary
       ? "var(--color-grey-700)"
-      : "var(--color-grey-0)";
+      : "var(--color-text-inverse)";
   }};
   background: ${(props) => {
     if (props.$whatsapp) return "var(--color-channel-whatsapp)";
@@ -911,6 +911,18 @@ export const DayButton = styled.button`
     transform: ${(props) => (props.$disabled ? "none" : "translateY(-1px)")};
   }
 
+  animation: ${(props) => (props.$selected ? "pulseSelected 0.3s cubic-bezier(0.16, 1, 0.3, 1)" : "none")};
+
+  @keyframes pulseSelected {
+    0% {
+      transform: scale(0.96);
+      box-shadow: inset 0 4px 0 var(--color-action-primary), 0 0 0 3px rgba(13, 128, 80, 0.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
   @media (max-width: 980px) {
     scroll-snap-align: center;
     scroll-snap-stop: always;
@@ -922,6 +934,7 @@ export const DayButton = styled.button`
     gap: 0.5rem;
   }
 `;
+
 
 export const DayName = styled.span`
   color: var(--color-grey-900);
@@ -1026,9 +1039,9 @@ export const SlotButton = styled.button`
       props.$active ? "var(--color-selection)" : "var(--color-grey-200)"};
   border-radius: var(--border-radius-sm);
   color: ${(props) =>
-    props.$active ? "var(--color-grey-0)" : "var(--color-grey-700)"};
+    props.$active ? "var(--color-text-inverse)" : "var(--color-grey-700)"};
   background: ${(props) =>
-    props.$active ? "var(--color-surface-dark)" : "var(--color-grey-0)"};
+    props.$active ? "var(--color-action-primary)" : "var(--color-grey-0)"};
   box-shadow: ${(props) =>
     props.$active
       ? "inset 0 -3px 0 var(--color-action-primary)"
@@ -1053,6 +1066,18 @@ export const SlotButton = styled.button`
   &:active:not(:disabled) {
     transform: translateY(0);
   }
+
+  animation: ${(props) => (props.$active ? "pulseActiveSlot 0.2s cubic-bezier(0.16, 1, 0.3, 1)" : "none")};
+
+  @keyframes pulseActiveSlot {
+    0% {
+      transform: scale(0.96);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
 
   &:disabled {
     color: var(--color-grey-400);
@@ -1197,10 +1222,10 @@ export const WizardStepNumber = styled.span`
     props.$completed
       ? "var(--color-brand-600)"
       : props.$active
-        ? "var(--color-surface-dark)"
+        ? "var(--color-action-primary)"
         : "var(--color-grey-200)"};
   color: ${(props) =>
-    props.$completed || props.$active ? "var(--color-grey-0)" : "var(--color-grey-600)"};
+    props.$completed || props.$active ? "var(--color-text-inverse)" : "var(--color-grey-600)"};
 
   @media (max-width: 480px) {
     width: 2.8rem;
@@ -1289,7 +1314,7 @@ export const SelectionCardIcon = styled.div`
   height: 4.8rem;
   border-radius: 50%;
   background: ${(props) => (props.$active ? "var(--color-brand-600)" : "var(--color-brand-50)")};
-  color: ${(props) => (props.$active ? "var(--color-grey-0)" : "var(--color-brand-600)")};
+  color: ${(props) => (props.$active ? "var(--color-text-inverse)" : "var(--color-brand-600)")};
   flex-shrink: 0;
 
   & svg {
@@ -1416,7 +1441,7 @@ export const ChannelLink = styled.a`
   justify-content: center;
   gap: 0.8rem;
   color: ${(props) =>
-    props.$disabled ? "var(--color-grey-500)" : "var(--color-grey-0)"};
+    props.$disabled ? "var(--color-grey-500)" : "var(--color-text-inverse)"};
   background: ${(props) =>
     props.$disabled ? "var(--color-grey-200)" : props.$color};
   font-size: 1.4rem;
@@ -1626,7 +1651,7 @@ export const StickyCTAContainer = styled.div`
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(251, 251, 249, 0.97);
+    background: var(--color-nav-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid var(--color-grey-200);
@@ -1672,7 +1697,7 @@ export const StickyCTAButton = styled.a`
   text-align: center;
   line-height: 1.2;
 
-  color: var(--color-grey-0);
+  color: var(--color-text-inverse);
   background: ${(props) =>
     props.$whatsapp ? "var(--color-channel-whatsapp)" : "var(--color-surface-dark)"};
   border-color: ${(props) =>
@@ -1709,5 +1734,66 @@ export const StickyCTAButton = styled.a`
     }
   }
 `;
+
+export const StepAnimationWrapper = styled.div`
+  animation: fadeInStep 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  @keyframes fadeInStep {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
+export const HeaderExtraLinks = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-top: 1.6rem;
+  font-size: 1.3rem;
+  color: var(--color-grey-500);
+
+  & .dot {
+    color: var(--color-grey-300);
+  }
+
+  @media (max-width: 520px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+
+    & .dot {
+      display: none;
+    }
+  }
+`;
+
+export const HeaderExtraLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-grey-600);
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-brand-700);
+    text-decoration: underline;
+  }
+
+  & svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    color: var(--color-brand-600);
+    flex-shrink: 0;
+  }
+`;
+
 
 

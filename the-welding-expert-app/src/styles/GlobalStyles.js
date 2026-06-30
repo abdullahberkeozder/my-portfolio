@@ -1,7 +1,35 @@
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`
+
+@property --color-grey-50 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #fbfbf9;
+}
+@property --color-grey-0 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #fff;
+}
+@property --color-hero-grad-start {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #fbfbf9;
+}
+@property --color-hero-grad-middle {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(251, 251, 249, 0.95);
+}
+@property --color-hero-grad-end {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(251, 251, 249, 0.15);
+}
+
 :root {
+
   /* Typography */
   --font-family-sans: "Poppins", sans-serif;
   --font-size-2xs: 1.1rem;
@@ -38,6 +66,7 @@ const GlobalStyles = createGlobalStyle`
   /* Warm Greys */
   --color-grey-0: #fff;
   --color-grey-50: #fbfbf9;
+  --color-grey-50-rgb: 251, 251, 249;
   --color-grey-100: #f2f2ee;
   --color-grey-200: #e4e4db;
   --color-grey-300: #cfcfc3;
@@ -54,7 +83,7 @@ const GlobalStyles = createGlobalStyle`
   --color-green-700: #0d8050;
   --color-green-800: #0b6c43;
   --color-yellow-100: #fffbeb;
-  --color-yellow-700: #dfaf16;
+  --color-yellow-700: #854d0e; /* Accessible dark amber */
   --color-silver-100: #e4e4db;
   --color-silver-700: #43433d;
   --color-red-100: #fee2e2;
@@ -65,7 +94,7 @@ const GlobalStyles = createGlobalStyle`
   /* Accent and surfaces */
   --color-accent-50: #fffbf0;
   --color-accent-400: #f28b24;
-  --color-accent-500: #e07a16;
+  --color-accent-500: #9a3412; /* Accessible dark rust/orange */
   --color-rust-700: #a0522d;
   --color-surface-dark: #1b3b2b;
   --color-surface-steel: #2a2a26;
@@ -87,6 +116,13 @@ const GlobalStyles = createGlobalStyle`
   --color-channel-whatsapp: #16a34a;
 
   --backdrop-color: rgba(27, 59, 43, 0.1);
+  --color-nav-bg: rgba(255, 255, 255, 0.94);
+
+  --color-hero-grad-start: #fbfbf9;
+  --color-hero-grad-middle: rgba(251, 251, 249, 0.95);
+  --color-hero-grad-end: rgba(251, 251, 249, 0.15);
+
+
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0px 6px 20px rgba(27, 59, 43, 0.04), 0px 2px 8px rgba(27, 59, 43, 0.02);
@@ -108,9 +144,18 @@ const GlobalStyles = createGlobalStyle`
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+}
 
-  /* Creating animations for dark mode */
-  transition: background-color 0.3s, border 0.3s;
+/* Premium, smooth melting-snow cross dissolve theme transition active during theme toggle */
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 1.5s cubic-bezier(0.4, 0, 0.2, 1) !important,
+              color 1.5s cubic-bezier(0.4, 0, 0.2, 1) !important,
+              border-color 1.5s cubic-bezier(0.4, 0, 0.2, 1) !important,
+              box-shadow 1.5s cubic-bezier(0.4, 0, 0.2, 1) !important,
+              fill 1.5s cubic-bezier(0.4, 0, 0.2, 1) !important,
+              stroke 1.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 html {
@@ -220,42 +265,70 @@ img {
   filter: grayscale(var(--image-grayscale)) opacity(var(--image-opacity));
 }
 
-/*
-FOR DARK MODE
+html.dark-mode {
 
---color-grey-0: #18212f;
---color-grey-50: #111827;
---color-grey-100: #1f2937;
---color-grey-200: #374151;
---color-grey-300: #4b5563;
---color-grey-400: #6b7280;
---color-grey-500: #9ca3af;
---color-grey-600: #d1d5db;
---color-grey-700: #e5e7eb;
---color-grey-800: #f3f4f6;
---color-grey-900: #f9fafb;
+    --color-grey-0: #18212f;
+    --color-grey-50: #111827;
+    --color-grey-50-rgb: 17, 24, 39;
+    --color-grey-100: #1f2937;
+    --color-grey-200: #374151;
+    --color-grey-300: #4b5563;
+    --color-grey-400: #6b7280;
+    --color-grey-500: #9ca3af;
+    --color-grey-600: #d1d5db;
+    --color-grey-700: #e5e7eb;
+    --color-grey-800: #f3f4f6;
+    --color-grey-900: #f9fafb;
 
---color-blue-100: #075985;
---color-blue-700: #e0f2fe;
---color-green-100: #166534;
---color-green-700: #dcfce7;
---color-yellow-100: #854d0e;
---color-yellow-700: #fef9c3;
---color-silver-100: #374151;
---color-silver-700: #f3f4f6;
---color-red-100: #fee2e2;
---color-red-700: #b91c1c;
---color-red-800: #991b1b;
+    --color-brand-50: rgba(16, 185, 129, 0.15); /* Beautiful transparent dark green */
+    --color-brand-100: rgba(16, 185, 129, 0.25);
+    --color-brand-200: #34d399; /* Bright mint green */
+    --color-brand-500: #10b981; /* Vibrant emerald */
+    --color-brand-600: #10b981;
+    --color-brand-700: #059669;
+    --color-brand-800: #047857;
+    --color-brand-900: #064e3b;
 
---backdrop-color: rgba(0, 0, 0, 0.3);
+    --color-blue-100: #075985;
+    --color-blue-700: #e0f2fe;
+    --color-green-100: #064e3b;
+    --color-green-700: #86efac;
+    --color-yellow-100: #78350f; /* Dark amber background */
+    --color-yellow-700: #fef3c7; /* Light yellow text */
+    --color-silver-100: #374151;
+    --color-silver-700: #f3f4f6;
+    --color-red-100: #7f1d1d; /* Accessible dark red bg */
+    --color-red-50: #450a0a;
+    --color-red-700: #fca5a5; /* Accessible light red text */
+    --color-red-800: #fee2e2;
 
---shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
---shadow-md: 0px 0.6rem 2.4rem rgba(0, 0, 0, 0.3);
---shadow-lg: 0 2.4rem 3.2rem rgba(0, 0, 0, 0.4);
+    /* Semantic color roles */
+    --color-action-primary: var(--color-brand-600);
+    --color-action-primary-hover: var(--color-brand-700);
+    --color-status-available: #86efac; /* Light green text */
+    --color-status-warning-bg: var(--color-yellow-100);
+    --color-status-warning-text: var(--color-yellow-700);
+    --color-status-danger-bg: var(--color-red-100);
+    --color-channel-whatsapp: #10b981;
 
---image-grayscale: 10%;
---image-opacity: 90%;
-*/
+    --backdrop-color: rgba(0, 0, 0, 0.5);
+    --color-nav-bg: rgba(24, 33, 47, 0.94);
+
+    --color-hero-grad-start: #111827;
+    --color-hero-grad-middle: rgba(17, 24, 39, 0.95);
+    --color-hero-grad-end: rgba(17, 24, 39, 0.15);
+
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0px 0.6rem 2.4rem rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 2.4rem 3.2rem rgba(0, 0, 0, 0.4);
+
+    --image-grayscale: 10%;
+    --image-opacity: 90%;
+  }
+
+
+
 `;
 
 export default GlobalStyles;

@@ -8,9 +8,10 @@ import {
   HiOutlineUser,
 } from "react-icons/hi2";
 import { FaWhatsapp } from "react-icons/fa";
+
+import styled from "styled-components";
 import Heading from "../../../ui/Heading";
 import Button from "../../../ui/Button";
-
 import {
   Panel,
   PanelHeader,
@@ -32,6 +33,21 @@ import {
   ChannelLink,
   WizardActions,
 } from "../../../pages/CustomerBooking.styles";
+
+const ButtonSpinner = styled.div`
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: button-spin 1s ease-in-out infinite;
+  display: inline-block;
+
+  @keyframes button-spin {
+    to { transform: rotate(360deg); }
+  }
+`;
+
 
 function BookingForm({
   selectedDay,
@@ -121,8 +137,15 @@ function BookingForm({
                 value={customerPhone}
                 onChange={(event) => onPhoneChange(event.target.value)}
                 placeholder="05xx xxx xx xx"
+                maxLength={14}
               />
+              {customerPhone && !/^[0][5]\d{9}$/.test(customerPhone.replace(/\D/g, "")) && (
+                <span style={{ color: "var(--color-red-700)", fontSize: "1.1rem", fontWeight: "600", marginTop: "0.4rem", display: "block" }}>
+                  Geçersiz format. Lütfen 05xx xxx xx xx şeklinde 11 haneli numaranızı girin.
+                </span>
+              )}
             </Field>
+
             <Field>
               E-posta
               <Input
@@ -145,11 +168,19 @@ function BookingForm({
           <Button
             size="large"
             variation="cta"
-            style={{ width: "100%", marginTop: "2rem" }}
+            style={{ width: "100%", marginTop: "2rem", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "0.8rem" }}
             disabled={!canSubmitToSystem || isLoading}
             onClick={onSystemSubmit}>
-            {isLoading ? "Kaydediliyor..." : "Randevu Talebi Oluştur"}
+            {isLoading ? (
+              <>
+                <ButtonSpinner />
+                <span>Kaydediliyor...</span>
+              </>
+            ) : (
+              "Randevu Talebi Oluştur"
+            )}
           </Button>
+
         </FormBlock>
 
         <DirectContactBlock>
@@ -178,13 +209,15 @@ function BookingForm({
               <HiOutlinePhone />
               {"Seçili Randevu ile WhatsApp'tan Yaz"}
             </ChannelLink>
-            <ChannelLink
-              href={canSend ? mailUrl : undefined}
-              $color="var(--color-brand-700)"
-              $disabled={!canSend}>
-              <HiOutlineEnvelope />
-              Seçili Randevu ile E-posta Gönder
-            </ChannelLink>
+            {mailUrl && (
+              <ChannelLink
+                href={canSend ? mailUrl : undefined}
+                $color="var(--color-brand-700)"
+                $disabled={!canSend}>
+                <HiOutlineEnvelope />
+                Seçili Randevu ile E-posta Gönder
+              </ChannelLink>
+            )}
           </ChannelGrid>
 
           <div style={{ marginTop: "2.4rem", display: "flex", gap: "1rem", alignItems: "start" }}>

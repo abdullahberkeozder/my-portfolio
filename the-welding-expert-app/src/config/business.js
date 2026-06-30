@@ -1,11 +1,11 @@
-export const BUSINESS_WHATSAPP_NUMBER = "905551112233";
-export const BUSINESS_TELEPHONE = "+90 555 111 22 33";
-export const BUSINESS_EMAIL = "info@umutusta.com";
+export const BUSINESS_WHATSAPP_NUMBER = "905455199916";
+export const BUSINESS_TELEPHONE = "+90 545 519 99 16";
+export const BUSINESS_EMAIL = ""; // E-posta hizmeti şu an aktif değil
 export const BUSINESS_ADDRESS = "Gazi Mahallesi, Şenol Caddesi No:42, Yenimahalle/Ankara";
 export const MAP_QUERY = encodeURIComponent(BUSINESS_ADDRESS);
 
-export const BUSINESS_GEO_LATITUDE = 39.931234;
-export const BUSINESS_GEO_LONGITUDE = 32.812345;
+export const BUSINESS_GEO_LATITUDE = 39.931234; // TODO: gerçek koordinatla güncelle
+export const BUSINESS_GEO_LONGITUDE = 32.812345; // TODO: gerçek koordinatla güncelle
 export const BUSINESS_URL = "https://umut-usta.vercel.app";
 
 export const OPENING_HOUR = 9;

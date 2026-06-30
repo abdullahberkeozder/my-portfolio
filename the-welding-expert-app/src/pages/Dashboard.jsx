@@ -18,6 +18,17 @@ import { getAppointmentRequests } from "../services/apiAppointmentRequests";
 import { getAvailabilityDays } from "../services/apiAvailability";
 import { getAdminProfile } from "../services/apiAuth";
 import { ROUTE_ROLES } from "../utils/adminPermissions";
+import {
+  OPENING_HOUR,
+  CLOSING_HOUR,
+  SLOT_DURATION_HOURS,
+} from "../config/business";
+import {
+  formatDateKey,
+  parseDateKey,
+  addDays,
+} from "../utils/dateHelpers";
+
 
 const DAY_STATUS_LABELS = {
   available: "Müsait",
@@ -34,9 +45,6 @@ const REQUEST_STATUS_LABELS = {
   completed: "Tamamlandı",
 };
 
-const OPENING_HOUR = 9;
-const CLOSING_HOUR = 21;
-const SLOT_DURATION_HOURS = 2;
 
 const dayFormatter = new Intl.DateTimeFormat("tr-TR", {
   weekday: "long",
@@ -53,27 +61,6 @@ const requestDateFormatter = new Intl.DateTimeFormat("tr-TR", {
   month: "short",
 });
 
-function padNumber(value) {
-  return String(value).padStart(2, "0");
-}
-
-function formatDateKey(date) {
-  return [
-    date.getFullYear(),
-    padNumber(date.getMonth() + 1),
-    padNumber(date.getDate()),
-  ].join("-");
-}
-
-function parseDateKey(dateKey) {
-  return new Date(`${dateKey}T00:00:00`);
-}
-
-function addDays(date, amount) {
-  const nextDate = new Date(date);
-  nextDate.setDate(nextDate.getDate() + amount);
-  return nextDate;
-}
 
 function isStandardSlot(slotTime) {
   const hour = Number(slotTime.slice(0, 2));
