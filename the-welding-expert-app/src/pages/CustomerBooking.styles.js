@@ -6,6 +6,7 @@ export const ScrollWrapper = styled.div`
   overflow: hidden;
 
   @media (max-width: ${(props) => props.$breakpoint || "640px"}) {
+    /* Right-side fade: indicates there's more content */
     &::after {
       content: "";
       position: absolute;
@@ -31,7 +32,12 @@ export const Page = styled.main`
   overflow-x: hidden;
 
   @media (max-width: 640px) {
-    padding: 2.4rem 1.6rem 10rem;
+    /* Extra bottom padding to clear the sticky CTA bar (~7.6rem) */
+    padding: 2.4rem 1.6rem 12rem;
+  }
+
+  @media (max-width: 380px) {
+    padding: 1.6rem 1.2rem 12rem;
   }
 `;
 
@@ -134,10 +140,21 @@ export const PublicHeader = styled.header`
 
   @media (max-width: 640px) {
     padding: 2.4rem;
+    min-height: 36rem;
+
+    &::after {
+      background: linear-gradient(
+        180deg,
+        rgba(251, 251, 249, 0.7) 0%,
+        rgba(251, 251, 249, 0.92) 50%,
+        rgba(251, 251, 249, 0.98) 100%
+      );
+    }
   }
 
   @media (max-width: 420px) {
-    padding: 2rem;
+    padding: 1.8rem;
+    min-height: 32rem;
   }
 `;
 
@@ -148,6 +165,10 @@ export const HeroImage = styled.img`
   height: 100%;
   object-fit: cover;
   object-position: center 42%;
+
+  @media (max-width: 640px) {
+    object-position: center 25%;
+  }
 `;
 
 export const Brand = styled.div`
@@ -554,7 +575,7 @@ export const ServiceCard = styled.button`
   }
 
   @media (max-width: 640px) {
-    flex: 0 0 88%; /* horizontal swipe on mobile */
+    flex: 0 0 min(88%, 30rem); /* horizontal swipe on mobile, viewport-aware */
     scroll-snap-align: start;
   }
 `;
@@ -565,6 +586,10 @@ export const CardImageContainer = styled.div`
   overflow: hidden;
   position: relative;
   background: var(--color-grey-100);
+
+  @media (max-width: 640px) {
+    height: 12rem;
+  }
 `;
 
 export const CardImage = styled.img`
@@ -826,13 +851,16 @@ export const WeekGrid = styled.div`
   gap: 1rem;
 
   @media (max-width: 980px) {
-    grid-template-columns: repeat(7, minmax(13.6rem, 1fr));
+    /* Viewport-aware card width — never wider than 90vw */
+    grid-template-columns: repeat(7, minmax(min(13.6rem, calc(90vw - 3.2rem)), 1fr));
     overflow-x: auto;
-    padding: 0.2rem calc((100% - 13.6rem) / 2) 0.6rem;
+    /* Center the selected card using dynamic side padding */
+    padding: 0.2rem calc((100% - min(13.6rem, calc(90vw - 3.2rem))) / 2) 0.8rem;
     scroll-snap-type: x mandatory;
-    scroll-padding-inline: calc((100% - 13.6rem) / 2);
+    scroll-padding-inline: calc((100% - min(13.6rem, calc(90vw - 3.2rem))) / 2);
     overscroll-behavior-inline: contain;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
 
     &::-webkit-scrollbar {
       display: none;
@@ -886,6 +914,12 @@ export const DayButton = styled.button`
   @media (max-width: 980px) {
     scroll-snap-align: center;
     scroll-snap-stop: always;
+  }
+
+  @media (max-width: 640px) {
+    min-height: 12rem;
+    padding: 1rem;
+    gap: 0.5rem;
   }
 `;
 
@@ -972,10 +1006,15 @@ export const SlotGrid = styled.div`
   gap: 0.8rem;
 
   @media (max-width: 760px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  @media (max-width: 460px) {
+  @media (max-width: 560px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+
+  @media (max-width: 380px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 `;
@@ -1129,6 +1168,11 @@ export const WizardProgress = styled.div`
   padding: 1.6rem;
   margin-bottom: 0.8rem;
   gap: 1rem;
+
+  @media (max-width: 480px) {
+    padding: 1.2rem 1rem;
+    gap: 0.6rem;
+  }
 `;
 
 export const WizardStep = styled.div`
@@ -1148,6 +1192,7 @@ export const WizardStepNumber = styled.span`
   border-radius: 50%;
   font-size: 1.3rem;
   font-weight: 800;
+  flex-shrink: 0;
   background: ${(props) =>
     props.$completed
       ? "var(--color-brand-600)"
@@ -1156,14 +1201,30 @@ export const WizardStepNumber = styled.span`
         : "var(--color-grey-200)"};
   color: ${(props) =>
     props.$completed || props.$active ? "var(--color-grey-0)" : "var(--color-grey-600)"};
+
+  @media (max-width: 480px) {
+    width: 2.8rem;
+    height: 2.8rem;
+    font-size: 1.2rem;
+  }
 `;
 
 export const StepLabel = styled.span`
   font-size: 1.3rem;
   font-weight: ${(props) => (props.$active ? "800" : "600")};
   color: ${(props) => (props.$active ? "var(--color-grey-900)" : "var(--color-grey-600)")};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 10rem;
 
-  @media (max-width: 480px) {
+  @media (max-width: 520px) {
+    font-size: 1.1rem;
+    max-width: 7rem;
+  }
+
+  @media (max-width: 400px) {
+    /* On very small screens hide label text, keep number circles visible */
     display: none;
   }
 `;
@@ -1173,9 +1234,15 @@ export const StepDivider = styled.div`
   height: 2px;
   background: ${(props) => (props.$completed ? "var(--color-brand-200)" : "var(--color-grey-200)")};
   max-width: 8rem;
+  min-width: 1.6rem;
 
   @media (max-width: 480px) {
-    max-width: 4rem;
+    max-width: 3rem;
+  }
+
+  @media (max-width: 400px) {
+    max-width: 2rem;
+    min-width: 1rem;
   }
 `;
 
@@ -1356,6 +1423,8 @@ export const ChannelLink = styled.a`
   font-weight: 800;
   pointer-events: ${(props) => (props.$disabled ? "none" : "auto")};
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  line-height: 1.3;
 
   &:hover {
     transform: translateY(-2px);
@@ -1370,6 +1439,18 @@ export const ChannelLink = styled.a`
   & svg {
     width: 2rem;
     height: 2rem;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 640px) {
+    font-size: 1.3rem;
+    padding: 1rem 1.2rem;
+    gap: 0.6rem;
+  }
+
+  @media (max-width: 380px) {
+    font-size: 1.2rem;
+    min-height: 4.4rem;
   }
 `;
 
@@ -1545,13 +1626,31 @@ export const StickyCTAContainer = styled.div`
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(251, 251, 249, 0.96);
-    backdrop-filter: blur(12px);
+    background: rgba(251, 251, 249, 0.97);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid var(--color-grey-200);
-    padding: 1.2rem 1.6rem calc(1.2rem + env(safe-area-inset-bottom));
-    gap: 1rem;
+    padding: 1rem 1.6rem calc(1rem + env(safe-area-inset-bottom));
+    gap: 0.8rem;
     z-index: 50;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
+    animation: cta-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+    @keyframes cta-slide-up {
+      from {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  }
+
+  @media (max-width: 380px) {
+    gap: 0.6rem;
+    padding: 0.8rem 1.2rem calc(0.8rem + env(safe-area-inset-bottom));
   }
 `;
 
@@ -1560,7 +1659,7 @@ export const StickyCTAButton = styled.a`
   min-height: 4.8rem;
   border: 1px solid transparent;
   border-radius: var(--border-radius-sm);
-  padding: 1rem 1.6rem;
+  padding: 1rem 1.4rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1570,6 +1669,8 @@ export const StickyCTAButton = styled.a`
   box-shadow: var(--shadow-sm);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  text-align: center;
+  line-height: 1.2;
 
   color: var(--color-grey-0);
   background: ${(props) =>
@@ -1593,6 +1694,20 @@ export const StickyCTAButton = styled.a`
   & svg {
     width: 2rem;
     height: 2rem;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 380px) {
+    font-size: 1.3rem;
+    padding: 0.9rem 1rem;
+    gap: 0.6rem;
+    min-height: 4.4rem;
+
+    & svg {
+      width: 1.8rem;
+      height: 1.8rem;
+    }
   }
 `;
+
 
