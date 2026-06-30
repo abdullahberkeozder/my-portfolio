@@ -24,7 +24,7 @@ const sizes = {
 
 const variations = {
   primary: css`
-    color: var(--color-grey-0);
+    color: var(--color-text-inverse);
     background-color: var(--color-selection);
 
     &:hover:not(:disabled) {
@@ -34,7 +34,7 @@ const variations = {
     }
   `,
   cta: css`
-    color: var(--color-grey-0);
+    color: var(--color-text-inverse);
     background-color: var(--color-action-primary);
 
     &:hover:not(:disabled) {
@@ -65,7 +65,7 @@ const variations = {
     }
   `,
   success: css`
-    color: var(--color-grey-0);
+    color: var(--color-text-inverse);
     background-color: var(--color-green-700);
 
     &:hover:not(:disabled) {
@@ -74,6 +74,7 @@ const variations = {
       box-shadow: 0 2px 6px rgba(46, 125, 79, 0.2);
     }
   `,
+
   ghost: css`
     color: var(--color-selection-strong);
     background-color: transparent;
