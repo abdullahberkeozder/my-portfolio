@@ -115,8 +115,8 @@ export const PublicHeader = styled.header`
     background: linear-gradient(
       90deg,
       var(--color-grey-50) 0%,
-      rgba(251, 251, 249, 0.95) 50%,
-      rgba(251, 251, 249, 0.15) 100%
+      rgba(var(--color-grey-50-rgb), 0.95) 50%,
+      rgba(var(--color-grey-50-rgb), 0.15) 100%
     );
   }
 
@@ -131,9 +131,9 @@ export const PublicHeader = styled.header`
     &::after {
       background: linear-gradient(
         180deg,
-        rgba(251, 251, 249, 0.96) 0%,
-        rgba(251, 251, 249, 0.88) 60%,
-        rgba(251, 251, 249, 0.96) 100%
+        rgba(var(--color-grey-50-rgb), 0.96) 0%,
+        rgba(var(--color-grey-50-rgb), 0.88) 60%,
+        rgba(var(--color-grey-50-rgb), 0.96) 100%
       );
     }
   }
@@ -145,9 +145,9 @@ export const PublicHeader = styled.header`
     &::after {
       background: linear-gradient(
         180deg,
-        rgba(251, 251, 249, 0.7) 0%,
-        rgba(251, 251, 249, 0.92) 50%,
-        rgba(251, 251, 249, 0.98) 100%
+        rgba(var(--color-grey-50-rgb), 0.7) 0%,
+        rgba(var(--color-grey-50-rgb), 0.92) 50%,
+        rgba(var(--color-grey-50-rgb), 0.98) 100%
       );
     }
   }
@@ -1651,7 +1651,7 @@ export const StickyCTAContainer = styled.div`
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(251, 251, 249, 0.97);
+    background: var(--color-nav-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid var(--color-grey-200);
