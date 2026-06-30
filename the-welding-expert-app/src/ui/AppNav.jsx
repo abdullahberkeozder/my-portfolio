@@ -6,7 +6,7 @@ import useActiveSection, { getSectionId } from "./useActiveSection";
 
 const NavShell = styled.nav`
   position: sticky;
-  top: 1.2rem;
+  top: 0.8rem;
   z-index: 20;
   border: 1px solid var(--color-grey-100);
   border-radius: var(--border-radius-md);
@@ -15,6 +15,12 @@ const NavShell = styled.nav`
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(12px);
   overflow: hidden;
+
+  @media (max-width: 640px) {
+    top: 0.4rem;
+    padding: 0.6rem;
+    border-radius: var(--border-radius-sm);
+  }
 `;
 
 const NavList = styled.ul`
