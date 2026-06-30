@@ -126,7 +126,7 @@ const ToggleHandle = styled.div`
   position: absolute;
   top: 0.2rem;
   left: ${(props) => (props.$isDark ? "5.8rem" : "0.2rem")};
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 2.5s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
@@ -136,8 +136,11 @@ const ToggleHandle = styled.div`
   & svg {
     width: 1.4rem;
     height: 1.4rem;
+    transform: rotate(${(props) => (props.$isDark ? "360deg" : "0deg")});
+    transition: transform 2.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 `;
+
 
 const ToggleLabel = styled.span`
   font-size: 1rem;
@@ -165,6 +168,10 @@ function AppNav() {
   function toggleTheme() {
     const nextDark = !isDark;
     setIsDark(nextDark);
+
+    // Add transitioning class to trigger 2.5s melting-snow cross dissolve transitions
+    document.documentElement.classList.add("theme-transitioning");
+
     if (nextDark) {
       document.documentElement.classList.add("dark-mode");
       localStorage.setItem("theme", "dark");
@@ -172,7 +179,13 @@ function AppNav() {
       document.documentElement.classList.remove("dark-mode");
       localStorage.setItem("theme", "light");
     }
+
+    // Snappy hover transitions are restored immediately after the 2.5s transition concludes
+    setTimeout(() => {
+      document.documentElement.classList.remove("theme-transitioning");
+    }, 2500);
   }
+
 
   useEffect(() => {
     if (!window.matchMedia("(max-width: 860px)").matches) return;
