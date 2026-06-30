@@ -38,6 +38,7 @@ const GlobalStyles = createGlobalStyle`
   /* Warm Greys */
   --color-grey-0: #fff;
   --color-grey-50: #fbfbf9;
+  --color-grey-50-rgb: 251, 251, 249;
   --color-grey-100: #f2f2ee;
   --color-grey-200: #e4e4db;
   --color-grey-300: #cfcfc3;
@@ -111,8 +112,8 @@ const GlobalStyles = createGlobalStyle`
   padding: 0;
   margin: 0;
 
-  /* Creating animations for dark mode */
-  transition: background-color 0.3s, border 0.3s;
+  /* Premium, smooth slow fade dissolve transition when switching themes */
+  transition: background-color 1s ease, color 1s ease, border-color 1s ease, box-shadow 1s ease;
 }
 
 html {
@@ -226,6 +227,7 @@ html.dark-mode {
 
     --color-grey-0: #18212f;
     --color-grey-50: #111827;
+    --color-grey-50-rgb: 17, 24, 39;
     --color-grey-100: #1f2937;
     --color-grey-200: #374151;
     --color-grey-300: #4b5563;
