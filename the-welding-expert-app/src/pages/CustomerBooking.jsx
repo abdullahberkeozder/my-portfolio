@@ -24,8 +24,16 @@ import { getAvailabilityDays } from "../services/apiAvailability";
 import { createAppointmentRequest } from "../services/apiAppointmentRequests";
 import BookingCalendar from "../features/booking/components/BookingCalendar";
 import BookingForm from "../features/booking/components/BookingForm";
+import BookingSuccess from "../features/booking/components/BookingSuccess";
 import FaqAccordion from "../features/booking/components/FaqAccordion";
 import StickyMobileCTA from "../features/booking/components/StickyMobileCTA";
+import {
+  padNumber,
+  formatDateKey,
+  parseDateKey,
+  addDays,
+} from "../utils/dateHelpers";
+
 
 import {
   BUSINESS_WHATSAPP_NUMBER,
@@ -61,7 +69,10 @@ import {
   TrustItem,
   HeaderActions,
   HeaderLink,
+  HeaderExtraLinks,
+  HeaderExtraLink,
   HeaderBadge,
+
   AboutSection,
   AboutCopy,
   Eyebrow,
@@ -115,7 +126,9 @@ import {
   Panel,
   PanelHeader,
   WizardActions,
+  StepAnimationWrapper,
 } from "./CustomerBooking.styles";
+
 
 const dayFormatter = new Intl.DateTimeFormat("tr-TR", {
   weekday: "long",
@@ -133,27 +146,6 @@ const longDateFormatter = new Intl.DateTimeFormat("tr-TR", {
   year: "numeric",
 });
 
-function padNumber(value) {
-  return String(value).padStart(2, "0");
-}
-
-function formatDateKey(date) {
-  return [
-    date.getFullYear(),
-    padNumber(date.getMonth() + 1),
-    padNumber(date.getDate()),
-  ].join("-");
-}
-
-function parseDateKey(dateKey) {
-  return new Date(`${dateKey}T00:00:00`);
-}
-
-function addDays(date, amount) {
-  const nextDate = new Date(date);
-  nextDate.setDate(date.getDate() + amount);
-  return nextDate;
-}
 
 function startOfWeek(date) {
   const weekStart = new Date(date);
@@ -282,7 +274,33 @@ function buildCustomerMessage({
     .join("\n");
 }
 
+function formatTRPhoneNumber(value) {
+  const digits = value.replace(/\D/g, "");
+  let cleanDigits = digits;
+
+  // Clean international prefix
+  if (cleanDigits.startsWith("905")) {
+    cleanDigits = cleanDigits.substring(2);
+  }
+
+  // Prepend 0 if user typed just the 5xx part
+  if (cleanDigits.startsWith("5") && cleanDigits.length <= 10) {
+    cleanDigits = "0" + cleanDigits;
+  }
+
+  if (cleanDigits.length === 0) return "";
+  if (cleanDigits.length <= 4) return cleanDigits;
+  if (cleanDigits.length <= 7) {
+    return `${cleanDigits.slice(0, 4)} ${cleanDigits.slice(4)}`;
+  }
+  if (cleanDigits.length <= 9) {
+    return `${cleanDigits.slice(0, 4)} ${cleanDigits.slice(4, 7)} ${cleanDigits.slice(7)}`;
+  }
+  return `${cleanDigits.slice(0, 4)} ${cleanDigits.slice(4, 7)} ${cleanDigits.slice(7, 9)} ${cleanDigits.slice(9, 11)}`;
+}
+
 function CustomerBooking() {
+
   const todayKey = useMemo(() => formatDateKey(new Date()), []);
   const [selectedDate, setSelectedDate] = useState(todayKey);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -292,6 +310,22 @@ function CustomerBooking() {
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [notes, setNotes] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  function handlePhoneChange(value) {
+    setCustomerPhone(formatTRPhoneNumber(value));
+  }
+
+  function handleReset() {
+    setCustomerName("");
+    setCustomerPhone("");
+    setCustomerEmail("");
+    setNotes("");
+    setSelectedSlot(null);
+    setBookingStep(1);
+    setIsSubmitted(false);
+  }
+
 
   const weekStart = useMemo(
     () => startOfWeek(parseDateKey(selectedDate)),
@@ -362,8 +396,9 @@ function CustomerBooking() {
       !availabilityError &&
       !isLoadingAvailability,
   );
+  const isPhoneValid = /^[0][5]\d{9}$/.test(customerPhone.replace(/\D/g, ""));
   const canSubmitToSystem = Boolean(
-    canSend && customerName.trim() && customerPhone.trim(),
+    canSend && customerName.trim() && isPhoneValid
   );
 
   const message = buildCustomerMessage({
@@ -382,15 +417,19 @@ function CustomerBooking() {
   const quickWhatsappUrl = `https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent(
     quickMessage,
   )}`;
-  const mailUrl = `mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent(
-    "Bakım ve onarım randevu talebi",
-  )}&body=${encodeURIComponent(message)}`;
+  const mailUrl = BUSINESS_EMAIL
+    ? `mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent(
+        "Bakım ve onarım randevu talebi",
+      )}&body=${encodeURIComponent(message)}`
+    : null;
+
 
   const { mutate: submitRequest, isLoading } = useMutation({
     mutationFn: createAppointmentRequest,
     onSuccess: () => {
-      toast.success("Randevu talebiniz alındı.");
+      setIsSubmitted(true);
     },
+
     onError: (error) => {
       toast.error(error.message);
     },
@@ -402,6 +441,12 @@ function CustomerBooking() {
     setSelectedDate(dateValue);
     setSelectedSlot(null);
   }
+
+  function handleServiceChange(serviceValue) {
+    setSelectedService(serviceValue);
+    setSelectedSlot(null);
+  }
+
 
   function handleWeekChange(direction) {
     const nextWeekStart = addDays(weekStart, direction * 7);
@@ -521,7 +566,7 @@ function CustomerBooking() {
               <HeaderActions>
                 <HeaderLink href="#appointment-calendar">
                   <HiOutlineCalendarDays />
-                  Randevu seç
+                  Randevu Seç
                 </HeaderLink>
                 <HeaderLink
                   href={quickWhatsappUrl}
@@ -531,21 +576,20 @@ function CustomerBooking() {
                   <FaWhatsapp />
                   Fotoğraf Gönder, Teklif Al
                 </HeaderLink>
-                <HeaderLink
-                  href="#location"
-                  $secondary>
+              </HeaderActions>
+              <HeaderExtraLinks>
+                <HeaderExtraLink href="#location">
                   <HiOutlineMapPin />
                   Adresi gör
-                </HeaderLink>
-                <HeaderLink
-                  as={Link}
-                  to="/gallery"
-                  $secondary>
+                </HeaderExtraLink>
+                <span className="dot">•</span>
+                <HeaderExtraLink as={Link} to="/gallery">
                   <HiOutlinePhoto />
                   İş örnekleri
-                </HeaderLink>
-              </HeaderActions>
+                </HeaderExtraLink>
+              </HeaderExtraLinks>
             </HeaderText>
+
           </div>
           <HeaderBadge>
             <HiOutlineMapPin />
@@ -636,12 +680,13 @@ function CustomerBooking() {
                   type="button"
                   $active={selectedService === service.serviceType}
                   onClick={() => {
-                    setSelectedService(service.serviceType);
+                    handleServiceChange(service.serviceType);
                     setBookingStep(2);
                     document
                       .getElementById("appointment-calendar")
                       ?.scrollIntoView({ behavior: "smooth" });
                   }}>
+
                   <CardImageContainer>
                     <CardImage src={service.imageUrl} alt={service.title} />
                   </CardImageContainer>
@@ -688,121 +733,141 @@ function CustomerBooking() {
         </Section>
 
         <WizardContainer id="appointment-calendar">
-          <WizardProgress>
-            <WizardStep $active={bookingStep === 1} $completed={bookingStep > 1}>
-              <WizardStepNumber $active={bookingStep === 1} $completed={bookingStep > 1}>
-                {bookingStep > 1 ? "✓" : "1"}
-              </WizardStepNumber>
-              <StepLabel $active={bookingStep === 1}>Hizmet Seçimi</StepLabel>
-            </WizardStep>
-
-            <StepDivider $completed={bookingStep > 1} />
-
-            <WizardStep $active={bookingStep === 2} $completed={bookingStep > 2}>
-              <WizardStepNumber $active={bookingStep === 2} $completed={bookingStep > 2}>
-                {bookingStep > 2 ? "✓" : "2"}
-              </WizardStepNumber>
-              <StepLabel $active={bookingStep === 2}>Tarih & Saat</StepLabel>
-            </WizardStep>
-
-            <StepDivider $completed={bookingStep > 2} />
-
-            <WizardStep $active={bookingStep === 3}>
-              <WizardStepNumber $active={bookingStep === 3}>3</WizardStepNumber>
-              <StepLabel $active={bookingStep === 3}>İletişim & Onay</StepLabel>
-            </WizardStep>
-          </WizardProgress>
-
-          {bookingStep === 1 && (
-            <Panel>
-              <PanelHeader>
-                <div>
-                  <Heading as="h2">Hangi konuda yardıma ihtiyacınız var?</Heading>
-                  <MutedText>
-                    Size en uygun hizmet türünü seçerek devam edin.
-                  </MutedText>
-                </div>
-              </PanelHeader>
-
-              <ServiceSelectionGrid>
-                {serviceOverview.map((service) => (
-                  <SelectionServiceCard
-                    key={service.serviceType}
-                    type="button"
-                    $active={selectedService === service.serviceType}
-                    onClick={() => setSelectedService(service.serviceType)}>
-                    <SelectionCardIcon $active={selectedService === service.serviceType}>
-                      <HiOutlineWrenchScrewdriver />
-                    </SelectionCardIcon>
-                    <div>
-                      <SelectionCardTitle>{service.title}</SelectionCardTitle>
-                      <SelectionCardPrice>{service.priceTagline}</SelectionCardPrice>
-                    </div>
-                  </SelectionServiceCard>
-                ))}
-              </ServiceSelectionGrid>
-
-              <WizardActions>
-                <div />
-                <Button
-                  type="button"
-                  size="large"
-                  variation="cta"
-                  onClick={() => setBookingStep(2)}>
-                  Tarih ve Saat Seçimine İlerle →
-                </Button>
-              </WizardActions>
-            </Panel>
-          )}
-
-          {bookingStep === 2 && (
-            <BookingCalendar
-              todayKey={todayKey}
-              selectedDate={selectedDate}
-              selectedSlot={selectedSlot}
-              selectedService={selectedService}
-              weekStart={weekStart}
-              weekEnd={weekEnd}
-              weekStartKey={weekStartKey}
-              weekDays={weekDays}
-              selectedDay={selectedDay}
-              selectedDateIsPast={selectedDateIsPast}
-              availableSlots={availableSlots}
-              isLoadingAvailability={isLoadingAvailability}
-              isFetchingAvailability={isFetchingAvailability}
-              availabilityError={availabilityError}
-              refetchAvailability={refetchAvailability}
-              onDateSelect={handleDateSelect}
-              onSlotSelect={setSelectedSlot}
-              onWeekChange={handleWeekChange}
-              onStepChange={setBookingStep}
-            />
-          )}
-
-          {bookingStep === 3 && (
-            <BookingForm
+          {isSubmitted ? (
+            <BookingSuccess
               selectedDay={selectedDay}
               selectedSlot={selectedSlot}
               selectedService={selectedService}
-              customerName={customerName}
-              customerPhone={customerPhone}
-              customerEmail={customerEmail}
-              notes={notes}
-              canSubmitToSystem={canSubmitToSystem}
-              isLoading={isLoading}
-              canSend={canSend}
               whatsappUrl={whatsappUrl}
-              quickWhatsappUrl={quickWhatsappUrl}
-              mailUrl={mailUrl}
-              onNameChange={setCustomerName}
-              onPhoneChange={setCustomerPhone}
-              onEmailChange={setCustomerEmail}
-              onNotesChange={setNotes}
-              onSystemSubmit={handleSystemSubmit}
-              onStepChange={setBookingStep}
+              onReset={handleReset}
             />
+          ) : (
+            <>
+              <WizardProgress>
+                <WizardStep $active={bookingStep === 1} $completed={bookingStep > 1}>
+                  <WizardStepNumber $active={bookingStep === 1} $completed={bookingStep > 1}>
+                    {bookingStep > 1 ? "✓" : "1"}
+                  </WizardStepNumber>
+                  <StepLabel $active={bookingStep === 1}>Hizmet Seçimi</StepLabel>
+                </WizardStep>
+
+                <StepDivider $completed={bookingStep > 1} />
+
+                <WizardStep $active={bookingStep === 2} $completed={bookingStep > 2}>
+                  <WizardStepNumber $active={bookingStep === 2} $completed={bookingStep > 2}>
+                    {bookingStep > 2 ? "✓" : "2"}
+                  </WizardStepNumber>
+                  <StepLabel $active={bookingStep === 2}>Tarih & Saat</StepLabel>
+                </WizardStep>
+
+                <StepDivider $completed={bookingStep > 2} />
+
+                <WizardStep $active={bookingStep === 3}>
+                  <WizardStepNumber $active={bookingStep === 3}>3</WizardStepNumber>
+                  <StepLabel $active={bookingStep === 3}>İletişim & Onay</StepLabel>
+                </WizardStep>
+              </WizardProgress>
+
+              {bookingStep === 1 && (
+                <StepAnimationWrapper>
+                  <Panel>
+                    <PanelHeader>
+                      <div>
+                        <Heading as="h2">Hangi konuda yardıma ihtiyacınız var?</Heading>
+                        <MutedText>
+                          Size en uygun hizmet türünü seçerek devam edin.
+                        </MutedText>
+                      </div>
+                    </PanelHeader>
+
+                    <ServiceSelectionGrid>
+                      {serviceOverview.map((service) => (
+                        <SelectionServiceCard
+                          key={service.serviceType}
+                          type="button"
+                          $active={selectedService === service.serviceType}
+                          onClick={() => handleServiceChange(service.serviceType)}>
+
+                          <SelectionCardIcon $active={selectedService === service.serviceType}>
+                            <HiOutlineWrenchScrewdriver />
+                          </SelectionCardIcon>
+                          <div>
+                            <SelectionCardTitle>{service.title}</SelectionCardTitle>
+                            <SelectionCardPrice>{service.priceTagline}</SelectionCardPrice>
+                          </div>
+                        </SelectionServiceCard>
+                      ))}
+                    </ServiceSelectionGrid>
+
+                    <WizardActions>
+                      <div />
+                      <Button
+                        type="button"
+                        size="large"
+                        variation="cta"
+                        onClick={() => setBookingStep(2)}>
+                        Tarih ve Saat Seçimine İlerle →
+                      </Button>
+                    </WizardActions>
+                  </Panel>
+                </StepAnimationWrapper>
+              )}
+
+              {bookingStep === 2 && (
+                <StepAnimationWrapper>
+                  <BookingCalendar
+                    todayKey={todayKey}
+                    selectedDate={selectedDate}
+                    selectedSlot={selectedSlot}
+                    selectedService={selectedService}
+                    weekStart={weekStart}
+                    weekEnd={weekEnd}
+                    weekStartKey={weekStartKey}
+                    weekDays={weekDays}
+                    selectedDay={selectedDay}
+                    selectedDateIsPast={selectedDateIsPast}
+                    availableSlots={availableSlots}
+                    isLoadingAvailability={isLoadingAvailability}
+                    isFetchingAvailability={isFetchingAvailability}
+                    availabilityError={availabilityError}
+                    refetchAvailability={refetchAvailability}
+                    onDateSelect={handleDateSelect}
+                    onSlotSelect={setSelectedSlot}
+                    onWeekChange={handleWeekChange}
+                    onStepChange={setBookingStep}
+                  />
+                </StepAnimationWrapper>
+              )}
+
+              {bookingStep === 3 && (
+                <StepAnimationWrapper>
+                  <BookingForm
+                    selectedDay={selectedDay}
+                    selectedSlot={selectedSlot}
+                    selectedService={selectedService}
+                    customerName={customerName}
+                    customerPhone={customerPhone}
+                    customerEmail={customerEmail}
+                    notes={notes}
+                    canSubmitToSystem={canSubmitToSystem}
+                    isLoading={isLoading}
+                    canSend={canSend}
+                    whatsappUrl={whatsappUrl}
+                    quickWhatsappUrl={quickWhatsappUrl}
+                    mailUrl={mailUrl}
+                    onNameChange={setCustomerName}
+                    onPhoneChange={handlePhoneChange}
+                    onEmailChange={setCustomerEmail}
+                    onNotesChange={setNotes}
+                    onSystemSubmit={handleSystemSubmit}
+                    onStepChange={setBookingStep}
+                  />
+                </StepAnimationWrapper>
+              )}
+            </>
           )}
         </WizardContainer>
+
 
         <LocationSection id="location">
           <LocationInfo>
@@ -825,12 +890,19 @@ function CustomerBooking() {
               </ContactItem>
               <ContactItem href={`tel:+${BUSINESS_WHATSAPP_NUMBER}`}>
                 <HiOutlinePhone />
-                <span>+90 555 111 22 33</span>
+                <span>{BUSINESS_TELEPHONE}</span>
               </ContactItem>
-              <ContactItem href={`mailto:${BUSINESS_EMAIL}`}>
-                <HiOutlineEnvelope />
-                <span>{BUSINESS_EMAIL}</span>
-              </ContactItem>
+              {BUSINESS_EMAIL ? (
+                <ContactItem href={`mailto:${BUSINESS_EMAIL}`}>
+                  <HiOutlineEnvelope />
+                  <span>{BUSINESS_EMAIL}</span>
+                </ContactItem>
+              ) : (
+                <ContactItem as="div">
+                  <HiOutlineEnvelope />
+                  <span style={{ color: "var(--color-grey-400)" }}>E-posta hizmeti yakında aktif olacak</span>
+                </ContactItem>
+              )}
               <ContactItem href="#appointment-calendar">
                 <HiOutlineClock />
                 <span>Randevu saatleri: 09:00 - 21:00</span>
@@ -864,10 +936,12 @@ function CustomerBooking() {
         </Footer>
       </Shell>
 
-      <StickyMobileCTA
-        quickWhatsappUrl={quickWhatsappUrl}
-        onScrollToCalendar={handleScrollToCalendar}
-      />
+      {bookingStep < 3 && !isSubmitted && (
+        <StickyMobileCTA
+          quickWhatsappUrl={quickWhatsappUrl}
+          onScrollToCalendar={handleScrollToCalendar}
+        />
+      )}
     </Page>
   );
 }

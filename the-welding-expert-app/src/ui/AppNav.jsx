@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
+import ThemeToggle from "./ThemeToggle";
 
 import appNavItems from "./appNavItems";
 import useActiveSection, { getSectionId } from "./useActiveSection";
@@ -10,16 +11,21 @@ const NavShell = styled.nav`
   z-index: 20;
   border: 1px solid var(--color-grey-100);
   border-radius: var(--border-radius-md);
-  padding: 0.8rem;
-  background: rgba(255, 255, 255, 0.94);
+  padding: 0.8rem 1.6rem;
+  background: var(--color-nav-bg);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(12px);
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.6rem;
 
   @media (max-width: 640px) {
     top: 0.4rem;
-    padding: 0.6rem;
+    padding: 0.6rem 1rem;
     border-radius: var(--border-radius-sm);
+    gap: 1rem;
   }
 `;
 
@@ -131,6 +137,7 @@ function AppNav() {
           );
         })}
       </NavList>
+      <ThemeToggle />
     </NavShell>
   );
 }

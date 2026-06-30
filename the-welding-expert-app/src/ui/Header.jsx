@@ -9,8 +9,10 @@ import {
 } from "react-icons/hi2";
 
 import Button from "./Button";
+import ThemeToggle from "./ThemeToggle";
 import { getAdminProfile, logout } from "../services/apiAuth";
 import { ROLE_LABELS } from "../utils/adminPermissions";
+
 
 const StyledHeader = styled.header`
   grid-area: header;
@@ -220,6 +222,8 @@ function Header({ isNavigationOpen, onToggleNavigation }) {
           <HiOutlineBolt />
           Randevu alınıyor
         </Status>
+        <ThemeToggle />
+
         {admin?.user ? (
           <>
             <UserBox title={admin.profile?.full_name || admin.user.email}>
