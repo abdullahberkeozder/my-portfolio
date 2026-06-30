@@ -1,0 +1,127 @@
+export const BUSINESS_WHATSAPP_NUMBER = "905551112233";
+export const BUSINESS_TELEPHONE = "+90 555 111 22 33";
+export const BUSINESS_EMAIL = "info@umutusta.com";
+export const BUSINESS_ADDRESS = "Gazi Mahallesi, Şenol Caddesi No:42, Yenimahalle/Ankara";
+export const MAP_QUERY = encodeURIComponent(BUSINESS_ADDRESS);
+
+export const BUSINESS_GEO_LATITUDE = 39.931234;
+export const BUSINESS_GEO_LONGITUDE = 32.812345;
+export const BUSINESS_URL = "https://the-welding-expert-app.vercel.app";
+
+export const OPENING_HOUR = 9;
+export const CLOSING_HOUR = 21;
+export const SLOT_DURATION_HOURS = 2;
+
+export const serviceTypes = [
+  "Duvar boya ve badana",
+  "Kapı, korkuluk ve kaynak",
+  "Bahçe peyzaj ve düzenleme",
+  "Küçük inşaat ve ev tadilatı",
+  "Yerinde keşif ve teklif",
+];
+
+export const aboutHighlights = [
+  "Yerinde keşif ve net teklif",
+  "Boya, kaynak, montaj ve onarım işleri",
+  "Randevulu çalışma ve zamanında teslim",
+];
+
+export const serviceOverview = [
+  {
+    title: "Duvar boya ve badana",
+    text: "Ev, ofis ve apartman içi/dışı duvarlarınız için pürüzsüz boya uygulaması, alçı sıva ve temiz işçilik.",
+    serviceType: "Duvar boya ve badana",
+    points: ["Pürüzsüz alçı sıva", "Kaliteli marka boyalar", "Sıfır kirlilik, temiz teslim"],
+    imageUrl: "/images/painting.png",
+    priceTagline: "Oda başı: 950 TL'den başlayan fiyatlar",
+  },
+  {
+    title: "Kapı, korkuluk ve kaynak",
+    text: "Menteşe onarımı, apartman kapıları, bahçe ve balkon korkuluklarının demir kaynak işleri.",
+    serviceType: "Kapı, korkuluk ve kaynak",
+    points: ["Yerinde sağlamlaştırma", "Kopan menteşe kaynağı", "Paslanmaz koruyucu boya"],
+    imageUrl: "/images/railing_repair.png",
+    priceTagline: "Küçük tamirler: 750 TL'den başlayan fiyatlar",
+  },
+  {
+    title: "Bahçe peyzaj ve düzenleme",
+    text: "Bahçe tasarımı, çim biçme, ağaç budama, toprak havalandırma ve bahçe çit montajı.",
+    serviceType: "Bahçe peyzaj ve düzenleme",
+    points: ["Bahçe peyzaj planı", "Ağaç ve çim budama", "Çit ve sınır telleri montajı"],
+    imageUrl: "/images/landscaping.png",
+    priceTagline: "Metrekare başı veya günlük fiyatlandırma",
+  },
+  {
+    title: "Küçük inşaat ve ev tadilatı",
+    text: "Lokal duvar örme, seramik/fayans döşeme, alçıpan montajı ve ev içi ufak tadilat işleri.",
+    serviceType: "Küçük inşaat ve ev tadilatı",
+    points: ["Alçıpan ve ara bölme duvarlar", "Fayans ve seramik döşeme", "Lokal sıva ve harç tamirleri"],
+    imageUrl: "/images/renovation.png",
+    priceTagline: "Metrekare başı veya iş bazlı fiyatlandırma",
+  },
+  {
+    title: "Yerinde keşif ve teklif",
+    text: "Yapılacak işlerin yerinde incelenmesi, malzeme seçimi, detaylı iş planı ve maliyet teklifi sunumu.",
+    serviceType: "Yerinde keşif ve teklif",
+    points: ["Ücretsiz ön inceleme seçeneği", "Detaylı malzeme listesi", "Yazılı fiyat ve süre teklifi"],
+    imageUrl: "/images/quote.png",
+    priceTagline: "Keşif randevusu: Ücretsiz",
+  },
+];
+
+export const processSteps = [
+  {
+    title: "Talep ve Randevu",
+    text: "Hizmeti seçin, takvimden uygun gün ve saati belirleyerek randevu talebi bırakın.",
+  },
+  {
+    title: "İletişim ve Keşif",
+    text: "Atölyemiz talebi onaylamadan önce telefonla veya WhatsApp'tan detayları netleştirir.",
+  },
+  {
+    title: "Uygulama ve İmalat",
+    text: "Belirlenen tarih ve saatte adreste çalışmaya başlanır; temiz ve dikkatli uygulama yapılır.",
+  },
+  {
+    title: "Kontrol ve Teslim",
+    text: "Çalışma bittiğinde kullanım testleri yapılır ve iş sahibine temiz bir şekilde teslim edilir.",
+  },
+];
+
+export const faqItems = [
+  {
+    question: "Randevu talebi oluşturduktan sonra ne zaman dönüş yapılır?",
+    answer: "Randevu taleplerinizi genellikle 1-2 saat içerisinde inceliyor ve seçtiğiniz telefon numarası üzerinden onay için size ulaşıyoruz.",
+  },
+  {
+    question: "Randevu saatini ertelemek veya iptal etmek mümkün mü?",
+    answer: "Evet, randevu saatinize en geç 24 saat kalana kadar bizi telefonla arayarak veya WhatsApp üzerinden randevunuzu güncelleyebilirsiniz.",
+  },
+  {
+    question: "Malzemeleri siz mi getiriyorsunuz?",
+    answer: "Genellikle kullanılacak ana malzemeleri kaliteli markalardan biz temin ediyoruz. Dilerseniz malzemeyi siz alabilir, sadece işçilik hizmeti talep edebilirsiniz.",
+  },
+  {
+    question: "Acil kaynak ve onarım hizmeti veriyor musunuz?",
+    answer: "Takvimimizin müsaitlik durumuna göre aynı gün içinde acil menteşe veya demir kapı kaynak onarımları için servis yönlendirmesi yapabiliyoruz. Hızlı yanıt için WhatsApp seçeneğini kullanabilirsiniz.",
+  },
+];
+
+export const DAY_STATUS_OPTIONS = [
+  {
+    value: "available",
+    label: "Müsait",
+    tone: "green",
+  },
+  {
+    value: "limited",
+    label: "Kısıtlı",
+    tone: "amber",
+  },
+  {
+    value: "closed",
+    label: "Kapalı",
+    tone: "red",
+  },
+];
+
