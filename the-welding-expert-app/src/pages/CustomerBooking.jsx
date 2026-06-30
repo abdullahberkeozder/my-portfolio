@@ -382,9 +382,12 @@ function CustomerBooking() {
   const quickWhatsappUrl = `https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent(
     quickMessage,
   )}`;
-  const mailUrl = `mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent(
-    "Bakım ve onarım randevu talebi",
-  )}&body=${encodeURIComponent(message)}`;
+  const mailUrl = BUSINESS_EMAIL
+    ? `mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent(
+        "Bakım ve onarım randevu talebi",
+      )}&body=${encodeURIComponent(message)}`
+    : null;
+
 
   const { mutate: submitRequest, isLoading } = useMutation({
     mutationFn: createAppointmentRequest,
@@ -825,12 +828,19 @@ function CustomerBooking() {
               </ContactItem>
               <ContactItem href={`tel:+${BUSINESS_WHATSAPP_NUMBER}`}>
                 <HiOutlinePhone />
-                <span>+90 555 111 22 33</span>
+                <span>{BUSINESS_TELEPHONE}</span>
               </ContactItem>
-              <ContactItem href={`mailto:${BUSINESS_EMAIL}`}>
-                <HiOutlineEnvelope />
-                <span>{BUSINESS_EMAIL}</span>
-              </ContactItem>
+              {BUSINESS_EMAIL ? (
+                <ContactItem href={`mailto:${BUSINESS_EMAIL}`}>
+                  <HiOutlineEnvelope />
+                  <span>{BUSINESS_EMAIL}</span>
+                </ContactItem>
+              ) : (
+                <ContactItem as="div">
+                  <HiOutlineEnvelope />
+                  <span style={{ color: "var(--color-grey-400)" }}>E-posta hizmeti yakında aktif olacak</span>
+                </ContactItem>
+              )}
               <ContactItem href="#appointment-calendar">
                 <HiOutlineClock />
                 <span>Randevu saatleri: 09:00 - 21:00</span>

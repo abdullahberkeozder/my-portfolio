@@ -2,5 +2,5 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://the-welding-expert-app.vercel.app/sitemap.xml
+Sitemap: https://umut-usta.vercel.app/sitemap.xml
 

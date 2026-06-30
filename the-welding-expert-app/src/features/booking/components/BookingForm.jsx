@@ -178,13 +178,15 @@ function BookingForm({
               <HiOutlinePhone />
               {"Seçili Randevu ile WhatsApp'tan Yaz"}
             </ChannelLink>
-            <ChannelLink
-              href={canSend ? mailUrl : undefined}
-              $color="var(--color-brand-700)"
-              $disabled={!canSend}>
-              <HiOutlineEnvelope />
-              Seçili Randevu ile E-posta Gönder
-            </ChannelLink>
+            {mailUrl && (
+              <ChannelLink
+                href={canSend ? mailUrl : undefined}
+                $color="var(--color-brand-700)"
+                $disabled={!canSend}>
+                <HiOutlineEnvelope />
+                Seçili Randevu ile E-posta Gönder
+              </ChannelLink>
+            )}
           </ChannelGrid>
 
           <div style={{ marginTop: "2.4rem", display: "flex", gap: "1rem", alignItems: "start" }}>
