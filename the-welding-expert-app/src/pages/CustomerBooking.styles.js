@@ -114,9 +114,9 @@ export const PublicHeader = styled.header`
     inset: 0;
     background: linear-gradient(
       90deg,
-      var(--color-grey-50) 0%,
-      rgba(var(--color-grey-50-rgb), 0.95) 50%,
-      rgba(var(--color-grey-50-rgb), 0.15) 100%
+      var(--color-hero-grad-start) 0%,
+      var(--color-hero-grad-middle) 50%,
+      var(--color-hero-grad-end) 100%
     );
   }
 
@@ -131,9 +131,9 @@ export const PublicHeader = styled.header`
     &::after {
       background: linear-gradient(
         180deg,
-        rgba(var(--color-grey-50-rgb), 0.96) 0%,
-        rgba(var(--color-grey-50-rgb), 0.88) 60%,
-        rgba(var(--color-grey-50-rgb), 0.96) 100%
+        var(--color-hero-grad-start) 0%,
+        var(--color-hero-grad-middle) 60%,
+        var(--color-hero-grad-start) 100%
       );
     }
   }
@@ -145,9 +145,9 @@ export const PublicHeader = styled.header`
     &::after {
       background: linear-gradient(
         180deg,
-        rgba(var(--color-grey-50-rgb), 0.7) 0%,
-        rgba(var(--color-grey-50-rgb), 0.92) 50%,
-        rgba(var(--color-grey-50-rgb), 0.98) 100%
+        var(--color-hero-grad-end) 0%,
+        var(--color-hero-grad-middle) 50%,
+        var(--color-hero-grad-start) 100%
       );
     }
   }

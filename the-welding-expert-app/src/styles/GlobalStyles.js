@@ -1,7 +1,35 @@
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`
+
+@property --color-grey-50 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #fbfbf9;
+}
+@property --color-grey-0 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #fff;
+}
+@property --color-hero-grad-start {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #fbfbf9;
+}
+@property --color-hero-grad-middle {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(251, 251, 249, 0.95);
+}
+@property --color-hero-grad-end {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(251, 251, 249, 0.15);
+}
+
 :root {
+
   /* Typography */
   --font-family-sans: "Poppins", sans-serif;
   --font-size-2xs: 1.1rem;
@@ -90,6 +118,11 @@ const GlobalStyles = createGlobalStyle`
   --backdrop-color: rgba(27, 59, 43, 0.1);
   --color-nav-bg: rgba(255, 255, 255, 0.94);
 
+  --color-hero-grad-start: #fbfbf9;
+  --color-hero-grad-middle: rgba(251, 251, 249, 0.95);
+  --color-hero-grad-end: rgba(251, 251, 249, 0.15);
+
+
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0px 6px 20px rgba(27, 59, 43, 0.04), 0px 2px 8px rgba(27, 59, 43, 0.02);
@@ -111,14 +144,18 @@ const GlobalStyles = createGlobalStyle`
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+}
 
-  /* Premium, smooth melting-snow cross dissolve theme transition */
-  transition: background-color 2s cubic-bezier(0.4, 0, 0.2, 1),
-              color 2s cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 2s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 2s cubic-bezier(0.4, 0, 0.2, 1),
-              fill 2s cubic-bezier(0.4, 0, 0.2, 1),
-              stroke 2s cubic-bezier(0.4, 0, 0.2, 1);
+/* Premium, smooth melting-snow cross dissolve theme transition active during theme toggle */
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 1.5s cubic-bezier(0.4, 0, 0.2, 1) !important,
+              color 1.5s cubic-bezier(0.4, 0, 0.2, 1) !important,
+              border-color 1.5s cubic-bezier(0.4, 0, 0.2, 1) !important,
+              box-shadow 1.5s cubic-bezier(0.4, 0, 0.2, 1) !important,
+              fill 1.5s cubic-bezier(0.4, 0, 0.2, 1) !important,
+              stroke 1.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 html {
@@ -276,6 +313,10 @@ html.dark-mode {
 
     --backdrop-color: rgba(0, 0, 0, 0.5);
     --color-nav-bg: rgba(24, 33, 47, 0.94);
+
+    --color-hero-grad-start: #111827;
+    --color-hero-grad-middle: rgba(17, 24, 39, 0.95);
+    --color-hero-grad-end: rgba(17, 24, 39, 0.15);
 
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
