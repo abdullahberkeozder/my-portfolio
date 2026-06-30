@@ -146,9 +146,25 @@ const Hero = styled.section`
     );
   }
 
+  @media (max-width: 760px) {
+    &::after {
+      background: linear-gradient(
+        180deg,
+        rgba(251, 251, 249, 0.6) 0%,
+        rgba(251, 251, 249, 0.92) 55%,
+        rgba(251, 251, 249, 0.98) 100%
+      );
+    }
+  }
+
   @media (max-width: 640px) {
-    min-height: 34rem;
-    padding: 2.4rem;
+    min-height: 30rem;
+    padding: 2rem;
+    align-items: end;
+  }
+
+  @media (max-width: 420px) {
+    min-height: 26rem;
   }
 `;
 
@@ -158,6 +174,11 @@ const HeroImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 30%;
+
+  @media (max-width: 640px) {
+    object-position: center 20%;
+  }
 `;
 
 const HeroContent = styled.div`
@@ -346,12 +367,14 @@ const WorkGrid = styled.div`
   @media (max-width: 640px) {
     grid-template-columns: none;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(28rem, 88%);
+    /* Viewport-aware card width */
+    grid-auto-columns: minmax(min(28rem, calc(90vw - 1.6rem)), 90%);
     overflow-x: auto;
     overscroll-behavior-inline: contain;
     scroll-snap-type: inline mandatory;
     scrollbar-width: none;
     padding-bottom: 0.4rem;
+    -webkit-overflow-scrolling: touch;
 
     &::-webkit-scrollbar {
       display: none;
@@ -382,6 +405,14 @@ const CompareGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   min-height: 22rem;
+
+  @media (max-width: 640px) {
+    min-height: 18rem;
+  }
+
+  @media (max-width: 380px) {
+    min-height: 15rem;
+  }
 `;
 
 const CompareMedia = styled.figure`
@@ -395,6 +426,14 @@ const CompareMedia = styled.figure`
     position: absolute;
     inset: 0;
     background: linear-gradient(180deg, rgba(17, 24, 39, 0.02), rgba(17, 24, 39, 0.5));
+  }
+
+  @media (max-width: 640px) {
+    min-height: 18rem;
+  }
+
+  @media (max-width: 380px) {
+    min-height: 15rem;
   }
 `;
 
@@ -484,15 +523,18 @@ const PhotoGrid = styled.div`
 
   @media (max-width: 560px) {
     grid-template-columns: none;
+    /* Fixed row height for horizontal scroll view */
     grid-template-rows: 20rem;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(24rem, 84%);
+    /* Viewport-aware column widths — never exceeds screen */
+    grid-auto-columns: minmax(min(22rem, calc(82vw)), 84%);
     grid-auto-rows: 20rem;
     overflow-x: auto;
     overscroll-behavior-inline: contain;
     scroll-snap-type: inline mandatory;
     scrollbar-width: none;
     padding-bottom: 0.4rem;
+    -webkit-overflow-scrolling: touch;
 
     &::-webkit-scrollbar {
       display: none;
@@ -528,6 +570,7 @@ const PhotoTile = styled.figure`
 
   @media (max-width: 560px) {
     scroll-snap-align: start;
+    border-radius: var(--border-radius-sm);
 
     &:first-child {
       grid-row: span 1;
@@ -558,12 +601,14 @@ const TestimonialsGrid = styled.div`
   @media (max-width: 640px) {
     grid-template-columns: none;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(26rem, 88%);
+    /* Viewport-aware card width */
+    grid-auto-columns: minmax(min(26rem, calc(88vw)), 88%);
     overflow-x: auto;
     overscroll-behavior-inline: contain;
     scroll-snap-type: inline mandatory;
     scrollbar-width: none;
     padding-bottom: 0.4rem;
+    -webkit-overflow-scrolling: touch;
 
     &::-webkit-scrollbar {
       display: none;
