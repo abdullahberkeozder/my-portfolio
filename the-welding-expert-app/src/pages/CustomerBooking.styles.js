@@ -3,6 +3,7 @@ import styled, { css } from "styled-components";
 export const ScrollWrapper = styled.div`
   position: relative;
   width: 100%;
+  overflow: hidden;
 
   @media (max-width: ${(props) => props.$breakpoint || "640px"}) {
     &::after {
