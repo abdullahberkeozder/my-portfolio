@@ -77,12 +77,12 @@ values
     'Yabani ot temizliği, toprak havalandırma, ağaç budama yapıldı ve sınır belirleme amacıyla panel çitler çelik dübellerle beton zemine kaynaklanarak sabitlendi.',
     'Bahçe ve peyzaj',
     'Gölbaşı, Ankara',
-    'https://qhevdwblchkotttcqoou.supabase.co/storage/v1/object/public/gallery/landscaping.png',
-    null,
-    'Öncesi',
-    'Sonrası',
+    'https://qhevdwblchkotttcqoou.supabase.co/storage/v1/object/public/gallery/landscaping_after.png',
+    'https://qhevdwblchkotttcqoou.supabase.co/storage/v1/object/public/gallery/landscaping_before.png',
+    'Karmakarışık Bahçe',
+    'Düzenlenmiş Bahçe ve Çit',
     array['Zemin temizliği ve tesviyesi', 'Panel çit direklerinin montajı ve kaynağı', 'Çim biçme ve ağaç budama', 'Toprak havalandırma'],
-    'Günlük veya metrekare fiyatı',
+    'Metrekare veya günlük fiyatlandırma',
     4,
     true
   ),
@@ -116,5 +116,53 @@ values
     array['Kapı kasası harç dolguları', 'Metal kısımların antipas ile kaplanması', 'Kilit ve menteşe ayarlarının yapılması'],
     'Proje bazlı fiyatlandırma',
     6,
+    true
+  ),
+
+  -- 7. Raylı Kapı Sistemleri (Raylı Kapı)
+  (
+    'Sürgülü Raylı Garaj Kapısı İmalat ve Montajı',
+    'Villa girişine özel ölçülerde sürgülü demir kapı imal edildi, ray hattı çekilerek zemin montajı tamamlandı.',
+    'Raylı kapı sistemleri',
+    'Keçiören, Ankara',
+    'https://qhevdwblchkotttcqoou.supabase.co/storage/v1/object/public/gallery/sliding_gate_after.png',
+    'https://qhevdwblchkotttcqoou.supabase.co/storage/v1/object/public/gallery/sliding_gate_before.png',
+    'Montaj Öncesi Boş Alan',
+    'Teslim Edilen Sürgülü Kapı',
+    array['4 metre boyunda çelik profil kapı imalatı', 'Zemine çelik ray hattı döşenmesi ve kaynaklanması', 'Rulmanlı çelik tekerlek montajı', 'Pas önleyici koruyucu antipas ve fırın boyama'],
+    '3.500 TL''den başlayan fiyatlar',
+    7,
+    true
+  ),
+
+  -- 8. Otomatik Kapı Motorları (Otomatik Motor)
+  (
+    'Bahçe Kapısı Otomatik Motor ve Fotosel Montajı',
+    'Mevcut demir bahçe kapısına yana kayar otomatik motor ünitesi monte edildi, elektrik bağlantıları ve güvenlik fotoselleri bağlandı.',
+    'Otomatik kapı motorları',
+    'Gölbaşı, Ankara',
+    'https://qhevdwblchkotttcqoou.supabase.co/storage/v1/object/public/gallery/gate_motor_after.png',
+    'https://qhevdwblchkotttcqoou.supabase.co/storage/v1/object/public/gallery/gate_motor_before.png',
+    'Manuel Demir Kapı',
+    'Motor Montajlı Otomatik Kapı',
+    array['İtalyan menşeili motor ünitesi montajı', 'Hassas kremayer dişli çelik ray montajı', 'Emniyet fotoselleri ve flaşör lamba bağlantısı', 'Uzaktan kumandaların kodlanması'],
+    '4.500 TL''den başlayan fiyatlar',
+    8,
+    true
+  ),
+
+  -- 9. Akıllı Kilit Sistemleri (Akıllı Kilit)
+  (
+    'Apartman Giriş Kapısı Akıllı Kilit ve Hidrolik Sistemi',
+    'Apartman demir giriş kapısına şifreli/kartlı geçiş ünitesi, sessiz kilit mekanizması ve otomatik kapı kapatıcı hidrolik monte edildi.',
+    'Bina ve bahçe kapıları için akıllı kilit sistemleri',
+    'Çankaya, Ankara',
+    'https://qhevdwblchkotttcqoou.supabase.co/storage/v1/object/public/gallery/smart_lock_after.png',
+    'https://qhevdwblchkotttcqoou.supabase.co/storage/v1/object/public/gallery/smart_lock_before.png',
+    'Eski Manuel Kilit',
+    'Akıllı Kilit ve Hidrolik Sistemi',
+    array['Şifreli ve RFID kartlı geçiş paneli montajı', 'Sessiz çalışan 12V elektrikli kilit karşılığı', 'Ağır hizmet tipi kapı hidroliği ayarı', 'Elektrik kesintilerine karşı akülü güç kaynağı'],
+    '2.200 TL''den başlayan fiyatlar',
+    9,
     true
   );

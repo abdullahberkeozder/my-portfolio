@@ -17,6 +17,9 @@ export const serviceTypes = [
   "Kapı, korkuluk ve kaynak",
   "Bahçe peyzaj ve düzenleme",
   "Küçük inşaat ve ev tadilatı",
+  "Raylı kapı sistemleri",
+  "Otomatik kapı motorları",
+  "Bina ve bahçe kapıları için akıllı kilit sistemleri",
   "Yerinde keşif ve teklif",
 ];
 
@@ -58,6 +61,30 @@ export const serviceOverview = [
     points: ["Alçıpan ve ara bölme duvarlar", "Fayans ve seramik döşeme", "Lokal sıva ve harç tamirleri"],
     imageUrl: "/images/renovation.png",
     priceTagline: "Metrekare başı veya iş bazlı fiyatlandırma",
+  },
+  {
+    title: "Raylı kapı sistemleri",
+    text: "Raylı garaj, site ve bahçe kapılarının demir iskelet imalatı, tekerlek değişimi, ray tamiri ve montajı.",
+    serviceType: "Raylı kapı sistemleri",
+    points: ["Sağlam metal ray montajı", "Rulman ve tekerlek yenileme", "Hassas terazi ve hizalama"],
+    imageUrl: "/images/sliding_gate_after.png",
+    priceTagline: "Metre başı veya proje bazlı fiyatlandırma",
+  },
+  {
+    title: "Otomatik kapı motorları",
+    text: "Yana kayar veya kanatlı kapılar için motor montajı, elektrik bağlantısı, kumanda kodlama ve fotosel kurulumu.",
+    serviceType: "Otomatik kapı motorları",
+    points: ["Marka motor seçenekleri", "Engel algılayıcı fotosel", "Uzaktan kumanda tanımlama"],
+    imageUrl: "/images/gate_motor_after.png",
+    priceTagline: "Motor dahil veya montaj bazlı fiyatlandırma",
+  },
+  {
+    title: "Bina ve bahçe kapıları için akıllı kilit sistemleri",
+    text: "Apartman, bina ve bahçe kapılarına şifreli, kartlı, manyetik veya parmak izli akıllı kilit ve geçiş sistemleri kurulumu.",
+    serviceType: "Bina ve bahçe kapıları için akıllı kilit sistemleri",
+    points: ["Kartlı ve şifreli geçiş", "Otomatik hidrolik kapatıcı", "Kesintisiz güç kaynağı (UPS)"],
+    imageUrl: "/images/smart_lock_after.png",
+    priceTagline: "Sistem dahil veya montaj bazlı fiyatlandırma",
   },
   {
     title: "Yerinde keşif ve teklif",
