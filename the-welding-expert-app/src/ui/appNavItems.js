@@ -19,14 +19,14 @@ const appNavItems = [
     Icon: HiOutlineWrenchScrewdriver,
   },
   {
-    href: "#process",
-    label: "Süreç",
-    Icon: HiOutlineClock,
-  },
-  {
     href: "#appointment-calendar",
     label: "Randevu",
     Icon: HiOutlineCalendarDays,
+  },
+  {
+    href: "#process",
+    label: "Süreç",
+    Icon: HiOutlineClock,
   },
   {
     href: "#location",
