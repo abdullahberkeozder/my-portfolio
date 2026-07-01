@@ -486,11 +486,16 @@ function CustomerBooking() {
 
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
-        wizard.scrollIntoView({
-          behavior: prefersReducedMotion ? "auto" : "smooth",
-          block: "start",
-        });
-        wizard.focus({ preventScroll: true });
+        if (typeof wizard.scrollIntoView === "function") {
+          wizard.scrollIntoView({
+            behavior: prefersReducedMotion ? "auto" : "smooth",
+            block: "start",
+          });
+        }
+
+        if (typeof wizard.focus === "function") {
+          wizard.focus({ preventScroll: true });
+        }
       });
     });
   }
