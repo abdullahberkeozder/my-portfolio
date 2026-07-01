@@ -146,6 +146,15 @@ const Hero = styled.section`
     );
   }
 
+  html.dark-mode &::after {
+    background: linear-gradient(
+      90deg,
+      rgba(17, 24, 39, 0.96) 0%,
+      rgba(17, 24, 39, 0.82) 52%,
+      rgba(17, 24, 39, 0.34) 100%
+    );
+  }
+
   @media (max-width: 760px) {
     &::after {
       background: linear-gradient(
@@ -153,6 +162,15 @@ const Hero = styled.section`
         rgba(251, 251, 249, 0.6) 0%,
         rgba(251, 251, 249, 0.92) 55%,
         rgba(251, 251, 249, 0.98) 100%
+      );
+    }
+
+    html.dark-mode &::after {
+      background: linear-gradient(
+        180deg,
+        rgba(17, 24, 39, 0.34) 0%,
+        rgba(17, 24, 39, 0.84) 52%,
+        rgba(17, 24, 39, 0.98) 100%
       );
     }
   }
@@ -203,6 +221,10 @@ const HeroText = styled.p`
   max-width: 64rem;
   color: var(--color-grey-600);
   font-size: var(--font-size-md);
+
+  html.dark-mode & {
+    color: var(--color-grey-700);
+  }
 `;
 
 const HeroActions = styled.div`
@@ -223,7 +245,7 @@ const ActionLink = styled(Link)`
   color: ${(props) =>
     props.$secondary
       ? "var(--color-grey-700)"
-      : "var(--color-grey-0)"};
+      : "var(--color-text-inverse)"};
   background: ${(props) =>
     props.$secondary
       ? "var(--color-grey-0)"
@@ -494,11 +516,22 @@ const CardText = styled.p`
   color: var(--color-grey-600);
   font-size: var(--font-size-body);
   line-height: 1.6;
+
+  @media (max-width: 640px) {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 `;
 
 const MiniList = styled.ul`
   display: grid;
   gap: 0.6rem;
+
+  @media (max-width: 640px) {
+    display: none;
+  }
 `;
 
 const MiniItem = styled.li`
@@ -672,14 +705,19 @@ const Cta = styled.section`
   justify-content: space-between;
   gap: 1.4rem;
   color: var(--color-text-inverse);
-  background: var(--color-surface-dark);
+  background: linear-gradient(
+    135deg,
+    var(--color-surface-dark),
+    var(--color-brand-800)
+  );
+  border: 1px solid rgba(251, 251, 249, 0.12);
 
   & ${MutedText} {
     color: var(--color-text-inverse-muted);
   }
 
   & ${SectionTitle} {
-    color: var(--color-grey-0);
+    color: var(--color-text-inverse);
   }
 `;
 
