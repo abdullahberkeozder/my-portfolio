@@ -451,7 +451,7 @@ const ImageLabel = styled.span`
   z-index: 1;
   border-radius: 999px;
   padding: 0.5rem 0.8rem;
-  color: var(--color-grey-0);
+  color: #ffffff;
   background: rgba(17, 24, 39, 0.82);
   font-size: var(--font-size-2xs);
   font-weight: var(--font-weight-extrabold);
@@ -476,6 +476,11 @@ const Pill = styled.span`
   background: var(--color-brand-50);
   font-size: var(--font-size-2xs);
   font-weight: var(--font-weight-extrabold);
+
+  html.dark-mode & {
+    color: var(--color-brand-200);
+    background: rgba(16, 185, 129, 0.15);
+  }
 `;
 
 const CardTitle = styled.h3`
@@ -584,7 +589,7 @@ const PhotoCaption = styled.figcaption`
   right: 1.4rem;
   bottom: 1.4rem;
   z-index: 1;
-  color: var(--color-grey-0);
+  color: #ffffff;
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-extrabold);
 `;
@@ -694,8 +699,11 @@ function Gallery() {
     [allItems],
   );
 
-  // Galeri fotoğraf gridi: tüm öğeler
-  const galleryItems = useMemo(() => allItems, [allItems]);
+  // Galeri fotoğraf gridi: "Villa Bahçe Peyzajı ve Çit Çevirme İşlemi" hariç hepsi (görsel dağılımı dengelemek için)
+  const galleryItems = useMemo(
+    () => allItems.filter((i) => i.title !== "Villa Bahçe Peyzajı ve Çit Çevirme İşlemi"),
+    [allItems],
+  );
 
   if (isLoading) {
     return (
