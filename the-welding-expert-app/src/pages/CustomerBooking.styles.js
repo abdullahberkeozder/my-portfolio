@@ -578,6 +578,10 @@ export const ServiceCard = styled.button`
     flex: 0 0 min(88%, 30rem); /* horizontal swipe on mobile, viewport-aware */
     scroll-snap-align: start;
   }
+
+  @media (max-width: 420px) {
+    flex-basis: min(84%, 28rem);
+  }
 `;
 
 export const CardImageContainer = styled.div`
@@ -609,6 +613,11 @@ export const CardContent = styled.div`
   flex-direction: column;
   gap: 1rem;
   flex: 1;
+
+  @media (max-width: 640px) {
+    padding: 1.4rem;
+    gap: 0.8rem;
+  }
 `;
 
 export const CardPrice = styled.span`
@@ -629,11 +638,22 @@ export const CardText = styled.p`
   color: var(--color-grey-600);
   font-size: 1.4rem;
   line-height: 1.55;
+
+  @media (max-width: 640px) {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 `;
 
 export const MiniList = styled.ul`
   display: grid;
   gap: 0.6rem;
+
+  @media (max-width: 640px) {
+    display: none;
+  }
 `;
 
 export const MiniItem = styled.li`
@@ -843,6 +863,51 @@ export const IconButton = styled.button`
 export const WeekLabel = styled.strong`
   color: var(--color-grey-800);
   font-size: 1.4rem;
+`;
+
+export const QuickDateRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+
+  @media (max-width: 520px) {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline proximity;
+    scrollbar-width: none;
+    padding-bottom: 0.2rem;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+`;
+
+export const QuickDateButton = styled.button`
+  min-height: 3.8rem;
+  border: 1px solid
+    ${(props) =>
+      props.$active ? "var(--color-selection)" : "var(--color-grey-200)"};
+  border-radius: 999px;
+  padding: 0.8rem 1.2rem;
+  flex: 0 0 auto;
+  color: ${(props) =>
+    props.$active ? "var(--color-text-inverse)" : "var(--color-grey-700)"};
+  background: ${(props) =>
+    props.$active ? "var(--color-action-primary)" : "var(--color-grey-0)"};
+  font-size: 1.3rem;
+  font-weight: 800;
+  box-shadow: ${(props) => (props.$active ? "var(--shadow-sm)" : "none")};
+  scroll-snap-align: start;
+
+  &:hover {
+    border-color: var(--color-selection);
+    background: ${(props) =>
+      props.$active
+        ? "var(--color-action-primary-hover)"
+        : "var(--color-selection-soft)"};
+  }
 `;
 
 export const WeekGrid = styled.div`
@@ -1181,6 +1246,10 @@ export const WizardContainer = styled.div`
   width: 100%;
   display: grid;
   gap: 2.4rem;
+
+  &:focus {
+    outline: none;
+  }
 `;
 
 export const WizardProgress = styled.div`
@@ -1304,6 +1373,11 @@ export const SelectionServiceCard = styled.button`
     transform: translateY(-1px);
     box-shadow: var(--shadow-sm);
   }
+
+  @media (max-width: 640px) {
+    padding: 1.4rem;
+    gap: 1.2rem;
+  }
 `;
 
 export const SelectionCardIcon = styled.div`
@@ -1320,6 +1394,16 @@ export const SelectionCardIcon = styled.div`
   & svg {
     width: 2.4rem;
     height: 2.4rem;
+  }
+
+  @media (max-width: 640px) {
+    width: 4rem;
+    height: 4rem;
+
+    & svg {
+      width: 2rem;
+      height: 2rem;
+    }
   }
 `;
 
@@ -1677,6 +1761,11 @@ export const StickyCTAContainer = styled.div`
     gap: 0.6rem;
     padding: 0.8rem 1.2rem calc(0.8rem + env(safe-area-inset-bottom));
   }
+
+  @media (max-width: 640px) and (max-height: 760px) {
+    padding-top: 0.8rem;
+    padding-bottom: calc(0.8rem + env(safe-area-inset-bottom));
+  }
 `;
 
 export const StickyCTAButton = styled.a`
@@ -1794,6 +1883,3 @@ export const HeaderExtraLink = styled.a`
     flex-shrink: 0;
   }
 `;
-
-
-

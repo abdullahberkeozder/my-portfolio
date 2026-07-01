@@ -12,6 +12,11 @@ import {
 } from "react-icons/hi2";
 import Heading from "../../../ui/Heading";
 import Button from "../../../ui/Button";
+import {
+  addDays,
+  formatDateKey,
+  parseDateKey,
+} from "../../../utils/dateHelpers";
 
 import {
   Panel,
@@ -24,6 +29,8 @@ import {
   WeekControls,
   IconButton,
   WeekLabel,
+  QuickDateRow,
+  QuickDateButton,
   ScrollWrapper,
   WeekGrid,
   DayButton,
@@ -110,6 +117,29 @@ function BookingCalendar({
   const totalWeekSlots = weekDays.reduce((acc, day) => {
     return acc + (day.slots?.filter((slot) => slot.isAvailable).length || 0);
   }, 0);
+  const tomorrowKey = formatDateKey(addDays(parseDateKey(todayKey), 1));
+  const firstAvailableDay = weekDays.find((day) => {
+    const isPast = day.dateValue < todayKey;
+    const isClosed = ["closed", "unavailable"].includes(day.status);
+    const hasSlots = day.slots.some((slot) => slot.isAvailable);
+
+    return !isPast && !isClosed && hasSlots;
+  });
+  const quickDates = [];
+  [
+    { label: "Bugün", value: todayKey },
+    { label: "Yarın", value: tomorrowKey },
+    firstAvailableDay && {
+      label: "İlk uygun gün",
+      value: firstAvailableDay.dateValue,
+    },
+  ]
+    .filter(Boolean)
+    .forEach((item) => {
+      if (!quickDates.some((date) => date.value === item.value)) {
+        quickDates.push(item);
+      }
+    });
 
   return (
     <Panel>
@@ -190,6 +220,19 @@ function BookingCalendar({
           </IconButton>
         </WeekControls>
       </DateToolbar>
+
+      <QuickDateRow aria-label="Hızlı tarih seçimi">
+        {quickDates.map((item) => (
+          <QuickDateButton
+            key={item.label}
+            type="button"
+            $active={selectedDate === item.value}
+            aria-pressed={selectedDate === item.value}
+            onClick={() => onDateSelect(item.value)}>
+            {item.label}
+          </QuickDateButton>
+        ))}
+      </QuickDateRow>
 
       <ScrollWrapper $breakpoint="980px" $bg="var(--color-grey-0)">
         <WeekGrid

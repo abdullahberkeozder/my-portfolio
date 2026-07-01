@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -301,6 +301,7 @@ function formatTRPhoneNumber(value) {
 
 function CustomerBooking() {
 
+  const wizardRef = useRef(null);
   const todayKey = useMemo(() => formatDateKey(new Date()), []);
   const [selectedDate, setSelectedDate] = useState(todayKey);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -311,6 +312,7 @@ function CustomerBooking() {
   const [customerEmail, setCustomerEmail] = useState("");
   const [notes, setNotes] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showStickyCta, setShowStickyCta] = useState(false);
 
   function handlePhoneChange(value) {
     setCustomerPhone(formatTRPhoneNumber(value));
@@ -325,6 +327,25 @@ function CustomerBooking() {
     setBookingStep(1);
     setIsSubmitted(false);
   }
+
+  useEffect(() => {
+    function updateStickyCtaVisibility() {
+      const isMobile = window.matchMedia("(max-width: 640px)").matches;
+      const headerHeight = document.querySelector("header")?.offsetHeight || 0;
+      const revealAfter = Math.max(420, headerHeight - window.innerHeight * 0.2);
+
+      setShowStickyCta(isMobile && window.scrollY > revealAfter);
+    }
+
+    updateStickyCtaVisibility();
+    window.addEventListener("scroll", updateStickyCtaVisibility, { passive: true });
+    window.addEventListener("resize", updateStickyCtaVisibility);
+
+    return () => {
+      window.removeEventListener("scroll", updateStickyCtaVisibility);
+      window.removeEventListener("resize", updateStickyCtaVisibility);
+    };
+  }, []);
 
 
   const weekStart = useMemo(
@@ -455,6 +476,35 @@ function CustomerBooking() {
     handleDateSelect(safeDate);
   }
 
+  function scrollWizardIntoView() {
+    const wizard = wizardRef.current;
+    if (!wizard) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        if (typeof wizard.scrollIntoView === "function") {
+          wizard.scrollIntoView({
+            behavior: prefersReducedMotion ? "auto" : "smooth",
+            block: "start",
+          });
+        }
+
+        if (typeof wizard.focus === "function") {
+          wizard.focus({ preventScroll: true });
+        }
+      });
+    });
+  }
+
+  function handleBookingStepChange(nextStep) {
+    setBookingStep(nextStep);
+    scrollWizardIntoView();
+  }
+
   function handleSystemSubmit() {
     if (!selectedDay || !selectedSlot) return;
 
@@ -511,9 +561,7 @@ function CustomerBooking() {
   }), []);
 
   function handleScrollToCalendar() {
-    document.getElementById("appointment-calendar")?.scrollIntoView({
-      behavior: "smooth",
-    });
+    scrollWizardIntoView();
   }
 
   return (
@@ -681,10 +729,7 @@ function CustomerBooking() {
                   $active={selectedService === service.serviceType}
                   onClick={() => {
                     handleServiceChange(service.serviceType);
-                    setBookingStep(2);
-                    document
-                      .getElementById("appointment-calendar")
-                      ?.scrollIntoView({ behavior: "smooth" });
+                    handleBookingStepChange(2);
                   }}>
 
                   <CardImageContainer>
@@ -732,7 +777,7 @@ function CustomerBooking() {
           </ScrollWrapper>
         </Section>
 
-        <WizardContainer id="appointment-calendar">
+        <WizardContainer id="appointment-calendar" ref={wizardRef} tabIndex="-1">
           {isSubmitted ? (
             <BookingSuccess
               selectedDay={selectedDay}
@@ -805,7 +850,7 @@ function CustomerBooking() {
                         type="button"
                         size="large"
                         variation="cta"
-                        onClick={() => setBookingStep(2)}>
+                        onClick={() => handleBookingStepChange(2)}>
                         Tarih ve Saat Seçimine İlerle →
                       </Button>
                     </WizardActions>
@@ -834,7 +879,7 @@ function CustomerBooking() {
                     onDateSelect={handleDateSelect}
                     onSlotSelect={setSelectedSlot}
                     onWeekChange={handleWeekChange}
-                    onStepChange={setBookingStep}
+                    onStepChange={handleBookingStepChange}
                   />
                 </StepAnimationWrapper>
               )}
@@ -860,7 +905,7 @@ function CustomerBooking() {
                     onEmailChange={setCustomerEmail}
                     onNotesChange={setNotes}
                     onSystemSubmit={handleSystemSubmit}
-                    onStepChange={setBookingStep}
+                    onStepChange={handleBookingStepChange}
                   />
                 </StepAnimationWrapper>
               )}
@@ -936,7 +981,7 @@ function CustomerBooking() {
         </Footer>
       </Shell>
 
-      {bookingStep < 3 && !isSubmitted && (
+      {showStickyCta && bookingStep < 3 && !isSubmitted && (
         <StickyMobileCTA
           quickWhatsappUrl={quickWhatsappUrl}
           onScrollToCalendar={handleScrollToCalendar}
