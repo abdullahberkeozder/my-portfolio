@@ -84,6 +84,7 @@ function BookingCalendar({
   isFetchingAvailability,
   availabilityError,
   refetchAvailability,
+  quickWhatsappUrl,
   onDateSelect,
   onSlotSelect,
   onWeekChange,
@@ -152,6 +153,16 @@ function BookingCalendar({
         </div>
       </PanelHeader>
 
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1rem 0", borderBottom: "1px solid var(--color-grey-100)", marginBottom: "0.4rem" }}>
+        <span style={{ fontSize: "1.3rem", color: "var(--color-grey-500)", fontWeight: 600 }}>Seçili hizmet:</span>
+        <span style={{ fontSize: "1.4rem", color: "var(--color-grey-900)", fontWeight: 700 }}>{selectedService}</span>
+        <a
+          href="#services"
+          style={{ marginLeft: "auto", fontSize: "1.2rem", color: "var(--color-brand-600)", fontWeight: 700, textDecoration: "underline", whiteSpace: "nowrap" }}>
+          Hizmeti değiştir ↑
+        </a>
+      </div>
+
       {isLoadingAvailability && (
         <AvailabilityNotice aria-live="polite">
           Müsaitlik bilgileri yükleniyor. Saatler doğrulanana kadar seçim
@@ -162,8 +173,15 @@ function BookingCalendar({
       {availabilityError && (
         <AvailabilityNotice role="alert" $error>
           <span>
-            Müsaitlik bilgileri şu anda alınamıyor. Güvenlik nedeniyle
-            saatler seçime kapatıldı.
+            Randevu takvimi şu an yüklenemiyor. Sayfayı yenileyin veya{" "}
+            <a
+              href={quickWhatsappUrl}
+              target="_blank"
+              rel="noreferrer"
+              style={{ fontWeight: 800, textDecoration: "underline" }}>
+              WhatsApp&apos;tan yazın
+            </a>
+            .
           </span>
           <Button
             type="button"
@@ -298,12 +316,28 @@ function BookingCalendar({
           selectedDateIsPast ||
           availableSlots.length === 0 ? (
             <EmptySlots>
-              <span>Bu tarih için seçilebilir saat bulunmuyor.</span>
-              <span>
-                {selectedDay?.status === "unavailable"
-                  ? "Müsaitlik doğrulanmadan randevu seçilemez."
-                  : "Başka bir tarih deneyin."}
-              </span>
+              {selectedDateIsPast ? (
+                <span>Geçmiş bir tarih için randevu alınamaz.</span>
+              ) : selectedDay?.status === "unavailable" && selectedDay?.note?.includes("WhatsApp") ? (
+                <>
+                  <span>Bu tarih için henüz randevu açılmadı.</span>
+                  <span>
+                    Başka bir tarih seçin veya{" "}
+                    <a
+                      href={quickWhatsappUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ fontWeight: 800, textDecoration: "underline", color: "var(--color-brand-700)" }}>
+                      WhatsApp&apos;tan yazın
+                    </a>
+                    .
+                  </span>
+                </>
+              ) : selectedDay?.status === "closed" ? (
+                <span>Bu gün kapalı. Başka bir tarih deneyin.</span>
+              ) : (
+                <span>Bu tarih için seçilebilir saat bulunmuyor. Başka bir gün deneyin.</span>
+              )}
             </EmptySlots>
           ) : (
             <SlotGrid>
@@ -369,12 +403,24 @@ function BookingCalendar({
       </div>
 
       <WizardActions>
-        <Button
-          type="button"
-          variation="secondary"
-          onClick={() => onStepChange(1)}>
-          ← Hizmet Seçimine Geri Dön
-        </Button>
+        <a
+          href="#services"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.6rem",
+            minHeight: "4.4rem",
+            padding: "1rem 1.6rem",
+            borderRadius: "var(--border-radius-sm)",
+            border: "1px solid var(--color-grey-200)",
+            background: "var(--color-grey-0)",
+            color: "var(--color-grey-700)",
+            fontSize: "1.4rem",
+            fontWeight: 700,
+            textDecoration: "none",
+          }}>
+          ← Hizmet Değiştir
+        </a>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.6rem" }}>
           {!selectedSlot && selectedDay && !["closed", "unavailable"].includes(selectedDay.status) && availableSlots.length > 0 && (
             <span style={{ fontSize: "1.2rem", color: "var(--color-yellow-700)", fontWeight: "600", whiteSpace: "nowrap" }}>
@@ -386,7 +432,7 @@ function BookingCalendar({
             size="large"
             variation="cta"
             disabled={!selectedDay || !selectedSlot}
-            onClick={() => onStepChange(3)}>
+            onClick={() => onStepChange(2)}>
             İletişim Bilgilerine İlerle →
           </Button>
         </div>
@@ -412,6 +458,7 @@ BookingCalendar.propTypes = {
   isFetchingAvailability: PropTypes.bool,
   availabilityError: PropTypes.bool,
   refetchAvailability: PropTypes.func.isRequired,
+  quickWhatsappUrl: PropTypes.string.isRequired,
   onDateSelect: PropTypes.func.isRequired,
   onSlotSelect: PropTypes.func.isRequired,
   onWeekChange: PropTypes.func.isRequired,

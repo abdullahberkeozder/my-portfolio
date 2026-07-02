@@ -623,7 +623,10 @@ function Dashboard() {
         `${b.requested_date}T${b.requested_time}`,
       ),
     )[0];
-  const recentRequests = requests.slice(0, 5);
+  const recentRequests = requests
+    .filter((r) => r.status === "new")
+    .slice(0, 5);
+  const lastUpdated = new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
 
   return (
     <Page>
@@ -750,15 +753,15 @@ function Dashboard() {
         <Section>
           <SectionHeader>
             <div>
-              <Heading as="h2">Son müşteri talepleri</Heading>
+              <Heading as="h2">İşlem bekleyen yeni talepler</Heading>
               <MutedText>
-                En son oluşturulan beş talep ve güncel durumları.
+                Henüz incelenmemiş yeni müşteri talepleri — güncelleme: {lastUpdated}
               </MutedText>
             </div>
           </SectionHeader>
 
           {recentRequests.length === 0 ? (
-            <EmptyState>Henüz müşteri talebi bulunmuyor.</EmptyState>
+            <EmptyState>Bekleyen yeni müşteri talebi yok. İyi günler!</EmptyState>
           ) : (
             <RequestList>
               {recentRequests.map((request) => (

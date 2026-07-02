@@ -3,7 +3,6 @@ import {
   HiOutlineCalendarDays,
   HiOutlineClock,
   HiOutlineWrenchScrewdriver,
-  HiOutlinePhone,
   HiOutlineEnvelope,
   HiOutlineUser,
 } from "react-icons/hi2";
@@ -22,14 +21,11 @@ import {
   SummaryContent,
   SummaryLabel,
   SummaryValue,
-  ConfirmLayout,
   FormBlock,
   FieldGrid,
   Field,
   Input,
   Textarea,
-  DirectContactBlock,
-  ChannelGrid,
   ChannelLink,
   WizardActions,
 } from "../../../pages/CustomerBooking.styles";
@@ -48,6 +44,68 @@ const ButtonSpinner = styled.div`
   }
 `;
 
+const ChannelDivider = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin: 2rem 0;
+  color: var(--color-grey-400);
+  font-size: 1.3rem;
+  font-weight: 600;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--color-grey-200);
+  }
+`;
+
+const PrimaryWhatsAppButton = styled.a`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  min-height: 5.6rem;
+  border-radius: var(--border-radius-sm);
+  background: var(--color-channel-whatsapp);
+  color: #fff;
+  font-size: 1.7rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  box-shadow: var(--shadow-md);
+
+  & svg {
+    width: 2.4rem;
+    height: 2.4rem;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: #15803d;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const ChannelHint = styled.div`
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  margin-top: 1.2rem;
+  font-size: 1.2rem;
+  color: var(--color-grey-500);
+  line-height: 1.4;
+`;
 
 function BookingForm({
   selectedDay,
@@ -76,7 +134,7 @@ function BookingForm({
         <div>
           <Heading as="h2">İletişim ve Onay</Heading>
           <MutedText>
-            Randevunuzu tamamlamak için iletişim bilgilerinizi doldurun veya hızlı paylaşım seçeneklerini kullanın.
+            Randevunuzu tamamlamak için en hızlı yöntemi seçin.
           </MutedText>
         </div>
       </PanelHeader>
@@ -113,128 +171,115 @@ function BookingForm({
         </SummaryItem>
       </HorizontalSummary>
 
-      <ConfirmLayout>
-        <FormBlock>
-          <Heading as="h3" style={{ fontSize: "1.6rem", marginBottom: "1.2rem" }}>
-            Sistem Kayıt Formu
-          </Heading>
-          <MutedText style={{ marginBottom: "1.6rem" }}>
-            Sisteme doğrudan talep bırakmak için aşağıdaki alanları doldurun.
-          </MutedText>
+      {/* 1. Birincil kanal: WhatsApp */}
+      <div>
+        <Heading as="h3" style={{ fontSize: "1.5rem", marginBottom: "1.2rem", color: "var(--color-grey-700)" }}>
+          En hızlı yanıt için WhatsApp ile gönderin
+        </Heading>
+        <PrimaryWhatsAppButton
+          href={canSend ? whatsappUrl : quickWhatsappUrl}
+          target="_blank"
+          rel="noreferrer">
+          <FaWhatsapp />
+          WhatsApp ile Randevu Gönder
+        </PrimaryWhatsAppButton>
+        <ChannelHint>
+          <HiOutlineUser style={{ width: "1.6rem", height: "1.6rem", flexShrink: 0, color: "var(--color-channel-whatsapp)", marginTop: "0.1rem" }} />
+          <span>
+            Seçtiğiniz tarih ve saatle hazırlanmış mesaj WhatsApp&apos;ta açılır.
+            Umut Usta genellikle <strong>1-2 saat içinde</strong> yanıt verir.
+          </span>
+        </ChannelHint>
 
-          <FieldGrid>
-            <Field>
-              Adınız
-              <Input
-                value={customerName}
-                onChange={(event) => onNameChange(event.target.value)}
-                placeholder="Ad Soyad"
-              />
-            </Field>
-            <Field>
-              Telefon
-              <Input
-                value={customerPhone}
-                onChange={(event) => onPhoneChange(event.target.value)}
-                placeholder="05xx xxx xx xx"
-                maxLength={14}
-              />
-              {customerPhone && !/^[0][5]\d{9}$/.test(customerPhone.replace(/\D/g, "")) && (
-                <span style={{ color: "var(--color-red-700)", fontSize: "1.1rem", fontWeight: "600", marginTop: "0.4rem", display: "block" }}>
-                  Geçersiz format. Lütfen 05xx xxx xx xx şeklinde 11 haneli numaranızı girin.
-                </span>
-              )}
-            </Field>
+        {mailUrl && canSend && (
+          <ChannelLink
+            href={mailUrl}
+            $color="var(--color-brand-700)"
+            style={{ marginTop: "1rem", width: "100%" }}>
+            <HiOutlineEnvelope />
+            E-posta ile Gönder
+          </ChannelLink>
+        )}
+      </div>
 
-            <Field>
-              E-posta
-              <Input
-                value={customerEmail}
-                onChange={(event) => onEmailChange(event.target.value)}
-                placeholder="ornek@email.com"
-              />
-            </Field>
-            <Field>
-              İşle ilgili notunuz
-              <Textarea
-                value={notes}
-                onChange={(event) => onNotesChange(event.target.value)}
-                maxLength={1000}
-                placeholder="Örn. Balkon korkuluğu tamiri yaptırmak istiyorum."
-              />
-            </Field>
-          </FieldGrid>
+      {/* Ayraç */}
+      <ChannelDivider>ya da sisteme kayıt ol</ChannelDivider>
 
-          <Button
-            size="large"
-            variation="cta"
-            style={{ width: "100%", marginTop: "2rem", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "0.8rem" }}
-            disabled={!canSubmitToSystem || isLoading}
-            onClick={onSystemSubmit}>
-            {isLoading ? (
-              <>
-                <ButtonSpinner />
-                <span>Kaydediliyor...</span>
-              </>
-            ) : (
-              "Randevu Talebi Oluştur"
+      {/* 2. İkincil kanal: Sistem formu */}
+      <FormBlock style={{ background: "var(--color-grey-50)", border: "1px solid var(--color-grey-100)", borderRadius: "var(--border-radius-sm)", padding: "2rem" }}>
+        <Heading as="h3" style={{ fontSize: "1.5rem", marginBottom: "0.4rem" }}>
+          Sistem üzerinden talep oluştur
+        </Heading>
+        <MutedText style={{ marginBottom: "1.6rem" }}>
+          Ad ve telefon numaranız sisteme kaydedilir; Umut Usta sizi arar.
+        </MutedText>
+
+        <FieldGrid>
+          <Field>
+            Adınız
+            <Input
+              value={customerName}
+              onChange={(event) => onNameChange(event.target.value)}
+              placeholder="Ad Soyad"
+            />
+          </Field>
+          <Field>
+            Telefon
+            <Input
+              value={customerPhone}
+              onChange={(event) => onPhoneChange(event.target.value)}
+              placeholder="05xx xxx xx xx"
+              maxLength={14}
+            />
+            {customerPhone && !/^[0][5]\d{9}$/.test(customerPhone.replace(/\D/g, "")) && (
+              <span style={{ color: "var(--color-red-700)", fontSize: "1.1rem", fontWeight: "600", marginTop: "0.4rem", display: "block" }}>
+                Geçersiz format. Lütfen 05xx xxx xx xx şeklinde 11 haneli numaranızı girin.
+              </span>
             )}
-          </Button>
+          </Field>
 
-        </FormBlock>
+          <Field>
+            E-posta (isteğe bağlı)
+            <Input
+              value={customerEmail}
+              onChange={(event) => onEmailChange(event.target.value)}
+              placeholder="ornek@email.com"
+            />
+          </Field>
+          <Field>
+            İşle ilgili notunuz (isteğe bağlı)
+            <Textarea
+              value={notes}
+              onChange={(event) => onNotesChange(event.target.value)}
+              maxLength={1000}
+              placeholder="Örn. Balkon korkuluğu tamiri yaptırmak istiyorum."
+            />
+          </Field>
+        </FieldGrid>
 
-        <DirectContactBlock>
-          <Heading as="h3" style={{ fontSize: "1.6rem", marginBottom: "1.2rem" }}>
-            Hızlı İletişim Seçenekleri
-          </Heading>
-          <MutedText style={{ marginBottom: "1.6rem" }}>
-            Bilgilerinizi sisteme kaydetmeden, doğrudan WhatsApp veya E-posta üzerinden randevulu mesaj hazırlayabilirsiniz.
-          </MutedText>
-
-          <ChannelGrid>
-            <ChannelLink
-              href={quickWhatsappUrl}
-              target="_blank"
-              rel="noreferrer"
-              $color="var(--color-channel-whatsapp)">
-              <FaWhatsapp />
-              Doğrudan Soru Sor / Fotoğraf Gönder
-            </ChannelLink>
-            <ChannelLink
-              href={canSend ? whatsappUrl : undefined}
-              target="_blank"
-              rel="noreferrer"
-              $color="var(--color-brand-600)"
-              $disabled={!canSend}>
-              <HiOutlinePhone />
-              {"Seçili Randevu ile WhatsApp'tan Yaz"}
-            </ChannelLink>
-            {mailUrl && (
-              <ChannelLink
-                href={canSend ? mailUrl : undefined}
-                $color="var(--color-brand-700)"
-                $disabled={!canSend}>
-                <HiOutlineEnvelope />
-                Seçili Randevu ile E-posta Gönder
-              </ChannelLink>
-            )}
-          </ChannelGrid>
-
-          <div style={{ marginTop: "2.4rem", display: "flex", gap: "1rem", alignItems: "start" }}>
-            <HiOutlineUser style={{ width: "2rem", height: "2rem", color: "var(--color-brand-600)", flexShrink: 0 }} />
-            <span style={{ fontSize: "1.2rem", color: "var(--color-grey-500)", lineHeight: "1.4" }}>
-              WhatsApp ve e-posta seçenekleri, seçtiğiniz tarih ve saatle hazırlanmış bir mesaj açar. Sistem kaydı için ad ve telefon bilgisi gerekir.
-            </span>
-          </div>
-        </DirectContactBlock>
-      </ConfirmLayout>
+        <Button
+          size="large"
+          variation="secondary"
+          style={{ width: "100%", marginTop: "1.6rem", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "0.8rem" }}
+          disabled={!canSubmitToSystem || isLoading}
+          onClick={onSystemSubmit}>
+          {isLoading ? (
+            <>
+              <ButtonSpinner />
+              <span>Kaydediliyor...</span>
+            </>
+          ) : (
+            "Randevu Talebi Oluştur"
+          )}
+        </Button>
+      </FormBlock>
 
       <WizardActions>
         <Button
           type="button"
           variation="secondary"
-          onClick={() => onStepChange(2)}>
-          ← Tarih & Saat Seçimine Geri Dön
+          onClick={() => onStepChange(1)}>
+          ← Tarih &amp; Saat Seçimine Geri Dön
         </Button>
         <div />
       </WizardActions>
