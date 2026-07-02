@@ -1,9 +1,10 @@
 import PropTypes from "prop-types";
-import { HiOutlineCheckCircle, HiOutlineCalendarDays, HiOutlineClock, HiOutlineWrenchScrewdriver } from "react-icons/hi2";
+import { HiOutlineCheckCircle, HiOutlineCalendarDays, HiOutlineClock, HiOutlineWrenchScrewdriver, HiOutlinePhone } from "react-icons/hi2";
 import { FaWhatsapp } from "react-icons/fa";
 import styled from "styled-components";
 import Heading from "../../../ui/Heading";
 import Button from "../../../ui/Button";
+import { BUSINESS_TELEPHONE } from "../../../config/business";
 
 const SuccessPanel = styled.div`
   display: flex;
@@ -45,7 +46,7 @@ const SuccessDetails = styled.div`
   gap: 1.2rem;
   width: 100%;
   max-width: 44rem;
-  margin: 2.8rem 0;
+  margin: 2.8rem 0 0;
   padding: 2rem;
   background: var(--color-grey-50);
   border: 1px solid var(--color-grey-100);
@@ -87,22 +88,110 @@ const SuccessSubtitle = styled.p`
   margin-top: 1rem;
 `;
 
+/* ---- Beklenti Yönetimi Timeline ---- */
+const TimelineSection = styled.div`
+  width: 100%;
+  max-width: 44rem;
+  margin: 2rem 0;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--color-brand-50) 0%, var(--color-grey-50) 100%);
+  border: 1px solid var(--color-brand-100);
+  border-radius: var(--border-radius-sm);
+  text-align: left;
+`;
+
+const TimelineTitle = styled.p`
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-brand-700);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 1.4rem;
+`;
+
+const TimelineList = styled.ol`
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+`;
+
+const TimelineItem = styled.li`
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  font-size: 1.4rem;
+  color: var(--color-grey-700);
+  line-height: 1.4;
+`;
+
+const TimelineBullet = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  background: ${(props) =>
+    props.$done
+      ? "var(--color-green-700)"
+      : "var(--color-brand-600)"};
+  color: #fff;
+  margin-top: 0.1rem;
+`;
+
+const PhoneCallout = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1.4rem;
+  padding: 1.2rem 1.4rem;
+  background: var(--color-brand-600);
+  border-radius: var(--border-radius-sm);
+  color: #fff;
+
+  & svg {
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+  }
+
+  & span {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+`;
+
 const ButtonGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
   width: 100%;
   max-width: 36rem;
-  margin-top: 1rem;
+  margin-top: 2rem;
 `;
+
+function maskPhone(phone) {
+  if (!phone) return null;
+  const clean = phone.replace(/\D/g, "");
+  if (clean.length < 7) return phone;
+  return phone.slice(0, -4).replace(/\d(?=\d{0}$)/g, "*") + clean.slice(-4);
+}
 
 function BookingSuccess({
   selectedDay,
   selectedSlot,
   selectedService,
+  customerPhone,
   whatsappUrl,
   onReset,
 }) {
+  const maskedPhone = maskPhone(customerPhone);
+
   return (
     <SuccessPanel>
       <SuccessIconWrapper>
@@ -112,7 +201,7 @@ function BookingSuccess({
         Randevu Talebiniz Alındı!
       </Heading>
       <SuccessSubtitle>
-        Umut Usta en kısa sürede (genellikle 1-2 saat içinde) verdiğiniz telefon numarası üzerinden sizinle WhatsApp veya arama yoluyla iletişime geçecektir.
+        Talebiniz sisteme kaydedildi. Aşağıdaki adımları takip edin.
       </SuccessSubtitle>
 
       <SuccessDetails>
@@ -131,7 +220,41 @@ function BookingSuccess({
           <DetailLabel>Saat Aralığı:</DetailLabel>
           <DetailValue>{selectedSlot?.label || "-"}</DetailValue>
         </DetailItem>
+        {maskedPhone && (
+          <DetailItem>
+            <HiOutlinePhone />
+            <DetailLabel>Telefonunuz:</DetailLabel>
+            <DetailValue>{maskedPhone}</DetailValue>
+          </DetailItem>
+        )}
       </SuccessDetails>
+
+      {/* Beklenti yönetimi timeline */}
+      <TimelineSection>
+        <TimelineTitle>Ne bekleyin?</TimelineTitle>
+        <TimelineList>
+          <TimelineItem>
+            <TimelineBullet $done>✓</TimelineBullet>
+            <span><strong>Talep alındı</strong> — Randevu talebiniz sisteme başarıyla kaydedildi.</span>
+          </TimelineItem>
+          <TimelineItem>
+            <TimelineBullet>2</TimelineBullet>
+            <span>
+              <strong>1-2 saat içinde aranacaksınız</strong> — Umut Usta,
+              {maskedPhone ? ` ${maskedPhone} numaranızı ` : " verdiğiniz numarayı "}
+              arayacak veya WhatsApp&apos;tan yazacak.
+            </span>
+          </TimelineItem>
+          <TimelineItem>
+            <TimelineBullet>3</TimelineBullet>
+            <span><strong>Randevu onaylanır</strong> — Detaylar netleştikten sonra randevunuz kesinleşir.</span>
+          </TimelineItem>
+        </TimelineList>
+        <PhoneCallout>
+          <HiOutlinePhone />
+          <span>Doğrudan aramak için: {BUSINESS_TELEPHONE}</span>
+        </PhoneCallout>
+      </TimelineSection>
 
       <ButtonGroup>
         <Button
@@ -150,11 +273,9 @@ function BookingSuccess({
             borderColor: "var(--color-channel-whatsapp)",
             width: "100%",
           }}
-
-
         >
           <FaWhatsapp style={{ width: "2rem", height: "2rem" }} />
-          WhatsApp ile Hemen Bildir (Teyit Al)
+          WhatsApp ile Hemen Teyit Al
         </Button>
         <Button type="button" variation="secondary" size="large" onClick={onReset}>
           Yeni Randevu Oluştur
@@ -168,6 +289,7 @@ BookingSuccess.propTypes = {
   selectedDay: PropTypes.object,
   selectedSlot: PropTypes.object,
   selectedService: PropTypes.string.isRequired,
+  customerPhone: PropTypes.string,
   whatsappUrl: PropTypes.string.isRequired,
   onReset: PropTypes.func.isRequired,
 };
