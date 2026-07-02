@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   useMutation,
@@ -33,6 +33,7 @@ import {
   updateAppointmentRequest,
   restoreAppointmentRequest,
 } from "../services/apiAppointmentRequests";
+import supabase from "../services/supabase";
 
 const STATUS_OPTIONS = [
   {
@@ -814,6 +815,35 @@ function Bookings() {
       toast.error(restoreError.message);
     },
   });
+
+  // Supabase Realtime: yeni randevu talebi gelince otomatik güncelle
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const channel = supabase
+      .channel("bookings-realtime")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "appointment_requests" },
+        (payload) => {
+          queryClient.invalidateQueries({ queryKey: ["appointment-requests"] });
+          const name = payload.new?.customer_name || "Bilinmeyen müşteri";
+          toast.success(`✨ Yeni randevu talebi: ${name}`, { duration: 6000 });
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "appointment_requests" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["appointment-requests"] });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isAdmin, queryClient]);
 
   const filteredRequests = requests.filter((request) => {
     // 1. Status Filter (when viewing active requests list, we can filter locally by specific status)
