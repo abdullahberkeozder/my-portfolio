@@ -46,14 +46,9 @@ describe("CustomerBooking availability safety", () => {
   it("keeps calendar days closed when availability cannot be verified", async () => {
     renderPage();
 
-    const nextButton = screen.getByRole("button", {
-      name: /tarih ve saat/i,
-    });
-    fireEvent.click(nextButton);
-
     const alert = await screen.findByRole("alert");
     expect(alert).toHaveTextContent(
-      "Müsaitlik bilgileri şu anda alınamıyor",
+      "Randevu takvimi şu an yüklenemiyor",
     );
 
     const closedDays = screen.getAllByRole("button", {
