@@ -586,28 +586,16 @@ to authenticated
 using (public.is_admin(auth.uid()))
 with check (public.is_admin(auth.uid()));
 
-insert into public.appointment_availability_days (work_date, status, note)
-select
-  day_value::date,
-  'available',
-  'Ortalama iş süresi iki saattir. 09:00 - 21:00 arasında randevu alınabilir.'
-from generate_series(
-  current_date,
-  current_date + interval '180 days',
-  interval '1 day'
-) as generated_days(day_value)
-on conflict (work_date) do nothing;
+-- =============================================================================
+-- Seed verisi bu dosyadan ayrıldı.
+-- Başlangıç takvim verisi için: supabase/seed.sql dosyasını çalıştırın.
+--
+-- Schema + Migration burada, Seed ayrı — tekrar çalıştırma güvenlidir.
+-- =============================================================================
 
-insert into public.appointment_availability_slots (day_id, slot_time)
-select d.id, make_time(hour_value, 0, 0)
-from public.appointment_availability_days d
-cross join generate_series(9, 19, 2) as hours(hour_value)
-where d.work_date between current_date and current_date + 180
-on conflict (day_id, slot_time) do nothing;
-
--- 2 saatlik blok mantigi:
--- slot_time = '09:00' kaydi musteride '09:00 - 11:00' olarak gorunur.
--- Birden fazla araligi kapatmak icin ilgili slot satirlarini false yapabilirsiniz:
+-- 2 saatlik blok mantığı:
+-- slot_time = '09:00' kaydı müşteride '09:00 - 11:00' olarak görünür.
+-- Birden fazla aralığı kapatmak için ilgili slot satırlarını false yapabilirsiniz:
 -- update public.appointment_availability_slots
 -- set is_available = false
 -- where day_id = (
@@ -616,7 +604,7 @@ on conflict (day_id, slot_time) do nothing;
 -- )
 -- and slot_time in ('09:00', '13:00', '17:00');
 
--- Ilk veya yeni admini onaylamak icin email adresini degistirip calistirin:
+-- İlk veya yeni admini onaylamak için email adresini değiştirip çalıştırın:
 -- update public.admin_profiles
 -- set role = 'admin', is_active = true
 -- where user_id = (
