@@ -6,23 +6,60 @@ The Welding Expert App is a React 18, Vite, and Supabase web application tailore
 
 ---
 
-## Screenshots
+## ⚡ 1-Minute Interactive Showcase (Click to Expand)
 
-<p align="center">
-  <img src="./docs/readme-assets/appointment-page.png" alt="Customer Booking Page" width="90%" />
-</p>
+If you are a recruiter or technical engineer reviewing this project, expand the cards below for a quick product walkthrough:
 
-<br>
+<details>
+<summary><strong>📱 Customer Portal & Mobile Wizard (Frictionless Scheduling Flow)</strong></summary>
 
-<p align="center">
-  <img src="./docs/readme-assets/gallery-page.png" alt="Work Gallery Page" width="90%" />
-</p>
+### The Problem
+Traditional local service booking takes too many calls. Customers abandon pages if scheduling takes more than a minute.
 
-<br>
+### Our Solution
+A **2-Step Booking Wizard** designed for mobile thumb zones. Customers can select services, view calendar availability, choose time slots, and submit bookings in under 45 seconds.
 
-<p align="center">
-  <img src="./docs/readme-assets/appointment-mobile.png" alt="Mobile Booking Experience" width="320px" />
-</p>
+* **Key Client Files:** [CustomerBooking.jsx](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/src/pages/CustomerBooking.jsx), [BookingCalendar.jsx](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/src/features/booking/components/BookingCalendar.jsx)
+* **Visual Mockup:**
+  <p align="center">
+    <img src="./docs/readme-assets/appointment-mobile.png" alt="Mobile Booking Experience" width="280px" />
+  </p>
+</details>
+
+<details>
+<summary><strong>📊 Operations Dashboard & Recharts Trend Analytics</strong></summary>
+
+### The Problem
+Business owners cannot see completed workload metrics, trends, or potential drop-offs.
+
+### Our Solution
+A live administrative control center featuring **weekly trend charts (recharts)** displaying the status of requests over the last 8 weeks, business KPIs (Total, New, Confirmed, Cancelled, Completed counts), and a conversion funnel analyzer mapping wizard drop-off rates.
+
+* **Key Admin Files:** [Dashboard.jsx](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/src/pages/Dashboard.jsx), [AnalyticsDashboard.jsx](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/src/features/analytics/components/AnalyticsDashboard.jsx)
+* **Visual Mockup:**
+  <p align="center">
+    <img src="./docs/readme-assets/appointment-page.png" alt="Operations Panel" width="80%" />
+  </p>
+</details>
+
+<details>
+<summary><strong>🛡️ Database Integrity & Race-Condition Prevention (SELECT FOR UPDATE)</strong></summary>
+
+### The Problem
+Two customers might attempt to book the exact same slot at the same time, leading to double-bookings.
+
+### Our Solution
+Guarded scheduling at the database transaction layer using a PostgreSQL RPC. When executing `create_appointment_request()`, a row lock is requested on the availability slot:
+```sql
+SELECT slot.id INTO v_slot_id
+FROM public.appointment_availability_slots as slot
+WHERE slot.slot_time = p_requested_time AND slot.is_available = true
+FOR UPDATE OF slot;
+```
+This queues up concurrent requests, allowing only the first write attempt to proceed while gracefully notifying others.
+
+* **Key Database Files:** [welding_appointments_schema.sql](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/supabase/welding_appointments_schema.sql)
+</details>
 
 ---
 
