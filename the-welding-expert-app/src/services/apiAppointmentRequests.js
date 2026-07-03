@@ -31,10 +31,15 @@ function getAppointmentRequestError(
   return fallbackMessage;
 }
 
-export async function getAppointmentRequests({ showArchived = false } = {}) {
+export async function getAppointmentRequests({
+  showArchived = false,
+  page = 1,
+  pageSize = 20,
+  fetchAll = false,
+} = {}) {
   let query = supabase
     .from(TABLE_NAME)
-    .select("*");
+    .select("*", { count: "exact" });
 
   if (showArchived) {
     query = query.not("archived_at", "is", null);
@@ -42,14 +47,23 @@ export async function getAppointmentRequests({ showArchived = false } = {}) {
     query = query.is("archived_at", null);
   }
 
-  const { data, error } = await query.order("created_at", { ascending: false });
+  query = query.order("created_at", { ascending: false });
+
+  // Arama aktifken veya fetchAll=true olduğunda tüm kayıtları çek
+  if (!fetchAll) {
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    query = query.range(from, to);
+  }
+
+  const { data, error, count } = await query;
 
   if (error) {
     console.error(error);
     throw new Error("Randevu talepleri yüklenemedi.");
   }
 
-  return data;
+  return { data: data ?? [], count: count ?? 0 };
 }
 
 export async function createAppointmentRequest(request) {

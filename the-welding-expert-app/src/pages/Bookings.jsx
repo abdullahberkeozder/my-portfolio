@@ -26,6 +26,7 @@ import {
 import Heading from "../ui/Heading";
 import Spinner from "../ui/Spinner";
 import Button from "../ui/Button";
+import Pagination from "../ui/Pagination";
 import { getAdminProfile } from "../services/apiAuth";
 import {
   deleteAppointmentRequest,
@@ -734,6 +735,8 @@ function Bookings() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 20;
 
   const {
     data: admin,
@@ -746,17 +749,29 @@ function Bookings() {
 
   const isAdmin = admin?.isAuthorized;
   const showArchived = statusFilter === "archived";
+  // Arama aktifken tüm kayıtları çek (lokal filtre), aksi hâlde sayfalama uygula
+  const isSearching = searchQuery.trim().length > 0;
 
   const {
-    data: requests = [],
+    data: requestsResult = { data: [], count: 0 },
     isLoading,
     isError,
     error,
   } = useQuery({
-    queryKey: ["appointment-requests", showArchived],
-    queryFn: () => getAppointmentRequests({ showArchived }),
+    queryKey: ["appointment-requests", showArchived, page, isSearching],
+    queryFn: () =>
+      getAppointmentRequests({
+        showArchived,
+        page,
+        pageSize: PAGE_SIZE,
+        fetchAll: isSearching,
+      }),
     enabled: Boolean(isAdmin),
+    keepPreviousData: true,
   });
+
+  const requests = requestsResult.data;
+  const totalCount = requestsResult.count;
 
   const newRequests = requests.filter(
     (request) => request.status === "new",
@@ -846,13 +861,13 @@ function Bookings() {
   }, [isAdmin, queryClient]);
 
   const filteredRequests = requests.filter((request) => {
-    // 1. Status Filter (when viewing active requests list, we can filter locally by specific status)
-    if (statusFilter !== "all" && statusFilter !== "archived") {
+    // 1. Status Filter (sadece arama yokken yerelde durum filtresi)
+    if (!isSearching && statusFilter !== "all" && statusFilter !== "archived") {
       if (request.status !== statusFilter) return false;
     }
 
-    // 2. Search Query filter (local text search)
-    if (searchQuery.trim()) {
+    // 2. Search Query filter (arama aktifken metin filtresi)
+    if (isSearching) {
       const search = searchQuery.toLowerCase();
       const name = (request.customer_name || "").toLowerCase();
       const phone = (request.customer_phone || "").toLowerCase();
@@ -874,6 +889,9 @@ function Bookings() {
     return true;
   });
 
+  // Sayfalama metadatası — arama yokken sunucu taraflı toplam kullanılır
+  const displayedTotal = isSearching ? filteredRequests.length : totalCount;
+
   return (
     <Page>
       <PageHeader>
@@ -894,7 +912,7 @@ function Bookings() {
       <StatsGrid>
         <StatCard>
           <MutedText>{showArchived ? "Arşivlenen talep" : "Toplam aktif talep"}</MutedText>
-          <StatValue>{requests.length}</StatValue>
+          <StatValue>{isSearching ? filteredRequests.length : totalCount}</StatValue>
         </StatCard>
         <StatCard>
           <MutedText>Yeni talep</MutedText>
@@ -932,32 +950,33 @@ function Bookings() {
               onClick={() => {
                 setStatusFilter("all");
                 setSearchQuery("");
+                setPage(1);
               }}>
               Tümü
             </FilterButton>
             <FilterButton
               $active={statusFilter === "new"}
-              onClick={() => setStatusFilter("new")}>
+              onClick={() => { setStatusFilter("new"); setPage(1); }}>
               Yeni
             </FilterButton>
             <FilterButton
               $active={statusFilter === "contacted"}
-              onClick={() => setStatusFilter("contacted")}>
+              onClick={() => { setStatusFilter("contacted"); setPage(1); }}>
               İletişime geçildi
             </FilterButton>
             <FilterButton
               $active={statusFilter === "confirmed"}
-              onClick={() => setStatusFilter("confirmed")}>
+              onClick={() => { setStatusFilter("confirmed"); setPage(1); }}>
               Onaylandı
             </FilterButton>
             <FilterButton
               $active={statusFilter === "cancelled"}
-              onClick={() => setStatusFilter("cancelled")}>
+              onClick={() => { setStatusFilter("cancelled"); setPage(1); }}>
               İptal edildi
             </FilterButton>
             <FilterButton
               $active={statusFilter === "completed"}
-              onClick={() => setStatusFilter("completed")}>
+              onClick={() => { setStatusFilter("completed"); setPage(1); }}>
               Tamamlandı
             </FilterButton>
             <FilterButton
@@ -965,6 +984,7 @@ function Bookings() {
               onClick={() => {
                 setStatusFilter("archived");
                 setSearchQuery("");
+                setPage(1);
               }}>
               Arşivlenenler
             </FilterButton>
@@ -1035,20 +1055,30 @@ function Bookings() {
         )}
 
         {isAdmin && !isLoading && !isError && filteredRequests.length > 0 && (
-          <RequestList>
-            {filteredRequests.map((request) => (
-              <RequestItem
-                key={request.id}
-                request={request}
-                isUpdating={isUpdatingRequest}
-                isDeleting={isDeletingRequest}
-                isRestoring={isRestoringRequest}
-                onUpdate={updateRequest}
-                onDelete={removeRequest}
-                onRestore={restoreRequest}
+          <>
+            <RequestList>
+              {filteredRequests.map((request) => (
+                <RequestItem
+                  key={request.id}
+                  request={request}
+                  isUpdating={isUpdatingRequest}
+                  isDeleting={isDeletingRequest}
+                  isRestoring={isRestoringRequest}
+                  onUpdate={updateRequest}
+                  onDelete={removeRequest}
+                  onRestore={restoreRequest}
+                />
+              ))}
+            </RequestList>
+            {!isSearching && (
+              <Pagination
+                page={page}
+                pageSize={PAGE_SIZE}
+                totalCount={displayedTotal}
+                onPageChange={setPage}
               />
-            ))}
-          </RequestList>
+            )}
+          </>
         )}
       </RequestsPanel>
     </Page>
