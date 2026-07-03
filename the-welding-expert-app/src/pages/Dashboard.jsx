@@ -9,6 +9,8 @@ import {
   HiOutlineClock,
   HiOutlinePhoto,
   HiOutlineUserGroup,
+  HiOutlineXCircle,
+  HiOutlineChartBar,
 } from "react-icons/hi2";
 
 import Button from "../ui/Button";
@@ -28,6 +30,8 @@ import {
   parseDateKey,
   addDays,
 } from "../utils/dateHelpers";
+import RequestTrendChart from "../features/analytics/components/RequestTrendChart";
+import AnalyticsDashboard from "../features/analytics/components/AnalyticsDashboard";
 
 
 const DAY_STATUS_LABELS = {
@@ -256,14 +260,18 @@ const PanelValue = styled.strong`
 
 const StatsGrid = styled.section`
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 1.6rem;
 
-  @media (max-width: 1020px) {
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 760px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  @media (max-width: 620px) {
+  @media (max-width: 480px) {
     grid-template-columns: 1fr;
   }
 `;
@@ -525,8 +533,9 @@ function Dashboard() {
 
   const requestsQuery = useQuery({
     queryKey: ["appointment-requests"],
-    queryFn: () => getAppointmentRequests(),
+    queryFn: () => getAppointmentRequests({ fetchAll: true }),
     refetchInterval: 30000,
+    select: (result) => result.data,
   });
 
   const availabilityQuery = useQuery({
@@ -604,6 +613,12 @@ function Dashboard() {
       request.status === "confirmed" &&
       request.requested_date >= todayKey &&
       request.requested_date <= endDateKey,
+  ).length;
+  const cancelledCount = requests.filter(
+    (r) => r.status === "cancelled",
+  ).length;
+  const completedCount = requests.filter(
+    (r) => r.status === "completed",
   ).length;
   const customerCount = new Set(
     requests.map(
@@ -711,6 +726,24 @@ function Dashboard() {
             <StatValue>{customerCount}</StatValue>
           </div>
         </StatCard>
+        <StatCard>
+          <StatIcon $color="red">
+            <HiOutlineXCircle />
+          </StatIcon>
+          <div>
+            <StatLabel>İptal edilen</StatLabel>
+            <StatValue>{cancelledCount}</StatValue>
+          </div>
+        </StatCard>
+        <StatCard>
+          <StatIcon $color="purple">
+            <HiOutlineChartBar />
+          </StatIcon>
+          <div>
+            <StatLabel>Tamamlanan</StatLabel>
+            <StatValue>{completedCount}</StatValue>
+          </div>
+        </StatCard>
       </StatsGrid>
 
       <Section>
@@ -747,6 +780,18 @@ function Dashboard() {
             </DayCard>
           ))}
         </WeekGrid>
+      </Section>
+
+      <Section>
+        <SectionHeader>
+          <div>
+            <Heading as="h2">Son 8 haftanın talep trendi</Heading>
+            <MutedText>
+              Haftalık bazda yeni, onaylanan, tamamlanan ve iptal edilen talep sayıları.
+            </MutedText>
+          </div>
+        </SectionHeader>
+        <RequestTrendChart requests={requests} weeks={8} />
       </Section>
 
       <ContentGrid>
@@ -820,6 +865,20 @@ function Dashboard() {
           </ContactGrid>
         </Section>
       </ContentGrid>
+
+      {ROUTE_ROLES.analytics.includes(admin?.profile?.role) && (
+        <Section>
+          <SectionHeader>
+            <div>
+              <Heading as="h2">Dönüşüm hunisi — Son 30 gün</Heading>
+              <MutedText>
+                Randevu sihirbazını açan müşterilerin form gönderme ve WhatsApp tıklama oranları.
+              </MutedText>
+            </div>
+          </SectionHeader>
+          <AnalyticsDashboard />
+        </Section>
+      )}
     </Page>
   );
 }

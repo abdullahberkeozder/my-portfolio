@@ -11,6 +11,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import styled from "styled-components";
 import Heading from "../../../ui/Heading";
 import Button from "../../../ui/Button";
+import { logEvent } from "../../../services/apiAnalytics";
 import {
   Panel,
   PanelHeader,
@@ -179,7 +180,11 @@ function BookingForm({
         <PrimaryWhatsAppButton
           href={canSend ? whatsappUrl : quickWhatsappUrl}
           target="_blank"
-          rel="noreferrer">
+          rel="noreferrer"
+          onClick={() => logEvent("booking_whatsapp_clicked", {
+            channel: canSend ? "wizard_form_filled" : "wizard_form_quick",
+            service_type: selectedService,
+          })}>
           <FaWhatsapp />
           WhatsApp ile Randevu Gönder
         </PrimaryWhatsAppButton>
@@ -195,7 +200,10 @@ function BookingForm({
           <ChannelLink
             href={mailUrl}
             $color="var(--color-brand-700)"
-            style={{ marginTop: "1rem", width: "100%" }}>
+            style={{ marginTop: "1rem", width: "100%" }}
+            onClick={() => logEvent("booking_email_clicked", {
+              service_type: selectedService,
+            })}>
             <HiOutlineEnvelope />
             E-posta ile Gönder
           </ChannelLink>
