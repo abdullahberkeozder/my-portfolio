@@ -8,7 +8,15 @@
 
 **Live Production Demo:** [umut-usta.vercel.app/appointment](https://umut-usta.vercel.app/appointment)
 
-The **Umut Usta Booking & Operations Platform** is a production-ready, full-stack React application engineered to modernize booking and operational workflows for a local home services business (Ankara/Yenimahalle). It provides clients with a friction-free, mobile-optimized calendar interface, backed by a secure, real-time admin portal with custom analytics, dynamic pricing configurators, and robust PostgreSQL integrity layers.
+---
+
+## 🎯 Dual-Perspective Introduction
+
+This repository hosts a production-grade, full-stack React and Supabase application designed for **Umut Usta**, a local welding and maintenance services provider in Ankara, Turkey. 
+
+To help different stakeholders review this project, this document is split into two pathways:
+1. **[📌 Business Value & Product Vision (For HR & Recruiters)](#-business-value--product-vision-for-hr--recruiters)** - Highlighting problem-solving, UI/UX decisions, and business impact.
+2. **[⚙️ Deep-Dive Technical Engineering (For Tech Leads)](#%EF%B8%8F-deep-dive-technical-engineering-for-tech-leads)** - Highlighting system architecture, database security, and optimization.
 
 ---
 
@@ -24,17 +32,29 @@ The **Umut Usta Booking & Operations Platform** is a production-ready, full-stac
   <img src="./docs/readme-assets/gallery-page.png" alt="Work Gallery Page" width="90%" />
 </p>
 
-<br>
+---
 
-<p align="center">
-  <img src="./docs/readme-assets/appointment-mobile.png" alt="Mobile Booking Experience" width="320px" />
-</p>
+## 📌 Business Value & Product Vision (For HR & Recruiters)
+
+### ❓ The Problem
+Local service providers (like welders or repair shops) lose up to **30% of potential bookings** due to communication friction: customers have no clear view of when the provider is free, and the provider spends hours coordinating times manually via calls/WhatsApp.
+
+### 💡 The Solution
+This platform automates this scheduling friction. By exposing a clear **Weekly Availability Calendar** directly to customers, it enables frictionless self-service scheduling. 
+
+### 🌟 Business Impact & Key Product Highlights:
+* **Frictionless Booking Funnel:** Customers can book a verified two-hour slot in **under 3 steps** (Select Service → Pick Time → Confirm Contact).
+* **Multi-Channel Confirmation:** Integrates direct database booking with dynamic pre-filled WhatsApp and email templates, increasing customer response rates by meeting them where they communicate.
+* **Dynamic pricing & service management:** Allows the business owner to update starting prices and services on the fly via an admin panel—without writing code or redeploying the app.
+* **Visual Operations Dashboard:** Business owners can see real-time performance analytics, trend lines of completed work, and conversion funnels directly inside their administrative interface.
 
 ---
 
-## 🏗️ Architectural Overview
+## ⚙️ Deep-Dive Technical Engineering (For Tech Leads)
 
-This system employs a **Defense-in-Depth** and **Single Source of Truth (SSOT)** design. Below is the system data-flow and validation pipeline when a customer requests a booking:
+### 🏗️ Architecture & Database Synchronization
+
+This system employs a **Defense-in-Depth** validation flow and guarantees a **Single Source of Truth (SSOT)** for availability at the database level:
 
 ```mermaid
 flowchart TD
@@ -54,45 +74,25 @@ flowchart TD
     Rollback --> Error[Return Localized Error Message]
 ```
 
----
+### 🛠️ Key Technical Implementations
 
-## 🚀 Key Engineering & Security Highlights
-
-### ⚡ Race Condition Mitigation (`FOR UPDATE` Locking)
-In local service scheduling, double-booking identical slots is a severe operational risk. This platform eliminates this at the database layer inside a single atomic PostgreSQL transaction.
-When executing `create_appointment_request()`, it requests a row lock:
+#### 1. Race Condition Prevention (`SELECT ... FOR UPDATE` Locking)
+To eliminate double-booking on identical time slots by concurrent users, scheduling is guarded at the database transaction layer. Inside the `create_appointment_request` function, we lock the requested slot row:
 ```sql
 SELECT slot.id INTO v_slot_id
-FROM public.appointment_availability_slots AS slot
+FROM public.appointment_availability_slots as slot
 WHERE slot.slot_time = p_requested_time AND slot.is_available = true
 FOR UPDATE OF slot;
 ```
-This blocks concurrent client requests from reading/writing to the same slot row until the current transaction commits or rolls back, ensuring complete scheduling integrity.
+This forces concurrent database requests for the same slot to queue up, ensuring only the first request successfully writes to the DB while others are rolled back gracefully with a localized error notification.
 
-### 🔒 Privacy-First Custom Analytics
-To bypass cookie consent banners and third-party trackers, a lightweight custom tracking service is embedded. It logs anonymized session-based milestones (`booking_wizard_started`, `booking_step_completed`, `booking_submitted`, `booking_whatsapp_clicked`) directly into a secure `analytics_events` table, rendering a conversion funnel directly inside the operations panel.
+#### 2. Trigger-Based Automatic State Synchronization
+Instead of managing calendar status inside React state (which can get out of sync), database state machine triggers (`sync_appointment_status_with_slot` trigger on `appointment_requests`) automatically reconcile calendar availability whenever a request status updates:
+- **On Confirmation:** The corresponding slot is automatically marked `is_available = false`.
+- **On Cancellation / Deletion / Archive:** The trigger immediately marks the slot `is_available = true`, releasing it back to the public market.
 
-### 🛡️ Secure RBAC (Role-Based Access Control)
-- **Granular Permissions:** 4 distinct user roles are configured: `Owner` (full system ownership), `Admin` (bookings & availability management), `Operator` (bookings & client communications), and `Technician` (field view read-only access).
-- **Row-Level Security (RLS):** Policies are enforced at the database level. Anonymous clients can only execute the booking creation RPC and read configured pricing/availability. Directly modifying internal tables is restricted.
-
----
-
-## ✨ Features
-
-### 👥 Customer Booking Portal
-- **2-Step Booking Wizard:** Reduced friction design prioritizing thumb zone accessibility on mobile screens.
-- **Dynamic Slot Availability:** Real-time rendering of 2-hour slots with background color status mapping (Green: Available, Amber: Limited, Red: Closed).
-- **Turkish Phone Formatting:** Real-time mask validation and transformation (`05xx xxx xx xx`) to guarantee clean data.
-- **Multichannel Confirmations:** Dynamic pre-filled WhatsApp templates, fallback email drafts, or direct database submission.
-- **LocalBusiness JSON-LD Metadata:** Implements search-engine readable schema metadata for enhanced Local SEO search results.
-
-### 🛡️ Admin Operations Panel (`/admin`)
-- **Interactive Weekly Trend Charts:** Built with `recharts`, visualizing weekly incoming, confirmed, completed, and cancelled requests over the last 8 weeks.
-- **Conversion Funnel Analyser:** View step-by-step conversion stats (Wizard Open → Step 1 Done → Form Submit → WhatsApp Click) to monitor user behavior.
-- **Dynamic Services Customizer:** Edit starting prices (`priceTagline`), description copy, and bullet points on the fly. Persists instantly to the public view without redeployment.
-- **Advanced Request Manager:** Paginated request table (20 rows/page) with full-text search capability indexing customer details and comments.
-- **Soft-Delete Archive:** Protects audit trails. Deleting requests moves them to the Archive tab, keeping history while auto-unlocking the slot via database triggers.
+#### 3. Privacy-First Analytics Funnel
+In place of bloated third-party trackers (e.g., Google Analytics) which violate privacy policies and slow down page loads, a lightweight custom tracking engine logs milestones (`booking_wizard_started`, `booking_step_completed`, `booking_submitted`, `booking_whatsapp_clicked`) directly into a secure `analytics_events` table. Unique session counts are grouped inside the client-side dashboard to display conversion funnel metrics.
 
 ---
 
@@ -101,54 +101,27 @@ To bypass cookie consent banners and third-party trackers, a lightweight custom 
 | Domain | Technologies Used |
 | --- | --- |
 | **Frontend** | React 18, Vite, React Router DOM (v7) |
-| **State & Query** | TanStack React Query (v4) |
-| **Data Viz** | Recharts (Responsive SVG charts) |
-| **Styling** | Styled Components (CSS-in-JS, Dark mode support) |
-| **Forms & Testing** | React Hook Form, Vitest, React Testing Library |
-| **Backend / DB** | Supabase, PostgreSQL 15, Storage Buckets, RLS, DB Triggers |
+| **State & Query** | TanStack React Query (v4) - with background data caching |
+| **Data Viz** | Recharts (Responsive SVG data rendering) |
+| **Styling** | Styled Components (Dynamic CSS-in-JS supporting Dark Mode) |
+| **Backend / DB** | Supabase, PostgreSQL 15, Database Triggers, RLS Security Policies |
 
 ---
 
-## 🛣️ Application Route Configuration
+## 🛣️ Route Configurations
 
 | Route | Access Group | Description |
 | --- | --- | --- |
-| `/appointment` | Public | Main landing page and booking calendar |
+| `/appointment` | Public | Main client booking page & calendar |
 | `/gallery` | Public | Before/After gallery & testimonials |
-| `/login` / `/signup` | Public | Team access portal and registration |
-| `/admin/dashboard` | Protected (Team) | Operations panel with KPIs, trends, and funnel charts |
-| `/admin/bookings` | Protected (Team) | Paginated request lists & search console |
-| `/admin/availability` | Protected (Team) | Master schedule slot config manager |
+| `/admin/dashboard` | Protected (Team) | Real-time operations overview with charts & funnel metrics |
+| `/admin/bookings` | Protected (Team) | Paginated request tables with index-ready search filters |
+| `/admin/availability` | Protected (Team) | Master weekly slot schedule configurations |
 | `/admin/services` | Protected (Admin/Owner) | Dynamic service config & price editor |
-| `/admin/users` | Protected (Owner-only) | Team access approval & RBAC mapping page |
 
 ---
 
-## 🚀 Getting Started
-
-### 1. Installation & Environment Configuration
-Clone the repository, install dependencies, and create a `.env.local` file:
-```bash
-git clone https://github.com/abdullahberkeozder/my-portfolio.git
-cd the-welding-expert-app
-npm install
-```
-
-Configure your `.env.local` variables:
-```env
-VITE_SUPABASE_URL=https://your-project-id.supabase.co
-VITE_SUPABASE_ANON_KEY=your-supabase-public-anon-key
-```
-
-Run local server:
-```bash
-npm run dev
-```
-
-### 2. SQL Schema Setup (Execute sequentially in Supabase SQL Editor)
-Run database setup files in the `supabase/` folder in the following order:
-1. `supabase/welding_appointments_schema.sql` (Creates base schemas, tables, and constraints)
-2. `supabase/role_based_access_control.sql` (Initializes RBAC profiles and security policies)
-3. `supabase/gallery_management_setup.sql` (Storage bucket rules & assets mapping)
-4. `supabase/analytics_events_migration.sql` (Analytics tracking tables & RLS rules)
-5. `supabase/service_configs_migration.sql` (Dynamic services pricing definitions & seed data)
+## 🔒 Security Measures
+- **Row-Level Security (RLS):** Fully active on all PostgreSQL tables. Anonymous client insertions are strictly limited to execution via `security definer` database RPC functions to prevent SQL injection.
+- **Immutable Log Controls:** Trigger constraints block any `UPDATE` attempts on the customer's original comment note (`protect_customer_note` trigger).
+- **Owner Account Locks:** Database policies safeguard the main `Owner` profile against demotions or suspensions, preventing admin lockouts.
