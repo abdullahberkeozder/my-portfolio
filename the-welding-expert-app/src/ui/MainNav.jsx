@@ -8,6 +8,7 @@ import {
   HiOutlineHome,
   HiOutlinePhoto,
   HiOutlineUserGroup,
+  HiOutlineWrenchScrewdriver,
 } from "react-icons/hi2";
 
 import { getAdminProfile } from "../services/apiAuth";
@@ -96,6 +97,12 @@ const ADMIN_LINKS = [
     label: "Ekip ve yetkiler",
     icon: HiOutlineUserGroup,
     roles: ROUTE_ROLES.users,
+  },
+  {
+    to: "/admin/services",
+    label: "Hizmet yönetimi",
+    icon: HiOutlineWrenchScrewdriver,
+    roles: ROUTE_ROLES.services,
   },
 ];
 
