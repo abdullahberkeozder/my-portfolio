@@ -27,6 +27,8 @@ export const ROUTE_ROLES = {
   availability: ["owner", "admin", "operator"],
   gallery: ["owner", "admin"],
   users: ["owner"],
+  services: ["owner", "admin"],
+  analytics: ["owner", "admin"],
 };
 
 export function isActiveTeamMember(profile) {

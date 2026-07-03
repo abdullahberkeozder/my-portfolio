@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { FaWhatsapp } from "react-icons/fa";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
+import { logEvent } from "../../../services/apiAnalytics";
 
 import {
   StickyCTAContainer,
@@ -14,6 +15,7 @@ function StickyMobileCTA({ quickWhatsappUrl, onScrollToCalendar }) {
         href={quickWhatsappUrl}
         target="_blank"
         rel="noreferrer"
+        onClick={() => logEvent("booking_whatsapp_clicked", { channel: "sticky_mobile" })}
         $whatsapp>
         <FaWhatsapp />
         Soru Sor

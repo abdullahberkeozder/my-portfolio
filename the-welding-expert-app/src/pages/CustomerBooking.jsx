@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -23,6 +23,8 @@ import BookingForm from "../features/booking/components/BookingForm";
 import BookingSuccess from "../features/booking/components/BookingSuccess";
 import FaqAccordion from "../features/booking/components/FaqAccordion";
 import StickyMobileCTA from "../features/booking/components/StickyMobileCTA";
+import { logEvent } from "../services/apiAnalytics";
+import { getServiceConfigs } from "../services/apiServiceConfigs";
 import {
   padNumber,
   formatDateKey,
@@ -291,9 +293,39 @@ function CustomerBooking() {
 
   const wizardRef = useRef(null);
   const todayKey = useMemo(() => formatDateKey(new Date()), []);
+
+  // Hizmetleri Supabase'den çek
+  const { data: dbServices = [] } = useQuery({
+    queryKey: ["service-configs"],
+    queryFn: getServiceConfigs,
+  });
+
+  const activeServices = useMemo(() => {
+    return dbServices.length > 0 ? dbServices : serviceOverview;
+  }, [dbServices]);
+
+  const activeServiceTypes = useMemo(() => {
+    return dbServices.length > 0
+      ? dbServices.map((s) => s.title)
+      : serviceTypes;
+  }, [dbServices]);
+
   const [selectedDate, setSelectedDate] = useState(todayKey);
   const [selectedSlot, setSelectedSlot] = useState(null);
-  const [selectedService, setSelectedService] = useState(serviceTypes[0]);
+  const [selectedService, setSelectedService] = useState(activeServiceTypes[0] || serviceTypes[0]);
+
+  // Dynamic service selection sync
+  useEffect(() => {
+    if (activeServiceTypes.length > 0 && !activeServiceTypes.includes(selectedService)) {
+      setSelectedService(activeServiceTypes[0]);
+    }
+  }, [activeServiceTypes, selectedService]);
+
+  // Analytics on mount
+  useEffect(() => {
+    logEvent("booking_wizard_started");
+  }, []);
+
   const [bookingStep, setBookingStep] = useState(1);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
@@ -417,6 +449,10 @@ function CustomerBooking() {
     mutationFn: createAppointmentRequest,
     onSuccess: () => {
       setIsSubmitted(true);
+      logEvent("booking_submitted", {
+        service_type: selectedService,
+        channel: "system",
+      });
     },
 
     onError: (error) => {
@@ -471,6 +507,12 @@ function CustomerBooking() {
   function handleBookingStepChange(nextStep) {
     setBookingStep(nextStep);
     scrollWizardIntoView();
+    if (nextStep === 2) {
+      logEvent("booking_step_completed", {
+        step: 1,
+        service_type: selectedService,
+      });
+    }
   }
 
   function handleSystemSubmit() {
@@ -588,6 +630,7 @@ function CustomerBooking() {
                   href={quickWhatsappUrl}
                   target="_blank"
                   rel="noreferrer"
+                  onClick={() => logEvent("booking_whatsapp_clicked", { channel: "header_quick" })}
                   $whatsapp>
                   <FaWhatsapp />
                   Fotoğraf Gönder, Teklif Al
@@ -690,23 +733,23 @@ function CustomerBooking() {
 
           <ScrollWrapper>
             <ServicesGrid>
-              {serviceOverview.map((service) => (
+              {activeServices.map((service) => (
                 <ServiceCard
                   key={service.title}
                   type="button"
-                  $active={selectedService === service.serviceType}
+                  $active={selectedService === (service.service_key || service.serviceType)}
                   onClick={() => {
-                    handleServiceChange(service.serviceType);
+                    handleServiceChange(service.service_key || service.serviceType);
                     handleBookingStepChange(1);
                   }}>
 
                   <CardImageContainer>
-                    <CardImage src={service.imageUrl} alt={service.title} />
+                    <CardImage src={service.image_url || service.imageUrl} alt={service.title} />
                   </CardImageContainer>
                   <CardContent>
                     <CardTitle>{service.title}</CardTitle>
-                    <CardPrice>{service.priceTagline}</CardPrice>
-                    <CardText>{service.text}</CardText>
+                    <CardPrice>{service.price_tagline || service.priceTagline}</CardPrice>
+                    <CardText>{service.description || service.text}</CardText>
                     <MiniList>
                       {service.points.map((point) => (
                         <MiniItem key={point}>
