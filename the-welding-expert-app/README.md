@@ -6,49 +6,61 @@ The Welding Expert App is a React 18, Vite, and Supabase web application tailore
 
 ---
 
-## ⚡ 1-Minute Interactive Showcase (Click to Expand)
+## Product Design & User Experience (Design Thinking)
 
-If you are a recruiter or technical engineer reviewing this project, expand the cards below for a quick product walkthrough:
+The application resolves communication and scheduling friction between local home service providers and customers. By introducing a self-service client calendar alongside automated multi-channel messaging options, the application drastically reduces booking drop-off rates.
 
 <details>
-<summary><strong>📱 Customer Portal & Mobile Wizard (Frictionless Scheduling Flow)</strong></summary>
+<summary><strong>Friction Reduction & User Journey Map</strong></summary>
 
 ### The Problem
-Traditional local service booking takes too many calls. Customers abandon pages if scheduling takes more than a minute.
+Traditional scheduling requires multiple phone calls and manual negotiation. Customers often abandon forms if selecting an available date and time slot feels complex or disconnected.
 
-### Our Solution
-A **2-Step Booking Wizard** designed for mobile thumb zones. Customers can select services, view calendar availability, choose time slots, and submit bookings in under 45 seconds.
+### UX Resolution
+A **2-Step Booking Wizard** designed specifically for mobile thumb zones. Customers select services, check calendar availability, choose their preferred time slot, and submit booking requests in under 45 seconds.
 
-* **Key Client Files:** [CustomerBooking.jsx](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/src/pages/CustomerBooking.jsx), [BookingCalendar.jsx](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/src/features/booking/components/BookingCalendar.jsx)
-* **Visual Mockup:**
+* **Primary Files:** [CustomerBooking.jsx](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/src/pages/CustomerBooking.jsx), [BookingCalendar.jsx](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/src/features/booking/components/BookingCalendar.jsx)
+* **Mobile Layout:**
   <p align="center">
     <img src="./docs/readme-assets/appointment-mobile.png" alt="Mobile Booking Experience" width="280px" />
   </p>
 </details>
 
+---
+
+## Operations & Data Visualization
+
+Operational efficiency is supported by providing real-time data insights directly to business operators, enabling quick confirmations, workload trend analysis, and funnel performance tracking.
+
 <details>
-<summary><strong>📊 Operations Dashboard & Recharts Trend Analytics</strong></summary>
+<summary><strong>Operational Analytics & Funnel Diagnostics</strong></summary>
 
 ### The Problem
-Business owners cannot see completed workload metrics, trends, or potential drop-offs.
+Small service providers lack visibility into workload trends, completed job volumes, or drop-off steps in their booking funnels.
 
-### Our Solution
-A live administrative control center featuring **weekly trend charts (recharts)** displaying the status of requests over the last 8 weeks, business KPIs (Total, New, Confirmed, Cancelled, Completed counts), and a conversion funnel analyzer mapping wizard drop-off rates.
+### Visualization Resolution
+A live administrative control center featuring **weekly trend charts (recharts)** displaying requests over the last 8 weeks, business KPIs (Total, New, Confirmed, Cancelled, Completed counts), and a conversion funnel mapping wizard milestones (Wizard Open → Step 1 Done → Form Submit → WhatsApp Click).
 
-* **Key Admin Files:** [Dashboard.jsx](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/src/pages/Dashboard.jsx), [AnalyticsDashboard.jsx](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/src/features/analytics/components/AnalyticsDashboard.jsx)
-* **Visual Mockup:**
+* **Primary Files:** [Dashboard.jsx](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/src/pages/Dashboard.jsx), [AnalyticsDashboard.jsx](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/src/features/analytics/components/AnalyticsDashboard.jsx)
+* **Dashboard View:**
   <p align="center">
     <img src="./docs/readme-assets/appointment-page.png" alt="Operations Panel" width="80%" />
   </p>
 </details>
 
+---
+
+## Systems Engineering & Data Security
+
+Veracity and atomic state synchronization are enforced at the database transaction layer to prevent scheduling discrepancies like double-bookings and unauthorized record updates.
+
 <details>
-<summary><strong>🛡️ Database Integrity & Race-Condition Prevention (SELECT FOR UPDATE)</strong></summary>
+<summary><strong>Concurrency Control & Race Condition Mitigation</strong></summary>
 
 ### The Problem
-Two customers might attempt to book the exact same slot at the same time, leading to double-bookings.
+Two customers might attempt to book the exact same time slot concurrently, leading to double-bookings and operational conflicts.
 
-### Our Solution
+### Engineering Resolution
 Guarded scheduling at the database transaction layer using a PostgreSQL RPC. When executing `create_appointment_request()`, a row lock is requested on the availability slot:
 ```sql
 SELECT slot.id INTO v_slot_id
@@ -58,7 +70,7 @@ FOR UPDATE OF slot;
 ```
 This queues up concurrent requests, allowing only the first write attempt to proceed while gracefully notifying others.
 
-* **Key Database Files:** [welding_appointments_schema.sql](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/supabase/welding_appointments_schema.sql)
+* **Primary Schema Configs:** [welding_appointments_schema.sql](file:///c:/Users/a-ber/Documents/Git/my-portfolio/the-welding-expert-app/supabase/welding_appointments_schema.sql)
 </details>
 
 ---
