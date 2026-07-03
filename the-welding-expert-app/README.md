@@ -1,8 +1,14 @@
-# The Welding Expert App (Umut Usta Booking System)
+# 🔨 Umut Usta Booking & Operations Platform
 
-**Live Demo:** [umut-usta.vercel.app/appointment](https://umut-usta.vercel.app/appointment)
+[![React](https://img.shields.io/badge/React-18.2-blue?logo=react&style=flat-square)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-4.4-646CFF?logo=vite&style=flat-square)](https://vitejs.dev/)
+[![Supabase](https://img.shields.io/badge/Supabase-Backend-3ECF8E?logo=supabase&style=flat-square)](https://supabase.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&style=flat-square)](https://www.postgresql.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-The Welding Expert App is a React 18, Vite, and Supabase web application tailored for a local metalwork and home maintenance service. It delivers a fast, mobile-optimized booking experience for clients, coupled with a secure, role-based operations panel for the business owner and their team.
+**Live Production Demo:** [umut-usta.vercel.app/appointment](https://umut-usta.vercel.app/appointment)
+
+The **Umut Usta Booking & Operations Platform** is a production-ready, full-stack React application engineered to modernize booking and operational workflows for a local home services business (Ankara/Yenimahalle). It provides clients with a friction-free, mobile-optimized calendar interface, backed by a secure, real-time admin portal with custom analytics, dynamic pricing configurators, and robust PostgreSQL integrity layers.
 
 ---
 
@@ -26,105 +32,123 @@ The Welding Expert App is a React 18, Vite, and Supabase web application tailore
 
 ---
 
+## 🏗️ Architectural Overview
+
+This system employs a **Defense-in-Depth** and **Single Source of Truth (SSOT)** design. Below is the system data-flow and validation pipeline when a customer requests a booking:
+
+```mermaid
+flowchart TD
+    Client[React App / Browser] -->|1. Client Validation\nName, Phone Format, Slot Available| Form[Form Submission]
+    Form -->|2. Secure RPC Call\ncreate_appointment_request| RPC[PostgreSQL RPC Function]
+    
+    subgraph "Supabase DB Layer (Atomicity)"
+        RPC -->|3. Locking Row\nSELECT FOR UPDATE| SlotCheck{Is Slot Still Open?}
+        SlotCheck -->|No| Rollback[Transaction Rollback\nRaise Exception]
+        SlotCheck -->|Yes| InsertReq[Insert Request Row]
+        InsertReq -->|4. Trigger Run\nsync_appointment_status| StatusTrigger{Is Request Confirmed?}
+        StatusTrigger -->|Yes| CloseSlot[Update Availability Slot\nis_available = false]
+        StatusTrigger -->|No / Cancelled| OpenSlot[Update Availability Slot\nis_available = true]
+    end
+
+    CloseSlot & OpenSlot --> Success[5. Return Success UUID]
+    Rollback --> Error[Return Localized Error Message]
+```
+
+---
+
+## 🚀 Key Engineering & Security Highlights
+
+### ⚡ Race Condition Mitigation (`FOR UPDATE` Locking)
+In local service scheduling, double-booking identical slots is a severe operational risk. This platform eliminates this at the database layer inside a single atomic PostgreSQL transaction.
+When executing `create_appointment_request()`, it requests a row lock:
+```sql
+SELECT slot.id INTO v_slot_id
+FROM public.appointment_availability_slots AS slot
+WHERE slot.slot_time = p_requested_time AND slot.is_available = true
+FOR UPDATE OF slot;
+```
+This blocks concurrent client requests from reading/writing to the same slot row until the current transaction commits or rolls back, ensuring complete scheduling integrity.
+
+### 🔒 Privacy-First Custom Analytics
+To bypass cookie consent banners and third-party trackers, a lightweight custom tracking service is embedded. It logs anonymized session-based milestones (`booking_wizard_started`, `booking_step_completed`, `booking_submitted`, `booking_whatsapp_clicked`) directly into a secure `analytics_events` table, rendering a conversion funnel directly inside the operations panel.
+
+### 🛡️ Secure RBAC (Role-Based Access Control)
+- **Granular Permissions:** 4 distinct user roles are configured: `Owner` (full system ownership), `Admin` (bookings & availability management), `Operator` (bookings & client communications), and `Technician` (field view read-only access).
+- **Row-Level Security (RLS):** Policies are enforced at the database level. Anonymous clients can only execute the booking creation RPC and read configured pricing/availability. Directly modifying internal tables is restricted.
+
+---
+
 ## ✨ Features
 
 ### 👥 Customer Booking Portal
-* **Weekly Smart Availability Calendar:** Clients can view open days and choose 2-hour slots between 09:00 and 21:00.
-* **Fast Checkout/Booking Options:** Submit requests directly through the system database, start a pre-filled WhatsApp conversation, or send a mail package.
-* **Accordion SSS (FAQ):** A mobile-first, space-saving collapsible Q&A container.
-* **Sticky Mobile CTA:** A persistent bottom action bar on mobile screens providing quick access to WhatsApp support and smooth scroll navigation to the calendar.
+- **2-Step Booking Wizard:** Reduced friction design prioritizing thumb zone accessibility on mobile screens.
+- **Dynamic Slot Availability:** Real-time rendering of 2-hour slots with background color status mapping (Green: Available, Amber: Limited, Red: Closed).
+- **Turkish Phone Formatting:** Real-time mask validation and transformation (`05xx xxx xx xx`) to guarantee clean data.
+- **Multichannel Confirmations:** Dynamic pre-filled WhatsApp templates, fallback email drafts, or direct database submission.
+- **LocalBusiness JSON-LD Metadata:** Implements search-engine readable schema metadata for enhanced Local SEO search results.
 
 ### 🛡️ Admin Operations Panel (`/admin`)
-* **Live Operational Dashboard:** Visual analytics, statistics, and a weekly slot status calendar.
-* **30-Second Auto-Refresh (Polling):** Queries are refreshed in the background every 30 seconds to catch new incoming client requests instantly.
-* **Advanced Request Management:** Search through client requests by name, phone, email, notes, or admin comments, and filter by status using tabs.
-* **Soft-Delete (Archiving):** Restrict physical deletion of requests. Cancelling/deleting an item marks it as archived, freeing up any locked slot in the calendar. Admins can view the archive and restore items at any time.
-* **Dynamic Slot Manager:** Easily declare days as *Available*, *Limited*, or *Closed*, and toggle individual slots.
-* **Team & Permission Control:** Owner-only control panel to approve pending accounts, assign roles (`Owner`, `Admin`, `Operator`, `Technician`), suspend, or demote members safely.
-
-### ⚡ Technical & Infrastructure
-* **Two-Way Database Slot Sync Trigger:** Confirmed requests lock their slot automatically. Cancelling, archiving, or deleting a confirmed request immediately re-opens the slot.
-* **Localized Dynamic SEO & Schemas:** Inject page title, descriptions, canonical paths, and Google rich snippets (`LocalBusiness` JSON-LD) into client-facing pages dynamically.
-* **SPA Redirection:** Handlers included for Netlify (`_redirects`) and Vercel (`vercel.json`) to prevent React Router route breakage.
-* **Clean Code Structure:** Separated styling blocks into `.styles.js` files and broke giant pages down into compact, unit-tested subcomponents.
+- **Interactive Weekly Trend Charts:** Built with `recharts`, visualizing weekly incoming, confirmed, completed, and cancelled requests over the last 8 weeks.
+- **Conversion Funnel Analyser:** View step-by-step conversion stats (Wizard Open → Step 1 Done → Form Submit → WhatsApp Click) to monitor user behavior.
+- **Dynamic Services Customizer:** Edit starting prices (`priceTagline`), description copy, and bullet points on the fly. Persists instantly to the public view without redeployment.
+- **Advanced Request Manager:** Paginated request table (20 rows/page) with full-text search capability indexing customer details and comments.
+- **Soft-Delete Archive:** Protects audit trails. Deleting requests moves them to the Archive tab, keeping history while auto-unlocking the slot via database triggers.
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Component | Technology |
+| Domain | Technologies Used |
 | --- | --- |
-| **Frontend** | React 18, Vite, React Router DOM |
-| **State & Data Fetching** | TanStack React Query (v4) |
-| **Styling** | Styled Components (Vanilla CSS properties) |
-| **Notifications** | React Hot Toast |
-| **Validation** | React Hook Form |
-| **Testing** | Vitest, React Testing Library, jsdom |
-| **Backend** | Supabase Auth, PostgreSQL DB, Storage Buckets, RLS Policies |
+| **Frontend** | React 18, Vite, React Router DOM (v7) |
+| **State & Query** | TanStack React Query (v4) |
+| **Data Viz** | Recharts (Responsive SVG charts) |
+| **Styling** | Styled Components (CSS-in-JS, Dark mode support) |
+| **Forms & Testing** | React Hook Form, Vitest, React Testing Library |
+| **Backend / DB** | Supabase, PostgreSQL 15, Storage Buckets, RLS, DB Triggers |
 
 ---
 
-## 🛣️ Application Routes
+## 🛣️ Application Route Configuration
 
-| Route | View Group | Description |
+| Route | Access Group | Description |
 | --- | --- | --- |
-| `/appointment` | Public | Main booking landing page |
-| `/gallery` | Public | Before/After comparisons, portfolio & testimonials |
-| `/login` | Public | Team access login |
-| `/signup` | Public | Register a pending team profile |
-| `/admin/dashboard` | Protected (Team) | Operations overview & status cards |
-| `/admin/bookings` | Protected (Team) | Advanced request manager (Search & Status Filters) |
-| `/admin/availability` | Protected (Team) | Weekly schedule slot planner |
-| `/admin/gallery` | Protected (Owner/Admin) | Portfolio item publisher & image uploader |
-| `/admin/users` | Protected (Owner-only) | Team accounts & permission controller |
-
-*Note: Legacy routes `/dashboard` and `/bookings` redirect automatically to their protected `/admin` equivalents.*
+| `/appointment` | Public | Main landing page and booking calendar |
+| `/gallery` | Public | Before/After gallery & testimonials |
+| `/login` / `/signup` | Public | Team access portal and registration |
+| `/admin/dashboard` | Protected (Team) | Operations panel with KPIs, trends, and funnel charts |
+| `/admin/bookings` | Protected (Team) | Paginated request lists & search console |
+| `/admin/availability` | Protected (Team) | Master schedule slot config manager |
+| `/admin/services` | Protected (Admin/Owner) | Dynamic service config & price editor |
+| `/admin/users` | Protected (Owner-only) | Team access approval & RBAC mapping page |
 
 ---
 
 ## 🚀 Getting Started
 
-### 1. Installation
-Install dependencies and launch the Vite development server:
+### 1. Installation & Environment Configuration
+Clone the repository, install dependencies, and create a `.env.local` file:
 ```bash
+git clone https://github.com/abdullahberkeozder/my-portfolio.git
+cd the-welding-expert-app
 npm install
-npm run dev
 ```
-Open `http://localhost:5173` in your browser.
 
-### 2. Environment Variables
-Create a `.env.local` file in the root directory:
+Configure your `.env.local` variables:
 ```env
 VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-public-anon-key
 ```
 
-### 3. Supabase Migrations
-Execute the SQL scripts in the following order inside the **Supabase SQL Editor**:
-1. `supabase/welding_appointments_schema.sql` (Base schema, tables, triggers, and sample data)
-2. `supabase/role_based_access_control.sql` (Role definitions, policies, Owner bootstrap)
-3. `supabase/gallery_management_setup.sql` (Storage bucket creation, policy grants, index keys)
-4. `supabase/sync_appointment_status_with_slot.sql` (Re-open cancelled slot trigger)
-5. `supabase/archive_appointment_requests.sql` (Archiving column addition, trigger logic updates)
+Run local server:
+```bash
+npm run dev
+```
 
-*Tip: Promote your first profile to Owner by editing the bootstrap email address inside `role_based_access_control.sql` before running.*
-
----
-
-## 🖼️ Seeding Portfolio Work Examples
-The project includes a ready-to-use seed file to populate your work gallery with real examples:
-1. Go to the **Supabase Storage** panel.
-2. Inside the **`gallery`** bucket, upload the 9 images from `public/images/`:
-   * `hinge_before.png`, `hinge_after.png` (Hinge replacement)
-   * `railing_before.png`, `railing_after.png` (Railing renovation)
-   * `shelf_before.png`, `shelf_after.png` (Custom heavy shelves)
-   * `landscaping.png`, `painting.png`, `renovation.png` (General works)
-3. Open **`supabase/seed_portfolio_images.sql`**, copy the statements, and run them in the **Supabase SQL Editor**. (The project reference prefix `qhevdwblchkotttcqoou` is pre-configured).
-
----
-
-## 🔒 Security Measures
-* **Row Level Security (RLS):** Enabled on all tables. Anonymous clients can only insert requests via the database function RPC, and select day/slot metrics.
-* **Immutable Client Notes:** Trigger policies prevent update attempts on a customer's original message/note.
-* **Owner Protection Policies:** The final active `Owner` user is guarded database-side; they cannot be demoted, suspended, or rejected, preventing lockout.
-* **Sanitized Client Pages:** Booking and Gallery views remain completely accessible without authentication.
+### 2. SQL Schema Setup (Execute sequentially in Supabase SQL Editor)
+Run database setup files in the `supabase/` folder in the following order:
+1. `supabase/welding_appointments_schema.sql` (Creates base schemas, tables, and constraints)
+2. `supabase/role_based_access_control.sql` (Initializes RBAC profiles and security policies)
+3. `supabase/gallery_management_setup.sql` (Storage bucket rules & assets mapping)
+4. `supabase/analytics_events_migration.sql` (Analytics tracking tables & RLS rules)
+5. `supabase/service_configs_migration.sql` (Dynamic services pricing definitions & seed data)
