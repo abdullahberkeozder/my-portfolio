@@ -100,7 +100,7 @@ function Sidebar({ isOpen, onClose }) {
             <HiOutlineXMark />
           </CloseButton>
         </SidebarTop>
-        <MainNav />
+        <MainNav onClose={onClose} />
       </StyledSidebar>
     </>
   );

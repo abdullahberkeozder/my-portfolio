@@ -4,33 +4,29 @@ import { getAnalyticsEvents } from "../../../services/apiAnalytics";
 
 const FunnelGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1.2rem;
 
-  @media (max-width: 760px) {
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 640px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 `;
 
 const FunnelStep = styled.div`
   padding: 1.6rem;
-  border-right: 1px solid var(--color-grey-100);
+  border: 1px solid var(--color-grey-100);
+  border-radius: var(--border-radius-md);
+  background: var(--color-grey-0);
   position: relative;
-
-  &:last-child {
-    border-right: none;
-  }
-
-  @media (max-width: 760px) {
-    &:nth-child(2),
-    &:nth-child(4) {
-      border-right: none;
-    }
-    &:nth-child(1),
-    &:nth-child(2) {
-      border-bottom: 1px solid var(--color-grey-100);
-    }
-  }
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 12rem;
 `;
 
 const StepLabel = styled.p`
@@ -111,6 +107,8 @@ function AnalyticsDashboard() {
     ).size;
 
   const started = countByEvent("booking_wizard_started");
+  const serviceChanged = countByEvent("booking_service_changed");
+  const slotSelected = countByEvent("booking_slot_selected");
   const step1 = countByEvent("booking_step_completed");
   const submitted = countByEvent("booking_submitted");
   const whatsapp = countByEvent("booking_whatsapp_clicked");
@@ -132,7 +130,19 @@ function AnalyticsDashboard() {
       id: "wizard_started",
     },
     {
-      label: "Adım 1 tamamlandı",
+      label: "Hizmet seçildi",
+      count: serviceChanged,
+      rate: calcRate(serviceChanged, started),
+      id: "service_changed",
+    },
+    {
+      label: "Tarih/Saat seçildi",
+      count: slotSelected,
+      rate: calcRate(slotSelected, started),
+      id: "slot_selected",
+    },
+    {
+      label: "İletişim adımına geçildi",
       count: step1,
       rate: calcRate(step1, started),
       id: "step1_completed",

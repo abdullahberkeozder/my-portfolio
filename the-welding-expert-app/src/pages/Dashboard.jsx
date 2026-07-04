@@ -1,6 +1,8 @@
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import {
   HiOutlineArrowPath,
   HiOutlineArrowTopRightOnSquare,
@@ -24,6 +26,7 @@ import {
   OPENING_HOUR,
   CLOSING_HOUR,
   SLOT_DURATION_HOURS,
+  serviceTypes,
 } from "../config/business";
 import {
   formatDateKey,
@@ -252,6 +255,103 @@ const PanelLabel = styled.span`
   text-transform: uppercase;
 `;
 
+const FilterToolbar = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.6rem;
+  padding: 1.6rem 2rem;
+  background: var(--color-grey-0);
+  border: 1px solid var(--color-grey-100);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+`;
+
+const ToolbarFilters = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.6rem;
+`;
+
+const SelectLabel = styled.label`
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-grey-600);
+`;
+
+const SelectInput = styled.select`
+  min-height: 3.8rem;
+  border: 1px solid var(--color-grey-200);
+  border-radius: var(--border-radius-sm);
+  padding: 0.6rem 1.2rem;
+  background: var(--color-grey-0);
+  color: var(--color-grey-800);
+  font-size: 1.35rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:focus {
+    outline: 2px solid var(--color-brand-600);
+  }
+`;
+
+const TargetCard = styled.div`
+  background: var(--color-grey-0);
+  border: 1px solid var(--color-grey-100);
+  border-radius: var(--border-radius-md);
+  padding: 1.8rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const TargetHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const TargetLabel = styled.span`
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-grey-500);
+`;
+
+const TargetValue = styled.strong`
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--color-brand-700);
+`;
+
+const ProgressBarContainer = styled.div`
+  width: 100%;
+  height: 0.8rem;
+  background: var(--color-grey-100);
+  border-radius: 999px;
+  overflow: hidden;
+`;
+
+const ProgressBarFill = styled.div`
+  height: 100%;
+  width: ${(props) => props.$percentage}%;
+  background: var(--color-brand-600);
+  border-radius: 999px;
+  transition: width 0.4s ease-out;
+`;
+
+const ChartsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 2.4rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
 const PanelValue = styled.strong`
   display: block;
   color: var(--color-grey-0);
@@ -315,6 +415,20 @@ const StatValue = styled.p`
   font-size: 2.4rem;
   font-weight: 700;
   line-height: 1.1;
+`;
+
+const StatTrend = styled.span`
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: ${(props) => (props.$up ? "var(--color-green-700)" : "var(--color-red-700)")};
+  background: ${(props) => (props.$up ? "var(--color-green-100)" : "var(--color-red-100)")};
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-top: 0.4rem;
+  width: max-content;
 `;
 
 const ContentGrid = styled.section`
@@ -516,7 +630,67 @@ const EmptyState = styled.div`
   font-weight: 600;
 `;
 
+function ServiceDistributionPieChart({ requests }) {
+  const data = useMemo(() => {
+    const counts = {};
+    requests.forEach((req) => {
+      const type = req.service_type || "Bilinmeyen";
+      counts[type] = (counts[type] || 0) + 1;
+    });
+
+    return Object.entries(counts).map(([name, value]) => ({
+      name,
+      value,
+    }));
+  }, [requests]);
+
+  const COLORS = ["#0d8050", "#2563eb", "#d97706", "#dc2626", "#7c3aed"];
+
+  if (data.length === 0) {
+    return (
+      <div style={{ height: "28rem", display: "flex", alignItems: "center", justifyItems: "center", justifyContent: "center", color: "var(--color-grey-400)", border: "1px dashed var(--color-grey-200)", borderRadius: "var(--border-radius-sm)", fontSize: "1.4rem" }}>
+        Yeterli veri yok
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ width: "100%", height: "28rem" }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            innerRadius={60}
+            outerRadius={80}
+            paddingAngle={5}
+            dataKey="value"
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip
+            contentStyle={{
+              background: "var(--color-grey-0)",
+              border: "1px solid var(--color-grey-100)",
+              borderRadius: "8px",
+              fontSize: "13px",
+              boxShadow: "var(--shadow-sm)",
+            }}
+          />
+          <Legend wrapperStyle={{ fontSize: "12px", fontWeight: 600 }} />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
 function Dashboard() {
+  const [daysRange, setDaysRange] = useState(30);
+  const [serviceFilter, setServiceFilter] = useState("all");
+
   const { data: admin } = useQuery({
     queryKey: ["admin-profile"],
     queryFn: getAdminProfile,
@@ -530,10 +704,15 @@ function Dashboard() {
   const endDate = addDays(today, 6);
   const todayKey = formatDateKey(today);
   const endDateKey = formatDateKey(endDate);
+  
+  const sinceDate = new Date();
+  sinceDate.setDate(sinceDate.getDate() - daysRange);
+  sinceDate.setHours(0, 0, 0, 0);
+  const sinceDateISO = sinceDate.toISOString();
 
   const requestsQuery = useQuery({
-    queryKey: ["appointment-requests"],
-    queryFn: () => getAppointmentRequests({ fetchAll: true }),
+    queryKey: ["appointment-requests", sinceDateISO],
+    queryFn: () => getAppointmentRequests({ fetchAll: true, createdAfter: sinceDateISO }),
     refetchInterval: 30000,
     select: (result) => result.data,
   });
@@ -550,6 +729,30 @@ function Dashboard() {
 
   const isLoading = requestsQuery.isLoading || availabilityQuery.isLoading;
   const isError = requestsQuery.isError || availabilityQuery.isError;
+
+  const requests = useMemo(() => {
+    const rawRequests = requestsQuery.data || [];
+    if (serviceFilter === "all") return rawRequests;
+    return rawRequests.filter(r => r.service_type === serviceFilter);
+  }, [requestsQuery.data, serviceFilter]);
+
+  const avgResponseTimeHours = useMemo(() => {
+    const confirmedRequests = requests.filter(
+      (r) => ["confirmed", "completed"].includes(r.status) && r.updated_at && r.created_at
+    );
+
+    if (confirmedRequests.length === 0) return null;
+
+    const totalDiffMs = confirmedRequests.reduce((acc, r) => {
+      const created = new Date(r.created_at);
+      const updated = new Date(r.updated_at);
+      return acc + Math.max(0, updated - created);
+    }, 0);
+
+    const avgMs = totalDiffMs / confirmedRequests.length;
+    const avgHours = avgMs / (1000 * 60 * 60);
+    return avgHours.toFixed(1);
+  }, [requests]);
 
   if (isLoading) {
     return (
@@ -592,7 +795,7 @@ function Dashboard() {
     );
   }
 
-  const requests = requestsQuery.data || [];
+  // Cleaned up rawRequests and useMemo hooks here
   const availabilityDays = availabilityQuery.data || [];
   const weekAvailability = buildWeekAvailability(availabilityDays, today);
   const openSlotCount = availabilityDays.reduce((total, day) => {
@@ -620,14 +823,7 @@ function Dashboard() {
   const completedCount = requests.filter(
     (r) => r.status === "completed",
   ).length;
-  const customerCount = new Set(
-    requests.map(
-      (request) =>
-        request.customer_phone ||
-        request.customer_email ||
-        request.customer_name?.trim().toLocaleLowerCase("tr-TR"),
-    ).filter(Boolean),
-  ).size;
+  // Removed unused customerCount
   const nextAppointment = requests
     .filter(
       (request) =>
@@ -638,9 +834,42 @@ function Dashboard() {
         `${b.requested_date}T${b.requested_time}`,
       ),
     )[0];
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const fourteenDaysAgo = new Date();
+  fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+
+  const newThisWeek = requests.filter(
+    (r) => r.status === "new" && r.created_at >= sevenDaysAgo.toISOString()
+  ).length;
+  const newPrevWeek = requests.filter(
+    (r) => r.status === "new" && r.created_at >= fourteenDaysAgo.toISOString() && r.created_at < sevenDaysAgo.toISOString()
+  ).length;
+  const newRequestsDiff = newThisWeek - newPrevWeek;
+  const newRequestsTrendPct = newPrevWeek > 0 ? Math.round((newRequestsDiff / newPrevWeek) * 100) : null;
+
+  const confirmedThisWeekCount = requests.filter(
+    (r) => r.status === "confirmed" && r.created_at >= sevenDaysAgo.toISOString()
+  ).length;
+  const confirmedPrevWeekCount = requests.filter(
+    (r) => r.status === "confirmed" && r.created_at >= fourteenDaysAgo.toISOString() && r.created_at < sevenDaysAgo.toISOString()
+  ).length;
+  const confirmedDiff = confirmedThisWeekCount - confirmedPrevWeekCount;
+  const confirmedTrendPct = confirmedPrevWeekCount > 0 ? Math.round((confirmedDiff / confirmedPrevWeekCount) * 100) : null;
+
+  const cancelledThisWeek = requests.filter(
+    (r) => r.status === "cancelled" && r.created_at >= sevenDaysAgo.toISOString()
+  ).length;
+  const cancelledPrevWeek = requests.filter(
+    (r) => r.status === "cancelled" && r.created_at >= fourteenDaysAgo.toISOString() && r.created_at < sevenDaysAgo.toISOString()
+  ).length;
+  const cancelledDiff = cancelledThisWeek - cancelledPrevWeek;
+  const cancelledTrendPct = cancelledPrevWeek > 0 ? Math.round((cancelledDiff / cancelledPrevWeek) * 100) : null;
+
   const recentRequests = requests
     .filter((r) => r.status === "new")
     .slice(0, 5);
+
   const lastUpdated = new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
 
   return (
@@ -689,6 +918,41 @@ function Dashboard() {
         </HeroPanel>
       </Hero>
 
+      <FilterToolbar>
+        <ToolbarFilters>
+          <div>
+            <SelectLabel htmlFor="days-range-select">Zaman Aralığı: </SelectLabel>
+            <SelectInput
+              id="days-range-select"
+              value={daysRange}
+              onChange={(e) => setDaysRange(Number(e.target.value))}
+            >
+              <option value={7}>Son 7 Gün</option>
+              <option value={30}>Son 30 Gün</option>
+              <option value={90}>Son 90 Gün</option>
+            </SelectInput>
+          </div>
+
+          <div>
+            <SelectLabel htmlFor="service-type-select">Hizmet Türü: </SelectLabel>
+            <SelectInput
+              id="service-type-select"
+              value={serviceFilter}
+              onChange={(e) => setServiceFilter(e.target.value)}
+            >
+              <option value="all">Tüm Hizmetler</option>
+              {serviceTypes && serviceTypes.map((type) => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </SelectInput>
+          </div>
+        </ToolbarFilters>
+
+        <MutedText style={{ fontSize: "1.25rem", fontWeight: "700" }}>
+          Son Güncelleme: {lastUpdated}
+        </MutedText>
+      </FilterToolbar>
+
       <StatsGrid>
         <StatCard>
           <StatIcon $color="green">
@@ -706,6 +970,11 @@ function Dashboard() {
           <div>
             <StatLabel>Onaylanan iş / 7 gün</StatLabel>
             <StatValue>{confirmedThisWeek}</StatValue>
+            {confirmedTrendPct !== null && (
+              <StatTrend $up={confirmedDiff >= 0}>
+                {confirmedDiff >= 0 ? "↑" : "↓"} {Math.abs(confirmedTrendPct)}%
+              </StatTrend>
+            )}
           </div>
         </StatCard>
         <StatCard>
@@ -715,15 +984,20 @@ function Dashboard() {
           <div>
             <StatLabel>Yeni talep</StatLabel>
             <StatValue>{newRequestCount}</StatValue>
+            {newRequestsTrendPct !== null && (
+              <StatTrend $up={newRequestsDiff >= 0}>
+                {newRequestsDiff >= 0 ? "↑" : "↓"} {Math.abs(newRequestsTrendPct)}%
+              </StatTrend>
+            )}
           </div>
         </StatCard>
         <StatCard>
           <StatIcon $color="indigo">
-            <HiOutlineUserGroup />
+            <HiOutlineClock />
           </StatIcon>
           <div>
-            <StatLabel>Toplam müşteri</StatLabel>
-            <StatValue>{customerCount}</StatValue>
+            <StatLabel>Ort. Yanıt Süresi</StatLabel>
+            <StatValue>{avgResponseTimeHours ? `${avgResponseTimeHours} sa` : "--"}</StatValue>
           </div>
         </StatCard>
         <StatCard>
@@ -733,6 +1007,11 @@ function Dashboard() {
           <div>
             <StatLabel>İptal edilen</StatLabel>
             <StatValue>{cancelledCount}</StatValue>
+            {cancelledTrendPct !== null && (
+              <StatTrend $up={cancelledDiff <= 0}>
+                {cancelledDiff <= 0 ? "↓" : "↑"} {Math.abs(cancelledTrendPct)}%
+              </StatTrend>
+            )}
           </div>
         </StatCard>
         <StatCard>
@@ -745,6 +1024,16 @@ function Dashboard() {
           </div>
         </StatCard>
       </StatsGrid>
+
+      <TargetCard>
+        <TargetHeader>
+          <TargetLabel>Haftalık Onaylı İş Hedefi</TargetLabel>
+          <TargetValue>{confirmedThisWeek} / 15 onaylı iş</TargetValue>
+        </TargetHeader>
+        <ProgressBarContainer>
+          <ProgressBarFill $percentage={Math.min(100, (confirmedThisWeek / 15) * 100)} />
+        </ProgressBarContainer>
+      </TargetCard>
 
       <Section>
         <SectionHeader>
@@ -782,17 +1071,31 @@ function Dashboard() {
         </WeekGrid>
       </Section>
 
-      <Section>
-        <SectionHeader>
-          <div>
-            <Heading as="h2">Son 8 haftanın talep trendi</Heading>
-            <MutedText>
-              Haftalık bazda yeni, onaylanan, tamamlanan ve iptal edilen talep sayıları.
-            </MutedText>
-          </div>
-        </SectionHeader>
-        <RequestTrendChart requests={requests} weeks={8} />
-      </Section>
+      <ChartsGrid>
+        <Section>
+          <SectionHeader>
+            <div>
+              <Heading as="h2">Son 8 haftanın talep trendi</Heading>
+              <MutedText>
+                Haftalık bazda yeni, onaylanan, tamamlanan ve iptal edilen talep sayıları.
+              </MutedText>
+            </div>
+          </SectionHeader>
+          <RequestTrendChart requests={requests} weeks={8} />
+        </Section>
+
+        <Section>
+          <SectionHeader>
+            <div>
+              <Heading as="h2">Hizmet dağılımı</Heading>
+              <MutedText>
+                Alınan taleplerin hizmet türlerine göre dağılımı.
+              </MutedText>
+            </div>
+          </SectionHeader>
+          <ServiceDistributionPieChart requests={requests} />
+        </Section>
+      </ChartsGrid>
 
       <ContentGrid>
         <Section>

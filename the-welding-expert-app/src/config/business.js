@@ -4,8 +4,8 @@ export const BUSINESS_EMAIL = ""; // E-posta hizmeti şu an aktif değil
 export const BUSINESS_ADDRESS = "Gazi Mahallesi, Şenol Caddesi No:42, Yenimahalle/Ankara";
 export const MAP_QUERY = encodeURIComponent(BUSINESS_ADDRESS);
 
-export const BUSINESS_GEO_LATITUDE = 39.931234; // TODO: gerçek koordinatla güncelle
-export const BUSINESS_GEO_LONGITUDE = 32.812345; // TODO: gerçek koordinatla güncelle
+export const BUSINESS_GEO_LATITUDE = 39.9310;
+export const BUSINESS_GEO_LONGITUDE = 32.8115;
 export const BUSINESS_URL = "https://umut-usta.vercel.app";
 
 export const OPENING_HOUR = 9;
