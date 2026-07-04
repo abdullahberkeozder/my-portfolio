@@ -119,7 +119,7 @@ const PUBLIC_LINKS = [
   },
 ];
 
-function MainNav() {
+function MainNav({ onClose }) {
   const { data: admin } = useQuery({
     queryKey: ["admin-profile"],
     queryFn: getAdminProfile,
@@ -138,7 +138,7 @@ function MainNav() {
 
           return (
             <li key={link.to}>
-              <StyledNavLink to={link.to}>
+              <StyledNavLink to={link.to} onClick={onClose}>
                 <Icon />
                 <span>{link.label}</span>
               </StyledNavLink>
@@ -151,7 +151,7 @@ function MainNav() {
 
           return (
             <li key={link.to}>
-              <StyledNavLink to={link.to}>
+              <StyledNavLink to={link.to} onClick={onClose}>
                 <Icon />
                 <span>{link.label}</span>
               </StyledNavLink>

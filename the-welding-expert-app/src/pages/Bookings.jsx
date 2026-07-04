@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   useMutation,
   useQuery,
@@ -27,6 +27,7 @@ import Heading from "../ui/Heading";
 import Spinner from "../ui/Spinner";
 import Button from "../ui/Button";
 import Pagination from "../ui/Pagination";
+import ConfirmModal from "../ui/ConfirmModal";
 import { getAdminProfile } from "../services/apiAuth";
 import {
   deleteAppointmentRequest,
@@ -543,6 +544,7 @@ function RequestItem({
 }) {
   const customerNote = request.customer_note ?? request.notes ?? "";
   const [noteDraft, setNoteDraft] = useState(request.admin_note || "");
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const status = request.status || "new";
   const statusMeta = getStatusMeta(status);
   const whatsappUrl = buildWhatsAppUrl(request);
@@ -568,12 +570,11 @@ function RequestItem({
   }
 
   function handleDelete() {
-    const shouldDelete = window.confirm(
-      "Bu talebi arşive kaldırmak istediğinizden emin misiniz?",
-    );
+    setShowConfirmDelete(true);
+  }
 
-    if (!shouldDelete) return;
-
+  function handleConfirmDelete() {
+    setShowConfirmDelete(false);
     onDelete(request.id);
   }
 
@@ -727,16 +728,41 @@ function RequestItem({
           )}
         </ActionGrid>
       </ManagementPanel>
+
+      {showConfirmDelete && (
+        <ConfirmModal
+          title="Talebi Arşive Kaldır"
+          message="Bu talebi arşive kaldırmak istediğinizden emin misiniz?"
+          confirmLabel="Arşive Kaldır"
+          cancelLabel="İptal"
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setShowConfirmDelete(false)}
+          disabled={isDeleting}
+        />
+      )}
     </RequestCard>
   );
 }
 
 function Bookings() {
   const queryClient = useQueryClient();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [searchParams] = useSearchParams();
+  const initialStatus = searchParams.get("status") || "all";
+  const initialSearch = searchParams.get("search") || "";
+
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 20;
+
+  useEffect(() => {
+    setSearchQuery(searchParams.get("search") || "");
+    setStatusFilter(searchParams.get("status") || "all");
+  }, [searchParams]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, statusFilter]);
 
   const {
     data: admin,
@@ -749,8 +775,7 @@ function Bookings() {
 
   const isAdmin = admin?.isAuthorized;
   const showArchived = statusFilter === "archived";
-  // Arama aktifken tüm kayıtları çek (lokal filtre), aksi hâlde sayfalama uygula
-  const isSearching = searchQuery.trim().length > 0;
+  const cleanSearch = searchQuery.trim();
 
   const {
     data: requestsResult = { data: [], count: 0 },
@@ -758,13 +783,14 @@ function Bookings() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["appointment-requests", showArchived, page, isSearching],
+    queryKey: ["appointment-requests", showArchived, page, statusFilter, cleanSearch],
     queryFn: () =>
       getAppointmentRequests({
         showArchived,
         page,
         pageSize: PAGE_SIZE,
-        fetchAll: isSearching,
+        status: statusFilter,
+        search: cleanSearch,
       }),
     enabled: Boolean(isAdmin),
     keepPreviousData: true,
@@ -860,37 +886,8 @@ function Bookings() {
     };
   }, [isAdmin, queryClient]);
 
-  const filteredRequests = requests.filter((request) => {
-    // 1. Status Filter (sadece arama yokken yerelde durum filtresi)
-    if (!isSearching && statusFilter !== "all" && statusFilter !== "archived") {
-      if (request.status !== statusFilter) return false;
-    }
-
-    // 2. Search Query filter (arama aktifken metin filtresi)
-    if (isSearching) {
-      const search = searchQuery.toLowerCase();
-      const name = (request.customer_name || "").toLowerCase();
-      const phone = (request.customer_phone || "").toLowerCase();
-      const email = (request.customer_email || "").toLowerCase();
-      const note = (request.customer_note || request.notes || "").toLowerCase();
-      const adminNote = (request.admin_note || "").toLowerCase();
-      const service = (request.service_type || "").toLowerCase();
-
-      return (
-        name.includes(search) ||
-        phone.includes(search) ||
-        email.includes(search) ||
-        note.includes(search) ||
-        adminNote.includes(search) ||
-        service.includes(search)
-      );
-    }
-
-    return true;
-  });
-
-  // Sayfalama metadatası — arama yokken sunucu taraflı toplam kullanılır
-  const displayedTotal = isSearching ? filteredRequests.length : totalCount;
+  const filteredRequests = requests;
+  const displayedTotal = totalCount;
 
   return (
     <Page>
@@ -912,7 +909,7 @@ function Bookings() {
       <StatsGrid>
         <StatCard>
           <MutedText>{showArchived ? "Arşivlenen talep" : "Toplam aktif talep"}</MutedText>
-          <StatValue>{isSearching ? filteredRequests.length : totalCount}</StatValue>
+          <StatValue>{totalCount}</StatValue>
         </StatCard>
         <StatCard>
           <MutedText>Yeni talep</MutedText>
@@ -1070,14 +1067,12 @@ function Bookings() {
                 />
               ))}
             </RequestList>
-            {!isSearching && (
-              <Pagination
-                page={page}
-                pageSize={PAGE_SIZE}
-                totalCount={displayedTotal}
-                onPageChange={setPage}
-              />
-            )}
+            <Pagination
+              page={page}
+              pageSize={PAGE_SIZE}
+              totalCount={displayedTotal}
+              onPageChange={setPage}
+            />
           </>
         )}
       </RequestsPanel>

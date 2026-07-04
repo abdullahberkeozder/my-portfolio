@@ -31,7 +31,7 @@ const GlobalStyles = createGlobalStyle`
 :root {
 
   /* Typography */
-  --font-family-sans: "Poppins", sans-serif;
+  --font-family-sans: "Plus Jakarta Sans", sans-serif;
   --font-size-2xs: 1.1rem;
   --font-size-xs: 1.2rem;
   --font-size-sm: 1.3rem;

@@ -82,6 +82,15 @@ function addDays(date, amount) {
   return nextDate;
 }
 
+function getMonday(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(d.setDate(diff));
+  monday.setHours(0, 0, 0, 0);
+  return monday;
+}
+
 function buildSlotLabel(slotTime) {
   const time = slotTime.slice(0, 5);
   const hour = Number(time.slice(0, 2));
@@ -224,8 +233,18 @@ function Availability() {
   const isUpdating =
     isUpdatingSlot || isUpdatingDay || isBulkUpdatingSlots;
 
+  const currentWeekMonday = getMonday(new Date());
+  const isPastWeekDisabled = weekStart <= currentWeekMonday;
+
   function handleWeekChange(amount) {
-    setWeekStart((current) => addDays(current, amount * 7));
+    setWeekStart((current) => {
+      const nextWeekStart = addDays(current, amount * 7);
+      if (amount < 0 && nextWeekStart < currentWeekMonday) {
+        toast.error("Geçmiş haftaların müsaitliğini düzenleyemezsiniz.");
+        return current;
+      }
+      return nextWeekStart;
+    });
     setSelectedSlotIdsByDay({});
   }
 
@@ -299,6 +318,7 @@ function Availability() {
           <ToolbarActions>
             <ToolbarButton
               type="button"
+              disabled={isPastWeekDisabled}
               onClick={() => handleWeekChange(-1)}>
               <HiOutlineChevronLeft />
               Önceki hafta

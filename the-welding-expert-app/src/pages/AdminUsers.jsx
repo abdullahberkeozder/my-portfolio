@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import styled, { css } from "styled-components";
@@ -12,6 +13,7 @@ import {
 
 import Heading from "../ui/Heading";
 import Spinner from "../ui/Spinner";
+import ConfirmModal from "../ui/ConfirmModal";
 import { getAdminProfile } from "../services/apiAuth";
 import {
   getAdminProfiles,
@@ -375,6 +377,8 @@ function AdminUsers() {
     onError: (updateError) => toast.error(updateError.message),
   });
 
+  const [removingProfile, setRemovingProfile] = useState(null);
+
   const counts = profiles.reduce(
     (totals, profile) => ({
       ...totals,
@@ -392,11 +396,7 @@ function AdminUsers() {
   }
 
   function handleRemove(profile) {
-    const confirmed = window.confirm(
-      `${profile.full_name || profile.email || "Bu kullanıcı"} ekipten çıkarılsın mı? Hesap giriş yapabilir ancak yönetim paneline erişemez.`,
-    );
-
-    if (confirmed) changeMember(profile, { status: "rejected" });
+    setRemovingProfile(profile);
   }
 
   return (
@@ -547,6 +547,21 @@ function AdminUsers() {
           </UserList>
         )}
       </Panel>
+
+      {removingProfile && (
+        <ConfirmModal
+          title="Ekip Üyesini Çıkar"
+          message={`${removingProfile.full_name || removingProfile.email || "Bu kullanıcı"} ekipten çıkarılsın mı? Hesap giriş yapabilir ancak yönetim paneline erişemez.`}
+          confirmLabel="Ekipten Çıkar"
+          cancelLabel="İptal"
+          onConfirm={() => {
+            changeMember(removingProfile, { status: "rejected" });
+            setRemovingProfile(null);
+          }}
+          onCancel={() => setRemovingProfile(null)}
+          disabled={isUpdating}
+        />
+      )}
     </Page>
   );
 }

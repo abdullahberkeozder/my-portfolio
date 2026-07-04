@@ -29,7 +29,7 @@ import {
   Textarea,
   ChannelLink,
   WizardActions,
-} from "../../../pages/CustomerBooking.styles";
+} from "./booking.styles";
 
 const ButtonSpinner = styled.div`
   width: 2rem;
@@ -223,17 +223,19 @@ function BookingForm({
         </MutedText>
 
         <FieldGrid>
-          <Field>
-            Adınız
+          <Field htmlFor="customerName">
+            Adınız <span style={{ color: "var(--color-red-700)" }}>*</span>
             <Input
+              id="customerName"
               value={customerName}
               onChange={(event) => onNameChange(event.target.value)}
               placeholder="Ad Soyad"
             />
           </Field>
-          <Field>
-            Telefon
+          <Field htmlFor="customerPhone">
+            Telefon <span style={{ color: "var(--color-red-700)" }}>*</span>
             <Input
+              id="customerPhone"
               value={customerPhone}
               onChange={(event) => onPhoneChange(event.target.value)}
               placeholder="05xx xxx xx xx"
@@ -246,17 +248,19 @@ function BookingForm({
             )}
           </Field>
 
-          <Field>
+          <Field htmlFor="customerEmail">
             E-posta (isteğe bağlı)
             <Input
+              id="customerEmail"
               value={customerEmail}
               onChange={(event) => onEmailChange(event.target.value)}
               placeholder="ornek@email.com"
             />
           </Field>
-          <Field>
+          <Field htmlFor="customerNotes">
             İşle ilgili notunuz (isteğe bağlı)
             <Textarea
+              id="customerNotes"
               value={notes}
               onChange={(event) => onNotesChange(event.target.value)}
               maxLength={1000}
@@ -286,7 +290,7 @@ function BookingForm({
         <Button
           type="button"
           variation="secondary"
-          onClick={() => onStepChange(1)}>
+          onClick={() => onStepChange(2)}>
           ← Tarih &amp; Saat Seçimine Geri Dön
         </Button>
         <div />

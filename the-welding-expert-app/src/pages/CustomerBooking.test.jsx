@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -45,6 +45,9 @@ describe("CustomerBooking availability safety", () => {
 
   it("keeps calendar days closed when availability cannot be verified", async () => {
     renderPage();
+
+    const nextBtn = screen.getByRole("button", { name: /tarih & saat seçimi/i });
+    fireEvent.click(nextBtn);
 
     const alert = await screen.findByRole("alert");
     expect(alert).toHaveTextContent(

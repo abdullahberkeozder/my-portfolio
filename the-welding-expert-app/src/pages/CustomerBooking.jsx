@@ -16,11 +16,14 @@ import { FaWhatsapp } from "react-icons/fa";
 
 import AppNav from "../ui/AppNav";
 import SEO from "../ui/SEO";
+import Button from "../ui/Button";
 import { getAvailabilityDays } from "../services/apiAvailability";
 import { createAppointmentRequest } from "../services/apiAppointmentRequests";
+import { getGalleryItems } from "../services/apiGallery";
 import BookingCalendar from "../features/booking/components/BookingCalendar";
 import BookingForm from "../features/booking/components/BookingForm";
 import BookingSuccess from "../features/booking/components/BookingSuccess";
+import ServiceSelection from "../features/booking/components/ServiceSelection";
 import FaqAccordion from "../features/booking/components/FaqAccordion";
 import StickyMobileCTA from "../features/booking/components/StickyMobileCTA";
 import { logEvent } from "../services/apiAnalytics";
@@ -102,12 +105,6 @@ import {
   ProcessGrid,
   ProcessCard,
   StepNumber,
-  WizardContainer,
-  WizardProgress,
-  WizardStep,
-  WizardStepNumber,
-  StepLabel,
-  StepDivider,
   LocationSection,
   LocationInfo,
   ContactList,
@@ -116,8 +113,23 @@ import {
   MapIframe,
   Footer,
   SelectedLine,
-  StepAnimationWrapper,
+  GalleryPreviewGrid,
+  GalleryPreviewCard,
+  GalleryPreviewImage,
+  GalleryPreviewContent,
+  GalleryPreviewTitle,
+  GalleryPreviewCategory,
 } from "./CustomerBooking.styles";
+
+import {
+  WizardContainer,
+  WizardProgress,
+  WizardStep,
+  WizardStepNumber,
+  StepLabel,
+  StepDivider,
+  StepAnimationWrapper,
+} from "../features/booking/components/booking.styles";
 
 
 const dayFormatter = new Intl.DateTimeFormat("tr-TR", {
@@ -300,6 +312,16 @@ function CustomerBooking() {
     queryFn: getServiceConfigs,
   });
 
+  // Galeri önizleme verilerini çek
+  const { data: dbGalleryItems = [] } = useQuery({
+    queryKey: ["gallery-items-preview"],
+    queryFn: () => getGalleryItems({ publishedOnly: true }),
+  });
+
+  const previewItems = useMemo(() => {
+    return dbGalleryItems.slice(0, 3);
+  }, [dbGalleryItems]);
+
   const activeServices = useMemo(() => {
     return dbServices.length > 0 ? dbServices : serviceOverview;
   }, [dbServices]);
@@ -327,24 +349,50 @@ function CustomerBooking() {
   }, []);
 
   const [bookingStep, setBookingStep] = useState(1);
-  const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
-  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerName, setCustomerName] = useState(() => {
+    try {
+      return localStorage.getItem("uu_customer_name") || "";
+    } catch {
+      return "";
+    }
+  });
+  const [customerPhone, setCustomerPhone] = useState(() => {
+    try {
+      return localStorage.getItem("uu_customer_phone") || "";
+    } catch {
+      return "";
+    }
+  });
+  const [customerEmail, setCustomerEmail] = useState(() => {
+    try {
+      return localStorage.getItem("uu_customer_email") || "";
+    } catch {
+      return "";
+    }
+  });
   const [notes, setNotes] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [createdBookingId, setCreatedBookingId] = useState(null);
 
   function handlePhoneChange(value) {
     setCustomerPhone(formatTRPhoneNumber(value));
   }
 
   function handleReset() {
-    setCustomerName("");
-    setCustomerPhone("");
-    setCustomerEmail("");
+    try {
+      setCustomerName(localStorage.getItem("uu_customer_name") || "");
+      setCustomerPhone(localStorage.getItem("uu_customer_phone") || "");
+      setCustomerEmail(localStorage.getItem("uu_customer_email") || "");
+    } catch {
+      setCustomerName("");
+      setCustomerPhone("");
+      setCustomerEmail("");
+    }
     setNotes("");
     setSelectedSlot(null);
     setBookingStep(1);
     setIsSubmitted(false);
+    setCreatedBookingId(null);
   }
 
 
@@ -447,8 +495,21 @@ function CustomerBooking() {
 
   const { mutate: submitRequest, isLoading } = useMutation({
     mutationFn: createAppointmentRequest,
-    onSuccess: () => {
+    onSuccess: (bookingId) => {
       setIsSubmitted(true);
+      setCreatedBookingId(bookingId);
+
+      // Save user details for next time (auto-fill returning user)
+      try {
+        localStorage.setItem("uu_customer_name", customerName.trim());
+        localStorage.setItem("uu_customer_phone", customerPhone.trim());
+        if (customerEmail.trim()) {
+          localStorage.setItem("uu_customer_email", customerEmail.trim());
+        }
+      } catch (err) {
+        console.warn("Could not save details to localStorage", err);
+      }
+
       logEvent("booking_submitted", {
         service_type: selectedService,
         channel: "system",
@@ -470,6 +531,19 @@ function CustomerBooking() {
   function handleServiceChange(serviceValue) {
     setSelectedService(serviceValue);
     setSelectedSlot(null);
+    logEvent("booking_service_changed", {
+      service_type: serviceValue,
+    });
+  }
+
+  function handleSlotSelect(slot) {
+    setSelectedSlot(slot);
+    if (slot) {
+      logEvent("booking_slot_selected", {
+        slot_time: slot.time,
+        service_type: selectedService,
+      });
+    }
   }
 
 
@@ -510,6 +584,11 @@ function CustomerBooking() {
     if (nextStep === 2) {
       logEvent("booking_step_completed", {
         step: 1,
+        service_type: selectedService,
+      });
+    } else if (nextStep === 3) {
+      logEvent("booking_step_completed", {
+        step: 2,
         service_type: selectedService,
       });
     }
@@ -740,7 +819,7 @@ function CustomerBooking() {
                   $active={selectedService === (service.service_key || service.serviceType)}
                   onClick={() => {
                     handleServiceChange(service.service_key || service.serviceType);
-                    handleBookingStepChange(1);
+                    handleBookingStepChange(2);
                   }}>
 
                   <CardImageContainer>
@@ -788,6 +867,52 @@ function CustomerBooking() {
           </ScrollWrapper>
         </Section>
 
+        <Section id="portfolio-preview" style={{ background: "var(--color-grey-50)", borderTop: "1px solid var(--color-grey-100)", borderBottom: "1px solid var(--color-grey-100)" }}>
+          <SectionHeader>
+            <Eyebrow>İşlerimiz</Eyebrow>
+            <AboutTitle>Tamamlanan bazı çalışmalarımız</AboutTitle>
+            <AboutText>
+              Atölyemizde ve yerinde gerçekleştirdiğimiz kaynak, montaj ve bakım onarım projelerimizden bazıları.
+            </AboutText>
+          </SectionHeader>
+
+          {previewItems.length === 0 ? (
+            <MutedText style={{ textAlign: "center" }}>Fotoğraflar yükleniyor...</MutedText>
+          ) : (
+            <>
+              <GalleryPreviewGrid>
+                {previewItems.map((item) => (
+                  <GalleryPreviewCard key={item.id}>
+                    <GalleryPreviewImage
+                      src={item.image_url}
+                      alt={item.title}
+                      loading="lazy"
+                    />
+                    <GalleryPreviewContent>
+                      <GalleryPreviewCategory>{item.category || "Kaynak"}</GalleryPreviewCategory>
+                      <GalleryPreviewTitle>{item.title}</GalleryPreviewTitle>
+                      <MutedText style={{ fontSize: "1.3rem", marginTop: "auto" }}>
+                        {item.description}
+                      </MutedText>
+                    </GalleryPreviewContent>
+                  </GalleryPreviewCard>
+                ))}
+              </GalleryPreviewGrid>
+              <div style={{ textAlign: "center", marginTop: "3.2rem" }}>
+                <Button
+                  as={Link}
+                  to="/gallery"
+                  variation="secondary"
+                  size="large"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "0.8rem" }}
+                >
+                  Tüm İş Örneklerini Gör →
+                </Button>
+              </div>
+            </>
+          )}
+        </Section>
+
         <WizardContainer id="appointment-calendar" ref={wizardRef} tabIndex="-1">
           {isSubmitted ? (
             <BookingSuccess
@@ -796,6 +921,7 @@ function CustomerBooking() {
               selectedService={selectedService}
               customerPhone={customerPhone}
               whatsappUrl={whatsappUrl}
+              bookingId={createdBookingId}
               onReset={handleReset}
             />
           ) : (
@@ -805,18 +931,38 @@ function CustomerBooking() {
                   <WizardStepNumber $active={bookingStep === 1} $completed={bookingStep > 1}>
                     {bookingStep > 1 ? "✓" : "1"}
                   </WizardStepNumber>
-                  <StepLabel $active={bookingStep === 1}>Tarih & Saat</StepLabel>
+                  <StepLabel $active={bookingStep === 1}>Hizmet Seçimi</StepLabel>
                 </WizardStep>
 
                 <StepDivider $completed={bookingStep > 1} />
 
-                <WizardStep $active={bookingStep === 2}>
-                  <WizardStepNumber $active={bookingStep === 2}>2</WizardStepNumber>
-                  <StepLabel $active={bookingStep === 2}>İletişim & Onay</StepLabel>
+                <WizardStep $active={bookingStep === 2} $completed={bookingStep > 2}>
+                  <WizardStepNumber $active={bookingStep === 2} $completed={bookingStep > 2}>
+                    {bookingStep > 2 ? "✓" : "2"}
+                  </WizardStepNumber>
+                  <StepLabel $active={bookingStep === 2}>Tarih & Saat</StepLabel>
+                </WizardStep>
+
+                <StepDivider $completed={bookingStep > 2} />
+
+                <WizardStep $active={bookingStep === 3}>
+                  <WizardStepNumber $active={bookingStep === 3}>3</WizardStepNumber>
+                  <StepLabel $active={bookingStep === 3}>İletişim & Onay</StepLabel>
                 </WizardStep>
               </WizardProgress>
 
               {bookingStep === 1 && (
+                <StepAnimationWrapper>
+                  <ServiceSelection
+                    services={activeServices}
+                    selectedService={selectedService}
+                    onServiceSelect={handleServiceChange}
+                    onStepChange={handleBookingStepChange}
+                  />
+                </StepAnimationWrapper>
+              )}
+
+              {bookingStep === 2 && (
                 <StepAnimationWrapper>
                   <BookingCalendar
                     todayKey={todayKey}
@@ -836,14 +982,14 @@ function CustomerBooking() {
                     refetchAvailability={refetchAvailability}
                     quickWhatsappUrl={quickWhatsappUrl}
                     onDateSelect={handleDateSelect}
-                    onSlotSelect={setSelectedSlot}
+                    onSlotSelect={handleSlotSelect}
                     onWeekChange={handleWeekChange}
                     onStepChange={handleBookingStepChange}
                   />
                 </StepAnimationWrapper>
               )}
 
-              {bookingStep === 2 && (
+              {bookingStep === 3 && (
                 <StepAnimationWrapper>
                   <BookingForm
                     selectedDay={selectedDay}
