@@ -11,6 +11,8 @@ import {
   HiOutlinePlusCircle,
   HiOutlineTrash,
   HiOutlineXMark,
+  HiOutlineArrowUp,
+  HiOutlineArrowDown,
 } from "react-icons/hi2";
 
 import Heading from "../ui/Heading";
@@ -861,6 +863,47 @@ function GalleryAdmin() {
     });
   }
 
+  async function handleMoveItem(item, direction) {
+    const index = items.findIndex((i) => i.id === item.id);
+    if (index === -1) return;
+
+    const partner = direction === "up" ? items[index - 1] : items[index + 1];
+    if (!partner) return;
+
+    let itemSort = partner.sort_order ?? 0;
+    let partnerSort = item.sort_order ?? 0;
+
+    if (itemSort === partnerSort) {
+      if (direction === "up") {
+        itemSort = itemSort - 1;
+      } else {
+        itemSort = itemSort + 1;
+      }
+    }
+
+    try {
+      // First update partner's sort order
+      await updateGalleryItem({
+        id: partner.id,
+        updates: { sort_order: partnerSort },
+        currentItem: partner,
+      });
+
+      // Then update item's sort order
+      await updateGalleryItem({
+        id: item.id,
+        updates: { sort_order: itemSort },
+        currentItem: item,
+      });
+
+      toast.success("Sıralama güncellendi.");
+      queryClient.invalidateQueries({ queryKey: ["gallery-items"] });
+      queryClient.invalidateQueries({ queryKey: ["gallery-items-public"] });
+    } catch (err) {
+      toast.error("Sıralama güncellenemedi.");
+    }
+  }
+
   // ── Render ───────────────────────────────────────────────────────────
 
   if (isLoading) return <Spinner />;
@@ -940,7 +983,7 @@ function GalleryAdmin() {
           </EmptyState>
         ) : (
           <ItemGrid>
-            {items.map((item) => (
+            {items.map((item, index) => (
               <ItemCard key={item.id}>
                 <CardImage>
                   <img
@@ -961,6 +1004,20 @@ function GalleryAdmin() {
                     <Pill>Sıra: {item.sort_order}</Pill>
                   </CardMeta>
                   <CardActions>
+                    <SmallButton
+                      disabled={index === 0}
+                      onClick={() => handleMoveItem(item, "up")}
+                      title="Yukarı taşı"
+                    >
+                      <HiOutlineArrowUp />
+                    </SmallButton>
+                    <SmallButton
+                      disabled={index === items.length - 1}
+                      onClick={() => handleMoveItem(item, "down")}
+                      title="Aşağı taşı"
+                    >
+                      <HiOutlineArrowDown />
+                    </SmallButton>
                     <SmallButton onClick={() => openEdit(item)}>
                       <HiOutlinePencilSquare />
                       Düzenle

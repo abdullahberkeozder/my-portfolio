@@ -10,6 +10,7 @@ import {
   HiOutlineXCircle,
   HiOutlineInformationCircle,
 } from "react-icons/hi2";
+import { FaWhatsapp } from "react-icons/fa";
 import Heading from "../../../ui/Heading";
 import Button from "../../../ui/Button";
 import {
@@ -50,7 +51,8 @@ import {
   SummaryValue,
   WizardActions,
   StepAnimationWrapper,
-} from "../../../pages/CustomerBooking.styles";
+  ScrollHint,
+} from "./booking.styles";
 
 
 const statusLabel = {
@@ -156,11 +158,12 @@ function BookingCalendar({
       <div style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1rem 0", borderBottom: "1px solid var(--color-grey-100)", marginBottom: "0.4rem" }}>
         <span style={{ fontSize: "1.3rem", color: "var(--color-grey-500)", fontWeight: 600 }}>Seçili hizmet:</span>
         <span style={{ fontSize: "1.4rem", color: "var(--color-grey-900)", fontWeight: 700 }}>{selectedService}</span>
-        <a
-          href="#services"
-          style={{ marginLeft: "auto", fontSize: "1.2rem", color: "var(--color-brand-600)", fontWeight: 700, textDecoration: "underline", whiteSpace: "nowrap" }}>
+        <button
+          type="button"
+          onClick={() => onStepChange(1)}
+          style={{ marginLeft: "auto", fontSize: "1.2rem", color: "var(--color-brand-600)", fontWeight: 700, textDecoration: "underline", border: "none", background: "none", cursor: "pointer", whiteSpace: "nowrap" }}>
           Hizmeti değiştir ↑
-        </a>
+        </button>
       </div>
 
       {isLoadingAvailability && (
@@ -252,6 +255,10 @@ function BookingCalendar({
         ))}
       </QuickDateRow>
 
+      <ScrollHint>
+        ← Günleri görmek için sağa/sola kaydırın →
+      </ScrollHint>
+
       <ScrollWrapper $breakpoint="980px" $bg="var(--color-grey-0)">
         <WeekGrid
           ref={weekGridRef}
@@ -311,54 +318,103 @@ function BookingCalendar({
           </MutedText>
         </div>
 
-        <StepAnimationWrapper key={selectedDate}>
-          {["closed", "unavailable"].includes(selectedDay?.status) ||
-          selectedDateIsPast ||
-          availableSlots.length === 0 ? (
-            <EmptySlots>
-              {selectedDateIsPast ? (
-                <span>Geçmiş bir tarih için randevu alınamaz.</span>
-              ) : selectedDay?.status === "unavailable" && selectedDay?.note?.includes("WhatsApp") ? (
-                <>
-                  <span>Bu tarih için henüz randevu açılmadı.</span>
-                  <span>
-                    Başka bir tarih seçin veya{" "}
-                    <a
-                      href={quickWhatsappUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{ fontWeight: 800, textDecoration: "underline", color: "var(--color-brand-700)" }}>
-                      WhatsApp&apos;tan yazın
-                    </a>
-                    .
-                  </span>
-                </>
-              ) : selectedDay?.status === "closed" ? (
-                <span>Bu gün kapalı. Başka bir tarih deneyin.</span>
-              ) : (
-                <span>Bu tarih için seçilebilir saat bulunmuyor. Başka bir gün deneyin.</span>
-              )}
-            </EmptySlots>
-          ) : (
-            <SlotGrid>
-              {selectedDay.slots.map((slot) => (
-                <SlotButton
-                  key={`${selectedDay.dateValue}-${slot.time}`}
-                  type="button"
-                  disabled={!slot.isAvailable}
-                  $active={selectedSlot?.time === slot.time}
-                  aria-pressed={selectedSlot?.time === slot.time}
-                  aria-label={`${slot.label}, ${
-                    slot.isAvailable ? "müsait" : "dolu"
-                  }`}
-                  onClick={() => onSlotSelect(slot)}
-                  title={slot.note || undefined}>
-                  {slot.label}
-                </SlotButton>
-              ))}
-            </SlotGrid>
-          )}
-        </StepAnimationWrapper>
+        {totalWeekSlots === 0 ? (
+          <div style={{
+            background: "linear-gradient(135deg, var(--color-brand-50) 0%, var(--color-grey-50) 100%)",
+            border: "1px solid var(--color-brand-200)",
+            borderRadius: "var(--border-radius-sm)",
+            padding: "2rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1.2rem",
+            textAlign: "left"
+          }}>
+            <Heading as="h3" style={{ fontSize: "1.6rem", color: "var(--color-brand-800)", display: "flex", alignItems: "center", gap: "0.8rem" }}>
+              <HiOutlineInformationCircle style={{ width: "2.2rem", height: "2.2rem", color: "var(--color-brand-600)", flexShrink: 0 }} />
+              Bu Hafta Müsait Saat Bulunmuyor
+            </Heading>
+            <MutedText style={{ fontSize: "1.35rem" }}>
+              Seçili hafta içinde tüm saatler dolmuş veya kapalıdır. Aşağıdaki butonlarla sonraki haftaları kontrol edebilir veya doğrudan WhatsApp üzerinden iletişime geçebilirsiniz.
+            </MutedText>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", marginTop: "0.4rem" }}>
+              <Button
+                type="button"
+                variation="primary"
+                size="large"
+                onClick={() => onWeekChange(7)}
+                style={{ display: "inline-flex", alignItems: "center", gap: "0.6rem" }}
+              >
+                Gelecek Haftaya Git <HiOutlineChevronRight />
+              </Button>
+              <Button
+                as="a"
+                href={quickWhatsappUrl}
+                target="_blank"
+                rel="noreferrer"
+                variation="cta"
+                size="large"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.6rem",
+                  background: "var(--color-channel-whatsapp)",
+                  borderColor: "var(--color-channel-whatsapp)"
+                }}
+              >
+                <FaWhatsapp /> WhatsApp ile Sor
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <StepAnimationWrapper key={selectedDate}>
+            {["closed", "unavailable"].includes(selectedDay?.status) ||
+            selectedDateIsPast ||
+            availableSlots.length === 0 ? (
+              <EmptySlots>
+                {selectedDateIsPast ? (
+                  <span>Geçmiş bir tarih için randevu alınamaz.</span>
+                ) : selectedDay?.status === "unavailable" && selectedDay?.note?.includes("WhatsApp") ? (
+                  <>
+                    <span>Bu tarih için henüz randevu açılmadı.</span>
+                    <span>
+                      Başka bir tarih seçin veya{" "}
+                      <a
+                        href={quickWhatsappUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ fontWeight: 800, textDecoration: "underline", color: "var(--color-brand-700)" }}>
+                        WhatsApp&apos;tan yazın
+                      </a>
+                      .
+                    </span>
+                  </>
+                ) : selectedDay?.status === "closed" ? (
+                  <span>Bu gün kapalı. Başka bir tarih deneyin.</span>
+                ) : (
+                  <span>Bu tarih için seçilebilir saat bulunmuyor. Başka bir gün deneyin.</span>
+                )}
+              </EmptySlots>
+            ) : (
+              <SlotGrid>
+                {selectedDay.slots.map((slot) => (
+                  <SlotButton
+                    key={`${selectedDay.dateValue}-${slot.time}`}
+                    type="button"
+                    disabled={!slot.isAvailable}
+                    $active={selectedSlot?.time === slot.time}
+                    aria-pressed={selectedSlot?.time === slot.time}
+                    aria-label={`${slot.label}, ${
+                      slot.isAvailable ? "müsait" : "dolu"
+                    }`}
+                    onClick={() => onSlotSelect(slot)}
+                    title={slot.note || undefined}>
+                    {slot.label}
+                  </SlotButton>
+                ))}
+              </SlotGrid>
+            )}
+          </StepAnimationWrapper>
+        )}
       </SlotPanel>
 
       <div style={{ marginTop: "2rem" }}>
@@ -403,24 +459,17 @@ function BookingCalendar({
       </div>
 
       <WizardActions>
-        <a
-          href="#services"
+        <Button
+          type="button"
+          variation="secondary"
+          onClick={() => onStepChange(1)}
           style={{
             display: "inline-flex",
             alignItems: "center",
             gap: "0.6rem",
-            minHeight: "4.4rem",
-            padding: "1rem 1.6rem",
-            borderRadius: "var(--border-radius-sm)",
-            border: "1px solid var(--color-grey-200)",
-            background: "var(--color-grey-0)",
-            color: "var(--color-grey-700)",
-            fontSize: "1.4rem",
-            fontWeight: 700,
-            textDecoration: "none",
           }}>
           ← Hizmet Değiştir
-        </a>
+        </Button>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.6rem" }}>
           {!selectedSlot && selectedDay && !["closed", "unavailable"].includes(selectedDay.status) && availableSlots.length > 0 && (
             <span style={{ fontSize: "1.2rem", color: "var(--color-yellow-700)", fontWeight: "600", whiteSpace: "nowrap" }}>
@@ -432,7 +481,7 @@ function BookingCalendar({
             size="large"
             variation="cta"
             disabled={!selectedDay || !selectedSlot}
-            onClick={() => onStepChange(2)}>
+            onClick={() => onStepChange(3)}>
             İletişim Bilgilerine İlerle →
           </Button>
         </div>

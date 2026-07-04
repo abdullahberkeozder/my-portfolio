@@ -36,6 +36,9 @@ export async function getAppointmentRequests({
   page = 1,
   pageSize = 20,
   fetchAll = false,
+  createdAfter = null,
+  search = "",
+  status = "",
 } = {}) {
   let query = supabase
     .from(TABLE_NAME)
@@ -45,6 +48,29 @@ export async function getAppointmentRequests({
     query = query.not("archived_at", "is", null);
   } else {
     query = query.is("archived_at", null);
+  }
+
+  if (createdAfter) {
+    query = query.gte("created_at", createdAfter);
+  }
+
+  if (status && status !== "all" && status !== "archived") {
+    query = query.eq("status", status);
+  }
+
+  if (search) {
+    const cleanSearch = search.trim();
+    if (cleanSearch) {
+      query = query.or(
+        `customer_name.ilike.%${cleanSearch}%,` +
+        `customer_phone.ilike.%${cleanSearch}%,` +
+        `customer_email.ilike.%${cleanSearch}%,` +
+        `customer_note.ilike.%${cleanSearch}%,` +
+        `notes.ilike.%${cleanSearch}%,` +
+        `admin_note.ilike.%${cleanSearch}%,` +
+        `service_type.ilike.%${cleanSearch}%`
+      );
+    }
   }
 
   query = query.order("created_at", { ascending: false });
