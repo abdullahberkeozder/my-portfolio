@@ -1,10 +1,17 @@
 import PropTypes from "prop-types";
-import { HiOutlineCheckCircle, HiOutlineCalendarDays, HiOutlineClock, HiOutlineWrenchScrewdriver, HiOutlinePhone } from "react-icons/hi2";
+import {
+  HiOutlineCheckCircle,
+  HiOutlineCalendarDays,
+  HiOutlineClock,
+  HiOutlineWrenchScrewdriver,
+  HiOutlinePhone,
+  HiOutlineClipboard,
+} from "react-icons/hi2";
 import { FaWhatsapp } from "react-icons/fa";
 import styled from "styled-components";
 import Heading from "../../../ui/Heading";
 import Button from "../../../ui/Button";
-import { BUSINESS_TELEPHONE } from "../../../config/business";
+import { BUSINESS_TELEPHONE, BUSINESS_WHATSAPP_NUMBER } from "../../../config/business";
 
 const SuccessPanel = styled.div`
   display: flex;
@@ -188,9 +195,26 @@ function BookingSuccess({
   selectedService,
   customerPhone,
   whatsappUrl,
+  bookingId,
   onReset,
 }) {
   const maskedPhone = maskPhone(customerPhone);
+
+  const trackingCode = bookingId
+    ? `UU-${bookingId.slice(0, 8).toUpperCase()}`
+    : "UU-YENI";
+
+  const messageText = `Merhaba Umut Usta, web sitenizden randevu talebi oluşturdum:
+
+Takip Kodu: ${trackingCode}
+Hizmet: ${selectedService}
+Tarih: ${selectedDay ? selectedDay.fullDate : "-"}
+Saat: ${selectedSlot?.label || "-"}
+Telefon: ${customerPhone || ""}
+
+Randevuyu onaylayabilir miyiz? Teşekkürler.`;
+
+  const customizedWhatsappUrl = `https://wa.me/${BUSINESS_WHATSAPP_NUMBER}?text=${encodeURIComponent(messageText)}`;
 
   return (
     <SuccessPanel>
@@ -205,6 +229,11 @@ function BookingSuccess({
       </SuccessSubtitle>
 
       <SuccessDetails>
+        <DetailItem style={{ background: "var(--color-brand-50)", padding: "1.2rem 1.6rem", borderRadius: "var(--border-radius-sm)", border: "1px dashed var(--color-brand-300)", marginBottom: "1rem" }}>
+          <HiOutlineClipboard />
+          <DetailLabel style={{ color: "var(--color-brand-700)", fontWeight: "800" }}>Takip Kodu:</DetailLabel>
+          <DetailValue style={{ fontFamily: "monospace", fontSize: "1.6rem", color: "var(--color-brand-800)", fontWeight: "900" }}>{trackingCode}</DetailValue>
+        </DetailItem>
         <DetailItem>
           <HiOutlineWrenchScrewdriver />
           <DetailLabel>Hizmet:</DetailLabel>
@@ -235,7 +264,7 @@ function BookingSuccess({
         <TimelineList>
           <TimelineItem>
             <TimelineBullet $done>✓</TimelineBullet>
-            <span><strong>Talep alındı</strong> — Randevu talebiniz sisteme başarıyla kaydedildi.</span>
+            <span><strong>Talep alındı</strong> — Randevu talebiniz sisteme başarıyla kaydedildi. (Takip No: {trackingCode})</span>
           </TimelineItem>
           <TimelineItem>
             <TimelineBullet>2</TimelineBullet>
@@ -259,7 +288,7 @@ function BookingSuccess({
       <ButtonGroup>
         <Button
           as="a"
-          href={whatsappUrl}
+          href={customizedWhatsappUrl}
           target="_blank"
           rel="noreferrer"
           variation="cta"
@@ -291,6 +320,7 @@ BookingSuccess.propTypes = {
   selectedService: PropTypes.string.isRequired,
   customerPhone: PropTypes.string,
   whatsappUrl: PropTypes.string.isRequired,
+  bookingId: PropTypes.string,
   onReset: PropTypes.func.isRequired,
 };
 
