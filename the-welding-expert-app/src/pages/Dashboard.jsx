@@ -730,11 +730,11 @@ function Dashboard() {
   const isLoading = requestsQuery.isLoading || availabilityQuery.isLoading;
   const isError = requestsQuery.isError || availabilityQuery.isError;
 
-  const rawRequests = requestsQuery.data || [];
   const requests = useMemo(() => {
+    const rawRequests = requestsQuery.data || [];
     if (serviceFilter === "all") return rawRequests;
     return rawRequests.filter(r => r.service_type === serviceFilter);
-  }, [rawRequests, serviceFilter]);
+  }, [requestsQuery.data, serviceFilter]);
 
   const avgResponseTimeHours = useMemo(() => {
     const confirmedRequests = requests.filter(
