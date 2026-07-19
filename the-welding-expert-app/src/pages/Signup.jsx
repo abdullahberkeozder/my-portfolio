@@ -5,7 +5,12 @@ import SEO from "../ui/SEO";
 function Signup() {
   return (
     <>
-      <SEO title="Kaydol | Umut Usta Yönetim" description="Ekip erişimi isteyin." />
+      <SEO
+        title="Kaydol | Umut Usta Yönetim"
+        description="Ekip erişimi isteyin."
+        canonicalPath="/signup"
+        noIndex
+      />
       <AuthLayout
         eyebrow="Yeni ekip hesabı"
         title="Ekip erişimi isteyin"

@@ -51,12 +51,23 @@ create table if not exists public.appointment_requests (
   customer_note text,
   admin_note text,
   archived_at timestamp with time zone default null,
+  public_token uuid not null default gen_random_uuid(),
+  customer_action text,
+  customer_action_note text,
+  customer_requested_date date,
+  customer_requested_time time,
+  cancellation_reason text,
+  customer_feedback text,
+  customer_action_at timestamp with time zone,
   -- Deprecated compatibility column. New code uses customer_note/admin_note.
   notes text,
   constraint appointment_requests_channel_check
     check (channel in ('system', 'whatsapp', 'email')),
   constraint appointment_requests_status_check
-    check (status in ('new', 'contacted', 'confirmed', 'cancelled', 'completed'))
+    check (status in ('new', 'contacted', 'confirmed', 'cancelled', 'completed')),
+  constraint appointment_requests_public_token_key unique (public_token),
+  constraint appointment_requests_customer_action_check
+    check (customer_action is null or customer_action in ('cancel_requested', 'change_requested'))
 );
 
 alter table public.appointment_requests
@@ -67,6 +78,30 @@ alter table public.appointment_requests
 
 alter table public.appointment_requests
   add column if not exists archived_at timestamp with time zone default null;
+
+alter table public.appointment_requests
+  add column if not exists public_token uuid not null default gen_random_uuid();
+
+alter table public.appointment_requests
+  add column if not exists customer_action text;
+
+alter table public.appointment_requests
+  add column if not exists customer_action_note text;
+
+alter table public.appointment_requests
+  add column if not exists customer_requested_date date;
+
+alter table public.appointment_requests
+  add column if not exists customer_requested_time time;
+
+alter table public.appointment_requests
+  add column if not exists cancellation_reason text;
+
+alter table public.appointment_requests
+  add column if not exists customer_feedback text;
+
+alter table public.appointment_requests
+  add column if not exists customer_action_at timestamp with time zone;
 
 -- Preserve existing data while separating notes where their origin can be
 -- inferred from the customer-facing message snapshot.
@@ -116,8 +151,47 @@ create index if not exists appointment_requests_created_at_idx
 create index if not exists appointment_requests_requested_date_idx
   on public.appointment_requests(requested_date);
 
+create index if not exists appointment_requests_public_token_idx
+  on public.appointment_requests(public_token);
+
+create index if not exists appointment_requests_customer_action_idx
+  on public.appointment_requests(customer_action, customer_action_at desc);
+
 create index if not exists admin_profiles_role_idx
   on public.admin_profiles(role);
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'appointment_requests_public_token_key'
+  ) then
+    alter table public.appointment_requests
+      add constraint appointment_requests_public_token_key unique (public_token);
+  end if;
+
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'appointment_requests_customer_action_check'
+  ) then
+    alter table public.appointment_requests
+      add constraint appointment_requests_customer_action_check
+      check (customer_action is null or customer_action in ('cancel_requested', 'change_requested'));
+  end if;
+end $$;
+
+drop function if exists public.create_appointment_request(
+  text,
+  text,
+  text,
+  date,
+  time without time zone,
+  text,
+  text,
+  text
+);
 
 create or replace function public.create_appointment_request(
   p_customer_name text,
@@ -129,7 +203,7 @@ create or replace function public.create_appointment_request(
   p_message text default null,
   p_notes text default null
 )
-returns uuid
+returns jsonb
 language plpgsql
 security definer
 set search_path = public, pg_temp
@@ -137,6 +211,7 @@ as $$
 declare
   v_slot_id uuid;
   v_request_id uuid;
+  v_public_token uuid;
 begin
   if char_length(trim(coalesce(p_customer_name, ''))) not between 2 and 120
     or char_length(trim(coalesce(p_customer_phone, ''))) not between 6 and 30
@@ -187,6 +262,7 @@ begin
       where existing_request.requested_date = p_requested_date
         and existing_request.requested_time = p_requested_time
         and existing_request.status = 'confirmed'
+        and existing_request.archived_at is null
     )
   for update of slot;
 
@@ -220,9 +296,122 @@ begin
     nullif(trim(coalesce(p_notes, '')), ''),
     nullif(trim(coalesce(p_notes, '')), '')
   )
-  returning id into v_request_id;
+  returning id, public_token into v_request_id, v_public_token;
 
-  return v_request_id;
+  return jsonb_build_object(
+    'id', v_request_id,
+    'public_token', v_public_token
+  );
+end;
+$$;
+
+create or replace function public.get_public_appointment_request(
+  p_public_token uuid
+)
+returns table (
+  id uuid,
+  public_token uuid,
+  customer_name text,
+  service_type text,
+  requested_date date,
+  requested_time time without time zone,
+  status text,
+  customer_action text,
+  customer_action_note text,
+  customer_requested_date date,
+  customer_requested_time time without time zone,
+  cancellation_reason text,
+  customer_feedback text,
+  customer_action_at timestamp with time zone
+)
+language sql
+security definer
+set search_path = public
+as $$
+  select
+    request.id,
+    request.public_token,
+    request.customer_name,
+    request.service_type,
+    request.requested_date,
+    request.requested_time,
+    request.status,
+    request.customer_action,
+    request.customer_action_note,
+    request.customer_requested_date,
+    request.customer_requested_time,
+    request.cancellation_reason,
+    request.customer_feedback,
+    request.customer_action_at
+  from public.appointment_requests as request
+  where request.public_token = p_public_token
+    and request.archived_at is null;
+$$;
+
+create or replace function public.submit_appointment_customer_action(
+  p_public_token uuid,
+  p_customer_action text,
+  p_customer_action_note text default null,
+  p_customer_requested_date date default null,
+  p_customer_requested_time time without time zone default null,
+  p_cancellation_reason text default null,
+  p_customer_feedback text default null
+)
+returns boolean
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+begin
+  if p_customer_action not in ('cancel_requested', 'change_requested') then
+    raise exception 'invalid_customer_action' using errcode = 'P0001';
+  end if;
+
+  if char_length(coalesce(p_customer_action_note, '')) > 1000
+    or char_length(coalesce(p_cancellation_reason, '')) > 160
+    or char_length(coalesce(p_customer_feedback, '')) > 1000
+  then
+    raise exception 'customer_action_text_too_long' using errcode = 'P0001';
+  end if;
+
+  if p_customer_action = 'change_requested' then
+    if p_customer_requested_date is null
+      or p_customer_requested_date < current_date
+      or p_customer_requested_time is null
+      or p_customer_requested_time < time '09:00'
+      or p_customer_requested_time > time '19:00'
+      or extract(minute from p_customer_requested_time) <> 0
+      or extract(second from p_customer_requested_time) <> 0
+      or mod(extract(hour from p_customer_requested_time)::integer - 9, 2) <> 0
+    then
+      raise exception 'invalid_requested_change_slot' using errcode = 'P0001';
+    end if;
+  end if;
+
+  update public.appointment_requests
+  set
+    customer_action = p_customer_action,
+    customer_action_note = nullif(trim(coalesce(p_customer_action_note, '')), ''),
+    customer_requested_date = case
+      when p_customer_action = 'change_requested' then p_customer_requested_date
+      else null
+    end,
+    customer_requested_time = case
+      when p_customer_action = 'change_requested' then p_customer_requested_time
+      else null
+    end,
+    cancellation_reason = nullif(trim(coalesce(p_cancellation_reason, '')), ''),
+    customer_feedback = nullif(trim(coalesce(p_customer_feedback, '')), ''),
+    customer_action_at = now()
+  where public_token = p_public_token
+    and archived_at is null
+    and status in ('new', 'contacted', 'confirmed');
+
+  if not found then
+    raise exception 'appointment_request_not_found' using errcode = 'P0001';
+  end if;
+
+  return true;
 end;
 $$;
 
@@ -476,6 +665,28 @@ grant execute on function public.create_appointment_request(
   date,
   time without time zone,
   text,
+  text,
+  text
+) to anon, authenticated;
+revoke all on function public.get_public_appointment_request(uuid)
+from public;
+grant execute on function public.get_public_appointment_request(uuid)
+to anon, authenticated;
+revoke all on function public.submit_appointment_customer_action(
+  uuid,
+  text,
+  text,
+  date,
+  time without time zone,
+  text,
+  text
+) from public;
+grant execute on function public.submit_appointment_customer_action(
+  uuid,
+  text,
+  text,
+  date,
+  time without time zone,
   text,
   text
 ) to anon, authenticated;

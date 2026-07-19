@@ -5,7 +5,12 @@ import SEO from "../ui/SEO";
 function Login() {
   return (
     <>
-      <SEO title="Giriş Yap | Umut Usta Yönetim" description="Yönetim paneli girişi." />
+      <SEO
+        title="Giriş Yap | Umut Usta Yönetim"
+        description="Yönetim paneli girişi."
+        canonicalPath="/login"
+        noIndex
+      />
       <AuthLayout
         eyebrow="Ekip yönetimi"
         title="Yönetim paneli girişi"

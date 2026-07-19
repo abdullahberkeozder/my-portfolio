@@ -10,6 +10,7 @@ import {
   AccordionIcon,
   CardTitle,
   CardText,
+  FaqMoreButton,
 } from "../../../pages/CustomerBooking.styles";
 
 function FaqItem({ item, index, isOpen, onToggle }) {
@@ -58,8 +59,11 @@ FaqItem.propTypes = {
   onToggle: PropTypes.func.isRequired,
 };
 
-function FaqAccordion({ items }) {
+function FaqAccordion({ items, initialVisibleCount = items.length }) {
   const [activeIndex, setActiveIndex] = useState(null);
+  const [showAll, setShowAll] = useState(false);
+  const visibleItems = showAll ? items : items.slice(0, initialVisibleCount);
+  const hiddenCount = Math.max(items.length - initialVisibleCount, 0);
 
   function handleToggle(index) {
     setActiveIndex((prevIndex) => (prevIndex === index ? null : index));
@@ -67,7 +71,7 @@ function FaqAccordion({ items }) {
 
   return (
     <AccordionContainer>
-      {items.map((item, index) => (
+      {visibleItems.map((item, index) => (
         <FaqItem
           key={item.question}
           item={item}
@@ -76,6 +80,16 @@ function FaqAccordion({ items }) {
           onToggle={() => handleToggle(index)}
         />
       ))}
+      {hiddenCount > 0 && (
+        <FaqMoreButton
+          type="button"
+          $expanded={showAll}
+          aria-expanded={showAll}
+          onClick={() => setShowAll((current) => !current)}>
+          {showAll ? "Daha az soru göster" : `${hiddenCount} soru daha göster`}
+          <HiOutlineChevronDown aria-hidden="true" />
+        </FaqMoreButton>
+      )}
     </AccordionContainer>
   );
 }
@@ -87,6 +101,7 @@ FaqAccordion.propTypes = {
       answer: PropTypes.string.isRequired,
     }),
   ).isRequired,
+  initialVisibleCount: PropTypes.number,
 };
 
 export default FaqAccordion;

@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 
 const sizes = {
   small: css`
-    min-height: 3.6rem;
+    min-height: 4.4rem;
     font-size: var(--font-size-sm);
     padding: 0.7rem 1rem;
     font-weight: var(--font-weight-semibold);
@@ -30,7 +30,7 @@ const variations = {
     &:hover:not(:disabled) {
       background-color: var(--color-selection-strong);
       transform: translateY(-1px);
-      box-shadow: 0 2px 6px rgba(13, 128, 80, 0.2);
+      box-shadow: 0 4px 12px rgba(122, 50, 24, 0.2);
     }
   `,
   cta: css`
@@ -40,7 +40,7 @@ const variations = {
     &:hover:not(:disabled) {
       background-color: var(--color-action-primary-hover);
       transform: translateY(-1px);
-      box-shadow: 0 2px 6px rgba(13, 128, 80, 0.2);
+      box-shadow: 0 4px 12px rgba(122, 50, 24, 0.2);
     }
   `,
   secondary: css`
@@ -66,10 +66,10 @@ const variations = {
   `,
   success: css`
     color: var(--color-text-inverse);
-    background-color: var(--color-green-700);
+    background-color: var(--color-action-success);
 
     &:hover:not(:disabled) {
-      background-color: var(--color-green-800);
+      background-color: var(--color-action-success-hover);
       transform: translateY(-1px);
       box-shadow: 0 2px 6px rgba(46, 125, 79, 0.2);
     }
@@ -99,11 +99,11 @@ const StyledButton = styled.button`
   line-height: 1.2;
   text-decoration: none;
   transition:
-    color 0.2s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.1s ease;
+    color var(--motion-base) var(--ease-standard),
+    background-color var(--motion-base) var(--ease-standard),
+    border-color var(--motion-base) var(--ease-standard),
+    box-shadow var(--motion-base) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-out);
 
   ${(props) =>
     variations[props.$variation] || variations.primary}

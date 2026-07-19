@@ -1,8 +1,10 @@
 import styled from "styled-components";
+import { useLocation } from "react-router-dom";
 
 import { useMoveBack } from "../hooks/useMoveBack";
 import Heading from "../ui/Heading";
 import Button from "../ui/Button";
+import SEO from "../ui/SEO";
 
 const StyledPageNotFound = styled.main`
   height: 100vh;
@@ -30,18 +32,27 @@ const Box = styled.div`
 
 function PageNotFound() {
   const moveBack = useMoveBack();
+  const location = useLocation();
 
   return (
-    <StyledPageNotFound>
-      <Box>
-        <Heading as="h1">Aradığınız sayfa bulunamadı</Heading>
-        <Button
-          onClick={moveBack}
-          size="large">
-          &larr; Önceki sayfaya dön
-        </Button>
-      </Box>
-    </StyledPageNotFound>
+    <>
+      <SEO
+        title="Sayfa Bulunamadı | Umut Usta"
+        description="Aradığınız Umut Usta sayfası bulunamadı. Randevu ekranına veya önceki sayfaya dönebilirsiniz."
+        canonicalPath={location.pathname}
+        noIndex
+      />
+      <StyledPageNotFound>
+        <Box>
+          <Heading as="h1">Aradığınız sayfa bulunamadı</Heading>
+          <Button
+            onClick={moveBack}
+            size="large">
+            &larr; Önceki sayfaya dön
+          </Button>
+        </Box>
+      </StyledPageNotFound>
+    </>
   );
 }
 

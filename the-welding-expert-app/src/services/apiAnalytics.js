@@ -1,52 +1,55 @@
-import supabase from "./supabase";
+import {
+  captureAttribution,
+  getEventDedupeKey,
+  normalizeEvent,
+} from "../analytics/events";
+import { getSupabaseClient } from "./getSupabaseClient";
 
 const TABLE_NAME = "analytics_events";
 
-/**
- * Bir analitik olayını Supabase'e yazar.
- * Hata durumunda sessizce başarısız olur — analitik loglama
- * uygulama akışını asla kesmemelidir.
- *
- * @param {string} eventName  - Olay adı (ör. "booking_submitted")
- * @param {object} [properties] - Olayla ilgili ek veriler
- */
 export async function logEvent(eventName, properties = {}) {
-  if (!eventName) return;
+  const normalized = normalizeEvent(eventName, properties);
+  if (!normalized) return false;
 
-  // Session ID: oturum bazlı takip için (localStorage'da saklanır)
   let sessionId = sessionStorage.getItem("uu_session_id");
-
   if (!sessionId) {
     sessionId = `sess_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
     sessionStorage.setItem("uu_session_id", sessionId);
   }
 
+  const eventProperties = { ...captureAttribution(), ...normalized.properties };
+  const dedupeKey = getEventDedupeKey(eventName, eventProperties);
+  const storageKey = dedupeKey ? `uu_event_${dedupeKey}` : null;
+
+  if (storageKey && sessionStorage.getItem(storageKey)) return false;
+  if (storageKey) sessionStorage.setItem(storageKey, "pending");
+
   try {
-    await supabase.from(TABLE_NAME).insert({
+    const supabase = await getSupabaseClient();
+    const { error } = await supabase.from(TABLE_NAME).insert({
       event_name: eventName,
       session_id: sessionId,
-      properties: Object.keys(properties).length > 0 ? properties : null,
+      properties: Object.keys(eventProperties).length > 0 ? eventProperties : null,
     });
+
+    if (error) throw error;
+    if (storageKey) sessionStorage.setItem(storageKey, "sent");
+    return true;
   } catch {
-    // Analitik hataları sessizce yutulur
+    if (storageKey) sessionStorage.removeItem(storageKey);
+    return false;
   }
 }
 
-/**
- * Son N günlük olayları gruplandırılmış olarak çeker.
- * Sadece admin rolü çağırabilir.
- *
- * @param {number} [days=30] - Kaç günlük verisi
- */
 export async function getAnalyticsEvents({ days = 30 } = {}) {
+  const supabase = await getSupabaseClient();
   const since = new Date();
   since.setDate(since.getDate() - days);
-  const sinceISO = since.toISOString();
 
   const { data, error } = await supabase
     .from(TABLE_NAME)
-    .select("id, created_at, event_name, session_id")
-    .gte("created_at", sinceISO)
+    .select("id, created_at, event_name, session_id, properties")
+    .gte("created_at", since.toISOString())
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -55,4 +58,23 @@ export async function getAnalyticsEvents({ days = 30 } = {}) {
   }
 
   return data;
+}
+
+export async function getAppointmentFunnelData({ days = 30 } = {}) {
+  const supabase = await getSupabaseClient();
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+
+  const { data, error } = await supabase
+    .from("appointment_requests")
+    .select("channel, status, service_type, lead_quality, created_at")
+    .gte("created_at", since.toISOString())
+    .is("archived_at", null);
+
+  if (error) {
+    console.error(error);
+    throw new Error("Talep hunisi verileri yüklenemedi.");
+  }
+
+  return data ?? [];
 }

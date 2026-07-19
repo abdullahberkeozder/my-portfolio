@@ -1,111 +1,128 @@
+import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import {
-  HiOutlineCalendarDays,
-  HiOutlineClock,
-  HiOutlineWrenchScrewdriver,
-  HiOutlineEnvelope,
-  HiOutlineUser,
+  HiOutlineShieldCheck,
+  HiOutlineChevronDown,
 } from "react-icons/hi2";
-import { FaWhatsapp } from "react-icons/fa";
+import styled, { css, keyframes } from "styled-components";
 
-import styled from "styled-components";
 import Heading from "../../../ui/Heading";
 import Button from "../../../ui/Button";
 import { logEvent } from "../../../services/apiAnalytics";
+import { ANALYTICS_EVENTS } from "../../../analytics/events";
 import {
+  ErrorSummary,
+  ContactLayout,
+  ContactSummaryPanel,
+  ContactSummaryTitle,
+  Field,
+  FieldError,
+  FieldGrid,
+  FormBlock,
+  HorizontalSummary,
+  Input,
+  MutedText,
   Panel,
   PanelHeader,
-  MutedText,
-  HorizontalSummary,
-  SummaryItem,
-  SummaryIcon,
+  PrivacyRow,
+  SavedDetailsNotice,
   SummaryContent,
+  SummaryEditButton,
+  SummaryItem,
   SummaryLabel,
   SummaryValue,
-  FormBlock,
-  FieldGrid,
-  Field,
-  Input,
   Textarea,
-  ChannelLink,
-  WizardActions,
 } from "./booking.styles";
 
-const ButtonSpinner = styled.div`
+const buttonSpin = keyframes`
+  to { transform: rotate(1turn); }
+`;
+
+const ButtonContent = styled.span`
+  width: min(21rem, 100%);
+  min-height: 2rem;
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) 2rem;
+  align-items: center;
+  gap: 0.8rem;
+`;
+
+const ButtonSpinner = styled.span`
   width: 2rem;
   height: 2rem;
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  border: 3px solid color-mix(in srgb, currentColor 30%, transparent);
   border-radius: 50%;
-  border-top-color: #fff;
-  animation: button-spin 1s ease-in-out infinite;
-  display: inline-block;
+  border-top-color: currentColor;
+  visibility: ${(props) => (props.$visible ? "visible" : "hidden")};
+  ${(props) =>
+    props.$visible &&
+    css`
+      animation: ${buttonSpin} 850ms linear infinite;
+    `}
 
-  @keyframes button-spin {
-    to { transform: rotate(360deg); }
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    border-color: currentColor;
   }
 `;
 
-const ChannelDivider = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  margin: 2rem 0;
-  color: var(--color-grey-400);
-  font-size: 1.3rem;
-  font-weight: 600;
-
-  &::before,
-  &::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: var(--color-grey-200);
-  }
+const ButtonBalance = styled.span`
+  width: 2rem;
+  height: 2rem;
 `;
 
-const PrimaryWhatsAppButton = styled.a`
-  display: flex;
+const RequiredMark = styled.span`
+  color: var(--color-red-700);
+`;
+
+const CharacterCount = styled.span`
+  justify-self: end;
+  color: var(--color-grey-500);
+  font-size: 1.1rem;
+  font-weight: var(--font-weight-semibold);
+`;
+
+const OptionalDetailsButton = styled.button`
+  min-height: 4.4rem;
+  width: fit-content;
+  border: 0;
+  padding: 0.8rem 0;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  width: 100%;
-  min-height: 5.6rem;
-  border-radius: var(--border-radius-sm);
-  background: var(--color-channel-whatsapp);
-  color: #fff;
-  font-size: 1.7rem;
-  font-weight: 800;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  box-shadow: var(--shadow-md);
+  gap: 0.6rem;
+  color: var(--color-brand-700);
+  background: transparent;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-extrabold);
 
   & svg {
-    width: 2.4rem;
-    height: 2.4rem;
-    flex-shrink: 0;
-  }
-
-  &:hover {
-    background: #15803d;
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-lg);
-  }
-
-  &:active {
-    transform: translateY(0);
+    width: 1.8rem;
+    height: 1.8rem;
+    transition: transform var(--motion-base) var(--ease-standard);
+    transform: rotate(${(props) => (props.$open ? "180deg" : "0")});
   }
 `;
 
-const ChannelHint = styled.div`
-  display: flex;
+const OptionalDetails = styled.div`
+  display: grid;
+  gap: 1rem;
+`;
+
+const SubmissionNote = styled.p`
+  display: grid;
+  grid-template-columns: 1.8rem minmax(0, 1fr);
   gap: 0.8rem;
-  align-items: flex-start;
-  margin-top: 1.2rem;
-  font-size: 1.2rem;
-  color: var(--color-grey-500);
-  line-height: 1.4;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--color-border-subtle);
+  color: var(--color-grey-600);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+
+  & svg {
+    width: 1.8rem;
+    height: 1.8rem;
+    color: var(--color-brand-700);
+  }
 `;
 
 function BookingForm({
@@ -116,185 +133,219 @@ function BookingForm({
   customerPhone,
   customerEmail,
   notes,
-  canSubmitToSystem,
   isLoading,
   canSend,
-  whatsappUrl,
-  quickWhatsappUrl,
-  mailUrl,
+  fieldErrors,
+  submissionError,
+  rememberDetails,
+  hasSavedDetails,
   onNameChange,
   onPhoneChange,
   onEmailChange,
   onNotesChange,
+  onRememberDetailsChange,
+  onClearSavedDetails,
   onSystemSubmit,
   onStepChange,
 }) {
+  const [showOptionalDetails, setShowOptionalDetails] = useState(() =>
+    Boolean(customerEmail || notes || fieldErrors.customerEmail),
+  );
+  const errorSummaryRef = useRef(null);
+  const hasErrors = Object.keys(fieldErrors).length > 0 || Boolean(submissionError);
+
+  useEffect(() => {
+    if (hasErrors) errorSummaryRef.current?.focus();
+  }, [fieldErrors, hasErrors, submissionError]);
+
+  useEffect(() => {
+    if (fieldErrors.customerEmail) setShowOptionalDetails(true);
+  }, [fieldErrors.customerEmail]);
+
+  function handleOptionalDetailsToggle() {
+    setShowOptionalDetails((isOpen) => {
+      const expanded = !isOpen;
+      logEvent(ANALYTICS_EVENTS.BOOKING_OPTIONAL_DETAILS_TOGGLED, {
+        expanded,
+        step: 3,
+      });
+      return expanded;
+    });
+  }
+
   return (
-    <Panel>
-      <PanelHeader>
+    <Panel aria-labelledby="booking-contact-title">
+      <PanelHeader $constrained>
         <div>
-          <Heading as="h2">İletişim ve Onay</Heading>
+          <Heading as="h2" id="booking-contact-title" tabIndex="-1">İletişim bilgileri</Heading>
           <MutedText>
-            Randevunuzu tamamlamak için en hızlı yöntemi seçin.
+            Uygunluğu teyit etmek için sizi arayalım veya WhatsApp&apos;tan yazalım.
           </MutedText>
         </div>
       </PanelHeader>
 
-      <HorizontalSummary style={{ marginTop: "0" }}>
-        <SummaryItem>
-          <SummaryIcon>
-            <HiOutlineCalendarDays />
-          </SummaryIcon>
-          <SummaryContent>
-            <SummaryLabel>Seçilen Tarih</SummaryLabel>
-            <SummaryValue>{selectedDay ? selectedDay.fullDate : "Gün seçilmedi"}</SummaryValue>
-          </SummaryContent>
-        </SummaryItem>
-
-        <SummaryItem>
-          <SummaryIcon>
-            <HiOutlineClock />
-          </SummaryIcon>
-          <SummaryContent>
-            <SummaryLabel>Seçilen Saat</SummaryLabel>
-            <SummaryValue>{selectedSlot?.label || "Saat seçilmedi"}</SummaryValue>
-          </SummaryContent>
-        </SummaryItem>
-
-        <SummaryItem>
-          <SummaryIcon>
-            <HiOutlineWrenchScrewdriver />
-          </SummaryIcon>
-          <SummaryContent>
-            <SummaryLabel>Hizmet Türü</SummaryLabel>
-            <SummaryValue>{selectedService}</SummaryValue>
-          </SummaryContent>
-        </SummaryItem>
-      </HorizontalSummary>
-
-      {/* 1. Birincil kanal: WhatsApp */}
-      <div>
-        <Heading as="h3" style={{ fontSize: "1.5rem", marginBottom: "1.2rem", color: "var(--color-grey-700)" }}>
-          En hızlı yanıt için WhatsApp ile gönderin
-        </Heading>
-        <PrimaryWhatsAppButton
-          href={canSend ? whatsappUrl : quickWhatsappUrl}
-          target="_blank"
-          rel="noreferrer"
-          onClick={() => logEvent("booking_whatsapp_clicked", {
-            channel: canSend ? "wizard_form_filled" : "wizard_form_quick",
-            service_type: selectedService,
-          })}>
-          <FaWhatsapp />
-          WhatsApp ile Randevu Gönder
-        </PrimaryWhatsAppButton>
-        <ChannelHint>
-          <HiOutlineUser style={{ width: "1.6rem", height: "1.6rem", flexShrink: 0, color: "var(--color-channel-whatsapp)", marginTop: "0.1rem" }} />
-          <span>
-            Seçtiğiniz tarih ve saatle hazırlanmış mesaj WhatsApp&apos;ta açılır.
-            Umut Usta genellikle <strong>1-2 saat içinde</strong> yanıt verir.
-          </span>
-        </ChannelHint>
-
-        {mailUrl && canSend && (
-          <ChannelLink
-            href={mailUrl}
-            $color="var(--color-brand-700)"
-            style={{ marginTop: "1rem", width: "100%" }}
-            onClick={() => logEvent("booking_email_clicked", {
-              service_type: selectedService,
-            })}>
-            <HiOutlineEnvelope />
-            E-posta ile Gönder
-          </ChannelLink>
+      <ContactLayout data-contact-layout="true">
+        <FormBlock as="form" noValidate onSubmit={onSystemSubmit} aria-busy={isLoading} aria-labelledby="booking-contact-title">
+        {hasErrors && (
+          <ErrorSummary ref={errorSummaryRef} role="alert" tabIndex="-1">
+            <strong>Talep henüz gönderilmedi.</strong>
+            {submissionError && <span>{submissionError}</span>}
+            {fieldErrors.customerName && <a href="#customerName">Ad soyad alanını kontrol edin.</a>}
+            {fieldErrors.customerPhone && <a href="#customerPhone">Telefon alanını kontrol edin.</a>}
+            {fieldErrors.customerEmail && <a href="#customerEmail">E-posta alanını kontrol edin.</a>}
+          </ErrorSummary>
         )}
-      </div>
 
-      {/* Ayraç */}
-      <ChannelDivider>ya da sisteme kayıt ol</ChannelDivider>
-
-      {/* 2. İkincil kanal: Sistem formu */}
-      <FormBlock style={{ background: "var(--color-grey-50)", border: "1px solid var(--color-grey-100)", borderRadius: "var(--border-radius-sm)", padding: "2rem" }}>
-        <Heading as="h3" style={{ fontSize: "1.5rem", marginBottom: "0.4rem" }}>
-          Sistem üzerinden talep oluştur
-        </Heading>
-        <MutedText style={{ marginBottom: "1.6rem" }}>
-          Ad ve telefon numaranız sisteme kaydedilir; Umut Usta sizi arar.
-        </MutedText>
+        {hasSavedDetails && (
+          <SavedDetailsNotice>
+            <span>Bu cihazda daha önce kaydedilen iletişim bilgileri dolduruldu.</span>
+            <button type="button" onClick={onClearSavedDetails}>Kayıtlı bilgileri sil</button>
+          </SavedDetailsNotice>
+        )}
 
         <FieldGrid>
           <Field htmlFor="customerName">
-            Adınız <span style={{ color: "var(--color-red-700)" }}>*</span>
+            <span>Ad soyad <RequiredMark aria-hidden="true">*</RequiredMark></span>
             <Input
               id="customerName"
+              name="customerName"
+              autoComplete="name"
+              required
               value={customerName}
+              aria-invalid={Boolean(fieldErrors.customerName)}
+              aria-describedby={fieldErrors.customerName ? "customerName-error" : undefined}
               onChange={(event) => onNameChange(event.target.value)}
               placeholder="Ad Soyad"
             />
+            {fieldErrors.customerName && (
+              <FieldError id="customerName-error">{fieldErrors.customerName}</FieldError>
+            )}
           </Field>
+
           <Field htmlFor="customerPhone">
-            Telefon <span style={{ color: "var(--color-red-700)" }}>*</span>
+            <span>Telefon numarası <RequiredMark aria-hidden="true">*</RequiredMark></span>
             <Input
               id="customerPhone"
+              name="customerPhone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              required
               value={customerPhone}
+              aria-invalid={Boolean(fieldErrors.customerPhone)}
+              aria-describedby={fieldErrors.customerPhone ? "customerPhone-error" : undefined}
               onChange={(event) => onPhoneChange(event.target.value)}
               placeholder="05xx xxx xx xx"
               maxLength={14}
             />
-            {customerPhone && !/^[0][5]\d{9}$/.test(customerPhone.replace(/\D/g, "")) && (
-              <span style={{ color: "var(--color-red-700)", fontSize: "1.1rem", fontWeight: "600", marginTop: "0.4rem", display: "block" }}>
-                Geçersiz format. Lütfen 05xx xxx xx xx şeklinde 11 haneli numaranızı girin.
-              </span>
+            {fieldErrors.customerPhone && (
+              <FieldError id="customerPhone-error">{fieldErrors.customerPhone}</FieldError>
             )}
           </Field>
 
-          <Field htmlFor="customerEmail">
-            E-posta (isteğe bağlı)
-            <Input
-              id="customerEmail"
-              value={customerEmail}
-              onChange={(event) => onEmailChange(event.target.value)}
-              placeholder="ornek@email.com"
-            />
-          </Field>
-          <Field htmlFor="customerNotes">
-            İşle ilgili notunuz (isteğe bağlı)
-            <Textarea
-              id="customerNotes"
-              value={notes}
-              onChange={(event) => onNotesChange(event.target.value)}
-              maxLength={1000}
-              placeholder="Örn. Balkon korkuluğu tamiri yaptırmak istiyorum."
-            />
-          </Field>
+          <OptionalDetailsButton
+            type="button"
+            $open={showOptionalDetails}
+            aria-expanded={showOptionalDetails}
+            aria-controls="booking-optional-details"
+            onClick={handleOptionalDetailsToggle}>
+            Ek bilgi ekle
+            <HiOutlineChevronDown aria-hidden="true" />
+          </OptionalDetailsButton>
+
+          {showOptionalDetails && (
+            <OptionalDetails id="booking-optional-details">
+              <Field htmlFor="customerEmail">
+                <span>E-posta <small>(isteğe bağlı)</small></span>
+                <Input
+                  id="customerEmail"
+                  name="customerEmail"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  value={customerEmail}
+                  aria-invalid={Boolean(fieldErrors.customerEmail)}
+                  aria-describedby={fieldErrors.customerEmail ? "customerEmail-error" : undefined}
+                  onChange={(event) => onEmailChange(event.target.value)}
+                  placeholder="ornek@email.com"
+                />
+                {fieldErrors.customerEmail && (
+                  <FieldError id="customerEmail-error">{fieldErrors.customerEmail}</FieldError>
+                )}
+              </Field>
+
+              <Field htmlFor="customerNotes">
+                <span>İşle ilgili not <small>(isteğe bağlı)</small></span>
+                <Textarea
+                  id="customerNotes"
+                  name="customerNotes"
+                  value={notes}
+                  onChange={(event) => onNotesChange(event.target.value)}
+                  maxLength={1000}
+                  placeholder="Örn. Balkon korkuluğu tamiri yaptırmak istiyorum."
+                />
+                <CharacterCount>{notes.length}/1000</CharacterCount>
+              </Field>
+            </OptionalDetails>
+          )}
         </FieldGrid>
 
-        <Button
-          size="large"
-          variation="secondary"
-          style={{ width: "100%", marginTop: "1.6rem", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "0.8rem" }}
-          disabled={!canSubmitToSystem || isLoading}
-          onClick={onSystemSubmit}>
-          {isLoading ? (
-            <>
-              <ButtonSpinner />
-              <span>Kaydediliyor...</span>
-            </>
-          ) : (
-            "Randevu Talebi Oluştur"
-          )}
-        </Button>
-      </FormBlock>
+        <PrivacyRow>
+          <input
+            type="checkbox"
+            checked={rememberDetails}
+            onChange={(event) => onRememberDetailsChange(event.target.checked)}
+          />
+          <span>Bilgilerimi bu cihazda hatırla.</span>
+        </PrivacyRow>
 
-      <WizardActions>
+        <ContactSummaryPanel data-contact-summary-panel="true">
+          <ContactSummaryTitle>Talep özeti</ContactSummaryTitle>
+          <HorizontalSummary aria-label="Talep özeti" data-booking-summary="true">
+            <SummaryItem>
+              <SummaryContent>
+                <SummaryLabel>Tarih tercihi</SummaryLabel>
+                <SummaryValue>{selectedDay?.fullDate || "Gün seçilmedi"}</SummaryValue>
+              </SummaryContent>
+            </SummaryItem>
+            <SummaryItem>
+              <SummaryContent>
+                <SummaryLabel>Saat tercihi</SummaryLabel>
+                <SummaryValue>{selectedSlot?.label || "Saat seçilmedi"}</SummaryValue>
+              </SummaryContent>
+            </SummaryItem>
+            <SummaryItem>
+              <SummaryContent>
+                <SummaryLabel>Hizmet</SummaryLabel>
+                <SummaryValue>{selectedService}</SummaryValue>
+              </SummaryContent>
+            </SummaryItem>
+            <SummaryEditButton type="button" onClick={() => onStepChange(2)}>
+              Değiştir
+            </SummaryEditButton>
+          </HorizontalSummary>
+        </ContactSummaryPanel>
+
+        <SubmissionNote>
+          <HiOutlineShieldCheck aria-hidden="true" />
+          <span>Bilgileriniz yalnızca talebinize dönüş yapmak için kullanılır.</span>
+        </SubmissionNote>
+
         <Button
-          type="button"
-          variation="secondary"
-          onClick={() => onStepChange(2)}>
-          ← Tarih &amp; Saat Seçimine Geri Dön
+          type="submit"
+          size="large"
+          variation="cta"
+          disabled={!canSend || isLoading}
+          style={{ width: "100%" }}>
+          <ButtonContent>
+            <ButtonSpinner $visible={isLoading} aria-hidden="true" />
+            <span>{isLoading ? "Talep gönderiliyor" : "Talebi Gönder"}</span>
+            <ButtonBalance aria-hidden="true" />
+          </ButtonContent>
         </Button>
-        <div />
-      </WizardActions>
+        </FormBlock>
+      </ContactLayout>
+
     </Panel>
   );
 }
@@ -307,16 +358,18 @@ BookingForm.propTypes = {
   customerPhone: PropTypes.string.isRequired,
   customerEmail: PropTypes.string.isRequired,
   notes: PropTypes.string.isRequired,
-  canSubmitToSystem: PropTypes.bool,
   isLoading: PropTypes.bool,
   canSend: PropTypes.bool,
-  whatsappUrl: PropTypes.string,
-  quickWhatsappUrl: PropTypes.string,
-  mailUrl: PropTypes.string,
+  fieldErrors: PropTypes.object.isRequired,
+  submissionError: PropTypes.string,
+  rememberDetails: PropTypes.bool.isRequired,
+  hasSavedDetails: PropTypes.bool.isRequired,
   onNameChange: PropTypes.func.isRequired,
   onPhoneChange: PropTypes.func.isRequired,
   onEmailChange: PropTypes.func.isRequired,
   onNotesChange: PropTypes.func.isRequired,
+  onRememberDetailsChange: PropTypes.func.isRequired,
+  onClearSavedDetails: PropTypes.func.isRequired,
   onSystemSubmit: PropTypes.func.isRequired,
   onStepChange: PropTypes.func.isRequired,
 };

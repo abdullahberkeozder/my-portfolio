@@ -1,4 +1,4 @@
-import supabase from "./supabase";
+import { getSupabaseClient } from "./getSupabaseClient";
 
 const OPENING_HOUR = 9;
 const CLOSING_HOUR = 21;
@@ -54,6 +54,7 @@ function buildStandardSlotTimes() {
 }
 
 export async function getAvailabilityDays({ startDate, endDate } = {}) {
+  const supabase = await getSupabaseClient();
   const today = new Date().toISOString().slice(0, 10);
   const fromDate = startDate || today;
   const toDate = endDate || fromDate;
@@ -77,6 +78,7 @@ export async function getAvailabilityDays({ startDate, endDate } = {}) {
 }
 
 export async function ensureAvailabilityRange({ startDate, endDate }) {
+  const supabase = await getSupabaseClient();
   const workDates = buildDateRange(startDate, endDate);
 
   const { data: existingDays, error: existingDaysError } = await supabase
@@ -149,6 +151,7 @@ export async function ensureAvailabilityRange({ startDate, endDate }) {
 }
 
 export async function updateAvailabilitySlot({ slotId, isAvailable }) {
+  const supabase = await getSupabaseClient();
   const { data, error } = await supabase
     .from("appointment_availability_slots")
     .update({ is_available: isAvailable })
@@ -165,6 +168,7 @@ export async function updateAvailabilitySlot({ slotId, isAvailable }) {
 }
 
 export async function updateAvailabilityDay({ dayId, updates }) {
+  const supabase = await getSupabaseClient();
   const { data, error } = await supabase
     .from("appointment_availability_days")
     .update(updates)
@@ -181,6 +185,7 @@ export async function updateAvailabilityDay({ dayId, updates }) {
 }
 
 export async function updateAvailabilitySlots({ slotIds, isAvailable }) {
+  const supabase = await getSupabaseClient();
   const { data, error } = await supabase
     .from("appointment_availability_slots")
     .update({ is_available: isAvailable })

@@ -30,7 +30,7 @@ const Name = styled.p`
 
 const Caption = styled.span`
   display: block;
-  color: var(--color-grey-400);
+  color: var(--color-grey-500);
   font-size: 1.05rem;
   font-weight: 700;
   text-transform: uppercase;

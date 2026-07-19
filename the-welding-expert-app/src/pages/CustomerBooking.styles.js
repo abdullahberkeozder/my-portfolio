@@ -1,29 +1,6 @@
 import styled from "styled-components";
-
-export const ScrollWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-
-  @media (max-width: ${(props) => props.$breakpoint || "640px"}) {
-    /* Right-side fade: indicates there's more content */
-    &::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 4rem;
-      background: linear-gradient(
-        to right,
-        rgba(255, 255, 255, 0) 0%,
-        ${(props) => props.$bg || "var(--color-grey-50)"} 100%
-      );
-      pointer-events: none;
-      z-index: 2;
-    }
-  }
-`;
+import { Link } from "react-router-dom";
+import ResponsiveImage from "../ui/ResponsiveImage";
 
 export const Page = styled.main`
   min-height: 100vh;
@@ -53,43 +30,6 @@ export const Shell = styled.div`
     min-width: 0;
   }
 
-  @media (max-width: 640px) {
-    & > header {
-      order: 1;
-    }
-
-    & > nav {
-      order: 2;
-    }
-
-    & > #about {
-      order: 3;
-    }
-
-    & > #services {
-      order: 4;
-    }
-
-    & > #appointment-calendar {
-      order: 5;
-    }
-
-    & > #process {
-      order: 6;
-    }
-
-    & > #location {
-      order: 7;
-    }
-
-    & > #faq {
-      order: 8;
-    }
-
-    & > footer {
-      order: 9;
-    }
-  }
 `;
 
 export const PublicHeader = styled.header`
@@ -103,10 +43,10 @@ export const PublicHeader = styled.header`
   border-radius: var(--border-radius-md);
   padding: 3.2rem;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 78rem);
   gap: 2rem;
   align-items: center;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 
   &::after {
     content: "";
@@ -120,7 +60,7 @@ export const PublicHeader = styled.header`
     );
   }
 
-  & > *:not(img) {
+  & > *:not([data-hero-image]) {
     position: relative;
     z-index: 1;
   }
@@ -139,8 +79,8 @@ export const PublicHeader = styled.header`
   }
 
   @media (max-width: 640px) {
-    padding: 2.4rem;
-    min-height: 36rem;
+    padding: 2rem;
+    min-height: 0;
 
     &::after {
       background: linear-gradient(
@@ -158,16 +98,20 @@ export const PublicHeader = styled.header`
   }
 `;
 
-export const HeroImage = styled.img`
+export const HeroImage = styled(ResponsiveImage)`
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center 42%;
+  & img {
+    object-fit: cover;
+    object-position: center 42%;
+  }
 
   @media (max-width: 640px) {
-    object-position: center 25%;
+    & img {
+      object-position: center 25%;
+    }
   }
 `;
 
@@ -185,7 +129,7 @@ export const BrandMark = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-grey-0);
+  background: var(--color-logo-surface);
   border: 1px solid var(--color-grey-200);
   padding: 0.6rem;
   box-shadow: var(--shadow-sm);
@@ -201,31 +145,33 @@ export const HeaderText = styled.div`
   min-width: 0;
   display: grid;
   gap: 1rem;
-  margin-top: 2rem;
+  gap: 1.6rem;
 
   @media (max-width: 640px) {
-    margin-top: 1.2rem;
+    gap: 1.4rem;
   }
 `;
 
 export const PublicTitle = styled.h1`
-  max-width: 72rem;
-  font-size: 4rem;
-  line-height: 1.1;
-  font-weight: 800;
-  overflow-wrap: anywhere;
+  max-width: 68rem;
+  font-size: 4.2rem;
+  line-height: 1.12;
+  font-weight: 700;
+  text-wrap: balance;
 
   @media (max-width: 640px) {
+    max-width: 18ch;
     font-size: 3rem;
+    text-wrap: pretty;
   }
 
   @media (max-width: 420px) {
-    font-size: 2.7rem;
+    font-size: 2.6rem;
   }
 `;
 
 export const Lead = styled.p`
-  max-width: 70rem;
+  max-width: 60rem;
   color: var(--color-grey-600);
   font-size: 1.7rem;
 
@@ -261,6 +207,10 @@ export const TrustList = styled.ul`
   flex-wrap: wrap;
   gap: 0.8rem 1.6rem;
   margin-top: 0.2rem;
+
+  @media (max-width: 640px) {
+    display: none;
+  }
 `;
 
 export const TrustItem = styled.li`
@@ -283,14 +233,16 @@ export const HeaderActions = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 0.4rem;
 
   @media (max-width: 520px) {
-    align-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 `;
 
 export const HeaderLink = styled.a`
+  min-width: 0;
   min-height: 5.2rem;
   border-radius: var(--border-radius-sm);
   padding: 1.2rem 2.2rem;
@@ -299,51 +251,50 @@ export const HeaderLink = styled.a`
   justify-content: center;
   gap: 0.8rem;
   color: ${(props) => {
-    if (props.$whatsapp) return "var(--color-text-inverse)";
     return props.$secondary
       ? "var(--color-grey-700)"
       : "var(--color-text-inverse)";
   }};
   background: ${(props) => {
-    if (props.$whatsapp) return "var(--color-channel-whatsapp)";
     return props.$secondary
-      ? "var(--color-grey-0)"
-      : "linear-gradient(135deg, var(--color-brand-600) 0%, var(--color-brand-700) 100%)";
+      ? "color-mix(in srgb, var(--color-grey-0) 82%, transparent)"
+      : "var(--color-brand-700)";
   }};
   border: 1px solid ${(props) => {
-    if (props.$whatsapp) return "var(--color-channel-whatsapp)";
     return props.$secondary
-      ? "var(--color-grey-200)"
-      : "var(--color-brand-600)";
+      ? "var(--color-grey-300)"
+      : "var(--color-brand-700)";
   }};
   font-size: 1.5rem;
   font-weight: 800;
-  box-shadow: ${(props) => props.$secondary ? "var(--shadow-sm)" : "var(--shadow-md)"};
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: ${(props) => props.$secondary ? "none" : "var(--shadow-sm)"};
+  transition: transform var(--motion-fast), background var(--motion-fast), border-color var(--motion-fast);
   position: relative;
   overflow: hidden;
+  overflow-wrap: anywhere;
 
   &:hover {
     transform: translateY(-2px);
     background: ${(props) => {
-      if (props.$whatsapp) return "#15803d";
       return props.$secondary
         ? "var(--color-grey-50)"
-        : "linear-gradient(135deg, var(--color-brand-700) 0%, var(--color-brand-800) 100%)";
+        : "var(--color-brand-800)";
     }};
     border-color: ${(props) => {
-      if (props.$whatsapp) return "#15803d";
       return props.$secondary
         ? "var(--color-grey-300)"
-        : "var(--color-brand-700)";
+        : "var(--color-brand-800)";
     }};
     box-shadow: ${(props) => {
-      if (props.$whatsapp) return "0 4px 12px rgba(22, 163, 74, 0.25)";
       return props.$secondary
-        ? "var(--shadow-md)"
-        : "0 6px 16px rgba(13, 128, 80, 0.25)";
+        ? "none"
+        : "var(--shadow-md)";
     }};
   }
+
+  ${(props) => props.$channel && `
+    & svg { color: var(--color-channel-whatsapp); }
+  `}
 
   & svg {
     width: 2rem;
@@ -351,7 +302,81 @@ export const HeaderLink = styled.a`
   }
 
   @media (max-width: 520px) {
-    flex: 1 1 100%;
+    min-width: 0;
+    padding-inline: 1.2rem;
+  }
+
+  @media (max-width: 300px) {
+    padding-inline: 0.6rem;
+    font-size: 1.3rem;
+    gap: 0.4rem;
+
+    & svg {
+      width: 1.7rem;
+      height: 1.7rem;
+      flex-shrink: 0;
+    }
+  }
+`;
+
+export const TrustBar = styled.section`
+  scroll-margin-top: 9rem;
+  border-block: 1px solid var(--color-grey-200);
+  padding: 1.4rem 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const TrustBarItem = styled.div`
+  min-width: 0;
+  min-height: 6.4rem;
+  padding: 0.8rem 1.6rem;
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  border-right: 1px solid var(--color-grey-200);
+
+  &:last-child {
+    border-right: 0;
+  }
+
+  & svg {
+    width: 2.2rem;
+    height: 2.2rem;
+    color: var(--color-brand-600);
+  }
+
+  & strong,
+  & span {
+    display: block;
+  }
+
+  & strong {
+    color: var(--color-grey-900);
+    font-size: 1.35rem;
+  }
+
+  & span {
+    color: var(--color-grey-500);
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  @media (max-width: 760px) {
+    border-right: 0;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--color-grey-200);
+    }
+  }
+
+  @media (max-width: 420px) {
+    padding-inline: 0.8rem;
   }
 `;
 
@@ -505,6 +530,8 @@ export const Section = styled.section`
   padding: 3.2rem 0;
   display: grid;
   gap: 2rem;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 70rem;
 
   @media (max-width: 640px) {
     padding: 1.6rem 0;
@@ -539,34 +566,18 @@ export const ServicesGrid = styled.div`
   }
 `;
 
-export const ServiceCard = styled.button`
+export const ServiceCard = styled.article`
   display: flex;
   flex-direction: column;
   flex: 0 0 calc(25% - 1.1rem); /* 4 columns on desktop by default */
   min-width: 25rem;
-  border: 2px solid
-    ${(props) =>
-      props.$active ? "var(--color-action-primary)" : "transparent"};
+  border: 1px solid var(--color-grey-100);
   border-radius: var(--border-radius-md);
   overflow: hidden;
   text-align: left;
   background: var(--color-grey-0);
-  box-shadow: ${(props) =>
-    props.$active ? "var(--shadow-lg)" : "var(--shadow-md)"};
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
+  box-shadow: var(--shadow-sm);
   padding: 0;
-
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
-    border-color: ${(props) =>
-      props.$active ? "var(--color-action-primary)" : "var(--color-brand-200)"};
-  }
-
-  &:active {
-    transform: translateY(-2px);
-  }
 
   @media (max-width: 1120px) {
     flex: 0 0 calc(33.333% - 1rem); /* 3 columns */
@@ -598,14 +609,93 @@ export const CardImageContainer = styled.div`
   }
 `;
 
-export const CardImage = styled.img`
+export const CardImage = styled(ResponsiveImage)`
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease;
 
-  ${ServiceCard}:hover & {
-    transform: scale(1.06);
+`;
+
+export const ServiceCategoryGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-block: 1px solid var(--color-border-subtle);
+
+  @media (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const ServiceCategory = styled.article`
+  min-width: 0;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: 1.4rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+
+  &:nth-child(odd) {
+    border-right: 1px solid var(--color-border-subtle);
+  }
+
+  &:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+
+  @media (max-width: 720px) {
+    padding: 1.6rem 0;
+
+    &:nth-child(odd) {
+      border-right: 0;
+    }
+
+    &:nth-last-child(2) {
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+  }
+`;
+
+export const ServiceCategoryIcon = styled.span`
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-control);
+  display: grid;
+  place-items: center;
+  color: var(--color-brand-700);
+  background: var(--color-brand-50);
+
+  & svg {
+    width: 2rem;
+    height: 2rem;
+  }
+`;
+
+export const ServiceCategoryCopy = styled.div`
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 0.7rem;
+`;
+
+export const ServiceCategoryServices = styled.ul`
+  padding-top: 0.5rem;
+  display: grid;
+  gap: 0.45rem;
+  color: var(--color-grey-700);
+  font-size: var(--font-size-xs);
+
+  & li {
+    display: grid;
+    grid-template-columns: 0.7rem minmax(0, 1fr);
+    gap: 0.7rem;
+  }
+
+  & li::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-top: 0.55rem;
+    border-radius: 50%;
+    background: var(--color-selection);
   }
 `;
 
@@ -623,6 +713,9 @@ export const CardContent = styled.div`
 `;
 
 export const CardPrice = styled.span`
+  display: block;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-grey-100);
   font-size: 1.3rem;
   font-weight: 800;
   color: var(--color-accent-500);
@@ -641,21 +734,126 @@ export const CardText = styled.p`
   font-size: 1.4rem;
   line-height: 1.55;
 
-  @media (max-width: 640px) {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+`;
+
+export const CardLabel = styled.span`
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--color-grey-500);
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+`;
+
+export const PriceFactorList = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+`;
+
+export const PriceFactor = styled.li`
+  border: 1px solid var(--color-grey-200);
+  border-radius: var(--border-radius-tiny);
+  padding: 0.45rem 0.65rem;
+  color: var(--color-grey-700);
+  background: var(--color-grey-50);
+  font-size: 1.1rem;
+  font-weight: 700;
+`;
+
+export const ServiceDetails = styled.details`
+  border-top: 1px solid var(--color-grey-100);
+  padding-top: 0.4rem;
+
+  & summary {
+    min-height: 4.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    color: var(--color-brand-700);
+    cursor: pointer;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-extrabold);
+    list-style: none;
+  }
+
+  & summary::-webkit-details-marker {
+    display: none;
+  }
+
+  & summary svg {
+    width: 1.7rem;
+    height: 1.7rem;
+    transition: transform var(--motion-base) var(--ease-standard);
+  }
+
+  &[open] summary svg {
+    transform: rotate(180deg);
+  }
+`;
+
+export const ServiceDetailsContent = styled.div`
+  padding: 0.4rem 0 0.8rem;
+  display: grid;
+  gap: 1rem;
+
+  & p {
+    color: var(--color-grey-600);
+    font-size: var(--font-size-xs);
+    line-height: 1.5;
+  }
+`;
+
+export const ServicePlanning = styled.p`
+  color: var(--color-grey-600);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+`;
+
+export const ServiceCaseLink = styled(Link)`
+  min-height: 4.4rem;
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-brand-700);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-extrabold);
+  text-decoration: underline;
+`;
+
+export const ServiceToggleButton = styled.button`
+  min-height: 4.4rem;
+  justify-self: center;
+  border: 1px solid var(--color-grey-200);
+  border-radius: var(--border-radius-sm);
+  padding: 0.9rem 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  color: var(--color-grey-700);
+  background: var(--color-grey-0);
+  font-size: 1.3rem;
+  font-weight: 800;
+
+  &:hover {
+    border-color: var(--color-brand-200);
+    color: var(--color-brand-800);
+    background: var(--color-brand-50);
+  }
+
+  & svg {
+    width: 1.8rem;
+    height: 1.8rem;
+    transform: rotate(${(props) => (props["aria-expanded"] ? "180deg" : "0")});
+    transition: transform var(--motion-base) var(--ease-standard);
   }
 `;
 
 export const MiniList = styled.ul`
   display: grid;
   gap: 0.6rem;
-
-  @media (max-width: 640px) {
-    display: none;
-  }
 `;
 
 export const MiniItem = styled.li`
@@ -676,59 +874,52 @@ export const MiniItem = styled.li`
 export const ProcessGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1.2rem;
+  border-block: 1px solid var(--color-border-subtle);
 
-  @media (max-width: 980px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @media (max-width: 560px) {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(24rem, 84%);
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scroll-snap-type: inline mandatory;
-    scrollbar-width: none;
-    padding-bottom: 0.4rem;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
+  @media (max-width: 820px) {
+    grid-template-columns: 1fr;
   }
 `;
 
 export const ProcessCard = styled.article`
-  border: 1px solid var(--color-grey-100);
-  border-radius: var(--border-radius-md);
-  padding: 1.6rem;
+  min-width: 0;
+  padding: 1.8rem;
   display: grid;
-  gap: 1rem;
-  background: var(--color-grey-50);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  grid-template-columns: 3.2rem minmax(0, 1fr);
+  gap: 1.2rem;
+  position: relative;
+  border-right: 1px solid var(--color-border-subtle);
 
-  &:hover {
-    border-color: var(--color-brand-200);
-    background: var(--color-grey-0);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
+  &:last-child {
+    border-right: 0;
   }
 
-  @media (max-width: 560px) {
-    min-height: 21rem;
-    scroll-snap-align: start;
+  & > div {
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+  }
+
+  @media (max-width: 820px) {
+    padding: 1.4rem 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+
+    &:last-child {
+      border-bottom: 0;
+    }
   }
 `;
 
 export const StepNumber = styled.span`
-  width: 3.6rem;
-  height: 3.6rem;
-  border-radius: 50%;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: var(--radius-control);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-accent-400);
-  background: var(--color-surface-dark);
+  color: var(--color-text-inverse);
+  background: var(--color-selection);
   font-size: 1.4rem;
   font-weight: 800;
 `;
@@ -741,6 +932,8 @@ export const LocationSection = styled.section`
   grid-template-columns: minmax(0, 0.9fr) minmax(36rem, 1.1fr);
   gap: 2rem;
   align-items: stretch;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 48rem;
 
   @media (max-width: 920px) {
     grid-template-columns: 1fr;
@@ -761,6 +954,37 @@ export const LocationInfo = styled.div`
 export const ContactList = styled.div`
   display: grid;
   gap: 1rem;
+`;
+
+export const ServiceAreaSummary = styled.div`
+  border-block: 1px solid var(--color-grey-200);
+  padding: 1.4rem 0;
+  display: grid;
+  gap: 1rem;
+`;
+
+export const ServiceAreaItem = styled.div`
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  color: var(--color-grey-700);
+  font-size: 1.35rem;
+  font-weight: 700;
+
+  & svg {
+    width: 2rem;
+    height: 2rem;
+    color: var(--color-brand-600);
+  }
+
+  & small {
+    display: block;
+    margin-top: 0.2rem;
+    color: var(--color-grey-500);
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
 `;
 
 export const ContactItem = styled.a`
@@ -788,11 +1012,11 @@ export const ContactItem = styled.a`
 
 export const MapBox = styled.div`
   min-height: 34rem;
-  border: 1px solid var(--color-grey-100);
-  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-component);
   overflow: hidden;
   position: relative;
-  box-shadow: var(--shadow-sm);
+  background: var(--color-surface-subtle);
 
   @media (max-width: 520px) {
     min-height: 30rem;
@@ -803,6 +1027,37 @@ export const MapIframe = styled.iframe`
   width: 100%;
   height: 100%;
   border: 0;
+`;
+
+export const MapPlaceholder = styled.div`
+  min-height: inherit;
+  padding: 2.4rem;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.8rem;
+  color: var(--color-grey-600);
+  text-align: center;
+
+  & > svg {
+    width: 3rem;
+    height: 3rem;
+    color: var(--color-brand-700);
+  }
+
+  & strong {
+    color: var(--color-grey-900);
+    font-size: var(--font-size-sm);
+  }
+
+  & span {
+    max-width: 32rem;
+    font-size: var(--font-size-xs);
+  }
+
+  & button {
+    margin-top: 0.8rem;
+  }
 `;
 
 export const FaqGrid = styled.div`
@@ -826,13 +1081,84 @@ export const FaqItem = styled.article`
 
 export const Footer = styled.footer`
   border-top: 1px solid var(--color-grey-200);
-  padding-top: 2rem;
+  padding: 2.4rem 0 1rem;
+  display: grid;
+  grid-template-columns: minmax(22rem, 1fr) auto;
+  align-items: center;
+  gap: 1.6rem 3.2rem;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 20rem;
+
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+`;
+
+export const FooterBrand = styled.div`
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+
+  & > div {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  & strong {
+    color: var(--color-grey-900);
+    font-size: 1.7rem;
+  }
+
+  & p {
+    max-width: 38rem;
+    color: var(--color-grey-500);
+    font-size: 1.3rem;
+  }
+`;
+
+export const FooterColumn = styled.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: flex-end;
+  gap: 0.4rem 1.4rem;
+
+  @media (max-width: 760px) {
+    justify-content: flex-start;
+  }
+`;
+
+export const FooterLink = styled.a`
+  min-height: 4.4rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--color-grey-600);
+  font-size: 1.25rem;
+  font-weight: 700;
+
+  &:hover {
+    color: var(--color-brand-700);
+  }
+
+  & svg {
+    width: 1.7rem;
+    height: 1.7rem;
+    color: var(--color-brand-600);
+  }
+`;
+
+export const FooterBottom = styled.div`
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--color-grey-100);
+  padding-top: 1.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 0.8rem 1.6rem;
   color: var(--color-grey-500);
-  font-size: 1.3rem;
+  font-size: 1.15rem;
 `;
 
 export const AccordionContainer = styled.div`
@@ -841,13 +1167,38 @@ export const AccordionContainer = styled.div`
   width: 100%;
 `;
 
+export const FaqMoreButton = styled.button`
+  min-height: 4.4rem;
+  width: fit-content;
+  justify-self: center;
+  border: 0;
+  padding: 0.8rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--color-brand-700);
+  background: transparent;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-extrabold);
+
+  & svg {
+    width: 1.7rem;
+    height: 1.7rem;
+    transform: rotate(${(props) => (props.$expanded ? "180deg" : "0")});
+    transition: transform var(--motion-fast) var(--ease-standard);
+  }
+`;
+
 export const AccordionItem = styled.div`
   border: 1px solid
     ${(props) => (props.$isOpen ? "var(--color-brand-200)" : "var(--color-grey-100)")};
   border-radius: var(--border-radius-md);
   background: ${(props) => (props.$isOpen ? "var(--color-grey-0)" : "var(--color-grey-50)")};
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition:
+    border-color var(--motion-base) var(--ease-standard),
+    background-color var(--motion-base) var(--ease-standard),
+    box-shadow var(--motion-base) var(--ease-standard);
   box-shadow: ${(props) => (props.$isOpen ? "var(--shadow-sm)" : "none")};
 
   &:hover {
@@ -880,7 +1231,7 @@ export const AccordionIcon = styled.span`
   align-items: center;
   justify-content: center;
   color: var(--color-grey-500);
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform var(--motion-base) var(--ease-standard);
   transform: rotate(${(props) => (props.$isOpen ? "180deg" : "0deg")});
 
   & svg {
@@ -893,7 +1244,9 @@ export const AccordionContent = styled.div`
   max-height: ${(props) => (props.$isOpen ? "500px" : "0")};
   opacity: ${(props) => (props.$isOpen ? "1" : "0")};
   overflow: hidden;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    max-height var(--motion-base) var(--ease-standard),
+    opacity var(--motion-fast) var(--ease-standard);
   padding: 0 1.6rem;
 `;
 
@@ -913,8 +1266,8 @@ export const StickyCTAContainer = styled.div`
     padding: 1rem 1.6rem calc(1rem + env(safe-area-inset-bottom));
     gap: 0.8rem;
     z-index: 50;
-    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
-    animation: cta-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    box-shadow: var(--shadow-sticky);
+    animation: cta-slide-up var(--motion-slow) var(--ease-out) both;
 
     @keyframes cta-slide-up {
       from {
@@ -941,6 +1294,7 @@ export const StickyCTAContainer = styled.div`
 
 export const StickyCTAButton = styled.a`
   flex: 1;
+  min-width: 0;
   min-height: 4.8rem;
   border: 1px solid transparent;
   border-radius: var(--border-radius-sm);
@@ -952,23 +1306,46 @@ export const StickyCTAButton = styled.a`
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-extrabold);
   box-shadow: var(--shadow-sm);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    color var(--motion-base) var(--ease-standard),
+    background-color var(--motion-base) var(--ease-standard),
+    border-color var(--motion-base) var(--ease-standard),
+    box-shadow var(--motion-base) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-out);
   cursor: pointer;
   text-align: center;
   line-height: 1.2;
+  overflow-wrap: anywhere;
 
-  color: var(--color-text-inverse);
   background: ${(props) =>
-    props.$whatsapp ? "var(--color-channel-whatsapp)" : "var(--color-surface-dark)"};
+    props.$whatsapp
+      ? "var(--color-channel-whatsapp)"
+      : props.$phone
+        ? "var(--color-grey-0)"
+        : "var(--color-brand-600)"};
   border-color: ${(props) =>
-    props.$whatsapp ? "var(--color-channel-whatsapp)" : "var(--color-surface-dark)"};
+    props.$whatsapp
+      ? "var(--color-channel-whatsapp)"
+      : props.$phone
+        ? "var(--color-grey-300)"
+        : "var(--color-brand-600)"};
+  color: ${(props) =>
+    props.$phone ? "var(--color-grey-800)" : "var(--color-text-inverse)"};
 
   &:hover {
     transform: translateY(-1px);
     background: ${(props) =>
-      props.$whatsapp ? "#15803d" : "var(--color-grey-900)"};
+      props.$whatsapp
+        ? "var(--color-channel-whatsapp)"
+        : props.$phone
+          ? "var(--color-grey-100)"
+          : "var(--color-brand-700)"};
     border-color: ${(props) =>
-      props.$whatsapp ? "#15803d" : "var(--color-grey-900)"};
+      props.$whatsapp
+        ? "var(--color-channel-whatsapp)"
+        : props.$phone
+          ? "var(--color-grey-400)"
+          : "var(--color-brand-700)"};
     box-shadow: var(--shadow-md);
   }
 
@@ -983,9 +1360,9 @@ export const StickyCTAButton = styled.a`
   }
 
   @media (max-width: 380px) {
-    font-size: 1.3rem;
-    padding: 0.9rem 1rem;
-    gap: 0.6rem;
+    font-size: 1.15rem;
+    padding: 0.8rem 0.5rem;
+    gap: 0.4rem;
     min-height: 4.4rem;
 
     & svg {
@@ -996,12 +1373,12 @@ export const StickyCTAButton = styled.a`
 `;
 
 export const StepAnimationWrapper = styled.div`
-  animation: fadeInStep 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fadeInStep var(--motion-base) var(--ease-out) both;
 
   @keyframes fadeInStep {
     from {
       opacity: 0;
-      transform: translateY(8px);
+      transform: translateY(6px);
     }
     to {
       opacity: 1;
@@ -1023,23 +1400,18 @@ export const HeaderExtraLinks = styled.div`
   }
 
   @media (max-width: 520px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.8rem;
-
-    & .dot {
-      display: none;
-    }
+    display: none;
   }
 `;
 
 export const HeaderExtraLink = styled.a`
   display: inline-flex;
   align-items: center;
+  min-height: 4.4rem;
   gap: 0.6rem;
   color: var(--color-grey-600);
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: color var(--motion-base) var(--ease-standard);
   cursor: pointer;
 
   &:hover {
@@ -1079,7 +1451,7 @@ export const MutedText = styled.p`
 export const GalleryPreviewGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 2.4rem;
+  gap: 1.6rem;
 
   @media (max-width: 900px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1090,39 +1462,59 @@ export const GalleryPreviewGrid = styled.div`
   }
 `;
 
-export const GalleryPreviewCard = styled.div`
+export const GalleryPreviewCard = styled.article`
   background: var(--color-grey-0);
-  border: 1px solid var(--color-grey-100);
-  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-component);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--color-brand-200);
-  }
 `;
 
-export const GalleryPreviewImage = styled.img`
+export const GalleryPreviewImage = styled(ResponsiveImage)`
   width: 100%;
-  height: 20rem;
-  object-fit: cover;
+  aspect-ratio: 4 / 3;
   display: block;
 `;
 
+export const StickyCTAIconButton = styled.a`
+  width: 4.8rem;
+  height: 4.8rem;
+  flex: 0 0 4.8rem;
+  border: 1px solid var(--color-grey-300);
+  border-radius: var(--radius-control);
+  display: grid;
+  place-items: center;
+  color: var(--color-channel-whatsapp);
+  background: var(--color-grey-0);
+  transition: background var(--motion-fast), border-color var(--motion-fast);
+
+  &:hover {
+    background: var(--color-grey-50);
+    border-color: var(--color-channel-whatsapp);
+  }
+
+  & svg {
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+
+  @media (max-width: 380px) {
+    width: 4.4rem;
+    height: 4.4rem;
+    flex-basis: 4.4rem;
+  }
+`;
+
 export const GalleryPreviewContent = styled.div`
-  padding: 1.6rem;
+  padding: 1.4rem;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
   flex-grow: 1;
 `;
 
-export const GalleryPreviewTitle = styled.h4`
+export const GalleryPreviewTitle = styled.h3`
   font-size: 1.5rem;
   font-weight: 800;
   color: var(--color-grey-900);
@@ -1134,8 +1526,32 @@ export const GalleryPreviewCategory = styled.span`
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--color-brand-700);
-  background: var(--color-brand-50);
-  padding: 0.2rem 0.8rem;
-  border-radius: 999px;
-  text-transform: uppercase;
+`;
+
+export const GalleryProofList = styled.div`
+  margin-top: 0.4rem;
+  display: grid;
+  gap: 0.7rem;
+`;
+
+export const GalleryProofRow = styled.div`
+  display: grid;
+  grid-template-columns: 6.4rem minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: start;
+  font-size: var(--font-size-xs);
+
+  & span {
+    color: var(--color-grey-500);
+    font-weight: var(--font-weight-bold);
+  }
+
+  & p {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--color-grey-700);
+    line-height: 1.45;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
 `;

@@ -1,38 +1,25 @@
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
 import {
   HiOutlineArrowLeft,
   HiOutlineCalendarDays,
-  HiOutlineChatBubbleLeftRight,
   HiOutlineCheckCircle,
+  HiOutlineEye,
   HiOutlinePhoto,
   HiOutlineSparkles,
 } from "react-icons/hi2";
 
-import Spinner from "../ui/Spinner";
 import SEO from "../ui/SEO";
+import ContentSkeleton from "../ui/LoadingSkeleton";
+import ResponsiveImage from "../ui/ResponsiveImage";
+import useScrollReveal from "../hooks/useScrollReveal";
 import { getGalleryItems } from "../services/apiGallery";
-
-
-const testimonials = [
-  {
-    name: "Murat A.",
-    job: "Apartman korkuluğu onarımı",
-    text: "Randevu saatinde geldi, önce sorunu anlattı ve ardından tamiri temiz bir şekilde tamamladı.",
-  },
-  {
-    name: "Selin K.",
-    job: "Metal masa ayağı imalatı",
-    text: "Ölçü konusunda dikkatliydi. Teslim edilen iş hem sağlam hem de beklediğimizden daha düzgün oldu.",
-  },
-  {
-    name: "Emre T.",
-    job: "Kapı menteşesi tamiri",
-    text: "Kısa sürede çözüm üretti. İş bittikten sonra kullanımı test ederek teslim etti.",
-  },
-];
+import { logEvent } from "../services/apiAnalytics";
+import { ANALYTICS_EVENTS } from "../analytics/events";
+import GalleryCaseDialog from "../features/gallery/GalleryCaseDialog";
+import { getGalleryImageAlt } from "../utils/galleryMedia";
 
 const ScrollWrapper = styled.div`
   position: relative;
@@ -186,16 +173,20 @@ const Hero = styled.section`
   }
 `;
 
-const HeroImage = styled.img`
+const HeroImage = styled(ResponsiveImage)`
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center 30%;
+  & img {
+    object-fit: cover;
+    object-position: center 30%;
+  }
 
   @media (max-width: 640px) {
-    object-position: center 20%;
+    & img {
+      object-position: center 20%;
+    }
   }
 `;
 
@@ -459,11 +450,28 @@ const CompareMedia = styled.figure`
   }
 `;
 
-const MediaImage = styled.img`
+const MediaImage = styled(ResponsiveImage)`
   width: 100%;
   height: 100%;
   min-height: inherit;
-  object-fit: cover;
+`;
+
+const FilterBar = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+`;
+
+const FilterButton = styled.button`
+  min-height: 4.4rem;
+  border: 1px solid
+    ${(props) => (props.$active ? "var(--color-brand-700)" : "var(--color-grey-200)")};
+  border-radius: var(--border-radius-sm);
+  padding: 0.8rem 1.2rem;
+  color: ${(props) => (props.$active ? "var(--color-text-inverse)" : "var(--color-grey-700)")};
+  background: ${(props) => (props.$active ? "var(--color-brand-700)" : "var(--color-grey-0)")};
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-extrabold);
 `;
 
 const ImageLabel = styled.span`
@@ -549,6 +557,32 @@ const MiniItem = styled.li`
   }
 `;
 
+const CaseButton = styled.button`
+  min-height: 4.4rem;
+  border: 1px solid var(--color-grey-200);
+  border-radius: var(--border-radius-sm);
+  padding: 0.9rem 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  color: var(--color-grey-800);
+  background: var(--color-grey-0);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-extrabold);
+
+  &:hover {
+    border-color: var(--color-brand-300);
+    color: var(--color-brand-800);
+    background: var(--color-brand-50);
+  }
+
+  & svg {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+`;
+
 const PhotoGrid = styled.div`
   display: grid;
   grid-template-columns: 1.2fr 0.8fr 1fr;
@@ -580,10 +614,13 @@ const PhotoGrid = styled.div`
   }
 `;
 
-const PhotoTile = styled.figure`
+const PhotoTile = styled.button`
   position: relative;
   overflow: hidden;
+  border: 0;
   border-radius: var(--border-radius-md);
+  padding: 0;
+  text-align: left;
   background-color: var(--color-grey-300);
 
   & img {
@@ -616,7 +653,7 @@ const PhotoTile = styled.figure`
   }
 `;
 
-const PhotoCaption = styled.figcaption`
+const PhotoCaption = styled.span`
   position: absolute;
   left: 1.4rem;
   right: 1.4rem;
@@ -625,75 +662,6 @@ const PhotoCaption = styled.figcaption`
   color: #ffffff;
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-extrabold);
-`;
-
-const TestimonialsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.2rem;
-
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-  }
-
-  @media (max-width: 640px) {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    /* Viewport-aware card width */
-    grid-auto-columns: minmax(min(26rem, calc(88vw)), 88%);
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scroll-snap-type: inline mandatory;
-    scrollbar-width: none;
-    padding-bottom: 0.4rem;
-    -webkit-overflow-scrolling: touch;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-`;
-
-const TestimonialCard = styled.article`
-  border: 1px solid var(--color-grey-100);
-  border-radius: var(--border-radius-md);
-  padding: 1.8rem;
-  display: grid;
-  gap: 1.2rem;
-  background: var(--color-grey-50);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    border-color: var(--color-brand-200);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
-  }
-
-  @media (max-width: 640px) {
-    scroll-snap-align: start;
-  }
-`;
-
-const QuoteIcon = styled.span`
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-brand-700);
-  background: var(--color-brand-50);
-
-  & svg {
-    width: 2rem;
-    height: 2rem;
-  }
-`;
-
-const CustomerName = styled.strong`
-  display: block;
-  color: var(--color-grey-900);
-  font-size: var(--font-size-base);
 `;
 
 const Cta = styled.section`
@@ -722,6 +690,9 @@ const Cta = styled.section`
 `;
 
 function Gallery() {
+  useScrollReveal();
+  const [activeCategory, setActiveCategory] = useState("Tümü");
+  const [selectedCase, setSelectedCase] = useState(null);
   const {
     data: allItems = [],
     isLoading,
@@ -731,17 +702,49 @@ function Gallery() {
     queryFn: () => getGalleryItems({ publishedOnly: true }),
   });
 
-  // Önce/sonra: before_image_url olan öğeler
-  const workExamples = useMemo(
-    () => allItems.filter((i) => i.before_image_url),
+  const categories = useMemo(
+    () => [
+      "Tümü",
+      ...Array.from(new Set(allItems.map((item) => item.category).filter(Boolean))),
+    ],
     [allItems],
   );
 
-  // Galeri fotoğraf gridi: "Villa Bahçe Peyzajı ve Çit Çevirme İşlemi" hariç hepsi (görsel dağılımı dengelemek için)
-  const galleryItems = useMemo(
-    () => allItems.filter((i) => i.title !== "Villa Bahçe Peyzajı ve Çit Çevirme İşlemi"),
-    [allItems],
+  const filteredItems = useMemo(
+    () =>
+      activeCategory === "Tümü"
+        ? allItems
+        : allItems.filter((item) => item.category === activeCategory),
+    [activeCategory, allItems],
   );
+
+  // Önce/sonra: before_image_url olan öğeler
+  const workExamples = useMemo(
+    () => filteredItems.filter((item) => item.before_image_url),
+    [filteredItems],
+  );
+
+  const galleryItems = useMemo(
+    () => filteredItems,
+    [filteredItems],
+  );
+
+  const closeCase = useCallback(() => setSelectedCase(null), []);
+
+  function openCase(item, placement) {
+    setSelectedCase(item);
+    logEvent(ANALYTICS_EVENTS.GALLERY_CASE_VIEWED, {
+      case_id: item.id,
+      case_title: item.title,
+      category: item.category,
+      placement,
+    });
+  }
+
+  function selectCategory(category) {
+    setActiveCategory(category);
+    logEvent(ANALYTICS_EVENTS.GALLERY_FILTER_SELECTED, { category });
+  }
 
   if (isLoading) {
     return (
@@ -753,7 +756,7 @@ function Gallery() {
               Randevu sayfasına dön
             </BackLink>
           </TopBar>
-          <Spinner />
+          <ContentSkeleton label="İş örnekleri yükleniyor" />
         </Shell>
       </Page>
     );
@@ -774,11 +777,13 @@ function Gallery() {
           </BackLink>
         </TopBar>
 
-        <Hero>
+        <Hero data-reveal>
           <HeroImage
             src="/images/hero.png"
-            alt="Umut Usta'nın düzenli atölyesindeki aletler ve çalışma tezgahı"
+            alt="Kaynak maskesiyle metal parça üzerinde çalışan usta"
+            sizes="(max-width: 760px) 100vw, 1200px"
             fetchpriority="high"
+            loading="eager"
           />
           <HeroContent>
             <HeroTitle>Umut Usta Önce-Sonra Çalışmaları ve Galeri</HeroTitle>
@@ -790,7 +795,7 @@ function Gallery() {
             <HeroActions>
               <ActionLink to="/appointment">
                 <HiOutlineCalendarDays />
-                Randevu seç
+                Randevu al
               </ActionLink>
               <ActionLink
                 to="/appointment#services"
@@ -802,7 +807,7 @@ function Gallery() {
           </HeroContent>
         </Hero>
 
-        <StatsGrid aria-label="Galeri özeti">
+        <StatsGrid aria-label="Galeri özeti" data-reveal>
           <StatCard>
             <StatValue>Yerinde</StatValue>
             <StatLabel>Servis seçeneği</StatLabel>
@@ -830,13 +835,37 @@ function Gallery() {
 
         {!isError && galleryItems.length === 0 && (
           <GalleryNotice>
-            <strong>Yeni iş örnekleri hazırlanıyor.</strong>
-            <span>Yayınlanan çalışmalar kısa süre içinde burada gösterilecek.</span>
+            <strong>Bu kategoride yayınlanmış iş örneği bulunmuyor.</strong>
+            <span>Başka bir kategori seçerek diğer çalışmaları inceleyebilirsiniz.</span>
           </GalleryNotice>
         )}
 
+        {!isError && allItems.length > 0 && (
+          <Section aria-labelledby="gallery-filter-title" data-reveal>
+            <SectionHeader>
+              <Eyebrow>Hizmete göre keşfet</Eyebrow>
+              <SectionTitle id="gallery-filter-title">İş örneklerini filtreleyin</SectionTitle>
+              <MutedText>
+                İhtiyacınıza en yakın hizmeti seçin; önce/sonra vakaları ve tamamlanan uygulamalar birlikte güncellensin.
+              </MutedText>
+            </SectionHeader>
+            <FilterBar aria-label="İş örneği kategorileri">
+              {categories.map((category) => (
+                <FilterButton
+                  key={category}
+                  type="button"
+                  $active={activeCategory === category}
+                  aria-pressed={activeCategory === category}
+                  onClick={() => selectCategory(category)}>
+                  {category}
+                </FilterButton>
+              ))}
+            </FilterBar>
+          </Section>
+        )}
+
         {!isError && workExamples.length > 0 && (
-          <Section>
+          <Section data-reveal>
             <SectionHeader>
               <Eyebrow>Önce / sonra</Eyebrow>
               <SectionTitle>Keşiften teslim anına kadar çalışma süreci</SectionTitle>
@@ -854,7 +883,8 @@ function Gallery() {
                       <CompareMedia>
                         <MediaImage
                           src={item.before_image_url}
-                          alt={`${item.title}: ${(item.before_label || "öncesi").toLocaleLowerCase("tr-TR")} aşaması`}
+                          sizes="(max-width: 640px) 88vw, 50vw"
+                          alt={getGalleryImageAlt(item, "before")}
                           loading="lazy"
                           decoding="async"
                         />
@@ -863,7 +893,8 @@ function Gallery() {
                       <CompareMedia>
                         <MediaImage
                           src={item.image_url}
-                          alt={`${item.title}: ${(item.after_label || "sonrası").toLocaleLowerCase("tr-TR")} aşaması`}
+                          sizes="(max-width: 640px) 88vw, 50vw"
+                          alt={getGalleryImageAlt(item)}
                           loading="lazy"
                           decoding="async"
                         />
@@ -888,6 +919,10 @@ function Gallery() {
                           ))}
                         </MiniList>
                       )}
+                      <CaseButton type="button" onClick={() => openCase(item, "before_after")}>
+                        <HiOutlineEye aria-hidden="true" />
+                        Vaka detayını incele
+                      </CaseButton>
                     </WorkBody>
                   </WorkCard>
                 ))}
@@ -897,7 +932,7 @@ function Gallery() {
         )}
 
         {!isError && galleryItems.length > 0 && (
-          <Section>
+          <Section data-reveal>
             <SectionHeader>
               <Eyebrow>Galeri</Eyebrow>
               <SectionTitle>Umut Usta Yerinde Servis ve Bakım Uygulamaları</SectionTitle>
@@ -910,10 +945,15 @@ function Gallery() {
             <ScrollWrapper $breakpoint="560px" $bg="var(--color-grey-0)">
               <PhotoGrid aria-label="Umut Usta çalışma galerisi">
                 {galleryItems.map((item) => (
-                  <PhotoTile key={item.id}>
+                  <PhotoTile
+                    key={item.id}
+                    type="button"
+                    onClick={() => openCase(item, "gallery_grid")}
+                    aria-label={`${item.title} vaka detayını incele`}>
                     <MediaImage
                       src={item.image_url}
-                      alt={item.title}
+                      sizes="(max-width: 640px) 88vw, 33vw"
+                      alt={getGalleryImageAlt(item)}
                       loading="lazy"
                       decoding="async"
                     />
@@ -925,34 +965,6 @@ function Gallery() {
           </Section>
         )}
 
-        <Section>
-          <SectionHeader>
-            <Eyebrow>Yorumlar / referanslar</Eyebrow>
-            <SectionTitle>Müşterilerin çalışma süreciyle ilgili görüşleri</SectionTitle>
-            <MutedText>
-              Randevu, uygulama ve teslim süreciyle ilgili müşteri geri
-              bildirimleri.
-            </MutedText>
-          </SectionHeader>
-
-          <ScrollWrapper $bg="var(--color-grey-0)">
-            <TestimonialsGrid aria-label="Müşteri yorumları">
-              {testimonials.map((item) => (
-                <TestimonialCard key={item.name}>
-                  <QuoteIcon>
-                    <HiOutlineChatBubbleLeftRight />
-                  </QuoteIcon>
-                  <CardText>{item.text}</CardText>
-                  <div>
-                    <CustomerName>{item.name}</CustomerName>
-                    <MutedText>{item.job}</MutedText>
-                  </div>
-                </TestimonialCard>
-              ))}
-            </TestimonialsGrid>
-          </ScrollWrapper>
-        </Section>
-
         <Cta>
           <div>
             <SectionTitle>Benzer bir iş için uygun randevuyu seçin</SectionTitle>
@@ -961,12 +973,29 @@ function Gallery() {
               ön değerlendirme alabilirsiniz.
             </MutedText>
           </div>
-          <ActionLink to="/appointment#appointment-calendar">
+          <ActionLink
+            to="/appointment#appointment-calendar"
+            onClick={() => logEvent(ANALYTICS_EVENTS.GALLERY_BOOKING_CTA_CLICKED, {
+              category: activeCategory,
+              placement: "gallery_footer",
+            })}>
             <HiOutlineSparkles />
             Randevuya git
           </ActionLink>
         </Cta>
       </Shell>
+      {selectedCase && (
+        <GalleryCaseDialog
+          item={selectedCase}
+          onClose={closeCase}
+          onBook={() => logEvent(ANALYTICS_EVENTS.GALLERY_BOOKING_CTA_CLICKED, {
+            case_id: selectedCase.id,
+            case_title: selectedCase.title,
+            category: selectedCase.category,
+            placement: "case_dialog",
+          })}
+        />
+      )}
     </Page>
   );
 }
