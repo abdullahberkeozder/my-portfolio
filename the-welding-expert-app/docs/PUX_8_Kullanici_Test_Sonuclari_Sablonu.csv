@@ -1,0 +1,2 @@
+participant_id,segment,device,task_id,result,first_correct_action_seconds,total_seconds,wrong_selection_count,backtrack_count,validation_error_count,help_count,seq_1_7,mental_demand_0_100,effort_0_100,frustration_0_100,careful_1_7,reliable_1_7,craftsmanship_1_7,artificial_1_7,crowded_1_7,confirmation_expectation_correct,observation
+P01,,,,,,,,,,,,,,,,,,,,,

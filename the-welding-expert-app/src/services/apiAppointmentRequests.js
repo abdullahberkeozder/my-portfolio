@@ -1,4 +1,4 @@
-import supabase from "./supabase";
+import { getSupabaseClient } from "./getSupabaseClient";
 
 const TABLE_NAME = "appointment_requests";
 
@@ -40,6 +40,7 @@ export async function getAppointmentRequests({
   search = "",
   status = "",
 } = {}) {
+  const supabase = await getSupabaseClient();
   let query = supabase
     .from(TABLE_NAME)
     .select("*", { count: "exact" });
@@ -68,6 +69,10 @@ export async function getAppointmentRequests({
         `customer_note.ilike.%${cleanSearch}%,` +
         `notes.ilike.%${cleanSearch}%,` +
         `admin_note.ilike.%${cleanSearch}%,` +
+        `customer_action_note.ilike.%${cleanSearch}%,` +
+        `cancellation_reason.ilike.%${cleanSearch}%,` +
+        `customer_feedback.ilike.%${cleanSearch}%,` +
+        `lead_quality.ilike.%${cleanSearch}%,` +
         `service_type.ilike.%${cleanSearch}%`
       );
     }
@@ -93,6 +98,7 @@ export async function getAppointmentRequests({
 }
 
 export async function createAppointmentRequest(request) {
+  const supabase = await getSupabaseClient();
   const { data, error } = await supabase.rpc(
     "create_appointment_request",
     {
@@ -116,7 +122,67 @@ export async function createAppointmentRequest(request) {
   return data;
 }
 
+export async function getPublicAppointmentRequest(publicToken) {
+  const supabase = await getSupabaseClient();
+  const { data, error } = await supabase.rpc(
+    "get_public_appointment_request",
+    {
+      p_public_token: publicToken,
+    },
+  );
+
+  if (error) {
+    console.error(error);
+    throw new Error("Randevu takip bilgisi yüklenemedi.");
+  }
+
+  const request = Array.isArray(data) ? data[0] : data;
+
+  if (!request) {
+    throw new Error("Randevu takip kaydı bulunamadı.");
+  }
+
+  return request;
+}
+
+export async function submitAppointmentCustomerAction({
+  publicToken,
+  action,
+  note,
+  requestedDate,
+  requestedTime,
+  cancellationReason,
+  feedback,
+}) {
+  const supabase = await getSupabaseClient();
+  const { data, error } = await supabase.rpc(
+    "submit_appointment_customer_action",
+    {
+      p_public_token: publicToken,
+      p_customer_action: action,
+      p_customer_action_note: note || null,
+      p_customer_requested_date: requestedDate || null,
+      p_customer_requested_time: requestedTime || null,
+      p_cancellation_reason: cancellationReason || null,
+      p_customer_feedback: feedback || null,
+    },
+  );
+
+  if (error) {
+    console.error(error);
+    throw new Error(
+      getAppointmentRequestError(
+        error,
+        "Randevu talebiniz güncellenemedi. Lütfen tekrar deneyin.",
+      ),
+    );
+  }
+
+  return data === true ? { submitted: true } : data;
+}
+
 export async function updateAppointmentRequest({ id, updates }) {
+  const supabase = await getSupabaseClient();
   const { data, error } = await supabase
     .from(TABLE_NAME)
     .update(updates)
@@ -138,6 +204,7 @@ export async function updateAppointmentRequest({ id, updates }) {
 }
 
 export async function deleteAppointmentRequest(id) {
+  const supabase = await getSupabaseClient();
   const { error } = await supabase
     .from(TABLE_NAME)
     .update({ archived_at: new Date().toISOString() })
@@ -152,6 +219,7 @@ export async function deleteAppointmentRequest(id) {
 }
 
 export async function restoreAppointmentRequest(id) {
+  const supabase = await getSupabaseClient();
   const { data, error } = await supabase
     .from(TABLE_NAME)
     .update({ archived_at: null })

@@ -1,4 +1,4 @@
-import supabase from "./supabase";
+import { getSupabaseClient } from "./getSupabaseClient";
 
 const TABLE_NAME = "service_configs";
 
@@ -7,6 +7,7 @@ const TABLE_NAME = "service_configs";
  * Anon erişime açık — müşteri tarafı için de kullanılabilir.
  */
 export async function getServiceConfigs() {
+  const supabase = await getSupabaseClient();
   const { data, error } = await supabase
     .from(TABLE_NAME)
     .select("*")
@@ -27,6 +28,7 @@ export async function getServiceConfigs() {
  * @param {{ id: string, updates: object }} param
  */
 export async function updateServiceConfig({ id, updates }) {
+  const supabase = await getSupabaseClient();
   const { data, error } = await supabase
     .from(TABLE_NAME)
     .update(updates)

@@ -1,17 +1,14 @@
 import {
-  HiOutlineCalendarDays,
-  HiOutlineClock,
-  HiOutlineInformationCircle,
   HiOutlineMapPin,
-  HiOutlineShieldCheck,
+  HiOutlinePhoto,
   HiOutlineWrenchScrewdriver,
 } from "react-icons/hi2";
 
 const appNavItems = [
   {
-    href: "#about",
-    label: "Biz kimiz",
-    Icon: HiOutlineShieldCheck,
+    href: "#portfolio-preview",
+    label: "İşler",
+    Icon: HiOutlinePhoto,
   },
   {
     href: "#services",
@@ -19,24 +16,9 @@ const appNavItems = [
     Icon: HiOutlineWrenchScrewdriver,
   },
   {
-    href: "#appointment-calendar",
-    label: "Randevu",
-    Icon: HiOutlineCalendarDays,
-  },
-  {
-    href: "#process",
-    label: "Süreç",
-    Icon: HiOutlineClock,
-  },
-  {
     href: "#location",
-    label: "Adres",
+    label: "İletişim",
     Icon: HiOutlineMapPin,
-  },
-  {
-    href: "#faq",
-    label: "SSS",
-    Icon: HiOutlineInformationCircle,
   },
 ];
 

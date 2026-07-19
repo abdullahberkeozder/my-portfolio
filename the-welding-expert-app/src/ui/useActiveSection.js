@@ -5,7 +5,7 @@ export function getSectionId(item) {
 }
 
 function useActiveSection(items) {
-  const [activeId, setActiveId] = useState(getSectionId(items[0]));
+  const [activeId, setActiveId] = useState(null);
 
   useEffect(() => {
     const sectionIds = items.map(getSectionId);
@@ -22,7 +22,7 @@ function useActiveSection(items) {
       }
 
       const checkpoint = window.scrollY + window.innerHeight * 0.35;
-      let currentId = sectionIds[0];
+      let currentId = null;
       let currentTop = Number.NEGATIVE_INFINITY;
 
       sectionIds.forEach((sectionId) => {

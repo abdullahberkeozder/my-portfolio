@@ -164,6 +164,7 @@ Execute the SQL scripts in the following order inside the **Supabase SQL Editor*
 5. `supabase/archive_appointment_requests.sql` (Archiving column addition, trigger logic updates)
 6. `supabase/analytics_events_migration.sql` (Analytics tracking tables & RLS rules)
 7. `supabase/service_configs_migration.sql` (Dynamic services pricing definitions & seed data)
+8. `supabase/customer_self_service_requests.sql` (Customer tracking links, cancellation/change requests, feedback fields & public RPCs)
 
 *Tip: Promote your first profile to Owner by editing the bootstrap email address inside `role_based_access_control.sql` before running.*
 

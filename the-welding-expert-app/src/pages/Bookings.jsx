@@ -65,6 +65,14 @@ const STATUS_OPTIONS = [
   },
 ];
 
+const LEAD_QUALITY_OPTIONS = [
+  { value: "", label: "Değerlendirilmedi" },
+  { value: "qualified", label: "Nitelikli talep" },
+  { value: "unqualified", label: "Niteliksiz talep" },
+  { value: "outside_area", label: "Hizmet bölgesi dışında" },
+  { value: "spam", label: "Spam" },
+];
+
 const Page = styled.div`
   display: flex;
   flex-direction: column;
@@ -302,6 +310,15 @@ const CustomerNote = styled.div`
   }
 `;
 
+const CustomerActionBox = styled(CustomerNote)`
+  border-left-color: var(--color-yellow-700);
+  background: var(--color-yellow-100);
+
+  & strong {
+    color: var(--color-yellow-700);
+  }
+`;
+
 const StatusBadge = styled.span`
   justify-self: start;
   border-radius: 999px;
@@ -519,6 +536,12 @@ function buildWhatsAppUrl(request) {
   )}`;
 }
 
+function getCustomerActionLabel(action) {
+  if (action === "cancel_requested") return "Müşteri iptal talebi";
+  if (action === "change_requested") return "Müşteri değişiklik talebi";
+  return "";
+}
+
 async function copyToClipboard(value, successMessage) {
   if (!value) {
     toast.error("Kopyalanacak bilgi bulunamadı.");
@@ -556,6 +579,17 @@ function RequestItem({
         status: event.target.value,
       },
       successMessage: "Talep durumu güncellendi.",
+    });
+  }
+
+  function handleLeadQualityChange(event) {
+    onUpdate({
+      id: request.id,
+      updates: {
+        lead_quality: event.target.value || null,
+        lead_quality_at: event.target.value ? new Date().toISOString() : null,
+      },
+      successMessage: "Talep kalitesi güncellendi.",
     });
   }
 
@@ -624,6 +658,29 @@ function RequestItem({
             <span>{customerNote}</span>
           </CustomerNote>
         )}
+        {request.customer_action && (
+          <CustomerActionBox>
+            <strong>{getCustomerActionLabel(request.customer_action)}</strong>
+            {request.customer_action === "change_requested" && (
+              <span>
+                Yeni tercih: {formatDate(request.customer_requested_date)}{" "}
+                {formatTime(request.customer_requested_time)}
+              </span>
+            )}
+            {request.cancellation_reason && (
+              <span>İptal nedeni: {request.cancellation_reason}</span>
+            )}
+            {request.customer_action_note && (
+              <span>Not: {request.customer_action_note}</span>
+            )}
+            {request.customer_feedback && (
+              <span>Geri bildirim: {request.customer_feedback}</span>
+            )}
+            {request.customer_action_at && (
+              <span>Gönderim: {formatCreatedAt(request.customer_action_at)}</span>
+            )}
+          </CustomerActionBox>
+        )}
         <MutedText>
           Oluşturulma: {formatCreatedAt(request.created_at)}
         </MutedText>
@@ -636,6 +693,15 @@ function RequestItem({
 
       <ManagementPanel>
         <DetailSectionTitle>Yönetim</DetailSectionTitle>
+        <Select
+          aria-label="Talep kalitesi"
+          value={request.lead_quality || ""}
+          disabled={isUpdating || !!request.archived_at}
+          onChange={handleLeadQualityChange}>
+          {LEAD_QUALITY_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>{option.label}</option>
+          ))}
+        </Select>
         <Select
           aria-label="Talep durumu"
           value={status}
@@ -895,8 +961,8 @@ function Bookings() {
         <HeaderCopy>
           <Heading as="h1">Randevu talepleri</Heading>
           <MutedText>
-            Müşterilerin randevu ekranından bıraktığı talepleri değerlendirin
-            ve iş durumlarını güncelleyin.
+            Sistem kaydı olan talepleri önceliklendirin, müşteriyle iletişim kurun
+            ve talep durumunu güncel tutun.
           </MutedText>
         </HeaderCopy>
 
@@ -916,17 +982,16 @@ function Bookings() {
           <StatValue>{showArchived ? "-" : newRequests}</StatValue>
         </StatCard>
         <StatCard>
-          <MutedText>Sistem üzerinden</MutedText>
+          <MutedText>Sistem kaydı</MutedText>
           <StatValue>{showArchived ? "-" : systemRequests}</StatValue>
         </StatCard>
       </StatsGrid>
 
       <RequestsPanel>
         <div>
-          <Heading as="h2">Müşteri talepleri</Heading>
+          <Heading as="h2">Sistem kaydı olan müşteri talepleri</Heading>
           <MutedText>
-            Sistem üzerinden oluşturulan talepler burada görüntülenir.
-            WhatsApp ve e-posta görüşmeleri kendi iletişim kanalında devam eder.
+            Burada yalnızca sistem formuyla oluşturulan talepler görünür. WhatsApp ve e-posta görüşmeleri bu listeye otomatik eklenmez; ilgili kaydı varsa durumunu buradan güncelleyin.
           </MutedText>
         </div>
 

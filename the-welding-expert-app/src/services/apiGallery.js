@@ -1,4 +1,4 @@
-import supabase from "./supabase";
+import { getSupabaseClient } from "./getSupabaseClient";
 
 const TABLE = "gallery_items";
 const BUCKET = "gallery";
@@ -6,6 +6,7 @@ const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export async function getGalleryItems({ publishedOnly = false } = {}) {
+  const supabase = await getSupabaseClient();
   let query = supabase
     .from(TABLE)
     .select("*")
@@ -25,6 +26,7 @@ export async function getGalleryItems({ publishedOnly = false } = {}) {
 }
 
 export async function getGalleryItem(id) {
+  const supabase = await getSupabaseClient();
   const { data, error } = await supabase
     .from(TABLE)
     .select("*")
@@ -56,6 +58,7 @@ export async function createGalleryItem({
       uploadedUrls.push(beforeImageUrl);
     }
 
+    const supabase = await getSupabaseClient();
     const { data, error } = await supabase
       .from(TABLE)
       .insert([
@@ -114,6 +117,7 @@ export async function updateGalleryItem({
       }
     }
 
+    const supabase = await getSupabaseClient();
     const { data, error } = await supabase
       .from(TABLE)
       .update(nextUpdates)
@@ -138,6 +142,7 @@ export async function updateGalleryItem({
 
 export async function deleteGalleryItem(id) {
   const item = await getGalleryItem(id);
+  const supabase = await getSupabaseClient();
   const { error } = await supabase.from(TABLE).delete().eq("id", id);
 
   if (error) {
@@ -151,6 +156,7 @@ export async function deleteGalleryItem(id) {
 
 export async function uploadGalleryImage(file) {
   validateGalleryImage(file);
+  const supabase = await getSupabaseClient();
 
   const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const uniqueId = globalThis.crypto?.randomUUID?.() ||
@@ -174,6 +180,8 @@ export async function uploadGalleryImage(file) {
 
 export async function deleteGalleryImages(paths) {
   if (!paths?.length) return;
+
+  const supabase = await getSupabaseClient();
 
   const { error } = await supabase.storage.from(BUCKET).remove(paths);
   if (error) console.error("Galeri görselleri temizlenemedi:", error);

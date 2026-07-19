@@ -48,6 +48,11 @@ const Container = styled.div`
   min-width: 0;
 `;
 
+const RouteSurface = styled.div`
+  min-width: 0;
+  animation: route-enter var(--motion-slow) var(--ease-out) both;
+`;
+
 function AppLayout() {
   const [isNavigationOpen, setIsNavigationOpen] = useState(false);
   const location = useLocation();
@@ -79,7 +84,9 @@ function AppLayout() {
       />
       <Main>
         <Container>
-          <Outlet />
+          <RouteSurface key={location.pathname} data-route-surface>
+            <Outlet />
+          </RouteSurface>
         </Container>
       </Main>
     </StyledAppLayout>

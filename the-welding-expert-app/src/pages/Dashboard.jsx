@@ -1,8 +1,20 @@
-import { useState, useMemo } from "react";
+import { Fragment, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from "recharts";
 import {
   HiOutlineArrowPath,
   HiOutlineArrowTopRightOnSquare,
@@ -630,6 +642,33 @@ const EmptyState = styled.div`
   font-weight: 600;
 `;
 
+const HeatmapGrid = styled.div`
+  display: grid;
+  grid-template-columns: 8rem repeat(6, minmax(4.8rem, 1fr));
+  gap: 0.6rem;
+  overflow-x: auto;
+`;
+
+const HeatmapCell = styled.div`
+  min-height: 4rem;
+  border-radius: var(--border-radius-sm);
+  display: grid;
+  place-items: center;
+  color: ${(props) => (props.$level >= 3 ? "#fff" : "var(--color-grey-700)")};
+  background: ${(props) => {
+    if (props.$header) return "var(--color-grey-100)";
+    if (props.$level >= 4) return "var(--color-brand-800)";
+    if (props.$level === 3) return "var(--color-brand-600)";
+    if (props.$level === 2) return "var(--color-brand-200)";
+    if (props.$level === 1) return "var(--color-brand-50)";
+    return "var(--color-grey-50)";
+  }};
+  border: 1px solid var(--color-grey-100);
+  font-size: 1.2rem;
+  font-weight: 800;
+  white-space: nowrap;
+`;
+
 function ServiceDistributionPieChart({ requests }) {
   const data = useMemo(() => {
     const counts = {};
@@ -684,6 +723,117 @@ function ServiceDistributionPieChart({ requests }) {
         </PieChart>
       </ResponsiveContainer>
     </div>
+  );
+}
+
+function ServiceApprovalRateChart({ requests }) {
+  const data = useMemo(() => {
+    const counts = {};
+
+    requests.forEach((request) => {
+      const type = request.service_type || "Bilinmeyen";
+      if (!counts[type]) counts[type] = { service: type, total: 0, approved: 0 };
+      counts[type].total += 1;
+      if (["confirmed", "completed"].includes(request.status)) {
+        counts[type].approved += 1;
+      }
+    });
+
+    return Object.values(counts)
+      .filter((item) => item.total > 0)
+      .map((item) => ({
+        service:
+          item.service.length > 18 ? `${item.service.slice(0, 18)}...` : item.service,
+        approvalRate: Math.round((item.approved / item.total) * 100),
+        total: item.total,
+      }))
+      .sort((a, b) => b.approvalRate - a.approvalRate)
+      .slice(0, 8);
+  }, [requests]);
+
+  if (data.length === 0) {
+    return (
+      <EmptyState>
+        Hizmet onay oranı için yeterli randevu verisi yok.
+      </EmptyState>
+    );
+  }
+
+  return (
+    <div style={{ width: "100%", height: "30rem" }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} layout="vertical" margin={{ left: 16, right: 24 }}>
+          <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+          <XAxis type="number" domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
+          <YAxis type="category" dataKey="service" width={132} />
+          <Tooltip
+            formatter={(value, name, item) => [
+              `${value}% (${item.payload.total} talep)`,
+              "Onay oranı",
+            ]}
+            contentStyle={{
+              background: "var(--color-grey-0)",
+              border: "1px solid var(--color-grey-100)",
+              borderRadius: "8px",
+              fontSize: "13px",
+            }}
+          />
+          <Bar dataKey="approvalRate" fill="var(--color-brand-600)" radius={[0, 6, 6, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function RequestHeatmap({ requests }) {
+  const days = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+  const slots = ["09:00", "11:00", "13:00", "15:00", "17:00", "19:00"];
+
+  const matrix = useMemo(() => {
+    const values = new Map();
+
+    requests.forEach((request) => {
+      if (!request.requested_date || !request.requested_time) return;
+      const date = parseDateKey(request.requested_date);
+      const dayIndex = (date.getDay() + 6) % 7;
+      const time = request.requested_time.slice(0, 5);
+      const key = `${dayIndex}-${time}`;
+      values.set(key, (values.get(key) || 0) + 1);
+    });
+
+    return values;
+  }, [requests]);
+
+  const maxValue = Math.max(0, ...matrix.values());
+  const getLevel = (value) => {
+    if (!value || !maxValue) return 0;
+    return Math.max(1, Math.ceil((value / maxValue) * 4));
+  };
+
+  return (
+    <HeatmapGrid>
+      <HeatmapCell $header />
+      {slots.map((slot) => (
+        <HeatmapCell key={slot} $header>
+          {slot}
+        </HeatmapCell>
+      ))}
+      {days.map((day, dayIndex) => (
+        <Fragment key={day}>
+          <HeatmapCell key={`${day}-label`} $header>
+            {day}
+          </HeatmapCell>
+          {slots.map((slot) => {
+            const value = matrix.get(`${dayIndex}-${slot}`) || 0;
+            return (
+              <HeatmapCell key={`${day}-${slot}`} $level={getLevel(value)}>
+                {value}
+              </HeatmapCell>
+            );
+          })}
+        </Fragment>
+      ))}
+    </HeatmapGrid>
   );
 }
 
@@ -911,7 +1061,7 @@ function Dashboard() {
           <HeroPanelItem>
             <HiOutlineClock />
             <div>
-              <PanelLabel>İşlem bekleyen talepler</PanelLabel>
+              <PanelLabel>Öncelikli geri dönüşler</PanelLabel>
               <PanelValue>{newRequestCount} yeni talep</PanelValue>
             </div>
           </HeroPanelItem>
@@ -959,7 +1109,7 @@ function Dashboard() {
             <HiOutlineCheckCircle />
           </StatIcon>
           <div>
-            <StatLabel>Açık randevu aralığı</StatLabel>
+            <StatLabel>Açık zaman aralığı</StatLabel>
             <StatValue>{openSlotCount}</StatValue>
           </div>
         </StatCard>
@@ -968,7 +1118,7 @@ function Dashboard() {
             <HiOutlineCalendarDays />
           </StatIcon>
           <div>
-            <StatLabel>Onaylanan iş / 7 gün</StatLabel>
+            <StatLabel>Bu hafta onaylanan iş</StatLabel>
             <StatValue>{confirmedThisWeek}</StatValue>
             {confirmedTrendPct !== null && (
               <StatTrend $up={confirmedDiff >= 0}>
@@ -982,7 +1132,7 @@ function Dashboard() {
             <HiOutlineClock />
           </StatIcon>
           <div>
-            <StatLabel>Yeni talep</StatLabel>
+            <StatLabel>Yanıt bekleyen yeni talep</StatLabel>
             <StatValue>{newRequestCount}</StatValue>
             {newRequestsTrendPct !== null && (
               <StatTrend $up={newRequestsDiff >= 0}>
@@ -1040,7 +1190,7 @@ function Dashboard() {
           <div>
             <Heading as="h2">Önümüzdeki 7 günün müsaitliği</Heading>
             <MutedText>
-              Müşteri ekranında görünen açık ve kapalı randevu aralıkları.
+              Müşterinin seçebildiği açık ve kapalı zaman aralıkları. Değişiklikler randevu ekranına yansır.
             </MutedText>
           </div>
         </SectionHeader>
@@ -1077,7 +1227,7 @@ function Dashboard() {
             <div>
               <Heading as="h2">Son 8 haftanın talep trendi</Heading>
               <MutedText>
-                Haftalık bazda yeni, onaylanan, tamamlanan ve iptal edilen talep sayıları.
+                Sistem kaydı olan taleplerin haftalık durumu: yeni, onaylanan, tamamlanan ve iptal edilen.
               </MutedText>
             </div>
           </SectionHeader>
@@ -1089,7 +1239,7 @@ function Dashboard() {
             <div>
               <Heading as="h2">Hizmet dağılımı</Heading>
               <MutedText>
-                Alınan taleplerin hizmet türlerine göre dağılımı.
+                Sistem üzerinden kaydedilen taleplerin hizmet türlerine göre dağılımı.
               </MutedText>
             </div>
           </SectionHeader>
@@ -1097,19 +1247,45 @@ function Dashboard() {
         </Section>
       </ChartsGrid>
 
+      <ChartsGrid>
+        <Section>
+          <SectionHeader>
+            <div>
+              <Heading as="h2">Hizmet türüne göre onay oranı</Heading>
+              <MutedText>
+                Her hizmette onaylanan veya tamamlanan işlerin, sistemdeki toplam talebe oranı.
+              </MutedText>
+            </div>
+          </SectionHeader>
+          <ServiceApprovalRateChart requests={requests} />
+        </Section>
+
+        <Section>
+          <SectionHeader>
+            <div>
+              <Heading as="h2">Gün/saat yoğunluk haritası</Heading>
+              <MutedText>
+                Müşterilerin seçtiği zaman tercihlerinin gün ve saat dağılımı; ekip planlaması için kullanılır.
+              </MutedText>
+            </div>
+          </SectionHeader>
+          <RequestHeatmap requests={requests} />
+        </Section>
+      </ChartsGrid>
+
       <ContentGrid>
         <Section>
           <SectionHeader>
             <div>
-              <Heading as="h2">İşlem bekleyen yeni talepler</Heading>
+          <Heading as="h2">Öncelikli geri dönüş listesi</Heading>
               <MutedText>
-                Henüz incelenmemiş yeni müşteri talepleri — güncelleme: {lastUpdated}
+                Henüz müşteriyle iletişim kurulmamış sistem talepleri — güncelleme: {lastUpdated}
               </MutedText>
             </div>
           </SectionHeader>
 
           {recentRequests.length === 0 ? (
-            <EmptyState>Bekleyen yeni müşteri talebi yok. İyi günler!</EmptyState>
+            <EmptyState>Şu anda ilk geri dönüş bekleyen sistem talebi yok.</EmptyState>
           ) : (
             <RequestList>
               {recentRequests.map((request) => (
@@ -1175,7 +1351,7 @@ function Dashboard() {
             <div>
               <Heading as="h2">Dönüşüm hunisi — Son 30 gün</Heading>
               <MutedText>
-                Randevu sihirbazını açan müşterilerin form gönderme ve WhatsApp tıklama oranları.
+                Web üzerindeki adımları tamamlayan oturumların oranı. WhatsApp&apos;taki sonraki görüşmeler ve telefon talepleri bu veriye otomatik dahil değildir.
               </MutedText>
             </div>
           </SectionHeader>
