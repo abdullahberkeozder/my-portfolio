@@ -49,19 +49,27 @@ const defaultProps = {
 };
 
 describe("BookingCalendar Component", () => {
-  it("renders the week name and days correctly", () => {
+  it("shows the full week with minimal availability states", () => {
     render(<BookingCalendar {...defaultProps} />);
 
+    expect(screen.getByText("Hizmet")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Hizmeti değiştir" })).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: /haftanın günleri/i })).toBeInTheDocument();
     expect(screen.getAllByText(/pazartesi/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/salı/i).length).toBeGreaterThan(0);
+    expect(screen.getByTestId("booking-day-2026-07-07")).toBeDisabled();
+    expect(screen.getByText("Müsait")).toBeInTheDocument();
+    expect(screen.getByText("Kapalı")).toBeInTheDocument();
+    expect(screen.queryByText("2 saat")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Bugün" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Yarın" })).not.toBeInTheDocument();
   });
 
   it("calls onDateSelect when an available day is clicked", async () => {
     const onDateSelect = vi.fn();
     render(<BookingCalendar {...defaultProps} onDateSelect={onDateSelect} />);
 
-    const days = screen.getAllByRole("button");
-    const mondayButton = days.find((btn) => btn.textContent?.includes("Pazartesi"));
+    const mondayButton = screen.getByTestId("booking-day-2026-07-06");
     expect(mondayButton).toBeInTheDocument();
 
     await userEvent.click(mondayButton);
@@ -79,10 +87,19 @@ describe("BookingCalendar Component", () => {
     expect(onSlotSelect).toHaveBeenCalled();
   });
 
+  it("uses an explicit edit control for the selected service", async () => {
+    const onStepChange = vi.fn();
+    render(<BookingCalendar {...defaultProps} onStepChange={onStepChange} />);
+
+    await userEvent.click(screen.getByRole("button", { name: "Hizmeti değiştir" }));
+    expect(onStepChange).toHaveBeenCalledWith(1);
+  });
+
   it("calls onWeekChange when navigation buttons are clicked", async () => {
     const onWeekChange = vi.fn();
     render(<BookingCalendar {...defaultProps} onWeekChange={onWeekChange} />);
 
+    expect(screen.getByRole("button", { name: /önceki hafta/i })).toBeDisabled();
     const nextWeekButton = screen.getByRole("button", { name: /sonraki hafta/i });
     expect(nextWeekButton).toBeInTheDocument();
 
@@ -96,5 +113,24 @@ describe("BookingCalendar Component", () => {
     const errorAlert = screen.getByRole("alert");
     expect(errorAlert).toBeInTheDocument();
     expect(errorAlert).toHaveTextContent(/yüklenemiyor/i);
+  });
+
+  it("starts without a selected date or time when the user has not chosen one", () => {
+    render(
+      <BookingCalendar
+        {...defaultProps}
+        selectedDate=""
+        selectedDay={null}
+        availableSlots={[]}
+      />,
+    );
+
+    expect(screen.getByTestId("booking-day-2026-07-06")).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByText("Gün seçin")).toBeInTheDocument();
+    expect(screen.queryByText("Önce bir tarih seçin")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Bir gün seçin" })).toBeInTheDocument();
+    expect(screen.getByText("Uygun saatleri görmek için takvimden bir gün seçin.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /09:00/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "İletişime Geç" })).not.toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 
@@ -20,7 +20,11 @@ describe("lazy application routes", () => {
     render(<App />);
 
     expect(
-      await screen.findByRole("heading", { name: "Yönetim paneli girişi" }),
+      await screen.findByRole(
+        "heading",
+        { name: "Yönetim paneli girişi" },
+        { timeout: 5000 },
+      ),
     ).toBeInTheDocument();
   });
 
@@ -29,9 +33,22 @@ describe("lazy application routes", () => {
     render(<App />);
 
     expect(
-      await screen.findByRole("heading", {
-        name: "Aradığınız sayfa bulunamadı",
-      }),
+      await screen.findByRole(
+        "heading",
+        { name: "Aradığınız sayfa bulunamadı" },
+        { timeout: 5000 },
+      ),
     ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(document.querySelector('meta[name="robots"]')).toHaveAttribute(
+        "content",
+        "noindex, nofollow",
+      );
+      expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute(
+        "href",
+        "https://umut-usta.vercel.app/bilinmeyen-sayfa",
+      );
+    });
   });
 });

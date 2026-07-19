@@ -9,5 +9,6 @@ export default defineConfig({
     setupFiles: "./src/test/setup.js",
     css: true,
     clearMocks: true,
+    exclude: ["e2e/**", "node_modules/**", "dist/**", "build/**"],
   },
 });

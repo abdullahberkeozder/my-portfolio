@@ -5,6 +5,7 @@ import {
   HiOutlineCalendarDays,
   HiOutlineShieldCheck,
 } from "react-icons/hi2";
+import BrandLogo from "./BrandLogo";
 
 const Page = styled.main`
   min-height: 100vh;
@@ -66,7 +67,7 @@ const BrandMark = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-grey-0);
+  background: var(--color-logo-surface);
   border: 1px solid var(--color-grey-200);
   padding: 0.6rem;
   box-shadow: var(--shadow-sm);
@@ -200,7 +201,7 @@ function AuthLayout({ eyebrow, title, description, children }) {
         <BrandPanel>
           <Brand>
             <BrandMark>
-              <img src="/umut-usta-logo.png" alt="" aria-hidden="true" />
+              <BrandLogo size={6.4} alt="" aria-hidden="true" />
             </BrandMark>
             <div>
               <BrandName>Umut Usta</BrandName>
