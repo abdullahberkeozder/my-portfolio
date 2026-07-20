@@ -186,6 +186,7 @@ test.describe("PUX-0 customer visual baselines", () => {
     await expect(wizard).toHaveScreenshot("pux-wizard-time.png", screenshotOptions);
 
     await page.locator('[data-date-value="2026-07-19"]').click();
+    await page.mouse.move(0, 0);
     await expect(wizard).toHaveScreenshot("pux-wizard-time-slots.png", screenshotOptions);
 
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -193,6 +194,7 @@ test.describe("PUX-0 customer visual baselines", () => {
     await expect(wizard).toHaveScreenshot("pux-wizard-time-slots-desktop.png", screenshotOptions);
 
     await page.getByRole("button", { name: "09:00 - 11:00, müsait" }).click();
+    await page.mouse.move(0, 0);
     await expect(wizard).toHaveScreenshot("pux-wizard-time-selected-desktop.png", screenshotOptions);
 
     await page.setViewportSize(DEFAULT_VIEWPORT);
@@ -465,10 +467,14 @@ test.describe("PUX-4 lower-page architecture", () => {
     await footer.scrollIntoViewIfNeeded();
     await expect(footer.getByRole("link", { name: "Gizlilik" })).toBeVisible();
     await expect(footer.getByText(/ekip teyidinden sonra/i)).toHaveCount(0);
+    const screenshotStyle = await page.addStyleTag({
+      content: '[aria-label="Hızlı işlem seçenekleri"] { visibility: hidden !important; }',
+    });
     await expect(page.locator("#services")).toHaveScreenshot("pux4-services-mobile.png", {
       ...screenshotOptions,
       maxDiffPixels: 500,
     });
+    await screenshotStyle.evaluate((element) => element.remove());
     await expect(footer).toHaveScreenshot("pux4-footer-mobile.png", screenshotOptions);
   });
 });

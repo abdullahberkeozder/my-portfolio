@@ -454,8 +454,11 @@ test.describe("PUX-7 accessibility and mobile resilience", () => {
     await page.keyboard.press("Space");
     await wizard.getByRole("button", { name: "Zaman Tercihini Seç" }).focus();
     await page.keyboard.press("Enter");
-    await wizard.locator('[data-date-value="2026-07-19"]').focus();
+    const availableDay = wizard.locator('[data-date-value="2026-07-19"]');
+    await expect(availableDay).toBeEnabled();
+    await availableDay.focus();
     await page.keyboard.press("Enter");
+    await expect(availableDay).toHaveAttribute("aria-pressed", "true");
     await wizard.getByRole("button", { name: "09:00 - 11:00, müsait" }).focus();
     await page.keyboard.press("Space");
     await wizard.getByRole("button", { name: "İletişime Geç" }).focus();
@@ -529,6 +532,7 @@ test.describe("PUX-7 accessibility and mobile resilience", () => {
   test("valid tracking state has a stable responsive baseline", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.clock.setFixedTime(FIXED_NOW);
     await mockPublicData(page);
     await page.goto(`/appointment/track/${PUBLIC_TOKEN}`);
     await expect(page.getByRole("heading", { name: "Talebinizi takip edin" })).toBeVisible();

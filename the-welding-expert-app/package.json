@@ -2,7 +2,7 @@
   "name": "the-welding-expert-app",
   "description": "A welding expert appointment and availability dashboard built with React and Supabase.",
   "version": "1.0.0",
-  "private": false,
+  "private": true,
   "type": "module",
   "author": "Abdullah Berke Ozder",
   "license": "MIT",
@@ -26,7 +26,6 @@
     "images:optimize": "node scripts/optimize-images.mjs",
     "images:audit": "node scripts/audit-images.mjs",
     "perf:budget": "node scripts/check-performance-budget.mjs",
-    "perf:lighthouse": "npm run build && lhci autorun",
     "lint": "eslint . --ext js,jsx --ignore-pattern build --ignore-pattern dist --report-unused-disable-directives --max-warnings 0",
     "test": "vitest",
     "test:run": "vitest run",
@@ -38,12 +37,9 @@
     "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
     "@supabase/supabase-js": "^2.38.0",
     "@tanstack/react-query": "^4.44.0",
-    "@tanstack/react-query-devtools": "^4.44.0",
-    "date-fns": "^4.4.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.77.0",
     "react-hot-toast": "^2.6.0",
     "react-icons": "^4.11.0",
     "react-router-dom": "^7.16.0",
@@ -51,14 +47,13 @@
     "styled-components": "^6.4.2"
   },
   "devDependencies": {
-    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.61.1",
     "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^14.3.1",
     "@testing-library/user-event": "^14.5.2",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react": "^4.0.3",
+    "@vitejs/plugin-react": "^6.0.3",
     "eslint": "^8.57.1",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-react": "^7.32.2",
@@ -66,8 +61,8 @@
     "eslint-plugin-react-refresh": "^0.4.3",
     "jsdom": "^22.1.0",
     "sharp": "^0.35.3",
-    "vite": "^4.4.5",
+    "vite": "^8.1.5",
     "vite-plugin-eslint": "^1.8.1",
-    "vitest": "^0.34.6"
+    "vitest": "^4.1.10"
   }
 }

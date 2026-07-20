@@ -38,3 +38,6 @@ playwright-report/
 *.sw?
 
 .lighthouseci/
+
+# Local research and cleanup archives
+.local-archive/
