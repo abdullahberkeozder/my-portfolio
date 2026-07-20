@@ -541,21 +541,33 @@ function CustomerBooking() {
   const [createdBookingId, setCreatedBookingId] = useState(null);
   const [createdBookingToken, setCreatedBookingToken] = useState(null);
 
+  function clearFieldError(fieldName) {
+    setFieldErrors((current) => {
+      if (!Object.prototype.hasOwnProperty.call(current, fieldName)) {
+        return current;
+      }
+
+      const nextErrors = { ...current };
+      delete nextErrors[fieldName];
+      return nextErrors;
+    });
+  }
+
   function handlePhoneChange(value) {
     setCustomerPhone(formatTRPhoneNumber(value));
-    setFieldErrors((current) => ({ ...current, customerPhone: undefined }));
+    clearFieldError("customerPhone");
     setSubmissionError("");
   }
 
   function handleNameChange(value) {
     setCustomerName(value);
-    setFieldErrors((current) => ({ ...current, customerName: undefined }));
+    clearFieldError("customerName");
     setSubmissionError("");
   }
 
   function handleEmailChange(value) {
     setCustomerEmail(value);
-    setFieldErrors((current) => ({ ...current, customerEmail: undefined }));
+    clearFieldError("customerEmail");
     setSubmissionError("");
   }
 

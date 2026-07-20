@@ -57,6 +57,25 @@ describe("BookingForm", () => {
     expect(onSystemSubmit).toHaveBeenCalledTimes(1);
   });
 
+  it("keeps the active input focused when a cleared error has no message", () => {
+    const { rerender } = render(<BookingForm {...defaultProps} />);
+    const nameInput = screen.getByLabelText(/ad soyad/i);
+
+    nameInput.focus();
+    expect(nameInput).toHaveFocus();
+
+    rerender(
+      <BookingForm
+        {...defaultProps}
+        customerName="C"
+        fieldErrors={{ customerName: undefined }}
+      />,
+    );
+
+    expect(nameInput).toHaveFocus();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
   it("keeps optional fields behind a disclosure without losing controlled values", async () => {
     const { rerender } = render(<BookingForm {...defaultProps} />);
 

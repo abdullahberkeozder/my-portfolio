@@ -152,7 +152,8 @@ function BookingForm({
     Boolean(customerEmail || notes || fieldErrors.customerEmail),
   );
   const errorSummaryRef = useRef(null);
-  const hasErrors = Object.keys(fieldErrors).length > 0 || Boolean(submissionError);
+  const hasErrors =
+    Object.values(fieldErrors).some(Boolean) || Boolean(submissionError);
 
   useEffect(() => {
     if (hasErrors) errorSummaryRef.current?.focus();
