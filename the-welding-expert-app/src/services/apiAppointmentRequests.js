@@ -39,6 +39,7 @@ export async function getAppointmentRequests({
   createdAfter = null,
   search = "",
   status = "",
+  leadQuality = "",
 } = {}) {
   const supabase = await getSupabaseClient();
   let query = supabase
@@ -57,6 +58,12 @@ export async function getAppointmentRequests({
 
   if (status && status !== "all" && status !== "archived") {
     query = query.eq("status", status);
+  }
+
+  if (leadQuality && leadQuality !== "all") {
+    query = leadQuality === "untagged"
+      ? query.is("lead_quality", null)
+      : query.eq("lead_quality", leadQuality);
   }
 
   if (search) {

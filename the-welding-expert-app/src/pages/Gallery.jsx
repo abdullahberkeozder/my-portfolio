@@ -7,8 +7,10 @@ import {
   HiOutlineCalendarDays,
   HiOutlineCheckCircle,
   HiOutlineEye,
+  HiOutlineMapPin,
   HiOutlinePhoto,
   HiOutlineSparkles,
+  HiOutlineWrenchScrewdriver,
 } from "react-icons/hi2";
 
 import SEO from "../ui/SEO";
@@ -18,8 +20,16 @@ import useScrollReveal from "../hooks/useScrollReveal";
 import { getGalleryItems } from "../services/apiGallery";
 import { logEvent } from "../services/apiAnalytics";
 import { ANALYTICS_EVENTS } from "../analytics/events";
+import {
+  getGalleryGroupKey,
+  getServiceGroupByKey,
+  SERVICE_GROUPS,
+} from "../config/serviceTaxonomy";
 import GalleryCaseDialog from "../features/gallery/GalleryCaseDialog";
 import { getGalleryImageAlt } from "../utils/galleryMedia";
+
+const ALL_GROUPS = "all";
+const ALL_SUBCATEGORIES = "all";
 
 const ScrollWrapper = styled.div`
   position: relative;
@@ -277,45 +287,64 @@ const ActionLink = styled(Link)`
   }
 `;
 
-const StatsGrid = styled.div`
+const ServiceModes = styled.section`
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-block: 1px solid var(--color-grey-100);
+  background: transparent;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ServiceMode = styled.div`
+  min-width: 0;
+  padding: 1.8rem 2.4rem;
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr);
   gap: 1.2rem;
+  align-items: start;
 
-  @media (max-width: 820px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  & + & {
+    border-left: 1px solid var(--color-grey-100);
   }
 
-  @media (max-width: 520px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  & svg {
+    width: 2.2rem;
+    height: 2.2rem;
+    margin-top: 0.1rem;
+    color: var(--color-brand-600);
+  }
+
+  & div {
+    min-width: 0;
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  @media (max-width: 640px) {
+    padding: 1.5rem 0.4rem;
+
+    & + & {
+      border-top: 1px solid var(--color-grey-100);
+      border-left: 0;
+    }
   }
 `;
 
-const StatCard = styled.div`
-  border: 1px solid var(--color-grey-100);
-  border-radius: var(--border-radius-md);
-  padding: 1.6rem;
-  background: var(--color-grey-0);
-
-  @media (max-width: 520px) {
-    padding: 1.2rem;
-  }
-`;
-
-const StatValue = styled.strong`
+const ServiceModeTitle = styled.strong`
   display: block;
   color: var(--color-grey-900);
-  font-size: var(--font-size-xl);
-
-  @media (max-width: 520px) {
-    font-size: var(--font-size-title);
-  }
+  font-size: var(--font-size-md);
+  line-height: 1.3;
 `;
 
-const StatLabel = styled.span`
+const ServiceModeText = styled.span`
   color: var(--color-grey-500);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.5;
 `;
 
 const Section = styled.section`
@@ -457,9 +486,17 @@ const MediaImage = styled(ResponsiveImage)`
 `;
 
 const FilterBar = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0.8rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    & > button:first-child {
+      grid-column: 1 / -1;
+    }
+  }
 `;
 
 const FilterButton = styled.button`
@@ -472,6 +509,41 @@ const FilterButton = styled.button`
   background: ${(props) => (props.$active ? "var(--color-brand-700)" : "var(--color-grey-0)")};
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-extrabold);
+  line-height: 1.3;
+
+  &:hover {
+    border-color: var(--color-brand-500);
+  }
+`;
+
+const SubcategoryFilters = styled.div`
+  border-top: 1px solid var(--color-grey-100);
+  padding-top: 1.2rem;
+  display: grid;
+  gap: 0.8rem;
+`;
+
+const SubcategoryLabel = styled.p`
+  color: var(--color-grey-600);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+`;
+
+const SubcategoryFilterBar = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+`;
+
+const SubcategoryButton = styled(FilterButton)`
+  color: ${(props) =>
+    props.$active ? "var(--color-brand-800)" : "var(--color-grey-700)"};
+  background: ${(props) =>
+    props.$active ? "var(--color-brand-50)" : "var(--color-grey-0)"};
+
+  @media (max-width: 520px) {
+    flex: 1 1 calc(50% - 0.4rem);
+  }
 `;
 
 const ImageLabel = styled.span`
@@ -691,7 +763,8 @@ const Cta = styled.section`
 
 function Gallery() {
   useScrollReveal();
-  const [activeCategory, setActiveCategory] = useState("Tümü");
+  const [activeGroup, setActiveGroup] = useState(ALL_GROUPS);
+  const [activeSubcategory, setActiveSubcategory] = useState(ALL_SUBCATEGORIES);
   const [selectedCase, setSelectedCase] = useState(null);
   const {
     data: allItems = [],
@@ -702,20 +775,36 @@ function Gallery() {
     queryFn: () => getGalleryItems({ publishedOnly: true }),
   });
 
-  const categories = useMemo(
-    () => [
-      "Tümü",
-      ...Array.from(new Set(allItems.map((item) => item.category).filter(Boolean))),
-    ],
+  const availableGroups = useMemo(
+    () => SERVICE_GROUPS.filter((group) =>
+      allItems.some((item) => getGalleryGroupKey(item.category) === group.key),
+    ),
     [allItems],
   );
 
+  const activeGroupConfig = getServiceGroupByKey(activeGroup);
+
+  const subcategories = useMemo(() => {
+    if (activeGroup === ALL_GROUPS) return [];
+
+    return Array.from(
+      new Set(
+        allItems
+          .filter((item) => getGalleryGroupKey(item.category) === activeGroup)
+          .map((item) => item.category)
+          .filter(Boolean),
+      ),
+    );
+  }, [activeGroup, allItems]);
+
   const filteredItems = useMemo(
-    () =>
-      activeCategory === "Tümü"
-        ? allItems
-        : allItems.filter((item) => item.category === activeCategory),
-    [activeCategory, allItems],
+    () => allItems.filter((item) => {
+      if (activeGroup === ALL_GROUPS) return true;
+      if (getGalleryGroupKey(item.category) !== activeGroup) return false;
+      return activeSubcategory === ALL_SUBCATEGORIES ||
+        item.category === activeSubcategory;
+    }),
+    [activeGroup, activeSubcategory, allItems],
   );
 
   // Önce/sonra: before_image_url olan öğeler
@@ -741,9 +830,35 @@ function Gallery() {
     });
   }
 
-  function selectCategory(category) {
-    setActiveCategory(category);
-    logEvent(ANALYTICS_EVENTS.GALLERY_FILTER_SELECTED, { category });
+  function selectGroup(groupKey) {
+    const resultCount = groupKey === ALL_GROUPS
+      ? allItems.length
+      : allItems.filter(
+        (item) => getGalleryGroupKey(item.category) === groupKey,
+      ).length;
+
+    setActiveGroup(groupKey);
+    setActiveSubcategory(ALL_SUBCATEGORIES);
+    logEvent(ANALYTICS_EVENTS.GALLERY_FILTER_SELECTED, {
+      group: groupKey,
+      subcategory: null,
+      result_count: resultCount,
+    });
+  }
+
+  function selectSubcategory(subcategory) {
+    const resultCount = allItems.filter((item) =>
+      getGalleryGroupKey(item.category) === activeGroup &&
+      (subcategory === ALL_SUBCATEGORIES || item.category === subcategory),
+    ).length;
+
+    setActiveSubcategory(subcategory);
+    logEvent(ANALYTICS_EVENTS.GALLERY_FILTER_SELECTED, {
+      group: activeGroup,
+      subcategory:
+        subcategory === ALL_SUBCATEGORIES ? null : subcategory,
+      result_count: resultCount,
+    });
   }
 
   if (isLoading) {
@@ -807,24 +922,22 @@ function Gallery() {
           </HeroContent>
         </Hero>
 
-        <StatsGrid aria-label="Galeri özeti" data-reveal>
-          <StatCard>
-            <StatValue>Yerinde</StatValue>
-            <StatLabel>Servis seçeneği</StatLabel>
-          </StatCard>
-          <StatCard>
-            <StatValue>Atölye</StatValue>
-            <StatLabel>Üretim ve onarım</StatLabel>
-          </StatCard>
-          <StatCard>
-            <StatValue>2 saat</StatValue>
-            <StatLabel>Standart randevu aralığı</StatLabel>
-          </StatCard>
-          <StatCard>
-            <StatValue>09-21</StatValue>
-            <StatLabel>Planlama saatleri</StatLabel>
-          </StatCard>
-        </StatsGrid>
+        <ServiceModes aria-label="Çalışma biçimleri" data-reveal>
+          <ServiceMode>
+            <HiOutlineMapPin aria-hidden="true" />
+            <div>
+              <ServiceModeTitle>Adresinizde hizmet</ServiceModeTitle>
+              <ServiceModeText>Ankara&apos;da yerinde keşif ve uygulama</ServiceModeText>
+            </div>
+          </ServiceMode>
+          <ServiceMode>
+            <HiOutlineWrenchScrewdriver aria-hidden="true" />
+            <div>
+              <ServiceModeTitle>Atölyede üretim</ServiceModeTitle>
+              <ServiceModeText>Özel ölçü imalat ve kontrollü onarım</ServiceModeText>
+            </div>
+          </ServiceMode>
+        </ServiceModes>
 
         {isError && (
           <GalleryNotice role="alert">
@@ -849,18 +962,53 @@ function Gallery() {
                 İhtiyacınıza en yakın hizmeti seçin; önce/sonra vakaları ve tamamlanan uygulamalar birlikte güncellensin.
               </MutedText>
             </SectionHeader>
-            <FilterBar aria-label="İş örneği kategorileri">
-              {categories.map((category) => (
+            <FilterBar role="group" aria-label="Ana hizmet kategorileri">
+              <FilterButton
+                type="button"
+                $active={activeGroup === ALL_GROUPS}
+                aria-pressed={activeGroup === ALL_GROUPS}
+                onClick={() => selectGroup(ALL_GROUPS)}>
+                Tümü
+              </FilterButton>
+              {availableGroups.map((group) => (
                 <FilterButton
-                  key={category}
+                  key={group.key}
                   type="button"
-                  $active={activeCategory === category}
-                  aria-pressed={activeCategory === category}
-                  onClick={() => selectCategory(category)}>
-                  {category}
+                  $active={activeGroup === group.key}
+                  aria-pressed={activeGroup === group.key}
+                  onClick={() => selectGroup(group.key)}>
+                  {group.title}
                 </FilterButton>
               ))}
             </FilterBar>
+            {subcategories.length > 1 && (
+              <SubcategoryFilters>
+                <SubcategoryLabel>
+                  {activeGroupConfig?.title} içinde iş türü
+                </SubcategoryLabel>
+                <SubcategoryFilterBar
+                  role="group"
+                  aria-label={`${activeGroupConfig?.title} alt kategorileri`}>
+                  <SubcategoryButton
+                    type="button"
+                    $active={activeSubcategory === ALL_SUBCATEGORIES}
+                    aria-pressed={activeSubcategory === ALL_SUBCATEGORIES}
+                    onClick={() => selectSubcategory(ALL_SUBCATEGORIES)}>
+                    Bu gruptaki tüm işler
+                  </SubcategoryButton>
+                  {subcategories.map((subcategory) => (
+                    <SubcategoryButton
+                      key={subcategory}
+                      type="button"
+                      $active={activeSubcategory === subcategory}
+                      aria-pressed={activeSubcategory === subcategory}
+                      onClick={() => selectSubcategory(subcategory)}>
+                      {subcategory}
+                    </SubcategoryButton>
+                  ))}
+                </SubcategoryFilterBar>
+              </SubcategoryFilters>
+            )}
           </Section>
         )}
 
@@ -976,7 +1124,11 @@ function Gallery() {
           <ActionLink
             to="/appointment#appointment-calendar"
             onClick={() => logEvent(ANALYTICS_EVENTS.GALLERY_BOOKING_CTA_CLICKED, {
-              category: activeCategory,
+              group: activeGroup,
+              subcategory:
+                activeSubcategory === ALL_SUBCATEGORIES
+                  ? null
+                  : activeSubcategory,
               placement: "gallery_footer",
             })}>
             <HiOutlineSparkles />

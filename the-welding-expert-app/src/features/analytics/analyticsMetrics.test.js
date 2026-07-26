@@ -88,8 +88,8 @@ describe("analytics metrics", () => {
       requests: 3,
       qualified: 2,
       qualifiedRate: 67,
-      confirmed: 2,
-      confirmationRate: 67,
+      confirmed: 1,
+      confirmationRate: 50,
       completed: 1,
       completionRate: 33,
     });

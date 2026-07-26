@@ -7,7 +7,7 @@
 --    - hinge_before.png, hinge_after.png
 --    - railing_before.png, railing_after.png
 --    - shelf_before.png, shelf_after.png
---    - landscaping.png
+--    - landscaping_after.png
 --    - painting.png
 --    - renovation.png
 -- 
@@ -78,8 +78,8 @@ values
     'Bahçe ve peyzaj',
     'Gölbaşı, Ankara',
     'https://YOUR_PROJECT_REF.supabase.co/storage/v1/object/public/gallery/landscaping_after.png',
-    'https://YOUR_PROJECT_REF.supabase.co/storage/v1/object/public/gallery/landscaping_before.png',
-    'Karmakarışık Bahçe',
+    null,
+    null,
     'Düzenlenmiş Bahçe ve Çit',
     array['Zemin temizliği ve tesviyesi', 'Panel çit direklerinin montajı ve kaynağı', 'Çim biçme ve ağaç budama', 'Toprak havalandırma'],
     'Metrekare veya günlük fiyatlandırma',

@@ -36,6 +36,8 @@ import {
   restoreAppointmentRequest,
 } from "../services/apiAppointmentRequests";
 import supabase from "../services/supabase";
+import { getAppointmentAttachments } from "../services/apiAppointmentAttachments";
+import AppointmentAttachmentGallery from "../features/bookings/components/AppointmentAttachmentGallery";
 
 const STATUS_OPTIONS = [
   {
@@ -208,6 +210,26 @@ const FilterGroup = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.8rem;
+`;
+
+const QualityFilter = styled.label`
+  min-width: min(100%, 22rem);
+  display: grid;
+  gap: 0.5rem;
+  color: var(--color-grey-600);
+  font-size: 1.2rem;
+  font-weight: 800;
+
+  & select {
+    min-height: 4.4rem;
+    border: 1px solid var(--color-grey-200);
+    border-radius: var(--border-radius-sm);
+    padding: 0.8rem 1rem;
+    color: var(--color-grey-700);
+    background: var(--color-grey-0);
+    font-size: 1.35rem;
+    font-weight: 700;
+  }
 `;
 
 const FilterButton = styled.button`
@@ -558,6 +580,7 @@ async function copyToClipboard(value, successMessage) {
 
 function RequestItem({
   request,
+  attachments,
   isUpdating,
   isDeleting,
   isRestoring,
@@ -658,6 +681,7 @@ function RequestItem({
             <span>{customerNote}</span>
           </CustomerNote>
         )}
+        <AppointmentAttachmentGallery attachments={attachments} />
         {request.customer_action && (
           <CustomerActionBox>
             <strong>{getCustomerActionLabel(request.customer_action)}</strong>
@@ -683,6 +707,12 @@ function RequestItem({
         )}
         <MutedText>
           Oluşturulma: {formatCreatedAt(request.created_at)}
+        </MutedText>
+        <MutedText>
+          İlk temas:{" "}
+          {request.first_contacted_at
+            ? formatCreatedAt(request.first_contacted_at)
+            : "Henüz kaydedilmedi"}
         </MutedText>
         {request.archived_at && (
           <MutedText style={{ color: "var(--color-red-600)", fontWeight: "bold" }}>
@@ -815,20 +845,23 @@ function Bookings() {
   const [searchParams] = useSearchParams();
   const initialStatus = searchParams.get("status") || "all";
   const initialSearch = searchParams.get("search") || "";
+  const initialLeadQuality = searchParams.get("lead_quality") || "all";
 
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [statusFilter, setStatusFilter] = useState(initialStatus);
+  const [leadQualityFilter, setLeadQualityFilter] = useState(initialLeadQuality);
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 20;
 
   useEffect(() => {
     setSearchQuery(searchParams.get("search") || "");
     setStatusFilter(searchParams.get("status") || "all");
+    setLeadQualityFilter(searchParams.get("lead_quality") || "all");
   }, [searchParams]);
 
   useEffect(() => {
     setPage(1);
-  }, [searchQuery, statusFilter]);
+  }, [leadQualityFilter, searchQuery, statusFilter]);
 
   const {
     data: admin,
@@ -849,13 +882,21 @@ function Bookings() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["appointment-requests", showArchived, page, statusFilter, cleanSearch],
+    queryKey: [
+      "appointment-requests",
+      showArchived,
+      page,
+      statusFilter,
+      leadQualityFilter,
+      cleanSearch,
+    ],
     queryFn: () =>
       getAppointmentRequests({
         showArchived,
         page,
         pageSize: PAGE_SIZE,
         status: statusFilter,
+        leadQuality: leadQualityFilter,
         search: cleanSearch,
       }),
     enabled: Boolean(isAdmin),
@@ -864,6 +905,22 @@ function Bookings() {
 
   const requests = requestsResult.data;
   const totalCount = requestsResult.count;
+  const requestIds = requests.map((request) => request.id);
+  const { data: attachments = [] } = useQuery({
+    queryKey: ["appointment-attachments", requestIds],
+    queryFn: () => getAppointmentAttachments(requestIds),
+    enabled: Boolean(isAdmin && requestIds.length),
+    staleTime: 4 * 60 * 1000,
+  });
+  const attachmentsByRequest = attachments.reduce((groups, attachment) => {
+    const requestAttachments =
+      groups[attachment.appointment_request_id] || [];
+    groups[attachment.appointment_request_id] = [
+      ...requestAttachments,
+      attachment,
+    ];
+    return groups;
+  }, {});
 
   const newRequests = requests.filter(
     (request) => request.status === "new",
@@ -945,6 +1002,19 @@ function Bookings() {
           queryClient.invalidateQueries({ queryKey: ["appointment-requests"] });
         },
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "appointment_attachments",
+        },
+        () => {
+          queryClient.invalidateQueries({
+            queryKey: ["appointment-attachments"],
+          });
+        },
+      )
       .subscribe();
 
     return () => {
@@ -1005,6 +1075,21 @@ function Bookings() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </SearchContainer>
+
+          <QualityFilter>
+            Talep kalitesi
+            <select
+              aria-label="Talep kalitesi filtresi"
+              value={leadQualityFilter}
+              onChange={(event) => setLeadQualityFilter(event.target.value)}>
+              <option value="all">Tüm kalite etiketleri</option>
+              <option value="qualified">Nitelikli talep</option>
+              <option value="unqualified">Niteliksiz talep</option>
+              <option value="outside_area">Hizmet bölgesi dışında</option>
+              <option value="spam">Spam</option>
+              <option value="untagged">Etiketlenmemiş</option>
+            </select>
+          </QualityFilter>
 
           <FilterGroup>
             <FilterButton
@@ -1123,6 +1208,7 @@ function Bookings() {
                 <RequestItem
                   key={request.id}
                   request={request}
+                  attachments={attachmentsByRequest[request.id] || []}
                   isUpdating={isUpdatingRequest}
                   isDeleting={isDeletingRequest}
                   isRestoring={isRestoringRequest}

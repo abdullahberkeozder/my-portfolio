@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import ProgressiveImage from "./ProgressiveImage";
@@ -37,5 +37,33 @@ describe("ProgressiveImage", () => {
     expect(sources[1]).not.toHaveAttribute("media");
     expect(image).toHaveAttribute("src", "/fallback.jpg");
     expect(image).toHaveAttribute("alt", "Tamamlanan metal kapı uygulaması");
+  });
+
+  it("falls back to the original image once when an optimized source fails", () => {
+    render(
+      <ProgressiveImage
+        src="https://project.supabase.co/storage/v1/render/image/public/gallery/work.png?width=640"
+        fallbackSrc="https://project.supabase.co/storage/v1/object/public/gallery/work.png"
+        alt="Tamamlanan uygulama"
+      />,
+    );
+
+    const image = screen.getByAltText("Tamamlanan uygulama");
+
+    fireEvent.error(image);
+
+    expect(image).toHaveAttribute(
+      "src",
+      "https://project.supabase.co/storage/v1/object/public/gallery/work.png",
+    );
+    expect(
+      screen.queryByLabelText("Tamamlanan uygulama görseli yüklenemedi"),
+    ).not.toBeInTheDocument();
+
+    fireEvent.error(image);
+
+    expect(
+      screen.getByLabelText("Tamamlanan uygulama görseli yüklenemedi"),
+    ).toBeInTheDocument();
   });
 });

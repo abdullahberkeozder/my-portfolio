@@ -1,18 +1,52 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createAppointmentRequest,
+  getAppointmentRequests,
   getPublicAppointmentRequest,
   submitAppointmentCustomerAction,
 } from "./apiAppointmentRequests";
 
-const { rpc } = vi.hoisted(() => ({ rpc: vi.fn() }));
+const { from, query, rpc } = vi.hoisted(() => {
+  const queryBuilder = {
+    select: vi.fn(),
+    is: vi.fn(),
+    eq: vi.fn(),
+    order: vi.fn(),
+    range: vi.fn(),
+  };
+
+  Object.values(queryBuilder).forEach((method) => method.mockReturnValue(queryBuilder));
+
+  return {
+    from: vi.fn(() => queryBuilder),
+    query: queryBuilder,
+    rpc: vi.fn(),
+  };
+});
 
 vi.mock("./supabase", () => ({
-  default: { rpc },
+  default: { from, rpc },
 }));
 
 describe("public appointment RPC client", () => {
   beforeEach(() => rpc.mockReset());
+
+  it("applies an explicit lead-quality filter to admin request queries", async () => {
+    query.range.mockResolvedValueOnce({
+      data: [{ id: "outside-1", lead_quality: "outside_area" }],
+      count: 1,
+      error: null,
+    });
+
+    await expect(getAppointmentRequests({
+      leadQuality: "outside_area",
+    })).resolves.toEqual({
+      data: [{ id: "outside-1", lead_quality: "outside_area" }],
+      count: 1,
+    });
+
+    expect(query.eq).toHaveBeenCalledWith("lead_quality", "outside_area");
+  });
 
   it("preserves the id and public token returned by request creation", async () => {
     const result = {

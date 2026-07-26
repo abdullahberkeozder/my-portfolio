@@ -254,7 +254,7 @@ function AnalyticsDashboard() {
 
           <ChartPanel>
             <ChartTitle>Kanal → talep → onay → tamamlanan iş</ChartTitle>
-            <ChartDescription>WhatsApp verisi yalnız sistemde talep kaydı oluşturulduysa hunide görünür; iletişim tıklaması satış olarak sayılmaz.</ChartDescription>
+            <ChartDescription>Onay oranının paydası yalnızca nitelikli olarak etiketlenen taleplerdir. WhatsApp verisi, sistemde talep kaydı oluşturulduysa hunide görünür.</ChartDescription>
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={operationalFunnel.byChannel}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />

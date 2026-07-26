@@ -160,7 +160,11 @@ const CHANNEL_LABELS = {
 function summarizeRequests(requests) {
   const total = requests.length;
   const qualified = requests.filter((request) => request.lead_quality === "qualified").length;
-  const confirmed = requests.filter((request) => ["confirmed", "completed"].includes(request.status)).length;
+  const confirmed = requests.filter(
+    (request) =>
+      request.lead_quality === "qualified" &&
+      ["confirmed", "completed"].includes(request.status),
+  ).length;
   const completed = requests.filter((request) => request.status === "completed").length;
 
   return {
@@ -168,7 +172,7 @@ function summarizeRequests(requests) {
     qualified,
     qualifiedRate: calcRate(qualified, total),
     confirmed,
-    confirmationRate: calcRate(confirmed, total),
+    confirmationRate: calcRate(confirmed, qualified),
     completed,
     completionRate: calcRate(completed, total),
   };

@@ -11,6 +11,9 @@ export const ANALYTICS_EVENTS = Object.freeze({
   BOOKING_DATE_SHORTCUT_SELECTED: "booking_date_shortcut_selected",
   BOOKING_FULL_CALENDAR_OPENED: "booking_full_calendar_opened",
   BOOKING_OPTIONAL_DETAILS_TOGGLED: "booking_optional_details_toggled",
+  BOOKING_ATTACHMENTS_SELECTED: "booking_attachments_selected",
+  BOOKING_ATTACHMENTS_UPLOAD_COMPLETED:
+    "booking_attachments_upload_completed",
   BOOKING_SLOT_SELECTED: "booking_slot_selected",
   BOOKING_STEP_COMPLETED: "booking_step_completed",
   BOOKING_VALIDATION_FAILED: "booking_validation_failed",

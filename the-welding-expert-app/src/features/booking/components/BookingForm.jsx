@@ -8,6 +8,7 @@ import styled, { css, keyframes } from "styled-components";
 
 import Heading from "../../../ui/Heading";
 import Button from "../../../ui/Button";
+import AppointmentPhotoPicker from "./AppointmentPhotoPicker";
 import { logEvent } from "../../../services/apiAnalytics";
 import { ANALYTICS_EVENTS } from "../../../analytics/events";
 import {
@@ -133,7 +134,9 @@ function BookingForm({
   customerPhone,
   customerEmail,
   notes,
+  attachmentFiles = [],
   isLoading,
+  submissionProgressLabel,
   canSend,
   fieldErrors,
   submissionError,
@@ -143,13 +146,19 @@ function BookingForm({
   onPhoneChange,
   onEmailChange,
   onNotesChange,
+  onAttachmentFilesChange = () => {},
   onRememberDetailsChange,
   onClearSavedDetails,
   onSystemSubmit,
   onStepChange,
 }) {
   const [showOptionalDetails, setShowOptionalDetails] = useState(() =>
-    Boolean(customerEmail || notes || fieldErrors.customerEmail),
+    Boolean(
+      customerEmail ||
+      notes ||
+      attachmentFiles.length ||
+      fieldErrors.customerEmail,
+    ),
   );
   const errorSummaryRef = useRef(null);
   const hasErrors =
@@ -287,6 +296,12 @@ function BookingForm({
                 />
                 <CharacterCount>{notes.length}/1000</CharacterCount>
               </Field>
+
+              <AppointmentPhotoPicker
+                files={attachmentFiles}
+                onChange={onAttachmentFilesChange}
+                disabled={isLoading}
+              />
             </OptionalDetails>
           )}
         </FieldGrid>
@@ -340,7 +355,11 @@ function BookingForm({
           style={{ width: "100%" }}>
           <ButtonContent>
             <ButtonSpinner $visible={isLoading} aria-hidden="true" />
-            <span>{isLoading ? "Talep gönderiliyor" : "Talebi Gönder"}</span>
+            <span>
+              {isLoading
+                ? submissionProgressLabel || "Talep gönderiliyor"
+                : "Talebi Gönder"}
+            </span>
             <ButtonBalance aria-hidden="true" />
           </ButtonContent>
         </Button>
@@ -359,7 +378,9 @@ BookingForm.propTypes = {
   customerPhone: PropTypes.string.isRequired,
   customerEmail: PropTypes.string.isRequired,
   notes: PropTypes.string.isRequired,
+  attachmentFiles: PropTypes.arrayOf(PropTypes.instanceOf(File)),
   isLoading: PropTypes.bool,
+  submissionProgressLabel: PropTypes.string,
   canSend: PropTypes.bool,
   fieldErrors: PropTypes.object.isRequired,
   submissionError: PropTypes.string,
@@ -369,6 +390,7 @@ BookingForm.propTypes = {
   onPhoneChange: PropTypes.func.isRequired,
   onEmailChange: PropTypes.func.isRequired,
   onNotesChange: PropTypes.func.isRequired,
+  onAttachmentFilesChange: PropTypes.func,
   onRememberDetailsChange: PropTypes.func.isRequired,
   onClearSavedDetails: PropTypes.func.isRequired,
   onSystemSubmit: PropTypes.func.isRequired,

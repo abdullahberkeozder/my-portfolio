@@ -47,6 +47,7 @@ create table if not exists public.appointment_requests (
   requested_time time not null,
   channel text not null default 'system',
   status text not null default 'new',
+  first_contacted_at timestamptz,
   message text,
   customer_note text,
   admin_note text,
@@ -102,6 +103,9 @@ alter table public.appointment_requests
 
 alter table public.appointment_requests
   add column if not exists customer_action_at timestamp with time zone;
+
+alter table public.appointment_requests
+  add column if not exists first_contacted_at timestamptz;
 
 -- Preserve existing data while separating notes where their origin can be
 -- inferred from the customer-facing message snapshot.
@@ -527,6 +531,33 @@ begin
 end;
 $$;
 
+create or replace function public.set_appointment_first_contacted_at()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+begin
+  if tg_op = 'UPDATE' and old.first_contacted_at is not null then
+    new.first_contacted_at := old.first_contacted_at;
+    return new;
+  end if;
+
+  if new.status in ('contacted', 'confirmed', 'cancelled', 'completed')
+    and (
+      tg_op = 'INSERT'
+      or old.status is distinct from new.status
+    )
+  then
+    new.first_contacted_at := clock_timestamp();
+  else
+    new.first_contacted_at := null;
+  end if;
+
+  return new;
+end;
+$$;
+
 create or replace function public.sync_legacy_admin_note()
 returns trigger
 language plpgsql
@@ -591,6 +622,14 @@ on public.appointment_requests;
 create trigger set_appointment_requests_updated_at
 before update on public.appointment_requests
 for each row execute function public.set_updated_at();
+
+drop trigger if exists set_appointment_first_contacted_at
+on public.appointment_requests;
+
+create trigger set_appointment_first_contacted_at
+before insert or update of status, first_contacted_at
+on public.appointment_requests
+for each row execute function public.set_appointment_first_contacted_at();
 
 drop trigger if exists protect_appointment_customer_note
 on public.appointment_requests;
@@ -695,6 +734,9 @@ revoke all on function public.handle_appointment_status_slot_sync()
 from public;
 
 revoke all on function public.protect_customer_note()
+from public;
+
+revoke all on function public.set_appointment_first_contacted_at()
 from public;
 
 revoke all on function public.sync_legacy_admin_note()

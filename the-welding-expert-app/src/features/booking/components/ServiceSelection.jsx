@@ -12,41 +12,23 @@ import {
 import styled from "styled-components";
 
 import { ANALYTICS_EVENTS } from "../../../analytics/events";
+import {
+  getServiceGroupByKey,
+  getServiceGroupKey,
+  isDiscoveryService,
+  SERVICE_GROUPS,
+} from "../../../config/serviceTaxonomy";
 import { logEvent } from "../../../services/apiAnalytics";
 import Heading from "../../../ui/Heading";
 import Button from "../../../ui/Button";
 import { Panel, PanelHeader, MutedText } from "./booking.styles";
 
-const SERVICE_GROUPS = [
-  {
-    key: "finish",
-    title: "Boya ve küçük tadilat",
-    description: "Boya, badana, inşaat ve ev içi küçük düzenlemeler",
-    icon: HiOutlineHomeModern,
-    keywords: ["boya", "badana", "tadilat", "inşaat", "insaat"],
-  },
-  {
-    key: "metal",
-    title: "Kaynak ve metal işleri",
-    description: "Kaynak, korkuluk, metal onarım ve imalat işleri",
-    icon: HiOutlineWrenchScrewdriver,
-    keywords: ["kaynak", "korkuluk", "metal", "demir"],
-  },
-  {
-    key: "access",
-    title: "Kapı ve otomasyon",
-    description: "Kapı, kilit, motor ve otomatik geçiş sistemleri",
-    icon: HiOutlineKey,
-    keywords: ["kapı", "kapi", "kilit", "motor", "otomatik", "raylı", "rayli"],
-  },
-  {
-    key: "outdoor",
-    title: "Bahçe ve dış alan",
-    description: "Bahçe düzenleme, peyzaj, çit ve dış alan işleri",
-    icon: HiOutlineSparkles,
-    keywords: ["bahçe", "bahce", "peyzaj", "keşif", "kesif", "teklif"],
-  },
-];
+const SERVICE_GROUP_ICONS = {
+  finish: HiOutlineHomeModern,
+  metal: HiOutlineWrenchScrewdriver,
+  access: HiOutlineKey,
+  outdoor: HiOutlineSparkles,
+};
 
 const UNSURE_SERVICE = {
   title: "Yerinde keşif ve teklif",
@@ -57,21 +39,6 @@ const UNSURE_SERVICE = {
 
 function getServiceValue(service) {
   return service.service_key || service.serviceType || service.title;
-}
-
-function isDiscoveryService(service) {
-  return getServiceValue(service).toLocaleLowerCase("tr-TR").includes("keşif");
-}
-
-function getServiceGroup(service) {
-  const searchable = [service.title, service.problem, service.description, service.text]
-    .filter(Boolean)
-    .join(" ")
-    .toLocaleLowerCase("tr-TR");
-
-  return SERVICE_GROUPS.find((group) =>
-    group.keywords.some((keyword) => searchable.includes(keyword)),
-  )?.key || "outdoor";
 }
 
 const ServiceGrid = styled.div`
@@ -263,15 +230,17 @@ function ServiceSelection({ services, selectedService, onServiceSelect, onStepCh
     () => normalizedServices.filter((service) => (
       activeGroup === "unsure"
         ? isDiscoveryService(service)
-        : !isDiscoveryService(service) && getServiceGroup(service) === activeGroup
+        : !isDiscoveryService(service) && getServiceGroupKey(service) === activeGroup
     )),
     [activeGroup, normalizedServices],
   );
-  const group = SERVICE_GROUPS.find((item) => item.key === activeGroup);
+  const group = getServiceGroupByKey(activeGroup);
 
   function handleGroupSelect(nextGroup) {
     const serviceCount = normalizedServices.filter(
-      (service) => !isDiscoveryService(service) && getServiceGroup(service) === nextGroup,
+      (service) =>
+        !isDiscoveryService(service) &&
+        getServiceGroupKey(service) === nextGroup,
     ).length;
     setActiveGroup(nextGroup);
     logEvent(ANALYTICS_EVENTS.BOOKING_SERVICE_GROUP_SELECTED, {
@@ -342,9 +311,11 @@ function ServiceSelection({ services, selectedService, onServiceSelect, onStepCh
         <>
           <ServiceGrid role="group" aria-label="İş türleri">
             {SERVICE_GROUPS.map((item) => {
-              const Icon = item.icon;
+              const Icon = SERVICE_GROUP_ICONS[item.key];
               const serviceCount = normalizedServices.filter(
-                (service) => !isDiscoveryService(service) && getServiceGroup(service) === item.key,
+                (service) =>
+                  !isDiscoveryService(service) &&
+                  getServiceGroupKey(service) === item.key,
               ).length;
               if (serviceCount === 0) return null;
 

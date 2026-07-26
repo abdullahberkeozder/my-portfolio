@@ -65,6 +65,7 @@ const ErrorState = styled.span`
 
 function ProgressiveImage({
   src,
+  fallbackSrc,
   alt,
   className,
   fit = "cover",
@@ -79,8 +80,11 @@ function ProgressiveImage({
 }) {
   const [loadedSrc, setLoadedSrc] = useState(null);
   const [failedSrc, setFailedSrc] = useState(null);
-  const loaded = revealImmediately || loadedSrc === src;
-  const failed = failedSrc === src;
+  const [fallbackForSrc, setFallbackForSrc] = useState(null);
+  const activeSrc =
+    fallbackSrc && fallbackForSrc === src ? fallbackSrc : src;
+  const loaded = revealImmediately || loadedSrc === activeSrc;
+  const failed = failedSrc === activeSrc;
 
   return (
     <Frame
@@ -101,18 +105,25 @@ function ProgressiveImage({
           />
         ))}
         <Image
-          src={src}
+          src={activeSrc}
           alt={alt}
           $fit={fit}
           $position={position}
           $loaded={loaded}
           onLoad={(event) => {
-            setLoadedSrc(src);
+            setLoadedSrc(activeSrc);
             setFailedSrc(null);
             onLoad?.(event);
           }}
           onError={(event) => {
-            setFailedSrc(src);
+            if (fallbackSrc && activeSrc !== fallbackSrc) {
+              setFallbackForSrc(src);
+              setFailedSrc(null);
+              setLoadedSrc(null);
+              return;
+            }
+
+            setFailedSrc(activeSrc);
             setLoadedSrc(null);
             onError?.(event);
           }}
