@@ -80,7 +80,10 @@ function BookingCalendar({
     if (slotConflictMessage) conflictNoticeRef.current?.focus();
   }, [slotConflictMessage]);
 
-  const totalWeekSlots = weekDays.reduce((acc, day) => {
+  const visibleWeekDays = weekDays.filter((day) => day.dateValue >= todayKey);
+  const visibleWeekStart =
+    weekStartKey < todayKey ? new Date(`${todayKey}T00:00:00`) : weekStart;
+  const totalWeekSlots = visibleWeekDays.reduce((acc, day) => {
     return acc + (day.slots?.filter((slot) => slot.isAvailable).length || 0);
   }, 0);
   return (
@@ -159,7 +162,7 @@ function BookingCalendar({
                 {new Intl.DateTimeFormat("tr-TR", {
                   day: "numeric",
                   month: "short",
-                }).format(weekStart)}{" "}
+                }).format(visibleWeekStart)}{" "}
                 -{" "}
                 {new Intl.DateTimeFormat("tr-TR", {
                   day: "numeric",
@@ -176,22 +179,19 @@ function BookingCalendar({
           </DateToolbar>
 
           <WeekGrid role="group" aria-label="Haftanın günleri">
-            {weekDays.map((day) => {
+            {visibleWeekDays.map((day) => {
               const isSelected = selectedDate === day.dateValue;
-              const isPast = day.dateValue < todayKey;
               const freeSlotCount = day.slots.filter((slot) => slot.isAvailable).length;
               const hasAvailableSlot = freeSlotCount > 0;
               const isSelectable =
-                !isPast &&
                 hasAvailableSlot &&
                 !["closed", "unavailable"].includes(day.status);
               const visualStatus =
-                isPast || (!hasAvailableSlot && ["available", "limited"].includes(day.status))
+                !hasAvailableSlot && ["available", "limited"].includes(day.status)
                   ? "closed"
                   : day.status;
-              const dayStatusText = isPast
-                ? "Geçmiş"
-                : !hasAvailableSlot && ["available", "limited"].includes(day.status)
+              const dayStatusText =
+                !hasAvailableSlot && ["available", "limited"].includes(day.status)
                   ? "Dolu"
                   : day.statusText || statusLabel[day.status];
 

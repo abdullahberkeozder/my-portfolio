@@ -67,7 +67,7 @@ describe("CustomerBooking availability safety", () => {
     );
   });
 
-  it("keeps unverified dates visible but unavailable for selection", async () => {
+  it("keeps only current and future unverified dates visible and unavailable", async () => {
     renderPage();
     selectPaintingService();
 
@@ -82,8 +82,15 @@ describe("CustomerBooking availability safety", () => {
     );
 
     const dateControls = document.querySelectorAll("[data-date-value]");
-    expect(dateControls).toHaveLength(7);
-    dateControls.forEach((control) => expect(control).toBeDisabled());
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    expect(dateControls.length).toBeGreaterThan(0);
+    dateControls.forEach((control) => {
+      const controlDate = new Date(`${control.dataset.dateValue}T00:00:00`);
+      expect(controlDate.getTime()).toBeGreaterThanOrEqual(today.getTime());
+      expect(control).toBeDisabled();
+    });
     expect(screen.getAllByText("Bağlantı hatası").length).toBeGreaterThan(0);
     expect(screen.getByRole("heading", { name: /bu hafta uygun saat yok/i })).toBeInTheDocument();
     expect(

@@ -65,6 +65,21 @@ describe("BookingCalendar Component", () => {
     expect(screen.queryByRole("button", { name: "Yarın" })).not.toBeInTheDocument();
   });
 
+  it("does not show days that have already passed in the current week", () => {
+    render(
+      <BookingCalendar
+        {...defaultProps}
+        todayKey="2026-07-07"
+        selectedDate=""
+        selectedDay={null}
+        availableSlots={[]}
+      />,
+    );
+
+    expect(screen.queryByTestId("booking-day-2026-07-06")).not.toBeInTheDocument();
+    expect(screen.getByTestId("booking-day-2026-07-07")).toBeInTheDocument();
+  });
+
   it("calls onDateSelect when an available day is clicked", async () => {
     const onDateSelect = vi.fn();
     render(<BookingCalendar {...defaultProps} onDateSelect={onDateSelect} />);
