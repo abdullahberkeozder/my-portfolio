@@ -156,6 +156,28 @@ const NextStep = styled.div`
   }
 `;
 
+const AttachmentStatus = styled.p`
+  width: 100%;
+  max-width: 54rem;
+  border-left: 3px solid
+    ${(props) =>
+      props.$hasError
+        ? "var(--color-yellow-700)"
+        : "var(--color-green-700)"};
+  padding: 1rem 1.2rem;
+  color: ${(props) =>
+    props.$hasError
+      ? "var(--color-status-warning-text)"
+      : "var(--color-status-success-text)"};
+  background: ${(props) =>
+    props.$hasError
+      ? "var(--color-status-warning-bg)"
+      : "var(--color-status-success-bg)"};
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-align: left;
+`;
+
 const ButtonGroup = styled.div`
   width: 100%;
   max-width: 40rem;
@@ -178,6 +200,7 @@ function BookingSuccess({
   customerPhone,
   bookingId,
   publicToken,
+  attachmentUpload,
   onReset,
 }) {
   const panelRef = useRef(null);
@@ -210,6 +233,16 @@ Talebime fotoğraf veya ek bilgi iletmek istiyorum. Teşekkürler.`;
       <Heading id="booking-success-title" as="h2">Talebiniz alındı</Heading>
       <SuccessLead>Hizmet ve zaman tercihiniz ekibe iletildi.</SuccessLead>
       <RequestStatus>Uygunluk teyidi bekleniyor</RequestStatus>
+
+      {attachmentUpload?.selected > 0 && (
+        <AttachmentStatus
+          role="status"
+          $hasError={attachmentUpload.failed > 0}>
+          {attachmentUpload.failed > 0
+            ? `Talebiniz kaydedildi. ${attachmentUpload.failed} fotoğraf yüklenemedi; dilerseniz WhatsApp üzerinden iletebilirsiniz.`
+            : `${attachmentUpload.uploaded} fotoğraf talebinize güvenle eklendi.`}
+        </AttachmentStatus>
+      )}
 
       <SuccessDetails aria-label="Talep özeti">
         <DetailItem>
@@ -280,6 +313,11 @@ BookingSuccess.propTypes = {
   customerPhone: PropTypes.string,
   bookingId: PropTypes.string,
   publicToken: PropTypes.string,
+  attachmentUpload: PropTypes.shape({
+    selected: PropTypes.number.isRequired,
+    uploaded: PropTypes.number.isRequired,
+    failed: PropTypes.number.isRequired,
+  }),
   onReset: PropTypes.func.isRequired,
 };
 

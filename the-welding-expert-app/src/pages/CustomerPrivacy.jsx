@@ -81,6 +81,7 @@ function CustomerPrivacy() {
             <li>Ad, telefon ve isteğe bağlı e-posta bilgisi</li>
             <li>Seçtiğiniz hizmet, tarih ve saat tercihi</li>
             <li>Değişiklik veya iptal isteği, işlem notu ve geri bildirim</li>
+            <li>Talebe isteğe bağlı olarak eklediğiniz iş fotoğrafları</li>
             <li>Hizmet deneyimini iyileştirmek için anonim kullanım olayları</li>
           </ul>
         </Section>
@@ -88,6 +89,11 @@ function CustomerPrivacy() {
         <Section>
           <Heading as="h2">Bilgiler neden kullanılır?</Heading>
           <p>Ekibin talebinizi değerlendirmesi, uygunluğu teyit etmesi, sizinle iletişim kurması, değişiklik veya iptal isteğinizi sonuçlandırması ve hizmet kalitesini ölçmesi için kullanılır.</p>
+        </Section>
+
+        <Section>
+          <Heading as="h2">Fotoğraflar nasıl korunur?</Heading>
+          <p>Talebe eklenen fotoğraflar genel iş galerisinden ayrı, özel bir alanda saklanır. Yalnızca talebi yönetmeye yetkili ekip üyeleri süreli erişim bağlantılarıyla görüntüleyebilir. Arşivlenen taleplere ait fotoğraflar en geç 90 gün içinde silinir.</p>
         </Section>
 
         <Section>

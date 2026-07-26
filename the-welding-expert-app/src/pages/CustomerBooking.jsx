@@ -23,6 +23,7 @@ import SEO from "../ui/SEO";
 import Button from "../ui/Button";
 import { getAvailabilityDays } from "../services/apiAvailability";
 import { createAppointmentRequest } from "../services/apiAppointmentRequests";
+import { uploadAppointmentAttachments } from "../services/apiAppointmentAttachments";
 import { getGalleryItems } from "../services/apiGallery";
 import BookingCalendar from "../features/booking/components/BookingCalendar";
 import BookingForm from "../features/booking/components/BookingForm";
@@ -492,6 +493,9 @@ function CustomerBooking() {
     }
   });
   const [notes, setNotes] = useState("");
+  const [attachmentFiles, setAttachmentFiles] = useState([]);
+  const [attachmentUpload, setAttachmentUpload] = useState(null);
+  const [attachmentUploadProgress, setAttachmentUploadProgress] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [submissionError, setSubmissionError] = useState("");
   const [rememberDetails, setRememberDetails] = useState(false);
@@ -566,6 +570,9 @@ function CustomerBooking() {
       setCustomerEmail("");
     }
     setNotes("");
+    setAttachmentFiles([]);
+    setAttachmentUpload(null);
+    setAttachmentUploadProgress(null);
     setFieldErrors({});
     setSubmissionError("");
     setSelectedSlot(null);
@@ -656,8 +663,40 @@ function CustomerBooking() {
   )}`;
   const phoneHref = `tel:+${BUSINESS_WHATSAPP_NUMBER}`;
   const { mutate: submitRequest, isLoading } = useMutation({
-    mutationFn: createAppointmentRequest,
-    onSuccess: (bookingResult) => {
+    mutationFn: async ({ request, files }) => {
+      const bookingResult = await createAppointmentRequest(request);
+      const bookingId =
+        typeof bookingResult === "string" ? bookingResult : bookingResult?.id;
+      const publicToken =
+        typeof bookingResult === "object" ? bookingResult?.public_token : null;
+
+      let uploadResult = {
+        selected: files.length,
+        uploaded: 0,
+        failed: files.length,
+      };
+
+      if (files.length && bookingId && publicToken) {
+        try {
+          setAttachmentUploadProgress({
+            completed: 0,
+            total: files.length,
+          });
+          uploadResult = await uploadAppointmentAttachments({
+            requestId: bookingId,
+            publicToken,
+            files,
+            onProgress: (completed, total) =>
+              setAttachmentUploadProgress({ completed, total }),
+          });
+        } catch {
+          // The appointment is already saved; attachment errors are non-blocking.
+        }
+      }
+
+      return { bookingResult, uploadResult };
+    },
+    onSuccess: ({ bookingResult, uploadResult }) => {
       const bookingId =
         typeof bookingResult === "string" ? bookingResult : bookingResult?.id;
       const publicToken =
@@ -666,6 +705,8 @@ function CustomerBooking() {
       setIsSubmitted(true);
       setCreatedBookingId(bookingId);
       setCreatedBookingToken(publicToken);
+      setAttachmentUpload(uploadResult);
+      setAttachmentUploadProgress(null);
 
       if (rememberDetails) {
         try {
@@ -692,6 +733,13 @@ function CustomerBooking() {
         operation_id: publicToken || bookingId,
         service_type: selectedService,
       });
+      if (uploadResult.selected > 0) {
+        logEvent(ANALYTICS_EVENTS.BOOKING_ATTACHMENTS_UPLOAD_COMPLETED, {
+          selected_count: uploadResult.selected,
+          uploaded_count: uploadResult.uploaded,
+          failed_count: uploadResult.failed,
+        });
+      }
     },
 
     onError: (error) => {
@@ -848,16 +896,19 @@ function CustomerBooking() {
       channel: "system",
     });
     submitRequest({
-      customer_name: customerName.trim(),
-      customer_phone: customerPhone.trim(),
-      customer_email: customerEmail.trim() || null,
-      service_type: selectedService,
-      requested_date: selectedDay.dateValue,
-      requested_time: selectedSlot.time,
-      channel: "system",
-      status: "new",
-      message: null,
-      customer_note: notes.trim() || null,
+      request: {
+        customer_name: customerName.trim(),
+        customer_phone: customerPhone.trim(),
+        customer_email: customerEmail.trim() || null,
+        service_type: selectedService,
+        requested_date: selectedDay.dateValue,
+        requested_time: selectedSlot.time,
+        channel: "system",
+        status: "new",
+        message: null,
+        customer_note: notes.trim() || null,
+      },
+      files: attachmentFiles,
     });
   }
 
@@ -1006,6 +1057,7 @@ function CustomerBooking() {
               customerPhone={customerPhone}
               bookingId={createdBookingId}
               publicToken={createdBookingToken}
+              attachmentUpload={attachmentUpload}
               onReset={handleReset}
             />
           ) : (
@@ -1107,7 +1159,13 @@ function CustomerBooking() {
                     customerPhone={customerPhone}
                     customerEmail={customerEmail}
                     notes={notes}
+                    attachmentFiles={attachmentFiles}
                     isLoading={isLoading}
+                    submissionProgressLabel={
+                      attachmentUploadProgress
+                        ? `Fotoğraflar yükleniyor ${attachmentUploadProgress.completed}/${attachmentUploadProgress.total}`
+                        : undefined
+                    }
                     canSend={canSend}
                     fieldErrors={fieldErrors}
                     submissionError={submissionError}
@@ -1119,6 +1177,13 @@ function CustomerBooking() {
                     onNotesChange={(value) => {
                       setNotes(value);
                       setSubmissionError("");
+                    }}
+                    onAttachmentFilesChange={(files) => {
+                      setAttachmentFiles(files);
+                      setSubmissionError("");
+                      logEvent(ANALYTICS_EVENTS.BOOKING_ATTACHMENTS_SELECTED, {
+                        selected_count: files.length,
+                      });
                     }}
                     onRememberDetailsChange={setRememberDetails}
                     onClearSavedDetails={handleClearSavedDetails}

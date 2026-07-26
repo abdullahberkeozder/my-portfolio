@@ -36,6 +36,8 @@ import {
   restoreAppointmentRequest,
 } from "../services/apiAppointmentRequests";
 import supabase from "../services/supabase";
+import { getAppointmentAttachments } from "../services/apiAppointmentAttachments";
+import AppointmentAttachmentGallery from "../features/bookings/components/AppointmentAttachmentGallery";
 
 const STATUS_OPTIONS = [
   {
@@ -578,6 +580,7 @@ async function copyToClipboard(value, successMessage) {
 
 function RequestItem({
   request,
+  attachments,
   isUpdating,
   isDeleting,
   isRestoring,
@@ -678,6 +681,7 @@ function RequestItem({
             <span>{customerNote}</span>
           </CustomerNote>
         )}
+        <AppointmentAttachmentGallery attachments={attachments} />
         {request.customer_action && (
           <CustomerActionBox>
             <strong>{getCustomerActionLabel(request.customer_action)}</strong>
@@ -901,6 +905,22 @@ function Bookings() {
 
   const requests = requestsResult.data;
   const totalCount = requestsResult.count;
+  const requestIds = requests.map((request) => request.id);
+  const { data: attachments = [] } = useQuery({
+    queryKey: ["appointment-attachments", requestIds],
+    queryFn: () => getAppointmentAttachments(requestIds),
+    enabled: Boolean(isAdmin && requestIds.length),
+    staleTime: 4 * 60 * 1000,
+  });
+  const attachmentsByRequest = attachments.reduce((groups, attachment) => {
+    const requestAttachments =
+      groups[attachment.appointment_request_id] || [];
+    groups[attachment.appointment_request_id] = [
+      ...requestAttachments,
+      attachment,
+    ];
+    return groups;
+  }, {});
 
   const newRequests = requests.filter(
     (request) => request.status === "new",
@@ -980,6 +1000,19 @@ function Bookings() {
         { event: "UPDATE", schema: "public", table: "appointment_requests" },
         () => {
           queryClient.invalidateQueries({ queryKey: ["appointment-requests"] });
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "appointment_attachments",
+        },
+        () => {
+          queryClient.invalidateQueries({
+            queryKey: ["appointment-attachments"],
+          });
         },
       )
       .subscribe();
@@ -1175,6 +1208,7 @@ function Bookings() {
                 <RequestItem
                   key={request.id}
                   request={request}
+                  attachments={attachmentsByRequest[request.id] || []}
                   isUpdating={isUpdatingRequest}
                   isDeleting={isDeletingRequest}
                   isRestoring={isRestoringRequest}
