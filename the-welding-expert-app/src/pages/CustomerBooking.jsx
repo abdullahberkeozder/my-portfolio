@@ -32,6 +32,11 @@ import FaqAccordion from "../features/booking/components/FaqAccordion";
 import StickyMobileCTA from "../features/booking/components/StickyMobileCTA";
 import { logEvent } from "../services/apiAnalytics";
 import { ANALYTICS_EVENTS } from "../analytics/events";
+import {
+  getServiceGroupKey,
+  isDiscoveryService,
+  SERVICE_GROUPS,
+} from "../config/serviceTaxonomy";
 import { getServiceConfigs } from "../services/apiServiceConfigs";
 import useScrollReveal from "../hooks/useScrollReveal";
 import {
@@ -146,55 +151,12 @@ const longDateFormatter = new Intl.DateTimeFormat("tr-TR", {
   year: "numeric",
 });
 
-const SERVICE_CATALOG_GROUPS = [
-  {
-    key: "finish",
-    title: "Boya ve küçük tadilat",
-    description: "Boya, badana, yüzey onarımı ve ev içi küçük düzenlemeler.",
-    icon: HiOutlineHomeModern,
-    keywords: ["boya", "badana", "tadilat", "inşaat", "insaat"],
-  },
-  {
-    key: "metal",
-    title: "Kaynak ve metal işleri",
-    description: "Kaynak, korkuluk, menteşe ve metal onarım işleri.",
-    icon: HiOutlineWrenchScrewdriver,
-    keywords: ["kaynak", "korkuluk", "metal", "demir"],
-  },
-  {
-    key: "access",
-    title: "Kapı ve otomasyon",
-    description: "Raylı kapı, motor, kilit ve kontrollü geçiş sistemleri.",
-    icon: HiOutlineKey,
-    keywords: ["kapı", "kapi", "kilit", "motor", "raylı", "rayli", "otomatik"],
-  },
-  {
-    key: "outdoor",
-    title: "Bahçe ve dış alan",
-    description: "Bahçe düzenleme, peyzaj, çit ve dış alan işleri.",
-    icon: HiOutlineSparkles,
-    keywords: ["bahçe", "bahce", "peyzaj", "çit", "cit"],
-  },
-];
-
-function isDiscoveryCatalogService(service) {
-  return [service.title, service.serviceType]
-    .filter(Boolean)
-    .join(" ")
-    .toLocaleLowerCase("tr-TR")
-    .includes("keşif");
-}
-
-function getCatalogGroup(service) {
-  const searchable = [service.title, service.problem, service.text]
-    .filter(Boolean)
-    .join(" ")
-    .toLocaleLowerCase("tr-TR");
-
-  return SERVICE_CATALOG_GROUPS.find((group) =>
-    group.keywords.some((keyword) => searchable.includes(keyword)),
-  )?.key || "outdoor";
-}
+const SERVICE_GROUP_ICONS = {
+  finish: HiOutlineHomeModern,
+  metal: HiOutlineWrenchScrewdriver,
+  access: HiOutlineKey,
+  outdoor: HiOutlineSparkles,
+};
 
 function getGalleryProof(item) {
   return {
@@ -417,13 +379,20 @@ function CustomerBooking() {
   }, [activeServices]);
 
   const serviceCatalogGroups = useMemo(
-    () => SERVICE_CATALOG_GROUPS.map((group) => {
+    () => SERVICE_GROUPS.map((group) => {
       const services = discoveryServices.filter(
-        (service) => !isDiscoveryCatalogService(service) && getCatalogGroup(service) === group.key,
+        (service) =>
+          !isDiscoveryService(service) &&
+          getServiceGroupKey(service) === group.key,
       );
       const factors = [...new Set(services.flatMap((service) => service.priceFactors || []))];
 
-      return { ...group, services, factors: factors.slice(0, 4) };
+      return {
+        ...group,
+        icon: SERVICE_GROUP_ICONS[group.key],
+        services,
+        factors: factors.slice(0, 4),
+      };
     }).filter((group) => group.services.length > 0),
     [discoveryServices],
   );
@@ -1022,12 +991,8 @@ function CustomerBooking() {
           <TrustBarItem>
             <HiOutlinePhoto aria-hidden="true" />
             <div>
-              <strong>
-                {dbGalleryItems.length > 0
-                  ? `${dbGalleryItems.length} yayınlanmış iş`
-                  : "İş örneklerini inceleyin"}
-              </strong>
-              <span>{dbGalleryItems.length > 0 ? "Galeride incelenebilir" : "Gerçek uygulama galerisi"}</span>
+              <strong>Gerçek iş örnekleri</strong>
+              <span>Uygulama ve sonuçlarıyla</span>
             </div>
           </TrustBarItem>
         </TrustBar>
@@ -1188,6 +1153,7 @@ function CustomerBooking() {
                     <GalleryPreviewCard key={item.id} aria-label={`${item.title} iş örneği`}>
                       <GalleryPreviewImage
                         src={getSupabasePreviewUrl(item.image_url)}
+                        fallbackSrc={item.image_url}
                         alt={getGalleryImageAlt(item)}
                         sizes="(max-width: 760px) 100vw, 33vw"
                         loading="lazy"

@@ -41,13 +41,13 @@ test("booking flow exposes semantic landmarks and works from the keyboard", asyn
   await expect(page.locator("#booking-service-title")).toBeFocused();
   await expect(page.getByRole("group", { name: "İş türleri" })).toBeVisible();
 
-  await page.getByRole("button", { name: /kaynak ve metal işleri/i }).click();
-  const metalOptions = page.getByRole("radiogroup", { name: "Hizmet seçenekleri" }).getByRole("radio");
-  await expect(metalOptions).toHaveCount(2);
-  await metalOptions.first().focus();
+  await page.getByRole("button", { name: /kapı ve otomasyon/i }).click();
+  const accessOptions = page.getByRole("radiogroup", { name: "Hizmet seçenekleri" }).getByRole("radio");
+  await expect(accessOptions).toHaveCount(3);
+  await accessOptions.first().focus();
   await page.keyboard.press("ArrowRight");
-  await expect(metalOptions.nth(1)).toBeFocused();
-  await expect(metalOptions.nth(1)).toHaveAttribute("aria-checked", "true");
+  await expect(accessOptions.nth(1)).toBeFocused();
+  await expect(accessOptions.nth(1)).toHaveAttribute("aria-checked", "true");
 
   await page.getByRole("button", { name: /türlerine dön/i }).click();
   await page.getByRole("button", { name: /boya ve küçük tadilat/i }).click();

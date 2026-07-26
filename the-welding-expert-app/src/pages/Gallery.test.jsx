@@ -43,6 +43,16 @@ const galleryItems = [
     before_image_url: null,
     points: ["Yüzey hazırlığı"],
   },
+  {
+    id: "case-3",
+    title: "Mutfak küçük tadilatı",
+    category: "İnşaat ve tadilat",
+    location: "Çankaya",
+    description: "Hasarlı yüzey onarıldı ve kullanıma hazır teslim edildi.",
+    image_url: "/images/renovation-after.png",
+    before_image_url: null,
+    points: ["Yüzey onarımı"],
+  },
 ];
 
 function renderPage() {
@@ -67,15 +77,72 @@ describe("Gallery discovery", () => {
     logEvent.mockClear();
   });
 
-  it("filters published cases by service category", async () => {
+  it("filters cases through main groups and contextual subcategories", async () => {
     renderPage();
 
-    fireEvent.click(await screen.findByRole("button", { name: "Kaynak ve metal" }));
+    expect(await screen.findByText("Adresinizde hizmet")).toBeInTheDocument();
+    expect(
+      screen.getByText("Ankara'da yerinde keşif ve uygulama"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Atölyede üretim"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Özel ölçü imalat ve kontrollü onarım"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("2 saatlik dilim")).not.toBeInTheDocument();
+    expect(screen.queryByText("09-21")).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", { name: "Boya ve badana" }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Boya ve küçük tadilat" }),
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Bu gruptaki tüm işler" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Boya ve badana" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("Salon boya uygulaması").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Mutfak küçük tadilatı").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Bahçe kapısı onarımı")).not.toBeInTheDocument();
+    expect(logEvent).toHaveBeenCalledWith("gallery_filter_selected", {
+      group: "finish",
+      subcategory: null,
+      result_count: 2,
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Boya ve badana" }));
+
+    expect(screen.getAllByText("Salon boya uygulaması").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Mutfak küçük tadilatı")).not.toBeInTheDocument();
+    expect(logEvent).toHaveBeenCalledWith("gallery_filter_selected", {
+      group: "finish",
+      subcategory: "Boya ve badana",
+      result_count: 1,
+    });
+  });
+
+  it("hides a redundant subcategory step for single-category groups", async () => {
+    renderPage();
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Kaynak ve metal işleri" }),
+    );
 
     expect(screen.getAllByText("Bahçe kapısı onarımı").length).toBeGreaterThan(0);
     expect(screen.queryByText("Salon boya uygulaması")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Bu gruptaki tüm işler" }),
+    ).not.toBeInTheDocument();
     expect(logEvent).toHaveBeenCalledWith("gallery_filter_selected", {
-      category: "Kaynak ve metal",
+      group: "metal",
+      subcategory: null,
+      result_count: 1,
     });
   });
 

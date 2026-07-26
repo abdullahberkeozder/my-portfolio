@@ -59,7 +59,7 @@ export const serviceOverview = [
     text: "Bahçe tasarımı, çim biçme, ağaç budama, toprak havalandırma ve bahçe çit montajı.",
     serviceType: "Bahçe peyzaj ve düzenleme",
     points: ["Bahçe peyzaj planı", "Ağaç ve çim budama", "Çit ve sınır telleri montajı"],
-    imageUrl: "/images/landscaping.png",
+    imageUrl: "/images/landscaping_after.png",
     priceTagline: "Metrekare veya günlük fiyat; iş kapsamına göre netleşir",
     priceFactors: ["Bahçe alanı", "Bitki ve zemin durumu", "Çit veya malzeme ihtiyacı"],
   },

@@ -181,6 +181,13 @@ describe("CustomerBooking availability safety", () => {
     renderPage();
 
     expect(await screen.findByText("Sorun")).toBeInTheDocument();
+    const trustRegion = screen.getByRole("region", {
+      name: "Doğrulanabilir işletme bilgileri",
+    });
+    expect(within(trustRegion).getByText("Gerçek iş örnekleri")).toBeInTheDocument();
+    expect(within(trustRegion).getByText("Uygulama ve sonuçlarıyla")).toBeInTheDocument();
+    expect(within(trustRegion).queryByText("1 yayınlanmış iş")).not.toBeInTheDocument();
+    expect(within(trustRegion).queryByText("1 tamamlanmış iş")).not.toBeInTheDocument();
     expect(screen.getAllByText("Uygulama").length).toBeGreaterThan(0);
     expect(screen.getByText("Sonuç")).toBeInTheDocument();
     expect(screen.queryByText(/e-posta hizmeti yakında/i)).not.toBeInTheDocument();

@@ -81,7 +81,7 @@ values
     'Bahçe tasarımı, çim biçme, ağaç budama, toprak havalandırma ve bahçe çit montajı.',
     'Metrekare başı veya günlük fiyatlandırma',
     array['Bahçe peyzaj planı', 'Ağaç ve çim budama', 'Çit ve sınır telleri montajı'],
-    '/images/landscaping.png',
+    '/images/landscaping_after.png',
     3
   ),
   (

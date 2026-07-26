@@ -21,6 +21,7 @@ import {
   HiOutlineCalendarDays,
   HiOutlineCheckCircle,
   HiOutlineClock,
+  HiOutlineMapPin,
   HiOutlinePhoto,
   HiOutlineUserGroup,
   HiOutlineXCircle,
@@ -47,6 +48,10 @@ import {
 } from "../utils/dateHelpers";
 import RequestTrendChart from "../features/analytics/components/RequestTrendChart";
 import AnalyticsDashboard from "../features/analytics/components/AnalyticsDashboard";
+import {
+  buildOperationalKpis,
+  splitRequestsByPeriod,
+} from "../features/analytics/operationalKpis";
 
 
 const DAY_STATUS_LABELS = {
@@ -99,6 +104,24 @@ function formatRequestDate(request) {
   return `${requestDateFormatter.format(
     parseDateKey(request.requested_date),
   )}, ${request.requested_time?.slice(0, 5) || "Saat yok"}`;
+}
+
+function formatResponseTime(hours) {
+  if (hours === null) return "Veri yok";
+  if (hours < 1) return `${Math.round(hours * 60)} dk`;
+  return `${hours.toLocaleString("tr-TR")} sa`;
+}
+
+function formatDelta(value, unit, lowerIsBetter = false) {
+  if (value === null) return "Önceki dönem verisi yok";
+  if (value === 0) return "Önceki dönemle aynı";
+
+  const improved = lowerIsBetter ? value < 0 : value > 0;
+  const direction = value > 0 ? "artış" : "azalış";
+  return {
+    text: `${Math.abs(value).toLocaleString("tr-TR")} ${unit} ${direction}`,
+    improved,
+  };
 }
 
 function buildWeekAvailability(days, startDate) {
@@ -372,7 +395,7 @@ const PanelValue = styled.strong`
 
 const StatsGrid = styled.section`
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 1.6rem;
 
   @media (max-width: 1200px) {
@@ -386,6 +409,100 @@ const StatsGrid = styled.section`
   @media (max-width: 480px) {
     grid-template-columns: 1fr;
   }
+`;
+
+const OperationalKpiGrid = styled.section`
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.6rem;
+
+  @media (max-width: 960px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const OperationalKpiCard = styled.article`
+  min-width: 0;
+  border: 1px solid var(--color-grey-200);
+  border-radius: var(--border-radius-md);
+  padding: 2rem;
+  display: grid;
+  gap: 1.2rem;
+  color: var(--color-grey-800);
+  background: var(--color-grey-0);
+  box-shadow: var(--shadow-sm);
+
+  &[href]:hover {
+    border-color: var(--color-brand-400);
+  }
+`;
+
+const KpiHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+`;
+
+const KpiLabel = styled.h2`
+  color: var(--color-grey-600);
+  font-size: 1.3rem;
+  font-weight: 800;
+`;
+
+const KpiIcon = styled.span`
+  width: 3.8rem;
+  height: 3.8rem;
+  border-radius: var(--border-radius-sm);
+  display: grid;
+  place-items: center;
+  color: var(--color-${(props) => props.$color}-700);
+  background: var(--color-${(props) => props.$color}-100);
+
+  & svg {
+    width: 2rem;
+    height: 2rem;
+  }
+`;
+
+const KpiValue = styled.strong`
+  color: var(--color-grey-900);
+  font-size: 3.2rem;
+  line-height: 1;
+`;
+
+const KpiContext = styled.p`
+  min-height: 3.8rem;
+  color: var(--color-grey-600);
+  font-size: 1.25rem;
+  line-height: 1.5;
+`;
+
+const KpiFooter = styled.div`
+  border-top: 1px solid var(--color-grey-100);
+  padding-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+`;
+
+const KpiTrend = styled.span`
+  color: ${(props) =>
+    props.$neutral
+      ? "var(--color-grey-500)"
+      : props.$improved
+        ? "var(--color-green-700)"
+        : "var(--color-red-700)"};
+  font-size: 1.15rem;
+  font-weight: 700;
+`;
+
+const KpiAction = styled.span`
+  color: var(--color-brand-700);
+  font-size: 1.15rem;
+  font-weight: 800;
 `;
 
 const StatCard = styled.div`
@@ -840,6 +957,7 @@ function RequestHeatmap({ requests }) {
 function Dashboard() {
   const [daysRange, setDaysRange] = useState(30);
   const [serviceFilter, setServiceFilter] = useState("all");
+  const reportingNow = useMemo(() => new Date(), []);
 
   const { data: admin } = useQuery({
     queryKey: ["admin-profile"],
@@ -849,19 +967,19 @@ function Dashboard() {
   const canManageOperations = ROUTE_ROLES.bookings.includes(
     admin?.profile?.role,
   );
-  const today = new Date();
+  const today = new Date(reportingNow);
   today.setHours(0, 0, 0, 0);
   const endDate = addDays(today, 6);
   const todayKey = formatDateKey(today);
   const endDateKey = formatDateKey(endDate);
   
-  const sinceDate = new Date();
-  sinceDate.setDate(sinceDate.getDate() - daysRange);
+  const sinceDate = new Date(reportingNow);
+  sinceDate.setDate(sinceDate.getDate() - daysRange * 2);
   sinceDate.setHours(0, 0, 0, 0);
   const sinceDateISO = sinceDate.toISOString();
 
   const requestsQuery = useQuery({
-    queryKey: ["appointment-requests", sinceDateISO],
+    queryKey: ["appointment-requests", "dashboard", daysRange],
     queryFn: () => getAppointmentRequests({ fetchAll: true, createdAfter: sinceDateISO }),
     refetchInterval: 30000,
     select: (result) => result.data,
@@ -880,29 +998,38 @@ function Dashboard() {
   const isLoading = requestsQuery.isLoading || availabilityQuery.isLoading;
   const isError = requestsQuery.isError || availabilityQuery.isError;
 
-  const requests = useMemo(() => {
+  const serviceRequests = useMemo(() => {
     const rawRequests = requestsQuery.data || [];
     if (serviceFilter === "all") return rawRequests;
     return rawRequests.filter(r => r.service_type === serviceFilter);
   }, [requestsQuery.data, serviceFilter]);
 
-  const avgResponseTimeHours = useMemo(() => {
-    const confirmedRequests = requests.filter(
-      (r) => ["confirmed", "completed"].includes(r.status) && r.updated_at && r.created_at
-    );
-
-    if (confirmedRequests.length === 0) return null;
-
-    const totalDiffMs = confirmedRequests.reduce((acc, r) => {
-      const created = new Date(r.created_at);
-      const updated = new Date(r.updated_at);
-      return acc + Math.max(0, updated - created);
-    }, 0);
-
-    const avgMs = totalDiffMs / confirmedRequests.length;
-    const avgHours = avgMs / (1000 * 60 * 60);
-    return avgHours.toFixed(1);
-  }, [requests]);
+  const periodRequests = useMemo(
+    () => splitRequestsByPeriod(serviceRequests, {
+      now: reportingNow,
+      days: daysRange,
+    }),
+    [daysRange, reportingNow, serviceRequests],
+  );
+  const requests = periodRequests.current;
+  const operationalKpis = useMemo(
+    () => buildOperationalKpis(requests, periodRequests.previous),
+    [periodRequests.previous, requests],
+  );
+  const responseTrend = formatDelta(
+    operationalKpis.responseTime.delta,
+    "saat",
+    true,
+  );
+  const confirmationTrend = formatDelta(
+    operationalKpis.confirmation.delta,
+    "puan",
+  );
+  const outsideAreaTrend = formatDelta(
+    operationalKpis.outsideArea.delta,
+    "puan",
+    true,
+  );
 
   if (isLoading) {
     return (
@@ -1103,6 +1230,93 @@ function Dashboard() {
         </MutedText>
       </FilterToolbar>
 
+      <OperationalKpiGrid aria-label="Operasyonel performans göstergeleri">
+        <OperationalKpiCard
+          {...(canManageOperations
+            ? { as: Link, to: "/admin/bookings?status=new" }
+            : {})}>
+          <KpiHeader>
+            <KpiLabel>Medyan ilk yanıt süresi</KpiLabel>
+            <KpiIcon $color="indigo"><HiOutlineClock /></KpiIcon>
+          </KpiHeader>
+          <KpiValue>
+            {formatResponseTime(operationalKpis.responseTime.medianHours)}
+          </KpiValue>
+          <KpiContext>
+            {operationalKpis.responseTime.sampleSize > 0
+              ? `Ortalama ${formatResponseTime(operationalKpis.responseTime.averageHours)} · ${operationalKpis.responseTime.sampleSize} ölçümlü talep`
+              : "Bu dönemde ilk temas zamanı kaydedilmiş talep yok."}
+            {operationalKpis.responseTime.missingCount > 0 &&
+              ` ${operationalKpis.responseTime.missingCount} talepte ölçüm eksik.`}
+          </KpiContext>
+          <KpiFooter>
+            <KpiTrend
+              $neutral={typeof responseTrend === "string"}
+              $improved={responseTrend.improved}>
+              {responseTrend.text || responseTrend}
+            </KpiTrend>
+            {canManageOperations && <KpiAction>Yanıt bekleyenler</KpiAction>}
+          </KpiFooter>
+        </OperationalKpiCard>
+
+        <OperationalKpiCard>
+          <KpiHeader>
+            <KpiLabel>Nitelikli talep teyit oranı</KpiLabel>
+            <KpiIcon $color="green"><HiOutlineCheckCircle /></KpiIcon>
+          </KpiHeader>
+          <KpiValue>
+            {operationalKpis.confirmation.rate === null
+              ? "Veri yok"
+              : `%${operationalKpis.confirmation.rate}`}
+          </KpiValue>
+          <KpiContext>
+            {operationalKpis.confirmation.qualifiedCount > 0
+              ? `${operationalKpis.confirmation.confirmedCount} / ${operationalKpis.confirmation.qualifiedCount} nitelikli talep onaylandı veya tamamlandı.`
+              : "Bu dönemde nitelikli olarak etiketlenmiş talep yok."}
+          </KpiContext>
+          <KpiFooter>
+            <KpiTrend
+              $neutral={typeof confirmationTrend === "string"}
+              $improved={confirmationTrend.improved}>
+              {confirmationTrend.text || confirmationTrend}
+            </KpiTrend>
+            <KpiAction>Payda: nitelikli talepler</KpiAction>
+          </KpiFooter>
+        </OperationalKpiCard>
+
+        <OperationalKpiCard
+          {...(canManageOperations
+            ? {
+              as: Link,
+              to: "/admin/bookings?lead_quality=outside_area",
+            }
+            : {})}>
+          <KpiHeader>
+            <KpiLabel>Hizmet bölgesi dışı oranı</KpiLabel>
+            <KpiIcon $color="red"><HiOutlineMapPin /></KpiIcon>
+          </KpiHeader>
+          <KpiValue>
+            {operationalKpis.outsideArea.rate === null
+              ? "Veri yok"
+              : `%${operationalKpis.outsideArea.rate}`}
+          </KpiValue>
+          <KpiContext>
+            {operationalKpis.outsideArea.taggedCount > 0
+              ? `${operationalKpis.outsideArea.outsideAreaCount} / ${operationalKpis.outsideArea.taggedCount} etiketli talep bölge dışında.`
+              : "Bu dönemde kalite etiketi atanmış talep yok."}
+            {` ${operationalKpis.outsideArea.untaggedCount} talep etiketlenmemiş.`}
+          </KpiContext>
+          <KpiFooter>
+            <KpiTrend
+              $neutral={typeof outsideAreaTrend === "string"}
+              $improved={outsideAreaTrend.improved}>
+              {outsideAreaTrend.text || outsideAreaTrend}
+            </KpiTrend>
+            {canManageOperations && <KpiAction>Filtreli listeyi aç</KpiAction>}
+          </KpiFooter>
+        </OperationalKpiCard>
+      </OperationalKpiGrid>
+
       <StatsGrid>
         <StatCard>
           <StatIcon $color="green">
@@ -1139,15 +1353,6 @@ function Dashboard() {
                 {newRequestsDiff >= 0 ? "↑" : "↓"} {Math.abs(newRequestsTrendPct)}%
               </StatTrend>
             )}
-          </div>
-        </StatCard>
-        <StatCard>
-          <StatIcon $color="indigo">
-            <HiOutlineClock />
-          </StatIcon>
-          <div>
-            <StatLabel>Ort. Yanıt Süresi</StatLabel>
-            <StatValue>{avgResponseTimeHours ? `${avgResponseTimeHours} sa` : "--"}</StatValue>
           </div>
         </StatCard>
         <StatCard>
