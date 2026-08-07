@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
-
 import BrandLogo from "./BrandLogo";
 import ThemeToggle from "./ThemeToggle";
 import appNavItems from "./appNavItems";
@@ -149,7 +148,57 @@ const AppointmentLink = styled.a`
   }
 `;
 
-function AppNav({ ...props }) {
+const MobileCompactCTA = styled.div`
+  display: none;
+  align-items: center;
+  gap: 0.6rem;
+  opacity: ${(props) => (props.$visible ? 1 : 0)};
+  visibility: ${(props) => (props.$visible ? "visible" : "hidden")};
+  pointer-events: ${(props) => (props.$visible ? "auto" : "none")};
+  transform: ${(props) => (props.$visible ? "translateY(0)" : "translateY(-4px)")};
+  transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+  
+  @media (max-width: 980px) {
+    display: flex;
+  }
+`;
+
+const MobileActionButton = styled.a`
+  height: 4.4rem;
+  padding: 0 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-control-border);
+  background: var(--color-control-bg);
+  color: var(--color-text-muted);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background var(--motion-fast), border-color var(--motion-fast), color var(--motion-fast);
+  
+  &.brand-accent {
+    color: var(--color-brand-600);
+    border-color: var(--color-brand-200);
+    background: var(--color-brand-50);
+  }
+  
+  &.whatsapp-accent {
+    color: var(--color-channel-whatsapp);
+    padding: 0;
+    width: 4.4rem; /* Icon only square */
+  }
+  
+  & svg {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+`;
+
+function AppNav({ quickWhatsappUrl, onScrollToCalendar, mobileCTAVisible, ...props }) {
   const [isHeroVisible, setIsHeroVisible] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const activeId = useActiveSection(appNavItems);
@@ -554,6 +603,22 @@ function AppNav({ ...props }) {
             <HiOutlineCalendarDays aria-hidden="true" />
             Randevu Al
           </AppointmentLink>
+          
+          <MobileCompactCTA $visible={mobileCTAVisible} aria-hidden={!mobileCTAVisible}>
+            <MobileActionButton 
+              as="button" 
+              type="button" 
+              className="brand-accent" 
+              onClick={(e) => {
+                e.preventDefault();
+                logEvent(ANALYTICS_EVENTS.NAVIGATION_CTA_CLICKED, { cta: "appointment", placement: "mobile_header" });
+                if (onScrollToCalendar) onScrollToCalendar();
+              }}
+              aria-label="Randevu Al">
+              <span className="cta-label">Randevu Al</span>
+            </MobileActionButton>
+          </MobileCompactCTA>
+
           <ThemeToggle />
         </NavActions>
       </NavRow>
