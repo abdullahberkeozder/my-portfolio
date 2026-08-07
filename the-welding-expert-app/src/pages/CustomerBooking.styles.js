@@ -6,15 +6,18 @@ export const Page = styled.main`
   min-height: 100vh;
   background: var(--color-grey-50);
   padding: 4rem 3.2rem 6.4rem;
-  overflow-x: hidden;
+  overflow-x: clip;
+
+  @media (max-width: 980px) {
+    padding: 2.8rem 2.4rem calc(11rem + env(safe-area-inset-bottom, 0px));
+  }
 
   @media (max-width: 640px) {
-    /* Extra bottom padding to clear the sticky CTA bar (~7.6rem) */
-    padding: 2.4rem 1.6rem 12rem;
+    padding: 2.4rem 1.6rem calc(15rem + env(safe-area-inset-bottom, 0px));
   }
 
   @media (max-width: 380px) {
-    padding: 1.6rem 1.2rem 12rem;
+    padding: 1.6rem 1.2rem calc(15rem + env(safe-area-inset-bottom, 0px));
   }
 `;
 
@@ -383,25 +386,98 @@ export const TrustBarItem = styled.div`
 export const AboutSection = styled.section`
   scroll-margin-top: 9rem;
   padding: 3.2rem 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(28rem, 0.9fr);
-  gap: 2.8rem;
-  align-items: center;
-
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-  }
+  content-visibility: auto;
 
   @media (max-width: 640px) {
     padding: 1.6rem 0;
-    gap: 2rem;
   }
 `;
 
-export const AboutCopy = styled.div`
-  min-width: 0;
+export const AboutGrid = styled.div`
   display: grid;
+  grid-template-columns: minmax(0, 48fr) minmax(0, 52fr);
+  gap: 5.6rem;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 3.6rem;
+  }
+`;
+
+export const AboutVisualColumn = styled.div`
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
   gap: 1.4rem;
+`;
+
+export const AboutImageCard = styled.div`
+  position: relative;
+  width: 100%;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  background: var(--color-surface-steel);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+`;
+
+export const AboutImageWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  @media (max-width: 900px) {
+    aspect-ratio: 16 / 9;
+    max-height: 30rem;
+  }
+`;
+
+export const AboutImageCaption = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.2rem 1.6rem;
+  background: var(--color-grey-50);
+  border-top: 1px solid var(--color-border-subtle);
+  color: var(--color-text-body);
+  font-size: var(--font-size-sm);
+  
+  & svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    color: var(--color-brand-600);
+    flex-shrink: 0;
+  }
+
+  & strong {
+    color: var(--color-grey-900);
+    font-weight: var(--font-weight-bold);
+  }
+`;
+
+export const AboutNarrativeColumn = styled.div`
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2.2rem;
+`;
+
+export const AboutHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 `;
 
 export const Eyebrow = styled.p`
@@ -409,120 +485,61 @@ export const Eyebrow = styled.p`
   font-size: 1.2rem;
   font-weight: 800;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
 `;
 
 export const AboutTitle = styled.h2`
   color: var(--color-grey-900);
-  font-size: 2.8rem;
+  font-size: 3.2rem;
   line-height: 1.15;
   font-weight: 800;
+  margin: 0;
   overflow-wrap: anywhere;
 
   @media (max-width: 640px) {
-    font-size: 2.4rem;
+    font-size: 2.6rem;
   }
 `;
 
 export const AboutText = styled.p`
   color: var(--color-grey-600);
-  font-size: 1.5rem;
-  line-height: 1.7;
+  font-size: 1.55rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 60rem;
 `;
 
-export const HighlightList = styled.ul`
+export const AboutMinimalPrinciples = styled.div`
   display: grid;
-  gap: 0.9rem;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
   margin-top: 0.6rem;
 `;
 
-export const HighlightItem = styled.li`
+export const AboutMinimalPrinciple = styled.div`
   display: grid;
-  grid-template-columns: 2rem 1fr;
-  gap: 0.8rem;
-  color: var(--color-grey-700);
-  font-size: 1.4rem;
-  font-weight: 700;
-
-  & svg {
-    width: 1.8rem;
-    height: 1.8rem;
-    color: var(--color-surface-steel);
-  }
-`;
-
-export const AboutPanel = styled.div`
-  min-width: 0;
-  border: 1px solid var(--color-grey-100);
-  border-radius: var(--border-radius-md);
-  padding: 2rem;
-  background: var(--color-grey-50);
-  display: grid;
-  gap: 1.4rem;
-
-  @media (max-width: 640px) {
-    padding: 1.6rem;
-  }
-`;
-
-export const ProfileLine = styled.div`
-  display: grid;
-  grid-template-columns: 4.4rem 1fr;
+  grid-template-columns: auto 1fr;
   gap: 1.2rem;
-  align-items: center;
+  align-items: baseline;
+  color: var(--color-grey-600);
+  font-size: 1.45rem;
+  line-height: 1.5;
 
-  & svg {
-    width: 4.4rem;
-    height: 4.4rem;
-    padding: 1rem;
-    border-radius: 50%;
-    color: var(--color-accent-400);
-    background: var(--color-surface-dark);
+  & span {
+    color: var(--color-brand-600);
+    font-weight: 800;
+    font-size: 1.3rem;
   }
-`;
 
-export const ProfileName = styled.strong`
-  display: block;
-  color: var(--color-grey-900);
-  font-size: 1.8rem;
-`;
-
-export const ProfileRole = styled.span`
-  color: var(--color-grey-500);
-  font-size: 1.3rem;
-  font-weight: 700;
-`;
-
-export const AboutStats = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-
-  @media (max-width: 520px) {
-    gap: 0.6rem;
+  & strong {
+    color: var(--color-grey-900);
+    font-weight: 800;
   }
-`;
-
-export const AboutStat = styled.div`
-  border: 1px solid var(--color-grey-100);
-  border-radius: var(--border-radius-sm);
-  padding: 1.2rem;
-  background: var(--color-grey-0);
-
-  @media (max-width: 520px) {
-    padding: 0.9rem;
+  
+  & p {
+    margin: 0;
   }
-`;
-
-export const AboutStatValue = styled.strong`
-  display: block;
-  color: var(--color-grey-900);
-  font-size: 1.9rem;
-`;
-
-export const AboutStatLabel = styled.span`
-  color: var(--color-grey-500);
-  font-size: 1.2rem;
-  font-weight: 700;
 `;
 
 export const Section = styled.section`
@@ -1256,14 +1273,16 @@ export const StickyCTAContainer = styled.div`
   @media (max-width: 640px) {
     display: flex;
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: calc(8.4rem + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(calc(100vw - 2.8rem), 44rem);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--color-grey-200);
     background: var(--color-nav-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid var(--color-grey-200);
-    padding: 1rem 1.6rem calc(1rem + env(safe-area-inset-bottom));
+    padding: 0.8rem 1.4rem;
     gap: 0.8rem;
     z-index: 50;
     box-shadow: var(--shadow-sticky);
@@ -1271,11 +1290,11 @@ export const StickyCTAContainer = styled.div`
 
     @keyframes cta-slide-up {
       from {
-        transform: translateY(100%);
+        transform: translate(-50%, 100%);
         opacity: 0;
       }
       to {
-        transform: translateY(0);
+        transform: translate(-50%, 0);
         opacity: 1;
       }
     }
