@@ -18,6 +18,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 
 import AppNav from "../ui/AppNav";
+import MobileBottomNav from "../ui/MobileBottomNav";
 import BrandLogo from "../ui/BrandLogo";
 import SEO from "../ui/SEO";
 import Button from "../ui/Button";
@@ -82,9 +83,19 @@ import {
   TrustBar,
   TrustBarItem,
 
+  AboutSection,
+  AboutGrid,
+  AboutVisualColumn,
+  AboutImageCard,
+  AboutImageWrapper,
+  AboutImageCaption,
+  AboutNarrativeColumn,
+  AboutHeader,
   Eyebrow,
   AboutTitle,
   AboutText,
+  AboutMinimalPrinciples,
+  AboutMinimalPrinciple,
   Section,
   SectionHeader,
   ServiceCategoryGrid,
@@ -1253,7 +1264,6 @@ function CustomerBooking() {
             </>
           )}
         </Section>
-
         <Section id="services" data-reveal>
           <SectionHeader>
             <Eyebrow>Hizmetlerimiz</Eyebrow>
@@ -1292,7 +1302,69 @@ function CustomerBooking() {
             })}
           </ServiceCategoryGrid>
         </Section>
+        <AboutSection id="about" data-reveal aria-labelledby="about-heading">
+          <AboutGrid>
+            <AboutVisualColumn>
+              <AboutImageCard>
+                <AboutImageWrapper>
+                  <img
+                    src="/images/custom_metal.png"
+                    alt="Ankara'da özenli kaynak ve metal işçiliği uygulaması"
+                    loading="lazy"
+                  />
+                </AboutImageWrapper>
+                <AboutImageCaption>
+                  <HiOutlineMapPin aria-hidden="true" />
+                  <span><strong>Yenimahalle Atölyesi</strong> · Ankara geneli yerinde servis</span>
+                </AboutImageCaption>
+              </AboutImageCard>
+            </AboutVisualColumn>
 
+            <AboutNarrativeColumn>
+              <AboutHeader>
+                <Eyebrow>Hakkında</Eyebrow>
+                <AboutTitle id="about-heading">
+                  Kaynak ve metal işlerinde sağlam, dikkatli ve ihtiyaca uygun çözümler
+                </AboutTitle>
+              </AboutHeader>
+              
+              <AboutText>
+                Yenimahalle atölyemizden Ankara geneline, hem randevulu yerinde servis hem de atölye imalatıyla dayanıklı metal çözümleri üretiyoruz. Geçici yamalar yerine sahanın koşullarına uygun, ömürlük onarımlar ve şeffaf fiyatlandırmayla profesyonel iş akışını esas alırız.
+              </AboutText>
+
+              <AboutMinimalPrinciples>
+                <AboutMinimalPrinciple>
+                  <span>01</span> 
+                  <p><strong>Sağlam işçilik —</strong> Kaliteli ana malzeme tercihi ve uzun yıllar dayanıklılığı merkezine alan uygulama güvencesi.</p>
+                </AboutMinimalPrinciple>
+                <AboutMinimalPrinciple>
+                  <span>02</span> 
+                  <p><strong>Projeye uygun çözüm —</strong> Kopan menteşe onarımından raylı sistem kurulumuna kadar alana uygun projelendirme.</p>
+                </AboutMinimalPrinciple>
+                <AboutMinimalPrinciple>
+                  <span>03</span> 
+                  <p><strong>Dikkatli uygulama —</strong> Çalışma alanını özenle koruyan temiz iş akışı ve sonuç odaklı son kontrol süreci.</p>
+                </AboutMinimalPrinciple>
+              </AboutMinimalPrinciples>
+
+              <div style={{ marginTop: "0.6rem" }}>
+                <Button
+                  as="a"
+                  href="#location"
+                  variation="secondary"
+                  size="large"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "0.8rem", width: "fit-content" }}
+                  onClick={() => logEvent(ANALYTICS_EVENTS.NAVIGATION_CTA_CLICKED, {
+                    destination: "location",
+                    placement: "about_section",
+                  })}>
+                  <HiOutlineMapPin aria-hidden="true" />
+                  Konum ve İletişim Bilgileri
+                </Button>
+              </div>
+            </AboutNarrativeColumn>
+          </AboutGrid>
+        </AboutSection>
         <Section id="process" data-reveal>
           <SectionHeader>
             <Eyebrow>Nasıl çalışıyoruz</Eyebrow>
@@ -1403,7 +1475,6 @@ function CustomerBooking() {
             )}
           </MapBox>
         </LocationSection>
-
         <Section id="faq" data-reveal>
           <SectionHeader>
             <Eyebrow>Sık sorulan sorular</Eyebrow>
@@ -1449,6 +1520,7 @@ function CustomerBooking() {
           onScrollToCalendar={handleScrollToCalendar}
         />
       )}
+      <MobileBottomNav />
     </Page>
   );
 }

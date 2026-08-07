@@ -1,6 +1,7 @@
 import {
   HiOutlineMapPin,
   HiOutlinePhoto,
+  HiOutlineShieldCheck,
   HiOutlineWrenchScrewdriver,
 } from "react-icons/hi2";
 
@@ -16,6 +17,11 @@ const appNavItems = [
     Icon: HiOutlineWrenchScrewdriver,
   },
   {
+    href: "#about",
+    label: "Hakkında",
+    Icon: HiOutlineShieldCheck,
+  },
+  {
     href: "#location",
     label: "İletişim",
     Icon: HiOutlineMapPin,
@@ -23,3 +29,4 @@ const appNavItems = [
 ];
 
 export default appNavItems;
+

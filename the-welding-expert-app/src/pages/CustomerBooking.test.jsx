@@ -136,13 +136,13 @@ describe("CustomerBooking availability safety", () => {
     expect(within(trustRegion).getByText("Yenimahalle, Ankara")).toBeInTheDocument();
     expect(within(trustRegion).getByText("09:00 - 21:00")).toBeInTheDocument();
 
-    const menuButton = document.querySelector(
-      'button[aria-controls="mobile-customer-menu"]',
-    );
-    expect(menuButton).toHaveAttribute("aria-label", "Menüyü aç");
-    fireEvent.click(menuButton);
-    expect(menuButton).toHaveAttribute("aria-expanded", "true");
-    expect(menuButton).toHaveAttribute("aria-label", "Menüyü kapat");
+    const mobileBottomNav = screen.getByRole("navigation", {
+      name: "Alt navigasyon",
+    });
+    expect(within(mobileBottomNav).getByText("İşler")).toBeInTheDocument();
+    expect(within(mobileBottomNav).getByText("Hizmetler")).toBeInTheDocument();
+    expect(within(mobileBottomNav).getByText("Hakkında")).toBeInTheDocument();
+    expect(within(mobileBottomNav).getByText("İletişim")).toBeInTheDocument();
 
     const heroWhatsapp = within(screen.getByRole("banner")).getByRole("link", {
       name: "Fotoğrafla Danış",
@@ -160,7 +160,7 @@ describe("CustomerBooking availability safety", () => {
       name: "Telefonla ara",
     })).not.toBeInTheDocument();
 
-    const navigation = screen.getByRole("navigation", { name: "Müşteri sayfası" });
+    const navigation = screen.getByRole("navigation", { name: /Müşteri sayfası/i });
     expect(within(navigation).getByRole("img", { name: "Umut Usta" }))
       .toHaveAttribute("data-brand-logo", "compact");
     expect(screen.getByRole("banner").querySelector("[data-brand-logo]"))

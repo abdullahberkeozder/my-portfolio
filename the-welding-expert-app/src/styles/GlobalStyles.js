@@ -180,6 +180,19 @@ const GlobalStyles = createGlobalStyle`
 
   --backdrop-color: rgba(37, 35, 33, 0.14);
   --color-nav-bg: rgba(255, 255, 255, 0.94);
+  --navbar-surface-bg: radial-gradient(900px 200px at 50% -50%, rgba(255, 255, 255, 0.92), transparent 70%), rgba(243, 246, 244, 0.76);
+  --navbar-surface-border: rgba(255, 255, 255, 0.78);
+  --navbar-surface-shadow: 0 16px 36px -8px rgba(24, 26, 24, 0.14), 0 4px 12px -2px rgba(24, 26, 24, 0.06), inset 0 1px 2px rgba(255, 255, 255, 0.95), inset 0 -1px 1px rgba(24, 26, 24, 0.04);
+  --glass-nav-bg: rgba(240, 243, 241, 0.76);
+  --glass-nav-border: rgba(255, 255, 255, 0.82);
+  --glass-nav-shadow: 0 14px 34px -6px rgba(24, 26, 24, 0.18), 0 4px 12px -2px rgba(24, 26, 24, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.95);
+  --glass-indicator-bg: rgba(255, 255, 255, 0.26);
+  --glass-indicator-border: rgba(255, 255, 255, 0.65);
+  --glass-indicator-shadow: 0 4px 14px rgba(24, 26, 24, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.75), inset 0 -1px 1px rgba(255, 255, 255, 0.15);
+  --glass-hover-bg: rgba(255, 255, 255, 0.12);
+  --glass-hover-border: rgba(255, 255, 255, 0.35);
+  --glass-hover-shadow: 0 4px 12px rgba(24, 26, 24, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  --glass-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.02) 100%);
 
   --color-hero-grad-start: #fbfbf9;
   --color-hero-grad-middle: rgba(251, 251, 249, 0.95);
@@ -265,7 +278,7 @@ html.theme-transitioning *::after {
 html {
   font-size: 62.5%;
   scroll-behavior: smooth;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -276,7 +289,7 @@ body {
   min-height: 100vh;
   line-height: var(--line-height-body);
   font-size: var(--font-size-md);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 input,
@@ -466,6 +479,19 @@ html.dark-mode {
 
     --backdrop-color: rgba(9, 10, 9, 0.68);
     --color-nav-bg: rgba(24, 26, 24, 0.94);
+    --navbar-surface-bg: radial-gradient(900px 200px at 50% -50%, rgba(62, 66, 61, 0.48), transparent 70%), rgba(22, 24, 22, 0.78);
+    --navbar-surface-border: rgba(255, 255, 255, 0.16);
+    --navbar-surface-shadow: 0 18px 40px -8px rgba(0, 0, 0, 0.55), 0 4px 14px -2px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.18), inset 0 -1px 1px rgba(0, 0, 0, 0.25);
+    --glass-nav-bg: rgba(26, 28, 26, 0.8);
+    --glass-nav-border: rgba(255, 255, 255, 0.16);
+    --glass-nav-shadow: 0 14px 36px -6px rgba(0, 0, 0, 0.52), 0 4px 12px -2px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.12);
+    --glass-indicator-bg: rgba(62, 66, 61, 0.85);
+    --glass-indicator-border: rgba(255, 255, 255, 0.22);
+    --glass-indicator-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+    --glass-hover-bg: rgba(62, 66, 61, 0.55);
+    --glass-hover-border: rgba(255, 255, 255, 0.18);
+    --glass-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    --glass-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.01) 100%);
     --color-hero-grad-start: #181a18;
     --color-hero-grad-middle: rgba(24, 26, 24, 0.95);
     --color-hero-grad-end: rgba(24, 26, 24, 0.18);
@@ -479,8 +505,364 @@ html.dark-mode {
     --image-opacity: 92%;
   }
 
+  /* ─── Liquid Glass Global & Mobile Bottom Nav Styles ──────────────────────── */
+  .liquid-glass-definitions {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+  .liquid-glass-layer,
+  .nav-pointer-glow {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .nav-pointer-glow {
+    clip-path: inset(0 round 999px);
+    background: radial-gradient(
+      240px 150px at var(--gx, 50%) var(--gy, 50%),
+      rgba(216, 147, 105, var(--ga, 0)) 0%,
+      rgba(216, 147, 105, 0) 74%
+    );
+    transition: background 0.18s ease;
+  }
+  .nav-glass-indicator {
+    position: absolute;
+    z-index: 6;
+    top: 0.6rem;
+    left: 0.8rem;
+    width: 10rem;
+    height: 5.2rem;
+    border-radius: 999px;
+    background: var(--glass-indicator-bg);
+    border: 1px solid var(--glass-indicator-border);
+    box-shadow: var(--glass-indicator-shadow);
+    transform-origin: center;
+    will-change: left, width, transform;
+    transition:
+      left 0.24s cubic-bezier(0.2, 0.9, 0.22, 1),
+      width 0.24s cubic-bezier(0.2, 0.9, 0.22, 1),
+      top 0.32s cubic-bezier(0.2, 0.9, 0.22, 1),
+      height 0.32s cubic-bezier(0.2, 0.9, 0.22, 1),
+      transform 0.25s ease,
+      background-color 0.25s ease,
+      box-shadow 0.25s ease;
+    pointer-events: none;
+  }
+  .nav-glass-indicator.interacting {
+    z-index: 999;
+    transform: scale(1.08);
+  }
+  .nav-route-links.dragging .nav-glass-indicator {
+    transition:
+      transform 0.2s ease,
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .nav-route-link {
+    position: relative;
+    z-index: 8;
+    min-height: 4.8rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.6rem 1.4rem;
+    border-radius: 999px;
+    color: var(--color-grey-600);
+    font-size: clamp(1.25rem, 1.05vw, 1.35rem);
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-decoration: none;
+    transition:
+      color 0.2s ease,
+      min-height 0.32s cubic-bezier(0.2, 0.9, 0.22, 1),
+      padding 0.32s cubic-bezier(0.2, 0.9, 0.22, 1),
+      gap 0.32s ease,
+      font-size 0.32s ease;
+    touch-action: none;
+    cursor: pointer;
+  }
+  .nav-route-link::before {
+    content: "";
+    position: absolute;
+    inset: 0.4rem 0.2rem;
+    border-radius: 999px;
+    background: var(--glass-hover-bg);
+    border: 1px solid var(--glass-hover-border);
+    box-shadow: var(--glass-hover-shadow);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    transform: scale(0.95);
+    transition:
+      opacity 0.22s cubic-bezier(0.2, 0.9, 0.22, 1),
+      transform 0.22s cubic-bezier(0.2, 0.9, 0.22, 1),
+      border-color 0.22s ease;
+    pointer-events: none;
+    z-index: -1;
+  }
+  @media (hover: hover) {
+    .nav-route-link:not(.active):hover::before {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  .nav-route-link svg {
+    width: 1.8rem;
+    height: 1.8rem;
+    flex-shrink: 0;
+    stroke-width: 1.8px;
+    transition: width 0.32s ease, height 0.32s ease;
+  }
+  .nav-route-link.active, .nav-route-link:hover {
+    color: var(--color-grey-900);
+  }
+  .nav-route-link.active {
+    font-weight: 800;
+  }
+  .nav-route-link:focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
+  .nav-glass-shell {
+    position: relative;
+    width: min(62rem, calc(100vw - 34rem));
+    height: 6.4rem;
+    flex: 0 0 auto;
+    overflow: visible;
+    border-radius: 999px;
+    background: var(--glass-nav-bg);
+    border: 1px solid var(--glass-nav-border);
+    box-shadow: var(--glass-nav-shadow);
+    backdrop-filter: blur(16px);
+    transition:
+      height 0.32s cubic-bezier(0.2, 0.9, 0.22, 1),
+      transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.32s ease;
+  }
+  .nav-glass-shell.engaged {
+    transform: scale(1.02);
+  }
+  .nav-route-links {
+    --gx: 50%;
+    --gy: 50%;
+    --ga: 0;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 999px;
+    transition: padding 0.32s cubic-bezier(0.2, 0.9, 0.22, 1), gap 0.32s ease;
+  }
+  .scrolled .nav-glass-shell {
+    height: 5.2rem;
+    box-shadow: 0 8px 22px -6px rgba(24, 26, 24, 0.14), 0 2px 8px -2px rgba(24, 26, 24, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.85);
+  }
+  .scrolled .nav-route-links {
+    padding: 0.4rem 0.6rem;
+    gap: 0.2rem;
+  }
+  .scrolled .nav-route-link {
+    min-height: 4.2rem;
+    padding: 0.4rem 1rem;
+    gap: 0.5rem;
+    font-size: clamp(1.15rem, 1vw, 1.25rem);
+  }
+  .scrolled .nav-route-link svg {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+  .scrolled .nav-glass-indicator {
+    top: 0.5rem;
+    left: 0.6rem;
+    background: rgba(255, 255, 255, 0.34);
+    border-color: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 4px 12px rgba(24, 26, 24, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.9), inset 0 -1px 1px rgba(255, 255, 255, 0.2);
+    height: 4.2rem;
+  }
 
+  @media (max-width: 980px) {
+    .nav-glass-shell {
+      display: none !important;
+    }
+  }
 
+  /* ─── Liquid Glass Mobile Bottom Navigation ──────────────────────── */
+  .mobile-bottom-nav {
+    display: none;
+    position: fixed;
+    left: 50%;
+    bottom: calc(1.4rem + env(safe-area-inset-bottom, 0px));
+    transform: translate3d(-50%, 0, 0) scale(1);
+    width: min(calc(100vw - 2.8rem), 44rem);
+    z-index: 900;
+    border-radius: 999px;
+    background: var(--glass-nav-bg);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border: 1px solid var(--glass-nav-border);
+    box-shadow: var(--glass-nav-shadow);
+    transition:
+      transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.28s ease;
+    will-change: transform, opacity;
+    overflow: hidden;
+  }
+  @media (max-width: 980px) {
+    .mobile-bottom-nav {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+  @supports not (backdrop-filter: blur(1px)) {
+    .mobile-bottom-nav {
+      background: var(--color-nav-bg);
+    }
+  }
+  .mobile-bottom-nav.no-motion,
+  .mobile-bottom-nav.no-motion * {
+    transition: none !important;
+  }
+  .mobile-bottom-nav.compact {
+    transform: translate3d(-50%, 0.6rem, 0) scale(0.93);
+    opacity: 0.9;
+    box-shadow: var(--shadow-md);
+  }
+  .mobile-bottom-nav.keyboard-hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translate3d(-50%, 150%, 0) !important;
+  }
+  .mbn-glass-sheen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48%;
+    background: var(--glass-sheen);
+    border-radius: 999px 999px 0 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .mbn-inner {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    height: 6.2rem;
+    padding: 0 0.4rem;
+    transition: height 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .mobile-bottom-nav.compact .mbn-inner {
+    height: 4.8rem;
+  }
+  .mbn-active-capsule {
+    position: absolute;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    left: 0;
+    z-index: 1;
+    border-radius: 999px;
+    background: var(--glass-indicator-bg);
+    border: 1px solid var(--glass-indicator-border);
+    box-shadow: var(--glass-indicator-shadow);
+    pointer-events: none;
+    transition:
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      width 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      top 0.28s ease,
+      bottom 0.28s ease,
+      opacity 0.22s ease;
+    will-change: transform, width;
+  }
+  .mobile-bottom-nav.compact .mbn-active-capsule {
+    top: 0.4rem;
+    bottom: 0.4rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .mbn-link {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    min-width: 0;
+    min-height: 4.4rem;
+    padding: 0.5rem 0.2rem;
+    border: 0;
+    background: none;
+    color: var(--color-grey-500);
+    text-decoration: none;
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: color 0.22s ease, transform 0.16s ease, filter 0.16s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .mbn-link:hover {
+      color: var(--color-grey-800);
+    }
+  }
+  .mbn-link.active {
+    color: var(--color-grey-900);
+    font-weight: 800;
+  }
+  .mbn-link:active {
+    transform: scale(0.92);
+    filter: brightness(1.08);
+  }
+  .mbn-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .mbn-icon-wrap svg {
+    width: 2rem;
+    height: 2rem;
+    stroke-width: 1.8px;
+  }
+  .mbn-link.active .mbn-icon-wrap svg {
+    stroke-width: 2.3px;
+  }
+  .mbn-label {
+    font-size: 1.15rem;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    transition: opacity 0.22s ease, transform 0.22s ease, max-height 0.22s ease;
+    max-height: 1.6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .mobile-bottom-nav.compact .mbn-link {
+    gap: 0;
+  }
+  .mobile-bottom-nav.compact .mbn-label {
+    opacity: 0;
+    max-height: 0;
+    transform: scale(0.8) translateY(0.4rem);
+  }
 `;
 
 export default GlobalStyles;
