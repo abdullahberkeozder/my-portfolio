@@ -31,7 +31,7 @@ import BookingForm from "../features/booking/components/BookingForm";
 import BookingSuccess from "../features/booking/components/BookingSuccess";
 import ServiceSelection from "../features/booking/components/ServiceSelection";
 import FaqAccordion from "../features/booking/components/FaqAccordion";
-import StickyMobileCTA from "../features/booking/components/StickyMobileCTA";
+
 import { logEvent } from "../services/apiAnalytics";
 import { ANALYTICS_EVENTS } from "../analytics/events";
 import {
@@ -975,7 +975,11 @@ function CustomerBooking() {
         schema={localBusinessSchema}
       />
       <Shell>
-        <AppNav />
+        <AppNav
+          quickWhatsappUrl={quickWhatsappUrl}
+          onScrollToCalendar={handleScrollToCalendar}
+          mobileCTAVisible={!isSubmitted && bookingStep === 1 && !isHeroInView && !isWizardInView && !isFooterInView}
+        />
 
         <PublicHeader id="top" ref={heroRef}>
           <HeroImage
@@ -1514,12 +1518,7 @@ function CustomerBooking() {
         </>}
       </Shell>
 
-      {!isSubmitted && bookingStep === 1 && !isHeroInView && !isWizardInView && !isFooterInView && (
-        <StickyMobileCTA
-          quickWhatsappUrl={quickWhatsappUrl}
-          onScrollToCalendar={handleScrollToCalendar}
-        />
-      )}
+
       <MobileBottomNav />
     </Page>
   );
