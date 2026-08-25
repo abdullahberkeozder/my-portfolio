@@ -161,3 +161,6 @@ vite.config.ts.timestamp-*
 **/.vercel/
 .netlify/
 **/.netlify/
+
+# Local backups for nested repository history
+.local-git-backups/

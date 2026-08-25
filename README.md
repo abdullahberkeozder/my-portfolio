@@ -10,6 +10,7 @@ I build user-focused web applications with clean component structure, maintainab
 
 | Project | Description | Stack |
 | --- | --- | --- |
+| [Ankara Usta](./ankara-usta-app/) | Ankara odaklı hizmet keşfi, doğal dil sınıflandırması, hizmet taksonomisi ve talep sihirbazı içeren yerel usta pazaryeri prototipi. | Next.js, React, TypeScript, Vinext, OpenAI Sites |
 | [The Welding Expert App](./the-welding-expert-app/) | Appointment, availability, gallery, and admin workflow for a local welding service. | React, Vite, Supabase, React Query, Styled Components |
 | [The Wild Oasis](./the-wild-oasis/) | Hotel and cabin management application with bookings, dashboard, and admin workflows. | React, Supabase, React Query, Styled Components |
 
@@ -18,6 +19,7 @@ Each project contains its own README with setup notes, screenshots, and implemen
 ## Technical Focus
 
 - React application architecture
+- Product taxonomy, guided request flows, and service classification
 - Responsive and accessible UI design
 - Supabase database, authentication, and Row Level Security
 - Server state management with TanStack React Query
@@ -29,6 +31,7 @@ Each project contains its own README with setup notes, screenshots, and implemen
 
 ```text
 my-portfolio/
+  ankara-usta-app/
   the-welding-expert-app/
   the-wild-oasis/
   README.md
@@ -39,7 +42,7 @@ my-portfolio/
 Open a project folder and follow its README:
 
 ```bash
-cd the-welding-expert-app
+cd ankara-usta-app
 npm install
 npm run dev
 ```
