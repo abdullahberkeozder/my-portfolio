@@ -10,7 +10,7 @@ I build user-focused web applications with clean component structure, maintainab
 
 | Project | Description | Stack |
 | --- | --- | --- |
-| [Ankara Usta](./ankara-usta-app/) | Ankara odaklı hizmet keşfi, doğal dil sınıflandırması, hizmet taksonomisi ve talep sihirbazı içeren yerel usta pazaryeri prototipi. | Next.js, React, TypeScript, Vinext, OpenAI Sites |
+| [Ankara Usta](./ankara-usta-app/) | Ankara-focused local services marketplace prototype with natural-language classification, a centralized service taxonomy, and guided request flows. | Next.js, React, TypeScript, Vinext, OpenAI Sites |
 | [The Welding Expert App](./the-welding-expert-app/) | Appointment, availability, gallery, and admin workflow for a local welding service. | React, Vite, Supabase, React Query, Styled Components |
 | [The Wild Oasis](./the-wild-oasis/) | Hotel and cabin management application with bookings, dashboard, and admin workflows. | React, Supabase, React Query, Styled Components |
 

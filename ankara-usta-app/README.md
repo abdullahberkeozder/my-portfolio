@@ -1,84 +1,91 @@
 # Ankara Usta
 
-Ankara Usta, Ankara'daki müşterileri doğrulanmış yerel ustalarla buluşturmak için geliştirilen hizmet pazaryeri prototipidir. Proje; müşterinin kategori bilmesini beklemek yerine sorununu doğal dille anlatmasını, doğru hizmete yönlendirilmesini ve hizmete özel talep akışını tamamlamasını hedefler.
+Ankara Usta is a local services marketplace prototype designed to connect customers in Ankara with verified tradespeople. Instead of requiring customers to understand service categories, the product lets them describe a problem in natural language, routes them to the most relevant service, and guides them through a service-specific request flow.
 
-Canlı sürüm: [ankara-usta.sevvaltuhafiye154322.chatgpt.site](https://ankara-usta.sevvaltuhafiye154322.chatgpt.site)
+Live preview: [ankara-usta.sevvaltuhafiye154322.chatgpt.site](https://ankara-usta.sevvaltuhafiye154322.chatgpt.site)
 
-## Mevcut Ürün Kapsamı
+## Current Product Scope
 
-- Ankara odaklı hizmet keşfi ve yerel eşleştirme yaklaşımı
-- Doğal dil girdisini hizmet adaylarına dönüştüren sınıflandırma ekranı
-- Altı ana kategori ve 26 hizmetten oluşan merkezi hizmet taksonomisi
-- Paket hizmet, teklif karşılaştırma ve keşif teslim modelleri
-- Altı örnek hizmet için çalışan kapsam soru sihirbazı
-- Görsel yükleme, konum ve kapsam özeti adımları
-- Popüler hizmetlerin ve kategori sekmelerinin taksonomi verisinden üretilmesi
-- Güven, doğrulama, iş günlüğü ve kapsam şeffaflığına odaklanan ana sayfa
-- Masaüstü ve mobil uyumlu arayüz
+- Ankara-focused service discovery and neighborhood-based matching
+- Natural-language classification that turns a customer's problem into relevant service candidates
+- A centralized taxonomy containing six main categories and 26 services
+- Packaged-service, quote-comparison, and on-site assessment delivery models
+- Working scope-question wizards for six representative services
+- Media upload, location selection, and request-summary steps
+- Category tabs and popular services generated from the shared taxonomy
+- A homepage focused on trust, verification, work evidence, and scope transparency
+- Responsive desktop and mobile layouts
 
-## Tasarım Sistemi
+## Design System
 
-Arayüz, Taskrabbit'in sade görev oluşturma yaklaşımından ilham alan fakat Ankara Usta'ya özgü hale getirilen bir sistem kullanır.
+The interface draws inspiration from Taskrabbit's straightforward task-creation experience while developing a distinct identity for Ankara Usta.
 
-- Petrol yeşili, güven mavisi ve kırık beyaz renk paleti
-- Figma `10:749` frame'inden alınan özgün **Mahalle Bağı** marka motifi
-- Müşteri, usta ve mahalle bağlantısını temsil eden iki renkli halka
-- Ev, Tetris ve LEGO dilini birleştiren modüler karo yapısı
-- Sayfa boyunca kenarlarda devam eden düşük yoğunluklu modüler ritim
-- İçeriğin önüne geçmeyen, kontrollü tekrar ve sade yüzeyler
+- A petrol-green, trust-blue, and warm off-white color palette
+- The original **Mahalle Bağı** (Neighborhood Bond) brand motif from Figma frame `10:749`
+- A two-color ring representing the connection between customer, tradesperson, and neighborhood
+- A modular tile structure combining house, Tetris, and LEGO-inspired visual language
+- A low-density modular rhythm that continues along the page edges
+- Controlled repetition and quiet surfaces that support rather than compete with the content
 
-## Teknoloji
+## Technology
 
 - Next.js 16
 - React 19
 - TypeScript
-- Vinext ve Vite
+- Vinext and Vite
 - Tailwind CSS 4
-- Cloudflare Workers uyumlu OpenAI Sites dağıtımı
+- OpenAI Sites deployment compatible with Cloudflare Workers
 
-## Projeyi Çalıştırma
+## Running the Project
 
-Gereksinim: Node.js `22.13.0` veya daha yeni bir sürüm.
+Requirement: Node.js `22.13.0` or newer.
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-Üretim derlemesi:
+Windows users can also use the included helper scripts. They prefer a project-local Node runtime under `.tools/` when available and otherwise use the compatible system installation.
+
+```powershell
+.\install.ps1
+.\dev.ps1
+```
+
+Production build:
 
 ```bash
 npm run build
 npm run start
 ```
 
-Kod kalite kontrolü:
+Code-quality check:
 
 ```bash
 npm run lint
 ```
 
-## Temel Proje Yapısı
+## Project Structure
 
 ```text
 app/
-  components/          Talep sihirbazı ve marka bileşenleri
-  data/                Hizmet taksonomisi ve soru tanımları
-  lib/                 Hizmet sınıflandırma mantığı
-  page.tsx             Ana ürün yüzeyi
-  globals.css          Tasarım sistemi ve responsive kurallar
+  components/          Request-wizard and brand components
+  data/                Service taxonomy and question definitions
+  lib/                 Service-classification logic
+  page.tsx             Main product surface
+  globals.css          Design system and responsive rules
 public/
   mahalle-bagi-figma-frame.png
 docs/
 ```
 
-## Sonraki Aşamalar
+## Next Steps
 
-- Müşteri, usta ve yönetici hesapları
-- Usta başvurusu, belge doğrulama ve bölge seçimi
-- Gerçek teklif oluşturma ve karşılaştırma
-- Mesajlaşma ve iş durumu takibi
-- Değerlendirme, şikâyet ve uyuşmazlık yönetimi
-- Kalıcı veritabanı, kimlik doğrulama ve dosya depolama
+- Customer, tradesperson, and administrator accounts
+- Tradesperson applications, document verification, and service-area selection
+- Production quote creation and comparison
+- Messaging and job-status tracking
+- Reviews, complaints, and dispute management
+- Persistent database, authentication, and file storage
 
-Bu sürüm ürün akışını ve görsel sistemi doğrulayan çalışan frontend prototipidir. Hesaplar, kalıcı veri ve yönetim işlevleri eklendiğinde proje tam full-stack pazaryeri yapısına geçecektir.
+This version is a working frontend prototype that validates the product flow and visual system. The project will become a full-stack marketplace once accounts, persistent data, and administration features are implemented.
