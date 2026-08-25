@@ -1,13 +1,25 @@
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-$nodeDirectory = Join-Path $projectRoot ".tools\node-v24.19.0-win-x64"
-$npmCommand = Join-Path $nodeDirectory "npm.cmd"
+$toolsDirectory = Join-Path $projectRoot ".tools"
+$localNode = Get-ChildItem -LiteralPath $toolsDirectory -Directory -Filter "node-v*-win-x64" -ErrorAction SilentlyContinue |
+    Sort-Object Name -Descending |
+    Select-Object -First 1
 
-if (-not (Test-Path -LiteralPath $npmCommand)) {
-    Write-Error "Projeye özel Node.js kurulumu bulunamadı: $nodeDirectory"
+if ($localNode) {
+    $env:Path = "$($localNode.FullName);$env:Path"
+}
+
+$npmCommand = Get-Command npm.cmd -ErrorAction SilentlyContinue
+if (-not $npmCommand) {
+    Write-Error "npm bulunamadı. Node.js 22.13.0 veya daha yeni bir sürüm kurun."
     exit 1
 }
 
-$env:Path = "$nodeDirectory;$env:Path"
+$nodeVersion = [version]((& node -p "process.versions.node").Trim())
+if ($nodeVersion -lt [version]"22.13.0") {
+    Write-Error "Node.js 22.13.0 veya daha yeni bir sürüm gerekli. Mevcut sürüm: $nodeVersion"
+    exit 1
+}
+
 Set-Location -LiteralPath $projectRoot
-& $npmCommand run dev -- --host localhost --port 5175
+& $npmCommand.Source run dev -- --host localhost --port 5175
 exit $LASTEXITCODE

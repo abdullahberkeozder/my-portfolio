@@ -164,3 +164,8 @@ vite.config.ts.timestamp-*
 
 # Local backups for nested repository history
 .local-git-backups/
+
+# Ankara Usta local bootstrap artifacts
+/.tmp-ai-website-cloner-template/
+/.tmp-node24-*
+/ankara-usta-social-preview.png

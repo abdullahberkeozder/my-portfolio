@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import styles from './motif-lab.module.css';
 
 type Motif = {
@@ -52,7 +53,7 @@ export default function MotifLab() {
 
   return <main className={styles.page}>
     <header className={styles.header}>
-      <a href="/" className={styles.brand}><span>∞</span> Ankara Usta</a>
+      <Link href="/" className={styles.brand}><span>∞</span> Ankara Usta</Link>
       <div><a href="/inspiration">18 ilham örneği ↗</a><span>GÖRSEL SİSTEM / 02</span><b>Arka plan örgü laboratuvarı</b></div>
     </header>
 

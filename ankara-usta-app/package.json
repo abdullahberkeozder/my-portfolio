@@ -6,10 +6,10 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "dev": ".tools\\node-v24.19.0-win-x64\\node.exe node_modules\\vinext\\dist\\cli.js dev",
-    "build": ".tools\\node-v24.19.0-win-x64\\node.exe node_modules\\vinext\\dist\\cli.js build",
-    "start": ".tools\\node-v24.19.0-win-x64\\node.exe node_modules\\vinext\\dist\\cli.js start",
-    "lint": ".tools\\node-v24.19.0-win-x64\\node.exe node_modules\\eslint\\bin\\eslint.js . --ignore-pattern dist --ignore-pattern .next"
+    "dev": "vinext dev",
+    "build": "vinext build",
+    "start": "vinext start",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
   },
   "dependencies": {
     "next": "16.2.6",
