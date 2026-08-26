@@ -63,7 +63,26 @@ Code-quality check:
 
 ```bash
 npm run lint
+npm run type-check
+npm run test
+npm run test:e2e
 ```
+
+Run the complete non-browser quality gate:
+
+```bash
+npm run quality
+```
+
+## Engineering Baseline
+
+- Vitest and Testing Library for unit and component tests
+- Playwright for browser-level customer-flow tests
+- Coverage thresholds for the taxonomy and classification modules
+- GitHub Actions checks for lint, type-check, coverage, build, and E2E smoke tests
+- Shared fixtures under `tests/fixtures/`
+- Domain glossary and requirements-to-test traceability under `docs/engineering/`
+- Backend, authentication, and storage decisions under `docs/adr/`
 
 ## Project Structure
 
@@ -77,6 +96,8 @@ app/
 public/
   mahalle-bagi-figma-frame.png
 docs/
+  adr/                 Architecture decision records
+  engineering/         Glossary and requirements traceability
 ```
 
 ## Next Steps
