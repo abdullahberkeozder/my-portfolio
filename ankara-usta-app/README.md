@@ -48,6 +48,8 @@ npm run dev
 
 Windows users can also use the included helper scripts. They prefer a project-local Node runtime under `.tools/` when available and otherwise use the compatible system installation.
 
+The standard `npm run dev`, `npm run build`, and `npm start` commands also detect this project-local runtime automatically when the system Node.js version is too old.
+
 ```powershell
 .\install.ps1
 .\dev.ps1
