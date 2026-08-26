@@ -1,17 +1,9 @@
-export type WizardQuestion = {
-  id: string;
-  label: string;
-  help?: string;
-  options: string[];
-};
+import { WizardDefinition, validateWizardDefinitions } from '../domain';
+import { services } from './serviceTaxonomy';
 
-export type WizardDefinition = {
-  serviceId: string;
-  intro: string;
-  questions: WizardQuestion[];
-};
+export type { WizardDefinition, WizardQuestion } from '../domain';
 
-export const wizardDefinitions: Record<string, WizardDefinition> = {
+const customWizardDefinitions: Record<string, WizardDefinition> = {
   'tv-duvar-montaji': {
     serviceId:'tv-duvar-montaji', intro:'Montaj kapsamını ve duvar uygunluğunu netleştirelim.',
     questions:[
@@ -61,3 +53,17 @@ export const wizardDefinitions: Record<string, WizardDefinition> = {
     ],
   },
 };
+
+export const genericWizardDefinition: Omit<WizardDefinition, 'serviceId'> = {
+  intro: 'İş kapsamını birkaç kısa soruyla netleştirelim.',
+  questions: [
+    {id:'scope',label:'İşin mevcut durumu nedir?',options:['Yeni kurulum','Onarım / değişim','Kontrol ve değerlendirme','Bilmiyorum']},
+    {id:'timing',label:'Ne zaman yapılmasını istersiniz?',options:['Mümkün olan en kısa sürede','Bu hafta','Önümüzdeki iki hafta','Tarih konusunda esneğim']},
+  ],
+};
+
+export const wizardDefinitions = validateWizardDefinitions(customWizardDefinitions, services);
+
+export function getWizardDefinition(serviceId: string): WizardDefinition {
+  return wizardDefinitions[serviceId] ?? {...genericWizardDefinition, serviceId};
+}

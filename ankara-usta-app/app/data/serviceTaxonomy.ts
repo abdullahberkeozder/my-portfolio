@@ -1,15 +1,6 @@
-export type DeliveryModel = 'package' | 'quote' | 'inspection';
+import { Service, ServiceCategory, validateServiceCatalog } from '../domain';
 
-export type Service = {
-  id: string; categoryId: string; name: string; slug: string;
-  aliases: string[]; deliveryModel: DeliveryModel;
-  popularRank?: number;
-};
-
-export type ServiceCategory = {
-  id: string; name: string; slug: string; icon: string; title: string;
-  description: [string, string];
-};
+export type { DeliveryModel, Service, ServiceCategory } from '../domain';
 
 export const serviceCategories: ServiceCategory[] = [
   {id:'montaj',name:'Montaj',slug:'mobilya-montaj',icon:'⌂',title:'Mobilya & montaj',description:['Mobilya, TV, perde ve raf işlerini güvenle tamamlatın.','Paket kapsamı, görünen fiyat ve uygun randevu saatleri.']},
@@ -48,6 +39,8 @@ export const services: Service[] = [
   {id:'tadilat-sonrasi-temizlik',categoryId:'temizlik',name:'Tadilat Sonrası Temizlik',slug:'tadilat-sonrasi-temizlik',aliases:['inşaat temizliği','boya sonrası temizlik','moloz tozu temizliği'],deliveryModel:'quote'},
   {id:'cam-temizligi',categoryId:'temizlik',name:'Cam Temizliği',slug:'cam-temizligi',aliases:['pencere temizliği','balkon camı temizliği','cam silme'],deliveryModel:'package'},
 ];
+
+validateServiceCatalog(serviceCategories, services);
 
 export const servicesByCategory = (categoryId: string) => services.filter((service) => service.categoryId === categoryId);
 export const popularServices = services.filter((service) => service.popularRank).sort((a,b) => (a.popularRank ?? 99) - (b.popularRank ?? 99));

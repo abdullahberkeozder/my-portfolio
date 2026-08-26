@@ -11,6 +11,7 @@ Live preview: [ankara-usta.sevvaltuhafiye154322.chatgpt.site](https://ankara-ust
 - A centralized taxonomy containing six main categories and 26 services
 - Packaged-service, quote-comparison, and on-site assessment delivery models
 - Working scope-question wizards for six representative services
+- UI-independent domain models, runtime schemas, and request/job state machines
 - Media upload, location selection, and request-summary steps
 - Category tabs and popular services generated from the shared taxonomy
 - A homepage focused on trust, verification, work evidence, and scope transparency
@@ -90,6 +91,7 @@ npm run quality
 app/
   components/          Request-wizard and brand components
   data/                Service taxonomy and question definitions
+  domain/              Models, validation, state machines, and integrity rules
   lib/                 Service-classification logic
   page.tsx             Main product surface
   globals.css          Design system and responsive rules
@@ -98,6 +100,11 @@ public/
 docs/
   adr/                 Architecture decision records
   engineering/         Glossary and requirements traceability
+tests/
+  fixtures/            Deterministic domain and UI test data
+  unit/                Domain, catalog, classifier, and wizard tests
+  component/           React behavior tests
+  e2e/                 Browser-level customer-flow tests
 ```
 
 ## Next Steps

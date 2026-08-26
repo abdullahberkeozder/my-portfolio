@@ -19,7 +19,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json-summary', 'html'],
-      include: ['app/data/**/*.ts', 'app/lib/**/*.ts'],
+      include: ['app/data/**/*.ts', 'app/domain/**/*.ts', 'app/lib/**/*.ts'],
       thresholds: {
         branches: 80,
         functions: 85,

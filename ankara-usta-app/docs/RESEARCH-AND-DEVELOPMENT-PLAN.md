@@ -223,6 +223,15 @@ Teslimatlar:
 
 Tahmin: 2 hafta
 
+Mühendislik alt fazı — 26 Ağustos 2026 tarihinde tamamlandı:
+
+- UI'dan bağımsız `Service`, `Request`, `Quote`, `Job` ve `UserRole` domain modelleri.
+- Zod tabanlı çalışma zamanı şema doğrulaması.
+- Talep ve iş durum makineleri; geçersiz geçişlerin domain katmanında reddedilmesi.
+- Altı kategori ve 26 hizmet için ID, slug, sıra ve kategori referansı bütünlük kontrolleri.
+- Altı özel wizard ile ortak fallback tanımının UI dışındaki veri katmanına taşınması.
+- Kalan 20 hizmet için `docs/engineering/WIZARD-BACKLOG.md` soru ağacı backlog'u.
+
 Geliştirme:
 
 - Tasarım sistemi: buton, giriş, kart, rozet, modal, adım göstergesi, durum etiketi.
