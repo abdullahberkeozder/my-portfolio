@@ -40,8 +40,28 @@ export async function POST(request: Request, context: {params: Promise<{id: stri
       .eq('id', id)
       .eq('status', 'draft')
       .select('id,status,submitted_at')
-      .single();
+      .maybeSingle();
     if (error) throw error;
+
+    // Another request with the same idempotency key may have won the draft ->
+    // submitted race after our initial read. Treat that as the same successful
+    // operation instead of returning a misleading client error.
+    if (!data) {
+      const {data: racedRequest, error: racedReadError} = await supabase
+        .from('service_requests')
+        .select('id,service_id,answers,district,neighborhood,preferred_timing,status,idempotency_key,submitted_at')
+        .eq('id', id)
+        .single();
+      if (racedReadError || !racedRequest) throw racedReadError ?? new Error('Talep bulunamadı.');
+      if (racedRequest.idempotency_key !== idempotencyKey) {
+        return NextResponse.json({error: 'Gönderim anahtarı uyuşmuyor.'}, {status: 409});
+      }
+      if (['submitted','matching','quotes_received','provider_selected'].includes(racedRequest.status)) {
+        return NextResponse.json({request: racedRequest, idempotent: true});
+      }
+      return NextResponse.json({error: 'Talep durumu eşzamanlı olarak değişti.'}, {status: 409});
+    }
+
     const {data:matching,error:matchingError}=await supabase.rpc('match_request',{p_request_id:id});
     return NextResponse.json({request:data,matching:matching??null,matchingWarning:matchingError?.message??null,idempotent:false});
   } catch (error) {

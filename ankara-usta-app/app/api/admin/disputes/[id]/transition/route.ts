@@ -1,0 +1,5 @@
+import {NextResponse} from 'next/server';
+import {z} from 'zod';
+import {disputeTransitionSchema} from '../../../../../domain';
+import {createSupabaseServerClient} from '../../../../../lib/supabase/server';
+export async function POST(request:Request,context:{params:Promise<{id:string}>}){try{const {id}=await context.params;if(!z.uuid().safeParse(id).success)throw new Error('Uyuşmazlık kimliği geçersiz.');const input=disputeTransitionSchema.parse(await request.json());const supabase=await createSupabaseServerClient();const {data:{user}}=await supabase.auth.getUser();if(!user)return NextResponse.json({error:'Oturum açmanız gerekiyor.'},{status:401});const {data,error}=await supabase.rpc('admin_transition_dispute',{p_dispute_id:id,p_status:input.status,p_reason:input.reason,p_evidence_due_at:input.evidenceDueAt??null,p_customer_explanation:input.customerExplanation??null,p_tradesperson_explanation:input.tradespersonExplanation??null});if(error)throw error;return NextResponse.json({dispute:data});}catch(error){return NextResponse.json({error:error instanceof Error?error.message:'Uyuşmazlık durumu değiştirilemedi.'},{status:409});}}

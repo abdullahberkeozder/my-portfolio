@@ -34,5 +34,17 @@ describe('RequestWizard', () => {
 
     expect(screen.getByRole('dialog', { name: 'TV Duvar Montajı' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Kapat' })).toBeInTheDocument();
+    expect(screen.getByRole('progressbar', { name: 'Talep adımları' })).toHaveAttribute('aria-valuenow', '1');
+  });
+
+  it('moves focus into the modal and closes it with Escape', async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+
+    render(<RequestWizard service={tvMounting!} onClose={onClose} />);
+
+    expect(screen.getByRole('button', { name: 'Kapat' })).toHaveFocus();
+    await user.keyboard('{Escape}');
+    expect(onClose).toHaveBeenCalledOnce();
   });
 });

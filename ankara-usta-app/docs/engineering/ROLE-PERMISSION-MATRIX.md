@@ -23,6 +23,11 @@ Roles are stored in `public.user_roles` and evaluated by database policies and s
 | Propose scope/inspection | No | Own non-terminal jobs | Own non-terminal jobs | No | Yes |
 | Complete a job | No | Customer approval only | No | No | Yes |
 | Read administrator audit events | No | No | No | Yes | Yes |
+| Submit dispute evidence and statements | No | Own jobs | Own jobs | Read all | Read all |
+| Read dispute internal notes | No | No | No | Yes | Yes |
+| Transition disputes and set SLA deadlines | No | No | No | Yes | Yes |
+| Apply warnings or suspensions | No | No | No | Yes | Yes |
+| Appeal a notified dispute decision | No | Own disputes | Own disputes | No | No |
 | Assign or revoke operator roles | No | No | No | No | Database bootstrap only |
 
 ## Enforcement rules

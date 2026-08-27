@@ -11,18 +11,15 @@ export async function POST(request: Request) {
 
     const {payload, service} = validateRequestDraft(await request.json());
     const {data, error} = await supabase
-      .from('service_requests')
-      .upsert({
-        customer_id: user.id,
-        service_id: service.id,
-        delivery_model: service.deliveryModel,
-        answers: payload.answers,
-        district: payload.district || null,
-        neighborhood: payload.neighborhood || null,
-        preferred_timing: payload.preferredTiming || null,
-        idempotency_key: payload.idempotencyKey,
-      }, {onConflict: 'customer_id,idempotency_key'})
-      .select('id,status,updated_at')
+      .rpc('upsert_request_draft', {
+        p_idempotency_key: payload.idempotencyKey,
+        p_service_id: service.id,
+        p_delivery_model: service.deliveryModel,
+        p_answers: payload.answers,
+        p_district: payload.district || null,
+        p_neighborhood: payload.neighborhood || null,
+        p_preferred_timing: payload.preferredTiming || null,
+      })
       .single();
 
     if (error) throw error;
@@ -32,4 +29,3 @@ export async function POST(request: Request) {
     return NextResponse.json({error: message}, {status: 400});
   }
 }
-

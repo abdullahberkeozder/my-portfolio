@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Service, serviceCategories } from '../data/serviceTaxonomy';
 import { getWizardDefinition } from '../data/wizardDefinitions';
 import { createSupabaseBrowserClient } from '../lib/supabase/browser';
+import { useModalDialog } from '../hooks/useModalDialog';
 
 type Props = { service: Service; onClose: () => void };
 type LocalDraft = {answers:Record<string,string>;district:string;neighborhood:string;timing:string;step:number;idempotencyKey:string;requestId?:string};
@@ -24,6 +25,7 @@ const resultContent={
 
 export default function RequestWizard({service,onClose}:Props){
   const router=useRouter();
+  const dialogRef=useModalDialog<HTMLElement>(true,onClose);
   const definition=getWizardDefinition(service.id);
   const questions=definition.questions;
   const storageKey=`ankara-usta:draft:${service.id}`;
@@ -96,7 +98,7 @@ export default function RequestWizard({service,onClose}:Props){
     }catch(error){setMessage(error instanceof Error?error.message:'Talep gönderilemedi.')}finally{setBusy(false)}
   }
 
-  return <div className="dialog-backdrop wizard-backdrop" role="presentation" onClick={onClose}><section className="request-dialog wizard-dialog" role="dialog" aria-modal="true" aria-labelledby="wizard-title" onClick={event=>event.stopPropagation()}><button className="dialog-close" onClick={onClose} aria-label="Kapat">×</button><div className="wizard-progress" aria-label={`Adım ${step+1} / 4`}><span style={{width:`${((step+1)/4)*100}%`}}/></div><p className="wizard-step">ADIM {step+1} / 4 · {category?.name}</p>
+  return <div className="dialog-backdrop wizard-backdrop" role="presentation" onClick={onClose}><section ref={dialogRef} tabIndex={-1} className="request-dialog wizard-dialog" role="dialog" aria-modal="true" aria-labelledby="wizard-title" onClick={event=>event.stopPropagation()}><button data-dialog-initial-focus className="dialog-close" onClick={onClose} aria-label="Kapat">×</button><div className="wizard-progress" role="progressbar" aria-label="Talep adımları" aria-valuemin={1} aria-valuemax={4} aria-valuenow={step+1}><span style={{width:`${((step+1)/4)*100}%`}}/></div><p className="wizard-step">ADIM {step+1} / 4 · {category?.name}</p>
     {step===0&&<><h2 id="wizard-title">{service.name}</h2><p>{definition.intro}</p><div className="wizard-questions">{questions.map(question=><fieldset key={question.id}><legend>{question.label}</legend>{question.options.map(option=><label className={answers[question.id]===option?'checked':''} key={option}><input type="radio" name={question.id} value={option} checked={answers[question.id]===option} onChange={()=>setAnswers(current=>({...current,[question.id]:option}))}/><span>{option}</span></label>)}</fieldset>)}</div><div className="wizard-actions"><button className="dialog-primary" disabled={!scopeComplete} onClick={()=>void continueFromScope()} type="button">Görsellere devam et</button></div></>}
     {step===1&&<><h2 id="wizard-title">Fotoğraf veya video ekleyin</h2><p>Görseller ustanın kapsamı daha doğru anlamasına yardımcı olur. Kişisel bilgi veya insan yüzü içermemesine dikkat edin.</p><label className="upload-zone"><input type="file" accept="image/jpeg,image/png,image/webp,video/mp4" multiple onChange={filesChanged}/><b>Dosya seçin veya buraya bırakın</b><span>JPG, PNG, WebP veya MP4 · Dosya başına en fazla 50 MB.</span>{files.length>0&&<strong>{files.length} dosya seçildi</strong>}</label><div className="wizard-actions"><button className="wizard-secondary" onClick={()=>setStep(0)} type="button">Geri</button><button className="dialog-primary" onClick={()=>setStep(2)} type="button">Konuma devam et</button></div></>}
     {step===2&&<><h2 id="wizard-title">İş nerede ve ne zaman?</h2><p>Bu aşamada yalnızca yaklaşık konum alınır. Açık adres, usta seçilmeden paylaşılmaz.</p><div className="location-grid"><label>İlçe<select value={district} onChange={event=>setDistrict(event.target.value)}><option value="">İlçe seçin</option>{districts.map(item=><option key={item}>{item}</option>)}</select></label><label>Mahalle<input value={neighborhood} onChange={event=>setNeighborhood(event.target.value)} placeholder="Mahalle adı"/></label><label>Tercih edilen zaman<select value={timing} onChange={event=>setTiming(event.target.value)}><option>Bugün / acil</option><option>Bu hafta</option><option>Önümüzdeki iki hafta</option><option>Tarih konusunda esneğim</option></select></label></div><div className="wizard-actions"><button className="wizard-secondary" onClick={()=>setStep(1)} type="button">Geri</button><button className="dialog-primary" disabled={!locationComplete} onClick={()=>setStep(3)} type="button">Kapsamı incele</button></div></>}

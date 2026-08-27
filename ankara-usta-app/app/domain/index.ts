@@ -7,4 +7,5 @@ export * from './schemas';
 export * from './stateMachines';
 export * from './verification';
 export * from './trust';
+export * from './disputes';
 export * from './wizard';
