@@ -3,6 +3,8 @@ import { Service, services } from '../data/serviceTaxonomy';
 export type ClassificationCandidate = {
   service: Service;
   score: number;
+  matchedTerms: string[];
+  explanation: string;
 };
 
 export type ClassificationResult = {
@@ -49,9 +51,32 @@ function scoreService(query: string, service: Service) {
   return score;
 }
 
+function explainMatch(query: string, service: Service) {
+  const queryWords = query
+    .toLocaleLowerCase('tr-TR')
+    .replace(/[^a-z0-9çğıöşü\s]/gi, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((word) => ({display: word, normalized: normalize(word)}));
+  const serviceTokens = new Set([service.name, ...service.aliases].flatMap(tokens));
+  const matchedTerms = Array.from(new Set(
+    queryWords
+      .filter(({normalized}) => Array.from(serviceTokens).some((token) =>
+        token === normalized || (token.length >= 5 && normalized.length >= 5 && token.slice(0, 5) === normalized.slice(0, 5)),
+      ))
+      .map(({display}) => display),
+  )).slice(0, 3);
+
+  const explanation = matchedTerms.length
+    ? `“${matchedTerms.join('” ve “')}” ifadeleri bu hizmetle eşleşiyor.`
+    : `Yazdığınız ihtiyaç, ${service.name.toLocaleLowerCase('tr-TR')} kapsamına en yakın görünüyor.`;
+
+  return {matchedTerms, explanation};
+}
+
 export function classifyService(query: string): ClassificationResult {
   const candidates = services
-    .map((service) => ({service, score: scoreService(query, service)}))
+    .map((service) => ({service, score: scoreService(query, service), ...explainMatch(query, service)}))
     .filter((candidate) => candidate.score >= 25)
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);

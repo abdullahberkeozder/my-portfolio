@@ -72,3 +72,32 @@ test('homepage and wizard do not overflow on the mobile viewport', async ({ page
   await expect(page.getByRole('dialog', { name: 'Avize Montajı' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 });
+
+test('mobile navigation opens, closes with Escape, and exposes product routes', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-chromium', 'Mobile-only navigation assertion');
+  await page.goto('/');
+
+  const menuButton = page.getByRole('button', {name:'Menüyü aç'});
+  await menuButton.click();
+  const navigation = page.getByRole('navigation', {name:'Mobil navigasyon'});
+  await expect(navigation).toBeVisible();
+  await expect(navigation.getByRole('link', {name:'Usta olarak katıl'})).toHaveAttribute('href','/usta-basvurusu');
+  await expect(navigation.getByRole('link', {name:'Yardım merkezi'})).toHaveAttribute('href','/yardim');
+
+  await page.keyboard.press('Escape');
+  await expect(navigation).toBeHidden();
+  await expect(page.getByRole('button', {name:'Menüyü aç'})).toBeFocused();
+});
+
+test('classification explains the selected match and footer contains no placeholder links', async ({ page }) => {
+  await page.goto('/');
+  const search = page.getByRole('textbox', {name:'Ne konuda yardıma ihtiyacınız var?'});
+  await search.fill('mutfak musluğu damlatıyor');
+  await search.press('Enter');
+
+  const dialog = page.getByRole('dialog', {name:'İhtiyacınızı doğru anladık mı?'});
+  await expect(dialog.getByText('Neden bu sonuç?')).toBeVisible();
+  await expect(dialog.locator('.match-rationale p')).toContainText('musluğu');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('footer a[href="#"]')).toHaveCount(0);
+});

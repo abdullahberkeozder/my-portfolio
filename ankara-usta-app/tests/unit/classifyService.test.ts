@@ -26,4 +26,11 @@ describe('classifyService', () => {
   it('returns no more than three candidates', () => {
     expect(classifyService('montaj değişim onarım').candidates.length).toBeLessThanOrEqual(3);
   });
+
+  it('explains a match using terms from the customer problem', () => {
+    const result = classifyService('mutfak musluğu damlatıyor');
+
+    expect(result.candidates[0]?.matchedTerms).toContain('musluğu');
+    expect(result.candidates[0]?.explanation).toContain('musluğu');
+  });
 });
