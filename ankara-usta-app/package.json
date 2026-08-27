@@ -6,8 +6,12 @@
     "node": ">=22.13.0"
   },
   "scripts": {
+    "styles:check": "node scripts/verify-style-entrypoints.mjs",
+    "predev": "npm run styles:check",
     "dev": "node scripts/run-vinext.mjs dev",
+    "prebuild": "npm run styles:check",
     "build": "node scripts/run-vinext.mjs build",
+    "prestart": "npm run styles:check",
     "start": "node scripts/run-vinext.mjs start",
     "lint": "node scripts/run-project-tool.mjs eslint . --ignore-pattern dist --ignore-pattern .next",
     "type-check": "node scripts/run-project-tool.mjs tsc --noEmit",
@@ -16,7 +20,7 @@
     "test:coverage": "node scripts/run-project-tool.mjs vitest run --coverage",
     "test:e2e": "node scripts/run-project-tool.mjs playwright test",
     "test:remote:phase65": "node scripts/run-phase65-remote.mjs",
-    "quality": "npm run lint && npm run type-check && npm run test:coverage && npm run build"
+    "quality": "npm run styles:check && npm run lint && npm run type-check && npm run test:coverage && npm run build"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.5",
