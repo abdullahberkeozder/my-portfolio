@@ -11,12 +11,12 @@ export const requestFixture: Request = {
 export const quoteFixture: Quote = {
   id: 'quote-1', requestId: requestFixture.id, tradespersonId: 'tradesperson-1',
   status: 'submitted', laborAmountKurus: 150_000, materialAmountKurus: 25_000,
-  estimatedDurationMinutes: 120, version: 1, createdAt: now, updatedAt: now,
+  estimatedDurationMinutes: 120, warrantyDays: 90, includedScope:['Montaj işçiliği'],excludedScope:['Duvar onarımı'],version: 1, createdAt: now, updatedAt: now,
 };
 
 export const jobFixture: Job = {
   id: 'job-1', requestId: requestFixture.id, acceptedQuoteId: quoteFixture.id,
   customerId: requestFixture.customerId, tradespersonId: quoteFixture.tradespersonId,
   status: 'scheduled', scheduledFor: '2026-08-27T09:00:00.000Z',
-  createdAt: now, updatedAt: now,
+  nextEventSequence:0,createdAt: now, updatedAt: now,
 };

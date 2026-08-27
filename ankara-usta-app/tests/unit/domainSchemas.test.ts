@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { jobSchema, quoteSchema, requestSchema, userRoleSchema } from '../../app/domain';
+import { jobSchema, quoteSchema, requestSchema, tradespersonApplicationStatusSchema, userRoleSchema, verificationDocumentStatusSchema } from '../../app/domain';
 import { jobFixture, quoteFixture, requestFixture } from '../fixtures/domainEntities';
 
 describe('domain runtime schemas', () => {
@@ -19,5 +19,11 @@ describe('domain runtime schemas', () => {
     expect(userRoleSchema.options).toEqual(['customer', 'tradesperson', 'moderator', 'admin']);
     expect(userRoleSchema.safeParse('customer').success).toBe(true);
     expect(userRoleSchema.safeParse('super-admin').success).toBe(false);
+  });
+
+  it('validates tradesperson review and document states', () => {
+    expect(tradespersonApplicationStatusSchema.safeParse('reassessment_required').success).toBe(true);
+    expect(tradespersonApplicationStatusSchema.safeParse('verified').success).toBe(false);
+    expect(verificationDocumentStatusSchema.safeParse('verified').success).toBe(true);
   });
 });

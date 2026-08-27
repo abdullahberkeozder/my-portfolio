@@ -4,6 +4,10 @@ import { describe, expect, it, vi } from 'vitest';
 import RequestWizard from '../../app/components/RequestWizard';
 import { services } from '../../app/data/serviceTaxonomy';
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({push: vi.fn(), refresh: vi.fn()}),
+}));
+
 const tvMounting = services.find((service) => service.id === 'tv-duvar-montaji');
 
 describe('RequestWizard', () => {

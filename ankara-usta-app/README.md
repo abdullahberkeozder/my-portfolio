@@ -13,6 +13,21 @@ Live preview: [ankara-usta.sevvaltuhafiye154322.chatgpt.site](https://ankara-ust
 - Working scope-question wizards for six representative services
 - UI-independent domain models, runtime schemas, and request/job state machines
 - Media upload, location selection, and request-summary steps
+- Supabase-backed customer registration and sign-in
+- Persistent request drafts, idempotent submission, private media, and a customer request list
+- Tradesperson applications with service and Ankara district selection
+- Private professional-document and reference evidence uploads
+- Administrator review queue, controlled application/document transitions, and immutable audit events
+- Database-enforced quote eligibility and evidence-backed verification badges
+- Daily document-expiry processing and automatic reassessment of affected profiles
+- Explainable matching across service, district, availability, and verification
+- Explicit no-supply and limited-supply customer states
+- Immutable, versioned quotes with labor, material, duration, warranty, inclusions, and exclusions
+- Customer comparison of up to three offers and atomic quote acceptance
+- Accepted-quote job creation with a backend-enforced lifecycle
+- Per-job messaging, inspection appointments, bilateral scope changes, and ordered timelines
+- Post-acceptance exact-address disclosure
+- Transactional notification outbox with retry, worker leases, and dead-letter state
 - Category tabs and popular services generated from the shared taxonomy
 - A homepage focused on trust, verification, work evidence, and scope transparency
 - Responsive desktop and mobile layouts
@@ -36,6 +51,7 @@ The interface draws inspiration from Taskrabbit's straightforward task-creation 
 - Vinext and Vite
 - Tailwind CSS 4
 - OpenAI Sites deployment compatible with Cloudflare Workers
+- Supabase Auth, PostgreSQL, Row Level Security, and private Storage
 
 ## Running the Project
 
@@ -45,6 +61,8 @@ Requirement: Node.js `22.13.0` or newer.
 npm ci
 npm run dev
 ```
+
+Copy `.env.example` to `.env.local` and set the project URL and publishable key. Never place the database password or a Supabase secret/service-role key in a client environment variable.
 
 Windows users can also use the included helper scripts. They prefer a project-local Node runtime under `.tools/` when available and otherwise use the compatible system installation.
 
@@ -91,31 +109,34 @@ npm run quality
 
 ```text
 app/
+  api/                 Customer, tradesperson, document, and administrator routes
   components/          Request-wizard and brand components
   data/                Service taxonomy and question definitions
   domain/              Models, validation, state machines, and integrity rules
-  lib/                 Service-classification logic
+  lib/                 Classification and Supabase client adapters
   page.tsx             Main product surface
   globals.css          Design system and responsive rules
 public/
   mahalle-bagi-figma-frame.png
 docs/
   adr/                 Architecture decision records
-  engineering/         Glossary and requirements traceability
+  engineering/         Glossary, role matrix, operations, and requirements traceability
 tests/
   fixtures/            Deterministic domain and UI test data
   unit/                Domain, catalog, classifier, and wizard tests
   component/           React behavior tests
   e2e/                 Browser-level customer-flow tests
+supabase/
+  migrations/          PostgreSQL schema, constraints, RLS, and Storage policies
 ```
 
 ## Next Steps
 
-- Customer, tradesperson, and administrator accounts
-- Tradesperson applications, document verification, and service-area selection
-- Production quote creation and comparison
-- Messaging and job-status tracking
+- Bootstrap the first administrator from a known Supabase Auth identity
+- Add authenticated cross-role RLS and Storage integration tests
+- Matching quality calibration with real Ankara supply and demand data
+- Production notification channel workers and delivery-provider integration
 - Reviews, complaints, and dispute management
-- Persistent database, authentication, and file storage
+- Cross-user RLS integration tests and production email delivery configuration
 
-This version is a working frontend prototype that validates the product flow and visual system. The project will become a full-stack marketplace once accounts, persistent data, and administration features are implemented.
+This version is now an early full-stack marketplace foundation: the public discovery experience is connected to Supabase-backed customer identity, durable requests, private media, tradesperson onboarding, evidence review, and an administrator queue. Matching, the complete quoting experience, messaging, jobs, and dispute operations remain planned phases.

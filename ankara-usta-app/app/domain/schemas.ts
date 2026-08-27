@@ -4,7 +4,10 @@ import {
   jobStatuses,
   quoteStatuses,
   requestStatuses,
+  tradespersonApplicationStatuses,
   userRoles,
+  verificationDocumentKinds,
+  verificationDocumentStatuses,
 } from './models';
 
 const idSchema = z.string().trim().min(1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
@@ -16,6 +19,9 @@ export const userRoleSchema = z.enum(userRoles);
 export const requestStatusSchema = z.enum(requestStatuses);
 export const quoteStatusSchema = z.enum(quoteStatuses);
 export const jobStatusSchema = z.enum(jobStatuses);
+export const tradespersonApplicationStatusSchema = z.enum(tradespersonApplicationStatuses);
+export const verificationDocumentStatusSchema = z.enum(verificationDocumentStatuses);
+export const verificationDocumentKindSchema = z.enum(verificationDocumentKinds);
 
 export const serviceCategorySchema = z.object({
   id: idSchema,
@@ -56,7 +62,13 @@ export const quoteSchema = z.object({
   laborAmountKurus: z.number().int().nonnegative(),
   materialAmountKurus: z.number().int().nonnegative(),
   estimatedDurationMinutes: z.number().int().positive(),
+  warrantyDays: z.number().int().min(0).max(3650),
+  includedScope: z.array(z.string().trim().min(1).max(300)).min(1).max(20),
+  excludedScope: z.array(z.string().trim().min(1).max(300)).max(20),
+  note: z.string().trim().max(2000).optional(),
   version: z.number().int().positive(),
+  supersedesQuoteId: entityIdSchema.optional(),
+  acceptedAt: timestampSchema.optional(),
   createdAt: timestampSchema,
   updatedAt: timestampSchema,
 });
@@ -70,6 +82,32 @@ export const jobSchema = z.object({
   status: jobStatusSchema,
   scheduledFor: timestampSchema.optional(),
   warrantyEndsAt: timestampSchema.optional(),
+  nextEventSequence: z.number().int().nonnegative(),
   createdAt: timestampSchema,
   updatedAt: timestampSchema,
+});
+
+export const tradespersonProfileSchema = z.object({
+  userId: entityIdSchema,
+  displayName: z.string().trim().min(2).max(120),
+  bio: z.string().trim().min(20).max(2000),
+  applicationStatus: tradespersonApplicationStatusSchema,
+  createdAt: timestampSchema,
+  updatedAt: timestampSchema,
+});
+
+export const tradespersonDirectoryEntrySchema = tradespersonProfileSchema.extend({
+  verificationBadge: z.boolean(),
+});
+
+export const verificationDocumentSchema = z.object({
+  id: entityIdSchema,
+  tradespersonId: entityIdSchema,
+  kind: verificationDocumentKindSchema,
+  status: verificationDocumentStatusSchema,
+  storagePath: z.string().trim().min(1),
+  expiresAt: timestampSchema.optional(),
+  verifiedAt: timestampSchema.optional(),
+  verifiedBy: entityIdSchema.optional(),
+  createdAt: timestampSchema,
 });

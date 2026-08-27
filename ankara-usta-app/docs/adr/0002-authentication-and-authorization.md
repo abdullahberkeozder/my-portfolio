@@ -1,6 +1,6 @@
 # ADR-0002: Separate Identity Authentication from Marketplace Authorization
 
-- Status: Proposed — provider spike required before Phase 2
+- Status: Superseded in part by ADR-0004 — Supabase Auth selected for Phase 2
 - Date: 26 August 2026
 - Owners: Product, Engineering, and Operations
 
@@ -15,7 +15,7 @@ The final marketplace must support public customers, public tradespeople, and re
 - Resolve identity through a server-side authentication adapter.
 - Store marketplace roles and permissions in the application database; never trust a role supplied by the browser.
 - Treat customer, tradesperson, moderator, and administrator authorization as explicit server-side policies.
-- Select the public authentication provider through a time-boxed spike before Phase 2. The spike must verify Turkish phone/email flows, account recovery, abuse controls, HTTP compatibility with Sites, pricing, and data export.
+- Use Supabase Auth for the Phase 2 customer email/password flow. Phone delivery, recovery, abuse controls, and provider portability remain launch-readiness checks.
 - ChatGPT/SIWC identity may be used only for a deliberately closed beta or internal operator surface unless the product scope changes.
 
 ## Consequences

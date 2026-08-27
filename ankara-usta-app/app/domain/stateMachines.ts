@@ -1,7 +1,7 @@
-import { Job, JobStatus, Request, RequestStatus } from './models';
+import { Job, JobStatus, Request, RequestStatus, TradespersonApplicationStatus } from './models';
 
 export class InvalidStateTransitionError extends Error {
-  constructor(entity: 'Request' | 'Job', from: string, to: string) {
+  constructor(entity: 'Request' | 'Job' | 'TradespersonApplication', from: string, to: string) {
     super(`${entity} cannot transition from "${from}" to "${to}".`);
     this.name = 'InvalidStateTransitionError';
   }
@@ -27,6 +27,17 @@ const jobTransitions: Readonly<Record<JobStatus, readonly JobStatus[]>> = {
   cancelled: [],
 };
 
+const tradespersonApplicationTransitions: Readonly<Record<TradespersonApplicationStatus, readonly TradespersonApplicationStatus[]>> = {
+  draft: ['submitted'],
+  submitted: ['under_review'],
+  under_review: ['needs_changes', 'approved', 'rejected'],
+  needs_changes: ['submitted', 'rejected'],
+  approved: ['reassessment_required', 'suspended'],
+  rejected: ['submitted'],
+  reassessment_required: ['under_review', 'suspended'],
+  suspended: ['under_review'],
+};
+
 export function canTransitionRequest(from: RequestStatus, to: RequestStatus) {
   return requestTransitions[from].includes(to);
 }
@@ -49,4 +60,14 @@ export function transitionJob(job: Job, to: JobStatus, at: string): Job {
   }
 
   return {...job, status: to, updatedAt: at};
+}
+
+export function canTransitionTradespersonApplication(from: TradespersonApplicationStatus, to: TradespersonApplicationStatus) {
+  return tradespersonApplicationTransitions[from].includes(to);
+}
+
+export function assertTradespersonApplicationTransition(from: TradespersonApplicationStatus, to: TradespersonApplicationStatus) {
+  if (!canTransitionTradespersonApplication(from, to)) {
+    throw new InvalidStateTransitionError('TradespersonApplication', from, to);
+  }
 }

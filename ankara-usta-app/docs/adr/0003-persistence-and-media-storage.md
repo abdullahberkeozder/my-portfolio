@@ -1,6 +1,6 @@
 # ADR-0003: Use D1 for Pilot Records and R2 for Media
 
-- Status: Accepted for the Ankara pilot; bindings remain disabled until Phase 2
+- Status: Superseded by ADR-0004
 - Date: 26 August 2026
 - Owners: Engineering
 

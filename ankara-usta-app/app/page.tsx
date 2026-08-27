@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import Link from 'next/link';
 import { DeliveryModel, popularServices, serviceCategories, services, servicesByCategory } from './data/serviceTaxonomy';
 import { ClassificationResult, classifyService } from './lib/classifyService';
 import RequestWizard from './components/RequestWizard';
@@ -32,7 +33,7 @@ export default function Home(){
   function continueToWizard(){if(selectedServiceId){setDialog(false);setWizardServiceId(selectedServiceId)}}
 
   return <main>
-    <header className="tr-header"><div className="header-inner"><a href="#top" className="tr-brand"><NeighborhoodBond className="brand-bond" decorative={false}/><b>Ankara Usta</b></a><nav><a href="#services">Hizmetler</a><a href="#">Kayıt ol / Giriş yap</a><button type="button">Usta olarak katıl</button></nav><button className="hamburger" aria-label="Menüyü aç">☰</button></div></header>
+    <header className="tr-header"><div className="header-inner"><a href="#top" className="tr-brand"><NeighborhoodBond className="brand-bond" decorative={false}/><b>Ankara Usta</b></a><nav><a href="#services">Hizmetler</a><a href="/taleplerim">Taleplerim</a><Link href="/islerim">İşlerim</Link><a href="/giris">Kayıt ol / Giriş yap</a><a className="join-link" href="/usta-basvurusu">Usta olarak katıl</a></nav><button className="hamburger" aria-label="Menüyü aç">☰</button></div></header>
 
     <section className="tr-hero" id="top">
       <div className="hero-bond-field" aria-hidden="true"><NeighborhoodBond className="hero-bond"/></div>

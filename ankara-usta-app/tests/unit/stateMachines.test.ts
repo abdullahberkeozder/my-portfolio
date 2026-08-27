@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { InvalidStateTransitionError, canTransitionJob, canTransitionRequest, transitionJob, transitionRequest } from '../../app/domain';
+import { InvalidStateTransitionError, assertTradespersonApplicationTransition, canTransitionJob, canTransitionRequest, canTransitionTradespersonApplication, transitionJob, transitionRequest } from '../../app/domain';
 import { jobFixture, requestFixture } from '../fixtures/domainEntities';
 
 describe('request state machine', () => {
@@ -33,5 +33,18 @@ describe('job state machine', () => {
     expect(canTransitionJob('scheduled', 'completed')).toBe(false);
     expect(() => transitionJob(jobFixture, 'completed', jobFixture.updatedAt)).toThrow(InvalidStateTransitionError);
     expect(canTransitionJob('cancelled', 'in_progress')).toBe(false);
+  });
+});
+
+describe('tradesperson application state machine', () => {
+  it('supports review, approval, and reassessment paths', () => {
+    expect(canTransitionTradespersonApplication('draft', 'submitted')).toBe(true);
+    expect(canTransitionTradespersonApplication('under_review', 'approved')).toBe(true);
+    expect(canTransitionTradespersonApplication('approved', 'reassessment_required')).toBe(true);
+  });
+
+  it('rejects approval before review and suspended-to-approved shortcuts', () => {
+    expect(() => assertTradespersonApplicationTransition('submitted', 'approved')).toThrow(InvalidStateTransitionError);
+    expect(() => assertTradespersonApplicationTransition('suspended', 'approved')).toThrow(InvalidStateTransitionError);
   });
 });
