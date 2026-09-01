@@ -1,7 +1,7 @@
 # Ankara Usta — Araştırma ve Geliştirme Planı
 
-Sürüm: 1.0  
-Tarih: 24 Ağustos 2026  
+Sürüm: 1.1
+Tarih: 26 Ağustos 2026
 Pazar: Ankara pilotu
 
 ## 1. Planın amacı
@@ -34,10 +34,10 @@ Sorunu anlat
 
 ### Hizmet bilgisi
 
-- Beş ana kategori.
-- Veritabanına aktarılabilir 22 hizmet.
+- Altı ana kategori.
+- Veritabanına aktarılabilir 26 hizmet.
 - Hizmet alias’ları, problem ifadeleri ve standart kapsam alanları.
-- 22 hizmet için soru ağaçları.
+- Altı hizmet için özel soru ağaçları; kalan 20 hizmet için ortak başlangıç soruları.
 - Ortak sihirbaz adımları ve sınıflandırma güven eşikleri.
 
 ### Tasarım araştırması
@@ -85,7 +85,7 @@ Amaç: Kullanıcıların sorunlarını gerçekte hangi kelimelerle anlattığın
 
 Çıkış ölçütü:
 
-- 22 hizmet için yeterli gerçek problem cümlesi seti.
+- 26 hizmet için yeterli gerçek problem cümlesi seti.
 - İlk üç aday içinde doğru hizmeti gösterme hedefi en az `%90`.
 
 ### R3 — Fiyat ve standart kapsam araştırması
@@ -94,7 +94,7 @@ Amaç: Paket ve teklif karşılaştırmasını güvenilir hale getirmek.
 
 Çalışmalar:
 
-- 22 hizmetin dahil/hariç kapsamı.
+- 26 hizmetin dahil/hariç kapsamı.
 - Paket işlerde adet, ölçü, yüzey ve malzeme sınırları.
 - Ankara ilçe bazlı başlangıç fiyatı/aralık araştırması.
 - Keşif bedeli ve işe mahsup uygulaması.
@@ -185,6 +185,8 @@ Süreler tek geliştirici için yaklaşık tahmindir. Ekip büyüklüğüne gör
 
 Tahmin: 1–2 hafta
 
+Durum: Mühendislik baseline'ı 26 Ağustos 2026 tarihinde tamamlandı. Pazar araştırması ve sağlayıcı seçimi çalışmaları ilgili fazlara devam eder.
+
 Araştırma:
 
 - R1–R5 çalışmalarını başlatma.
@@ -198,6 +200,11 @@ Geliştirme:
 - Ortam, secret ve migration stratejisi.
 - Hata izleme ve analitik olay sözleşmesi.
 - Tasarım tokenlarının mevcut ana sayfadan ortak sisteme alınması.
+- Vitest, Testing Library ve Playwright test altyapısı.
+- Lint, type-check, coverage, build ve E2E kalite kapısı.
+- GitHub Actions CI workflow'u.
+- Domain terimleri sözlüğü ve gereksinim–test izlenebilirlik matrisi.
+- Backend, authentication ve storage ADR belgeleri.
 
 Teslimatlar:
 
@@ -205,6 +212,7 @@ Teslimatlar:
 - Pilot kapsam matrisi.
 - Ortam ve yayın stratejisi.
 - P0 backlog ve bağımlılık haritası.
+- Çalışan unit, component ve E2E başlangıç testleri.
 
 Çıkış ölçütü:
 
@@ -215,11 +223,20 @@ Teslimatlar:
 
 Tahmin: 2 hafta
 
+Mühendislik alt fazı — 26 Ağustos 2026 tarihinde tamamlandı:
+
+- UI'dan bağımsız `Service`, `Request`, `Quote`, `Job` ve `UserRole` domain modelleri.
+- Zod tabanlı çalışma zamanı şema doğrulaması.
+- Talep ve iş durum makineleri; geçersiz geçişlerin domain katmanında reddedilmesi.
+- Altı kategori ve 26 hizmet için ID, slug, sıra ve kategori referansı bütünlük kontrolleri.
+- Altı özel wizard ile ortak fallback tanımının UI dışındaki veri katmanına taşınması.
+- Kalan 20 hizmet için `docs/engineering/WIZARD-BACKLOG.md` soru ağacı backlog'u.
+
 Geliştirme:
 
 - Tasarım sistemi: buton, giriş, kart, rozet, modal, adım göstergesi, durum etiketi.
 - Responsive header, footer ve ortak sayfa kabuğu.
-- Beş kategori ve 22 hizmetin veri kaynağına aktarılması.
+- Altı kategori ve 26 hizmetin veri kaynağına aktarılması.
 - `/hizmetler`, kategori ve hizmet detay sayfaları.
 - Hizmette dahil/hariç, süre, malzeme, keşif ve fiyat gösterimi.
 - Ankara ilçe veri kaynağı.
@@ -250,7 +267,7 @@ Geliştirme:
 - Kural tabanlı doğal dil sınıflandırma.
 - Güven skoru, alternatif adaylar ve “Birlikte belirleyelim”.
 - Risk bayrakları ve güvenlik uyarıları.
-- 22 hizmetin dallanan soru ağaçlarını çalışan forma bağlama.
+- 26 hizmetin dallanan soru ağaçlarını çalışan forma bağlama.
 - Geri dönüşte yanıt koruma ve taslak kaydetme.
 - Fotoğraf/video çekim rehberi ve yükleme.
 - İlçe/mahalle, erişim, zaman/aciliyet.
@@ -448,7 +465,7 @@ Pilot çıkış ölçütleri:
 - Müşteri hesabı.
 - Usta hesabı, başvurusu ve doğrulama.
 - Yönetici/moderatör rolleri.
-- Beş kategori ve 22 hizmet.
+- Altı kategori ve 26 hizmet.
 - Doğal dil araması ve talep sihirbazı.
 - Güvenli medya yükleme.
 - Hizmet/bölge eşleştirmesi.
@@ -489,7 +506,7 @@ Pilot çıkış ölçütleri:
 ### Sprint 1 — Veriye dayalı hizmet temeli
 
 - Tasarım bileşenlerini ayır.
-- 5 kategori/22 hizmet verisini uygulamaya bağla.
+- 6 kategori/26 hizmet verisini uygulamaya bağla.
 - Hizmet dizini ve iki hizmet detay şablonu oluştur.
 - Demo metrik ve fiyatları açık biçimde işaretle.
 - Mimari karar belgesini tamamla.
@@ -601,7 +618,7 @@ Bir sonraki geliştirme çalışması Faz 0 ve Sprint 1’i birlikte başlatmal�
 1. Teknik mimari kararını ver.
 2. Mevcut ana sayfadaki demo veriyi gerçek taksonomiden ayır.
 3. Tasarım sistemini yeniden kullanılabilir bileşenlere böl.
-4. 5 kategori/22 hizmeti uygulamanın tek veri kaynağı yap.
+4. 6 kategori/26 hizmeti uygulamanın tek veri kaynağı yap.
 5. `/hizmetler` ve ilk iki hizmet detay sayfasını oluştur.
 
 İlk iki temsilî hizmet önerisi:

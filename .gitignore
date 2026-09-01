@@ -91,6 +91,8 @@ dist
 # App build output
 build/
 **/build/
+**/bin/
+**/obj/
 dist-ssr/
 **/dist-ssr/
 screenshots/
@@ -169,3 +171,6 @@ vite.config.ts.timestamp-*
 /.tmp-ai-website-cloner-template/
 /.tmp-node24-*
 /ankara-usta-social-preview.png
+
+# Separate private repository; never publish it through this portfolio repository
+/the-psychologist-app/

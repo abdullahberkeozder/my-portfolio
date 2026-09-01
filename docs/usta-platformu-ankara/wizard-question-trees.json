@@ -1,0 +1,260 @@
+{
+  "schema_version": "0.1.0",
+  "rules": {
+    "skip_answered_from_search": true,
+    "allow_unknown_for_technical_questions": true,
+    "preserve_raw_problem_text": true,
+    "max_quotes": 3
+  },
+  "common_steps": [
+    { "key": "problem_text", "type": "textarea", "prompt": "Sorunu veya yaptırmak istediğiniz işi kendi cümlelerinizle anlatın.", "required": true },
+    { "key": "district", "type": "district_select", "prompt": "İş Ankara'nın hangi ilçesinde?", "required": true },
+    { "key": "neighborhood", "type": "neighborhood_select", "prompt": "Hangi mahallede?", "required": true, "depends_on": { "question": "district", "operator": "answered" } },
+    { "key": "space_type", "type": "single_select", "prompt": "İşin yapılacağı yer hangisi?", "options": ["home", "apartment_common_area", "site", "office", "shop", "outdoor", "other"], "required": true },
+    { "key": "timing", "type": "single_select", "prompt": "Ne zaman yapılmasını istersiniz?", "options": ["same_day", "within_3_days", "within_1_week", "flexible", "specific_range"], "required": true },
+    { "key": "additional_details", "type": "textarea", "prompt": "Ustanın bilmesi gereken başka bir ayrıntı var mı?", "required": false }
+  ],
+  "service_trees": {
+    "chandelier_installation": {
+      "delivery_model": "package",
+      "questions": [
+        { "key": "item_count", "type": "number", "prompt": "Kaç avize veya aydınlatma ürünü monte edilecek?", "min": 1, "max": 30, "required": true },
+        { "key": "old_fixture_removal", "type": "boolean", "prompt": "Eski ürünlerin sökülmesi gerekiyor mu?", "required": true },
+        { "key": "fixture_types", "type": "multi_select", "prompt": "Ürün türleri neler?", "options": ["light_chandelier", "heavy_chandelier", "pendant", "ceiling_fixture", "wall_sconce", "other"], "required": true },
+        { "key": "electrical_outlet_ready", "type": "single_select", "prompt": "Montaj noktalarında elektrik çıkışı hazır mı?", "options": ["yes", "no_new_line_needed", "unknown"], "required": true },
+        { "key": "ceiling_height", "type": "single_select", "prompt": "En yüksek montaj noktası yaklaşık kaç metre?", "options": ["under_3m", "3_to_4m", "over_4m", "unknown"], "required": true },
+        { "key": "risk_symptoms", "type": "multi_select", "prompt": "Yanık kokusu, kıvılcım veya hasarlı kablo var mı?", "options": ["burn_smell", "sparking", "damaged_wire", "none", "unknown"], "required": true, "risk_if": ["burn_smell", "sparking"] },
+        { "key": "work_area_photo", "type": "media", "prompt": "Tavan bağlantısını ve ürünleri gösteren fotoğrafları ekleyin.", "accept": ["image"], "required": true }
+      ]
+    },
+    "socket_switch_replacement": {
+      "delivery_model": "package",
+      "questions": [
+        { "key": "item_count", "type": "number", "prompt": "Kaç priz veya anahtar işlem görecek?", "min": 1, "max": 50, "required": true },
+        { "key": "work_type", "type": "multi_select", "prompt": "Hangi işlemler gerekiyor?", "options": ["socket_replace", "switch_replace", "loose_fixture", "new_point", "unknown"], "required": true },
+        { "key": "parts_ready", "type": "single_select", "prompt": "Yeni priz veya anahtarlar hazır mı?", "options": ["all_ready", "provider_should_supply", "partly_ready", "unknown"], "required": true },
+        { "key": "risk_symptoms", "type": "multi_select", "prompt": "Yanık izi, koku, ısınma veya kıvılcım var mı?", "options": ["burn_mark", "burn_smell", "heating", "sparking", "none", "unknown"], "required": true, "risk_if": ["burn_smell", "sparking", "heating"] },
+        { "key": "problem_photo", "type": "media", "prompt": "İşlem görecek noktaların fotoğraflarını ekleyin.", "accept": ["image"], "required": true }
+      ]
+    },
+    "electrical_fault_diagnosis": {
+      "delivery_model": "discovery",
+      "questions": [
+        { "key": "symptom", "type": "multi_select", "prompt": "Ne oluyor?", "options": ["breaker_trips", "partial_outage", "full_outage", "socket_not_working", "burn_smell", "sparking", "electric_shock", "other"], "required": true, "risk_if": ["burn_smell", "sparking", "electric_shock"] },
+        { "key": "started_when", "type": "single_select", "prompt": "Sorun ne zaman başladı?", "options": ["today", "last_3_days", "last_month", "intermittent_long_term", "unknown"], "required": true },
+        { "key": "trigger", "type": "single_select", "prompt": "Belirli bir cihaz veya işlem sorunu tetikliyor mu?", "options": ["yes", "no", "unknown"], "required": true },
+        { "key": "trigger_details", "type": "text", "prompt": "Hangi cihaz veya işlem?", "required": true, "depends_on": { "question": "trigger", "equals": "yes" } },
+        { "key": "panel_photo", "type": "media", "prompt": "Güvenliyse elektrik panosunun ve sorunlu noktanın fotoğrafını ekleyin.", "accept": ["image", "video"], "required": false }
+      ]
+    },
+    "electrical_line_panel_work": {
+      "delivery_model": "discovery",
+      "questions": [
+        { "key": "work_type", "type": "single_select", "prompt": "Hangi işe ihtiyacınız var?", "options": ["new_device_line", "panel_replacement", "full_rewire", "capacity_increase", "unknown_other"], "required": true },
+        { "key": "target_device", "type": "multi_select", "prompt": "Hat hangi cihaz veya alan için?", "options": ["air_conditioner", "oven_hob", "water_heater", "ev_charger", "room_office", "other", "unknown"], "required": true, "depends_on": { "question": "work_type", "equals": "new_device_line" } },
+        { "key": "route_length", "type": "single_select", "prompt": "Tahmini kablo güzergâhı ne kadar?", "options": ["under_5m", "5_to_15m", "over_15m", "unknown"], "required": true },
+        { "key": "installation_style", "type": "single_select", "prompt": "Sıva altı mı sıva üstü mü tercih ediyorsunuz?", "options": ["concealed", "surface", "either", "unknown"], "required": true },
+        { "key": "panel_area_media", "type": "media", "prompt": "Pano ile hedef alanı gösteren fotoğraf veya videoyu ekleyin.", "accept": ["image", "video"], "required": true }
+      ]
+    },
+    "faucet_replacement": {
+      "delivery_model": "package",
+      "questions": [
+        { "key": "fixture_location", "type": "single_select", "prompt": "Batarya nerede?", "options": ["kitchen_sink", "bathroom_sink", "shower", "garden", "other"], "required": true },
+        { "key": "item_count", "type": "number", "prompt": "Kaç ürün değişecek?", "min": 1, "max": 20, "required": true },
+        { "key": "product_ready", "type": "single_select", "prompt": "Yeni ürün ve bağlantı parçaları hazır mı?", "options": ["all_ready", "product_only", "provider_should_supply", "unknown"], "required": true },
+        { "key": "shutoff_valves_work", "type": "single_select", "prompt": "Ara musluklar suyu kapatabiliyor mu?", "options": ["yes", "no", "unknown"], "required": true },
+        { "key": "fixture_media", "type": "media", "prompt": "Mevcut bağlantıyı ve yeni ürünü gösterin.", "accept": ["image"], "required": true }
+      ]
+    },
+    "drain_unblocking": {
+      "delivery_model": "quote",
+      "questions": [
+        { "key": "drain_location", "type": "multi_select", "prompt": "Hangi giderlerde sorun var?", "options": ["kitchen_sink", "bathroom_sink", "shower", "toilet", "floor_drain", "multiple", "other"], "required": true },
+        { "key": "flow_state", "type": "single_select", "prompt": "Su nasıl tahliye oluyor?", "options": ["not_at_all", "slow", "backs_up", "bad_odor_only", "intermittent"], "required": true },
+        { "key": "other_drains_affected", "type": "single_select", "prompt": "Başka giderlerde geri tepme veya ses var mı?", "options": ["yes", "no", "unknown"], "required": true },
+        { "key": "attempts_made", "type": "multi_select", "prompt": "Şimdiye kadar ne denendi?", "options": ["nothing", "chemical", "plunger", "siphon_cleaned", "other"], "required": true },
+        { "key": "problem_video", "type": "media", "prompt": "Mümkünse suyun davranışını gösteren kısa video ekleyin.", "accept": ["image", "video"], "required": false }
+      ]
+    },
+    "water_leak_diagnosis": {
+      "delivery_model": "discovery",
+      "questions": [
+        { "key": "leak_active", "type": "single_select", "prompt": "Su akışı şu anda devam ediyor mu?", "options": ["active_fast", "active_slow", "only_when_used", "stopped", "unknown"], "required": true, "risk_if": ["active_fast"] },
+        { "key": "visible_location", "type": "multi_select", "prompt": "Hasar nerede görünüyor?", "options": ["wall", "ceiling", "floor", "lower_neighbor", "meter_only", "other"], "required": true },
+        { "key": "water_source_guess", "type": "single_select", "prompt": "Kaynağın ne olabileceğini düşünüyorsunuz?", "options": ["clean_water", "waste_water", "heating", "roof_rain", "unknown"], "required": true },
+        { "key": "meter_moves", "type": "single_select", "prompt": "Tüm musluklar kapalıyken sayaç hareket ediyor mu?", "options": ["yes", "no", "not_checked", "no_access"], "required": true },
+        { "key": "damage_media", "type": "media", "prompt": "Hasarı, yakın çevresini ve mümkünse sayacı gösterin.", "accept": ["image", "video"], "required": true }
+      ]
+    },
+    "fixture_installation": {
+      "delivery_model": "quote",
+      "questions": [
+        { "key": "fixture_types", "type": "multi_select", "prompt": "Neler monte edilecek?", "options": ["sink", "toilet", "concealed_cistern", "shower_set", "shower_tray", "other"], "required": true },
+        { "key": "item_count", "type": "number", "prompt": "Toplam kaç ürün var?", "min": 1, "max": 20, "required": true },
+        { "key": "old_removal", "type": "boolean", "prompt": "Eski ürünlerin sökülmesi gerekiyor mu?", "required": true },
+        { "key": "connection_points_change", "type": "single_select", "prompt": "Su veya gider noktalarının yeri değişecek mi?", "options": ["no", "yes", "unknown"], "required": true },
+        { "key": "products_ready", "type": "single_select", "prompt": "Ürün ve bağlantı parçaları hazır mı?", "options": ["all_ready", "partly_ready", "provider_should_supply", "unknown"], "required": true },
+        { "key": "installation_media", "type": "media", "prompt": "Alanı, bağlantıları ve ürünleri gösterin.", "accept": ["image"], "required": true }
+      ]
+    },
+    "tv_wall_mounting": {
+      "delivery_model": "package",
+      "questions": [
+        { "key": "tv_count", "type": "number", "prompt": "Kaç televizyon monte edilecek?", "min": 1, "max": 10, "required": true },
+        { "key": "screen_sizes", "type": "multi_select", "prompt": "Ekran ölçüleri nedir?", "options": ["under_43", "43_to_55", "56_to_65", "66_to_75", "over_75", "unknown"], "required": true },
+        { "key": "bracket_supply", "type": "single_select", "prompt": "Uyumlu askı aparatı hazır mı?", "options": ["ready", "provider_should_supply", "unknown_compatibility"], "required": true },
+        { "key": "wall_type", "type": "single_select", "prompt": "Duvarın türü nedir?", "options": ["reinforced_concrete", "brick", "aerated_concrete", "drywall", "wood_panel", "unknown"], "required": true },
+        { "key": "extras", "type": "multi_select", "prompt": "Ek işlem gerekiyor mu?", "options": ["none", "old_tv_removal", "cable_channel", "hidden_cable", "socket_move", "channel_setup"], "required": true },
+        { "key": "tv_wall_media", "type": "media", "prompt": "Duvarı, TV arkasını ve askı aparatını gösterin.", "accept": ["image"], "required": true }
+      ]
+    },
+    "curtain_rail_installation": {
+      "delivery_model": "package",
+      "questions": [
+        { "key": "product_types", "type": "multi_select", "prompt": "Neler monte edilecek?", "options": ["ceiling_rail", "rod", "roller_blind", "venetian_blind", "other"], "required": true },
+        { "key": "quantity_or_length", "type": "measurement_list", "prompt": "Adetleri ve yaklaşık uzunlukları girin.", "required": true },
+        { "key": "old_removal", "type": "boolean", "prompt": "Eski ürünler sökülecek mi?", "required": true },
+        { "key": "mount_surface", "type": "single_select", "prompt": "Montaj yüzeyi nedir?", "options": ["concrete_ceiling", "drywall_ceiling", "wall", "unknown"], "required": true },
+        { "key": "product_ready", "type": "single_select", "prompt": "Ürünler ve aparatları hazır mı?", "options": ["all_ready", "partly_ready", "provider_should_supply", "unknown"], "required": true },
+        { "key": "area_product_media", "type": "media", "prompt": "Montaj alanını ve ürünleri gösterin.", "accept": ["image"], "required": true }
+      ]
+    },
+    "flat_pack_furniture_assembly": {
+      "delivery_model": "package",
+      "questions": [
+        { "key": "product_types", "type": "multi_select", "prompt": "Hangi mobilyalar kurulacak?", "options": ["wardrobe", "bed", "table", "dresser", "tv_unit", "cabinet", "shelf", "other"], "required": true },
+        { "key": "item_count", "type": "number", "prompt": "Toplam kaç ürün var?", "min": 1, "max": 30, "required": true },
+        { "key": "product_reference", "type": "text", "prompt": "Varsa ürün bağlantısını, marka/modeli veya ürün kodunu girin.", "required": false },
+        { "key": "package_count", "type": "number", "prompt": "Yaklaşık kaç paket var?", "min": 1, "max": 100, "required": false },
+        { "key": "extras", "type": "multi_select", "prompt": "Ek işlem gerekiyor mu?", "options": ["none", "old_disassembly", "room_to_room_move", "wall_anchoring", "missing_parts_possible", "other"], "required": true },
+        { "key": "package_media", "type": "media", "prompt": "Paket etiketlerini ve kurulum alanını gösterin.", "accept": ["image"], "required": true }
+      ]
+    },
+    "shelf_accessory_installation": {
+      "delivery_model": "package",
+      "questions": [
+        { "key": "product_types", "type": "multi_select", "prompt": "Neler monte edilecek?", "options": ["shelf", "mirror", "picture", "coat_rack", "bathroom_accessory", "kitchen_accessory", "other"], "required": true },
+        { "key": "item_count", "type": "number", "prompt": "Toplam kaç parça var?", "min": 1, "max": 50, "required": true },
+        { "key": "weight_class", "type": "single_select", "prompt": "En ağır parçanın yaklaşık ağırlığı nedir?", "options": ["under_5kg", "5_to_15kg", "15_to_30kg", "over_30kg", "unknown"], "required": true },
+        { "key": "wall_type", "type": "single_select", "prompt": "Duvar türü nedir?", "options": ["reinforced_concrete", "brick", "aerated_concrete", "drywall", "tile", "unknown"], "required": true },
+        { "key": "fixings_ready", "type": "single_select", "prompt": "Montaj aparatları hazır mı?", "options": ["ready", "provider_should_supply", "unknown"], "required": true },
+        { "key": "wall_product_media", "type": "media", "prompt": "Duvarı ve ürünleri gösterin.", "accept": ["image"], "required": true }
+      ]
+    },
+    "furniture_repair_custom": {
+      "delivery_model": "quote",
+      "questions": [
+        { "key": "job_kind", "type": "single_select", "prompt": "Tamir mi, yeni özel imalat mı?", "options": ["repair", "custom_build", "modification", "unknown"], "required": true },
+        { "key": "furniture_type", "type": "multi_select", "prompt": "Hangi mobilya?", "options": ["wardrobe", "kitchen_cabinet", "drawer", "door", "table", "bed", "other"], "required": true },
+        { "key": "repair_symptom", "type": "multi_select", "prompt": "Sorun nedir?", "options": ["hinge", "rail", "broken_panel", "loose_joint", "door_alignment", "surface", "other"], "required": true, "depends_on": { "question": "job_kind", "in": ["repair", "modification"] } },
+        { "key": "dimensions", "type": "measurement_list", "prompt": "Yaklaşık ölçüleri girin.", "required": true },
+        { "key": "material_finish", "type": "text", "prompt": "Varsa malzeme, renk veya görünüm tercihinizi yazın.", "required": false },
+        { "key": "furniture_media", "type": "media", "prompt": "Sorunu veya imalat alanını birkaç açıdan gösterin.", "accept": ["image", "video"], "required": true }
+      ]
+    },
+    "single_room_painting": {
+      "delivery_model": "package",
+      "questions": [
+        { "key": "room_area", "type": "number", "prompt": "Oda yaklaşık kaç m²?", "min": 1, "max": 150, "unit": "m2", "required": true },
+        { "key": "surfaces", "type": "multi_select", "prompt": "Nereler boyanacak?", "options": ["walls", "ceiling", "doors", "radiators", "trim"], "required": true },
+        { "key": "furnished", "type": "single_select", "prompt": "Oda eşyalı mı?", "options": ["empty", "lightly_furnished", "fully_furnished"], "required": true },
+        { "key": "paint_supply", "type": "single_select", "prompt": "Boya ve sarf malzemesini kim sağlasın?", "options": ["customer", "provider", "compare_both"], "required": true },
+        { "key": "surface_condition", "type": "multi_select", "prompt": "Duvarlarda hangi durumlar var?", "options": ["clean", "small_holes", "many_cracks", "peeling", "dampness", "mold", "unknown"], "required": true, "risk_if": ["dampness", "mold"] },
+        { "key": "colors", "type": "text", "prompt": "Mevcut ve istenen renkleri yazın.", "required": true },
+        { "key": "room_media", "type": "media", "prompt": "Odanın dört duvarını ve hasarlı alanları gösterin.", "accept": ["image"], "required": true }
+      ]
+    },
+    "interior_painting": {
+      "delivery_model": "quote",
+      "questions": [
+        { "key": "total_area", "type": "number", "prompt": "Boyanacak alan yaklaşık kaç m²?", "min": 1, "max": 2000, "unit": "m2", "required": true },
+        { "key": "room_count", "type": "single_select", "prompt": "Kaç oda/alan boyanacak?", "options": ["1", "2", "3", "4", "5_plus", "whole_property"], "required": true },
+        { "key": "surfaces", "type": "multi_select", "prompt": "Duvar dışında neler dahil?", "options": ["ceiling", "doors", "radiators", "trim", "none"], "required": true },
+        { "key": "occupancy", "type": "single_select", "prompt": "Mekânın durumu nedir?", "options": ["empty", "furnished", "occupied_business"], "required": true },
+        { "key": "paint_supply", "type": "single_select", "prompt": "Malzeme teklife dahil olsun mu?", "options": ["included", "labor_only", "compare_both"], "required": true },
+        { "key": "surface_condition", "type": "multi_select", "prompt": "Yüzey durumu nasıl?", "options": ["good", "small_repairs", "many_cracks", "peeling", "dampness", "mold", "unknown"], "required": true },
+        { "key": "property_media", "type": "media", "prompt": "Her alanı ve onarım gereken yerleri gösterin.", "accept": ["image", "video"], "required": true }
+      ]
+    },
+    "plaster_drywall_repair": {
+      "delivery_model": "quote",
+      "questions": [
+        { "key": "repair_type", "type": "multi_select", "prompt": "Ne tür bir onarım gerekiyor?", "options": ["small_hole", "large_hole", "crack", "fallen_plaster", "drywall_panel", "corner_damage", "other"], "required": true },
+        { "key": "damage_size", "type": "measurement_list", "prompt": "Hasarın yaklaşık ölçüsünü girin.", "required": true },
+        { "key": "active_cause", "type": "multi_select", "prompt": "Hasara yol açan aktif bir sorun var mı?", "options": ["none", "water_leak", "dampness", "structural_movement", "unknown"], "required": true, "risk_if": ["water_leak", "structural_movement"] },
+        { "key": "finish_needed", "type": "multi_select", "prompt": "Onarım sonrası hangi yüzey işlemleri gerekli?", "options": ["none", "sanding", "paint", "wallpaper", "texture_match", "unknown"], "required": true },
+        { "key": "damage_media", "type": "media", "prompt": "Hasarı yakından ve çevresiyle gösterin; ölçü için referans ekleyin.", "accept": ["image"], "required": true }
+      ]
+    },
+    "tile_minor_renovation": {
+      "delivery_model": "quote",
+      "questions": [
+        { "key": "job_kind", "type": "multi_select", "prompt": "Hangi işlemler gerekiyor?", "options": ["replace_broken", "new_installation", "remove_old", "grout_repair", "waterproofing", "other"], "required": true },
+        { "key": "area_size", "type": "number", "prompt": "Alan yaklaşık kaç m²?", "min": 0.1, "max": 500, "unit": "m2", "required": true },
+        { "key": "surface_location", "type": "multi_select", "prompt": "Uygulama nerede?", "options": ["bathroom_wall", "bathroom_floor", "kitchen_backsplash", "balcony", "room_floor", "other"], "required": true },
+        { "key": "material_ready", "type": "single_select", "prompt": "Fayans/seramik ve sarf malzemeleri hazır mı?", "options": ["all_ready", "tiles_only", "provider_should_supply", "unknown"], "required": true },
+        { "key": "hidden_issue", "type": "multi_select", "prompt": "Su kaçağı, oynayan yüzey veya kabarma var mı?", "options": ["none", "water_leak", "loose_surface", "swelling", "unknown"], "required": true },
+        { "key": "area_material_media", "type": "media", "prompt": "Alanı, hasarı ve varsa yeni malzemeyi gösterin.", "accept": ["image"], "required": true }
+      ]
+    },
+    "on_site_welding_repair": {
+      "delivery_model": "quote",
+      "questions": [
+        { "key": "object_type", "type": "multi_select", "prompt": "Hangi metal parça işlem görecek?", "options": ["gate", "railing", "furniture", "frame", "hinge", "machine_part", "other"], "required": true },
+        { "key": "repair_kind", "type": "multi_select", "prompt": "Sorun nedir?", "options": ["broken_joint", "crack", "detached_hinge", "bent_part", "missing_piece", "other"], "required": true },
+        { "key": "metal_type", "type": "single_select", "prompt": "Metal türü biliniyor mu?", "options": ["steel_iron", "stainless", "aluminum", "cast", "unknown"], "required": true },
+        { "key": "access_power", "type": "single_select", "prompt": "Çalışma alanında uygun elektrik erişimi var mı?", "options": ["yes", "no", "unknown"], "required": true },
+        { "key": "site_risks", "type": "multi_select", "prompt": "Çalışma koşullarından hangileri var?", "options": ["none", "flammable_material", "height", "confined_space", "public_passage", "unknown"], "required": true, "risk_if": ["flammable_material", "height", "confined_space"] },
+        { "key": "repair_media", "type": "media", "prompt": "Hasarı yakından ve çalışma çevresiyle gösterin.", "accept": ["image", "video"], "required": true }
+      ]
+    },
+    "railing_fence_fabrication": {
+      "delivery_model": "discovery",
+      "questions": [
+        { "key": "product_type", "type": "multi_select", "prompt": "Ne yapılacak?", "options": ["balcony_railing", "stair_railing", "garden_fence", "security_grille", "decorative_iron", "repair", "other"], "required": true },
+        { "key": "dimensions", "type": "measurement_list", "prompt": "Yaklaşık uzunluk ve yüksekliği girin.", "required": true },
+        { "key": "mounting_surface", "type": "single_select", "prompt": "Montaj zemini nedir?", "options": ["concrete", "brick", "metal", "soil", "stone", "unknown"], "required": true },
+        { "key": "design_finish", "type": "multi_select", "prompt": "Tasarım ve yüzey tercihiniz nedir?", "options": ["simple", "decorative", "panel_fence", "painted", "galvanized", "powder_coated", "unknown"], "required": true },
+        { "key": "permit_status", "type": "single_select", "prompt": "Site/belediye izni gerekiyor mu?", "options": ["approved", "needed_not_ready", "not_needed", "unknown"], "required": true },
+        { "key": "area_reference_media", "type": "media", "prompt": "Alanı ve varsa beğendiğiniz örneği gösterin.", "accept": ["image"], "required": true }
+      ]
+    },
+    "building_garden_gate": {
+      "delivery_model": "discovery",
+      "questions": [
+        { "key": "job_kind", "type": "single_select", "prompt": "Yeni kapı mı, tamir mi?", "options": ["new_with_installation", "new_without_installation", "repair", "modification", "unknown"], "required": true },
+        { "key": "gate_type", "type": "single_select", "prompt": "Kapı türü nedir?", "options": ["garden", "apartment_entrance", "warehouse", "pedestrian", "double_leaf", "other"], "required": true },
+        { "key": "item_count", "type": "number", "prompt": "Kaç kapı var?", "min": 1, "max": 20, "required": true },
+        { "key": "problem_parts", "type": "multi_select", "prompt": "Tamirde sorun hangi bölümde?", "options": ["hinge", "lock", "frame", "alignment", "rust", "sheet_panel", "other"], "required": true, "depends_on": { "question": "job_kind", "in": ["repair", "modification"] } },
+        { "key": "dimensions", "type": "measurement_list", "prompt": "Yaklaşık en ve yüksekliği girin.", "required": true },
+        { "key": "automation_needed", "type": "single_select", "prompt": "Motor veya geçiş kontrolü isteniyor mu?", "options": ["yes", "no", "existing_system", "unknown"], "required": true },
+        { "key": "gate_media", "type": "media", "prompt": "Kapının tamamını, menteşe/kilitleri ve zemini gösterin.", "accept": ["image", "video"], "required": true }
+      ]
+    },
+    "sliding_automatic_gate": {
+      "delivery_model": "discovery",
+      "questions": [
+        { "key": "job_kind", "type": "single_select", "prompt": "Yeni sistem mi, arıza/tamir mi?", "options": ["new_system", "motor_addition", "repair", "maintenance", "unknown"], "required": true },
+        { "key": "gate_mechanism", "type": "single_select", "prompt": "Kapı nasıl hareket ediyor?", "options": ["sliding_rail", "cantilever", "single_leaf", "double_leaf", "sectional", "unknown"], "required": true },
+        { "key": "symptoms", "type": "multi_select", "prompt": "Sorun nedir?", "options": ["not_moving", "slow", "noise", "derails", "remote", "sensor", "motor", "other"], "required": true, "depends_on": { "question": "job_kind", "in": ["repair", "maintenance"] } },
+        { "key": "motor_info", "type": "text", "prompt": "Varsa motor marka/modelini yazın.", "required": false },
+        { "key": "dimensions_weight", "type": "measurement_list", "prompt": "Kapı ölçülerini ve biliniyorsa ağırlığını girin.", "required": true },
+        { "key": "power_available", "type": "single_select", "prompt": "Kapı yakınında elektrik hattı var mı?", "options": ["yes", "no", "unknown"], "required": true },
+        { "key": "gate_motion_media", "type": "media", "prompt": "Kapının tamamını, rayı ve motoru; arızada hareketini gösterin.", "accept": ["image", "video"], "required": true }
+      ]
+    },
+    "pergola_canopy_steel": {
+      "delivery_model": "discovery",
+      "questions": [
+        { "key": "structure_type", "type": "single_select", "prompt": "Ne yapılacak?", "options": ["canopy", "pergola", "carport", "light_steel_roof", "frame_only", "other"], "required": true },
+        { "key": "dimensions", "type": "measurement_list", "prompt": "Yaklaşık en, boy ve yüksekliği girin.", "required": true },
+        { "key": "roof_cover", "type": "single_select", "prompt": "Üst kaplama tercihiniz nedir?", "options": ["polycarbonate", "sandwich_panel", "glass", "sheet_metal", "fabric", "frame_only", "unknown"], "required": true },
+        { "key": "mounting_context", "type": "multi_select", "prompt": "Yapı nereye bağlanacak?", "options": ["building_wall", "concrete_ground", "soil", "existing_metal", "roof_terrace", "unknown"], "required": true },
+        { "key": "permit_status", "type": "single_select", "prompt": "Belediye/site/kat maliki izni durumu nedir?", "options": ["approved", "needed_not_ready", "not_needed", "unknown"], "required": true },
+        { "key": "drainage_needed", "type": "single_select", "prompt": "Yağmur oluğu ve su tahliyesi dahil olsun mu?", "options": ["yes", "no", "unknown"], "required": true },
+        { "key": "area_reference_media", "type": "media", "prompt": "Alanı farklı açılardan ve varsa örnek tasarımı gösterin.", "accept": ["image", "video"], "required": true }
+      ]
+    }
+  }
+}

@@ -1,0 +1,308 @@
+{
+  "schema_version": "0.1.0",
+  "market": { "country_code": "TR", "city": "Ankara", "plate_code": "06" },
+  "delivery_models": ["package", "quote", "discovery"],
+  "categories": [
+    {
+      "key": "electrical",
+      "name": "Elektrik",
+      "services": [
+        {
+          "key": "chandelier_installation",
+          "name": "Avize ve aydınlatma montajı",
+          "aliases": ["avize takma", "lamba montajı", "aplik takma"],
+          "problem_phrases": ["avize taktırmak istiyorum", "tavandaki lamba değişecek"],
+          "delivery_model": "package",
+          "requires_discovery": false,
+          "included": ["Mevcut elektrik noktasına standart montaj", "Bağlantı ve çalışma kontrolü"],
+          "excluded": ["Yeni hat çekilmesi", "Tavan onarımı", "Ürün bedeli"],
+          "duration_minutes": { "min": 30, "max": 90 },
+          "media_requirements": ["work_area_photo"],
+          "questions": ["Kaç adet ürün monte edilecek?", "Mevcut elektrik çıkışı hazır mı?", "Tavan yüksekliği kaç metre?"]
+        },
+        {
+          "key": "socket_switch_replacement",
+          "name": "Priz ve anahtar değişimi",
+          "aliases": ["priz tamiri", "anahtar değişimi", "gevşek priz"],
+          "problem_phrases": ["priz çalışmıyor", "anahtardan ses geliyor", "priz duvardan çıktı"],
+          "delivery_model": "package",
+          "requires_discovery": false,
+          "included": ["Eski parçanın sökülmesi", "Standart montaj", "Çalışma testi"],
+          "excluded": ["Duvar içi kablo yenileme", "Yeni hat", "Parça bedeli"],
+          "duration_minutes": { "min": 30, "max": 120 },
+          "media_requirements": ["problem_photo"],
+          "questions": ["Kaç parça değişecek?", "Yanık izi veya koku var mı?", "Yeni parçalar hazır mı?"]
+        },
+        {
+          "key": "electrical_fault_diagnosis",
+          "name": "Elektrik arızası ve kaçak tespiti",
+          "aliases": ["elektrik arızası", "sigorta atıyor", "kaçak akım"],
+          "problem_phrases": ["sigorta sürekli atıyor", "evin bir bölümünde elektrik yok", "yanık kokusu geliyor"],
+          "delivery_model": "discovery",
+          "requires_discovery": true,
+          "included": ["Ön kontrol", "Ölçüm", "Arıza kapsamı raporu"],
+          "excluded": ["Tespit sonrası parça ve onarım", "Kırım ve kapama"],
+          "media_requirements": ["panel_photo", "optional_problem_video"],
+          "questions": ["Arıza ne zaman başladı?", "Hangi sigorta atıyor?", "Duman, kıvılcım veya yanık kokusu var mı?"],
+          "safety_note": "Aktif yangın veya elektrik çarpması riskinde enerji kesilmeli ve kullanıcı acil birimlere yönlendirilmelidir."
+        },
+        {
+          "key": "electrical_line_panel_work",
+          "name": "Elektrik hattı ve pano işleri",
+          "aliases": ["yeni hat çekme", "sigorta panosu", "tesisat yenileme"],
+          "problem_phrases": ["klima için ayrı hat gerekiyor", "elektrik panosu yenilenecek"],
+          "delivery_model": "discovery",
+          "requires_discovery": true,
+          "included": ["Yük ve güzergâh değerlendirmesi", "Kalem bazlı teklif"],
+          "excluded": ["Keşifte görülmeyen yapısal onarım"],
+          "media_requirements": ["panel_photo", "work_area_photos"],
+          "questions": ["Hat hangi cihaz için?", "Yaklaşık mesafe nedir?", "Sıva altı mı üstü mü?"]
+        }
+      ]
+    },
+    {
+      "key": "plumbing",
+      "name": "Su tesisatı",
+      "services": [
+        {
+          "key": "faucet_replacement",
+          "name": "Musluk ve batarya değişimi",
+          "aliases": ["musluk değişimi", "batarya montajı", "damlatan musluk"],
+          "problem_phrases": ["mutfak musluğu değişecek", "batarya su kaçırıyor"],
+          "delivery_model": "package",
+          "requires_discovery": false,
+          "included": ["Eski ürünün sökülmesi", "Standart montaj", "Sızdırmazlık kontrolü"],
+          "excluded": ["Tezgâh kesimi", "Tesisat hattı değişimi", "Ürün bedeli"],
+          "duration_minutes": { "min": 45, "max": 120 },
+          "media_requirements": ["existing_fixture_photo", "new_product_photo"],
+          "questions": ["Ürün hazır mı?", "Ara musluklar çalışıyor mu?", "Montaj yeri neresi?"]
+        },
+        {
+          "key": "drain_unblocking",
+          "name": "Lavabo ve gider açma",
+          "aliases": ["tıkanıklık açma", "lavabo tıkandı", "gider açma"],
+          "problem_phrases": ["lavabo suyu gitmiyor", "gider geri tepiyor", "kötü koku geliyor"],
+          "delivery_model": "quote",
+          "requires_discovery": false,
+          "included": ["Standart gider kontrolü", "Uygun yöntemle açma denemesi"],
+          "excluded": ["Kırma", "Ana kolon onarımı", "Kamera görüntüleme aksi belirtilmedikçe"],
+          "media_requirements": ["problem_photo", "optional_problem_video"],
+          "questions": ["Hangi gider tıkalı?", "Su hiç mi gitmiyor?", "Başka giderlerde geri tepme var mı?"]
+        },
+        {
+          "key": "water_leak_diagnosis",
+          "name": "Su kaçağı tespiti",
+          "aliases": ["kaçak tespiti", "duvar nemli", "alt kata su akıyor"],
+          "problem_phrases": ["banyodan alt kata su akıyor", "duvar ıslak", "sayaç kapalıyken dönüyor"],
+          "delivery_model": "discovery",
+          "requires_discovery": true,
+          "included": ["Kaçak kaynağı araştırması", "Bulgular ve onarım önerisi"],
+          "excluded": ["Onarım", "Kırma", "Yüzey kapama"],
+          "media_requirements": ["damage_photos", "meter_photo"],
+          "questions": ["Kaçak sürekli mi?", "Temiz su mu gider suyu mu?", "Komşuda hasar var mı?"]
+        },
+        {
+          "key": "fixture_installation",
+          "name": "Lavabo, klozet ve duş montajı",
+          "aliases": ["klozet montajı", "lavabo takma", "duş montajı", "rezervuar değişimi"],
+          "problem_phrases": ["yeni klozet takılacak", "lavabo değişecek", "duş seti monte edilecek"],
+          "delivery_model": "quote",
+          "requires_discovery": false,
+          "included": ["Standart söküm ve montaj", "Bağlantı ve sızdırmazlık kontrolü"],
+          "excluded": ["Seramik işi", "Tesisat yeri değişikliği", "Ürün bedeli"],
+          "media_requirements": ["installation_area_photos", "product_photos"],
+          "questions": ["Eski ürün sökülecek mi?", "Yeni ürün hazır mı?", "Tesisat noktası değişecek mi?"]
+        }
+      ]
+    },
+    {
+      "key": "assembly_furniture",
+      "name": "Paketlenmiş işler, mobilya ve montaj",
+      "services": [
+        {
+          "key": "tv_wall_mounting",
+          "name": "TV duvar montajı",
+          "aliases": ["televizyon asma", "TV askı aparatı", "duvara TV"],
+          "problem_phrases": ["televizyonu duvara asmak istiyorum", "TV montajı yapılacak"],
+          "delivery_model": "package",
+          "requires_discovery": false,
+          "included": ["Hazır aparatı sabitleme", "TV montajı", "Terazi ve sağlamlık kontrolü"],
+          "excluded": ["Askı aparatı", "Gizli kablo", "Elektrik hattı", "Duvar onarımı"],
+          "duration_minutes": { "min": 45, "max": 120 },
+          "media_requirements": ["wall_photo", "tv_and_bracket_photo"],
+          "questions": ["TV kaç inç?", "Duvar malzemesi nedir?", "Askı aparatı hazır mı?"]
+        },
+        {
+          "key": "curtain_rail_installation",
+          "name": "Korniş, perde ve stor montajı",
+          "aliases": ["korniş takma", "perde montajı", "stor takma"],
+          "problem_phrases": ["korniş takılacak", "stor perde monte edilecek", "perde rayı düştü"],
+          "delivery_model": "package",
+          "requires_discovery": false,
+          "included": ["Standart delme ve montaj", "Hizalama"],
+          "excluded": ["Ürün bedeli", "Elektrikli perde bağlantısı", "Tavan onarımı"],
+          "duration_minutes": { "min": 45, "max": 150 },
+          "media_requirements": ["installation_area_photo", "product_photo"],
+          "questions": ["Kaç metre veya parça?", "Tavan beton mu alçıpan mı?", "Ürün hazır mı?"]
+        },
+        {
+          "key": "flat_pack_furniture_assembly",
+          "name": "Hazır mobilya kurulumu",
+          "aliases": ["mobilya montajı", "dolap kurulumu", "demonte mobilya"],
+          "problem_phrases": ["demonte dolap kurulacak", "yeni masa monte edilecek"],
+          "delivery_model": "package",
+          "requires_discovery": false,
+          "included": ["Üretici talimatına göre kurulum", "Parça kontrolü"],
+          "excluded": ["Eksik parça", "Modifikasyon", "Duvara sabitleme aksi belirtilmedikçe"],
+          "media_requirements": ["product_label_or_link", "package_photos"],
+          "questions": ["Ürün marka/modeli nedir?", "Kaç paket var?", "Duvara sabitlenecek mi?"]
+        },
+        {
+          "key": "shelf_accessory_installation",
+          "name": "Raf, askı ve aksesuar montajı",
+          "aliases": ["raf montajı", "ayna asma", "tablo asma", "askılık takma"],
+          "problem_phrases": ["duvara raf takılacak", "ayna asılacak", "aksesuar monte edilecek"],
+          "delivery_model": "package",
+          "requires_discovery": false,
+          "included": ["Standart sabitleme", "Hizalama"],
+          "excluded": ["Elektrik/tesisat taşıma", "Ürün ve özel bağlantı elemanı"],
+          "media_requirements": ["wall_photo", "products_photo"],
+          "questions": ["Kaç parça?", "Duvar türü nedir?", "Yaklaşık ağırlık nedir?"]
+        },
+        {
+          "key": "furniture_repair_custom",
+          "name": "Mobilya tamiri ve özel imalat",
+          "aliases": ["dolap tamiri", "menteşe değişimi", "marangoz", "özel mobilya"],
+          "problem_phrases": ["dolap kapağı düştü", "çekmece rayı bozuldu", "özel dolap yapılacak"],
+          "delivery_model": "quote",
+          "requires_discovery": true,
+          "included": ["Kapsam değerlendirmesi", "İşçilik ve malzeme kalemli teklif"],
+          "excluded": ["Teklif dışı boya ve duvar işleri"],
+          "media_requirements": ["problem_or_area_photos", "measurements"],
+          "questions": ["Tamir mi imalat mı?", "Ölçüler nedir?", "Malzeme/renk tercihi var mı?"]
+        }
+      ]
+    },
+    {
+      "key": "painting_minor_renovation",
+      "name": "Boya ve küçük tadilat",
+      "services": [
+        {
+          "key": "single_room_painting",
+          "name": "Tek oda boya",
+          "aliases": ["oda boyama", "tek oda badana", "duvar boya"],
+          "problem_phrases": ["salon boyanacak", "tek oda badana istiyorum"],
+          "delivery_model": "package",
+          "requires_discovery": false,
+          "included": ["Standart yüzey koruma", "Belirlenen kat boya", "Kaba temizlik"],
+          "excluded": ["Yoğun yüzey onarımı", "Tavan/kapı aksi belirtilmedikçe", "Paket dışı boya"],
+          "duration_minutes": { "min": 360, "max": 960 },
+          "media_requirements": ["room_photos"],
+          "questions": ["Oda kaç m²?", "Tavan dahil mi?", "Renkler nedir?", "Nem veya çatlak var mı?"]
+        },
+        {
+          "key": "interior_painting",
+          "name": "İç cephe boya ve badana",
+          "aliases": ["ev boyama", "badana", "iç cephe boya"],
+          "problem_phrases": ["evin tamamı boyanacak", "taşınmadan önce badana gerekiyor"],
+          "delivery_model": "quote",
+          "requires_discovery": true,
+          "included": ["Kapsam analizi", "İşçilik/malzeme ayrımlı teklif"],
+          "excluded": ["Gizli nem ve yapısal çatlak onarımı"],
+          "media_requirements": ["room_photos", "approximate_area"],
+          "questions": ["Kaç oda ve kaç m²?", "Ev eşyalı mı?", "Tavan/kapılar dahil mi?"]
+        },
+        {
+          "key": "plaster_drywall_repair",
+          "name": "Alçı, sıva ve alçıpan tamiri",
+          "aliases": ["duvar tamiri", "alçı tamiri", "alçıpan yama", "sıva çatlağı"],
+          "problem_phrases": ["duvarda delik var", "tavan alçısı döküldü", "çatlak kapatılacak"],
+          "delivery_model": "quote",
+          "requires_discovery": false,
+          "included": ["Hasarlı alan hazırlığı", "Tanımlanan lokal onarım"],
+          "excluded": ["Aktif su kaçağı", "Yapısal çatlak değerlendirmesi"],
+          "media_requirements": ["damage_photos", "size_reference"],
+          "questions": ["Hasarın boyutu nedir?", "Nem/kaçak var mı?", "Boya da isteniyor mu?"]
+        },
+        {
+          "key": "tile_minor_renovation",
+          "name": "Fayans, seramik ve küçük tadilat",
+          "aliases": ["fayans döşeme", "kırık seramik", "küçük banyo tadilatı"],
+          "problem_phrases": ["kırık fayans değişecek", "mutfak arasına seramik yapılacak"],
+          "delivery_model": "quote",
+          "requires_discovery": true,
+          "included": ["Yüzey değerlendirmesi", "İşçilik/malzeme ayrımlı teklif"],
+          "excluded": ["Gizli tesisat sorunları", "Teklif dışı moloz/nakliye"],
+          "media_requirements": ["area_photos", "measurements"],
+          "questions": ["Alan kaç m²?", "Eski kaplama sökülecek mi?", "Malzeme hazır mı?"]
+        }
+      ]
+    },
+    {
+      "key": "metal_welding_doors",
+      "name": "Kaynak, demir ve kapı sistemleri",
+      "services": [
+        {
+          "key": "on_site_welding_repair",
+          "name": "Yerinde kaynak ve metal tamiri",
+          "aliases": ["kaynakçı", "demir kaynak", "metal tamiri", "menteşe kaynağı"],
+          "problem_phrases": ["demir parça koptu", "menteşe kaynak yapılacak", "metal kırıldı"],
+          "delivery_model": "quote",
+          "requires_discovery": false,
+          "included": ["Tanımlanan yerinde kaynak", "Temel yüzey temizliği"],
+          "excluded": ["Yeni profil/parça", "Boya", "Özel güç kaynağı"],
+          "media_requirements": ["damage_photos", "surrounding_area_photo"],
+          "questions": ["Metal türü nedir?", "Ölçüsü nedir?", "Çevrede yanıcı malzeme var mı?"]
+        },
+        {
+          "key": "railing_fence_fabrication",
+          "name": "Korkuluk, çit ve ferforje",
+          "aliases": ["balkon korkuluğu", "bahçe çiti", "ferforje", "merdiven korkuluğu"],
+          "problem_phrases": ["balkona korkuluk yapılacak", "bahçeye demir çit istiyorum"],
+          "delivery_model": "discovery",
+          "requires_discovery": true,
+          "included": ["Ölçü/zemin değerlendirmesi", "Malzeme ve işçilik teklifi"],
+          "excluded": ["Statik proje ve resmi izin aksi belirtilmedikçe"],
+          "media_requirements": ["area_photos", "approximate_measurements"],
+          "questions": ["Uzunluk/yükseklik nedir?", "Tasarım tercihi var mı?", "Montaj zemini nedir?"]
+        },
+        {
+          "key": "building_garden_gate",
+          "name": "Bina ve bahçe kapısı yapım/tamiri",
+          "aliases": ["demir kapı", "bahçe kapısı", "apartman kapısı", "kapı tamiri"],
+          "problem_phrases": ["bahçe kapısı kapanmıyor", "apartman kapısı sarktı", "yeni demir kapı yapılacak"],
+          "delivery_model": "discovery",
+          "requires_discovery": true,
+          "included": ["Arıza/imalat kapsamı tespiti", "Kalem bazlı teklif"],
+          "excluded": ["Otomasyon ve elektrik aksi belirtilmedikçe"],
+          "media_requirements": ["gate_photos", "hinge_lock_photos", "measurements"],
+          "questions": ["Tamir mi imalat mı?", "Sorun hangi parçada?", "Kapı otomatik mi?"]
+        },
+        {
+          "key": "sliding_automatic_gate",
+          "name": "Raylı ve otomatik kapı sistemleri",
+          "aliases": ["raylı kapı", "kapı motoru", "otomatik bahçe kapısı", "fotosel"],
+          "problem_phrases": ["raylı kapı zor açılıyor", "kapı motoru çalışmıyor"],
+          "delivery_model": "discovery",
+          "requires_discovery": true,
+          "included": ["Mekanik/otomasyon değerlendirmesi", "Onarım veya kurulum teklifi"],
+          "excluded": ["Elektrik hattı ve beton altyapı aksi belirtilmedikçe"],
+          "media_requirements": ["full_gate_video", "rail_motor_photos"],
+          "questions": ["Kapı tipi ve ağırlığı nedir?", "Motor modeli nedir?", "Sorun mekanik mi elektriksel mi?"]
+        },
+        {
+          "key": "pergola_canopy_steel",
+          "name": "Pergola, sundurma ve hafif çelik imalat",
+          "aliases": ["sundurma", "metal pergola", "çelik çatı", "demir konstrüksiyon"],
+          "problem_phrases": ["kapı önüne sundurma yapılacak", "bahçeye metal pergola istiyorum"],
+          "delivery_model": "discovery",
+          "requires_discovery": true,
+          "included": ["Yerinde ölçü/zemin değerlendirmesi", "Malzeme ve işçilik teklifi"],
+          "excluded": ["Ruhsat", "Statik proje", "Zemin güçlendirme aksi belirtilmedikçe"],
+          "media_requirements": ["area_photos", "measurements", "optional_reference_design"],
+          "questions": ["En/boy/yükseklik nedir?", "Üst kaplama tercihi nedir?", "İzin gerekiyor mu?"]
+        }
+      ]
+    }
+  ]
+}

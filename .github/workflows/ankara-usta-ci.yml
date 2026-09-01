@@ -1,0 +1,107 @@
+name: Ankara Usta CI
+
+on:
+  pull_request:
+    paths:
+      - 'ankara-usta-app/**'
+      - 'docs/usta-platformu-ankara/**'
+      - 'README.md'
+      - '.github/workflows/ankara-usta-ci.yml'
+  push:
+    paths:
+      - 'ankara-usta-app/**'
+      - 'docs/usta-platformu-ankara/**'
+      - 'README.md'
+      - '.github/workflows/ankara-usta-ci.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ankara-usta-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: ankara-usta-app
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ankara-usta-app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify repository hygiene
+        run: npm run repository:check
+
+      - name: Enforce UI debt ratchet
+        run: npm run ui-debt:check
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check
+        run: npm run type-check
+
+      - name: Unit and component tests
+        run: npm run test:coverage
+
+      - name: Production build
+        run: npm run build
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build and test notification integration
+        run: npm run dotnet:check
+
+      - name: End-to-end smoke test
+        run: npm run test:e2e
+
+  supabase-integration:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: supabase-integration
+    env:
+      REQUIRE_AUTH_E2E: 'true'
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      E2E_CUSTOMER_EMAIL: ${{ secrets.E2E_CUSTOMER_EMAIL }}
+      E2E_CUSTOMER_PASSWORD: ${{ secrets.E2E_CUSTOMER_PASSWORD }}
+      E2E_TRADESPERSON_EMAIL: ${{ secrets.E2E_TRADESPERSON_EMAIL }}
+      E2E_TRADESPERSON_PASSWORD: ${{ secrets.E2E_TRADESPERSON_PASSWORD }}
+      E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+      E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+    defaults:
+      run:
+        working-directory: ankara-usta-app
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ankara-usta-app/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Authenticated customer, tradesperson and admin journeys
+        run: npm run test:e2e -- tests/e2e/auth-preflight.spec.ts tests/e2e/authenticated-roles.spec.ts --project=chromium
