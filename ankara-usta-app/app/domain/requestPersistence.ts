@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { services } from '../data/serviceTaxonomy';
 import { getWizardDefinition } from '../data/wizardDefinitions';
 
+export const DEFAULT_DRAFT_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
 export const requestDraftPayloadSchema = z.object({
   idempotencyKey: z.uuid(),
   serviceId: z.string().trim().min(1),
@@ -9,12 +11,29 @@ export const requestDraftPayloadSchema = z.object({
   district: z.string().trim().max(80).optional(),
   neighborhood: z.string().trim().max(120).optional(),
   preferredTiming: z.string().trim().max(120).optional(),
+  createdAt: z.number().int().positive().optional(),
 });
 
 export type RequestDraftPayload = z.infer<typeof requestDraftPayloadSchema>;
 
+export function isDraftExpired(createdAt?: number, ttlMs = DEFAULT_DRAFT_TTL_MS): boolean {
+  if (!createdAt) return false;
+  return Date.now() - createdAt > ttlMs;
+}
+
+export function createTtlDraft(payload: Omit<RequestDraftPayload, 'createdAt'>): RequestDraftPayload {
+  return {
+    ...payload,
+    createdAt: Date.now(),
+  };
+}
+
 export function validateRequestDraft(input: unknown, requireComplete = false) {
   const payload = requestDraftPayloadSchema.parse(input);
+  if (payload.createdAt && isDraftExpired(payload.createdAt)) {
+    throw new Error('Draft has expired.');
+  }
+
   const service = services.find((item) => item.id === payload.serviceId);
   if (!service) throw new Error('Unknown service.');
 
@@ -36,4 +55,3 @@ export function validateRequestDraft(input: unknown, requireComplete = false) {
 
   return {payload, service};
 }
-

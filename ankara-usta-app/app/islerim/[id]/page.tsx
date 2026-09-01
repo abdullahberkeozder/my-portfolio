@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {notFound,redirect} from 'next/navigation';
 import JobTrustCenter from '../../components/JobTrustCenter';
 import JobWorkspace from '../../components/JobWorkspace';
+import RealtimeRefresh from '../../components/RealtimeRefresh';
 import {createSupabaseServerClient} from '../../lib/supabase/server';
 
 export const dynamic='force-dynamic';
@@ -23,5 +24,5 @@ export default async function JobPage({params}:{params:Promise<{id:string}>}){
     supabase.from('dispute_cases').select('id,category,description,status,resolution,created_at').eq('job_id',id).order('created_at',{ascending:false}),
   ]);
   const entries=await Promise.all(((workLog??[]) as WorkEntry[]).map(async entry=>{const {data}=await supabase.storage.from('job-media').createSignedUrl(entry.storage_path,3600);return {...entry,signedUrl:data?.signedUrl??null}}));
-  return <main className="account-shell job-page"><Link className="account-back" href="/islerim">← İşlerim</Link><JobWorkspace jobId={id} currentUserId={user.id} role={role} status={job.status} events={(events??[]) as never[]} messages={(messages??[]) as never[]} appointments={(appointments??[]) as never[]} scopeChanges={(scopeChanges??[]) as never[]} address={address as never}/><JobTrustCenter jobId={id} role={role} status={job.status} entries={entries} review={review as never} certificate={certificate as never} disputes={(disputes??[]) as never[]}/></main>;
+  return <main className="account-shell job-page"><RealtimeRefresh channelName={`job-room-${id}`} subscriptions={[{table:'jobs',filter:`id=eq.${id}`},{table:'job_events',filter:`job_id=eq.${id}`},{table:'job_messages',filter:`job_id=eq.${id}`},{table:'inspection_appointments',filter:`job_id=eq.${id}`},{table:'scope_changes',filter:`job_id=eq.${id}`},{table:'job_addresses',filter:`job_id=eq.${id}`},{table:'work_log_entries',filter:`job_id=eq.${id}`},{table:'reviews',filter:`job_id=eq.${id}`},{table:'workmanship_certificates',filter:`job_id=eq.${id}`},{table:'dispute_cases',filter:`job_id=eq.${id}`}]} label="İş odası"/><Link className="account-back" href="/islerim">← İşlerim</Link><JobWorkspace jobId={id} currentUserId={user.id} role={role} status={job.status} events={(events??[]) as never[]} messages={(messages??[]) as never[]} appointments={(appointments??[]) as never[]} scopeChanges={(scopeChanges??[]) as never[]} address={address as never}/><JobTrustCenter jobId={id} role={role} status={job.status} entries={entries} review={review as never} certificate={certificate as never} disputes={(disputes??[]) as never[]}/></main>;
 }

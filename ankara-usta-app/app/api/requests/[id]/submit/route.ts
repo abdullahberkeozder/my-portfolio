@@ -15,55 +15,22 @@ export async function POST(request: Request, context: {params: Promise<{id: stri
     const {data: {user}} = await supabase.auth.getUser();
     if (!user) return NextResponse.json({error: 'Oturum açmanız gerekiyor.'}, {status: 401});
 
-    const {data: existing, error: readError} = await supabase
-      .from('service_requests')
+    const {data: existing, error: readError} = await supabase.from('service_requests')
       .select('id,service_id,answers,district,neighborhood,preferred_timing,status,idempotency_key')
-      .eq('id', id)
-      .single();
+      .eq('id', id).single();
     if (readError || !existing) return NextResponse.json({error: 'Talep bulunamadı.'}, {status: 404});
-    if (existing.idempotency_key !== idempotencyKey) return NextResponse.json({error: 'Gönderim anahtarı uyuşmuyor.'}, {status: 409});
-    if (['submitted','matching','quotes_received','provider_selected'].includes(existing.status)) return NextResponse.json({request: existing, idempotent: true});
-    if (existing.status !== 'draft') return NextResponse.json({error: 'Bu talep artık gönderilemez.'}, {status: 409});
+    validateRequestDraft({idempotencyKey, serviceId: existing.service_id, answers: existing.answers,
+      district: existing.district, neighborhood: existing.neighborhood, preferredTiming: existing.preferred_timing}, true);
 
-    validateRequestDraft({
-      idempotencyKey,
-      serviceId: existing.service_id,
-      answers: existing.answers,
-      district: existing.district,
-      neighborhood: existing.neighborhood,
-      preferredTiming: existing.preferred_timing,
-    }, true);
-
-    const {data, error} = await supabase
-      .from('service_requests')
-      .update({status: 'submitted', submitted_at: new Date().toISOString()})
-      .eq('id', id)
-      .eq('status', 'draft')
-      .select('id,status,submitted_at')
-      .maybeSingle();
+    const wasAlreadySubmitted = ['submitted','matching','quotes_received','provider_selected'].includes(existing.status);
+    const {data, error} = await supabase.rpc('submit_request', {
+      p_request_id: id,
+      p_idempotency_key: idempotencyKey,
+    }).single();
     if (error) throw error;
 
-    // Another request with the same idempotency key may have won the draft ->
-    // submitted race after our initial read. Treat that as the same successful
-    // operation instead of returning a misleading client error.
-    if (!data) {
-      const {data: racedRequest, error: racedReadError} = await supabase
-        .from('service_requests')
-        .select('id,service_id,answers,district,neighborhood,preferred_timing,status,idempotency_key,submitted_at')
-        .eq('id', id)
-        .single();
-      if (racedReadError || !racedRequest) throw racedReadError ?? new Error('Talep bulunamadı.');
-      if (racedRequest.idempotency_key !== idempotencyKey) {
-        return NextResponse.json({error: 'Gönderim anahtarı uyuşmuyor.'}, {status: 409});
-      }
-      if (['submitted','matching','quotes_received','provider_selected'].includes(racedRequest.status)) {
-        return NextResponse.json({request: racedRequest, idempotent: true});
-      }
-      return NextResponse.json({error: 'Talep durumu eşzamanlı olarak değişti.'}, {status: 409});
-    }
-
     const {data:matching,error:matchingError}=await supabase.rpc('match_request',{p_request_id:id});
-    return NextResponse.json({request:data,matching:matching??null,matchingWarning:matchingError?.message??null,idempotent:false});
+    return NextResponse.json({request:data,matching:matching??null,matchingWarning:matchingError?.message??null,idempotent:wasAlreadySubmitted});
   } catch (error) {
     return NextResponse.json({error: error instanceof Error ? error.message : 'Talep gönderilemedi.'}, {status: 400});
   }

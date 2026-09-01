@@ -6,6 +6,10 @@ export const wizardQuestionSchema = z.object({
   label: z.string().trim().min(1),
   help: z.string().trim().min(1).optional(),
   options: z.array(z.string().trim().min(1)).min(2),
+  showWhen: z.object({
+    questionId: z.string().trim().min(1),
+    equals: z.array(z.string().trim().min(1)).min(1),
+  }).optional(),
 });
 
 export const wizardDefinitionSchema = z.object({
@@ -16,6 +20,24 @@ export const wizardDefinitionSchema = z.object({
 
 export type WizardQuestion = z.infer<typeof wizardQuestionSchema>;
 export type WizardDefinition = z.infer<typeof wizardDefinitionSchema>;
+
+export function getVisibleWizardQuestions(
+  definition: WizardDefinition,
+  answers: Record<string, string>,
+): WizardQuestion[] {
+  return definition.questions.filter(question => {
+    if (!question.showWhen) return true;
+    return question.showWhen.equals.includes(answers[question.showWhen.questionId]);
+  });
+}
+
+export function pruneWizardAnswers(
+  definition: WizardDefinition,
+  answers: Record<string, string>,
+): Record<string, string> {
+  const visibleIds = new Set(getVisibleWizardQuestions(definition, answers).map(question => question.id));
+  return Object.fromEntries(Object.entries(answers).filter(([questionId]) => visibleIds.has(questionId)));
+}
 
 export function validateWizardDefinitions(
   definitionsInput: unknown,
@@ -29,6 +51,17 @@ export function validateWizardDefinitions(
     if (definition.serviceId !== key) throw new Error(`Wizard key ${key} does not match serviceId ${definition.serviceId}.`);
     const questionIds = definition.questions.map((question) => question.id);
     if (new Set(questionIds).size !== questionIds.length) throw new Error(`Wizard ${key} contains duplicate question IDs.`);
+    for (const [index, question] of definition.questions.entries()) {
+      if (!question.showWhen) continue;
+      const parentIndex = questionIds.indexOf(question.showWhen.questionId);
+      if (parentIndex === -1 || parentIndex >= index) {
+        throw new Error(`Wizard ${key} contains an invalid conditional question reference.`);
+      }
+      const parent = definition.questions[parentIndex];
+      if (question.showWhen.equals.some(value => !parent.options.includes(value))) {
+        throw new Error(`Wizard ${key} contains a conditional value outside its parent options.`);
+      }
+    }
   }
 
   return definitions;

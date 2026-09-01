@@ -3,11 +3,16 @@ import {redirect} from 'next/navigation';
 import ModerationQueue from '../../components/ModerationQueue';
 import {createSupabaseServerClient} from '../../lib/supabase/server';
 
+import { getServerUserAndRoles } from '../../lib/authServer';
+
 export const dynamic='force-dynamic';
 export default async function ModerationPage(){
+  const { user, roles } = await getServerUserAndRoles();
+  if(!user) redirect('/giris?next=/yonetim/moderasyon');
+  if(!roles.includes('admin') && !roles.includes('moderator')) redirect('/');
+
   const supabase=await createSupabaseServerClient();
-  const {data:{user}}=await supabase.auth.getUser();if(!user)redirect('/giris');
-  const {data:role}=await supabase.from('user_roles').select('role').eq('user_id',user.id).in('role',['admin','moderator']).limit(1).maybeSingle();if(!role)redirect('/');
+
   const [{data:media},{data:reviews},{count:disputeCount}]=await Promise.all([
     supabase.from('work_log_entries').select('id,kind,caption,storage_path,created_at').eq('moderation_status','pending').order('created_at'),
     supabase.from('reviews').select('id,rating,comment,created_at').eq('moderation_status','pending').order('created_at'),
