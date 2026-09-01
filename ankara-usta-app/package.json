@@ -7,6 +7,9 @@
   },
   "scripts": {
     "styles:check": "node scripts/verify-style-entrypoints.mjs",
+    "repository:check": "node scripts/verify-repository-hygiene.mjs",
+    "dotnet:check": "dotnet build services/AnkaraUsta.NotificationWorker/AnkaraUsta.NotificationWorker.csproj --configuration Release && dotnet run --project services/AnkaraUsta.NotificationWorker.Tests/AnkaraUsta.NotificationWorker.Tests.csproj --configuration Release",
+    "ui-debt:check": "node scripts/audit-ui-debt.mjs",
     "predev": "npm run styles:check",
     "dev": "node scripts/run-vinext.mjs dev",
     "prebuild": "npm run styles:check",
@@ -20,12 +23,12 @@
     "test:coverage": "node scripts/run-project-tool.mjs vitest run --coverage",
     "test:e2e": "node scripts/run-project-tool.mjs playwright test",
     "test:remote:phase65": "node scripts/run-phase65-remote.mjs",
-    "quality": "npm run styles:check && npm run lint && npm run type-check && npm run test:coverage && npm run build"
+    "quality": "npm run repository:check && npm run styles:check && npm run ui-debt:check && npm run lint && npm run type-check && npm run test:coverage && npm run build && npm run dotnet:check"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.5",
     "@supabase/supabase-js": "2.112.4",
-    "next": "16.2.6",
+    "next": "16.3.3",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "zod": "^4.4.3"
@@ -47,7 +50,7 @@
     "@vitejs/plugin-rsc": "0.5.26",
     "@vitest/coverage-v8": "^4.1.11",
     "eslint": "9.39.4",
-    "eslint-config-next": "16.2.6",
+    "eslint-config-next": "16.3.3",
     "jsdom": "^30.0.1",
     "react-server-dom-webpack": "19.2.6",
     "supabase": "2.115.0",

@@ -31,17 +31,21 @@ Live preview: [ankara-usta.sevvaltuhafiye154322.chatgpt.site](https://ankara-ust
 - Category tabs and popular services generated from the shared taxonomy
 - A homepage focused on trust, verification, work evidence, and scope transparency
 - Responsive desktop and mobile layouts
+- Conditional, data-driven wizard steps with district-dependent neighborhoods and risk guidance
+- Account recovery, role-aware redirects, loading/error/empty states, and paginated work surfaces
+- Consent-aware funnel instrumentation with sensitive-field masking
+- An ASP.NET Core notification worker connected to Supabase's transactional outbox and the Resend Email API
 
-## Design System
+## Product and Design System
 
-The interface draws inspiration from Taskrabbit's straightforward task-creation experience while developing a distinct identity for Ankara Usta.
+The interface combines a focused, question-first marketplace flow with an original modular identity for Ankara Usta.
 
 - A petrol-green, trust-blue, and warm off-white color palette
-- The original **Mahalle Bağı** (Neighborhood Bond) brand motif from Figma frame `10:749`
-- A two-color ring representing the connection between customer, tradesperson, and neighborhood
-- A modular tile structure combining house, Tetris, and LEGO-inspired visual language
-- A low-density modular rhythm that continues along the page edges
-- Controlled repetition and quiet surfaces that support rather than compete with the content
+- A forest-green, pistachio, trust-blue, warm off-white, and editorial-gray palette
+- A six-tile house mark representing an assembled service team and completed work
+- Scroll-linked tile separation/reassembly with a reduced-motion fallback
+- Typeform-inspired question focus and a restrained physical work-receipt summary
+- Explicit mobile layouts for 320 px, 390 px, tablet, and desktop surfaces
 
 ## Technology
 
@@ -52,6 +56,8 @@ The interface draws inspiration from Taskrabbit's straightforward task-creation 
 - Tailwind CSS 4
 - OpenAI Sites deployment compatible with Cloudflare Workers
 - Supabase Auth, PostgreSQL, Row Level Security, and private Storage
+- ASP.NET Core 10 background processing
+- Resend transactional email API with provider idempotency
 
 ## Running the Project
 
@@ -87,6 +93,7 @@ npm run lint
 npm run type-check
 npm run test
 npm run test:e2e
+npm run dotnet:check
 ```
 
 Run the complete non-browser quality gate:
@@ -115,7 +122,7 @@ app/
   domain/              Models, validation, state machines, and integrity rules
   lib/                 Classification and Supabase client adapters
   page.tsx             Main product surface
-  globals.css          Design system and responsive rules
+  application.css      Consolidated design system and responsive rules
 public/
   mahalle-bagi-figma-frame.png
 docs/
@@ -128,15 +135,48 @@ tests/
   e2e/                 Browser-level customer-flow tests
 supabase/
   migrations/          PostgreSQL schema, constraints, RLS, and Storage policies
+services/
+  AnkaraUsta.NotificationWorker/        ASP.NET Core outbox delivery worker
+  AnkaraUsta.NotificationWorker.Tests/  Provider and processing contract tests
 ```
+
+## API and Integration Design
+
+- Client writes cross a Next.js server-route boundary and are validated again before database mutation.
+- Concurrency-sensitive operations use PostgreSQL RPCs rather than read-then-write client sequences.
+- Supabase RLS and private Storage policies enforce customer, tradesperson, and administrator boundaries.
+- Job events enqueue durable notifications in the same database transaction.
+- The ASP.NET Core worker claims email-only batches with a service-role-only RPC, resolves recipients through Supabase Auth Admin, and sends through Resend using a stable idempotency key.
+- Email failures update the existing retry/dead-letter state and never roll back the business operation.
+
+Provider setup and operational details are documented in [`services/AnkaraUsta.NotificationWorker`](./services/AnkaraUsta.NotificationWorker/README.md).
+
+## Testing Strategy
+
+- Vitest covers pure domain rules, schemas, state transitions, taxonomy integrity, auth helpers, error normalization, and analytics privacy.
+- React Testing Library covers component behavior and keyboard interaction.
+- Playwright covers responsive layouts, accessibility, wizard persistence, authentication preflight, and cross-role workflows.
+- The .NET contract suite verifies outbox delivery and Resend idempotency headers without sending a real email.
+- Protected CI credentials enable remote Supabase RLS, Storage, and concurrency journeys on `main`.
+
+## Known Limitations
+
+- The hosted demo does not yet operate with a live pool of Ankara tradespeople.
+- Six high-priority services have specialized question trees; the remaining catalog uses a validated generic flow.
+- Matching weights are explainable but not yet calibrated with production completion data.
+- The notification worker needs separate deployment and server-only Supabase/Resend configuration.
+- Payments and calendar synchronization are not implemented and are not presented as current capabilities.
+
+## AI-Assisted Development
+
+OpenAI Codex was used for requirements analysis, implementation alternatives, test-case discovery, debugging, and documentation. Suggestions were reviewed against domain rules, type safety, automated tests, security requirements, and the project's architecture decisions. Final architecture and source changes remain under human review and ownership.
 
 ## Next Steps
 
-- Bootstrap the first administrator from a known Supabase Auth identity
-- Add authenticated cross-role RLS and Storage integration tests
 - Matching quality calibration with real Ankara supply and demand data
-- Production notification channel workers and delivery-provider integration
-- Reviews, complaints, and dispute management
-- Cross-user RLS integration tests and production email delivery configuration
+- Deploy and observe the ASP.NET Core notification worker in staging
+- Complete specialized question trees for the remaining service backlog
+- Add operational dashboards for RPC latency, outbox retry depth, and funnel exits
+- Validate production email delivery, domain authentication, and unsubscribe boundaries
 
-This version is now an early full-stack marketplace foundation: the public discovery experience is connected to Supabase-backed customer identity, durable requests, private media, tradesperson onboarding, evidence review, and an administrator queue. Matching, the complete quoting experience, messaging, jobs, and dispute operations remain planned phases.
+This repository is a full-stack marketplace foundation rather than a static concept: public discovery is connected to identity, durable requests, private media, tradesperson onboarding, evidence review, matching, versioned quotes, ordered job operations, disputes, and a decoupled external-notification integration.
