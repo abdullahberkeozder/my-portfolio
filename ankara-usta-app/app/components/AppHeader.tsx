@@ -106,6 +106,7 @@ export default function AppHeader({ role: explicitRole }: AppHeaderProps) {
               <>
                 <a href={servicesHref} onClick={handleServicesNavigation}>Hizmetler</a>
                 <NavLink href="/nasil-calisir" active={pathname === '/nasil-calisir'}>Nasıl Çalışır?</NavLink>
+                <NavLink href="/ustalar" active={pathname.startsWith('/ustalar')}>Ustalar</NavLink>
                 <NavLink href="/yardim" active={pathname === '/yardim'}>Yardım</NavLink>
                 <NavLink href="/giris" className="nav-login" active={pathname === '/giris'}>Giriş Yap</NavLink>
                 <NavLink className="join-link" href="/usta-basvurusu" active={pathname === '/usta-basvurusu'}>Usta olarak katıl</NavLink>
@@ -211,8 +212,9 @@ export default function AppHeader({ role: explicitRole }: AppHeaderProps) {
                 <>
                   <a href={servicesHref} onClick={handleServicesNavigation}>Hizmetleri Keşfet</a>
                   <NavLink href="/nasil-calisir" active={pathname === '/nasil-calisir'} onClick={closeMobileMenu}>Nasıl Çalışır?</NavLink>
-                  <Link href="/taleplerim" onClick={closeMobileMenu}>Taleplerim</Link>
-                  <Link href="/islerim" onClick={closeMobileMenu}>İşlerim</Link>
+                  <NavLink href="/ustalar" active={pathname.startsWith('/ustalar')} onClick={closeMobileMenu}>Ustalar</NavLink>
+                  <NavLink href="/taleplerim" active={false} onClick={closeMobileMenu}>Taleplerim</NavLink>
+                  <NavLink href="/islerim" active={false} onClick={closeMobileMenu}>İşlerim</NavLink>
                   <NavLink href="/giris" active={pathname === '/giris'} onClick={closeMobileMenu}>Kayıt Ol / Giriş Yap</NavLink>
                   <NavLink className="mobile-join" href="/usta-basvurusu" active={pathname === '/usta-basvurusu'} onClick={closeMobileMenu}>Usta Olarak Katıl</NavLink>
                   <NavLink className="mobile-help" href="/yardim" active={pathname === '/yardim'} onClick={closeMobileMenu}>Yardım Merkezi</NavLink>

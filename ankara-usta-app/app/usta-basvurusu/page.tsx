@@ -39,10 +39,30 @@ export default function TradespersonApplicationPage() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [draftReady, setDraftReady] = useState(false);
+  const [hasDraft, setHasDraft] = useState(false);
 
   // Filters for Step 1 (Services)
   const [serviceSearch, setServiceSearch] = useState('');
   const [selectedServiceCat, setSelectedServiceCat] = useState<string>('all');
+
+  // Draft TTL: 2 hours — prevents stale test data from leaking into new sessions
+  const DRAFT_TTL_MS = 2 * 60 * 60 * 1000;
+
+  function clearDraft() {
+    localStorage.removeItem(draftKey);
+    setDisplayName('');
+    setBio('');
+    setServiceIds([]);
+    setDistricts([]);
+    setReferenceName('');
+    setRelationship('');
+    setReferencePhone('');
+    setDocumentKind('professional_certificate');
+    setExpiresAt('');
+    setStep(0);
+    setHasDraft(false);
+    setMessage('');
+  }
 
   // Load Full Draft on Mount
   useEffect(() => {
@@ -62,11 +82,12 @@ export default function TradespersonApplicationPage() {
             documentKind?: keyof typeof documentKinds;
             expiresAt?: string;
           };
-          if (!draft.updatedAt || Date.now() - draft.updatedAt > 24 * 60 * 60 * 1000) {
+          if (!draft.updatedAt || Date.now() - draft.updatedAt > DRAFT_TTL_MS) {
             localStorage.removeItem(draftKey);
+            setDraftReady(true);
             return;
           }
-          if (draft.displayName) setDisplayName(draft.displayName);
+          if (draft.displayName) { setDisplayName(draft.displayName); setHasDraft(true); }
           if (draft.bio) setBio(draft.bio);
           if (draft.serviceIds) setServiceIds(draft.serviceIds);
           if (draft.districts) setDistricts(draft.districts);
@@ -82,6 +103,7 @@ export default function TradespersonApplicationPage() {
         setDraftReady(true);
       }
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Save Full Draft on Change
@@ -214,6 +236,21 @@ export default function TradespersonApplicationPage() {
         <span className="application-kicker">ZANAATKAR & USTA AĞI</span>
         <h1>Orkestra Ağına Katılın</h1>
         <p>Uzmanlığınızı ve hizmet bölgelerinizi tanımlayın. Formdaki tüm tercihleriniz bu cihazda otomatik taslak olarak saklanır.</p>
+
+        {hasDraft && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f0f7f4', border: '1px solid #c3e0d5', borderRadius: '10px', padding: '12px 16px', marginBottom: '8px', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '13px', color: '#2d6652', fontWeight: 600 }}>
+              📋 Kaydedilmiş bir taslak bulundu. Kaldığınız yerden devam edebilir veya yeni başvuru başlatabilirsiniz.
+            </span>
+            <button
+              type="button"
+              onClick={clearDraft}
+              style={{ fontSize: '12px', fontWeight: 700, color: '#b44040', background: 'transparent', border: '1px solid #e8c4c4', borderRadius: '6px', padding: '6px 12px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+            >
+              Yeni Başvuru Başlat
+            </button>
+          </div>
+        )}
 
         <div className="application-progress-wrapper">
           <div className="wizard-progress" role="progressbar" aria-label="Başvuru ilerleme durumu" aria-valuemin={1} aria-valuemax={5} aria-valuenow={step + 1}>

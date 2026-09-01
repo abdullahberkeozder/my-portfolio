@@ -127,13 +127,15 @@ export default function SignInPage() {
             </button>
           </div>
 
-          <form className="account-form" onSubmit={submit}>
+          <form className="account-form" onSubmit={submit} autoComplete="off">
             <div className="form-field-group">
               <label htmlFor="auth-email">E-posta Adresi</label>
+              {/* autoComplete="new-password" is intentional: prevents browser password managers
+                  from auto-filling saved localhost/test credentials into production login form. */}
               <input
                 id="auth-email"
                 type="email"
-                autoComplete="email"
+                autoComplete="new-password"
                 required
                 placeholder="ornek@ankarausta.com"
                 value={email}
@@ -159,7 +161,7 @@ export default function SignInPage() {
                 <input
                   id="auth-password"
                   type={showPassword ? 'text' : 'password'}
-                  autoComplete={authMode === 'sign-in' ? 'current-password' : 'new-password'}
+                  autoComplete="new-password"
                   minLength={8}
                   required
                   placeholder="En az 8 karakter"

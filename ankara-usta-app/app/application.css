@@ -396,6 +396,15 @@ body{background:var(--surface-page);color:var(--text-primary)}.tr-header,.tr-her
   background: var(--action-primary);
   border-radius: 2px;
 }
+/* Nav-action-button (e.g. "Belgelerim / Profil") has its own solid bg — keep text white when active */
+.desktop-nav a.active.nav-action-button,
+.desktop-nav a.active.join-link {
+  color: #ffffff !important;
+}
+.desktop-nav a.active.nav-action-button::after,
+.desktop-nav a.active.join-link::after {
+  display: none;
+}
 .mobile-nav-header {
   display: flex;
   align-items: center;
@@ -2067,7 +2076,8 @@ time,
 .desktop-nav .join-link.active,
 .desktop-nav .nav-login.active,
 .desktop-nav .nav-profile-link.active {
-  box-shadow: 0 0 0 3px var(--surface-info);
+  /* Use white ring on dark/colored buttons so focus ring is always visible */
+  box-shadow: 0 0 0 2px var(--surface-page, #fff), 0 0 0 4px var(--action-primary);
 }
 
 .mobile-nav-links a.active[aria-current='page'] {
@@ -4933,17 +4943,24 @@ details[open] .accordion-chevron {
 }
 
 .step-pill-indicator {
-  width: 22px;
-  height: 22px;
+  /* Visual size: 36×36 — large enough to read, compact in the wizard header */
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   font-family: var(--font-geist-mono), monospace;
   background: #edf3f0;
   color: #6b827a;
+  /* Ensure button element has no default padding */
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  /* Minimum tap target via transparent padding (WCAG 2.5.5) */
+  touch-action: manipulation;
 }
 
 .step-pill-indicator.active {
@@ -6489,12 +6506,15 @@ body:has(.dialog-backdrop) .privacy-consent-banner { pointer-events:none;visibil
   }
 
   .wizard-progress-pills {
-    gap: 3px;
+    gap: 4px;
   }
 
+  /* On small mobile, ensure pills meet 44px tap target requirement (WCAG 2.5.5).
+     We use a min 44px click area via explicit size, keeping visual weight consistent. */
   .step-pill-indicator {
-    height: 24px;
-    width: 24px;
+    height: 44px;
+    width: 44px;
+    font-size: 14px;
   }
 
   .option-check-badge {
