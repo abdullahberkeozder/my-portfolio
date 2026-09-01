@@ -41,7 +41,7 @@ export default function PasswordUpdatePage() {
         </Link>
         <div className="account-brand-pill">
           <NeighborhoodBond variant="brand" className="account-brand-icon" />
-          <span>ANKARA USTA</span>
+          <span>ORKESTRA</span>
         </div>
       </header>
 

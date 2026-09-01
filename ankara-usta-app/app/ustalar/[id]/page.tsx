@@ -31,7 +31,7 @@ export default async function PublicTradespersonPage({ params }: { params: Promi
         <header className="public-profile-hero">
           <div className="public-profile-monogram" aria-hidden="true">{profile.display_name.slice(0, 1).toLocaleUpperCase('tr-TR')}</div>
           <div>
-            <span>ANKARA USTA PROFİLİ</span>
+            <span>ORKESTRA PROFİLİ</span>
             <h1>{profile.display_name}</h1>
             <p>{profile.bio}</p>
             <div className="profile-badges">

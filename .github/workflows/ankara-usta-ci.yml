@@ -1,4 +1,4 @@
-name: Ankara Usta CI
+name: Orkestra CI
 
 on:
   pull_request:

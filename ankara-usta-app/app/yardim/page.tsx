@@ -31,7 +31,7 @@ export default function HelpPage() {
           body: 'İşin vaat edilen kapsama uymaması, gecikmesi veya hasar oluşması durumunda iş sayfasından "Uyuşmazlık Bildirimi" başlatabilirsiniz.',
           items: [
             'Kanıt Yükleme: Taraflara 24 saat kanıt ve beyan süresi tanınır.',
-            'Operasyon İncelemesi: Ankara Usta uzman heyeti dosyayı azami 48 saat içinde inceleyerek gerekçeli karar oluşturur.',
+            'Operasyon İncelemesi: Orkestra uzman heyeti dosyayı azami 48 saat içinde inceleyerek gerekçeli karar oluşturur.',
             'İtiraz Hakkı: Karara 72 saat içinde yeni kanıtla itiraz edilebilir.',
           ],
         },

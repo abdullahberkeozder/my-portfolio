@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Motif Lab | Ankara Usta',
+  title: 'Motif Lab | Orkestra',
   robots: {
     index: false,
     follow: false,

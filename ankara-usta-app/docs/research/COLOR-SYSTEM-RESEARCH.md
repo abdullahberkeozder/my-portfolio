@@ -1,4 +1,4 @@
-# Ankara Usta — Renk Sistemi Araştırması
+# Orkestra — Renk Sistemi Araştırması
 
 Tarih: 25 Ağustos 2026  
 Kapsam: Ana sayfa ve ilerideki pazaryeri ekranları  
@@ -6,7 +6,7 @@ Karar durumu: Araştırma; henüz uygulamaya alınmadı
 
 ## Yönetici özeti
 
-Ankara Usta için renk sisteminin ilk görevi “güzel görünmek” değil; kullanıcıya belirsiz bir ev sorununu güvenle tarif edebileceği, teklifleri ayırt edebileceği ve işi takip edebileceği sakin bir karar ortamı sağlamaktır. Petrol yeşili bu güven ve sükûnet tabanını; bakır, ustalık ve insan emeğini; kırık beyaz ise sıcak ve uzun süre okunabilir yüzeyi taşır.
+Orkestra için renk sisteminin ilk görevi “güzel görünmek” değil; kullanıcıya belirsiz bir ev sorununu güvenle tarif edebileceği, teklifleri ayırt edebileceği ve işi takip edebileceği sakin bir karar ortamı sağlamaktır. Petrol yeşili bu güven ve sükûnet tabanını; bakır, ustalık ve insan emeğini; kırık beyaz ise sıcak ve uzun süre okunabilir yüzeyi taşır.
 
 Önerilen yön **Palet A — Dengeli Ankara Bakırı**dır. Ana işlemlerde petrol yeşili, vurgu ve seçili kanıtlarda ölçülü bakır, geniş yüzeylerde kırık beyaz kullanır. Bakırın marka vurgusu olması, her CTA'nın bakır olması anlamına gelmez.
 
@@ -83,7 +83,7 @@ Gerçek iş fotoğraflarında beton gri, ahşap kahve, metal, beyaz duvar, mavi 
 
 ## 10. Rakiplerden ayrışma ve ölçeklenebilirlik
 
-Taskrabbit'in kendi marka açıklaması yeşil tabanlı paletini “insan odaklı” ve komşuların yardımlaşması anlatısıyla ilişkilendirir. Ankara Usta aynı kullanım kolaylığını korurken bakır ve sıcak taş yüzeylerle daha yerel, kanıta dayalı ve zanaat odaklı ayrışmalıdır. Rakibin yeşilini veya logo varlığını taklit etmek yerine rol tabanlı özgün tokenlar kullanılmalıdır.
+Taskrabbit'in kendi marka açıklaması yeşil tabanlı paletini “insan odaklı” ve komşuların yardımlaşması anlatısıyla ilişkilendirir. Orkestra aynı kullanım kolaylığını korurken bakır ve sıcak taş yüzeylerle daha yerel, kanıta dayalı ve zanaat odaklı ayrışmalıdır. Rakibin yeşilini veya logo varlığını taklit etmek yerine rol tabanlı özgün tokenlar kullanılmalıdır.
 
 Renk sistemi ileride müşteri, usta ve yönetim ekranlarına ölçeklenebilmelidir. Rol ayrımı tüm sayfayı başka renge çevirmekle değil, rozet, navigasyon bağlamı ve içerik etiketleriyle yapılmalıdır.
 

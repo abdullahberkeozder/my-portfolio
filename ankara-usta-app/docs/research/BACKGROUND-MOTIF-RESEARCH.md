@@ -1,4 +1,4 @@
-# Ankara Usta — Arka Plan Motifleri Araştırması
+# Orkestra — Arka Plan Motifleri Araştırması
 
 Tarih: 25 Ağustos 2026  
 Renk sistemi: Güven Mavisi + mevcut yeşil ve beyaz  
@@ -6,7 +6,7 @@ Durum: On tasarım örgüsü değerlendirildi; üç yön kısa listeye alındı
 
 ## Tasarım ilkeleri
 
-Arka plan şekilleri yalnız dekorasyon olmamalı; Ankara Usta'nın “sorunu anlat, kapsamı netleştir, işi takip et” vaadini sessizce desteklemelidir. Motifler metin ve arama alanıyla yarışmamalı, hizmet kategorilerinden yalnız birine ait görünmemeli ve mobilde kaldırıldığında sayfa anlam kaybetmemelidir.
+Arka plan şekilleri yalnız dekorasyon olmamalı; Orkestra'nın “sorunu anlat, kapsamı netleştir, işi takip et” vaadini sessizce desteklemelidir. Motifler metin ve arama alanıyla yarışmamalı, hizmet kategorilerinden yalnız birine ait görünmemeli ve mobilde kaldırıldığında sayfa anlam kaybetmemelidir.
 
 Kurallar:
 

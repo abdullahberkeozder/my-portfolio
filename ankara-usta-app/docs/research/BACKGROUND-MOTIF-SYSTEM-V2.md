@@ -1,4 +1,4 @@
-# Ankara Usta — Geometrik Arka Plan Örgüleri V2
+# Orkestra — Geometrik Arka Plan Örgüleri V2
 
 Tarih: 25 Ağustos 2026  
 Başlangıç noktası: Tasarımda akılda kalıcılık araştırması  
@@ -8,7 +8,7 @@ Renk sınırı: Mevcut yeşil, beyaz ve Güven Mavisi
 
 Mevcut hero şekilleri genel bir teknoloji girişimi estetiğine benziyor: büyük daireler, nokta kümeleri, çizgili yüzeyler ve birbirinden bağımsız lekeler ortak bir anlam üretmiyor. Yeni örgü:
 
-- Ankara Usta'ya ait olmalı.
+- Orkestra'ya ait olmalı.
 - Logosuz tanınma potansiyeli taşımalı.
 - Ev hizmetlerinin tamamına tarafsız kalmalı.
 - Arama alanıyla yarışmamalı.
@@ -165,7 +165,7 @@ Kısa liste kullanıcı testinde şu sorularla karşılaştırılmalıdır:
 1. Beş saniyede sitenin amacı anlaşılıyor mu?
 2. Arama alanı ne kadar hızlı bulunuyor?
 3. Motif hangi üç kelimeyi çağrıştırıyor?
-4. Marka adı kapatıldığında Ankara Usta ile eşleşiyor mu?
+4. Marka adı kapatıldığında Orkestra ile eşleşiyor mu?
 5. 24 saat sonra hangi şekil hatırlanıyor?
 6. Rakip markayla yanlış eşleşme oluşuyor mu?
 

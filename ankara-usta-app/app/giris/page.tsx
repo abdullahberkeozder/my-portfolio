@@ -88,14 +88,14 @@ export default function SignInPage() {
         </Link>
         <div className="account-brand-pill">
           <NeighborhoodBond variant="brand" className="account-brand-icon" />
-          <span>ANKARA USTA</span>
+          <span>ORKESTRA</span>
         </div>
       </header>
 
       <div className="account-card-wrapper">
         <section className="account-card">
           <div className="account-card-header">
-            <span className="account-eyebrow">ANKARA USTA HESAP MERKEZİ</span>
+            <span className="account-eyebrow">ORKESTRA HESAP MERKEZİ</span>
             <h1 className="account-title">
               {authMode === 'sign-in' ? 'Hesabınıza Giriş Yapın' : 'Yeni Hesap Oluşturun'}
             </h1>

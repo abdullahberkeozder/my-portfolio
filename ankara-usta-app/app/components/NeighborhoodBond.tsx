@@ -21,7 +21,7 @@ export default function NeighborhoodBond({
   className = '',
   size,
   decorative = true,
-  label = 'Ankara Usta Mahalle Bağı',
+  label = 'Orkestra Mahalle Bağı',
 }: NeighborhoodBondProps) {
   const sizeStyle = size ? { width: size, height: size } : undefined;
 

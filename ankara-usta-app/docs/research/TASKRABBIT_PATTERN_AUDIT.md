@@ -26,7 +26,7 @@ Kaynak: `https://www.taskrabbit.com/`
 - Masaüstü H2: yaklaşık 30 px, 700 ağırlık.
 - Beyaz yüzeyler, düşük gölge ve kontrollü yuvarlatma.
 
-## Ankara Usta’ya alınan ürün kalıpları
+## Orkestra’ya alınan ürün kalıpları
 
 - İlk ekranda problem odaklı arama.
 - Hizmeti bilmeyen kullanıcı için doğal dil girişi.
@@ -37,7 +37,7 @@ Kaynak: `https://www.taskrabbit.com/`
 
 ## Bilerek farklılaştırılan alanlar
 
-- Taskrabbit marka yeşili yerine Ankara Usta’nın petrol/orman yeşili ve bakır vurgusu.
+- Taskrabbit marka yeşili yerine Orkestra’nın petrol/orman yeşili ve bakır vurgusu.
 - Taskrabbit logosu ve tavşan imgesi yerine özgün `U` işareti.
 - “Hemen görevli seç” modeline ek olarak teklif ve keşif yolları.
 - Yalnızca bitmiş sonuç yerine öncesi–sonrası iş günlüğü.

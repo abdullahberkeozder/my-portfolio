@@ -20,7 +20,7 @@ const motifs: Motif[] = [
   { id: 'proofstitch', no: '04', name: 'Kanıt Dikişi', memory: 'Önce ve sonra yüzeyleri kayıt çizgisi birleştirir.', product: 'İş günlüğü, fotoğraf ve müşteri kabulü', mechanism: 'Devamlılık + seri konum etkisi' },
   { id: 'offerorbit', no: '05', name: 'Teklif Yörüngesi', memory: 'Üç seçenek aynı şeffaf karar merkezine yaklaşır.', product: 'Teklif karşılaştırma ve kullanıcı seçimi', mechanism: 'Seçenek ayrıştırma + odak' },
   { id: 'scopeframe', no: '06', name: 'Kapsam Çerçevesi', memory: 'Dört açık köşe işi sıkıştırmadan sınırlar.', product: 'Dahil, hariç, süre ve malzeme kapsamı', mechanism: 'Çerçeveleme + açık sınır' },
-  { id: 'craftjoint', no: '07', name: 'Bağ Geçmesi / Modüler Halka', memory: 'İki yapım parçası birbirine geçerek tek ve tekrar edilebilir Ankara Usta halkasını kurar.', product: 'Müşteri ihtiyacı + usta becerisi → eşleşme köprüsü → doğrulanmış iş', mechanism: 'Şekil belleği + mevcut hedefle uyum + kontrollü izolasyon' },
+  { id: 'craftjoint', no: '07', name: 'Bağ Geçmesi / Modüler Halka', memory: 'İki yapım parçası birbirine geçerek tek ve tekrar edilebilir Orkestra halkasını kurar.', product: 'Müşteri ihtiyacı + usta becerisi → eşleşme köprüsü → doğrulanmış iş', mechanism: 'Şekil belleği + mevcut hedefle uyum + kontrollü izolasyon' },
   { id: 'trustbeacon', no: '08', name: 'Güven Feneri', memory: 'Doğrulama karesi çevreye ölçülü sinyal yayar.', product: 'Belge, referans, adres ve iş doğrulaması', mechanism: 'Merkez–çevre hiyerarşisi' },
   { id: 'workrhythm', no: '09', name: 'İş Ritmi', memory: 'Tekrarlanan aşamalar dolu bir son işaretinde durur.', product: 'Talep, teklif, keşif, iş ve garanti adımları', mechanism: 'Ritim + görünür durma işareti' },
   { id: 'signature06', no: '10', name: '06 Koordinatı', memory: 'Ankara kodu, rota çizgisi ve usta düğümü birleşir.', product: 'Yerel Ankara kimliği ve hizmet bölgesi', mechanism: 'Anlamsal kodlama + yer belleği' },
@@ -53,7 +53,7 @@ export default function MotifLab() {
 
   return <main className={styles.page}>
     <header className={styles.header}>
-      <Link href="/" className={styles.brand}><span>∞</span> Ankara Usta</Link>
+      <Link href="/" className={styles.brand}><span>∞</span> Orkestra</Link>
       <div><a href="/inspiration">18 ilham örneği ↗</a><span>GÖRSEL SİSTEM / 02</span><b>Arka plan örgü laboratuvarı</b></div>
     </header>
 
@@ -101,6 +101,6 @@ export default function MotifLab() {
       <div className={styles.researchGrid}>{research.map(([name, decision], index) => <article key={name}><span>{String(index + 1).padStart(2, '0')}</span><div><h3>{name}</h3><p>{decision}</p></div></article>)}</div>
     </section>
 
-    <footer className={styles.footer}><b>ANKARA USTA</b><span>Örgü sistemi · V3</span><a href="#top">Yukarı dön ↑</a></footer>
+    <footer className={styles.footer}><b>ORKESTRA</b><span>Örgü sistemi · V3</span><a href="#top">Yukarı dön ↑</a></footer>
   </main>;
 }

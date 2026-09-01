@@ -1,4 +1,4 @@
-# AI Website Cloner Template — Ankara Usta Değerlendirmesi
+# AI Website Cloner Template — Orkestra Değerlendirmesi
 
 ## Depo ne yapıyor?
 
@@ -32,14 +32,14 @@
 ## Riskler ve sınırlar
 
 - Varsayılan “pixel-perfect” ve gerçek varlık indirme yaklaşımı üçüncü taraf marka, telif ve ticari görünüm riskleri doğurur.
-- Gerçek metin ve görsellerin alınması Ankara Usta için doğru değildir; özgün metin, fotoğraf ve marka kullanılmalıdır.
+- Gerçek metin ve görsellerin alınması Orkestra için doğru değildir; özgün metin, fotoğraf ve marka kullanılmalıdır.
 - Çok ajanlı worktree süreci küçük/orta bir MVP için gereğinden ağır olabilir.
 - Varsayılan kapsam backend, gerçek kimlik doğrulama ve erişilebilirlik denetimi içermez.
-- Depo Node.js 24+ ve Vercel odaklıdır; Ankara Usta mevcut Vinext/Sites yapısını korumalıdır.
+- Depo Node.js 24+ ve Vercel odaklıdır; Orkestra mevcut Vinext/Sites yapısını korumalıdır.
 
 ## Entegrasyon kararı
 
-Depoyu proje temeli olarak kopyalamıyoruz. Mevcut Ankara Usta uygulamasının çalışan Vinext yapısı korunuyor. Depodan şu yöntemler uyarlanıyor:
+Depoyu proje temeli olarak kopyalamıyoruz. Mevcut Orkestra uygulamasının çalışan Vinext yapısı korunuyor. Depodan şu yöntemler uyarlanıyor:
 
 - Araştırma çıktılarının `docs/research` altında tutulması.
 - Tasarım tokenları, sayfa iskeleti, etkileşimler ve bileşenlerin ayrı belgelenmesi.

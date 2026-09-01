@@ -1,22 +1,22 @@
-# Ankara Usta — Mahalle Halkası Marka Sistemi
+# Orkestra — Mahalle Halkası Marka Sistemi
 
 Tarih: 25 Ağustos 2026  
 Durum: Tasarım geliştirme önerisi; henüz ana sayfaya uygulanmadı
 
 ## Etik hedef
 
-Hedef kullanıcıyı kompulsif kullanıma veya bağımlılığa yöneltmek değildir. Ankara Usta, ihtiyaç anında kolay hatırlanan, güvenilir ve tanınabilir ilk seçenek olmalıdır. Bunun yolu gizli mesajlar, yapay aciliyet veya değişken ödül mekanizmaları değil; özgün ve tutarlı bir marka varlığının yararlı ürün deneyimiyle tekrar tekrar eşleşmesidir.
+Hedef kullanıcıyı kompulsif kullanıma veya bağımlılığa yöneltmek değildir. Orkestra, ihtiyaç anında kolay hatırlanan, güvenilir ve tanınabilir ilk seçenek olmalıdır. Bunun yolu gizli mesajlar, yapay aciliyet veya değişken ödül mekanizmaları değil; özgün ve tutarlı bir marka varlığının yararlı ürün deneyimiyle tekrar tekrar eşleşmesidir.
 
 Araştırmalar, şekil temelli ayırt edici marka varlıklarının hızlı tanınmayı düşük bilişsel çabayla destekleyebildiğini; tekrarlı karşılaşmanın aşinalık ve beğeniyi etkileyebildiğini gösteriyor. Ancak salt tekrar yeterli değildir ve etkiler bağlama göre değişebilir. Motif, her karşılaşmada güvenilir bir ürün davranışıyla desteklenmelidir.
 
 Kaynaklar: [Shape-based distinctive assets](https://www.tandfonline.com/doi/full/10.1080/02650487.2026.2637295), [mere exposure and consumer products](https://www.sciencedirect.com/science/article/pii/S0001691813001753), [brand familiarity and visual search](https://acr.memberclicks.net/assets/docs/vol49.pdf).
 
-## Ana fikir: Ankara Usta Bağ Halkası
+## Ana fikir: Orkestra Bağ Halkası
 
 Mahalle halkası rastgele eşmerkezli dairelerden çıkarılıp anlamı olan tek bir imzaya dönüştürülmelidir:
 
 - **Açık halka:** Kullanıcının henüz tamamlanmamış işi.
-- **Köprü çizgisi:** Ankara Usta'nın müşteriyle ustayı bağlaması.
+- **Köprü çizgisi:** Orkestra'nın müşteriyle ustayı bağlaması.
 - **Altı çevre düğümü:** Ankara'nın `06` koduna sessiz bir gönderme; arayüzde “06” yazılmaz.
 - **Bir kare düğüm:** Usta, iş ve somut uygulama.
 - **Bir iç nokta:** Müşterinin mahallesini temsil eden yaklaşık merkez; gerçek konum değildir.
@@ -78,7 +78,7 @@ Risk: Yaygın ilerleme göstergelerine benzeyebilir; tek başına markaya aitli�
 
 Motifin başarısı “kullanıcı bağımlılığı” ile değil şu metriklerle ölçülmelidir:
 
-- Logosuz motif gösteriminde Ankara Usta'yı doğru hatırlama oranı.
+- Logosuz motif gösteriminde Orkestra'yı doğru hatırlama oranı.
 - Beş saniyelik ilk izlenimde “yerel”, “güvenilir”, “iş takibi” çağrışımı.
 - Hero aramasını bulma süresi; motif eklendikten sonra kötüleşmemeli.
 - Mobil ve masaüstünde algılanan görsel karmaşıklık.

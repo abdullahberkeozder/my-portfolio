@@ -140,7 +140,7 @@ public sealed class NotificationTemplateRenderer
         var safeEvent = HtmlEncoder.Default.Encode(EventLabel(eventType));
 
         return new RenderedEmail(
-            $"Ankara Usta iş güncellemesi: {EventLabel(eventType)}",
+            $"Orkestra iş güncellemesi: {EventLabel(eventType)}",
             $"<h1>İşinizde yeni bir gelişme var</h1><p>{safeEvent}</p><p>İş kaydı: <strong>{safeJobId}</strong></p><p>Akış sırası: {HtmlEncoder.Default.Encode(sequence)}</p>",
             $"İşinizde yeni bir gelişme var\n{EventLabel(eventType)}\nİş kaydı: {jobId}\nAkış sırası: {sequence}");
     }

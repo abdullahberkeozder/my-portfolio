@@ -28,7 +28,7 @@ export default function WorkReceipt({service,answers,questions,district,neighbor
     <div className="premium-receipt-printer" aria-hidden="true"><span/></div>
     <article className="premium-receipt-paper">
       <header className="premium-receipt-header">
-        <div className="premium-receipt-brand"><OrchestraLogo size={20} variant="emerald"/><div><strong>ANKARA USTA</strong><span>İş kapsam fişi</span></div></div>
+        <div className="premium-receipt-brand"><OrchestraLogo size={20} variant="emerald"/><div><strong>ORKESTRA</strong><span>İş kapsam fişi</span></div></div>
         <div className="premium-receipt-state"><i aria-hidden="true"/>{isComplete?'Onaya hazır':'Taslak'}</div>
       </header>
 

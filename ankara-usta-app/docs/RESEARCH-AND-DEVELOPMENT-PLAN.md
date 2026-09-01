@@ -1,4 +1,4 @@
-# Ankara Usta — Araştırma ve Geliştirme Planı
+# Orkestra — Araştırma ve Geliştirme Planı
 
 Sürüm: 1.1
 Tarih: 26 Ağustos 2026

@@ -32,7 +32,7 @@ function Shape({id,large=false}:{id:string;large?:boolean}){return <div classNam
 export default function ConceptsPage(){
   const [active,setActive]=useState(concepts[0]);
   return <main className={styles.page}>
-    <header className={styles.header}><Link href="/" className={styles.brand}><span>∞</span> Ankara Usta</Link><nav><a href="/inspiration">18 ilham örneği</a><a href="/motif-lab">Örgü laboratuvarı</a><b>Centro Prodotto / 05</b></nav></header>
+    <header className={styles.header}><Link href="/" className={styles.brand}><span>∞</span> Orkestra</Link><nav><a href="/inspiration">18 ilham örneği</a><a href="/motif-lab">Örgü laboratuvarı</a><b>Centro Prodotto / 05</b></nav></header>
     <section className={styles.intro}><div><span>UZMAN UX/UI DEĞERLENDİRMESİ</span><h1>Önce neye<br/><em>bakmalıyız?</em></h1></div><p>İyi görünen şekil yeterli değil. Seçilecek ürün kimliği, müşterinin işini kolaylaştırmalı; markayı hatırlatmalı ve ana ürün akışının her aşamasına taşınabilmelidir.</p></section>
     <section className={styles.gates}>{gates.map(([no,title,text])=><article key={no}><span>{no}</span><div><b>{title}</b><p>{text}</p></div></article>)}</section>
     <section className={styles.manifesto}><span>ITALIAN INDUSTRIAL DESIGN LENS</span><div><b>Form + işlev</b><b>Pozitif + negatif hacim</b><b>Gerilim + sakin yüzey</b><b>İmza + tutarlılık</b></div><p>Otomobil biçimi veya Ferrari görsel kimliği kopyalanmadı. Referans, keyfî dekor yerine araştırma ve işlevden doğan heykelsi form yaklaşımıdır.</p></section>
@@ -42,6 +42,6 @@ export default function ConceptsPage(){
     </section>
     <section className={styles.designs}><div className={styles.title}><span>BEŞ ÜRÜN YÖNÜ</span><h2>Aynı araştırma,<br/>beş ayrı karakter.</h2></div><div className={styles.grid}>{concepts.map(item=><button type="button" onClick={()=>setActive(item)} className={active.id===item.id?styles.selected:''} key={item.id}><div className={styles.visual}><Shape id={item.id}/><span>{item.no}</span></div><div className={styles.cardTitle}><div><h3>{item.name}</h3><p>{item.subtitle}</p></div><b>↗</b></div><dl><div><dt>Ürün tezi</dt><dd>{item.thesis}</dd></div><div><dt>UX rolü</dt><dd>{item.ux}</dd></div><div><dt>Hareket</dt><dd>{item.motion}</dd></div><div><dt>İmza</dt><dd>{item.signature}</dd></div><div><dt>Risk</dt><dd>{item.risk}</dd></div></dl></button>)}</div></section>
     <section className={styles.recommendation}><span>UZMAN ÖN SEÇİMİ</span><h2>Casa Interlink</h2><p>Ev sonucu, H Interlink geçmesi ve ürün boyunca genişleyebilecek modüler yapı aynı formda buluşuyor. İkinci prototip adayı Telaio 06; en sakin premium alternatif ise Scocca U.</p><a href="#top">Seçili tasarımı tekrar gör ↑</a></section>
-    <footer className={styles.footer}><b>Ankara Usta · Ürün kimliği çalışması</b><span>5 yön / 10 UX kapısı</span><a href="/inspiration">Araştırmaya dön →</a></footer>
+    <footer className={styles.footer}><b>Orkestra · Ürün kimliği çalışması</b><span>5 yön / 10 UX kapısı</span><a href="/inspiration">Araştırmaya dön →</a></footer>
   </main>
 }

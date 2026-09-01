@@ -1,4 +1,4 @@
-# Ankara Usta Notification Worker
+# Orkestra Notification Worker
 
 This ASP.NET Core service connects the marketplace's PostgreSQL transactional outbox to the Resend email API. It claims email deliveries through service-role-only Supabase RPCs, resolves the recipient through Supabase Auth Admin, sends an idempotent transactional email, and reports success or failure to the existing retry state machine.
 

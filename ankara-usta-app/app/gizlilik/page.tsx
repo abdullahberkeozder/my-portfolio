@@ -1,8 +1,8 @@
 import InfoPage from '../components/InfoPage';
 
 export const metadata = {
-  title: 'Gizlilik Politikası | Ankara Usta',
-  description: 'Ankara Usta kişisel verilerin korunması, medya yayın izinleri ve veri güvenliği ilkeleri.',
+  title: 'Gizlilik Politikası | Orkestra',
+  description: 'Orkestra kişisel verilerin korunması, medya yayın izinleri ve veri güvenliği ilkeleri.',
 };
 
 export default function PrivacyPage() {
@@ -10,7 +10,7 @@ export default function PrivacyPage() {
     <InfoPage
       eyebrow="GİZLİLİK POLİTİKASI & KVKK"
       title="Bilgileriniz ve evinizin mahremiyeti işin gerektirdiği ölçüde korunur."
-      intro="Ankara Usta; hesap, talep, teklif, iş günlüğü ve uyuşmazlık kayıtlarını 6698 sayılı KVKK ve ilgili mevzuat uyarınca güvenle işler."
+      intro="Orkestra; hesap, talep, teklif, iş günlüğü ve uyuşmazlık kayıtlarını 6698 sayılı KVKK ve ilgili mevzuat uyarınca güvenle işler."
       sections={[
         {
           title: '1. Hesap, İletişim ve Konum Verileri',

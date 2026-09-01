@@ -20,11 +20,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Orkestra | Başkentin Zanaat Platformu',
     description: 'Sorunu anlatın; doğru hizmeti, şeffaf kapsamı ve Ankara’daki başvurusu onaylanmış ustayı birlikte bulalım.',
-    images: ['/ankara-usta-social-preview.png'],
+    images: ['/orkestra-social-preview.png'],
   },
   twitter: {
     card: 'summary_large_image',
-    images: ['/ankara-usta-social-preview.png'],
+    images: ['/orkestra-social-preview.png'],
   },
   icons: {
     icon: '/favicon.svg',

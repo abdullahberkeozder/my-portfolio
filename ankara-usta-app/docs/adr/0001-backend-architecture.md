@@ -6,7 +6,7 @@
 
 ## Context
 
-Ankara Usta must support a public catalog, guided customer requests, tradesperson onboarding, matching, quotes, job tracking, trust evidence, and moderation. The pilot is limited to Ankara and will initially be maintained by a small development team. Premature service separation would add deployment, consistency, tracing, and operational overhead before the domain boundaries are stable.
+Orkestra must support a public catalog, guided customer requests, tradesperson onboarding, matching, quotes, job tracking, trust evidence, and moderation. The pilot is limited to Ankara and will initially be maintained by a small development team. Premature service separation would add deployment, consistency, tracing, and operational overhead before the domain boundaries are stable.
 
 ## Decision
 

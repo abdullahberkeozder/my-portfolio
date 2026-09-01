@@ -2,13 +2,13 @@
 
 Selected product-oriented applications covering full-stack web development, secure data workflows, automated testing, responsive interface design, and documented architecture decisions.
 
-## Ankara Usta — Local Services Marketplace
+## Orkestra — Local Services Marketplace
 
 > A production-oriented marketplace foundation built with Next.js, TypeScript, Supabase/PostgreSQL, ASP.NET Core, role-based access, API routes, state machines, automated tests, GitHub Actions, and written architecture decisions.
 
 [Live demo](https://ankara-usta.sevvaltuhafiye154322.chatgpt.site) · [Project documentation](./ankara-usta-app/README.md) · [Architecture decisions](./ankara-usta-app/docs/adr/) · [Requirements traceability](./ankara-usta-app/docs/engineering/REQUIREMENTS-TRACEABILITY.md)
 
-Ankara Usta helps customers describe a household problem, identify the correct service, create a structured request, compare offers, and manage the resulting job. Tradespeople apply with service regions and evidence; administrators review applications, documents, disputes, and moderation decisions.
+Orkestra helps customers describe a household problem, identify the correct service, create a structured request, compare offers, and manage the resulting job. Tradespeople apply with service regions and evidence; administrators review applications, documents, disputes, and moderation decisions.
 
 ### Architecture overview
 

@@ -1,4 +1,4 @@
-# Ankara Usta — Tasarımda Akılda Kalıcılık İlkeleri
+# Orkestra — Tasarımda Akılda Kalıcılık İlkeleri
 
 Tarih: 25 Ağustos 2026  
 Kapsam: Web arayüzü, Mahalle/Bağ Halkası, renk, yerleşim, hareket ve marka sürekliliği  
@@ -6,20 +6,20 @@ Durum: Araştırma ve tasarım stratejisi; henüz yeni motif ana sayfaya uygulan
 
 ## 1. Araştırma sorusu
 
-Ankara Usta'nın görsel kimliği, kullanıcı açıkça dikkat etmese bile ihtiyaç anında markayı daha kolay hatırlamasına nasıl yardım edebilir?
+Orkestra'nın görsel kimliği, kullanıcı açıkça dikkat etmese bile ihtiyaç anında markayı daha kolay hatırlamasına nasıl yardım edebilir?
 
 Hedef “kullanıcıyı bağımlı kılmak” değildir. Hedef:
 
-- Evde bir iş çıktığında Ankara Usta'nın kolay hatırlanması.
+- Evde bir iş çıktığında Orkestra'nın kolay hatırlanması.
 - Markanın logosuz bir yüzeyde bile ayırt edilebilmesi.
 - Görsel varlığın güven, yerellik ve iş takibiyle eşleşmesi.
 - Hatırlanırlığın kullanılabilirlik veya kullanıcı özerkliği pahasına oluşmaması.
 
 ## 2. Temel bulgu: renk tek başına yeterli değil
 
-2026 tarihli, 21 kategori ve dört ülkede 1.162 ayırt edici marka varlığını inceleyen çalışma; şekil temelli varlıkların ortalamada renk varlıklarından daha yüksek tanınırlık ve benzersizlik ürettiğini bildiriyor. Çalışmadaki şekil temelli varlıklar `%40` fame ve `%71` uniqueness; renk varlıkları `%12` fame ve `%39` uniqueness ortalamalarına sahipti. Bu sonuç her marka için otomatik başarı garantisi değildir fakat Ankara Usta'nın yalnız yeşile güvenmemesi gerektiğini güçlü biçimde destekler.
+2026 tarihli, 21 kategori ve dört ülkede 1.162 ayırt edici marka varlığını inceleyen çalışma; şekil temelli varlıkların ortalamada renk varlıklarından daha yüksek tanınırlık ve benzersizlik ürettiğini bildiriyor. Çalışmadaki şekil temelli varlıklar `%40` fame ve `%71` uniqueness; renk varlıkları `%12` fame ve `%39` uniqueness ortalamalarına sahipti. Bu sonuç her marka için otomatik başarı garantisi değildir fakat Orkestra'nın yalnız yeşile güvenmemesi gerektiğini güçlü biçimde destekler.
 
-**Ankara Usta kararı:** Yeşil–beyaz–mavi sistem korunacak; asıl ayırt edici varlık, sahiplenilebilir **Bağ Halkası şekli** olacaktır.
+**Orkestra kararı:** Yeşil–beyaz–mavi sistem korunacak; asıl ayırt edici varlık, sahiplenilebilir **Bağ Halkası şekli** olacaktır.
 
 Kaynak: [Shape-based assets are strongest](https://www.tandfonline.com/doi/full/10.1080/02650487.2026.2637295).
 
@@ -122,7 +122,7 @@ Arama alanı figür, motif zemindir. Kullanıcı ilk iki saniyede motiften önce
 
 ## 12. Anlamlı mikro-hareket
 
-Hareket dikkat ve zaman içinde imza oluşturabilir; ancak sürekli animasyon dikkat tüketir. Ankara Usta'nın davranış dili “sakin tamamlanma” olmalıdır.
+Hareket dikkat ve zaman içinde imza oluşturabilir; ancak sürekli animasyon dikkat tüketir. Orkestra'nın davranış dili “sakin tamamlanma” olmalıdır.
 
 **İzin verilen hareket:**
 
@@ -164,8 +164,8 @@ Kullanıcı bir motifi güzel bulup markayı hatırlamayabilir; motifi hatırlay
 
 **Ölçülecek iki temel boyut:**
 
-- **Fame:** Motifi görenlerin ne kadarı Ankara Usta'yı hatırlıyor?
-- **Uniqueness:** Motifi Ankara Usta'ya bağlayanların ne kadarı başka markaya da bağlıyor?
+- **Fame:** Motifi görenlerin ne kadarı Orkestra'yı hatırlıyor?
+- **Uniqueness:** Motifi Orkestra'ya bağlayanların ne kadarı başka markaya da bağlıyor?
 
 Şekil temelli marka varlıkları araştırmasındaki bu iki boyut, test planının temelini oluşturmalıdır.
 
@@ -181,7 +181,7 @@ Kullanıcı bir motifi güzel bulup markayı hatırlamayabilir; motifi hatırlay
 ### Aşama 2 — Logosuz marka eşleme
 
 - Bağ Halkası logo ve marka adı olmadan gösterilir.
-- Ankara Usta, Armut, Taskrabbit ve “hiçbiri” seçenekleri sunulur.
+- Orkestra, Armut, Taskrabbit ve “hiçbiri” seçenekleri sunulur.
 - Doğru eşleme ve yanlış rakip eşleme ölçülür.
 
 ### Aşama 3 — Gecikmeli hatırlama
@@ -201,7 +201,7 @@ Akılda kalıcılık kullanıcı özerkliğine zarar vermemelidir. Dikkat yakala
 
 Kaynaklar: [Dark patterns and addictive designs](https://ojs.weizenbaum-institut.de/index.php/wjds/article/download/5_3_2/5_3_2/3341), [Beyond Dark Patterns](https://groups.csail.mit.edu/sdg/pubs/2023/dark-concepts-23.pdf).
 
-## 19. Ankara Usta için önerilen hafıza sistemi
+## 19. Orkestra için önerilen hafıza sistemi
 
 ```text
 Görsel varlık: Bağ Halkası
@@ -216,7 +216,7 @@ Sözlü eşlik: tek kısa marka vaadi
 
 ## 20. Sonuç
 
-Ankara Usta'nın akılda kalıcılığı yeni şekiller ekleyerek değil, **Bağ Halkası'nı azaltılmış, anlamlı ve tutarlı bir hafıza varlığına dönüştürerek** artırılmalıdır. En güçlü kombinasyon:
+Orkestra'nın akılda kalıcılığı yeni şekiller ekleyerek değil, **Bağ Halkası'nı azaltılmış, anlamlı ve tutarlı bir hafıza varlığına dönüştürerek** artırılmalıdır. En güçlü kombinasyon:
 
 1. Kolay işlenen basit biçim.
 2. Rakiplerden ayrışan tek kare/açık halka yapısı.
@@ -239,7 +239,7 @@ Bu ilkeler doğrulanmadan motifin her sayfaya yayılması önerilmez. İlk deney
 
 # Bölüm II — Etik Dışı ve Tartışmalı Deneylerin İncelenmesi
 
-Bu bölüm, manipülatif yöntemlerin tarihini ve kanıt düzeyini anlamak için eklenmiştir. Yöntemler Ankara Usta'ya uygulanacak öneriler değildir. Amaç, “bilinçaltı etki” veya “bağımlılık yaratan tasarım” hakkındaki popüler iddiaları gerçek bulgulardan ayırmak ve gelecekte farkında olmadan dark pattern üretilmesini önlemektir.
+Bu bölüm, manipülatif yöntemlerin tarihini ve kanıt düzeyini anlamak için eklenmiştir. Yöntemler Orkestra'ya uygulanacak öneriler değildir. Amaç, “bilinçaltı etki” veya “bağımlılık yaratan tasarım” hakkındaki popüler iddiaları gerçek bulgulardan ayırmak ve gelecekte farkında olmadan dark pattern üretilmesini önlemektir.
 
 ## 21. Vicary'nin sözde sinema deneyi
 
@@ -255,7 +255,7 @@ Karremans, Stroebe ve Claus'un 2006 deneyinde katılımcılara görsel görev s�
 
 **Sınırlamalar:** Laboratuvar tercihi gerçek satın alma davranışı değildir; etkiler küçük, koşullu ve tekrarlanabilirlik tartışmalarına açıktır. Bir kullanıcıda olmayan ihtiyacı güvenilir biçimde yaratabildiğini göstermez.
 
-**Ankara Usta açısından:** Algı eşiği altı mesaj veya gizli görsel yerleştirme bilimsel olarak sağlam bir marka stratejisi değildir ve kullanıcı özerkliğiyle bağdaşmaz.
+**Orkestra açısından:** Algı eşiği altı mesaj veya gizli görsel yerleştirme bilimsel olarak sağlam bir marka stratejisi değildir ve kullanıcı özerkliğiyle bağdaşmaz.
 
 Kaynaklar: [Karremans ve arkadaşları](https://www.sciencedirect.com/science/article/abs/pii/S0022103105001496), [subliminal reklamın çalışma koşulları ve sınırları](https://www.sciencedirect.com/science/article/abs/pii/S1057740810001397).
 
@@ -264,7 +264,7 @@ Kaynaklar: [Karremans ve arkadaşları](https://www.sciencedirect.com/science/ar
 Priming çalışmalarında bir uyaranın sonraki değerlendirme veya tercihle ilişkilendirildiği deneyler vardır. En önemli ayrım şudur: bu etkiler çoğu zaman kişinin zaten taşıdığı hedef, ihtiyaç veya çağrışımı kısa süreli erişilebilir hale getirir; yeni ve kalıcı bir amaç yaratmaz.
 
 **Yanlış çıkarım:** “Arka plana anahtar şekli koyarsak herkes usta çağırmak ister.”  
-**Daha doğru çıkarım:** Ev sorunu yaşayan kullanıcı, tutarlı bir marka işaretini zamanla Ankara Usta ile eşleştirebilir. Bu olağan marka öğrenmesidir; algı eşiği altı yönlendirme gerektirmez.
+**Daha doğru çıkarım:** Ev sorunu yaşayan kullanıcı, tutarlı bir marka işaretini zamanla Orkestra ile eşleştirebilir. Bu olağan marka öğrenmesidir; algı eşiği altı yönlendirme gerektirmez.
 
 ## 24. Sahte kıtlık ve sahte aciliyet deneyleri
 
@@ -272,7 +272,7 @@ E-ticaret arayüzleri üzerinde yapılan çalışmalar; geri sayım, “yalnız 
 
 2019'daki geniş ölçekli tarama, yaklaşık 11 bin alışveriş sitesindeki 53 bin ürün sayfasında 1.818 dark pattern örneği ve 15 örüntü türü tespit etti. Araştırma bu örüntülerin varlığını gösterir; tüm örüntülerin eşit derecede etkili olduğunu kanıtlamaz.
 
-**Ankara Usta açısından yasak örnekler:**
+**Orkestra açısından yasak örnekler:**
 
 - “Mahallenizde yalnız bir usta kaldı” mesajının gerçek veri olmadan gösterilmesi.
 - Talebi tamamlatmak için sahte geri sayım.
@@ -285,7 +285,7 @@ Kaynak: [Dark Patterns at Scale](https://doi.org/10.1145/3359183).
 
 Dark pattern deneylerinde istenen seçeneğin büyük, renkli veya varsayılan; kullanıcının yararına olan çıkışın küçük, soluk veya çok adımlı sunulması incelenmiştir. Luguri ve Strahilevitz'in deneyleri, hafif ve saldırgan dark pattern koşullarının kabul/katılım davranışını etkileyebildiğini; daha saldırgan örüntülerin kullanıcı refahı ve rahatsızlık açısından olumsuz sonuçlar üretebildiğini tartışır.
 
-**Ankara Usta açısından riskler:**
+**Orkestra açısından riskler:**
 
 - En pahalı teklifi yeşil “önerilen” olarak öne çıkarmak.
 - Usta seçmeden geri dönmeyi görünmez yapmak.
@@ -299,7 +299,7 @@ Kaynak: [Shining a Light on Dark Patterns](https://papers.ssrn.com/sol3/Delivery
 
 Sosyal medya ve oyun tasarımında ödülün ne zaman geleceğinin belirsiz olması, sosyal onay, karşılıklılık ve doğal durma noktalarının kaldırılması kompulsif kullanımla ilişkilendirilmiştir. “Beğeni geldi mi?”, “yeni içerik var mı?” veya rastlantısal ödül beklentisi tekrar kontrol davranışını besleyebilir.
 
-Bu mekanizma bir hizmet pazaryeri için ürün gereksinimi değildir. Ankara Usta'nın kullanım sıklığı doğal olarak düşüktür; kullanıcı yalnız ihtiyacı olduğunda gelmelidir.
+Bu mekanizma bir hizmet pazaryeri için ürün gereksinimi değildir. Orkestra'nın kullanım sıklığı doğal olarak düşüktür; kullanıcı yalnız ihtiyacı olduğunda gelmelidir.
 
 **Uygulanmaması gerekenler:**
 
@@ -315,21 +315,21 @@ Kaynaklar: [Ethics of the Attention Economy](https://doi.org/10.1017/beq.2020.32
 
 Sosyal kanıt, gerçek ve bağlama uygun olduğunda karar desteği sağlayabilir. Dark pattern'e dönüşmesi; sayıların uydurulması, örneklem büyüklüğünün saklanması, olumsuz yorumların sistematik gizlenmesi veya komşuluk baskısının kullanılmasıyla gerçekleşir.
 
-**Ankara Usta için izin verilen:** “Bu usta Çankaya'da 12 doğrulanmış platform işi tamamladı” — yalnız gerçek hesaplanan veriyse.  
+**Orkestra için izin verilen:** “Bu usta Çankaya'da 12 doğrulanmış platform işi tamamladı” — yalnız gerçek hesaplanan veriyse.
 **İzin verilmeyen:** “Mahallenizde herkes bu ustayı seçiyor” — ölçüm ve bağlam yoksa.
 
 ## 28. Kayıp korkusu ve çerçeveleme
 
 Aynı seçenek, “kazanacağınız fayda” veya “kaybedeceğiniz fırsat” olarak çerçevelendiğinde farklı değerlendirilebilir. Arayüzler kayıp korkusunu abonelik, sigorta, ek hizmet ve iptal kararlarında kullanabilir.
 
-**Ankara Usta açısından manipülatif örnek:** “Şimdi seçmezseniz güvenilir usta bulma şansınızı kaybedeceksiniz.”  
+**Orkestra açısından manipülatif örnek:** “Şimdi seçmezseniz güvenilir usta bulma şansınızı kaybedeceksiniz.”
 **Şeffaf alternatif:** “Teklifler 48 saat geçerlidir; süre, ustanın takvim uygunluğuna göre belirlenmiştir.”
 
 ## 29. Varsayılan seçim ve sürtünme asimetrisi
 
 Varsayılanlar kullanıcı davranışını güçlü biçimde yönlendirebilir. Sorun, varsayılanın kullanıcı yararı yerine platform çıkarı için seçilmesi ve değiştirme yolunun zorlaştırılmasıdır.
 
-**Ankara Usta kırmızı çizgileri:**
+**Orkestra kırmızı çizgileri:**
 
 - Pazarlama iletişimi varsayılan kapalı.
 - Fotoğrafı herkese açık portföye ekleme varsayılan kapalı.
@@ -339,13 +339,13 @@ Varsayılanlar kullanıcı davranışını güçlü biçimde yönlendirebilir. S
 
 ## 30. Sonsuz kaydırma, otomatik oynatma ve durma işaretlerinin kaldırılması
 
-Bu yöntemler içerik tüketiminde oturum süresini artırmak için kullanılmıştır. Kullanıcı “bitti” sinyalini alamadığında kullanımı sonlandırma kararı zorlaşır. Ankara Usta'nın usta listesi ve teklif ekranları sınırlı, açıklanabilir ve karşılaştırılabilir olmalıdır.
+Bu yöntemler içerik tüketiminde oturum süresini artırmak için kullanılmıştır. Kullanıcı “bitti” sinyalini alamadığında kullanımı sonlandırma kararı zorlaşır. Orkestra'nın usta listesi ve teklif ekranları sınırlı, açıklanabilir ve karşılaştırılabilir olmalıdır.
 
 **Karar:** En fazla üç teklif karşılaştırması; sayfalı usta dizini; açık “tüm sonuçları gördünüz” durumu; otomatik oynayan iş videoları yok.
 
 ## 31. Etki–risk değerlendirme matrisi
 
-| Yöntem | Araştırma durumu | Kısa vadeli etki ihtimali | Uzun vadeli marka riski | Ankara Usta kararı |
+| Yöntem | Araştırma durumu | Kısa vadeli etki ihtimali | Uzun vadeli marka riski | Orkestra kararı |
 |---|---|---:|---:|---|
 | Subliminal mesaj | Koşullu, küçük, tartışmalı | Düşük/belirsiz | Çok yüksek | Kullanılmaz |
 | Tutarlı şekil tekrarı | Destekleyici kanıt var | Orta | Düşük | Etik biçimde kullanılır |
@@ -360,7 +360,7 @@ Bu yöntemler içerik tüketiminde oturum süresini artırmak için kullanılmı
 
 ## 32. Bu araştırmadan çıkarılacak tasarım kararı
 
-Tartışmalı deneylerin ortak noktası, kısa vadeli davranışı marka güveninin ve kullanıcı özerkliğinin önüne koymalarıdır. Ankara Usta'nın iş modeli ise tekrar tekrar dikkat tüketmekten çok, seyrek fakat yüksek riskli bir ihtiyaç anında güvenilir biçimde hatırlanmaya dayanır.
+Tartışmalı deneylerin ortak noktası, kısa vadeli davranışı marka güveninin ve kullanıcı özerkliğinin önüne koymalarıdır. Orkestra'nın iş modeli ise tekrar tekrar dikkat tüketmekten çok, seyrek fakat yüksek riskli bir ihtiyaç anında güvenilir biçimde hatırlanmaya dayanır.
 
 Bu nedenle:
 

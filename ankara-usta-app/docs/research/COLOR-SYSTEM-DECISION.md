@@ -1,11 +1,11 @@
-# Ankara Usta — Renk Sistemi Kararı
+# Orkestra — Renk Sistemi Kararı
 
 Tarih: 25 Ağustos 2026  
 Durum: Kabul edildi ve ana sayfaya uygulandı
 
 ## Karar
 
-Ankara Usta, mevcut yeşil ve beyaz kimliğini koruyarak **Güven Mavisi** yardımcı renk sistemini kullanacaktır.
+Orkestra, mevcut yeşil ve beyaz kimliğini koruyarak **Güven Mavisi** yardımcı renk sistemini kullanacaktır.
 
 ## Temel roller
 

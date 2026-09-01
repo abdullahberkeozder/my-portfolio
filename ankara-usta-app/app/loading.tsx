@@ -9,7 +9,7 @@ export default function Loading() {
       <main className="system-state-shell" aria-busy="true" aria-label="Sayfa yükleniyor">
         <section className="system-state-card">
           <NeighborhoodBond variant="brand" className="system-state-mark" />
-          <span>ANKARA USTA</span>
+          <span>ORKESTRA</span>
           <h1>Bilgiler hazırlanıyor</h1>
           <p>İhtiyacınıza ait güncel kapsam ve iş kayıtları güvenli biçimde getiriliyor.</p>
           <div className="system-state-skeletons" aria-hidden="true">

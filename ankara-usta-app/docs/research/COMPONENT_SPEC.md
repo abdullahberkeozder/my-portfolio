@@ -1,8 +1,8 @@
-# Ankara Usta Ana Sayfa Bileşen Spesifikasyonu
+# Orkestra Ana Sayfa Bileşen Spesifikasyonu
 
 ## Header
 
-- Sol: özgün Ankara Usta marka işareti ve kısa vaat.
+- Sol: özgün Orkestra marka işareti ve kısa vaat.
 - Sağ: Hizmetler, Nasıl çalışır ve Usta olarak katıl.
 - Beyaz yüzey, ince alt sınır; mobilde metin bağlantıları gizlenir.
 

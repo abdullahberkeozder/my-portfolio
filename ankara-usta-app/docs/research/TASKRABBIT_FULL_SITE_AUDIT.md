@@ -66,7 +66,7 @@ Taskrabbit; şehir, hizmet ve şehir–hizmet birleşimleriyle yüzlerce SEO rot
 - Aynı hizmet hem üst düzey öne çıkanlarda hem kendi kategorisinde yer alabilir.
 - Mobilde kategori navigasyonu ve hizmet listeleri tek sütunlu, yoğun fakat hızlı taranabilir kalır.
 
-Ankara Usta karşılığı: Beş pilot kategori ana girişte; 22 hizmetin tamamı ayrı Hizmetler sayfasında kategorilere göre listelenmeli.
+Orkestra karşılığı: Beş pilot kategori ana girişte; 22 hizmetin tamamı ayrı Hizmetler sayfasında kategorilere göre listelenmeli.
 
 ## 3. Talep ve rezervasyon sihirbazı
 
@@ -76,7 +76,7 @@ Ankara Usta karşılığı: Beş pilot kategori ana girişte; 22 hizmetin tamam�
 - Başlıklar numaralı ve doğrusal ilerler; her ekranda tek baskın eylem bulunur.
 - Kullanıcı, usta listesine geçmeden önce işin kapsamını ve hizmet bölgesini belirler.
 
-Ankara Usta farkı: doğal dil sınıflandırması konumdan önce gelmeli; konum ilçe/mahalle düzeyinde alınmalı, tam adres usta seçilene kadar saklanabilir.
+Orkestra farkı: doğal dil sınıflandırması konumdan önce gelmeli; konum ilçe/mahalle düzeyinde alınmalı, tam adres usta seçilene kadar saklanabilir.
 
 ## 4. Giriş ve kayıt
 
@@ -85,7 +85,7 @@ Ankara Usta farkı: doğal dil sınıflandırması konumdan önce gelmeli; konum
 - “Continue” tek birincil eylemdir.
 - Pazaryeri içeriği ve navigasyon bu ekranda dikkat dağıtmaz.
 
-Ankara Usta karşılığı: müşteri ve usta için ortak giriş; rol seçimi kayıt sonrasında yapılmalı.
+Orkestra karşılığı: müşteri ve usta için ortak giriş; rol seçimi kayıt sonrasında yapılmalı.
 
 ## 5. Usta başvuru sayfası
 
@@ -98,7 +98,7 @@ Ankara Usta karşılığı: müşteri ve usta için ortak giriş; rol seçimi ka
 5. Akordeon SSS.
 6. Tekrarlanan “Get started” CTA.
 
-Ankara Usta karşılığı: ilçe + hizmet seçimi, belge doğrulama, referans işleri, çalışma bölgesi, müsaitlik ve moderasyon sırası.
+Orkestra karşılığı: ilçe + hizmet seçimi, belge doğrulama, referans işleri, çalışma bölgesi, müsaitlik ve moderasyon sırası.
 
 ## 6. Şehir ve bölge mimarisi
 
@@ -113,7 +113,7 @@ Ankara Usta karşılığı: ilçe + hizmet seçimi, belge doğrulama, referans i
 - Şehirdeki bütün hizmetlerin kart/listesi.
 - Her hizmette tekrarlanan “Book Now”.
 
-Ankara Usta karşılığı: tek şehir nedeniyle şehir dizini gereksizdir. Bunun yerine `/ankara/cankaya`, `/ankara/kecioren` gibi ilçe sayfaları ve ilçe–hizmet kombinasyonları kullanılabilir.
+Orkestra karşılığı: tek şehir nedeniyle şehir dizini gereksizdir. Bunun yerine `/ankara/cankaya`, `/ankara/kecioren` gibi ilçe sayfaları ve ilçe–hizmet kombinasyonları kullanılabilir.
 
 ## 7. Yakındaki hizmetler ve yerel hizmet detayı
 
@@ -135,7 +135,7 @@ Ankara Usta karşılığı: tek şehir nedeniyle şehir dizini gereksizdir. Bunu
 10. Benzer ve ilişkili hizmet bağlantıları.
 11. Uzun, SEO odaklı açıklayıcı içerik.
 
-Ankara Usta karşılığı: posta kodu yerine ilçe/mahalle; usta kartında aynı ilçe iş sayısı, zamanında gelme, tekrar çağrılma ve doğrulanmış öncesi–sonrası bulunmalı.
+Orkestra karşılığı: posta kodu yerine ilçe/mahalle; usta kartında aynı ilçe iş sayısı, zamanında gelme, tekrar çağrılma ve doğrulanmış öncesi–sonrası bulunmalı.
 
 ## 8. Fiyat rehberleri
 
@@ -144,14 +144,14 @@ Ankara Usta karşılığı: posta kodu yerine ilçe/mahalle; usta kartında ayn�
 - Rehberler ana kategori ve hizmete göre gruplanır.
 - Ticari dönüşümden önce fiyat belirsizliğini azaltan eğitici yüzeydir.
 
-Ankara Usta karşılığı: her hizmette dahil/hariç kapsam, tahmini süre, malzeme, keşif gereksinimi ve Ankara fiyat aralığı.
+Orkestra karşılığı: her hizmette dahil/hariç kapsam, tahmini süre, malzeme, keşif gereksinimi ve Ankara fiyat aralığı.
 
 ## 9. Elite / doğrulanmış usta seviyesi
 
 - Ayrı bir prestij programı olarak konumlandırılır.
 - Ana mesaj en yüksek puanlı ustalar ve müşterinin bu ustaları neden tercih ettiği üzerinedir.
 
-Ankara Usta karşılığı: tek Elite rozeti yerine telefon, belge, adres, referans, zamanında gelme ve sorunsuz tamamlanma göstergeleri ayrı ayrı sunulmalı.
+Orkestra karşılığı: tek Elite rozeti yerine telefon, belge, adres, referans, zamanında gelme ve sorunsuz tamamlanma göstergeleri ayrı ayrı sunulmalı.
 
 ## 10. Blog ve destek
 
@@ -169,7 +169,7 @@ Ankara Usta karşılığı: tek Elite rozeti yerine telefon, belge, adres, refer
 - Popüler kısayollar: fatura, ödeme, rezervasyon, iptal ve IKEA işleri.
 - Bulamayan kullanıcı için destek eylemi; ardından yeni iş oluşturma CTA’sı.
 
-Ankara Usta karşılığı: Müşteri, Usta, Talep/Teklif, Ödeme, Şikâyet/Uyuşmazlık ve Garanti kategorileri.
+Orkestra karşılığı: Müşteri, Usta, Talep/Teklif, Ödeme, Şikâyet/Uyuşmazlık ve Garanti kategorileri.
 
 ## Tasarım sistemi ölçümleri
 
@@ -195,7 +195,7 @@ Ankara Usta karşılığı: Müşteri, Usta, Talep/Teklif, Ödeme, Şikâyet/Uyu
 
 ## Ana sayfaya uyarlanması gereken yapı
 
-Araştırma tamamlandıktan sonra Ankara Usta ana sayfası şu sırayla yeniden kurulmalıdır:
+Araştırma tamamlandıktan sonra Orkestra ana sayfası şu sırayla yeniden kurulmalıdır:
 
 1. Sade header: Hizmetler, Nasıl çalışır, Giriş, Usta olarak katıl.
 2. Büyük doğal dil araması ve sorun örnekleri.

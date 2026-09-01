@@ -209,10 +209,10 @@ export default function TradespersonApplicationPage() {
 
   return (
     <main className="account-shell tradesperson-application">
-      <Link className="account-back" href="/">← Ankara Usta Ana Sayfa</Link>
+      <Link className="account-back" href="/">← Orkestra Ana Sayfa</Link>
       <form className="application-card" onSubmit={submit}>
         <span className="application-kicker">ZANAATKAR & USTA AĞI</span>
-        <h1>Ankara Usta Ağına Katılın</h1>
+        <h1>Orkestra Ağına Katılın</h1>
         <p>Uzmanlığınızı ve hizmet bölgelerinizi tanımlayın. Formdaki tüm tercihleriniz bu cihazda otomatik taslak olarak saklanır.</p>
 
         <div className="application-progress-wrapper">

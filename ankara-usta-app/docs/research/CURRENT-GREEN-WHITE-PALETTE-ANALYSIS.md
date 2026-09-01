@@ -1,4 +1,4 @@
-# Ankara Usta — Mevcut Yeşil ve Beyazı Koruyan Renk Analizi
+# Orkestra — Mevcut Yeşil ve Beyazı Koruyan Renk Analizi
 
 Tarih: 25 Ağustos 2026  
 Durum: Karar araştırması; uygulamaya alınmadı
@@ -95,6 +95,6 @@ Yeşil ana eylemi, mavi sınıflandırma sonucu ve güvenlik bilgisini, bakır i
 
 ## Sonuç
 
-Birinci öneri mevcut tasarımı en az bozarak Ankara Usta'ya özgü bir imza ekler. İkinci öneri içerik ve zanaat hikâyesini güçlendirir. Üçüncü öneri ise sınıflandırma, risk uyarıları ve süreç ekranlarında en açık semantik ayrımı sağlar.
+Birinci öneri mevcut tasarımı en az bozarak Orkestra'ya özgü bir imza ekler. İkinci öneri içerik ve zanaat hikâyesini güçlendirir. Üçüncü öneri ise sınıflandırma, risk uyarıları ve süreç ekranlarında en açık semantik ayrımı sağlar.
 
 Ana sayfa için **Öneri 1**, hizmet detayları ve fiyat rehberleri için Öneri 2'nin sıcak kâğıt yüzeyi, bilgi/risk bileşenleri için Öneri 3'ün mavi semantik rengi birlikte kullanılabilir. Ancak ana tasarım sisteminde tek baskın öneri seçilecekse en güvenli tercih Öneri 1'dir.

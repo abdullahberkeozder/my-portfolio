@@ -1,8 +1,8 @@
 import InfoPage from '../components/InfoPage';
 
 export const metadata = {
-  title: 'Kullanım Koşulları | Ankara Usta',
-  description: 'Ankara Usta platformu hizmet alma, usta sorumlulukları, iş günlüğü ve kapsam kuralları.',
+  title: 'Kullanım Koşulları | Orkestra',
+  description: 'Orkestra platformu hizmet alma, usta sorumlulukları, iş günlüğü ve kapsam kuralları.',
 };
 
 export default function TermsPage() {
@@ -26,7 +26,7 @@ export default function TermsPage() {
         },
         {
           title: '4. İş Kabulü, Garanti ve Uyuşmazlık Çözümü',
-          body: 'İş bittiğinde müşteri işi yerinde kontrol ederek sistem üzerinden onay verir veya eksiklik bildirir. Teslimden itibaren usta tarafından taahhüt edilen garanti süresince oluşacak işçilik kusurları ustanın sorumluluğundadır. Çözülemeyen anlaşmazlıklarda Ankara Usta Uyuşmazlık Operasyonu devreye girer.',
+          body: 'İş bittiğinde müşteri işi yerinde kontrol ederek sistem üzerinden onay verir veya eksiklik bildirir. Teslimden itibaren usta tarafından taahhüt edilen garanti süresince oluşacak işçilik kusurları ustanın sorumluluğundadır. Çözülemeyen anlaşmazlıklarda Orkestra Uyuşmazlık Operasyonu devreye girer.',
         },
       ]}
     />

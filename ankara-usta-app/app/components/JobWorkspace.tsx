@@ -709,7 +709,7 @@ export default function JobWorkspace(props: Props) {
               {confirmAction.status === 'completed' &&
                 'İşi onayladığınızda iş günlüğü kilitlenir ve ustaya memnuniyet teyidi iletilir.'}
               {confirmAction.status === 'disputed' &&
-                'Uyuşmazlık bildirildiğinde Ankara Usta moderasyon masası devreye girer ve taraflardan kanıt istenir.'}
+                'Uyuşmazlık bildirildiğinde Orkestra moderasyon masası devreye girer ve taraflardan kanıt istenir.'}
               {confirmAction.status === 'in_progress' &&
                 'İş durumu "Devam ediyor" olarak güncellenecek.'}
               {confirmAction.status === 'awaiting_customer_approval' &&

@@ -1,8 +1,8 @@
-# Ankara Usta — Tasarım Dili, Site Şeması ve Geliştirme Stratejisi
+# Orkestra — Tasarım Dili, Site Şeması ve Geliştirme Stratejisi
 
 ## 1. Stratejik sonuç
 
-Önerilen yön yalnızca “Taskrabbit benzeri” değildir. Ankara Usta için daha savunulabilir birleşim:
+Önerilen yön yalnızca “Taskrabbit benzeri” değildir. Orkestra için daha savunulabilir birleşim:
 
 ```text
 Taskrabbit’in görev başlatma kolaylığı

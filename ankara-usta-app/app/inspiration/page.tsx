@@ -39,14 +39,14 @@ export default function InspirationPage(){
   const [filter,setFilter]=useState<(typeof filters)[number]>('Tümü');
   const shown=useMemo(()=>filter==='Tümü'?examples:examples.filter(item=>item.group===filter),[filter]);
   return <main className={styles.page}>
-    <header className={styles.header}><a href="/motif-lab" className={styles.brand}><span>∞</span> Ankara Usta</a><div><a href="/concepts">5 ürün yönü ↗</a><a href="/motif-lab">Örgü laboratuvarı</a><b>İlham araştırması / 18 örnek</b></div></header>
+    <header className={styles.header}><a href="/motif-lab" className={styles.brand}><span>∞</span> Orkestra</a><div><a href="/concepts">5 ürün yönü ↗</a><a href="/motif-lab">Örgü laboratuvarı</a><b>İlham araştırması / 18 örnek</b></div></header>
     <section className={styles.hero}><span>BAĞ GEÇMESİ / ÖN ARAŞTIRMA</span><h1>Parça nasıl<br/><em>markaya dönüşür?</em></h1><p>LEGO taklidi aramıyoruz. Modüler parçaların birleşerek ayırt edici bir işaret, hareket dili ve ölçeklenebilir ürün sistemi oluşturduğu örnekleri inceliyoruz.</p></section>
     <section className={styles.shortlist}><div><span>EN GÜÇLÜ ÜÇ YÖN</span><h2>Bağ Geçmesi için<br/>başlangıç koordinatları</h2></div><ol><li><b>Play@TED</b><span>Tek birimden büyüyen sistem</span></li><li><b>OM Mark 3D</b><span>Birleşme hareketinin anlam öğretmesi</span></li><li><b>Quilter</b><span>İki parçadan işaret ve desen üretme</span></li></ol></section>
     <nav className={styles.filters} aria-label="İlham kategorileri">{filters.map(item=><button type="button" className={filter===item?styles.active:''} onClick={()=>setFilter(item)} key={item}>{item}</button>)}</nav>
     <section className={styles.grid}>{shown.map(item=><article key={item.no}>
       <a href={item.url} target="_blank" rel="noreferrer" className={styles.preview}><MiniVisual type={item.visual}/><span>{item.no}</span><em>{item.group}</em></a>
       <div className={styles.cardHead}><div><h2>{item.name}</h2><p>{item.studio}</p></div><b>{'●'.repeat(item.relevance)}{'○'.repeat(5-item.relevance)}</b></div>
-      <dl><div><dt>Neyi incelemeli?</dt><dd>{item.lesson}</dd></div><div><dt>Ankara Usta’ya aktarım</dt><dd>{item.transfer}</dd></div><div><dt>Dikkat</dt><dd>{item.caution}</dd></div></dl>
+      <dl><div><dt>Neyi incelemeli?</dt><dd>{item.lesson}</dd></div><div><dt>Orkestra’ya aktarım</dt><dd>{item.transfer}</dd></div><div><dt>Dikkat</dt><dd>{item.caution}</dd></div></dl>
       <a className={styles.source} href={item.url} target="_blank" rel="noreferrer">Kaynağı aç ↗</a>
     </article>)}</section>
     <footer className={styles.footer}><b>18 örnek · 4 araştırma ekseni</b><span>Bir sonraki adım: üç görsel yön üretmek</span><a href="/motif-lab">Örgülere dön →</a></footer>
