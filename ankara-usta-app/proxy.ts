@@ -1,9 +1,14 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { getSupabaseConfig } from './app/lib/supabase/config';
+import { getSupabaseConfig, hasSupabaseConfig } from './app/lib/supabase/config';
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({request});
+
+  // Public discovery pages remain testable without secrets. Any route that
+  // actually needs Supabase still creates its own client and fails closed.
+  if (!hasSupabaseConfig()) return response;
+
   const {url, publishableKey} = getSupabaseConfig();
   const supabase = createServerClient(url, publishableKey, {
     cookies: {
