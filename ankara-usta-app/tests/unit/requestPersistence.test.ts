@@ -24,4 +24,11 @@ describe('request persistence validation', () => {
     expect(() => validateRequestDraft(draft)).not.toThrow();
     expect(() => validateRequestDraft(draft, true)).toThrow('Required scope answers');
   });
+
+  it('rejects expired drafts exceeding TTL', () => {
+    const expiredTimestamp = Date.now() - (8 * 24 * 60 * 60 * 1000); // 8 days ago
+    const expiredDraft = { ...validRequest, createdAt: expiredTimestamp };
+
+    expect(() => validateRequestDraft(expiredDraft)).toThrow('Draft has expired');
+  });
 });

@@ -4,9 +4,9 @@ test('customer can classify a service from the homepage', async ({ page }) => {
   await page.goto('/');
   await page.waitForLoadState('networkidle');
 
-  await expect(page.getByRole('heading', { name: /Güvenilir ustayı bul/ })).toBeVisible();
-  await page.getByRole('textbox', { name: 'Ne konuda yardıma ihtiyacınız var?' }).fill('tavandan su geliyor');
-  await page.getByRole('button', { name: 'Ara', exact: true }).click();
+  await expect(page.getByRole('heading', { name: /Her iş, doğru parçalar/ })).toBeVisible();
+  await page.getByRole('textbox', { name: 'İhtiyacınızı yazın' }).fill('tavandan su geliyor');
+  await page.getByRole('button', { name: 'Zanaatkar Bul' }).click();
 
   const classificationDialog = page.getByRole('dialog', { name: 'İhtiyacınızı doğru anladık mı?' });
   await expect(classificationDialog).toBeVisible();
@@ -15,38 +15,42 @@ test('customer can classify a service from the homepage', async ({ page }) => {
 
 test('request draft survives a page refresh and resumes at the saved step', async ({ page }) => {
   await page.goto('/');
-  const search = page.getByRole('textbox', { name: 'Ne konuda yardıma ihtiyacınız var?' });
-  await search.fill('TV duvar montajı');
+  const search = page.getByRole('textbox', { name: 'İhtiyacınızı yazın' });
+  await search.fill('TV Duvar Montajı');
   await search.press('Enter');
-  await page.getByRole('button', { name: 'Bu hizmetle devam et' }).click();
+  await page.getByRole('button', { name: /Bu Hizmetle Devam Et/i }).click();
 
   const wizard = page.getByRole('dialog', { name: 'TV Duvar Montajı' });
-  await wizard.getByLabel('32–49 inç').check();
-  await wizard.getByLabel('Beton / tuğla').check();
-  await wizard.getByLabel('Evet, hazır').check();
-  await wizard.getByRole('button', { name: 'Görsellere devam et' }).click();
-  await expect(page.getByRole('dialog', { name: 'Fotoğraf veya video ekleyin' })).toBeVisible();
+  await wizard.locator('.wizard-form-side label').filter({ hasText: '32–49 inç' }).click();
+  await wizard.getByRole('button', { name: /Sonraki soru/i }).click();
+  await wizard.locator('.wizard-form-side label').filter({ hasText: 'Beton / tuğla' }).click();
+  await wizard.getByRole('button', { name: /Sonraki soru/i }).click();
+  await wizard.locator('.wizard-form-side label').filter({ hasText: 'Evet, hazır' }).click();
+  await wizard.getByRole('button', { name: /Görsellere devam et/i }).click();
+  await expect(page.getByRole('dialog', { name: /İsterseniz fotoğraf veya video ekleyin/i })).toBeVisible();
 
   await page.reload();
-  await search.fill('TV duvar montajı');
+  await search.fill('TV Duvar Montajı');
   await search.press('Enter');
-  await page.getByRole('button', { name: 'Bu hizmetle devam et' }).click();
+  await page.getByRole('button', { name: /Bu Hizmetle Devam Et/i }).click();
 
-  await expect(page.getByRole('dialog', { name: 'Fotoğraf veya video ekleyin' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: /İsterseniz fotoğraf veya video ekleyin/i })).toBeVisible();
   await page.getByRole('button', { name: 'Geri' }).click();
-  await expect(page.getByLabel('32–49 inç')).toBeChecked();
-  await expect(page.getByLabel('Beton / tuğla')).toBeChecked();
   await expect(page.getByLabel('Evet, hazır')).toBeChecked();
+  await page.getByRole('button', { name: /Önceki soru/i }).click();
+  await expect(page.getByLabel('Beton / tuğla')).toBeChecked();
+  await page.getByRole('button', { name: /Önceki soru/i }).click();
+  await expect(page.getByLabel('32–49 inç')).toBeChecked();
 });
 
 test('classification modal supports keyboard entry, focus, and Escape dismissal', async ({ page }) => {
   await page.goto('/');
 
   for (let index = 0; index < 12; index += 1) {
-    if (await page.getByRole('textbox', { name: 'Ne konuda yardıma ihtiyacınız var?' }).evaluate((element) => element === document.activeElement)) break;
+    if (await page.getByRole('textbox', { name: 'İhtiyacınızı yazın' }).evaluate((element) => element === document.activeElement)) break;
     await page.keyboard.press('Tab');
   }
-  const search = page.getByRole('textbox', { name: 'Ne konuda yardıma ihtiyacınız var?' });
+  const search = page.getByRole('textbox', { name: 'İhtiyacınızı yazın' });
   await expect(search).toBeFocused();
   await page.keyboard.type('musluk akıtıyor');
   await page.keyboard.press('Enter');
@@ -64,11 +68,11 @@ test('homepage and wizard do not overflow on the mobile viewport', async ({ page
   await page.goto('/');
 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
-  const search = page.getByRole('textbox', { name: 'Ne konuda yardıma ihtiyacınız var?' });
+  const search = page.getByRole('textbox', { name: 'İhtiyacınızı yazın' });
   await expect(search).toBeVisible();
   await search.fill('avize montajı');
   await search.press('Enter');
-  await page.getByRole('button', { name: 'Bu hizmetle devam et' }).click();
+  await page.getByRole('button', { name: /Bu Hizmetle Devam Et/i }).click();
   await expect(page.getByRole('dialog', { name: 'Avize Montajı' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 });
@@ -91,13 +95,81 @@ test('mobile navigation opens, closes with Escape, and exposes product routes', 
 
 test('classification explains the selected match and footer contains no placeholder links', async ({ page }) => {
   await page.goto('/');
-  const search = page.getByRole('textbox', {name:'Ne konuda yardıma ihtiyacınız var?'});
+  const search = page.getByRole('textbox', {name:'İhtiyacınızı yazın'});
   await search.fill('mutfak musluğu damlatıyor');
   await search.press('Enter');
 
   const dialog = page.getByRole('dialog', {name:'İhtiyacınızı doğru anladık mı?'});
-  await expect(dialog.getByText('Neden bu sonuç?')).toBeVisible();
-  await expect(dialog.locator('.match-rationale p')).toContainText('musluğu');
+  await expect(dialog.locator('.match-single-rationale')).toContainText('eşleşiyor');
   await page.keyboard.press('Escape');
   await expect(page.locator('footer a[href="#"]')).toHaveCount(0);
+});
+
+test('production server applies the consolidated stylesheet and design tokens', async ({ page }) => {
+  await page.goto('/');
+
+  const styles = await page.evaluate(() => {
+    const header = document.querySelector('header');
+    return {
+      actionPrimary: getComputedStyle(document.documentElement)
+        .getPropertyValue('--action-primary')
+        .trim(),
+      headerHeight: header?.getBoundingClientRect().height ?? 0,
+      linkedStylesheets: Array.from(document.styleSheets).filter(sheet => Boolean(sheet.href)).length,
+    };
+  });
+
+  expect(styles.actionPrimary).toBe('#0d7a5f');
+  expect(styles.headerHeight).toBeGreaterThanOrEqual(60);
+  expect(styles.headerHeight).toBeLessThan(100);
+  expect(styles.linkedStylesheets).toBeGreaterThan(0);
+});
+
+test('narrow phones keep the hero, help affordance, and wizard inside safe bounds', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto('/');
+
+  const heroLayout = await page.evaluate(() => {
+    const heading = document.querySelector('h1')?.getBoundingClientRect();
+    const motif = document.querySelector('.hero-bond-field')?.getBoundingClientRect();
+    const help = document.querySelector<HTMLElement>('.help-float');
+    const overlaps = Boolean(
+      heading && motif &&
+      heading.left < motif.right && heading.right > motif.left &&
+      heading.top < motif.bottom && heading.bottom > motif.top
+    );
+    return {
+      overlaps,
+      helpDisplay: help ? getComputedStyle(help).display : null,
+      overflows: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    };
+  });
+
+  expect(heroLayout.overlaps).toBe(false);
+  expect(heroLayout.helpDisplay).toBe('none');
+  expect(heroLayout.overflows).toBe(false);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobileSearch = page.getByRole('textbox', { name: 'İhtiyacınızı yazın' });
+  await mobileSearch.fill('Musluk Değişimi');
+  await mobileSearch.press('Enter');
+  await page.getByRole('button', { name: /Bu Hizmetle Devam Et/i }).click();
+
+  const wizard = page.locator('.swiss-monolith-dialog');
+  const wizardFits = await wizard.evaluate(element => {
+    const rect = element.getBoundingClientRect();
+    return rect.left >= 0 && rect.right <= document.documentElement.clientWidth;
+  });
+  expect(wizardFits).toBe(true);
+  await expect(page.locator('.dev-role-switcher')).toHaveCount(0);
+
+  const formSide = wizard.locator('.wizard-form-side');
+  await expect(formSide).toHaveCSS('overflow-y', 'auto');
+  await wizard.locator('.wizard-form-side label').filter({ hasText: 'Mutfak bataryası' }).click();
+  const nextButton = wizard.getByRole('button', { name: /Sonraki soru/i });
+  await nextButton.scrollIntoViewIfNeeded();
+  await expect(nextButton).toBeVisible();
+  await nextButton.click();
+  await expect(wizard.getByText(/SORU 2 \/ 3/)).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 });

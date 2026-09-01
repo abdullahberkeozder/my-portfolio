@@ -1,81 +1,446 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
-import Link from 'next/link';
-import { DeliveryModel, popularServices, serviceCategories, services, servicesByCategory } from './data/serviceTaxonomy';
+import { FormEvent, useEffect, useState } from 'react';
+import { serviceCategories, services, servicesByCategory } from './data/serviceTaxonomy';
+import { getServiceSafetyGuidance, packageScopePreview } from './data/serviceGuidance';
 import { ClassificationResult, classifyService } from './lib/classifyService';
 import RequestWizard from './components/RequestWizard';
-import NeighborhoodBond from './components/NeighborhoodBond';
+import OrchestraLogo from './components/OrchestraLogo';
+import AppHeader from './components/AppHeader';
 import { useModalDialog } from './hooks/useModalDialog';
+import Button from './components/Button';
+import { trackFunnel } from './lib/analytics';
 
-const deliveryLabels: Record<DeliveryModel,string> = {
-  package:'Paket hizmet', quote:'Teklif karşılaştırma', inspection:'Keşif gerektirebilir'
-};
+export default function Home() {
+  const [query, setQuery] = useState('');
+  const [dialog, setDialog] = useState(false);
+  const [classification, setClassification] = useState<ClassificationResult | null>(null);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  const [wizardServiceId, setWizardServiceId] = useState<string | null>(null);
+  const [showAllServices, setShowAllServices] = useState(false);
+  const [remoteDraft, setRemoteDraft] = useState<Parameters<typeof RequestWizard>[0]['remoteDraft']>();
+  const classificationDialogRef = useModalDialog<HTMLElement>(dialog, () => setDialog(false));
 
-export default function Home(){
-  const [selected,setSelected]=useState(0);
-  const [query,setQuery]=useState('');
-  const [dialog,setDialog]=useState(false);
-  const [classification,setClassification]=useState<ClassificationResult|null>(null);
-  const [selectedServiceId,setSelectedServiceId]=useState<string|null>(null);
-  const [wizardServiceId,setWizardServiceId]=useState<string|null>(null);
-  const [mobileMenu,setMobileMenu]=useState(false);
-  const classificationDialogRef=useModalDialog<HTMLElement>(dialog,()=>setDialog(false));
-  const mobileMenuRef=useModalDialog<HTMLElement>(mobileMenu,()=>setMobileMenu(false));
-  const active=serviceCategories[selected];
-  const activeServices=servicesByCategory(active.id);
+  const selectedClassificationService = services.find(item => item.id === selectedServiceId);
+  const selectedSafetyGuidance = selectedClassificationService
+    ? getServiceSafetyGuidance(selectedClassificationService)
+    : undefined;
 
-  function startClassification(value:string){
-    const result=classifyService(value);
-    setQuery(value);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const draftId = params.get('draftId');
+    const serviceId = params.get('service');
+    if (!draftId || !serviceId) return;
+    let active = true;
+    void fetch(`/api/requests/${encodeURIComponent(draftId)}`)
+      .then(async response => {
+        if (!response.ok) throw new Error('Taslak yüklenemedi.');
+        return response.json() as Promise<{request: {id:string;answers:Record<string,string>;district:string|null;neighborhood:string|null;preferred_timing:string|null;idempotency_key:string}}>;
+      })
+      .then(({request}) => {
+        if (!active) return;
+        const definition = services.find(item => item.id === serviceId);
+        if (!definition) return;
+        setRemoteDraft({answers:request.answers??{},district:request.district??'',neighborhood:request.neighborhood??'',timing:request.preferred_timing??'Bu hafta',step:0,idempotencyKey:request.idempotency_key,requestId:request.id,updatedAt:Date.now()});
+        setWizardServiceId(serviceId);
+      })
+      .catch(() => { if (active) setRemoteDraft(undefined); });
+    return () => { active = false; };
+  }, []);
+
+
+  function submitSearch(event: FormEvent) {
+    event.preventDefault();
+    if (!query.trim()) return;
+    const result = classifyService(query);
+    trackFunnel('service_search', {candidateCount: result.candidates.length});
     setClassification(result);
     setSelectedServiceId(result.candidates[0]?.service.id ?? null);
     setDialog(true);
   }
 
-  function submit(event:FormEvent){event.preventDefault();if(query.trim())startClassification(query)}
-  function continueToWizard(){if(selectedServiceId){setDialog(false);setWizardServiceId(selectedServiceId)}}
+  function startClassification(rawQuery: string) {
+    setQuery(rawQuery);
+    const result = classifyService(rawQuery);
+    trackFunnel('service_selected');
+    setClassification(result);
+    setSelectedServiceId(result.candidates[0]?.service.id ?? null);
+    setDialog(true);
+  }
 
-  function closeMobileMenu(){setMobileMenu(false)}
+  function continueToWizard() {
+    if (!selectedServiceId) return;
+    setDialog(false);
+    trackFunnel('wizard_started', {serviceId:selectedServiceId});
+    setWizardServiceId(selectedServiceId);
+  }
 
-  return <main id="main-content">
-    <a className="skip-link" href="#services">Hizmetlere geç</a>
-    <header className="tr-header"><div className="header-inner"><a href="#top" className="tr-brand"><NeighborhoodBond className="brand-bond" decorative={false}/><b>Ankara Usta</b></a><nav className="desktop-nav"><a href="#services">Hizmetler</a><a href="/taleplerim">Taleplerim</a><Link href="/islerim">İşlerim</Link><a href="/giris">Kayıt ol / Giriş yap</a><a className="join-link" href="/usta-basvurusu">Usta olarak katıl</a></nav><button className={`hamburger ${mobileMenu?'open':''}`} type="button" aria-label={mobileMenu?'Menüyü kapat':'Menüyü aç'} aria-expanded={mobileMenu} aria-controls="mobile-navigation" onClick={()=>setMobileMenu(value=>!value)}><span/><span/></button></div></header>
-    {mobileMenu&&<div className="mobile-nav-backdrop" onClick={closeMobileMenu}><nav ref={mobileMenuRef} id="mobile-navigation" className="mobile-nav" aria-label="Mobil navigasyon" tabIndex={-1} onClick={event=>event.stopPropagation()}><div><NeighborhoodBond className="mobile-nav-bond"/><span>Ankara’da işinizi güvenle tamamlayın.</span></div><a data-dialog-initial-focus href="#services" onClick={closeMobileMenu}>Hizmetleri keşfet</a><Link href="/taleplerim" onClick={closeMobileMenu}>Taleplerim</Link><Link href="/islerim" onClick={closeMobileMenu}>İşlerim</Link><Link href="/giris" onClick={closeMobileMenu}>Kayıt ol veya giriş yap</Link><Link className="mobile-join" href="/usta-basvurusu" onClick={closeMobileMenu}>Usta olarak katıl</Link><Link className="mobile-help" href="/yardim" onClick={closeMobileMenu}>Yardım merkezi</Link></nav></div>}
+  return (
+    <main className="app-shell landing-page">
+      <AppHeader role="visitor" />
 
-    <section className="tr-hero" id="top">
-      <div className="hero-bond-field" aria-hidden="true"><NeighborhoodBond className="hero-bond"/></div>
-      <div className="tetris-scatter" aria-hidden="true">
-        <span className="tetris-piece tetris-l tetris-left-top"><i/><i/><i/><i/></span>
-        <span className="tetris-piece tetris-t tetris-right-mid"><i/><i/><i/><i/></span>
-        <span className="tetris-piece tetris-s tetris-left-low"><i/><i/><i/><i/></span>
-        <span className="tetris-piece tetris-o tetris-right-low"><i/><i/><i/><i/></span>
-      </div>
-      <div className="local-badge"><NeighborhoodBond className="badge-bond"/><span>ANKARA</span><b>Yerel hizmet</b></div>
-      <h1>Güvenilir ustayı bul<br/>evindeki işi tamamla</h1>
-      <form className="tr-search" onSubmit={submit}><input value={query} onChange={event=>setQuery(event.target.value)} aria-label="Ne konuda yardıma ihtiyacınız var?" placeholder="Ne konuda yardıma ihtiyacınız var?"/><button aria-label="Ara" type="submit">⌕</button></form>
-      <div className="category-zone" id="services">
-        <div className="icon-tabs" role="tablist">{serviceCategories.map((category,index)=><button role="tab" aria-selected={selected===index} className={selected===index?'active':''} onClick={()=>setSelected(index)} type="button" key={category.id}><span>{category.icon}</span><b>{category.name}</b></button>)}</div>
-        <div className="pill-row">{activeServices.map(service=><button type="button" onClick={()=>startClassification(service.name)} key={service.id}>{service.name}</button>)}</div>
-        <div className="feature-showcase"><div className="showcase-photo"/><article><h2>{active.title}</h2><p>✓ &nbsp; {active.description[0]}</p><p>✓ &nbsp; {active.description[1]}</p></article></div>
-      </div>
-    </section>
+      {/* 1. Orkestra Dark Forest Green Hero Zone */}
+      <section className="orkestra-hero-zone" aria-labelledby="hero-title">
+        <div className="orkestra-hero-inner">
+          <div className="orkestra-hero-emblem">
+            <OrchestraLogo size={96} variant="pistachio" />
+          </div>
 
-    <section className="number-band trust-band"><div><span>Kapsam baştan netleşir</span><b>Dahil ve hariç işler</b></div><div><span>Doğrulama görünürdür</span><b>Belge ve referanslar</b></div><div><span>Karar sizin</span><b>Paket, teklif veya keşif</b></div><div><span>Süreç kayıt altındadır</span><b>İş günlüğü ve onay</b></div><div><span>Yerel eşleştirme</span><b>İlçe ve mahalle odağı</b></div><NeighborhoodBond className="trust-bond-mark"/></section>
+          <div className="orkestra-hero-heading-stage">
+            <h1 id="hero-title" className="orkestra-hero-title">
+              Her iş, doğru parçalar bir araya geldiğinde tamamlanır.
+            </h1>
+          </div>
+          <p className="orkestra-hero-tagline">
+            Ankara’daki ev işleri için doğru hizmeti bulun, kapsamı netleştirin ve uygun ustalardan teklif alın.
+          </p>
 
-    <section className="tr-section popular-section"><h2>Popüler işler</h2><div className="project-grid">{popularServices.map((service,index)=><button type="button" onClick={()=>startClassification(service.name)} key={service.id}><div className={`project-image project-${index+1}`}/><strong>{service.name}</strong><span>{deliveryLabels[service.deliveryModel]}</span></button>)}</div></section>
+          {/* Global Search Shell */}
+          <form className="orkestra-search-shell" role="search" onSubmit={submitSearch}>
+            <label htmlFor="service-search-input" className="sr-only">
+              İhtiyacınızı yazın
+            </label>
+            <input
+              id="service-search-input"
+              className="orkestra-search-input"
+              value={query}
+              onChange={event => setQuery(event.target.value)}
+              placeholder="Örn: Mutfak bataryası su damlatıyor, 3 kapılı dolap montajı..."
+            />
+            <button type="submit" className="orkestra-search-btn" aria-label="Zanaatkar Bul">
+              Zanaatkar Bul →
+            </button>
+          </form>
 
-    <section className="satisfaction tr-section"><h2>Memnuniyetiniz, <span>güvencemiz.</span></h2><div><article><h3>İşçilik güvencesi</h3><p>Kapsam, değişiklikler ve müşteri kabulü dijital iş günlüğünde kayıt altında tutulur.</p></article><article><h3>Doğrulanmış ustalar</h3><p>Telefon, mesleki belge, adres ve referanslar ayrı ayrı kontrol edilir.</p></article><article><h3>Kesintisiz destek</h3><p>İhtiyaç duyduğunuzda şikâyet ve uyuşmazlık sürecinde yanınızdayız.</p></article></div></section>
+          {/* Quick Search Chips */}
+          <div className="orkestra-chips-row" aria-label="Hızlı arama etiketleri">
+            {['Musluk Değişimi', 'Tek Oda Boya', 'Avize Montajı', 'Priz Tamiri', 'Mobilya Kurulumu', 'TV Duvar Montajı'].map(hint => (
+              <button
+                type="button"
+                className="orkestra-chip-pill"
+                onClick={() => startClassification(hint)}
+                key={hint}
+              >
+                {hint}
+              </button>
+            ))}
+          </div>
+          <a className="orkestra-hero-scroll" href="#services" aria-label="Hizmetleri incele">↓</a>
+        </div>
+      </section>
 
-    <section className="how-section"><div className="how-card"><h2>Nasıl çalışır?</h2><ol><li><span>1</span><p>Fiyat, beceri ve değerlendirmeye göre ustayı seçin.</p></li><li><span>2</span><p>Bugün veya size uygun başka bir gün için randevu alın.</p></li><li><span>3</span><p>Mesajlaşın, işi takip edin ve değerlendirin.</p></li></ol></div><div className="how-photo"><div className="how-bond-signature"><NeighborhoodBond className="how-bond"/><span>İş tamamlandı</span></div></div></section>
+      {/* 2. Orbital Ensemble Section (Image 2 Style) */}
+      <section className="orkestra-ensemble-section" aria-labelledby="ensemble-title">
+        <div className="ensemble-inner">
+          <div className="ensemble-statement">
+            <span className="ensemble-kicker">ZANAATKARLAR MECLİSİ</span>
+            <h2 id="ensemble-title" className="ensemble-title">
+              En yetkin zanaatkarları tek bir orkestrada buluşturduk.
+            </h2>
+            <p className="ensemble-desc">
+              Orkestra; montajdan elektrik tesisatına, boya badanalardan demir doğramaya kadar Ankara’nın en güvenilir yerel ustalarını şeffaf standartlarla koordine eder.
+            </p>
+          </div>
 
-    <section className="tr-section help-today"><h2>Bugün yardım alın</h2><div>{services.map(service=><button onClick={()=>startClassification(service.name)} type="button" key={service.id}>{service.name}</button>)}</div><a href="#services">Tüm hizmetleri gör&nbsp; ›</a></section>
+          <div className="ensemble-grid">
+            {serviceCategories.map((category, idx) => {
+              const catServices = servicesByCategory(category.id);
+              const numStr = (idx + 1).toString().padStart(2, '0');
+              return (
+                <article key={category.id} className="ensemble-card">
+                  <div>
+                    <span className="ensemble-card-num">{numStr} / KATEGORİ</span>
+                    <h3 className="ensemble-card-title">{category.name}</h3>
+                    <p className="ensemble-card-text">
+                      {catServices.map(s => s.name).slice(0, 3).join(', ')} ve {catServices.length} uzmanlık alanı.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="ensemble-card-btn"
+                    onClick={() => startClassification(catServices[0]?.name || category.name)}
+                  >
+                    <span>Talep Başlat</span>
+                    <span>→</span>
+                  </button>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
-    <footer className="tr-footer"><div className="footer-inner"><div className="footer-brand"><NeighborhoodBond className="footer-bond"/><strong>Ankara Usta</strong><p>İşi, ustayı ve süreci aynı yerde görün.</p></div><div><p>Hizmet alın</p><a href="#services">Tüm hizmetler</a><Link href="/taleplerim">Taleplerim</Link><Link href="/islerim">İşlerim</Link><Link href="/giris">Giriş yap</Link></div><div><p>Ustalar için</p><Link href="/usta-basvurusu">Usta olarak katıl</Link><Link href="/usta/talepler">Eşleşen talepler</Link><Link href="/usta/musaitlik">Müsaitliği güncelle</Link></div><div><p>Destek ve yasal</p><Link href="/yardim">Yardım merkezi</Link><Link href="/gizlilik">Gizlilik</Link><Link href="/kullanim-kosullari">Kullanım koşulları</Link><span className="footer-note">Mobil uygulama hazırlanıyor</span></div></div></footer>
+      {/* 3. Numbered Editorial Services Directory (Image 5 Style) */}
+      <section className="orkestra-services-section" id="services" tabIndex={-1} aria-labelledby="services-index-title">
+        <div className="services-index-inner">
+          <div className="services-header-row">
+            <div>
+              <span className="directory-kicker">01 — 26 EKSİKSİZ KATALOG</span>
+              <h2 id="services-index-title" className="services-header-title">
+                Tüm Ankara Zanaat Rehberi
+              </h2>
+              <p className="services-header-sub">
+                Ev ve iş yeriniz için 6 ana kategoride 26 uzmanlık alanını inceleyin, 2 dakikada dijital fişinizi oluşturun.
+              </p>
+            </div>
+            <a href="#hero-title" className="directory-back-top">
+              Hızlı Arama Yap ↑
+            </a>
+          </div>
 
-    <Link className="help-float" href="/yardim">? &nbsp; Yardım</Link>
+          <div className="editorial-services-list">
+            {services.map((service, idx) => {
+              const numStr = (idx + 1).toString().padStart(2, '0');
+              const cat = serviceCategories.find(c => c.id === service.categoryId);
+              const isPkg = service.deliveryModel === 'package';
+              const isInsp = service.deliveryModel === 'inspection';
+              const tagLabel = isPkg ? 'Paket Hizmet' : isInsp ? 'Yerinde Keşif' : 'Şeffaf Teklif';
+              const tagClass = isPkg ? 'tag-pkg' : isInsp ? 'tag-insp' : 'tag-quote';
 
-    {dialog&&classification&&<div className="dialog-backdrop" role="presentation" onClick={()=>setDialog(false)}><section ref={classificationDialogRef} tabIndex={-1} className="request-dialog classification-dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title" onClick={event=>event.stopPropagation()}><button data-dialog-initial-focus className="dialog-close" onClick={()=>setDialog(false)} aria-label="Kapat">×</button><span>HİZMET SINIFLANDIRMA</span><h2 id="dialog-title">İhtiyacınızı doğru anladık mı?</h2><p className="query-echo">“{classification.query}”</p>{classification.candidates.length>0?<><div className={`confidence confidence-${classification.confidence}`}>{classification.confidence==='high'?'Güçlü eşleşme':classification.confidence==='medium'?'Muhtemel eşleşme':'Birlikte netleştirelim'}</div><div className="match-rationale" role="note"><b>Neden bu sonuç?</b><p>{classification.candidates.find(candidate=>candidate.service.id===selectedServiceId)?.explanation}</p><span>{classification.candidates.find(candidate=>candidate.service.id===selectedServiceId)?.service.deliveryModel==='package'?'Kapsamı standartlaştırılabilen bu iş için paket akışıyla devam edeceğiz.':'İşin kapsamını sorularla netleştirip uygun ustalardan teklif veya keşif isteyeceğiz.'}</span></div><div className="candidate-list">{classification.candidates.map((candidate,index)=>{const category=serviceCategories.find(item=>item.id===candidate.service.categoryId);return <button type="button" className={selectedServiceId===candidate.service.id?'selected':''} onClick={()=>setSelectedServiceId(candidate.service.id)} key={candidate.service.id}><span className="candidate-radio">{selectedServiceId===candidate.service.id?'●':'○'}</span><span><b>{candidate.service.name}</b><small>{category?.name} · {deliveryLabels[candidate.service.deliveryModel]}</small></span>{index===0&&<em>Önerilen</em>}</button>})}</div><p className="classification-alternative">Öneri doğru değilse aşağıdan başka bir hizmet seçebilirsiniz.</p><button className="dialog-primary" type="button" disabled={!selectedServiceId} onClick={continueToWizard}>Bu hizmetle devam et</button></>:<><div className="confidence confidence-low">Eşleşme bulunamadı</div><p>İfadenizi biraz daha ayrıntılı yazabilir veya aşağıdan bir hizmet kategorisi seçebilirsiniz.</p><div className="manual-categories">{serviceCategories.map(category=><button type="button" onClick={()=>{setDialog(false);document.getElementById('services')?.scrollIntoView({behavior:'smooth'})}} key={category.id}>{category.name}</button>)}</div></>}</section></div>}
-    {wizardServiceId&&<RequestWizard service={services.find(service=>service.id===wizardServiceId)!} onClose={()=>setWizardServiceId(null)}/>} 
-  </main>
+              return (
+                <div
+                  key={service.id}
+                  className={`editorial-service-row ${idx >= 8 ? 'service-extra' : ''}`}
+                  onClick={() => setWizardServiceId(service.id)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setWizardServiceId(service.id);
+                    }
+                  }}
+                  aria-label={`${service.name} hizmeti için talep başlat`}
+                >
+                  <span className="service-idx-num">{numStr}</span>
+                  <strong className="service-idx-name">{service.name}</strong>
+                  <span className="service-idx-desc">
+                    {service.aliases.length ? service.aliases.join(', ') : cat?.name}
+                  </span>
+                  <span className={`service-idx-tag ${tagClass}`}>{tagLabel}</span>
+                  <span className="service-idx-arrow">→</span>
+                </div>
+              );
+            })}
+          </div>
+          <button type="button" className="service-directory-toggle" aria-expanded={showAllServices} onClick={() => setShowAllServices(value => !value)}>
+            {showAllServices ? 'Kataloğu daralt' : '26 hizmetin tamamını göster'}
+          </button>
+        </div>
+      </section>
+
+      {/* 4. Trust & Guarantee Strip */}
+      <section className="tr-section guarantee-section" aria-labelledby="guarantee-title">
+        <div className="guarantee-header-row">
+          <div className="guarantee-header-left">
+            <span className="guarantee-kicker">KORUMA & ŞEFFAFLIK</span>
+            <h2 id="guarantee-title" className="guarantee-title">Memnuniyetiniz, güvencemiz.</h2>
+            <p className="guarantee-subtitle">Talep kapsamı, teklifler, onaylar ve iş kayıtları aynı süreç içinde izlenebilir.</p>
+          </div>
+        </div>
+        <div className="guarantee-grid">
+          <article className="guarantee-card">
+            <div className="guarantee-card-badge">01</div>
+            <h3>Şeffaf Kapsam ve Dijital Fiş</h3>
+            <p>Seçtiğiniz seçenekler doğrulanabilir dijital talep fişine dönüşür; dahil ve hariç kapsam net olarak kayıt altına alınır.</p>
+          </article>
+          <article className="guarantee-card">
+            <div className="guarantee-card-badge">02</div>
+            <h3>Kontrol Edilen Usta Başvuruları</h3>
+            <p>Usta başvuruları operasyon ekibi tarafından incelenir; yalnız kontrolü tamamlanan belge türleri ayrı doğrulama bilgisi olarak gösterilir.</p>
+          </article>
+          <article className="guarantee-card">
+            <div className="guarantee-card-badge">03</div>
+            <h3>Müşteri Onaylı İş Günlüğü</h3>
+            <p>İşin kapsamı, değişiklikleri ve görsel kayıtları müşteri kabulüyle birlikte dijital iş günlüğünde tutulur.</p>
+          </article>
+        </div>
+      </section>
+
+      {/* 5. How it Works Section */}
+      <section className="how-section studio-how-section" aria-labelledby="how-it-works-title">
+        <div className="how-card studio-how-card">
+          <span className="how-kicker">3 ADIMDA KOLAY SÜREÇ</span>
+          <h2 id="how-it-works-title">Evinizdeki işi nasıl çözeriz?</h2>
+          <ol className="how-steps-list">
+            <li className="how-step-item">
+              <span className="step-num-pill">1</span>
+              <div className="step-text-wrap">
+                <strong>Sorunu anlatın veya seçin</strong>
+                <p>26 uzmanlık alanından birini arayın; sorularla işin kapsamı netleşsin.</p>
+              </div>
+            </li>
+            <li className="how-step-item">
+              <span className="step-num-pill">2</span>
+              <div className="step-text-wrap">
+                <strong>Başvurusu onaylanmış zanaatkarla eşleşin</strong>
+                <p>Hizmet modeline göre net paket kapsamı, karşılaştırılabilir teklif veya yerinde keşif planlayın.</p>
+              </div>
+            </li>
+            <li className="how-step-item">
+              <span className="step-num-pill">3</span>
+              <div className="step-text-wrap">
+                <strong>Dijital iş fişiyle onaylayın</strong>
+              <p>İş dijital günlüğe kaydedilsin; kapsam değişiklikleri ve müşteri kabulü sonradan incelenebilsin.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div className="how-photo">
+          <div className="how-bond-signature">
+            <OrchestraLogo size={42} variant="pistachio" />
+            <div className="how-signature-text">
+              <strong>Kayıtlı iş kapsamı</strong>
+              <span>Talep, değişiklik ve müşteri onayı aynı akışta</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Classification Match Dialog */}
+      {dialog && classification && (
+        <div className="dialog-backdrop" role="presentation" onClick={() => setDialog(false)}>
+          <section
+            ref={classificationDialogRef}
+            tabIndex={-1}
+            className="request-dialog classification-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="dialog-title"
+            onClick={event => event.stopPropagation()}
+          >
+            <button data-dialog-initial-focus className="dialog-close" onClick={() => setDialog(false)} aria-label="Kapat">×</button>
+            <span className="account-eyebrow">HİZMET EŞLEŞTİRME</span>
+            <h2 id="dialog-title">İhtiyacınızı Doğru Anladık mı?</h2>
+            <p className="query-echo">“{classification.query}”</p>
+            {classification.candidates.length > 0 ? (
+              <>
+                <div className="progressive-match-hero">
+                  <div className="match-hero-top">
+                    <span className={`confidence confidence-${classification.confidence}`}>
+                      {classification.confidence === 'high' ? '✓ Güçlü Eşleşme' : classification.confidence === 'medium' ? '● Muhtemel Eşleşme' : '○ Birlikte Netleştirelim'}
+                    </span>
+                    <span className="match-category-tag">
+                      {serviceCategories.find(c => c.id === selectedClassificationService?.categoryId)?.name}
+                    </span>
+                  </div>
+                  <h3 className="match-service-headline">{selectedClassificationService?.name}</h3>
+                  <p className="match-single-rationale">
+                    {classification.candidates.find(candidate => candidate.service.id === selectedServiceId)?.explanation}
+                  </p>
+                </div>
+
+                {/* Primary & Secondary Action CTAs */}
+                <div className="match-actions-stack">
+                  <Button variant="primary" type="button" disabled={!selectedServiceId} onClick={continueToWizard}>
+                    Bu Hizmetle Devam Et →
+                  </Button>
+                  <button
+                    type="button"
+                    className="match-discovery-btn"
+                    onClick={() => {
+                      if (!selectedServiceId) return;
+                      setDialog(false);
+                      setWizardServiceId(selectedServiceId);
+                    }}
+                  >
+                    Emin Değilim, Keşif Talep Et
+                  </button>
+                </div>
+
+                {/* Scope Guidance accordion */}
+                {selectedClassificationService && (
+                  <details className="match-scope-details">
+                    <summary className="scope-details-summary">
+                      <span>Dahil & Hariç Kapsam Detayları</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </summary>
+                    <div className="scope-details-content">
+                      <div className="scope-col-included">
+                        <strong>✓ Dahil Olanlar</strong>
+                        <ul>
+                          {packageScopePreview.included.map((item: string) => (
+                            <li key={item}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="scope-col-excluded">
+                        <strong>✕ Dahil Olmayanlar</strong>
+                        <ul>
+                          {packageScopePreview.excluded.map((item: string) => (
+                            <li key={item}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      {selectedSafetyGuidance && (
+                        <div className="scope-safety-alert">
+                          <strong>Önemli Güvenlik Notu ({selectedSafetyGuidance.title}):</strong> {selectedSafetyGuidance.body}
+                        </div>
+                      )}
+                    </div>
+                  </details>
+                )}
+
+                {/* Alternative Candidates */}
+                {classification.candidates.length > 1 && (
+                  <div className="match-alternatives-zone">
+                    <span className="alternatives-label">Diğer Olası Hizmetler:</span>
+                    <div className="alternatives-chips">
+                      {classification.candidates.slice(1, 4).map(candidate => (
+                        <button
+                          type="button"
+                          key={candidate.service.id}
+                          className={`alt-chip ${selectedServiceId === candidate.service.id ? 'active' : ''}`}
+                          onClick={() => setSelectedServiceId(candidate.service.id)}
+                        >
+                          {candidate.service.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="no-match-state">
+                <p>Sorunuza uygun otomatik hizmet eşleştiremedik. Lütfen aşağıdaki kategorilerden birini seçin:</p>
+                <div className="manual-categories">
+                  {serviceCategories.map(category => (
+                    <button
+                      type="button"
+                      key={category.id}
+                      onClick={() => {
+                        const first = servicesByCategory(category.id)[0];
+                        if (first) {
+                          setSelectedServiceId(first.id);
+                          setDialog(false);
+                          setWizardServiceId(first.id);
+                        }
+                      }}
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+        </div>
+      )}
+
+      {/* Progressive Step Wizard Dialog */}
+      {wizardServiceId && (() => {
+        const wizardService = services.find(s => s.id === wizardServiceId);
+        if (!wizardService) return null;
+        return (
+          <RequestWizard
+            service={wizardService}
+            remoteDraft={remoteDraft}
+            onClose={() => setWizardServiceId(null)}
+          />
+        );
+      })()}
+    </main>
+  );
 }

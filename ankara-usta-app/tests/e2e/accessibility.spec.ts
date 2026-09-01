@@ -13,7 +13,7 @@ test('homepage has no automatically detectable serious accessibility violations'
 
 test('classification and request dialogs have no serious accessibility violations', async ({ page }) => {
   await page.goto('/');
-  const search = page.getByRole('textbox', { name: 'Ne konuda yardıma ihtiyacınız var?' });
+  const search = page.getByRole('textbox', { name: 'İhtiyacınızı yazın' });
   await search.fill('TV duvar montajı');
   await search.press('Enter');
 
@@ -25,7 +25,7 @@ test('classification and request dialogs have no serious accessibility violation
     JSON.stringify(results.violations, null, 2),
   ).toEqual([]);
 
-  await classification.getByRole('button', { name: 'Bu hizmetle devam et' }).click();
+  await classification.getByRole('button', { name: /Bu Hizmetle Devam Et/i }).click();
   const wizard = page.getByRole('dialog', { name: 'TV Duvar Montajı' });
   await expect(wizard).toBeVisible();
   results = await new AxeBuilder({page}).include('.wizard-dialog').analyze();
