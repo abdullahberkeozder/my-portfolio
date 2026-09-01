@@ -2,8 +2,6 @@
 
 Orkestra is a local services marketplace prototype designed to connect customers in Ankara with verified tradespeople. Instead of requiring customers to understand service categories, the product lets them describe a problem in natural language, routes them to the most relevant service, and guides them through a service-specific request flow.
 
-Live preview: [ankara-usta.sevvaltuhafiye154322.chatgpt.site](https://ankara-usta.sevvaltuhafiye154322.chatgpt.site)
-
 ## Current Product Scope
 
 - Ankara-focused service discovery and neighborhood-based matching

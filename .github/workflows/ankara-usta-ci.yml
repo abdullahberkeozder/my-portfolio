@@ -103,5 +103,7 @@ jobs:
           cache-dependency-path: ankara-usta-app/package-lock.json
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - name: Production build for authenticated journeys
+        run: npm run build
       - name: Authenticated customer, tradesperson and admin journeys
         run: npm run test:e2e -- tests/e2e/auth-preflight.spec.ts tests/e2e/authenticated-roles.spec.ts --project=chromium
