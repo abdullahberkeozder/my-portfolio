@@ -8273,3 +8273,14 @@ button, [role="button"], a.dialog-primary, input[type="submit"] {
 .auth-shell.account-shell::before,
 .auth-shell.account-shell::after { display: none !important; }
 
+
+/* --- Phase 3 Redesign Additions --- */
+.search-shell-prominent { border: 2px solid var(--brand-cobalt); transition: box-shadow var(--transition-fast); }
+.search-shell-prominent:focus-within { box-shadow: 0 0 0 4px var(--brand-cobalt-light); border-color: var(--brand-cobalt); }
+@media (max-width: 768px) { .chips-row-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 8px; overflow: hidden !important; } .chips-row-grid .orkestra-chip-pill { width: 100%; white-space: normal; padding: 4px; font-size: 13px; min-height: 44px; display: flex; align-items: center; justify-content: center; text-align: center; } }
+.ensemble-card-interactive { cursor: pointer; text-align: left; transition: background-color var(--transition-fast); width: 100%; }
+.ensemble-card-interactive:hover { background-color: rgba(18, 70, 181, 0.03) !important; border-color: var(--orchestra-blue-ink) !important; }
+.ensemble-card-arrow { display: flex; align-items: center; justify-content: center; color: var(--orchestra-blue-ink); opacity: 0.5; transition: opacity var(--transition-fast), transform var(--transition-fast); }
+.ensemble-card-interactive:hover .ensemble-card-arrow { opacity: 1; transform: translateX(4px); }
+@media (max-width: 768px) { .orkestra-hero-zone { min-height: auto !important; } .orkestra-hero-inner { min-height: auto !important; padding: 96px 20px 48px !important; } }
+

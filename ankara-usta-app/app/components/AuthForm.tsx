@@ -232,7 +232,7 @@ export default function AuthForm({
               <input
                 id="auth-email"
                 type="email"
-                autoComplete="email"
+                autoComplete="off"
                 required
                 placeholder="ornek@eposta.com"
                 value={email}

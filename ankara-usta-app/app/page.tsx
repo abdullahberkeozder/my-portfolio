@@ -107,7 +107,7 @@ export default function Home() {
           </p>
 
           {/* Global Search Shell */}
-          <form className="orkestra-search-shell" role="search" onSubmit={submitSearch}>
+          <form className="orkestra-search-shell search-shell-prominent" role="search" onSubmit={submitSearch}>
             <label htmlFor="service-search-input" className="sr-only">
               İhtiyacınızı yazın
             </label>
@@ -124,7 +124,7 @@ export default function Home() {
           </form>
 
           {/* Quick Search Chips */}
-          <div className="orkestra-chips-row" aria-label="Hızlı arama etiketleri">
+          <div className="orkestra-chips-row chips-row-grid" aria-label="Hızlı arama etiketleri">
             {['Musluk Değişimi', 'Tek Oda Boya', 'Avize Montajı', 'Priz Tamiri', 'Mobilya Kurulumu', 'TV Duvar Montajı'].map(hint => (
               <button
                 type="button"
@@ -136,7 +136,6 @@ export default function Home() {
               </button>
             ))}
           </div>
-          <a className="orkestra-hero-scroll" href="#services" aria-label="Hizmetleri incele">↓</a>
         </div>
       </section>
 
@@ -158,23 +157,26 @@ export default function Home() {
               const catServices = servicesByCategory(category.id);
               const numStr = (idx + 1).toString().padStart(2, '0');
               return (
-                <article key={category.id} className="ensemble-card">
-                  <div>
+                <button
+                  key={category.id}
+                  type="button"
+                  className="ensemble-card ensemble-card-interactive"
+                  onClick={() => startClassification(catServices[0]?.name || category.name)}
+                >
+                  <div style={{textAlign: 'left'}}>
                     <span className="ensemble-card-num">{numStr} / KATEGORİ</span>
                     <h3 className="ensemble-card-title">{category.name}</h3>
                     <p className="ensemble-card-text">
                       {catServices.map(s => s.name).slice(0, 3).join(', ')} ve {catServices.length} uzmanlık alanı.
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    className="ensemble-card-btn"
-                    onClick={() => startClassification(catServices[0]?.name || category.name)}
-                  >
-                    <span>Talep Başlat</span>
-                    <span>→</span>
-                  </button>
-                </article>
+                  <div className="ensemble-card-arrow">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                  </div>
+                </button>
               );
             })}
           </div>
@@ -209,45 +211,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. How it Works Section */}
-      <section className="how-section studio-how-section" aria-labelledby="how-it-works-title">
-        <div className="how-card studio-how-card">
-          <span className="how-kicker">3 ADIMDA KOLAY SÜREÇ</span>
-          <h2 id="how-it-works-title">Evinizdeki işi nasıl çözeriz?</h2>
-          <ol className="how-steps-list">
-            <li className="how-step-item">
-              <span className="step-num-pill">1</span>
-              <div className="step-text-wrap">
-                <strong>Sorunu anlatın veya seçin</strong>
-                <p>26 uzmanlık alanından birini arayın; sorularla işin kapsamı netleşsin.</p>
-              </div>
-            </li>
-            <li className="how-step-item">
-              <span className="step-num-pill">2</span>
-              <div className="step-text-wrap">
-                <strong>Başvurusu onaylanmış zanaatkarla eşleşin</strong>
-                <p>Hizmet modeline göre net paket kapsamı, karşılaştırılabilir teklif veya yerinde keşif planlayın.</p>
-              </div>
-            </li>
-            <li className="how-step-item">
-              <span className="step-num-pill">3</span>
-              <div className="step-text-wrap">
-                <strong>Dijital iş fişiyle onaylayın</strong>
-              <p>İş dijital günlüğe kaydedilsin; kapsam değişiklikleri ve müşteri kabulü sonradan incelenebilsin.</p>
-              </div>
-            </li>
-          </ol>
-        </div>
-        <div className="how-photo">
-          <div className="how-bond-signature">
-            <OrchestraLogo size={42} variant="primary" />
-            <div className="how-signature-text">
-              <strong>Kayıtlı iş kapsamı</strong>
-              <span>Talep, değişiklik ve müşteri onayı aynı akışta</span>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       {/* Classification Match Dialog */}
       {dialog && classification && (
