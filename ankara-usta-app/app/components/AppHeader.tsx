@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 import { usePathname, useRouter } from 'next/navigation';
 import OrchestraLogo from './OrchestraLogo';
+import OrkestraWordmark from './OrkestraWordmark';
 import { useModalDialog } from '../hooks/useModalDialog';
 
 export type UserRole = 'visitor' | 'customer' | 'tradesperson' | 'admin';
@@ -88,8 +89,8 @@ export default function AppHeader({ role: explicitRole }: AppHeaderProps) {
         <div className="header-inner">
           <div className="brand-group">
             <Link href="/" className="tr-brand">
-              <OrchestraLogo size={32} variant={isLandingHeader ? 'pistachio' : 'dark'} />
-              <b>Orkestra</b>
+              <OrchestraLogo size={32} variant="primary" />
+              <OrkestraWordmark />
             </Link>
 
             {detectedRole !== 'visitor' && (
@@ -198,7 +199,7 @@ export default function AppHeader({ role: explicitRole }: AppHeaderProps) {
             onClick={event => event.stopPropagation()}
           >
             <div className="mobile-nav-header">
-              <OrchestraLogo size={32} variant="emerald" />
+              <OrchestraLogo size={32} variant="primary" />
               <div>
                 <b>Orkestra</b>
                 <span>{roleLabels[detectedRole].badge}</span>

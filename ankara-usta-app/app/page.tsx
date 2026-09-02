@@ -17,7 +17,6 @@ export default function Home() {
   const [classification, setClassification] = useState<ClassificationResult | null>(null);
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [wizardServiceId, setWizardServiceId] = useState<string | null>(null);
-  const [showAllServices, setShowAllServices] = useState(false);
   const [remoteDraft, setRemoteDraft] = useState<Parameters<typeof RequestWizard>[0]['remoteDraft']>();
   const classificationDialogRef = useModalDialog<HTMLElement>(dialog, () => setDialog(false));
 
@@ -79,20 +78,20 @@ export default function Home() {
     <main className="app-shell landing-page">
       <AppHeader role="visitor" />
 
-      {/* 1. Orkestra Dark Forest Green Hero Zone */}
+      {/* Yellow brand opening with a focused service search. */}
       <section className="orkestra-hero-zone" aria-labelledby="hero-title">
         <div className="orkestra-hero-inner">
           <div className="orkestra-hero-emblem">
-            <OrchestraLogo size={96} variant="pistachio" />
+            <OrchestraLogo size={96} variant="primary" />
           </div>
 
           <div className="orkestra-hero-heading-stage">
             <h1 id="hero-title" className="orkestra-hero-title">
-              Her iş, doğru parçalar bir araya geldiğinde tamamlanır.
+              İşini anlat.<br />Doğru ustayla buluş.
             </h1>
           </div>
           <p className="orkestra-hero-tagline">
-            Ankara’daki ev işleri için doğru hizmeti bulun, kapsamı netleştirin ve uygun ustalardan teklif alın.
+            Evde yapılacak bir iş mi var? Ankara’da hizmetini bul, kapsamı belirle, teklifleri karşılaştır.
           </p>
 
           {/* Global Search Shell */}
@@ -105,10 +104,10 @@ export default function Home() {
               className="orkestra-search-input"
               value={query}
               onChange={event => setQuery(event.target.value)}
-              placeholder="Örn: Mutfak bataryası su damlatıyor, 3 kapılı dolap montajı..."
+              placeholder="Hangi iş için yardıma ihtiyacın var?"
             />
-            <button type="submit" className="orkestra-search-btn" aria-label="Zanaatkar Bul">
-              Zanaatkar Bul →
+            <button type="submit" className="orkestra-search-btn" aria-label="Hizmet bul">
+              Hizmet bul →
             </button>
           </form>
 
@@ -130,15 +129,15 @@ export default function Home() {
       </section>
 
       {/* 2. Orbital Ensemble Section (Image 2 Style) */}
-      <section className="orkestra-ensemble-section" aria-labelledby="ensemble-title">
+      <section className="orkestra-ensemble-section" id="services" tabIndex={-1} aria-labelledby="ensemble-title">
         <div className="ensemble-inner">
           <div className="ensemble-statement">
-            <span className="ensemble-kicker">ZANAATKARLAR MECLİSİ</span>
+            <span className="ensemble-kicker">EVDEKİ İŞLER, BİR ARADA</span>
             <h2 id="ensemble-title" className="ensemble-title">
-              En yetkin zanaatkarları tek bir orkestrada buluşturduk.
+              Küçük bir tamir.<br />Büyük bir rahatlık.
             </h2>
             <p className="ensemble-desc">
-              Orkestra; montajdan elektrik tesisatına, boya badanalardan demir doğramaya kadar Ankara’nın en güvenilir yerel ustalarını şeffaf standartlarla koordine eder.
+              Montaj, tesisat, boya veya temizlik. İhtiyacına uygun hizmeti seç; yapılacak işi birlikte netleştirelim.
             </p>
           </div>
 
@@ -167,65 +166,6 @@ export default function Home() {
               );
             })}
           </div>
-        </div>
-      </section>
-
-      {/* 3. Numbered Editorial Services Directory (Image 5 Style) */}
-      <section className="orkestra-services-section" id="services" tabIndex={-1} aria-labelledby="services-index-title">
-        <div className="services-index-inner">
-          <div className="services-header-row">
-            <div>
-              <span className="directory-kicker">01 — 26 EKSİKSİZ KATALOG</span>
-              <h2 id="services-index-title" className="services-header-title">
-                Tüm Ankara Zanaat Rehberi
-              </h2>
-              <p className="services-header-sub">
-                Ev ve iş yeriniz için 6 ana kategoride 26 uzmanlık alanını inceleyin, 2 dakikada dijital fişinizi oluşturun.
-              </p>
-            </div>
-            <a href="#hero-title" className="directory-back-top">
-              Hızlı Arama Yap ↑
-            </a>
-          </div>
-
-          <div className="editorial-services-list">
-            {services.map((service, idx) => {
-              const numStr = (idx + 1).toString().padStart(2, '0');
-              const cat = serviceCategories.find(c => c.id === service.categoryId);
-              const isPkg = service.deliveryModel === 'package';
-              const isInsp = service.deliveryModel === 'inspection';
-              const tagLabel = isPkg ? 'Paket Hizmet' : isInsp ? 'Yerinde Keşif' : 'Şeffaf Teklif';
-              const tagClass = isPkg ? 'tag-pkg' : isInsp ? 'tag-insp' : 'tag-quote';
-
-              return (
-                <div
-                  key={service.id}
-                  className={`editorial-service-row ${idx >= 8 ? 'service-extra' : ''}`}
-                  onClick={() => setWizardServiceId(service.id)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setWizardServiceId(service.id);
-                    }
-                  }}
-                  aria-label={`${service.name} hizmeti için talep başlat`}
-                >
-                  <span className="service-idx-num">{numStr}</span>
-                  <strong className="service-idx-name">{service.name}</strong>
-                  <span className="service-idx-desc">
-                    {service.aliases.length ? service.aliases.join(', ') : cat?.name}
-                  </span>
-                  <span className={`service-idx-tag ${tagClass}`}>{tagLabel}</span>
-                  <span className="service-idx-arrow">→</span>
-                </div>
-              );
-            })}
-          </div>
-          <button type="button" className="service-directory-toggle" aria-expanded={showAllServices} onClick={() => setShowAllServices(value => !value)}>
-            {showAllServices ? 'Kataloğu daralt' : '26 hizmetin tamamını göster'}
-          </button>
         </div>
       </section>
 
@@ -288,7 +228,7 @@ export default function Home() {
         </div>
         <div className="how-photo">
           <div className="how-bond-signature">
-            <OrchestraLogo size={42} variant="pistachio" />
+            <OrchestraLogo size={42} variant="primary" />
             <div className="how-signature-text">
               <strong>Kayıtlı iş kapsamı</strong>
               <span>Talep, değişiklik ve müşteri onayı aynı akışta</span>

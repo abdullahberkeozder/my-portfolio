@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import OrchestraLogo from './OrchestraLogo';
+import OrkestraWordmark from './OrkestraWordmark';
 
 export default function AppFooter() {
   const pathname = usePathname();
@@ -25,8 +26,8 @@ export default function AppFooter() {
         <div className="footer-inner">
           <div className="footer-brand-col">
             <div className="footer-brand-header">
-              <OrchestraLogo size={32} variant="pistachio" />
-              <strong className="footer-brand-name">Orkestra</strong>
+              <OrchestraLogo size={32} variant="inverse" />
+              <OrkestraWordmark inverse />
             </div>
             <p className="footer-brand-desc">
               Ankara’nın 9 pilot ilçesinde ev işi talebi oluşturma, teklif karşılaştırma ve iş takibi.
@@ -41,7 +42,7 @@ export default function AppFooter() {
           <div className="footer-nav-col">
             <span className="footer-col-title">HİZMET VE KAPSAM</span>
             <ul className="footer-links-list">
-              <li><Link href="/#services">Tüm Hizmet Dizini (01–26)</Link></li>
+              <li><Link href="/#services">Hizmet kategorileri</Link></li>
               <li><Link href="/nasil-calisir">Nasıl Çalışır?</Link></li>
               <li><Link href="/taleplerim">Taleplerim & Fişlerim</Link></li>
               <li><Link href="/islerim">Devam Eden İşlerim</Link></li>

@@ -70,7 +70,7 @@ export default function HowItWorksPage() {
         {/* Evidence-based tradesperson review */}
         <section id="dogrulama" style={{ padding: '36px', background: 'var(--surface-page)', borderRadius: 'var(--radius-surface)', border: '1px solid var(--border-default)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
-            <OrchestraLogo size={32} variant="emerald" />
+            <OrchestraLogo size={32} variant="primary" />
             <h2 style={{ fontSize: '26px', color: 'var(--text-primary)', margin: 0 }}>
               Başvuru İncelemesi ve Belge Bazlı Doğrulama
             </h2>

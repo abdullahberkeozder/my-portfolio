@@ -1,12 +1,18 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Outfit } from 'next/font/google';
 import './application.css';
 import AppFooter from './components/AppFooter';
 import ConsentBanner from './components/ConsentBanner';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
+});
+
+const outfit = Outfit({
+  variable: '--font-outfit',
+  subsets: ['latin', 'latin-ext'],
+  display: 'swap',
 });
 
 const geistMono = Geist_Mono({
@@ -46,7 +52,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased`}>
         <a href="#main-content" className="skip-link">İçeriğe Atla</a>
         <div id="main-content">
           {children}
