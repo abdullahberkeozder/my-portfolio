@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, useEffect, useState, useCallback } from 'react';
+import { ChangeEvent, useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Service, serviceCategories } from '../data/serviceTaxonomy';
@@ -12,6 +12,7 @@ import { createSupabaseBrowserClient } from '../lib/supabase/browser';
 import { useModalDialog } from '../hooks/useModalDialog';
 import Button from './Button';
 import WorkReceipt from './WorkReceipt';
+import { normalizeRequestTiming, requestTimings, requestTimingLabel } from '../domain/requestTiming';
 import { CategoryIcon } from './CategoryIcon';
 import { trackFunnel } from '../lib/analytics';
 import {WizardLocationStep,WizardMediaStep,WizardQuestionStep,WizardSummaryStep} from './wizard/WizardStepScreens';
@@ -75,6 +76,7 @@ const resultContent = {
 export default function RequestWizard({ service, onClose, remoteDraft }: Props) {
   const router = useRouter();
   const dialogRef = useModalDialog<HTMLElement>(true, onClose);
+  const formRef = useRef<HTMLDivElement>(null);
   const definition = getWizardDefinition(service.id);
   const storageKey = `ankara-usta:draft:${service.id}`;
   const [initialDraft] = useState(() => remoteDraft ?? readLocalDraft(storageKey));
@@ -83,20 +85,24 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
   const [files, setFiles] = useState<File[]>([]);
   const [district, setDistrict] = useState(initialDraft?.district ?? '');
   const [neighborhood, setNeighborhood] = useState(initialDraft?.neighborhood ?? '');
-  const [timing, setTiming] = useState(initialDraft?.timing ?? 'Bu hafta içinde');
+  const [timing, setTiming] = useState(() => {
+    try { return normalizeRequestTiming(initialDraft?.timing ?? 'this_week'); }
+    catch { return 'this_week' as const; }
+  });
   const [idempotencyKey] = useState(() => initialDraft?.idempotencyKey ?? crypto.randomUUID());
   const [requestId, setRequestId] = useState<string | undefined>(initialDraft?.requestId);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [mediaMessage, setMediaMessage] = useState('');
   const [showMobileReceipt, setShowMobileReceipt] = useState(false);
-  const [questionIndex, setQuestionIndex] = useState(() => {
+  const [requestedQuestionIndex, setQuestionIndex] = useState(() => {
     const initialQuestions = getVisibleWizardQuestions(definition, initialDraft?.answers ?? {});
     const firstUnanswered = initialQuestions.findIndex(question => !initialDraft?.answers?.[question.id]);
     return firstUnanswered === -1 ? Math.max(initialQuestions.length - 1, 0) : firstUnanswered;
   });
 
   const questions = getVisibleWizardQuestions(definition, answers);
+  const questionIndex = Math.min(requestedQuestionIndex, Math.max(questions.length - 1, 0));
   const category = serviceCategories.find(item => item.id === service.categoryId);
   const result = resultContent[service.deliveryModel];
   const activeQuestion = questions[questionIndex];
@@ -114,6 +120,10 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
     : ['Görseller', 'Konum ve zaman', 'Talep özeti'][step - 1];
 
   useEffect(() => {
+    if (formRef.current) formRef.current.scrollTop = 0;
+  }, [step, questionIndex]);
+
+  useEffect(() => {
     const draft: LocalDraft = {
       answers,
       district,
@@ -129,15 +139,22 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
 
   function filesChanged(event: ChangeEvent<HTMLInputElement>) {
     const selectedFiles = Array.from(event.target.files ?? []);
+    if (!selectedFiles.length) return;
+    if (selectedFiles.some(file => !['image/jpeg', 'image/png', 'image/webp', 'video/mp4'].includes(file.type))) {
+      event.target.value = '';
+      setMediaMessage('JPG, PNG, WebP veya MP4 biçiminde dosya seçin.');
+      return;
+    }
     const oversized = selectedFiles.find(file => file.size > 52_428_800);
     if (oversized) {
       event.target.value = '';
-      setFiles([]);
       setMediaMessage(`${oversized.name} 50 MB sınırını aşıyor. Daha küçük bir dosya seçin.`);
       return;
     }
     setMediaMessage('');
-    setFiles(selectedFiles);
+    setFiles(current => [...current, ...selectedFiles.filter(file => !current.some(existing =>
+      existing.name === file.name && existing.size === file.size && existing.lastModified === file.lastModified))]);
+    event.target.value = '';
   }
 
   const saveDraft = useCallback(async (showAuthError = false) => {
@@ -195,7 +212,8 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
     if (step !== 0 || !activeQuestion) return;
 
     function onKeyDown(e: KeyboardEvent) {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey ||
+        (e.target instanceof Element && e.target.closest('button, a, input, textarea, select, [contenteditable="true"]'))) return;
 
       const num = parseInt(e.key, 10);
       if (!isNaN(num) && num >= 1 && num <= activeQuestion.options.length) {
@@ -350,7 +368,7 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
         )}
 
         <div className="wizard-split-layout">
-          <div className="wizard-form-side">
+          <div className="wizard-form-side" ref={formRef}>
             <div className="wizard-step-nav-bar">
               <div className="wizard-category-pill">
                 {category && <CategoryIcon categoryId={category.id} size={15} />}
@@ -394,7 +412,6 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
                           <label
                             key={option}
                             className={`swiss-option-card ${isChecked ? 'checked' : ''}`}
-                            onClick={() => handleSelectOption(option)}
                           >
                             <input
                               type="radio"
@@ -457,14 +474,22 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
                     onChange={filesChanged}
                   />
                   <div className="upload-zone-icon">📷</div>
-                  <strong>Dosya seçin veya buraya sürükleyin</strong>
+                  <strong>Fotoğraf veya video seçin</strong>
                   <small>JPG, PNG, WebP veya MP4 · Dosya başına maks. 50 MB</small>
                   {files.length > 0 && (
                     <span className="upload-file-success">
-                      ✓ {files.length} dosya talebe eklendi
+                      ✓ {files.length} dosya seçildi · Gönderirken yüklenecek
                     </span>
                   )}
                 </label>
+
+                {files.length > 0 && <ul className="wizard-selected-files">
+                  {files.map((file, index) => <li key={`${file.name}-${file.size}-${file.lastModified}`}>
+                    <span>{file.name}</span>
+                    <button type="button" onClick={() => setFiles(current => current.filter((_, i) => i !== index))}
+                      aria-label={`${file.name} dosyasını kaldır`}>Kaldır</button>
+                  </li>)}
+                </ul>}
 
                 {mediaMessage && <p className="wizard-inline-error" role="alert">{mediaMessage}</p>}
 
@@ -513,7 +538,7 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
                   <div className="timing-choice-group">
                     <span className="timing-label">Tercih Edilen Zaman:</span>
                     <div className="timing-pills-row">
-                      {['Mümkün olan en kısa sürede', 'Bu hafta içinde', 'Tarih konusunda esneğim'].map(t => (
+                      {(Object.keys(requestTimings) as Array<keyof typeof requestTimings>).map(t => (
                         <button
                           key={t}
                           type="button"
@@ -521,7 +546,7 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
                           aria-pressed={timing === t}
                           onClick={() => setTiming(t)}
                         >
-                          {t}
+                          {requestTimingLabel(t)}
                         </button>
                       ))}
                     </div>

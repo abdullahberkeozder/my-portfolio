@@ -25,9 +25,11 @@ export function getVisibleWizardQuestions(
   definition: WizardDefinition,
   answers: Record<string, string>,
 ): WizardQuestion[] {
+  const visibleIds = new Set<string>();
   return definition.questions.filter(question => {
-    if (!question.showWhen) return true;
-    return question.showWhen.equals.includes(answers[question.showWhen.questionId]);
+    const visible = !question.showWhen || (visibleIds.has(question.showWhen.questionId) && question.showWhen.equals.includes(answers[question.showWhen.questionId]));
+    if (visible) visibleIds.add(question.id);
+    return visible;
   });
 }
 

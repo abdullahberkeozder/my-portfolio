@@ -1,4 +1,5 @@
 'use client';
+import { requestTimingLabel } from '../domain/requestTiming';
 
 import {CSSProperties,useMemo} from 'react';
 import {Service,serviceCategories} from '../data/serviceTaxonomy';
@@ -28,7 +29,7 @@ export default function WorkReceipt({service,answers,questions,district,neighbor
     <div className="premium-receipt-printer" aria-hidden="true"><span/></div>
     <article className="premium-receipt-paper">
       <header className="premium-receipt-header">
-        <div className="premium-receipt-brand"><OrchestraLogo size={20} variant="emerald"/><div><strong>ORKESTRA</strong><span>İş kapsam fişi</span></div></div>
+        <div className="premium-receipt-brand"><OrchestraLogo size={20} variant="primary"/><div><strong>ORKESTRA</strong><span>İş kapsam fişi</span></div></div>
         <div className="premium-receipt-state"><i aria-hidden="true"/>{isComplete?'Onaya hazır':'Taslak'}</div>
       </header>
 
@@ -50,7 +51,7 @@ export default function WorkReceipt({service,answers,questions,district,neighbor
 
       {(district||timing||filesCount>0)&&<dl className="premium-receipt-details">
         {district&&<div><dt>Bölge</dt><dd>{district}{neighborhood?` · ${neighborhood}`:''}</dd></div>}
-        {timing&&<div><dt>Zaman</dt><dd>{timing}</dd></div>}
+        {timing&&<div><dt>Zaman</dt><dd>{requestTimingLabel(timing)}</dd></div>}
         {filesCount>0&&<div><dt>Ekler</dt><dd>{filesCount} dosya</dd></div>}
       </dl>}
 

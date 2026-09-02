@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { services } from '../data/serviceTaxonomy';
 import { getWizardDefinition } from '../data/wizardDefinitions';
+import { getVisibleWizardQuestions } from './wizard';
+import { normalizeRequestTiming } from './requestTiming';
 
 export const DEFAULT_DRAFT_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -30,6 +32,7 @@ export function createTtlDraft(payload: Omit<RequestDraftPayload, 'createdAt'>):
 
 export function validateRequestDraft(input: unknown, requireComplete = false) {
   const payload = requestDraftPayloadSchema.parse(input);
+  if (payload.preferredTiming) payload.preferredTiming = normalizeRequestTiming(payload.preferredTiming);
   if (payload.createdAt && isDraftExpired(payload.createdAt)) {
     throw new Error('Draft has expired.');
   }
@@ -38,14 +41,15 @@ export function validateRequestDraft(input: unknown, requireComplete = false) {
   if (!service) throw new Error('Unknown service.');
 
   const definition = getWizardDefinition(service.id);
-  const questions = new Map(definition.questions.map((question) => [question.id, question]));
+  const visibleQuestions = getVisibleWizardQuestions(definition, payload.answers);
+  const questions = new Map(visibleQuestions.map((question) => [question.id, question]));
   for (const [questionId, answer] of Object.entries(payload.answers)) {
     const question = questions.get(questionId);
     if (!question || !question.options.includes(answer)) throw new Error('Invalid wizard answer.');
   }
 
   if (requireComplete) {
-    if (!definition.questions.every((question) => payload.answers[question.id])) {
+    if (!visibleQuestions.every((question) => payload.answers[question.id])) {
       throw new Error('Required scope answers are missing.');
     }
     if (!payload.district || !payload.neighborhood || !payload.preferredTiming) {

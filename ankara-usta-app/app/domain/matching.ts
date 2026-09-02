@@ -1,5 +1,6 @@
 import type { MatchDecision, SupplyState, TradespersonApplicationStatus, TradespersonAvailability, VerificationDocument } from './models';
 import { hasCurrentProfessionalVerification } from './verification';
+import { normalizeRequestTiming, requestTimings } from './requestTiming';
 
 export type MatchRequest={
   serviceId:string;
@@ -25,10 +26,7 @@ function dateOnly(value:Date|string){
 }
 
 export function preferredTimingHorizonDays(preferredTiming:string){
-  if(preferredTiming==='Bugün / acil')return 0;
-  if(preferredTiming==='Bu hafta')return 7;
-  if(preferredTiming==='Önümüzdeki iki hafta')return 14;
-  return 30;
+  return requestTimings[normalizeRequestTiming(preferredTiming)].days;
 }
 
 export function isAvailabilityCompatible(windows:readonly TradespersonAvailability[],preferredTiming:string,asOf:Date|string=new Date()){
