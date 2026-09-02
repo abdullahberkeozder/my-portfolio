@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { quoteVersionInputSchema } from '../../domain';
+import { publicErrorBody } from '../../lib/apiErrors';
 import { createSupabaseServerClient } from '../../lib/supabase/server';
 
-const createQuoteSchema=quoteVersionInputSchema.extend({requestId:z.uuid()});
+const createQuoteSchema=quoteVersionInputSchema.extend({requestId:z.string().uuid()});
 
 export async function POST(request:Request){
   try{
@@ -24,6 +25,9 @@ export async function POST(request:Request){
     if(error)throw error;
     return NextResponse.json({quote:data});
   }catch(error){
-    return NextResponse.json({error:error instanceof Error?error.message:'Teklif kaydedilemedi.'},{status:400});
+    // Use publicErrorBody to avoid leaking raw Supabase / PostgreSQL messages
+    const err=publicErrorBody(error,'Teklif kaydedilemedi.');
+    return NextResponse.json({error:err.error,code:err.code,correlationId:err.correlationId},{status:err.status});
   }
 }
+
