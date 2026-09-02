@@ -6,6 +6,15 @@ import { serviceCategories, services } from '../data/serviceTaxonomy';
 import { ankaraDistricts } from '../domain/tradespersonApplication';
 import { createSupabaseBrowserClient } from '../lib/supabase/browser';
 import Button from '../components/Button';
+import AccountDraftBoundary, {type DraftScope} from '../components/AccountDraftBoundary';
+
+const stepDescriptions = [
+  'İşletme adınızı ve deneyim açıklamanızı girin. Bu bilgiler müşterilere usta profilinizde görünür.',
+  'Teklif verebileceğiniz hizmetleri seçin. İlgili alanları seçmek daha fazla talep almanızı sağlar.',
+  'Hizmet vermek istediğiniz Ankara ilçelerini belirleyin. Birden fazla ilçe seçebilirsiniz.',
+  'Mesleki yeterliliğinizi kanıtlayan bir belge yükleyin. Belge yalnızca moderatörler tarafından incelenir.',
+  'Başvurunuzu göndermeden önce bilgilerinizi gözden geçirin.',
+];
 
 const documentKinds = {
   professional_certificate: 'Mesleki Yeterlilik Belgesi / Ustalık Belgesi',
@@ -15,7 +24,6 @@ const documentKinds = {
 } as const;
 
 const applicationSteps = ['Profil & Uzmanlık', 'Hizmet Alanları', 'Çalışma Bölgeleri', 'Belge Yükleme', 'Önizleme & Onay'] as const;
-const draftKey = 'ankara-usta:tradesperson-application-full';
 
 // District Regional Clusters
 const districtClusters: Record<string, typeof ankaraDistricts[number][]> = {
@@ -25,6 +33,11 @@ const districtClusters: Record<string, typeof ankaraDistricts[number][]> = {
 };
 
 export default function TradespersonApplicationPage() {
+  return <AccountDraftBoundary kind="application" ttl={2*60*60*1000}>{scope=><ScopedApplication scope={scope}/>}</AccountDraftBoundary>;
+}
+
+function ScopedApplication({scope}:{scope:DraftScope}) {
+  const draftKey=scope.key;
   const [step, setStep] = useState(0);
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
@@ -49,7 +62,8 @@ export default function TradespersonApplicationPage() {
   const DRAFT_TTL_MS = 2 * 60 * 60 * 1000;
 
   function clearDraft() {
-    localStorage.removeItem(draftKey);
+    scope.storage.removeItem(draftKey);
+    setFile(undefined);
     setDisplayName('');
     setBio('');
     setServiceIds([]);
@@ -68,10 +82,11 @@ export default function TradespersonApplicationPage() {
   useEffect(() => {
     queueMicrotask(() => {
       try {
-        const raw = localStorage.getItem(draftKey);
+        const raw = scope.storage.getItem(draftKey);
         if (raw) {
           const draft = JSON.parse(raw) as {
             updatedAt?: number;
+            step?: number;
             displayName?: string;
             bio?: string;
             serviceIds?: string[];
@@ -83,7 +98,7 @@ export default function TradespersonApplicationPage() {
             expiresAt?: string;
           };
           if (!draft.updatedAt || Date.now() - draft.updatedAt > DRAFT_TTL_MS) {
-            localStorage.removeItem(draftKey);
+            scope.storage.removeItem(draftKey);
             setDraftReady(true);
             return;
           }
@@ -96,6 +111,7 @@ export default function TradespersonApplicationPage() {
           if (draft.referencePhone) setReferencePhone(draft.referencePhone);
           if (draft.documentKind) setDocumentKind(draft.documentKind);
           if (draft.expiresAt) setExpiresAt(draft.expiresAt);
+          if(Number.isInteger(draft.step)&&draft.step!>=0&&draft.step!<=4)setStep(draft.step!);
         }
       } catch {
         /* Bozuk yerel taslak yeni başvuruyu engellemez. */
@@ -109,10 +125,11 @@ export default function TradespersonApplicationPage() {
   // Save Full Draft on Change
   useEffect(() => {
     if (draftReady) {
-      localStorage.setItem(
+      try { scope.storage.setItem(
         draftKey,
         JSON.stringify({
           updatedAt: Date.now(),
+          step,
           displayName,
           bio,
           serviceIds,
@@ -123,9 +140,9 @@ export default function TradespersonApplicationPage() {
           documentKind,
           expiresAt,
         })
-      );
+      ); } catch { /* Storage can be disabled; keep the current form usable. */ }
     }
-  }, [draftReady, displayName, bio, serviceIds, districts, referenceName, relationship, referencePhone, documentKind, expiresAt]);
+  }, [draftReady, displayName, bio, serviceIds, districts, referenceName, relationship, referencePhone, documentKind, expiresAt,step,draftKey,scope.storage]);
 
   function toggle(value: string, current: string[], setter: (value: string[]) => void) {
     setter(current.includes(value) ? current.filter(item => item !== value) : [...current, value]);
@@ -211,7 +228,7 @@ export default function TradespersonApplicationPage() {
           .remove([document.storagePath]);
         throw new Error(body.error ?? 'Başvuru gönderilemedi.');
       }
-      localStorage.removeItem(draftKey);
+      scope.storage.removeItem(draftKey);
       setMessage('Başvurunuz ve belgeniz inceleme masasına alındı. Moderatör onayının ardından doğrulama rozetiniz aktifleşecektir.');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Başvuru gönderilemedi.');
@@ -252,31 +269,41 @@ export default function TradespersonApplicationPage() {
           </div>
         )}
 
-        <div className="application-progress-wrapper">
-          <div className="wizard-progress" role="progressbar" aria-label="Başvuru ilerleme durumu" aria-valuemin={1} aria-valuemax={5} aria-valuenow={step + 1}>
-            <span style={{ width: `${progressPercent}%` }} />
-          </div>
-          <nav className="application-progress" aria-label="Başvuru adımları">
-            {applicationSteps.map((label, index) => (
+        {/* Thick progress bar */}
+        <div className="application-progress-bar-thick" role="progressbar" aria-label="Başvuru ilerleme durumu" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progressPercent}>
+          <span style={{ width: `${progressPercent}%` }} />
+        </div>
+
+        {/* Horizontal stepper */}
+        <nav className="application-stepper" aria-label="Başvuru adımları">
+          {applicationSteps.map((label, index) => (
+            <div key={label} className={`stepper-item ${index === step ? 'active' : index < step ? 'done' : ''}`}>
               <button
-                key={label}
                 type="button"
-                className={index === step ? 'active' : index < step ? 'complete' : ''}
+                className="stepper-btn"
                 disabled={index > step}
                 onClick={() => index < step && setStep(index)}
                 aria-current={index === step ? 'step' : undefined}
                 aria-label={`${index + 1}. Adım: ${label}`}
               >
-                <i>{index < step ? '✓' : index + 1}</i>
-                <span>{label}</span>
+                <span className="stepper-num">
+                  {index < step ? '✓' : index + 1}
+                </span>
+                <span className="stepper-label" style={{ display: index === step ? undefined : 'none' }}>{label}</span>
               </button>
-            ))}
-          </nav>
-        </div>
+              {index < applicationSteps.length - 1 && (
+                <div className="stepper-connector" />
+              )}
+            </div>
+          ))}
+        </nav>
 
-        <div className="application-step-heading">
-          <span>ADIM {step + 1} / {applicationSteps.length} · %{progressPercent} Tamamlandı</span>
-          <b>{applicationSteps[step]}</b>
+        {/* Step description */}
+        <div className="step-description" aria-live="polite">
+          <strong style={{ display: 'block', marginBottom: '4px', color: 'var(--text-primary)', fontSize: '15px' }}>
+            Adım {step + 1}/{applicationSteps.length} — {applicationSteps[step]}
+          </strong>
+          {stepDescriptions[step]}
         </div>
 
         {/* Step 0: Profile */}
@@ -527,7 +554,7 @@ export default function TradespersonApplicationPage() {
           </p>
         )}
 
-        <div className="application-actions">
+        <div className="application-actions-sticky">
           {step > 0 && (
             <Button variant="outline" type="button" onClick={() => { setMessage(''); setStep(value => value - 1); }}>
               ← Geri

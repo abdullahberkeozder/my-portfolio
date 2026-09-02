@@ -8,8 +8,8 @@ export const roleLandingPages: Record<UserRole, string> = {
 };
 
 export const roleAllowedRoutePrefixes: Record<UserRole, string[]> = {
-  customer: ['/taleplerim', '/islerim', '/uyusmazliklar'],
-  tradesperson: ['/usta', '/islerim', '/uyusmazliklar'],
+  customer: ['/taleplerim', '/islerim', '/uyusmazliklar', '/gorusmeler', '/teklifler/'],
+  tradesperson: ['/usta', '/islerim', '/uyusmazliklar', '/gorusmeler', '/teklifler/'],
   moderator: ['/yonetim', '/uyusmazliklar'],
   admin: ['/yonetim', '/usta', '/taleplerim', '/islerim', '/uyusmazliklar'],
 };
@@ -46,10 +46,13 @@ export function safeNextPath(value: string | null | undefined): string | null {
  */
 export function isPathAllowedForRoles(roles: UserRole[], targetPath: string): boolean {
   if (!targetPath.startsWith('/')) return false;
+  // Authorize the pathname, while retaining the query string in the redirect.
+  targetPath = new URL(targetPath, 'https://orkestra.invalid').pathname;
   
   // Public routes always allowed
+  if (['/kayit','/usta/giris','/usta/kayit'].includes(targetPath)) return true;
   const publicPrefixes = ['/giris', '/parola-yenile', '/auth', '/yardim', '/nasil-calisir', '/usta-basvurusu', '/gizlilik', '/kullanim-kosullari'];
-  if (targetPath === '/' || publicPrefixes.some(prefix => targetPath.startsWith(prefix))) {
+  if (targetPath === '/' || targetPath === '/ustalar' || targetPath.startsWith('/ustalar/') || publicPrefixes.some(prefix => targetPath.startsWith(prefix))) {
     return true;
   }
 

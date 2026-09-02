@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
+import {useRouter} from 'next/navigation';
 import { serviceCategories, services, servicesByCategory } from './data/serviceTaxonomy';
 import { getServiceSafetyGuidance, packageScopePreview } from './data/serviceGuidance';
 import { ClassificationResult, classifyService } from './lib/classifyService';
@@ -12,6 +13,7 @@ import Button from './components/Button';
 import { trackFunnel } from './lib/analytics';
 
 export default function Home() {
+  const router=useRouter();
   const [query, setQuery] = useState('');
   const [dialog, setDialog] = useState(false);
   const [classification, setClassification] = useState<ClassificationResult | null>(null);
@@ -29,15 +31,25 @@ export default function Home() {
     const params = new URLSearchParams(window.location.search);
     const draftId = params.get('draftId');
     const serviceId = params.get('service');
+    if (params.get('resume') === '1' && serviceId && services.some(service => service.id === serviceId)) {
+      queueMicrotask(() => {setRemoteDraft(undefined);setWizardServiceId(serviceId);});
+      return;
+    }
     if (!draftId || !serviceId) return;
     let active = true;
     void fetch(`/api/requests/${encodeURIComponent(draftId)}`)
       .then(async response => {
         if (!response.ok) throw new Error('Taslak yüklenemedi.');
-        return response.json() as Promise<{request: {id:string;answers:Record<string,string>;district:string|null;neighborhood:string|null;preferred_timing:string|null;idempotency_key:string}}>;
+        return response.json() as Promise<{request: {id:string;service_id:string;target_professional_id?:string|null;routing_mode?:string;answers:Record<string,string>;district:string|null;neighborhood:string|null;preferred_timing:string|null;idempotency_key:string}}>;
       })
       .then(({request}) => {
         if (!active) return;
+        if (request.target_professional_id) {
+          router.replace(`/ustalar/${encodeURIComponent(request.target_professional_id)}/talep?service=${encodeURIComponent(request.service_id)}&draftId=${encodeURIComponent(request.id)}`);
+          return;
+        }
+        if(request.routing_mode && request.routing_mode!=='open')return;
+        if(request.service_id!==serviceId)return;
         const definition = services.find(item => item.id === serviceId);
         if (!definition) return;
         setRemoteDraft({answers:request.answers??{},district:request.district??'',neighborhood:request.neighborhood??'',timing:request.preferred_timing??'Bu hafta',step:0,idempotencyKey:request.idempotency_key,requestId:request.id,updatedAt:Date.now()});
@@ -45,7 +57,7 @@ export default function Home() {
       })
       .catch(() => { if (active) setRemoteDraft(undefined); });
     return () => { active = false; };
-  }, []);
+  }, [router]);
 
 
   function submitSearch(event: FormEvent) {

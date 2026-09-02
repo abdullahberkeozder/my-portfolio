@@ -11,7 +11,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     const {data:{user}} = await supabase.auth.getUser();
     if (!user) return NextResponse.json({error:'Oturum açmanız gerekiyor.'},{status:401});
     const {data,error} = await supabase.from('service_requests')
-      .select('id,service_id,answers,district,neighborhood,preferred_timing,idempotency_key,status')
+      .select('*')
       .eq('id',id).eq('customer_id',user.id).eq('status','draft').single();
     if (error) throw error;
     return NextResponse.json({request:data});

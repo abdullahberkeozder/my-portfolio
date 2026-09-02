@@ -110,7 +110,7 @@ export default function AppHeader({ role: explicitRole }: AppHeaderProps) {
                 <NavLink href="/ustalar" active={pathname.startsWith('/ustalar')}>Ustalar</NavLink>
                 <NavLink href="/yardim" active={pathname === '/yardim'}>Yardım</NavLink>
                 <NavLink href="/giris" className="nav-login" active={pathname === '/giris'}>Giriş Yap</NavLink>
-                <NavLink className="join-link" href="/usta-basvurusu" active={pathname === '/usta-basvurusu'}>Usta olarak katıl</NavLink>
+                <NavLink className="join-link" href="/usta/kayit" active={pathname === '/usta/kayit'}>Usta olarak katıl</NavLink>
               </>
             )}
 
@@ -138,7 +138,7 @@ export default function AppHeader({ role: explicitRole }: AppHeaderProps) {
                 <NavLink href="/usta/talepler" active={pathname === '/usta/talepler'}>Gelen Talepler</NavLink>
                 <NavLink href="/usta/musaitlik" active={pathname === '/usta/musaitlik'}>Müsaitlik</NavLink>
                 <NavLink href="/islerim" active={pathname.startsWith('/islerim')}>İşlerim</NavLink>
-                <NavLink href="/usta-basvurusu" className="nav-action-button" active={pathname === '/usta-basvurusu'}>Belgelerim / Profil</NavLink>
+                <NavLink href="/usta-basvurusu" className="nav-action-button profile-nav-btn" active={pathname === '/usta-basvurusu'}>Belgelerim / Profil</NavLink>
                 <NavLink href="/yardim" active={pathname === '/yardim'}>Destek</NavLink>
                 <button
                   type="button"
@@ -217,7 +217,7 @@ export default function AppHeader({ role: explicitRole }: AppHeaderProps) {
                   <NavLink href="/taleplerim" active={false} onClick={closeMobileMenu}>Taleplerim</NavLink>
                   <NavLink href="/islerim" active={false} onClick={closeMobileMenu}>İşlerim</NavLink>
                   <NavLink href="/giris" active={pathname === '/giris'} onClick={closeMobileMenu}>Kayıt Ol / Giriş Yap</NavLink>
-                  <NavLink className="mobile-join" href="/usta-basvurusu" active={pathname === '/usta-basvurusu'} onClick={closeMobileMenu}>Usta Olarak Katıl</NavLink>
+                  <NavLink className="mobile-join" href="/usta/kayit" active={pathname === '/usta/kayit'} onClick={closeMobileMenu}>Usta Olarak Katıl</NavLink>
                   <NavLink className="mobile-help" href="/yardim" active={pathname === '/yardim'} onClick={closeMobileMenu}>Yardım Merkezi</NavLink>
                 </>
               )}

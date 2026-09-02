@@ -2,6 +2,11 @@ import {describe,expect,it} from 'vitest';
 import {landingPathForRoles,safeNextPath} from '../../app/lib/authRedirect';
 
 describe('auth redirects',()=>{
+  it('preserves the wizard return query for new and existing accounts',()=>{
+    const next='/?resume=1&service=tv-duvar-montaji';
+    expect(landingPathForRoles([],next)).toBe(next);
+    expect(landingPathForRoles(['customer'],next)).toBe(next);
+  });
   it('rejects external and protocol-relative redirects',()=>{
     expect(safeNextPath('https://example.com')).toBeNull();
     expect(safeNextPath('//example.com')).toBeNull();

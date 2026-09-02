@@ -1,0 +1,15 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 1rem;
+  margin-block: 1.5rem;
+}
+.filters label { display: grid; gap: .5rem; flex: 1 1 12rem; min-width: 0; }
+.filters select { width: 100%; min-height: 44px; font: inherit; padding: .5rem; }
+.filters button, .filters a { min-height: 44px; display: inline-flex; align-items: center; }
+@media (max-width: 480px) {
+  .filters { flex-direction: column; align-items: stretch; }
+  .filters label { flex: auto; }
+  .filters button { white-space: normal; }
+}

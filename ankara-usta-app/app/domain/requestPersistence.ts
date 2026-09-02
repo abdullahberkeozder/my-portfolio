@@ -3,6 +3,7 @@ import { services } from '../data/serviceTaxonomy';
 import { getWizardDefinition } from '../data/wizardDefinitions';
 import { getVisibleWizardQuestions } from './wizard';
 import { normalizeRequestTiming } from './requestTiming';
+import { requestRoutingSchema } from './requestRouting';
 
 export const DEFAULT_DRAFT_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -14,7 +15,7 @@ export const requestDraftPayloadSchema = z.object({
   neighborhood: z.string().trim().max(120).optional(),
   preferredTiming: z.string().trim().max(120).optional(),
   createdAt: z.number().int().positive().optional(),
-});
+}).and(requestRoutingSchema);
 
 export type RequestDraftPayload = z.infer<typeof requestDraftPayloadSchema>;
 

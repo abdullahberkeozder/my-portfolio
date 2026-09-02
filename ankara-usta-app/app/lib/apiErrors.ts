@@ -10,6 +10,7 @@ const ERROR_CODE_MAP: Record<string, { message: string; status: number }> = {
   '23505': { message: 'Bu kayıt zaten mevcut veya daha önce oluşturulmuş.', status: 409 },
   '23503': { message: 'İlişkili kayıt bulunamadı veya silinmiş.', status: 400 },
   '23502': { message: 'Zorunlu bir alan eksik bırakıldı.', status: 400 },
+  '23514': { message: 'Talep veya seçilen ustanın uygunluğu değişti. Hizmet, bölge ve usta durumunu kontrol edin.', status: 422 },
   '22P02': { message: 'Geçersiz veri biçimi veya kimlik formatı.', status: 400 },
   '42501': { message: 'Bu işlem için yetkiniz bulunmuyor.', status: 403 },
 

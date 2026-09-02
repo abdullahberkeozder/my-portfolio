@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import AppHeader from '../../components/AppHeader';
 import { services } from '../../data/serviceTaxonomy';
 import { createSupabaseServerClient } from '../../lib/supabase/server';
+import { directedRequestsEnabled } from '../../lib/directedRequests';
+import styles from '../directory.module.css';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,7 +29,7 @@ export default async function PublicTradespersonPage({ params }: { params: Promi
     <main className="account-shell public-profile-page">
       <AppHeader />
       <div className="public-profile-container">
-        <Link className="account-back" href="/taleplerim">← Tekliflere dön</Link>
+        <Link className="account-back" href="/ustalar">← Ustalara dön</Link>
         <header className="public-profile-hero">
           <div className="public-profile-monogram" aria-hidden="true">{profile.display_name.slice(0, 1).toLocaleUpperCase('tr-TR')}</div>
           <div>
@@ -41,6 +43,15 @@ export default async function PublicTradespersonPage({ params }: { params: Promi
           </div>
         </header>
         {hasLoadError ? <p className="account-message" role="status">Bazı profil kanıtları şu anda yüklenemedi.</p> : null}
+        {directedRequestsEnabled() && verificationResult.data===true && !servicesResult.error && !areasResult.error && areasResult.data?.length && servicesResult.data?.length ? <section className="account-card">
+          <h2>Bu ustadan teklif al</h2>
+          <p>İşinizi aynı talep adımlarıyla anlatın. Talebiniz diğer ustalara açılmaz. Göndermeden önce giriş yapmanız istenir.</p>
+          <form className={styles.filters} action={`/ustalar/${id}/talep`} method="get">
+            <label htmlFor="direct-service">Hangi hizmete ihtiyacınız var?
+            <select id="direct-service" name="service" required>{servicesResult.data.map(item=>{const service=services.find(s=>s.id===item.service_id);return service?<option key={service.id} value={service.id}>{service.name}</option>:null;})}</select></label>
+            <button className="dialog-primary" type="submit">Bu ustadan teklif al</button>
+          </form>
+        </section> : null}
         <div className="public-profile-grid">
           <section className="account-card"><h2>Hizmetler</h2><ul>{serviceNames.map(name => <li key={name}>{name}</li>)}</ul></section>
           <section className="account-card"><h2>Çalışma bölgeleri</h2><ul>{(areasResult.data ?? []).map(area => <li key={`${area.district}-${area.neighborhood ?? ''}`}>{area.neighborhood ? `${area.neighborhood}, ` : ''}{area.district}</li>)}</ul></section>

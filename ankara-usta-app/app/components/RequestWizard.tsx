@@ -16,28 +16,38 @@ import { normalizeRequestTiming, requestTimings, requestTimingLabel } from '../d
 import { CategoryIcon } from './CategoryIcon';
 import { trackFunnel } from '../lib/analytics';
 import {WizardLocationStep,WizardMediaStep,WizardQuestionStep,WizardSummaryStep} from './wizard/WizardStepScreens';
+import AccountDraftBoundary, {type DraftScope} from './AccountDraftBoundary';
+import {requestDraftKind, requestResumePath, requestRoutingSchema, type RequestTarget} from '../domain/requestRouting';
 
-type Props = { service: Service; onClose: () => void; remoteDraft?: LocalDraft };
+type Props = { service: Service; onClose: () => void; remoteDraft?: LocalDraft; targetProfessional?: RequestTarget };
 type LocalDraft = {
   answers: Record<string, string>;
   district: string;
   neighborhood: string;
   timing: string;
   step: number;
+  questionIndex?: number;
+  pendingMediaCount?: number;
   idempotencyKey: string;
   requestId?: string;
   updatedAt: number;
+  routingMode?: 'open' | 'direct';
+  targetProfessionalId?: string;
 };
 type ApiBody = { error?: string; request?: { id: string } };
 
-function readLocalDraft(storageKey: string): LocalDraft | undefined {
+export function readLocalDraft(storageKey: string, storage:Storage = localStorage): LocalDraft | undefined {
   if (typeof window === 'undefined') return undefined;
   try {
-    const saved = localStorage.getItem(storageKey);
+    const saved = storage.getItem(storageKey);
     if (!saved) return undefined;
     const draft = JSON.parse(saved) as LocalDraft;
+    if (!draft || !draft.answers || typeof draft.answers !== 'object' || Array.isArray(draft.answers) ||
+      !Object.values(draft.answers).every(value => typeof value === 'string') ||
+      !Number.isInteger(draft.step) || draft.step < 0 || draft.step > 3 ||
+      typeof draft.idempotencyKey !== 'string') return undefined;
     if (!draft.updatedAt || Date.now() - draft.updatedAt > 7 * 24 * 60 * 60 * 1000) {
-      localStorage.removeItem(storageKey);
+      storage.removeItem(storageKey);
       return undefined;
     }
     return draft;
@@ -73,13 +83,23 @@ const resultContent = {
   },
 };
 
-export default function RequestWizard({ service, onClose, remoteDraft }: Props) {
+export default function RequestWizard(props:Props) {
+  return <AccountDraftBoundary key={requestDraftKind(props.service.id,props.targetProfessional?.id)} kind={requestDraftKind(props.service.id,props.targetProfessional?.id)} ttl={7*86400000}>
+    {scope=><ScopedRequestWizard {...props} scope={scope}/>}
+  </AccountDraftBoundary>;
+}
+
+function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfessional }: Props & {scope:DraftScope}) {
   const router = useRouter();
   const dialogRef = useModalDialog<HTMLElement>(true, onClose);
   const formRef = useRef<HTMLDivElement>(null);
   const definition = getWizardDefinition(service.id);
-  const storageKey = `ankara-usta:draft:${service.id}`;
-  const [initialDraft] = useState(() => remoteDraft ?? readLocalDraft(storageKey));
+  const storageKey = scope.key;
+  const [initialDraft] = useState(() => (!scope.discardRemote && !scope.preferLocal ? remoteDraft : undefined) ?? readLocalDraft(storageKey,scope.storage));
+  const routingMode = targetProfessional ? 'direct' as const : 'open' as const;
+  const targetProfessionalId = targetProfessional?.id;
+  const savedRouting = requestRoutingSchema.safeParse(initialDraft ?? {});
+  const routingConflict = Boolean(initialDraft && (!savedRouting.success || savedRouting.data.targetProfessionalId !== targetProfessionalId));
   const [step, setStep] = useState(initialDraft?.step ?? 0);
   const [answers, setAnswers] = useState<Record<string, string>>(initialDraft?.answers ?? {});
   const [files, setFiles] = useState<File[]>([]);
@@ -93,9 +113,12 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
   const [requestId, setRequestId] = useState<string | undefined>(initialDraft?.requestId);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const [needsAuth, setNeedsAuth] = useState(false);
+  const resumePath = requestResumePath(service.id,targetProfessionalId);
   const [mediaMessage, setMediaMessage] = useState('');
   const [showMobileReceipt, setShowMobileReceipt] = useState(false);
   const [requestedQuestionIndex, setQuestionIndex] = useState(() => {
+    if (Number.isInteger(initialDraft?.questionIndex) && initialDraft!.questionIndex! >= 0) return initialDraft!.questionIndex!;
     const initialQuestions = getVisibleWizardQuestions(definition, initialDraft?.answers ?? {});
     const firstUnanswered = initialQuestions.findIndex(question => !initialDraft?.answers?.[question.id]);
     return firstUnanswered === -1 ? Math.max(initialQuestions.length - 1, 0) : firstUnanswered;
@@ -104,12 +127,16 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
   const questions = getVisibleWizardQuestions(definition, answers);
   const questionIndex = Math.min(requestedQuestionIndex, Math.max(questions.length - 1, 0));
   const category = serviceCategories.find(item => item.id === service.categoryId);
-  const result = resultContent[service.deliveryModel];
+  const result = targetProfessional ? {
+    eyebrow: 'USTAYA ÖZEL TALEP', title: `${targetProfessional.name} için talep özeti`,
+    copy: 'Ustalar arasında yalnızca seçtiğiniz usta görebilir. Ustanın yanıt süresi gönderimden itibaren 48 saattir; bu bir hizmet veya randevu garantisi değildir. Yanıt gelmezse talebiniz kendiliğinden diğer ustalara açılmaz.',
+    cta: 'Bu ustaya talebi gönder',
+  } : resultContent[service.deliveryModel];
   const activeQuestion = questions[questionIndex];
   const activeQuestionId = activeQuestion?.id;
   const activeAnswer = activeQuestionId ? answers[activeQuestionId] : undefined;
   const questionCount = questions.length;
-  const locationComplete = Boolean(district && neighborhood.trim());
+  const locationComplete = Boolean(district && neighborhood.trim() && (!targetProfessional || targetProfessional.districts.includes(district)));
   const availableNeighborhoods = district ? ankaraNeighborhoods[district] ?? [] : [];
   const safetyGuidance = getWizardSafetyGuidance(service.id, answers);
   const scopeComplete = questions.every(question => Boolean(answers[question.id]));
@@ -124,18 +151,23 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
   }, [step, questionIndex]);
 
   useEffect(() => {
+    if (routingConflict) return;
     const draft: LocalDraft = {
+      routingMode, targetProfessionalId,
       answers,
       district,
       neighborhood,
       timing,
       step,
+      questionIndex,
+      pendingMediaCount: files.length || initialDraft?.pendingMediaCount || 0,
       idempotencyKey,
       requestId,
       updatedAt: Date.now(),
     };
-    localStorage.setItem(storageKey, JSON.stringify(draft));
-  }, [answers, district, idempotencyKey, neighborhood, requestId, step, storageKey, timing]);
+    try { scope.storage.setItem(storageKey, JSON.stringify(draft)); }
+    catch { /* The auth handoff explicitly checks storage before leaving. */ }
+  }, [answers, district, idempotencyKey, neighborhood, requestId, step, storageKey, timing, questionIndex, files.length, initialDraft?.pendingMediaCount, scope.storage, routingMode, targetProfessionalId, routingConflict]);
 
   function filesChanged(event: ChangeEvent<HTMLInputElement>) {
     const selectedFiles = Array.from(event.target.files ?? []);
@@ -158,10 +190,14 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
   }
 
   const saveDraft = useCallback(async (showAuthError = false) => {
+    // Guests may complete the wizard locally; membership is required only to persist/publish.
+    if (scope.guest) return undefined;
+    if (routingConflict) throw new Error('Taslağın seçili ustası değişmiş. Taslağı kapatıp doğru profilden devam edin.');
     const response = await fetch('/api/requests/draft', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        routingMode, targetProfessionalId,
         idempotencyKey,
         serviceId: service.id,
         answers,
@@ -172,17 +208,20 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
     });
     const body = (await response.json()) as ApiBody;
     if (response.status === 401) {
-      if (showAuthError)
+      if (showAuthError) {
+        setNeedsAuth(true);
         setMessage(
-          'Talebi göndermek için önce müşteri hesabınıza giriş yapın.'
+          'Yanıtlarınız saklandı. Giriş veya kayıt sonrasında bu adıma döneceksiniz; talebiniz otomatik gönderilmeyecek.'
         );
+      }
       return undefined;
     }
     if (!response.ok) throw new Error(body.error ?? 'Taslak kaydedilemedi.');
+    setNeedsAuth(false);
     if (!body.request) throw new Error('Sunucu geçerli bir taslak döndürmedi.');
     setRequestId(body.request.id);
     return body.request.id;
-  }, [answers, district, idempotencyKey, neighborhood, service.id, timing]);
+  }, [answers, district, idempotencyKey, neighborhood, service.id, timing, routingMode, targetProfessionalId, routingConflict, scope.guest]);
 
   const continueFromScope = useCallback(async () => {
     setStep(1);
@@ -267,10 +306,14 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
   }
 
   async function submitRequest() {
+    if (!scopeComplete || !locationComplete) {
+      setMessage('Kapsam sorularını ve ustanın çalıştığı bölgedeki konumunuzu tamamlayın.');
+      return;
+    }
     setBusy(true);
     setMessage('');
     try {
-      const targetRequestId = (await saveDraft(true)) ?? requestId;
+      const targetRequestId = await saveDraft(true);
       if (!targetRequestId) return;
       await uploadFiles(targetRequestId);
 
@@ -280,8 +323,13 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
         body: JSON.stringify({ idempotencyKey }),
       });
       const body = (await response.json()) as ApiBody;
+      if (response.status === 401) {
+        setNeedsAuth(true);
+        setMessage('Oturumunuz sona erdi. Giriş yaptıktan sonra aynı adımdan devam edebilirsiniz.');
+        return;
+      }
       if (!response.ok) throw new Error(body.error ?? 'Talep gönderilemedi.');
-      localStorage.removeItem(storageKey);
+      scope.storage.removeItem(storageKey);
       trackFunnel('wizard_completed', {serviceId:service.id, deliveryModel:service.deliveryModel});
       router.push('/taleplerim');
       router.refresh();
@@ -293,6 +341,8 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
   }
 
   const answeredCount = Object.keys(answers).length;
+
+  if (routingConflict) return <section role="alert" className="account-card">Taslağın hedefi bu usta ile eşleşmiyor. Güvenliğiniz için taslak değiştirilmedi. <button type="button" onClick={onClose}>Kapat</button></section>;
 
   return (
     <div className="dialog-backdrop wizard-backdrop frosted-backdrop" role="presentation" onClick={onClose}>
@@ -369,6 +419,7 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
 
         <div className="wizard-split-layout">
           <div className="wizard-form-side" ref={formRef}>
+            {targetProfessional && <p className="account-message">Seçili usta: <strong>{targetProfessional.name}</strong> · Başka ustalara gönderilmez.</p>}
             <div className="wizard-step-nav-bar">
               <div className="wizard-category-pill">
                 {category && <CategoryIcon categoryId={category.id} size={15} />}
@@ -517,7 +568,7 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
                       <span>İlçe Seçin</span>
                       <select value={district} onChange={event => { setDistrict(event.target.value); setNeighborhood(''); }}>
                         <option value="">İlçe seçin</option>
-                        {ankaraDistricts.map(item => (
+                        {ankaraDistricts.filter(item => !targetProfessional || targetProfessional.districts.includes(item)).map(item => (
                           <option key={item}>{item}</option>
                         ))}
                       </select>
@@ -571,6 +622,10 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
 
             {step === 3 && (
               <WizardSummaryStep kicker={result.eyebrow} title={result.title} description={result.copy}>
+                <p className="account-message">{targetProfessional ? `Talebin muhatabı: ${targetProfessional.name}.` : 'Uygun ustalardan teklif alınır.'} Talep size bağlıdır; yetkili operasyon ekibi gerektiğinde inceleyebilir.</p>
+                {Boolean(initialDraft?.pendingMediaCount) && files.length === 0 && (
+                  <p className="account-message" role="status">Önceki seçiminizdeki dosyalar henüz eklenmedi. <button type="button" onClick={() => setStep(1)}>Görsellere dön ve yeniden ekle</button></p>
+                )}
 
                 <div className="confirmation-meta-box">
                   <div className="meta-highlight-row">
@@ -587,9 +642,18 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
                   </div>
                 </div>
 
-                {message && (
-                  <p className="account-message" role="alert" aria-live="assertive">
-                    {message} {message.includes('giriş') && <Link href="/giris">Giriş sayfasına git</Link>}
+                {(message || scope.guest || needsAuth) && (
+                  <p className="account-message" role={message ? 'alert' : 'status'}>
+                    {message || 'Talebinizi göndermek için giriş yapın veya üye olun. Yanıtlarınız ve seçtiğiniz usta korunur; dönüşte bu özeti kontrol edip kendiniz gönderirsiniz.'} {(scope.guest || needsAuth) && <Link className="dialog-primary" href={`/giris?next=${encodeURIComponent(resumePath)}`} onClick={event => {
+                      try {
+                        scope.storage.setItem(storageKey, JSON.stringify({answers,district,neighborhood,timing,step,questionIndex,idempotencyKey,requestId,routingMode,targetProfessionalId,updatedAt:Date.now(),pendingMediaCount:files.length}));
+                        if(scope.guest)sessionStorage.setItem('orkestra:draft-handoff',storageKey);
+                      } catch {
+                        event.preventDefault();
+                        setMessage('Tarayıcı taslağı saklayamıyor. Bu sayfayı açık tutup ayrı sekmede giriş yapın, ardından burada yeniden gönderin.');
+                      }
+                    }}>Giriş yap / kayıt ol ve devam et</Link>}
+                    {(scope.guest || needsAuth) && files.length > 0 && ' Seçtiğiniz dosyaları dönüşte yeniden eklemeniz gerekecek; yanıtlarınız korunur.'}
                   </p>
                 )}
 
@@ -597,14 +661,14 @@ export default function RequestWizard({ service, onClose, remoteDraft }: Props) 
                   <Button variant="outline" onClick={() => setStep(2)} type="button">
                     ← Düzenle
                   </Button>
-                  <Button
+                  {!scope.guest && !needsAuth && <Button
                     variant="primary"
                     loading={busy}
                     onClick={() => void submitRequest()}
                     type="button"
                   >
                     {result.cta}
-                  </Button>
+                  </Button>}
                 </div>
               </WizardSummaryStep>
             )}

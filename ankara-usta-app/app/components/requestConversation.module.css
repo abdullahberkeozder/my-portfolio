@@ -1,0 +1,18 @@
+.room { width: 100%; max-width: 48rem; margin-inline: auto; min-width: 0; overflow-wrap: anywhere; }
+.room h1 { font-size: clamp(1.6rem,5vw,2.2rem); }
+.room p { line-height: 1.65; }
+.toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; }
+.room button, .job { min-height: 44px; padding: .65rem 1rem; font: inherit; white-space: normal; border: 1px solid var(--border-default); border-radius: var(--radius-control); }
+.room button { cursor: pointer; color: var(--text-primary); background: var(--surface-primary,white); }
+.room button:disabled { opacity: .6; cursor: not-allowed; }
+.hint, .room small, .messages time { font-size: .875rem; line-height: 1.5; }
+.messages { list-style: none; padding: .75rem; display: flex; flex-direction: column; gap: 1rem; max-height: 50dvh; overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--border-default); border-radius: var(--radius-control); }
+.messages:empty { display: none; }
+.messages li { max-width: 90%; padding: .8rem 1rem; border: 1px solid var(--border-default); border-radius: var(--radius-control); background: var(--surface-primary,white); }
+.messages li[data-own='true'] { align-self: flex-end; background: var(--brand-lemonade,#fffbe5); }
+.messages p { white-space: pre-wrap; margin-block: .4rem; }
+.room form { display: grid; gap: .75rem; margin-block: 1rem; }
+.room textarea { width: 100%; box-sizing: border-box; resize: vertical; padding: .8rem; font: inherit; color: inherit; background: var(--surface-primary,white); border: 1px solid var(--border-default); border-radius: var(--radius-control); }
+.room :is(button,textarea,a,ol):focus-visible { outline: 3px solid var(--action-primary); outline-offset: 3px; }
+.job { display: inline-flex; align-items: center; }
+@media(max-width: 390px) { .messages { padding: .5rem; } .messages li { max-width: 100%; } .toolbar button { flex: 1 1 auto; } }

@@ -1,0 +1,39 @@
+.screen { padding-inline: 16px; }
+.screen :global(.account-card-wrapper), .screen :global(.account-top-bar) { width: min(520px, 100%); }
+.screen :global(.account-card) { padding: 28px; }
+.screen :global(.account-title) { font-size: clamp(1.75rem, 5vw, 2rem); line-height: 1.2; }
+.screen :global(.account-subtitle) { font-size: 1rem; line-height: 1.55; }
+.screen :global(.account-card-header) { margin-bottom: 20px; }
+.groupLabel { font-size: .875rem; font-weight: 650; margin: 0 0 8px; color: var(--text-primary); }
+.screen .audience, .screen .mode { gap: 6px; background: transparent; padding: 0; }
+.screen .audience { margin-bottom: 20px; }
+.screen .mode { background: var(--surface-muted, #f4f5f3); padding: 4px; margin-bottom: 24px; }
+.screen .audience a, .screen .mode button {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  height: auto; min-height: 48px; padding: 10px 12px; min-width: 0;
+  font-size: 1rem; line-height: 1.4; color: var(--text-primary);
+  border: 1px solid var(--border-default); border-radius: var(--radius-control, 10px);
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+.screen .audience a[aria-current="page"] {
+  background: var(--brand-lemonade, #fff7cc); border-color: var(--action-primary);
+  box-shadow: inset 0 0 0 1px var(--action-primary); font-weight: 800;
+}
+.audience a[aria-current="page"]::before { content: '✓'; }
+.screen .mode button { border-color: transparent; }
+.screen .mode button[aria-pressed="true"] { background: white; color: var(--action-primary); box-shadow: 0 2px 5px #00000012; border-color: var(--border-default); font-weight: 800; }
+@media (hover: hover) {
+  .screen .audience a:hover { background: var(--brand-lemonade, #fff7cc); border-color: var(--action-primary); }
+  .screen .mode button:not(:disabled):hover { background: white; border-color: var(--action-primary); }
+}
+.screen a:focus-visible, .screen button:focus-visible { outline: 3px solid var(--action-primary); outline-offset: 3px; }
+.screen :global(.form-field-group) label { font-size: .875rem; }
+.screen :global(.form-field-group) input { font-size: 1rem; }
+.screen :global(.inline-text-btn), .screen :global(.password-toggle-btn) { min-height: 44px; }
+.screen :global(.label-with-action) { flex-wrap: wrap; gap: 4px 12px; }
+.screen :global(.account-card-footer) { line-height: 1.6; }
+@media (max-width: 380px) {
+  .screen :global(.account-card) { padding: 20px 16px; }
+  .screen :global(.account-top-bar) { gap: 12px; flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) { .screen .audience a, .screen .mode button { transition: none; } }

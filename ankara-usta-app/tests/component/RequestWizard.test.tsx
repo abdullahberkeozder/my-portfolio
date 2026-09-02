@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import RequestWizard from '../../app/components/RequestWizard';
@@ -9,10 +9,34 @@ vi.mock('next/navigation', () => ({
 }));
 
 const tvMounting = services.find((service) => service.id === 'tv-duvar-montaji');
+// Wizard mechanics are tested separately from authenticated draft ownership.
+vi.mock('../../app/components/AccountDraftBoundary',()=>({default:({children}:{children:(scope:unknown)=>unknown})=>children({key:'ankara-usta:draft:tv-duvar-montaji',storage:localStorage,guest:true})}));
 
 describe('RequestWizard', () => {
   beforeEach(() => {
     localStorage.clear();
+    vi.unstubAllGlobals();
+  });
+
+  it('keeps the summary draft and offers a safe return URL after authentication is required', async () => {
+    vi.stubGlobal('fetch',vi.fn().mockResolvedValue({status:401,ok:false,json:async()=>({error:'Oturum açmanız gerekiyor.'})}));
+    const draft={answers:{'tv-size':'32–49 inç','wall-type':'Beton / tuğla',bracket:'Evet, hazır'},district:'Çankaya',neighborhood:'Ayrancı',timing:'this_week',step:3,questionIndex:1,idempotencyKey:crypto.randomUUID(),updatedAt:Date.now()};
+    localStorage.setItem('ankara-usta:draft:tv-duvar-montaji',JSON.stringify(draft));
+    const view=render(<RequestWizard service={tvMounting!} onClose={vi.fn()} />);
+    expect(screen.queryByRole('button',{name:'Talebi ve Fişi Onayla'})).toBeNull();
+    expect(await screen.findByRole('link',{name:'Giriş yap / kayıt ol ve devam et'})).toHaveAttribute('href','/giris?next=%2F%3Fresume%3D1%26service%3Dtv-duvar-montaji');
+    await waitFor(()=>expect(JSON.parse(localStorage.getItem('ankara-usta:draft:tv-duvar-montaji')!).step).toBe(3));
+    view.unmount();
+    render(<RequestWizard service={tvMounting!} onClose={vi.fn()} />);
+    expect(screen.getByRole('link',{name:'Giriş yap / kayıt ol ve devam et'})).toBeVisible();
+    expect(JSON.parse(localStorage.getItem('ankara-usta:draft:tv-duvar-montaji')!).idempotencyKey).toBe(draft.idempotencyKey);
+    expect(fetch).not.toHaveBeenCalled(); // Guests never persist remotely or auto-submit.
+  });
+
+  it('restores the exact question rather than jumping to the first unanswered question',()=>{
+    localStorage.setItem('ankara-usta:draft:tv-duvar-montaji',JSON.stringify({answers:{'tv-size':'32–49 inç'},district:'',neighborhood:'',timing:'this_week',step:0,questionIndex:0,idempotencyKey:crypto.randomUUID(),updatedAt:Date.now()}));
+    render(<RequestWizard service={tvMounting!} onClose={vi.fn()} />);
+    expect(screen.getByRole('progressbar',{name:'Talep adımları'})).toHaveAttribute('aria-valuenow','1');
   });
 
   it('presents scope questions progressively and requires an answer before advancing', async () => {

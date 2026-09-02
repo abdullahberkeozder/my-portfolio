@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export type ComparableQuote = {
   id: string;
@@ -14,6 +15,7 @@ export type ComparableQuote = {
   includedScope: string[];
   excludedScope: string[];
   note: string | null;
+  detailHref?: string;
 };
 
 const money = (kurus: number) =>
@@ -220,6 +222,7 @@ export default function QuoteComparison({ quotes }: { quotes: ComparableQuote[] 
                     >
                       {busy === quote.id ? 'İşleniyor…' : 'Bu teklifi kabul et'}
                     </button>
+                    {quote.detailHref&&<Link className="account-back" href={quote.detailHref}>Sürümleri incele / revizyon iste →</Link>}
                   </td>
                 ))}
               </tr>

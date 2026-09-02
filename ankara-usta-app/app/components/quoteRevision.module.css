@@ -1,0 +1,26 @@
+.page { max-width: 52rem; margin-inline: auto; min-width: 0; overflow-wrap: anywhere; }
+.conditions { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 1rem; }
+.conditions legend { padding: 0; margin-bottom: .75rem; font-weight: 650; }
+.conditions label { display: grid; gap: .45rem; font-size: 1rem; line-height: 1.5; }
+.conditions input, .conditions textarea { min-width: 0; box-sizing: border-box; font: inherit; }
+.conditions>div { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.page h1 { font-size: clamp(1.6rem,5vw,2.2rem); }
+.page p, .form label, .form legend { font-size: 1rem; line-height: 1.6; }
+.form, .summary, .feedback { padding: clamp(1rem,4vw,1.5rem); margin-block: 1rem; border: 1px solid var(--border-default); border-radius: var(--radius-card); }
+.feedback { background: var(--brand-lemonade-soft); white-space: pre-wrap; }
+.form { display: grid; gap: .75rem; }
+.form fieldset { display: flex; flex-wrap: wrap; gap: .5rem 1rem; border: 0; padding: 0; }
+.form fieldset label { display: flex; align-items: center; gap: .6rem; min-height: 44px; }
+.form input { width: 1.2rem; height: 1.2rem; }
+.form textarea { width: 100%; box-sizing: border-box; font: inherit; padding: .75rem; border: 1px solid var(--border-default); border-radius: var(--radius-control); }
+.form small, .summary small { font-size: .875rem; }
+.page a, .form button { display: inline-flex; align-items: center; min-height: 44px; }
+.summary dl { margin: 0; }
+.summary dl>div { padding-block: .8rem; border-bottom: 1px solid var(--border-default); }
+.summary dt { font-weight: 650; }
+.summary dd { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: .4rem 0 0; white-space: pre-wrap; }
+.summary dd span { min-width: 0; overflow-wrap: anywhere; }
+.summary small { display: block; color: var(--text-secondary); margin-bottom: .25rem; }
+.page :is(a,button,input,textarea):focus-visible { outline: 3px solid var(--action-primary); outline-offset: 3px; }
+@media(max-width: 480px) { .summary dd { grid-template-columns: 1fr; } }
+@media(max-width: 390px) { .conditions>div { grid-template-columns: 1fr; } }
