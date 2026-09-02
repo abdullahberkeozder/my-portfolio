@@ -3,44 +3,37 @@ type OrchestraLogoProps = {
   className?: string;
   color?: string;
   accentColor?: string;
-  variant?: 'emerald' | 'dark' | 'burgundy' | 'gold' | 'white' | 'pistachio';
+  variant?: 'primary' | 'inverse' | 'emerald' | 'dark' | 'burgundy' | 'gold' | 'white' | 'pistachio';
 };
 
-const variantColors: Record<NonNullable<OrchestraLogoProps['variant']>, string> = {
-  emerald: '#0d7a5f',
-  pistachio: '#e3fed3',
-  dark: '#182608',
-  burgundy: '#3D0F19',
-  gold: '#eab308',
-  white: '#ffffff',
-};
-
-/** Six equal modules form a house, a local network and an assembled team. */
+/** Preserved five-circle mark. Primary is cobalt; inverse is yellow. */
 export default function OrchestraLogo({
   size = 36,
   className = '',
   color,
-  variant = 'emerald',
+  accentColor,
+  variant = 'primary',
 }: OrchestraLogoProps) {
-  const fill = color ?? variantColors[variant];
+  const inverse = ['inverse', 'white', 'pistachio'].includes(variant);
+  const fill = color ?? (inverse ? 'var(--brand-yellow, #FFDD00)' : 'var(--brand-cobalt, #1246B5)');
 
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 88 72"
+      viewBox="0 0 96 96"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={`orchestra-directional-logo ${className}`}
       aria-hidden="true"
+      focusable="false"
     >
       <g fill={fill} className="orchestra-modules">
-        <rect className="orchestra-module module-apex" x="34" y="0" width="20" height="20" />
-        <polygon className="orchestra-module module-left-roof" points="24,16 38,30 24,44 10,30" />
-        <polygon className="orchestra-module module-right-roof" points="64,16 78,30 64,44 50,30" />
-        <rect className="orchestra-module module-left-base" x="4" y="44" width="20" height="20" />
-        <rect className="orchestra-module module-center-base" x="34" y="44" width="20" height="20" />
-        <rect className="orchestra-module module-right-base" x="64" y="44" width="20" height="20" />
+        <circle className="orchestra-module module-north" cx="48" cy="20" r="17" />
+        <circle className="orchestra-module module-west" cx="20" cy="48" r="17" />
+        <circle className="orchestra-module module-south" cx="48" cy="76" r="17" />
+        <circle className="orchestra-module module-east" cx="76" cy="48" r="17" fill={accentColor ?? fill} />
+        <circle className="orchestra-module module-core" cx="48" cy="48" r="12" fill={fill} />
       </g>
     </svg>
   );
