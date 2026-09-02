@@ -194,6 +194,8 @@ export default function AppHeader({ role: explicitRole }: AppHeaderProps) {
             ref={mobileMenuRef}
             id="mobile-navigation"
             className="mobile-nav"
+            role="dialog"
+            aria-modal="true"
             aria-label="Mobil navigasyon"
             tabIndex={-1}
             onClick={event => event.stopPropagation()}

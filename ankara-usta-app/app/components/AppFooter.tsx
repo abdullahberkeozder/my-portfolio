@@ -33,10 +33,6 @@ export default function AppFooter() {
               Ankara’nın 9 pilot ilçesinde ev işi talebi oluşturma, teklif karşılaştırma ve iş takibi.
             </p>
 
-            <div className="footer-status-pill">
-              <span className="footer-status-dot" />
-              <span>Orkestra Hizmet Ağı Aktif</span>
-            </div>
           </div>
 
           <div className="footer-nav-col">
