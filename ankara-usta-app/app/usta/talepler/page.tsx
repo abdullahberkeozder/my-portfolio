@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import {requestTimingLabel} from '../../domain/requestTiming';
 import { redirect } from 'next/navigation';
 import { services } from '../../data/serviceTaxonomy';
 import { createSupabaseServerClient } from '../../lib/supabase/server';
@@ -61,7 +62,7 @@ export default async function TradespersonRequestsPage() {
                   <div>
                     <span>EŞLEŞME PUANI {match.score}</span>
                     <h2>{service?.name ?? request?.service_id}</h2>
-                    <p>{request?.neighborhood}, {request?.district} · {request?.preferred_timing}</p>
+                    <p>{request?.neighborhood}, {request?.district} · {requestTimingLabel(request?.preferred_timing ?? '')}</p>
                     <ul className="match-reasons">
                       {match.reasons.map(reason => (
                         <li key={reason}>{reason}</li>

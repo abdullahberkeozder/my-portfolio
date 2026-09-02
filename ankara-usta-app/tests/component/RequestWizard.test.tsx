@@ -57,7 +57,7 @@ describe('RequestWizard', () => {
 
     const oversized = new File(['x'], 'buyuk-video.mp4', { type: 'video/mp4' });
     Object.defineProperty(oversized, 'size', { value: 52_428_801 });
-    await user.upload(screen.getByLabelText(/Dosya seçin veya buraya sürükleyin/i), oversized);
+    await user.upload(screen.getByLabelText(/Fotoğraf veya video seçin/i), oversized);
 
     expect(screen.getByRole('alert')).toHaveTextContent(/50 MB sınırını aşıyor/i);
   });
@@ -111,5 +111,33 @@ describe('RequestWizard', () => {
     expect(screen.getByRole('button', { name: 'Kapat' })).toHaveFocus();
     await user.keyboard('{Escape}');
     expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('does not hijack Enter on the close button after answering', async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    render(<RequestWizard service={tvMounting!} onClose={onClose} />);
+    await user.click(screen.getByLabelText('32–49 inç'));
+    screen.getByRole('button', {name: 'Kapat'}).focus();
+    await user.keyboard('{Enter}');
+    expect(onClose).toHaveBeenCalledOnce();
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '1');
+  });
+
+  it('allows selected media to be removed and preserves it after an invalid selection', async () => {
+    const user = userEvent.setup();
+    render(<RequestWizard service={tvMounting!} onClose={vi.fn()} />);
+    for (const option of ['32–49 inç', 'Beton / tuğla', 'Evet, hazır']) {
+      await user.click(screen.getByLabelText(option));
+      await user.click(screen.getByRole('button', {name: /Sonraki soru|Görsellere devam et/i}));
+    }
+    const input = screen.getByLabelText(/Fotoğraf veya video seçin/i);
+    await user.upload(input, new File(['x'], 'test.jpg', {type:'image/jpeg'}));
+    const oversized = new File(['x'], 'big.mp4', {type:'video/mp4'});
+    Object.defineProperty(oversized, 'size', {value:52_428_801});
+    await user.upload(input, oversized);
+    expect(screen.getByText('test.jpg')).toBeVisible();
+    await user.click(screen.getByRole('button', {name:'test.jpg dosyasını kaldır'}));
+    expect(screen.queryByText('test.jpg')).not.toBeInTheDocument();
   });
 });

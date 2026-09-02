@@ -155,7 +155,8 @@ Provider setup and operational details are documented in [`services/AnkaraUsta.N
 - React Testing Library covers component behavior and keyboard interaction.
 - Playwright covers responsive layouts, accessibility, wizard persistence, authentication preflight, and cross-role workflows.
 - The .NET contract suite verifies outbox delivery and Resend idempotency headers without sending a real email.
-- Protected CI credentials enable remote Supabase RLS, Storage, and concurrency journeys on `main`.
+- The `supabase-integration` CI job runs authenticated role-routing journeys on `main` when all eight required environment secrets are configured: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and the `E2E_CUSTOMER`, `E2E_TRADESPERSON`, and `E2E_ADMIN` email/password pairs.
+- Temporarily, missing integration credentials skip that suite with an explicit workflow warning and summary. This is not a passing authenticated test result. Once configured, strict preflight and test failures remain blocking; lint, type-check, unit tests, build, and smoke tests remain unchanged.
 
 ## Known Limitations
 

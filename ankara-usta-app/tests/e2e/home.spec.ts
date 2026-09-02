@@ -4,9 +4,9 @@ test('customer can classify a service from the homepage', async ({ page }) => {
   await page.goto('/');
   await page.waitForLoadState('networkidle');
 
-  await expect(page.getByRole('heading', { name: /Her iş, doğru parçalar/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /İşini anlat.*Doğru ustayla buluş/ })).toBeVisible();
   await page.getByRole('textbox', { name: 'İhtiyacınızı yazın' }).fill('tavandan su geliyor');
-  await page.getByRole('button', { name: 'Zanaatkar Bul' }).click();
+  await page.getByRole('button', { name: 'Hizmet bul' }).click();
 
   const classificationDialog = page.getByRole('dialog', { name: 'İhtiyacınızı doğru anladık mı?' });
   await expect(classificationDialog).toBeVisible();
