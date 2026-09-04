@@ -61,7 +61,7 @@ const resultContent = {
     eyebrow: 'PAKET HİZMET',
     title: 'Standart kapsamlı talep',
     copy: 'Kapsamınız standart bir işe karşılık geliyor. Talebiniz, seçtiğiniz zaman tercihiyle uygun ve başvurusu onaylanmış hizmet verenlere iletilecek.',
-    cta: 'Talebi ve Fişi Onayla',
+    cta: 'Talebi onayla ve gönder',
   },
   quote: {
     eyebrow: 'TEKLİF MODELİ',
@@ -328,7 +328,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
       if (!response.ok) throw new Error(body.error ?? 'Talep gönderilemedi.');
       try { scope.storage.removeItem(storageKey); } catch { /* Submission already succeeded. */ }
       trackFunnel('wizard_completed', {serviceId:service.id, deliveryModel:service.deliveryModel});
-      router.push('/taleplerim');
+      router.push(`/taleplerim/${targetRequestId}/teklifler?created=1`);
       router.refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Talep gönderilemedi.');

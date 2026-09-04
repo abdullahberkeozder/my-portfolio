@@ -8,7 +8,7 @@ Orkestra is a local services marketplace prototype designed to connect customers
 - Natural-language classification that turns a customer's problem into relevant service candidates
 - A centralized taxonomy containing six main categories and 26 services
 - Packaged-service, quote-comparison, and on-site assessment delivery models
-- Working scope-question wizards for six representative services
+- Runtime-validated, service-specific scope-question wizards for all 26 catalog services
 - UI-independent domain models, runtime schemas, and request/job state machines
 - Media upload, location selection, and request-summary steps
 - Supabase-backed customer registration and sign-in
@@ -162,7 +162,7 @@ Provider setup and operational details are documented in [`services/AnkaraUsta.N
 ## Known Limitations
 
 - The hosted demo does not yet operate with a live pool of Ankara tradespeople.
-- Six high-priority services have specialized question trees; the remaining catalog uses a validated generic flow.
+- All 26 catalog services have service-specific question definitions. Their wording and branch quality still require calibration against anonymized production request language.
 - Matching weights are explainable but not yet calibrated with production completion data.
 - The notification worker needs separate deployment and server-only Supabase/Resend configuration.
 - Payments and calendar synchronization are not implemented and are not presented as current capabilities.

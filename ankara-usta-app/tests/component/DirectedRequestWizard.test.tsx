@@ -5,14 +5,15 @@ import RequestWizard from '../../app/components/RequestWizard';
 import {services} from '../../app/data/serviceTaxonomy';
 import {requestDraftKind,requestResumePath} from '../../app/domain/requestRouting';
 
-vi.mock('next/navigation',()=>({useRouter:()=>({push:vi.fn(),refresh:vi.fn()})}));
+const router=vi.hoisted(()=>({push:vi.fn(),refresh:vi.fn()}));
+vi.mock('next/navigation',()=>({useRouter:()=>router}));
 const auth=vi.hoisted(()=>({guest:false}));
 vi.mock('../../app/components/AccountDraftBoundary',()=>({default:({kind,children}:{kind:string;children:(scope:unknown)=>unknown})=>children({key:kind,storage:sessionStorage,guest:auth.guest})}));
 const target={id:'f31e936b-d492-4d9b-a44a-a6ce932976d0',name:'Test Ustası',districts:['Çankaya']};
 const service=services.find(s=>s.id==='tv-duvar-montaji')!;
 const key=requestDraftKind(service.id,target.id);
 const saved=()=>({answers:{'tv-size':'32–49 inç','wall-type':'Beton / tuğla',bracket:'Evet, hazır'},district:'Çankaya',neighborhood:'Ayrancı',timing:'this_week',step:3,questionIndex:1,idempotencyKey:crypto.randomUUID(),updatedAt:Date.now(),routingMode:'direct',targetProfessionalId:target.id});
-beforeEach(()=>{auth.guest=false;sessionStorage.clear();vi.unstubAllGlobals();});
+beforeEach(()=>{auth.guest=false;sessionStorage.clear();vi.unstubAllGlobals();router.push.mockClear();router.refresh.mockClear();});
 afterEach(cleanup);
 it('requires an explicit final confirmation from a signed-in member before publishing',async()=>{
   sessionStorage.setItem(key,JSON.stringify(saved()));
@@ -24,6 +25,7 @@ it('requires an explicit final confirmation from a signed-in member before publi
   await userEvent.click(screen.getByRole('button',{name:'Bu ustaya talebi gönder'}));
   await waitFor(()=>expect(fetchMock).toHaveBeenCalledTimes(2));
   expect(fetchMock.mock.calls[1][0]).toBe('/api/requests/draft-id/submit');
+  expect(router.push).toHaveBeenCalledWith('/taleplerim/draft-id/teklifler?created=1');
 });
 it('offers login again if the session expires between saving and publication',async()=>{
   sessionStorage.setItem(key,JSON.stringify(saved()));

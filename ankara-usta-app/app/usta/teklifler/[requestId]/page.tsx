@@ -10,6 +10,8 @@ import {services} from '../../../data/serviceTaxonomy';
 import {getWizardDefinition} from '../../../data/wizardDefinitions';
 import {createSupabaseServerClient} from '../../../lib/supabase/server';
 import {directedRequestsEnabled} from '../../../lib/directedRequests';
+import RequestScopeSummary from '../../../components/RequestScopeSummary';
+import type {DeliveryModel} from '../../../domain/models';
 
 export const dynamic='force-dynamic';
 
@@ -42,9 +44,8 @@ export default async function TradespersonQuotePage({params}:{params:Promise<{re
       <h1>{service?.name??request.service_id}</h1>
       <p>{request.neighborhood}, {request.district} · {requestTimingLabel(request.preferred_timing??'')}</p>
       {match&&<ul>{(match.reasons as string[]).map(reason=><li key={reason}>{reason}</li>)}</ul>}
-      <h2>İşin kapsamı</h2>
-      <dl>{questions.filter(q=>request.answers?.[q.id]).map(q=><div key={q.id}><dt>{q.label}</dt><dd>{String(request.answers[q.id])}</dd></div>)}</dl>
     </section>
+    <RequestScopeSummary serviceName={service?.name??request.service_id} deliveryModel={(service?.deliveryModel??request.delivery_model) as DeliveryModel} questions={questions} answers={request.answers??{}} district={request.district} neighborhood={request.neighborhood} timing={request.preferred_timing??''}/>
     {!active&&<p className="account-message">Bu talep yeni teklif veya ret yanıtı kabul etmiyor.</p>}
     <RequestConversationLinks requestId={requestId} professionalId={user.id}/>
     {revisionHref&&<section className="account-card"><h2>Teklifiniz ve revizyonlar</h2><Link href={revisionHref}>Müşterinin isteğini ve sürüm geçmişini incele →</Link></section>}

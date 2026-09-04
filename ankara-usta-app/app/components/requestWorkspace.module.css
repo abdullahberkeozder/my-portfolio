@@ -1,0 +1,85 @@
+.journey,
+.scope {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-surface);
+  margin: 24px 0;
+}
+
+.journey { overflow: hidden; }
+
+.journey ol {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  list-style: none;
+  margin: 0;
+  padding: 0 24px;
+}
+
+.journey li {
+  align-items: center;
+  border-bottom: 3px solid var(--border-default);
+  color: var(--text-secondary);
+  display: flex;
+  font-size: 14px;
+  font-weight: 650;
+  gap: 8px;
+  min-height: 56px;
+}
+
+.journey li span {
+  align-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  display: inline-flex;
+  flex: 0 0 20px;
+  height: 20px;
+  justify-content: center;
+  line-height: 1;
+}
+
+.journey li.complete { border-color: var(--brand-cobalt); color: var(--brand-cobalt); }
+.journey li.current { border-color: var(--brand-yellow); color: var(--text-primary); }
+.journey li.current span { background: var(--brand-yellow); border-color: var(--brand-yellow); }
+
+.nextStep {
+  align-items: center;
+  display: flex;
+  gap: 32px;
+  justify-content: space-between;
+  padding: 24px;
+}
+
+.nextStep span,
+.scope header span {
+  color: var(--text-secondary);
+  display: block;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 20px;
+}
+
+.nextStep h2,
+.scope h2 { font-size: 22px; letter-spacing: -.02em; line-height: 1.2; margin: 4px 0 8px; }
+.nextStep p { color: var(--text-secondary); line-height: 1.55; margin: 0; max-width: 68ch; }
+.nextStep a { align-items: center; background: var(--action-primary); border-radius: var(--radius-control); color: white; display: inline-flex; flex: none; font-weight: 700; min-height: 44px; padding: 0 18px; }
+.nextStep a:focus-visible { outline: 3px solid var(--brand-yellow); outline-offset: 3px; }
+
+.scope { padding: 24px; }
+.scope header { align-items: start; border-bottom: 1px solid var(--border-default); display: flex; justify-content: space-between; padding-bottom: 18px; }
+.scope header small { background: var(--brand-lemonade-soft); border-radius: var(--radius-control); color: var(--text-primary); font-size: 13px; padding: 7px 10px; }
+.scope dl { margin: 0; }
+.scope dl div { display: grid; gap: 24px; grid-template-columns: minmax(160px, .8fr) minmax(0, 1.2fr); padding: 15px 0; }
+.scope dl div + div { border-top: 1px solid var(--border-default); }
+.scope dt { color: var(--text-secondary); font-size: 14px; line-height: 22px; }
+.scope dd { color: var(--text-primary); font-size: 15px; font-weight: 650; line-height: 22px; margin: 0; overflow-wrap: anywhere; }
+
+@media (max-width: 640px) {
+  .journey ol { grid-template-columns: 1fr 1fr; padding: 0 16px; }
+  .journey li { min-height: 48px; }
+  .nextStep { align-items: stretch; flex-direction: column; gap: 18px; padding: 20px 16px; }
+  .nextStep a { justify-content: center; }
+  .scope { padding: 20px 16px; }
+  .scope header { gap: 12px; }
+  .scope dl div { gap: 4px; grid-template-columns: 1fr; }
+}

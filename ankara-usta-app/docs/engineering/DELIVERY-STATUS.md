@@ -29,6 +29,7 @@ No lower status implies a higher one. In particular, local verification is not e
 | M4, acceptance continuation | Yes | Yes | Targeted checks | No | No | Same-job recovery is locally covered; real race evidence is pending |
 | M5, inquiry and operational inbox | Yes | No | No | No | No | Planned in [marketplace plan](MARKETPLACE-REQUEST-AND-CONVERSATION-PLAN.md) |
 | Wizard R0/R1 baseline | Yes | Yes | Yes | Not run | No | Single task surface and editable final summary; [wizard research](WIZARD-REDESIGN-RESEARCH-2026-09-04.md) |
+| Golden vertical slice: Musluk Değişimi | Yes | Yes | Yes | No | No | Submission-to-workspace continuity and shared scope are locally covered; [slice evidence](GOLDEN-VERTICAL-SLICE-MUSLUK-2026-09-04.md) |
 | Wizard R2 completion receipt | Yes | No | No | No | No | Receipt must appear only after an authoritative successful submission |
 
 ## Rollout flags
