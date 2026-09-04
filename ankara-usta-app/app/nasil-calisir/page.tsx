@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import AppHeader from '../components/AppHeader';
 
 const customerSteps = [
   {
@@ -69,7 +68,7 @@ export default function HowItWorksPage() {
 
   return (
     <main className="account-shell how-it-works-page">
-      <AppHeader role="visitor" />
+
 
       <div style={{ maxWidth: '960px', margin: '48px auto 80px', padding: '0 20px' }}>
 

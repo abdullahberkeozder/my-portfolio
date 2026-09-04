@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import AppHeader from '../../components/AppHeader';
 import { services } from '../../data/serviceTaxonomy';
 import { createSupabaseServerClient } from '../../lib/supabase/server';
 import { directedRequestsEnabled } from '../../lib/directedRequests';
@@ -27,7 +26,7 @@ export default async function PublicTradespersonPage({ params }: { params: Promi
 
   return (
     <main className="account-shell public-profile-page">
-      <AppHeader />
+
       <div className="public-profile-container">
         <Link className="account-back" href="/ustalar">← Ustalara dön</Link>
         <header className="public-profile-hero">

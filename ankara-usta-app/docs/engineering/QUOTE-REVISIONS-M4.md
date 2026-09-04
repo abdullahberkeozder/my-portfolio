@@ -46,7 +46,7 @@ Security decisions follow the [Supabase function security guidance](https://supa
 
 No implementation commit was created. Base HEAD is `51d7e252ab8638beee4d7ffe064671edc48a9da3`; work remains uncommitted alongside preceding slices. No push, remote data change or deployment was performed. The existing jsdom navigation diagnostic and vinext static route-classification notice remain non-failing output.
 
-## Known limits and next slice
+## Known limits at the end of the first slice
 
 - Migration and real authorization/concurrency evidence are mandatory before activation. The feature flag controls the application surface, not direct Supabase RPC permissions.
 - No rejection/cancellation workflow for feedback, attachment support, message-to-feedback conversion, revision notifications or realtime revision subscription yet. Refresh/revisit the detail page to obtain current feedback.
@@ -62,3 +62,43 @@ No implementation commit was created. Base HEAD is `51d7e252ab8638beee4d7ffe0646
 2. Apply and test this additive migration along with its prerequisites. Execute the M4 matrix in [deferred validation](PRE-RELEASE-VALIDATION-BACKLOG.md), including direct RPC calls.
 3. Record the implementation commit and evidence before enabling the flag in that verified environment. Deployment remains a deliberate separate action.
 4. UI rollback: disable the flag and redeploy, leaving versions and feedback intact. For a security rollback, also revoke authenticated execution on both new public/private function pairs. Do not delete feedback, alter accepted terms, drop privacy policies or merge histories. Prefer a reviewed forward migration for schema corrections.
+
+## Second slice — comparison, explicit acceptance and handoff (2026-09-03)
+
+The first-slice limits above are historical. This continuation addresses comparison selection and final acceptance UX only; it does not implement all remaining negotiation features.
+
+- Comparison retains professional selection across quote-ID/version replacement, shows the latest version per professional, and still caps selection at three. Removed professionals no longer consume selection capacity.
+- Confirmation displays the exact version, precise currency amounts, duration, warranty, included/excluded scope and note. A changed quote or closed request invalidates the open confirmation; no silent upgrade or automatic acceptance occurs.
+- Native modal semantics provide a labelled dialog, background inertness and Escape handling. Initial focus is on cancel; closing restores the invoking control when still present. Scrollable terms and a separate action area use viewport bounds, white/lemonade tokens and 44 px minimum actions. Native focus trapping, screen readers and responsive behavior still need real-browser evidence.
+- The acceptance API requires `expectedUserId` and compares it with server-verified `getUser()`. Older bodyless API callers must update; the direct SQL RPC signature is unchanged. Responses are private/no-store and do not expose raw SQL error messages.
+- Before accepting, and after an RPC response, the API looks up a job by **both accepted quote ID and authenticated customer ID**. An already-created matching job is returned without creating another. A failed job read after successful RPC returns accepted status with a null job ID and a jobs-page fallback, not a false mutation failure.
+- The existing `accept_quote` transaction remains responsible for request locking, latest-version rejection and one-job creation. No SQL, policy, grant, role or feature-flag changes were made. This HTTP response-recovery behavior is not a claim of globally idempotent SQL acceptance or quote creation.
+- The UI prevents duplicate pending clicks, keeps the same quote for retry after an uncertain response, blocks already-accepted/closed actions and routes a successful result to its exact job. Errors are announced as errors rather than green success notices.
+- Removed unverified blanket approval wording and the assumption that a zero material amount means customer-supplied materials.
+
+### Verification record
+
+Base HEAD: `ca1db13d326e5f9c6fd72dd19cc0647d64ea3a8b`. No implementation commit, push, migration application, activation or release was performed in this continuation. Four unrelated pre-existing modified files were preserved.
+
+| Stage | Evidence |
+| --- | --- |
+| Implemented | Comparison, confirmation component/styles, parent wiring and existing acceptance API extended |
+| Targeted local checks | 12 tests passed across `quoteAcceptApi.test.ts` and `QuoteComparison.test.tsx` (11 new cases plus the existing max-three case) |
+| Type-check | Passed |
+| Final source build | Passed, including style entry-point validation. Existing vinext unknown-route classification notice remains non-failing. |
+| Full unit/component suite | 45 files: 43 passed, 2 failed; 232 tests passed, 4 failed. `AuthForm.test.tsx` and `QuoteRevision.test.tsx` expect old labels such as `Ad soyad` and `İşçilik (TL)`; current source already uses `Ad Soyad` and `İşçilik Ücreti (TL)`. These source-label changes are present in base HEAD, not introduced here. |
+| Lint | One remaining pre-existing error: `app/usta-basvurusu/page.tsx:148`, synchronous setState in effect. New acceptance files introduce no remaining lint errors. |
+| Whitespace | Scoped acceptance diff passes; whole working tree has existing trailing whitespace at `app/usta-basvurusu/page.tsx:145`. |
+| Real database / concurrency / multi-account | Not run. Mocked recovery tests do not prove RLS, transaction races or current deployed SQL. |
+| Browser / devices | Not run. jsdom modal methods are stubbed, not evidence of native focus trapping or physical-device layout. |
+| Release | Blocked pending the deferred evidence and outstanding repository checks |
+
+### Remaining implementation queue
+
+1. Decide explicit feedback withdrawal/rejection states without rewriting immutable history; implement as a separate migration-backed slice.
+2. Revision notifications and realtime/catch-up; keep authoritative reads and participant privacy.
+3. Account-scoped pending-edit recovery with expiry; do not place sensitive form data in unscoped browser storage.
+4. Global legacy quote idempotency/stale-base contract and history access after eligibility loss: review separately, never broaden request SELECT to make history work.
+5. Attachments and message-to-feedback conversion remain outside the text-first scope.
+
+Before activation, run the appended M4 acceptance checklist in the deferred validation backlog, including both direct RPC calls and HTTP callers. Roll back this UI/API slice together if required (the new request body is paired with the new caller); keep jobs and accepted terms intact. Disabling the revision flag alone does **not** disable the existing acceptance API or SQL permissions.

@@ -69,4 +69,13 @@ Evidence and limits: [M3 implementation log](PREJOB-CONVERSATIONS-M3.md). Pendin
 - [ ] Test customer feedback → professional prefilled edit → new version → customer change summary in two sessions, including auth return/account switch, network failure, current-version refresh, lost matching/history access and direct invitation expiry. Verify original open matching/quoting and max-three comparison behavior.
 - [ ] Test 320/390 px, tablet, desktop and keyboard, long scope lists and exact currency precision. Review advisors, rollback/revocation and retention; record actual commit and results before enabling `ORKESTRA_QUOTE_REVISIONS_ENABLED` or releasing.
 
-Evidence and limits: [M4 implementation log](QUOTE-REVISIONS-M4.md). Full acceptance/handoff UX and real concurrency proof remain later work, not completed by passing mocked local tests.
+Evidence and limits: [M4 implementation log](QUOTE-REVISIONS-M4.md). The second slice now implements acceptance/handoff UX; real concurrency and browser proof remain pending, not completed by passing mocked local tests.
+
+## M4 — Acceptance continuation: deferred verification
+
+- [ ] Verify actual `accept_quote` and quote mutation definitions, current participant jobs SELECT policies and unique job constraints before activation. No schema was applied in this continuation.
+- [ ] Race same-quote HTTP retries, different-professional acceptances, acceptance vs revision, and direct RPC callers. Only one job may exist; a losing different quote must never receive the winning job as its own successful acceptance.
+- [ ] Simulate lost response after commit and failed post-commit job SELECT. Exact-quote retries must recover only the authenticated customer's job. Test another customer, switched account, expired session, suspended/expired-verification professional and stale/closed quote.
+- [ ] Confirm accepted terms remain immutable, unrelated conversations remain private, and the final job link uses the winning job ID. Do not enable flags based on application mocks.
+- [ ] Inspect native modal focus trapping, initial cancel focus, Escape, restoration after version replacement/removal, loading/error announcements, 320/390 px/tablet/desktop, zoom, long scope and visible actions. Verify max-three selection survives realtime refresh.
+- [ ] Reconcile existing stale AuthForm/QuoteRevision test label expectations and the pre-existing usta-basvurusu effect lint failure before claiming a green quality gate. Record exact implementation commit and build/test evidence.

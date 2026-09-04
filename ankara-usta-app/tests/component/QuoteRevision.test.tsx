@@ -28,18 +28,18 @@ it('preserves the exact feedback after a failed acknowledgement',async()=>{
 it('prefills the original terms, previews changes and reuses the same base on retry',async()=>{
   fetchMock.mockRejectedValueOnce(new Error('Offline')).mockResolvedValue({ok:true,json:async()=>({quote:{id:'next',version:2}})});
   render(<QuoteForm requestId="request" currentVersion={1} initial={terms} baseQuoteId="base" currentUserId="professional"/>);
-  expect(screen.getByLabelText('İşçilik (TL)')).toHaveValue(150);expect(screen.getByLabelText('Tahmini süre (dakika)')).toHaveValue(90);
-  expect(screen.getByRole('button',{name:'Yeni teklif sürümünü gönder'})).toBeDisabled();
-  await userEvent.clear(screen.getByLabelText('İşçilik (TL)'));await userEvent.type(screen.getByLabelText('İşçilik (TL)'),'175');
+  expect(screen.getByLabelText('İşçilik Ücreti (TL)')).toHaveValue(150);expect(screen.getByLabelText('Tahmini Süre (Dakika)')).toHaveValue(90);
+  expect(screen.getByRole('button',{name:'Yeni Teklif Sürümünü Gönder →'})).toBeDisabled();
+  await userEvent.clear(screen.getByLabelText('İşçilik Ücreti (TL)'));await userEvent.type(screen.getByLabelText('İşçilik Ücreti (TL)'),'175');
   expect(screen.getByRole('region',{name:'Teklif değişiklik özeti'})).toHaveTextContent('Toplam');
-  await userEvent.click(screen.getByRole('button',{name:'Yeni teklif sürümünü gönder'}));await screen.findByRole('status');
-  expect(screen.getByLabelText('İşçilik (TL)')).toBeDisabled();await userEvent.click(screen.getByRole('button',{name:'Yeniden dene'}));
+  await userEvent.click(screen.getByRole('button',{name:'Yeni Teklif Sürümünü Gönder →'}));await screen.findAllByRole('alert');
+  expect(screen.getByLabelText('İşçilik Ücreti (TL)')).toBeDisabled();await userEvent.click(screen.getByRole('button',{name:'Yeniden dene'}));
   await waitFor(()=>expect(router.push).toHaveBeenCalledWith('/teklifler/next'));
   expect(fetchMock.mock.calls[0][0]).toBe('/api/quotes/base/revision');expect(fetchMock.mock.calls[0][1].body).toBe(fetchMock.mock.calls[1][1].body);
 });
 it('retains the original creation endpoint for a first quote',async()=>{
   fetchMock.mockResolvedValue({ok:true,json:async()=>({quote:{id:'first',version:1}})});
-  render(<QuoteForm requestId="request" currentVersion={0}/>);await userEvent.type(screen.getByLabelText('İşçilik (TL)'),'100');await userEvent.click(screen.getByRole('button',{name:'Yeni teklif sürümünü gönder'}));
+  render(<QuoteForm requestId="request" currentVersion={0}/>);await userEvent.type(screen.getByLabelText('İşçilik Ücreti (TL)'),'100');await userEvent.click(screen.getByRole('button',{name:'Yeni Teklif Sürümünü Gönder →'}));
   await screen.findByRole('status');expect(fetchMock.mock.calls[0][0]).toBe('/api/quotes');expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({requestId:'request',laborAmountKurus:10000});
 });
 it('shows explicit before/after labels and renders scope as plain text',()=>{

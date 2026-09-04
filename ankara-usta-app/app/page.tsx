@@ -7,9 +7,9 @@ import { getServiceSafetyGuidance, packageScopePreview } from './data/serviceGui
 import { ClassificationResult, classifyService } from './lib/classifyService';
 import RequestWizard from './components/RequestWizard';
 import OrchestraLogo from './components/OrchestraLogo';
-import AppHeader from './components/AppHeader';
 import { useModalDialog } from './hooks/useModalDialog';
 import Button from './components/Button';
+import matchStyles from './components/serviceMatch.module.css';
 import { trackFunnel } from './lib/analytics';
 
 export default function Home() {
@@ -88,7 +88,7 @@ export default function Home() {
 
   return (
     <main className="app-shell landing-page">
-      <AppHeader role="visitor" />
+
 
       {/* Yellow brand opening with a focused service search. */}
       <section className="orkestra-hero-zone" aria-labelledby="hero-title">
@@ -116,7 +116,9 @@ export default function Home() {
               className="orkestra-search-input"
               value={query}
               onChange={event => setQuery(event.target.value)}
-              placeholder="Hangi iş için yardıma ihtiyacın var?"
+              placeholder="Örn. mutfak musluğum su kaçırıyor"
+              required
+              maxLength={500}
             />
             <button type="submit" className="orkestra-search-btn" aria-label="Hizmet bul">
               Hizmet bul →
@@ -125,7 +127,7 @@ export default function Home() {
 
           {/* Quick Search Chips */}
           <div className="orkestra-chips-row chips-row-grid" aria-label="Hızlı arama etiketleri">
-            {['Musluk Değişimi', 'Tek Oda Boya', 'Avize Montajı', 'Priz Tamiri', 'Mobilya Kurulumu', 'TV Duvar Montajı'].map(hint => (
+            {['Musluk Değişimi', 'Tek Oda Boya', 'Avize Montajı'].map(hint => (
               <button
                 type="button"
                 className="orkestra-chip-pill"
@@ -145,40 +147,32 @@ export default function Home() {
           <div className="ensemble-statement">
             <span className="ensemble-kicker">EVDEKİ İŞLER, BİR ARADA</span>
             <h2 id="ensemble-title" className="ensemble-title">
-              Küçük bir tamir.<br />Büyük bir rahatlık.
+              Hangi iş için<br />usta arıyorsunuz?
             </h2>
             <p className="ensemble-desc">
-              Montaj, tesisat, boya veya temizlik. İhtiyacına uygun hizmeti seç; yapılacak işi birlikte netleştirelim.
+              Bir kategori açın, ihtiyacınıza uygun hizmeti seçin.
             </p>
           </div>
 
           <div className="ensemble-grid">
-            {serviceCategories.map((category, idx) => {
-              const catServices = servicesByCategory(category.id);
-              const numStr = (idx + 1).toString().padStart(2, '0');
-              return (
-                <button
-                  key={category.id}
-                  type="button"
-                  className="ensemble-card ensemble-card-interactive"
-                  onClick={() => startClassification(catServices[0]?.name || category.name)}
-                >
-                  <div style={{textAlign: 'left'}}>
-                    <span className="ensemble-card-num">{numStr} / KATEGORİ</span>
-                    <h3 className="ensemble-card-title">{category.name}</h3>
-                    <p className="ensemble-card-text">
-                      {catServices.map(s => s.name).slice(0, 3).join(', ')} ve {catServices.length} uzmanlık alanı.
-                    </p>
-                  </div>
-                  <div className="ensemble-card-arrow">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                      <polyline points="12 5 19 12 12 19" />
-                    </svg>
-                  </div>
-                </button>
-              );
-            })}
+            {serviceCategories.map(category => (
+              <details key={category.id} className="ensemble-card" name="service-category">
+                <summary>
+                  <span className="ensemble-card-num">{servicesByCategory(category.id).length} hizmet</span>
+                  <h3 className="ensemble-card-title">{category.name}</h3>
+                  <span className="ensemble-card-text">Hizmetleri göster <span aria-hidden="true">↓</span></span>
+                </summary>
+                <ul className="category-service-list">
+                  {servicesByCategory(category.id).map(service => (
+                    <li key={service.id}><button type="button" onClick={() => {
+                      trackFunnel('wizard_started', { serviceId: service.id });
+                      setRemoteDraft(undefined);
+                      setWizardServiceId(service.id);
+                    }}>{service.name} <span aria-hidden="true">→</span></button></li>
+                  ))}
+                </ul>
+              </details>
+            ))}
           </div>
         </div>
       </section>
@@ -187,25 +181,25 @@ export default function Home() {
       <section className="tr-section guarantee-section" aria-labelledby="guarantee-title">
         <div className="guarantee-header-row">
           <div className="guarantee-header-left">
-            <span className="guarantee-kicker">KORUMA & ŞEFFAFLIK</span>
-            <h2 id="guarantee-title" className="guarantee-title">Memnuniyetiniz, güvencemiz.</h2>
+            <span className="guarantee-kicker">SÜREÇ NASIL İŞLER?</span>
+            <h2 id="guarantee-title" className="guarantee-title">Karar sizde, kapsam kayıt altında.</h2>
             <p className="guarantee-subtitle">Talep kapsamı, teklifler, onaylar ve iş kayıtları aynı süreç içinde izlenebilir.</p>
           </div>
         </div>
         <div className="guarantee-grid">
           <article className="guarantee-card">
             <div className="guarantee-card-badge">01</div>
-            <h3>Şeffaf Kapsam ve Dijital Fiş</h3>
+            <h3>1. Yapılacak işi belirleyin</h3>
             <p>Seçtiğiniz seçenekler doğrulanabilir dijital talep fişine dönüşür; dahil ve hariç kapsam net olarak kayıt altına alınır.</p>
           </article>
           <article className="guarantee-card">
             <div className="guarantee-card-badge">02</div>
-            <h3>Kontrol Edilen Usta Başvuruları</h3>
+            <h3>2. Ustayı ve teklifini inceleyin</h3>
             <p>Usta başvuruları operasyon ekibi tarafından incelenir; yalnız kontrolü tamamlanan belge türleri ayrı doğrulama bilgisi olarak gösterilir.</p>
           </article>
           <article className="guarantee-card">
             <div className="guarantee-card-badge">03</div>
-            <h3>Müşteri Onaylı İş Günlüğü</h3>
+            <h3>3. Anlaşın ve işi takip edin</h3>
             <p>İşin kapsamı, değişiklikleri ve görsel kayıtları müşteri kabulüyle birlikte dijital iş günlüğünde tutulur.</p>
           </article>
         </div>
@@ -215,66 +209,57 @@ export default function Home() {
 
       {/* Classification Match Dialog */}
       {dialog && classification && (
-        <div className="dialog-backdrop" role="presentation" onClick={() => setDialog(false)}>
+        <div className={matchStyles.backdrop} role="presentation" onClick={() => setDialog(false)}>
           <section
             ref={classificationDialogRef}
             tabIndex={-1}
-            className="request-dialog classification-dialog"
+            className={matchStyles.dialog}
             role="dialog"
             aria-modal="true"
             aria-labelledby="dialog-title"
             onClick={event => event.stopPropagation()}
           >
-            <button data-dialog-initial-focus className="dialog-close" onClick={() => setDialog(false)} aria-label="Kapat">×</button>
-            <span className="account-eyebrow">HİZMET EŞLEŞTİRME</span>
+            <button data-dialog-initial-focus className={matchStyles.close} onClick={() => setDialog(false)} aria-label="Kapat">×</button>
+            <span className={matchStyles.eyebrow}>HİZMET EŞLEŞTİRME</span>
             <h2 id="dialog-title">İhtiyacınızı Doğru Anladık mı?</h2>
-            <p className="query-echo">“{classification.query}”</p>
+            <p className={matchStyles.query}>“{classification.query}”</p>
             {classification.candidates.length > 0 ? (
               <>
-                <div className="progressive-match-hero">
-                  <div className="match-hero-top">
-                    <span className={`confidence confidence-${classification.confidence}`}>
-                      {classification.confidence === 'high' ? '✓ Güçlü Eşleşme' : classification.confidence === 'medium' ? '● Muhtemel Eşleşme' : '○ Birlikte Netleştirelim'}
+                <div className={matchStyles.hero}>
+                  <div className={matchStyles.meta}>
+                    <span className={matchStyles.confidence}>
+                      {selectedServiceId !== classification.candidates[0]?.service.id ? 'Alternatif hizmet' : classification.confidence === 'high' ? '✓ Güçlü Eşleşme' : classification.confidence === 'medium' ? '● Muhtemel Eşleşme' : '○ Birlikte Netleştirelim'}
                     </span>
-                    <span className="match-category-tag">
+                    <span className={matchStyles.category}>
                       {serviceCategories.find(c => c.id === selectedClassificationService?.categoryId)?.name}
                     </span>
                   </div>
-                  <h3 className="match-service-headline">{selectedClassificationService?.name}</h3>
-                  <p className="match-single-rationale">
+                  <h3 className={matchStyles.serviceTitle}>{selectedClassificationService?.name}</h3>
+                  <p className={matchStyles.rationale}>
                     {classification.candidates.find(candidate => candidate.service.id === selectedServiceId)?.explanation}
                   </p>
                 </div>
 
                 {/* Primary & Secondary Action CTAs */}
-                <div className="match-actions-stack">
+                <div className={matchStyles.actions}>
                   <Button variant="primary" type="button" disabled={!selectedServiceId} onClick={continueToWizard}>
                     Bu Hizmetle Devam Et →
                   </Button>
-                  <button
-                    type="button"
-                    className="match-discovery-btn"
-                    onClick={() => {
-                      if (!selectedServiceId) return;
-                      setDialog(false);
-                      setWizardServiceId(selectedServiceId);
-                    }}
-                  >
-                    Emin Değilim, Keşif Talep Et
-                  </button>
+
                 </div>
 
                 {/* Scope Guidance accordion */}
                 {selectedClassificationService && (
-                  <details className="match-scope-details">
-                    <summary className="scope-details-summary">
-                      <span>Dahil & Hariç Kapsam Detayları</span>
+                  <details className={matchStyles.details}>
+                    <summary className={matchStyles.summary}>
+                      <span>Kapsam hakkında</span>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <polyline points="6 9 12 15 18 9" />
                       </svg>
                     </summary>
-                    <div className="scope-details-content">
-                      <div className="scope-col-included">
+                    <div className={matchStyles.scope}>
+                      <p className={matchStyles.scopeNote}>Bunlar genel kapsam başlıklarıdır. Kesin işçilik, malzeme ve hariç işler ustanın teklifinde netleşir.</p>
+                      <div className={matchStyles.scopeColumn}>
                         <strong>✓ Dahil Olanlar</strong>
                         <ul>
                           {packageScopePreview.included.map((item: string) => (
@@ -282,7 +267,7 @@ export default function Home() {
                           ))}
                         </ul>
                       </div>
-                      <div className="scope-col-excluded">
+                      <div className={matchStyles.scopeColumn}>
                         <strong>✕ Dahil Olmayanlar</strong>
                         <ul>
                           {packageScopePreview.excluded.map((item: string) => (
@@ -291,7 +276,7 @@ export default function Home() {
                         </ul>
                       </div>
                       {selectedSafetyGuidance && (
-                        <div className="scope-safety-alert">
+                        <div className={matchStyles.safety}>
                           <strong>Önemli Güvenlik Notu ({selectedSafetyGuidance.title}):</strong> {selectedSafetyGuidance.body}
                         </div>
                       )}
@@ -301,14 +286,14 @@ export default function Home() {
 
                 {/* Alternative Candidates */}
                 {classification.candidates.length > 1 && (
-                  <div className="match-alternatives-zone">
-                    <span className="alternatives-label">Diğer Olası Hizmetler:</span>
-                    <div className="alternatives-chips">
-                      {classification.candidates.slice(1, 4).map(candidate => (
+                  <div className={matchStyles.alternatives}>
+                    <span className={matchStyles.alternativesLabel}>Diğer Olası Hizmetler:</span>
+                    <div className={matchStyles.chips}>
+                      {classification.candidates.filter(candidate => candidate.service.id !== selectedServiceId).slice(0, 3).map(candidate => (
                         <button
                           type="button"
                           key={candidate.service.id}
-                          className={`alt-chip ${selectedServiceId === candidate.service.id ? 'active' : ''}`}
+                          className={matchStyles.chip}
                           onClick={() => setSelectedServiceId(candidate.service.id)}
                         >
                           {candidate.service.name}
@@ -319,9 +304,9 @@ export default function Home() {
                 )}
               </>
             ) : (
-              <div className="no-match-state">
+              <div className={matchStyles.empty}>
                 <p>Sorunuza uygun otomatik hizmet eşleştiremedik. Lütfen aşağıdaki kategorilerden birini seçin:</p>
-                <div className="manual-categories">
+                <div className={matchStyles.chips}>
                   {serviceCategories.map(category => (
                     <button
                       type="button"

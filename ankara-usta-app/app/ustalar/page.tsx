@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import AppHeader from '../components/AppHeader';
 import { services } from '../data/serviceTaxonomy';
 import { createSupabaseServerClient } from '../lib/supabase/server';
 import { ankaraDistricts } from '../data/ankaraLocations';
@@ -49,7 +48,7 @@ export default async function UstalarIndexPage({
   if (error) {
     return (
       <main className="account-shell">
-        <AppHeader />
+
         <div style={{ maxWidth: '980px', margin: '60px auto', padding: '0 16px', textAlign: 'center' }}>
           <div className="empty-state" style={{ background: 'white', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)' }}>
             <span className="empty-state-icon" role="img" aria-label="Hata">⚠️</span>
@@ -89,8 +88,8 @@ export default async function UstalarIndexPage({
 
   return (
     <main className="account-shell ustalar-page">
-      <AppHeader />
-      <div style={{ maxWidth: '980px', margin: '0 auto', padding: '32px 16px 80px' }}>
+
+      <div className="page-body">
         {/* Page header */}
         <div className="ustalar-header">
           <div>
@@ -149,10 +148,9 @@ export default async function UstalarIndexPage({
 
         {/* Content */}
         {!profiles || profiles.length === 0 ? (
-          <div className="empty-state" style={{ background: 'white', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)' }}>
-            <span className="empty-state-icon" role="img" aria-label="Sonuç yok">🔍</span>
-            <h2>Bu seçimde usta bulunamadı</h2>
-            <p>
+          <div className="empty-state" style={{ background: 'white', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', padding: '48px', textAlign: 'center' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 600, margin: '0 0 12px' }}>Bu kriterlere uygun usta bulunamadı</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
               {hasFilters
                 ? 'Filtre seçimlerinizi değiştirmeyi deneyin veya tüm ustaları görmek için filtreleri temizleyin.'
                 : 'Henüz onaylı usta bulunmuyor. İlk siz katılın!'}
@@ -161,17 +159,17 @@ export default async function UstalarIndexPage({
               <Link
                 href="/ustalar"
                 className="dialog-primary"
-                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', background: 'var(--brand-cobalt)', color: 'white' }}
+                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', background: 'var(--brand-cobalt)', color: 'white', minHeight: '44px', padding: '0 24px', borderRadius: 'var(--radius-control)' }}
               >
-                Tüm Ustaları Göster
+                Filtreleri Temizle
               </Link>
             ) : (
               <Link
                 href="/usta-basvurusu"
                 className="dialog-primary"
-                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', background: 'var(--brand-cobalt)', color: 'white' }}
+                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', background: 'var(--brand-cobalt)', color: 'white', minHeight: '44px', padding: '0 24px', borderRadius: 'var(--radius-control)' }}
               >
-                Usta Olarak Başvur →
+                Usta Olarak Başvur
               </Link>
             )}
           </div>

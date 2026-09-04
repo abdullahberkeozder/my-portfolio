@@ -1,13 +1,13 @@
 import Link from 'next/link';
-import NeighborhoodBond from './components/NeighborhoodBond';
-import AppHeader from './components/AppHeader';
+import OrchestraLogo from './components/OrchestraLogo';
+import OrkestraWordmark from './components/OrkestraWordmark';
 
 export default function NotFound() {
   return (
     <main className="account-shell not-found-page">
-      <AppHeader role="visitor" />
+
       <div style={{ maxWidth: '640px', margin: '80px auto', textAlign: 'center', padding: '0 20px' }}>
-        <NeighborhoodBond variant="matching" size={80} className="not-found-bond" />
+        <div className="system-state-brand"><OrchestraLogo size={44} /><OrkestraWordmark /></div>
         <span style={{ display: 'block', marginTop: '24px', color: 'var(--action-primary)', fontSize: '13px', fontWeight: 800, letterSpacing: '0.08em' }}>
           404 — SAYFA BULUNAMADI
         </span>

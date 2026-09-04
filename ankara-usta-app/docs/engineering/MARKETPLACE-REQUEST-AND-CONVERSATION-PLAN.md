@@ -1,7 +1,7 @@
 # Marketplace requests, conversations and negotiation
 
 Date: 2026-09-02
-Status: M0–M3 and the first M4 revision slice have source implementations; release remains gated. See [M0/M1 evidence](DIRECTED-REQUESTS-M0-M1.md), [M3 evidence](PREJOB-CONVERSATIONS-M3.md) and [M4 evidence](QUOTE-REVISIONS-M4.md).
+Status: M0–M3, M4 revisions and the M4 acceptance UI/API continuation have source implementations; release remains gated. See [M0/M1 evidence](DIRECTED-REQUESTS-M0-M1.md), [M3 evidence](PREJOB-CONVERSATIONS-M3.md) and [M4 evidence](QUOTE-REVISIONS-M4.md).
 Scope: Orkestra, currently located in `ankara-usta-app`.
 
 ## 1. Product decision
@@ -109,7 +109,7 @@ Persist messages before broadcasting; use stable IDs, server ordering and retry 
 
 ## 7. Sequenced delivery backlog
 
-M0/M1 now have a local source implementation; their verification gates are tracked in [implementation evidence](DIRECTED-REQUESTS-M0-M1.md). M2 also has a local implementation, tracked in [M2 evidence](REQUEST-INVITATIONS-M2.md). M3 text conversations are implemented with local application checks passing; database and multi-account verification remain pending in [M3 evidence](PREJOB-CONVERSATIONS-M3.md). The first M4 slice (revision request, new version and change summary) is implemented with local application checks in [M4 evidence](QUOTE-REVISIONS-M4.md). Remaining M4 acceptance work and M5 remain planned. No item is production-verified by this document.
+M0/M1 now have a local source implementation; their verification gates are tracked in [implementation evidence](DIRECTED-REQUESTS-M0-M1.md). M2 also has a local implementation, tracked in [M2 evidence](REQUEST-INVITATIONS-M2.md). M3 text conversations are implemented with local application checks passing; database and multi-account verification remain pending in [M3 evidence](PREJOB-CONVERSATIONS-M3.md). The first M4 slice (revision request, new version and change summary) is implemented with local application checks in [M4 evidence](QUOTE-REVISIONS-M4.md). M4 comparison/confirmation and same-job API recovery now have local targeted checks; full-suite baseline failures, real authorization/concurrency and browser verification remain open. Remaining feedback lifecycle work and M5 remain planned. No item is production-verified by this document.
 
 | Slice | Deliverable | Exit evidence |
 | --- | --- | --- |

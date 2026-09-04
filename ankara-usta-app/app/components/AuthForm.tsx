@@ -1,11 +1,10 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createSupabaseBrowserClient } from '../lib/supabase/browser';
 import { landingPathForRoles, safeNextPath } from '../lib/authRedirect';
-import NeighborhoodBond from './NeighborhoodBond';
 
 // Eye icon for password toggle
 function EyeIcon({ closed }: { closed?: boolean }) {
@@ -42,21 +41,29 @@ export default function AuthForm({
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const inFlight = useRef(false);
+  const emailInput = useRef<HTMLInputElement>(null);
+  const [registrationPending, setRegistrationPending] = useState(false);
+  const registrationNotice = 'Bu adresle yeni kayıt yapılabiliyorsa doğrulama e-postasını kontrol edin; gelen kutusu ve spam klasörüne bakın. Zaten hesabınız varsa giriş yapın veya parolanızı yenileyin.';
 
   function requestedPath() {
     return safeNextPath(nextPath);
   }
 
   async function authenticate(mode: 'sign-in' | 'sign-up') {
+    if (inFlight.current) return;
+    inFlight.current = true;
     setBusy(true);
     setMessage(null);
+    setRegistrationPending(false);
+    const submittedEmail = email.trim();
     try {
       const supabase = createSupabaseBrowserClient();
       const result =
         mode === 'sign-in'
-          ? await supabase.auth.signInWithPassword({ email, password })
+          ? await supabase.auth.signInWithPassword({ email: submittedEmail, password })
           : await supabase.auth.signUp({
-              email,
+              email: submittedEmail,
               password,
               options: {
                 data: { display_name: displayName.trim(), registration_intent: audience },
@@ -68,6 +75,12 @@ export default function AuthForm({
             });
 
       if (result.error) {
+        // Auth remains the authority for duplicate accounts. Do not expose an email lookup API.
+        if (mode === 'sign-up' && ['user_already_exists', 'email_exists'].includes(result.error.code ?? '')) {
+          setRegistrationPending(true);
+          setPassword('');
+          return setMessage({type: 'success', text: registrationNotice});
+        }
         return setMessage({
           type: 'error',
           text:
@@ -78,9 +91,11 @@ export default function AuthForm({
       }
 
       if (mode === 'sign-up' && !result.data.session) {
+        setRegistrationPending(true);
+        setPassword('');
         return setMessage({
           type: 'success',
-          text: 'Doğrulama bağlantısı e-posta adresinize gönderildi. Mevcut hesabınız varsa giriş yapabilirsiniz.',
+          text: registrationNotice,
         });
       }
 
@@ -108,22 +123,26 @@ export default function AuthForm({
     } catch {
       setMessage({ type: 'error', text: 'Bağlantı hatası oluştu. Lütfen tekrar deneyin.' });
     } finally {
+      inFlight.current = false;
       setBusy(false);
     }
   }
 
   async function requestPasswordReset() {
-    if (!email) {
+    if (inFlight.current) return;
+    if (!email.trim() || !emailInput.current?.reportValidity()) {
       return setMessage({
         type: 'error',
         text: 'Parola sıfırlama için lütfen önce e-posta adresinizi girin.',
       });
     }
+    inFlight.current = true;
     setBusy(true);
+    setMessage(null);
     try {
       const supabase = createSupabaseBrowserClient();
       const redirectTo = `${window.location.origin}/auth/callback?next=/parola-yenile`;
-      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo });
       if (error) {
         setMessage({
           type: 'error',
@@ -132,12 +151,13 @@ export default function AuthForm({
       } else {
         setMessage({
           type: 'success',
-          text: 'Parola yenileme bağlantısı e-posta adresinize gönderildi.',
+          text: 'Bu adres için parola yenileme yapılabiliyorsa e-posta gönderilir. Gelen kutunuzu ve spam klasörünü kontrol edin.',
         });
       }
     } catch {
       setMessage({ type: 'error', text: 'Bağlantı kurulamadı. Lütfen tekrar deneyin.' });
     } finally {
+      inFlight.current = false;
       setBusy(false);
     }
   }
@@ -167,24 +187,16 @@ export default function AuthForm({
 
   return (
     <main className="auth-shell account-shell">
-      {/* Top bar */}
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', height: '56px', background: 'rgba(250,248,245,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--border-default)' }}>
-        <Link className="auth-back-link" href="/">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
-          Ana Sayfa
-        </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)', fontWeight: 700, fontSize: '15px' }}>
-          <NeighborhoodBond variant="brand" className="brand-bond" />
-          ORKESTRA
-        </div>
-      </div>
-
       {/* Card */}
-      <div style={{ paddingTop: '72px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+      <div className="auth-form-container">
         <div className="auth-card">
           <span className="auth-eyebrow">ORKESTRA HESAP MERKEZİ</span>
           <h1>{pageTitle}</h1>
           <p className="auth-subtitle">{pageSubtitle}</p>
+          <nav className="auth-audience-links" aria-label="Hesap kullanım amacı">
+            <Link href={withNext(authMode === 'sign-up' ? '/kayit' : '/giris')} aria-current={!professional ? 'page' : undefined}>Hizmet almak istiyorum</Link>
+            <Link href={withNext(authMode === 'sign-up' ? '/usta/kayit' : '/usta/giris')} aria-current={professional ? 'page' : undefined}>Ustayım</Link>
+          </nav>
 
           {/* Giriş / Kayıt tabs */}
           <div className="auth-mode-tabs" role="group" aria-label="Giriş veya Kayıt">
@@ -193,7 +205,7 @@ export default function AuthForm({
               type="button"
               aria-pressed={authMode === 'sign-in'}
               disabled={busy}
-              onClick={() => { setAuthMode('sign-in'); setMessage(null); }}
+              onClick={() => { setAuthMode('sign-in'); setMessage(null); setRegistrationPending(false); }}
             >
               Giriş Yap
             </button>
@@ -202,7 +214,7 @@ export default function AuthForm({
               type="button"
               aria-pressed={authMode === 'sign-up'}
               disabled={busy}
-              onClick={() => { setAuthMode('sign-up'); setMessage(null); }}
+              onClick={() => { setAuthMode('sign-up'); setMessage(null); setRegistrationPending(false); }}
             >
               Kayıt Ol
             </button>
@@ -215,6 +227,7 @@ export default function AuthForm({
                 <label htmlFor="auth-name">Ad Soyad</label>
                 <input
                   id="auth-name"
+                  disabled={busy}
                   autoComplete="name"
                   required
                   minLength={2}
@@ -231,12 +244,14 @@ export default function AuthForm({
               <label htmlFor="auth-email">E-posta Adresi</label>
               <input
                 id="auth-email"
+                ref={emailInput}
+                disabled={busy}
                 type="email"
-                autoComplete="off"
+                autoComplete="email"
                 required
                 placeholder="ornek@eposta.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => { setEmail(e.target.value); setMessage(null); setRegistrationPending(false); }}
               />
             </div>
 
@@ -258,6 +273,7 @@ export default function AuthForm({
               <div className="auth-password-wrap">
                 <input
                   id="auth-password"
+                  disabled={busy}
                   type={showPassword ? 'text' : 'password'}
                   autoComplete={authMode === 'sign-in' ? 'current-password' : 'new-password'}
                   minLength={authMode === 'sign-up' ? 8 : undefined}
@@ -289,7 +305,11 @@ export default function AuthForm({
             )}
 
             {/* Submit */}
-            <button className="auth-submit-btn" disabled={busy} type="submit">
+            {registrationPending && <div className="auth-mode-tabs" role="group" aria-label="Hesabınıza erişin">
+              <button className="auth-mode-tab" type="button" disabled={busy} onClick={() => {setAuthMode('sign-in'); setRegistrationPending(false); setMessage(null);}}>Mevcut hesabımla giriş yap</button>
+              <button className="auth-mode-tab" type="button" disabled={busy} onClick={() => void requestPasswordReset()}>Parolamı yenile</button>
+            </div>}
+            <button className="auth-submit-btn" disabled={busy || registrationPending} type="submit">
               {busy ? (
                 <>
                   <span className="btn-spinner" aria-hidden="true" />

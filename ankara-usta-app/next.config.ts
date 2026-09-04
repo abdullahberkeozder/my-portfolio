@@ -14,6 +14,7 @@ const securityHeaders = [
       "base-uri 'self'",
       "form-action 'self'",
       "frame-ancestors 'self'",
+      "frame-src 'self' https://www.openstreetmap.org",
       "object-src 'none'",
       "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline'",

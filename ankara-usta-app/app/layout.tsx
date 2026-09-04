@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, Outfit } from 'next/font/google';
 import './application.css';
 import AppFooter from './components/AppFooter';
 import ConsentBanner from './components/ConsentBanner';
+import ProductFrame from './components/ProductFrame';
+import { prejobChatEnabled } from './lib/prejobChat';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -54,9 +56,9 @@ export default function RootLayout({
     <html lang="tr">
       <body className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased`}>
         <a href="#main-content" className="skip-link">İçeriğe Atla</a>
-        <div id="main-content">
+        <ProductFrame conversations={prejobChatEnabled()}>
           {children}
-        </div>
+        </ProductFrame>
         <AppFooter />
         <ConsentBanner />
       </body>

@@ -36,7 +36,14 @@ describe('RequestWizard', () => {
   it('restores the exact question rather than jumping to the first unanswered question',()=>{
     localStorage.setItem('ankara-usta:draft:tv-duvar-montaji',JSON.stringify({answers:{'tv-size':'32–49 inç'},district:'',neighborhood:'',timing:'this_week',step:0,questionIndex:0,idempotencyKey:crypto.randomUUID(),updatedAt:Date.now()}));
     render(<RequestWizard service={tvMounting!} onClose={vi.fn()} />);
-    expect(screen.getByRole('progressbar',{name:'Talep adımları'})).toHaveAttribute('aria-valuenow','1');
+    expect(screen.getByRole('group',{name:'Talep adımları, 1. adım: Kapsam'})).toBeInTheDocument();
+  });
+
+  it('rejects a restored answer that is no longer an available option',()=>{
+    localStorage.setItem('ankara-usta:draft:tv-duvar-montaji',JSON.stringify({answers:{'tv-size':'retired-option'},district:'',neighborhood:'',timing:'this_week',step:0,questionIndex:0,idempotencyKey:crypto.randomUUID(),updatedAt:Date.now()}));
+    render(<RequestWizard service={tvMounting!} onClose={vi.fn()}/>);
+    expect(screen.getByRole('button',{name:/Sonraki soru/})).toBeDisabled();
+    expect(screen.getByRole('button',{name:/2. adım: Görseller/})).toBeDisabled();
   });
 
   it('presents scope questions progressively and requires an answer before advancing', async () => {
@@ -52,7 +59,8 @@ describe('RequestWizard', () => {
     expect(continueButton).toBeEnabled();
     await user.click(continueButton);
 
-    expect(screen.getByRole('progressbar', { name: 'Talep adımları' })).toHaveAttribute('aria-valuenow', '2');
+    expect(screen.getByText('Soru 2 / 3')).toBeVisible();
+    expect(screen.getByRole('heading',{name:'Montaj yapılacak duvar türü nedir?'})).toHaveFocus();
 
     await user.click(screen.getByLabelText('Beton / tuğla'));
     continueButton = screen.getByRole('button', { name: /Sonraki soru/i });
@@ -64,13 +72,13 @@ describe('RequestWizard', () => {
     expect(continueButton).toBeEnabled();
   });
 
-  it('shows truthful progress and validates oversized media before upload', async () => {
+  it('shows a single global stage model and validates oversized media before upload', async () => {
     const user = userEvent.setup();
     render(<RequestWizard service={tvMounting!} onClose={vi.fn()} />);
 
-    const progress = screen.getByRole('progressbar', { name: 'Talep adımları' });
-    expect(progress).toHaveAttribute('aria-valuemax', '6');
-    expect(progress).toHaveAttribute('aria-valuetext', 'Kapsam sorusu 1 / 3, toplam 6 adım');
+    expect(screen.getByRole('group',{name:'Talep adımları, 1. adım: Kapsam'})).toBeInTheDocument();
+    expect(screen.getByText('Soru 1 / 3')).toBeVisible();
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
 
     await user.click(screen.getByLabelText('32–49 inç'));
     await user.click(screen.getByRole('button', { name: /Sonraki soru/i }));
@@ -104,7 +112,7 @@ describe('RequestWizard', () => {
 
     render(<RequestWizard service={tvMounting!} onClose={vi.fn()} />);
 
-    expect(screen.getByText(/yalnız gönderirken giriş yapmanız gerekir/i)).toBeVisible();
+    expect(screen.getByText(/Göndermeden önce giriş yapmanız istenir/i)).toBeVisible();
     await user.click(screen.getByLabelText('32–49 inç'));
     await user.click(screen.getByRole('button', { name: /Sonraki soru/i }));
     await user.click(screen.getByLabelText('Beton / tuğla'));
@@ -123,7 +131,7 @@ describe('RequestWizard', () => {
 
     expect(screen.getByRole('dialog', { name: 'TV Duvar Montajı' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Kapat' })).toBeInTheDocument();
-    expect(screen.getByRole('progressbar', { name: 'Talep adımları' })).toHaveAttribute('aria-valuenow', '1');
+    expect(screen.getByRole('group',{name:'Talep adımları, 1. adım: Kapsam'})).toBeInTheDocument();
   });
 
   it('moves focus into the modal and closes it with Escape', async () => {
@@ -132,7 +140,7 @@ describe('RequestWizard', () => {
 
     render(<RequestWizard service={tvMounting!} onClose={onClose} />);
 
-    expect(screen.getByRole('button', { name: 'Kapat' })).toHaveFocus();
+    expect(screen.getByRole('heading', {name:'Televizyonun ekran boyutu nedir?'})).toHaveFocus();
     await user.keyboard('{Escape}');
     expect(onClose).toHaveBeenCalledOnce();
   });
@@ -145,7 +153,7 @@ describe('RequestWizard', () => {
     screen.getByRole('button', {name: 'Kapat'}).focus();
     await user.keyboard('{Enter}');
     expect(onClose).toHaveBeenCalledOnce();
-    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '1');
+    expect(screen.getByRole('group',{name:'Talep adımları, 1. adım: Kapsam'})).toBeInTheDocument();
   });
 
   it('allows selected media to be removed and preserves it after an invalid selection', async () => {

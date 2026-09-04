@@ -9,7 +9,7 @@ export function draftAccountKey(kind:string,userId:string) {
 }
 
 // Local drafts are a convenience, never authorization. Server RLS still owns access.
-export default function AccountDraftBoundary({kind,ttl,children}:{kind:string;ttl:number;children:(scope:DraftScope)=>ReactNode}) {
+export default function AccountDraftBoundary({kind,ttl,children,renderPending=content=>content}:{kind:string;ttl:number;children:(scope:DraftScope)=>ReactNode;renderPending?:(content:ReactNode)=>ReactNode}) {
   const [scope,setScope]=useState<DraftScope>();
   const [error,setError]=useState(false);
   const [retry,setRetry]=useState(0);
@@ -52,12 +52,12 @@ export default function AccountDraftBoundary({kind,ttl,children}:{kind:string;tt
     });
     return()=>{active=false;subscription.unsubscribe();};
   },[kind,ttl,retry]);
-  if(error)return <section role="alert" className="account-card">Taslak hesabı doğrulanamadı. Verilerinizi korumak için form açılmadı. <button onClick={()=>{setError(false);setRetry(n=>n+1);}}>Yeniden dene</button></section>;
-  if(!scope)return <p role="status">Hesap ve taslak kontrol ediliyor…</p>;
-  return <DraftChoice key={scope.key} scope={scope} kind={kind}>{children}</DraftChoice>;
+  if(error)return renderPending(<section role="alert" className="account-card">Taslak hesabı doğrulanamadı. Verilerinizi korumak için form açılmadı. <button onClick={()=>{setError(false);setRetry(n=>n+1);}}>Yeniden dene</button></section>);
+  if(!scope)return renderPending(<p role="status">Hesap ve taslak kontrol ediliyor…</p>);
+  return <DraftChoice key={scope.key} scope={scope} kind={kind} renderPending={renderPending}>{children}</DraftChoice>;
 }
 
-function DraftChoice({scope,kind,children}:{scope:DraftScope;kind:string;children:(scope:DraftScope)=>ReactNode}) {
+function DraftChoice({scope,kind,children,renderPending}:{scope:DraftScope;kind:string;children:(scope:DraftScope)=>ReactNode;renderPending:(content:ReactNode)=>ReactNode}) {
   const [pending,setPending]=useState(()=>{
     try {
       // Anonymous handoff is explicit, same-tab, and only valid for this service.
@@ -88,12 +88,12 @@ function DraftChoice({scope,kind,children}:{scope:DraftScope;kind:string;childre
     } catch {setError('Taslak işlemi tamamlanamadı. Tarayıcı depolama izinlerini kontrol edin.');}
   }
   if(ready)return children({...scope,discardRemote,preferLocal});
-  return <section className="account-card" aria-label="Kayıtlı taslak seçimi">
+  return renderPending(<section className="account-card" aria-label="Kayıtlı taslak seçimi">
     <h2>Kayıtlı taslağınız var</h2>
     <p>Devam etmeyi seçmeden taslak bilgileri forma aktarılmaz. Silme yalnızca bu cihazdaki taslağı kaldırır; sunucu kaydını silmez.</p>
     {pending.saved&&<button type="button" onClick={()=>choose(true)}>Hesabımdaki taslağa devam et</button>}
     {pending.guestRaw&&<button type="button" onClick={()=>choose(true,true)}>Giriş öncesi taslağı bu hesaba aktar ve devam et</button>}
     <button type="button" onClick={()=>choose(false)}>Taslağı sil ve yeni başla</button>
     {error&&<p role="alert">{error}</p>}
-  </section>;
+  </section>);
 }

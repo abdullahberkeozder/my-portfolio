@@ -3,7 +3,19 @@ import {trackFunnel} from '../../app/lib/analytics';
 
 describe('consent-gated funnel analytics',()=>{
   beforeEach(()=>{localStorage.clear();vi.stubEnv('NEXT_PUBLIC_ANALYTICS_ENDPOINT','');});
-  afterEach(()=>vi.unstubAllEnvs());
+  afterEach(()=>{vi.unstubAllEnvs();vi.restoreAllMocks();});
+
+  it('does not interrupt a product action when consent storage is unavailable',()=>{
+    vi.spyOn(Storage.prototype,'getItem').mockImplementation(()=>{throw new Error('storage denied');});
+    expect(()=>trackFunnel('wizard_completed')).not.toThrow();
+  });
+
+  it('does not interrupt a product action when the transport throws',()=>{
+    localStorage.setItem('ankara_analytics_consent','accepted');
+    vi.stubEnv('NEXT_PUBLIC_ANALYTICS_ENDPOINT','https://analytics.example.test/events');
+    Object.defineProperty(navigator,'sendBeacon',{configurable:true,value:()=>{throw new Error('beacon denied');}});
+    expect(()=>trackFunnel('wizard_completed')).not.toThrow();
+  });
 
   it('does nothing without explicit consent',()=>{
     const listener=vi.fn();window.addEventListener('orkestra:analytics',listener);

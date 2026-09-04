@@ -122,8 +122,11 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Save Full Draft on Change
+  const [draftSaveState, setDraftSaveState] = useState<'idle'|'saved'|'unavailable'>('idle');
+
+  // Persist without a floating toast on each keystroke.
   useEffect(() => {
+    let active = true;
     if (draftReady) {
       try { scope.storage.setItem(
         draftKey,
@@ -140,8 +143,11 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
           documentKind,
           expiresAt,
         })
-      ); } catch { /* Storage can be disabled; keep the current form usable. */ }
+      );
+      queueMicrotask(() => { if (active) setDraftSaveState('saved'); });
+      } catch { queueMicrotask(() => { if (active) setDraftSaveState('unavailable'); }); }
     }
+    return () => { active = false; };
   }, [draftReady, displayName, bio, serviceIds, districts, referenceName, relationship, referencePhone, documentKind, expiresAt,step,draftKey,scope.storage]);
 
   function toggle(value: string, current: string[], setter: (value: string[]) => void) {
@@ -247,12 +253,18 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
   });
 
   return (
-    <main className="account-shell tradesperson-application">
-      <Link className="account-back" href="/">← Orkestra Ana Sayfa</Link>
+    <main className="account-shell auth-shell tradesperson-application">
+      <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', marginBottom: '28px', color: 'var(--action-primary)', fontWeight: 600, textDecoration: 'none' }}>
+        ← Orkestra Ana Sayfa
+      </Link>
       <form className="application-card" onSubmit={submit}>
         <span className="application-kicker">ZANAATKAR & USTA AĞI</span>
         <h1>Orkestra Ağına Katılın</h1>
         <p>Uzmanlığınızı ve hizmet bölgelerinizi tanımlayın. Formdaki tüm tercihleriniz bu cihazda otomatik taslak olarak saklanır.</p>
+
+        {draftSaveState !== 'idle' && <p className="draft-save-feedback" role={draftSaveState === 'unavailable' ? 'alert' : 'status'}>
+          {draftSaveState === 'saved' ? 'Taslak bu cihazda kaydedildi.' : 'Tarayıcı taslağı saklayamıyor. Bu sayfayı kapatmadan başvurunuzu tamamlayın.'}
+        </p>}
 
         {hasDraft && (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f0f7f4', border: '1px solid #c3e0d5', borderRadius: '10px', padding: '12px 16px', marginBottom: '8px', gap: '12px', flexWrap: 'wrap' }}>
@@ -300,7 +312,7 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
 
         {/* Step description */}
         <div className="step-description" aria-live="polite">
-          <strong style={{ display: 'block', marginBottom: '4px', color: 'var(--text-primary)', fontSize: '15px' }}>
+          <strong className="application-step-description-title">
             Adım {step + 1}/{applicationSteps.length} — {applicationSteps[step]}
           </strong>
           {stepDescriptions[step]}

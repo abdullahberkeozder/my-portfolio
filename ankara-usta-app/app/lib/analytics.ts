@@ -79,25 +79,30 @@ export function trackFunnel(
 ): void {
   if (typeof window === 'undefined') return;
   if (!ALLOWED_EVENTS.has(eventName)) return;
-  if (localStorage.getItem('ankara_analytics_consent') !== 'accepted') return;
+  try {
+    if (localStorage.getItem('ankara_analytics_consent') !== 'accepted') return;
 
-  const safe = sanitizeProperties(properties);
-  const endpoint = process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT;
+    const safe = sanitizeProperties(properties);
+    const endpoint = process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT;
 
-  const payload = JSON.stringify({
-    eventName,
-    path: window.location.pathname,
-    properties: safe,
-    occurredAt: new Date().toISOString(),
-  });
+    const payload = JSON.stringify({
+      eventName,
+      path: window.location.pathname,
+      properties: safe,
+      occurredAt: new Date().toISOString(),
+    });
 
-  // Dispatch to same-page listeners (used by E2E tests and dev tooling)
-  window.dispatchEvent(
-    new CustomEvent('orkestra:analytics', { detail: JSON.parse(payload) }),
-  );
+    // Dispatch to same-page listeners (used by E2E tests and dev tooling)
+    window.dispatchEvent(
+      new CustomEvent('orkestra:analytics', { detail: JSON.parse(payload) }),
+    );
 
-  // Send to external endpoint when configured
-  if (endpoint) {
-    navigator.sendBeacon(endpoint, new Blob([payload], { type: 'application/json' }));
+    // Send to external endpoint when configured
+    if (endpoint) {
+      navigator.sendBeacon(endpoint, new Blob([payload], { type: 'application/json' }));
+    }
+  } catch {
+    // Optional measurement must never change the outcome of a product action.
+    // Storage denial is not consent; do not queue or retry these events.
   }
 }

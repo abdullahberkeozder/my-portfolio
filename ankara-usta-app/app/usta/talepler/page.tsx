@@ -6,9 +6,10 @@ import {type RequestInvitation} from '../../domain/requestInvitation';
 import {services} from '../../data/serviceTaxonomy';
 import {createSupabaseServerClient} from '../../lib/supabase/server';
 import {directedRequestsEnabled} from '../../lib/directedRequests';
-import AppHeader from '../../components/AppHeader';
 import RequestInvitationPanel from '../../components/RequestInvitationPanel';
 import RealtimeRefresh from '../../components/RealtimeRefresh';
+import PilotCityMap from '../../components/PilotCityMap';
+import {pilotCityState} from '../../lib/pilotCity';
 
 export const dynamic='force-dynamic';
 type Scope={service_id:string;district:string;neighborhood:string;preferred_timing:string;status:string;routing_mode?:string};
@@ -35,9 +36,10 @@ export default async function TradespersonRequestsPage({searchParams}:{searchPar
     const result=await query.order('score',{ascending:false}).order('request_id').range((page-1)*pageSize,page*pageSize-1);
     rows=(result.data??[]) as unknown as Opportunity[];failed=Boolean(result.error);count=result.count??0;
   }
-  return <main className="account-shell requests-page"><AppHeader role="tradesperson"/>
+  return <main className="account-shell requests-page">
     <div className="public-profile-container">
       <h1>İş fırsatları</h1><Link href="/usta/musaitlik">Müsaitliğimi güncelle →</Link>
+      <PilotCityMap cityState={pilotCityState(user.user_metadata)}/>
       {prejobChatEnabled()&&<p><Link className="account-back" href="/gorusmeler">Özel görüşmelerim →</Link></p>}
       {enabled&&<RealtimeRefresh channelName={`opportunities-${user.id}`} subscriptions={[{table:'request_invitations',filter:`professional_id=eq.${user.id}`},{table:'request_matches',filter:`tradesperson_id=eq.${user.id}`}]} label="İş fırsatları"/>}
       <nav className="pagination" aria-label="Talep türü">

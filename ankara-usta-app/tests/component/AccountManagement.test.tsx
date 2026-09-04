@@ -1,0 +1,61 @@
+import {render,screen,cleanup,within} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import {beforeEach,afterEach,it,expect,vi} from 'vitest';
+import AppHeader from '../../app/components/AppHeader';
+import AccountProfileForm from '../../app/components/AccountProfileForm';
+import AccountSignOut from '../../app/components/AccountSignOut';
+const m=vi.hoisted(()=>({state:{status:'ready',user:{id:'owner',name:'Berke',roles:['customer']}} as {status:string;user:{id:string;name:string;roles:string[]}|null},path:'/',replace:vi.fn(),refresh:vi.fn(),announce:vi.fn(),fetch:vi.fn()}));
+vi.mock('next/navigation',()=>({usePathname:()=>m.path,useRouter:()=>({replace:m.replace,refresh:m.refresh})}));
+vi.mock('../../app/hooks/useAccountSummary',()=>({useAccountSummary:()=>m.state,announceAccountChange:m.announce}));
+beforeEach(()=>{vi.clearAllMocks();m.state={status:'ready',user:{id:'owner',name:'Berke',roles:['customer']}};m.path='/';vi.stubGlobal('fetch',m.fetch);});
+afterEach(()=>{cleanup();vi.unstubAllGlobals();});
+it('keeps desktop account panel free of repeated main navigation and restores focus',async()=>{
+  m.state.user!.name='rls-test-20260827';render(<AppHeader/>);const trigger=screen.getByRole('button',{name:'Hesabım'});
+  expect(trigger).not.toHaveTextContent('rls-test');await userEvent.click(trigger);
+  const panel=screen.getByRole('dialog',{name:'Hesabım'});
+  expect(within(panel).getByText('rls-test-20260827')).toBeInTheDocument();
+  expect(within(panel).queryByRole('link',{name:'Taleplerim'})).not.toBeInTheDocument();
+  expect(within(panel).queryByRole('link',{name:'Müşteri alanına geç'})).not.toBeInTheDocument();
+  expect(within(panel).getByRole('button',{name:'Kapat'})).toHaveFocus();
+  await userEvent.keyboard('{Escape}');expect(trigger).toHaveFocus();
+});
+it('keeps discovery and task links in the mobile hamburger menu',async()=>{
+  render(<AppHeader/>);await userEvent.click(screen.getByRole('button',{name:'Menü'}));
+  const panel=screen.getByRole('dialog',{name:'Menü'});
+  expect(within(panel).getByRole('link',{name:'Ustalar'})).toBeInTheDocument();
+  expect(within(panel).getByRole('link',{name:'Taleplerim'})).toBeInTheDocument();
+  expect(within(panel).getByRole('link',{name:'Hesap ayarları'})).toBeInTheDocument();
+});
+it('orders identity, account settings and neutral logout in the account panel',async()=>{
+  render(<AppHeader/>);await userEvent.click(screen.getByRole('button',{name:'Hesabım'}));
+  const panel=screen.getByRole('dialog',{name:'Hesabım'});
+  const identity=within(panel).getByText('Berke');
+  const settings=within(panel).getByRole('navigation',{name:'Hesap işlemleri'});
+  const logout=within(panel).getByRole('button',{name:'Oturumu kapat'});
+  expect(settings).not.toContainElement(identity);
+  expect(settings).not.toContainElement(logout);
+  expect(identity.compareDocumentPosition(settings)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(settings.compareDocumentPosition(logout)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(logout).not.toHaveClass('dialog-primary');
+  expect(logout.className).toContain('signOutButton');
+});
+it('preserves standalone logout styling outside the account panel',()=>{
+  render(<AccountSignOut/>);expect(screen.getByRole('button',{name:'Oturumu kapat'})).toHaveClass('dialog-primary');
+});
+it('keeps long names intact and traps keyboard focus until Escape',async()=>{
+  const name='ÇokUzunBirKullanıcıAdı'.repeat(6);m.state.user!.name=name;
+  render(<AppHeader/>);const trigger=screen.getByRole('button',{name:'Menü'});
+  await userEvent.click(trigger);const panel=screen.getByRole('dialog',{name:'Menü'});
+  expect(within(panel).getByText(name)).toBeInTheDocument();
+  await userEvent.tab({shift:true});expect(within(panel).getByRole('button',{name:'Oturumu kapat'})).toHaveFocus();
+  await userEvent.tab();expect(within(panel).getByRole('button',{name:'Kapat'})).toHaveFocus();
+  await userEvent.keyboard('{Escape}');expect(trigger).toHaveFocus();
+});
+it('shows signed-in navigation on homepage and does not offer elevated roles',async()=>{render(<AppHeader/>);expect(screen.getByRole('link',{name:'Taleplerim'})).toBeInTheDocument();await userEvent.click(screen.getByRole('button',{name:'Hesabım'}));const dialog=screen.getByRole('dialog');expect(within(dialog).getByRole('link',{name:'Usta başvurum'})).toHaveAttribute('href','/usta-basvurusu');expect(within(dialog).queryByText('Yönetim alanı')).not.toBeInTheDocument();expect(within(dialog).queryByText('Giriş yap')).not.toBeInTheDocument();});
+it('offers professional workspace and keeps its account return context',async()=>{m.path='/usta/talepler';m.state.user!.roles.push('tradesperson');render(<AppHeader/>);expect(screen.getByRole('link',{name:'İş fırsatları'})).toBeInTheDocument();await userEvent.click(screen.getByRole('button',{name:'Hesabım'}));expect(screen.getByRole('link',{name:'Hesap ayarları'})).toHaveAttribute('href','/hesap?workspace=professional');});
+it('does not treat an auth lookup error as a logged-out user',async()=>{m.state={status:'error',user:null};render(<AppHeader/>);await userEvent.click(screen.getByRole('button',{name:'Hesap'}));expect(screen.getByRole('status')).toHaveTextContent('Hesap yüklenemedi');expect(screen.queryByRole('link',{name:'Kayıt ol'})).not.toBeInTheDocument();});
+it('keeps a failed profile edit, and can cancel it',async()=>{m.fetch.mockResolvedValue({ok:false,status:502});render(<AccountProfileForm userId="owner" initialName="Berke"/>);await userEvent.clear(screen.getByLabelText('Görünen ad'));await userEvent.type(screen.getByLabelText('Görünen ad'),'Yeni Ad');await userEvent.click(screen.getByRole('button',{name:'Değişiklikleri kaydet'}));expect(screen.getByRole('alert')).toHaveTextContent('formda korunuyor');expect(screen.getByLabelText('Görünen ad')).toHaveValue('Yeni Ad');expect(m.announce).not.toHaveBeenCalled();await userEvent.click(screen.getByRole('button',{name:'Vazgeç'}));expect(screen.getByLabelText('Görünen ad')).toHaveValue('Berke');});
+it('broadcasts successful profile edits for navbar refresh',async()=>{m.fetch.mockResolvedValue({ok:true,json:async()=>({displayName:'Berke Yeni'})});render(<AccountProfileForm userId="owner" initialName="Berke"/>);await userEvent.type(screen.getByLabelText('Görünen ad'),' Yeni');await userEvent.click(screen.getByRole('button',{name:'Değişiklikleri kaydet'}));expect(m.announce).toHaveBeenCalledOnce();expect(m.refresh).toHaveBeenCalledOnce();expect(screen.getByRole('status')).toHaveTextContent('kaydedildi');});
+it('hides the previous profile form after an account switch',()=>{m.state.user!.id='other';render(<AccountProfileForm userId="owner" initialName="Private name"/>);expect(screen.queryByDisplayValue('Private name')).not.toBeInTheDocument();expect(screen.getByRole('alert')).toHaveTextContent('Hesap değişti');});
+it('does not redirect or broadcast a failed signout',async()=>{m.fetch.mockResolvedValue({ok:false});render(<AccountSignOut/>);await userEvent.click(screen.getByRole('button'));expect(screen.getByRole('alert')).toBeInTheDocument();expect(m.replace).not.toHaveBeenCalled();expect(m.announce).not.toHaveBeenCalled();});
+it('refreshes and redirects only after confirmed logout',async()=>{m.fetch.mockResolvedValue({ok:true,json:async()=>({success:true})});render(<AccountSignOut/>);await userEvent.click(screen.getByRole('button'));expect(m.announce).toHaveBeenCalledOnce();expect(m.replace).toHaveBeenCalledWith('/giris');});

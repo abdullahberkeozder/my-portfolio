@@ -1,15 +1,17 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import RetryButton from '../components/RetryButton';
 import { prejobChatEnabled } from '../lib/prejobChat';
 import { services } from '../data/serviceTaxonomy';
 import { createSupabaseServerClient } from '../lib/supabase/server';
-import AppHeader from '../components/AppHeader';
 import DraftActions from '../components/DraftActions';
 import { getWizardDefinition } from '../data/wizardDefinitions';
 import Pagination from '../components/Pagination';
 import { directedRequestsEnabled } from '../lib/directedRequests';
 import RequestInvitationPanel from '../components/RequestInvitationPanel';
 import RealtimeRefresh from '../components/RealtimeRefresh';
+import PilotCityMap from '../components/PilotCityMap';
+import {pilotCityState} from '../lib/pilotCity';
 
 export const dynamic = 'force-dynamic';
 
@@ -62,7 +64,7 @@ export default async function MyRequestsPage({
 
   return (
     <main className="account-shell requests-page">
-      <AppHeader role="customer" />
+
       {directedRequestsEnabled() && (
         <RealtimeRefresh
           channelName={`my-invitations-${user.id}`}
@@ -70,7 +72,7 @@ export default async function MyRequestsPage({
           label="Talep yanıtları"
         />
       )}
-      <div style={{ maxWidth: '980px', margin: '32px auto 80px', padding: '0 16px' }}>
+      <div className="page-body">
         {/* Page header */}
         <div className="requests-header">
           <div>
@@ -102,13 +104,7 @@ export default async function MyRequestsPage({
             <span className="empty-state-icon" role="img" aria-label="Hata">⚠️</span>
             <h2>Talepler yüklenemedi</h2>
             <p>Bir bağlantı sorunu oluştu. Sayfayı yenileyerek tekrar deneyin.</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="dialog-primary"
-              style={{ background: 'var(--brand-cobalt)', color: 'white', border: 0, cursor: 'pointer' }}
-            >
-              Sayfayı Yenile
-            </button>
+            <RetryButton />
           </div>
         ) : requests?.length ? (
           <>
@@ -216,10 +212,9 @@ export default async function MyRequestsPage({
           </>
         ) : (
           /* Empty state */
-          <section className="empty-state" style={{ background: 'white', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)' }}>
-            <span className="empty-state-icon" role="img" aria-label="Henüz talep yok">📋</span>
-            <h2>Henüz talebiniz yok</h2>
-            <p>
+          <section className="empty-state" style={{ background: 'white', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', padding: '48px', textAlign: 'center' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 600, margin: '0 0 12px' }}>Henüz talebiniz yok</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
               Ev işleriniz için profesyonel yardım almaya hazır mısınız? Hizmeti seçin,
               kapsamı belirleyin, teklifleri karşılaştırın.
             </p>
@@ -233,12 +228,16 @@ export default async function MyRequestsPage({
                 textDecoration: 'none',
                 background: 'var(--brand-cobalt)',
                 color: 'white',
+                minHeight: '44px',
+                padding: '0 24px',
+                borderRadius: 'var(--radius-control)'
               }}
             >
-              İlk Talebimi Oluştur →
+              İlk Talebimi Oluştur
             </Link>
           </section>
         )}
+        <PilotCityMap cityState={pilotCityState(user.user_metadata)} initiallyExpanded={false}/>
       </div>
     </main>
   );

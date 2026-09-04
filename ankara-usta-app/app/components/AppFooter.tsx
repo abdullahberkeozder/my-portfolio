@@ -4,21 +4,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import OrchestraLogo from './OrchestraLogo';
 import OrkestraWordmark from './OrkestraWordmark';
+import { navigationContext } from '../lib/navigationModel';
 
 export default function AppFooter() {
   const pathname = usePathname();
 
-  // Do not render marketing footer on operational workspaces and admin pages
-  if (
-    pathname.startsWith('/yonetim') ||
-    pathname.startsWith('/islerim') ||
-    pathname.startsWith('/taleplerim') ||
-    pathname.startsWith('/uyusmazliklar') ||
-    pathname.startsWith('/usta/') ||
-    pathname === '/hesap'
-  ) {
-    return null;
-  }
+  if (navigationContext(pathname) !== 'public') return null;
 
   return (
     <>
@@ -40,8 +31,8 @@ export default function AppFooter() {
             <ul className="footer-links-list">
               <li><Link href="/#services">Hizmet kategorileri</Link></li>
               <li><Link href="/nasil-calisir">Nasıl Çalışır?</Link></li>
-              <li><Link href="/taleplerim">Taleplerim & Fişlerim</Link></li>
-              <li><Link href="/islerim">Devam Eden İşlerim</Link></li>
+              <li><Link href="/taleplerim">Taleplerim</Link></li>
+              <li><Link href="/islerim">İşlerim</Link></li>
               <li><Link href="/giris">Kullanıcı Girişi</Link></li>
             </ul>
           </div>
@@ -57,7 +48,7 @@ export default function AppFooter() {
           </div>
 
           <div className="footer-nav-col">
-            <span className="footer-col-title">GÜVENCE VE DESTEK</span>
+            <span className="footer-col-title">YARDIM VE BİLGİ</span>
             <ul className="footer-links-list">
               <li><Link href="/yardim">Yardım ve Çözüm Merkezi</Link></li>
               <li><Link href="/gizlilik">Gizlilik ve KVKK Politikası</Link></li>

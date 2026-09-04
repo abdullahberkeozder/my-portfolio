@@ -1,6 +1,6 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
+import { useSyncExternalStore, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 function subscribe(callback: () => void) {
@@ -12,25 +12,39 @@ function getSnapshot() {
   try {
     return localStorage.getItem('ankara_analytics_consent') ?? 'undecided';
   } catch {
-    return 'accepted';
+    return 'unavailable';
   }
 }
 
 function getServerSnapshot() {
-  return 'accepted';
+  return 'loading';
 }
 
 export default function ConsentBanner() {
   const consent = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const show = consent === 'undecided';
+  const [localChoice,setLocalChoice] = useState(false);
+  const show = !localChoice && ['undecided','unavailable'].includes(consent);
+  const bannerRef = useRef<HTMLElement>(null);
+
+  useEffect(()=>{
+    if(!show || !bannerRef.current) return;
+    const element=bannerRef.current;
+    const previous=document.body.style.paddingBottom;
+    const reserve=()=>{document.body.style.paddingBottom=`${element.getBoundingClientRect().height+32}px`;};
+    reserve();
+    const observer=typeof ResizeObserver==='undefined'?null:new ResizeObserver(reserve);
+    observer?.observe(element);
+    return()=>{observer?.disconnect();document.body.style.paddingBottom=previous;};
+  },[show]);
 
 
   function saveChoice(value: 'accepted' | 'rejected') {
+    setLocalChoice(true);
     try {
       localStorage.setItem('ankara_analytics_consent', value);
       window.dispatchEvent(new Event('storage'));
     } catch {
-      // Ignore
+      // Close for this visit without inventing persisted consent.
     }
   }
 
@@ -38,17 +52,17 @@ export default function ConsentBanner() {
 
   return (
     <aside
+      ref={bannerRef}
       className="privacy-consent-banner"
       role="region"
       aria-label="Gizlilik ve Çerez Tercihleri"
     >
       <div className="consent-inner">
         <p className="consent-text">
-          İzin verirseniz yalnız ürün akışlarını iyileştirmek için anonim kullanım olayları toplarız. Form metinleri, adresler ve yüklenen dosyalar ölçümlere eklenmez.{' '}
+          Kullanımı iyileştirmek için isteğe bağlı ölçüme izin verir misiniz?{' '}
           <Link href="/gizlilik" className="consent-link">
-            Gizlilik Politikamızı
-          </Link>{' '}
-          inceleyebilirsiniz.
+            Gizlilik ayrıntıları
+          </Link>
         </p>
         <div className="consent-actions">
           <button
@@ -56,7 +70,7 @@ export default function ConsentBanner() {
             className="consent-accept-btn"
             onClick={() => saveChoice('accepted')}
           >
-            Anonim ölçüme izin ver
+            İzin ver
           </button>
           <button type="button" className="consent-reject-btn" onClick={() => saveChoice('rejected')}>Reddet</button>
         </div>

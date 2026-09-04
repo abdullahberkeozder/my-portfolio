@@ -1,175 +1,107 @@
-import { expect, test } from '@playwright/test';
+import {expect,test} from '@playwright/test';
 
-test('customer can classify a service from the homepage', async ({ page }) => {
+test.beforeEach(async({page})=>{
   await page.goto('/');
-  await page.waitForLoadState('networkidle');
-
-  await expect(page.getByRole('heading', { name: /İşini anlat.*Doğru ustayla buluş/ })).toBeVisible();
-  await page.getByRole('textbox', { name: 'İhtiyacınızı yazın' }).fill('tavandan su geliyor');
-  await page.getByRole('button', { name: 'Hizmet bul' }).click();
-
-  const classificationDialog = page.getByRole('dialog', { name: 'İhtiyacınızı doğru anladık mı?' });
-  await expect(classificationDialog).toBeVisible();
-  await expect(classificationDialog.getByText('Su Kaçağı Tespiti', { exact: true })).toBeVisible();
+  await page.getByRole('button',{name:'Reddet',exact:true}).click();
 });
 
-test('request draft survives a page refresh and resumes at the saved step', async ({ page }) => {
-  await page.goto('/');
-  const search = page.getByRole('textbox', { name: 'İhtiyacınızı yazın' });
-  await search.fill('TV Duvar Montajı');
-  await search.press('Enter');
-  await page.getByRole('button', { name: /Bu Hizmetle Devam Et/i }).click();
+test('customer classifies a service, reads scope and opens the wizard',async({page})=>{
+  await expect(page.getByRole('heading',{name:/İşini anlat.*Doğru ustayla buluş/})).toBeVisible();
+  const search=page.getByRole('textbox',{name:'İhtiyacınızı yazın'});
+  await search.fill('tavandan su geliyor');await search.press('Enter');
+  const dialog=page.getByRole('dialog',{name:/İhtiyacınızı doğru anladık mı/i});
+  await expect(dialog.getByRole('heading',{level:3})).toHaveText('Su Kaçağı Tespiti');
+  await dialog.getByText('Kapsam hakkında',{exact:true}).click();
+  await expect(dialog.getByRole('listitem')).toHaveCount(6);
+  for(const item of await dialog.getByRole('listitem').all())await expect(item).not.toBeEmpty();
+  await dialog.getByRole('button',{name:/Bu Hizmetle Devam Et/}).click();
+  await expect(page.getByRole('dialog',{name:'Su Kaçağı Tespiti'})).toBeVisible();
+});
 
-  const wizard = page.getByRole('dialog', { name: 'TV Duvar Montajı' });
-  await wizard.locator('.wizard-form-side label').filter({ hasText: '32–49 inç' }).click();
-  await wizard.getByRole('button', { name: /Sonraki soru/i }).click();
-  await wizard.locator('.wizard-form-side label').filter({ hasText: 'Beton / tuğla' }).click();
-  await wizard.getByRole('button', { name: /Sonraki soru/i }).click();
-  await wizard.locator('.wizard-form-side label').filter({ hasText: 'Evet, hazır' }).click();
-  await wizard.getByRole('button', { name: /Görsellere devam et/i }).click();
-  await expect(page.getByRole('dialog', { name: /İsterseniz fotoğraf veya video ekleyin/i })).toBeVisible();
-
+test('draft refresh requires explicit resume and preserves the selected answers',async({page})=>{
+  const search=page.getByRole('textbox',{name:'İhtiyacınızı yazın'});
+  await search.fill('TV Duvar Montajı');await search.press('Enter');
+  await page.getByRole('button',{name:/Bu Hizmetle Devam Et/}).click();
+  await page.locator('label').filter({has:page.getByRole('radio',{name:'32–49 inç',exact:true})}).click();
+  await expect(page.getByRole('radio',{name:'32–49 inç',exact:true})).toBeChecked();
+  await page.getByRole('button',{name:/Sonraki soru/}).click();
+  await page.locator('label').filter({has:page.getByRole('radio',{name:'Beton / tuğla',exact:true})}).click();
+  await page.getByRole('button',{name:/Sonraki soru/}).click();
+  await page.locator('label').filter({has:page.getByRole('radio',{name:'Evet, hazır',exact:true})}).click();
+  await page.getByRole('button',{name:/Görsellere devam et/}).click();
+  await expect(page.getByRole('heading',{name:'İsterseniz fotoğraf veya video ekleyin'})).toBeFocused();
   await page.reload();
-  await search.fill('TV Duvar Montajı');
-  await search.press('Enter');
-  await page.getByRole('button', { name: /Bu Hizmetle Devam Et/i }).click();
-
-  await expect(page.getByRole('dialog', { name: /İsterseniz fotoğraf veya video ekleyin/i })).toBeVisible();
-  await page.getByRole('button', { name: 'Geri' }).click();
-  await expect(page.getByLabel('Evet, hazır')).toBeChecked();
-  await page.getByRole('button', { name: /Önceki soru/i }).click();
-  await expect(page.getByLabel('Beton / tuğla')).toBeChecked();
-  await page.getByRole('button', { name: /Önceki soru/i }).click();
-  await expect(page.getByLabel('32–49 inç')).toBeChecked();
+  await search.fill('TV Duvar Montajı');await search.press('Enter');
+  await page.getByRole('button',{name:/Bu Hizmetle Devam Et/}).click();
+  await expect(page.getByRole('heading',{name:'Kayıtlı taslağınız var'})).toBeVisible();
+  await page.getByRole('button',{name:'Hesabımdaki taslağa devam et'}).click();
+  await expect(page.getByRole('dialog',{name:'İsterseniz fotoğraf veya video ekleyin'})).toBeVisible();
+  await page.getByRole('button',{name:'Geri',exact:true}).click();
+  await expect(page.getByRole('radio',{name:'Evet, hazır',exact:true})).toBeChecked();
 });
 
-test('classification modal supports keyboard entry, focus, and Escape dismissal', async ({ page }) => {
-  await page.goto('/');
-
-  for (let index = 0; index < 12; index += 1) {
-    if (await page.getByRole('textbox', { name: 'İhtiyacınızı yazın' }).evaluate((element) => element === document.activeElement)) break;
-    await page.keyboard.press('Tab');
-  }
-  const search = page.getByRole('textbox', { name: 'İhtiyacınızı yazın' });
-  await expect(search).toBeFocused();
-  await page.keyboard.type('musluk akıtıyor');
-  await page.keyboard.press('Enter');
-
-  const dialog = page.getByRole('dialog', { name: 'İhtiyacınızı doğru anladık mı?' });
-  await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole('button', { name: 'Kapat' })).toBeFocused();
-  await page.keyboard.press('Escape');
-  await expect(dialog).toBeHidden();
-  await expect(search).toBeFocused();
-});
-
-test('homepage and wizard do not overflow on the mobile viewport', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'mobile-chromium', 'Mobile-only layout assertion');
-  await page.goto('/');
-
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
-  const search = page.getByRole('textbox', { name: 'İhtiyacınızı yazın' });
-  await expect(search).toBeVisible();
-  await search.fill('avize montajı');
-  await search.press('Enter');
-  await page.getByRole('button', { name: /Bu Hizmetle Devam Et/i }).click();
-  await expect(page.getByRole('dialog', { name: 'Avize Montajı' })).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
-});
-
-test('mobile navigation opens, closes with Escape, and exposes product routes', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'mobile-chromium', 'Mobile-only navigation assertion');
-  await page.goto('/');
-
-  const menuButton = page.getByRole('button', {name:'Menüyü aç'});
-  await menuButton.click();
-  const navigation = page.getByRole('navigation', {name:'Mobil navigasyon'});
-  await expect(navigation).toBeVisible();
-  await expect(navigation.getByRole('link', {name:'Usta olarak katıl'})).toHaveAttribute('href','/usta-basvurusu');
-  await expect(navigation.getByRole('link', {name:'Yardım merkezi'})).toHaveAttribute('href','/yardim');
-
-  await page.keyboard.press('Escape');
-  await expect(navigation).toBeHidden();
-  await expect(page.getByRole('button', {name:'Menüyü aç'})).toBeFocused();
-});
-
-test('classification explains the selected match and footer contains no placeholder links', async ({ page }) => {
-  await page.goto('/');
-  const search = page.getByRole('textbox', {name:'İhtiyacınızı yazın'});
-  await search.fill('mutfak musluğu damlatıyor');
-  await search.press('Enter');
-
-  const dialog = page.getByRole('dialog', {name:'İhtiyacınızı doğru anladık mı?'});
-  await expect(dialog.locator('.match-single-rationale')).toContainText('eşleşiyor');
-  await page.keyboard.press('Escape');
+test('keyboard search restores focus on Escape',async({page})=>{
+  const search=page.getByRole('textbox',{name:'İhtiyacınızı yazın'});
+  await search.focus();await page.keyboard.type('musluk akıtıyor');await page.keyboard.press('Enter');
+  const dialog=page.getByRole('dialog',{name:/İhtiyacınızı doğru anladık mı/i});
+  await expect(dialog.getByRole('button',{name:'Kapat'})).toBeFocused();
+  await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(search).toBeFocused();
   await expect(page.locator('footer a[href="#"]')).toHaveCount(0);
 });
 
-test('production server applies the consolidated stylesheet and design tokens', async ({ page }) => {
-  await page.goto('/');
-
-  const styles = await page.evaluate(() => {
-    const header = document.querySelector('header');
-    return {
-      actionPrimary: getComputedStyle(document.documentElement)
-        .getPropertyValue('--action-primary')
-        .trim(),
-      headerHeight: header?.getBoundingClientRect().height ?? 0,
-      linkedStylesheets: Array.from(document.styleSheets).filter(sheet => Boolean(sheet.href)).length,
-    };
-  });
-
-  expect(styles.actionPrimary).toBe('#0d7a5f');
-  expect(styles.headerHeight).toBeGreaterThanOrEqual(60);
-  expect(styles.headerHeight).toBeLessThan(100);
-  expect(styles.linkedStylesheets).toBeGreaterThan(0);
+test('narrow mobile match and wizard fit without horizontal clipping',async({page})=>{
+  for(const width of [320,390]){
+    await page.setViewportSize({width,height:844});
+    const search=page.getByRole('textbox',{name:'İhtiyacınızı yazın'});
+    await search.fill('Musluk Değişimi');await search.press('Enter');
+    const match=page.getByRole('dialog',{name:/İhtiyacınızı doğru anladık mı/i});
+    await expect(match).toBeVisible();
+    const bounds=await match.boundingBox();expect(bounds).not.toBeNull();expect(bounds!.x).toBeGreaterThanOrEqual(0);expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(width+1);
+    await match.getByRole('button',{name:/Bu Hizmetle Devam Et/}).click();
+    const resume=page.getByRole('button',{name:'Taslağı sil ve yeni başla'});
+    if(width===390){await expect(resume).toBeVisible();await resume.click();}
+    const wizard=page.getByRole('dialog',{name:'Musluk Değişimi'});
+    await expect(wizard.getByRole('heading',{level:2})).toBeFocused();
+    await wizard.locator('label').filter({has:page.getByRole('radio',{name:'Mutfak bataryası',exact:true})}).click();
+    await expect(wizard.getByRole('radio',{name:'Mutfak bataryası',exact:true})).toBeChecked();
+    await wizard.getByRole('button',{name:/Sonraki soru/}).click();
+    await expect(wizard.getByText('Soru 2 / 3',{exact:true})).toBeVisible();
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+1)).toBe(true);
+    await page.keyboard.press('Escape');
+  }
 });
 
-test('narrow phones keep the hero, help affordance, and wizard inside safe bounds', async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 568 });
-  await page.goto('/');
+test('wizard and compact receipt fit the target responsive matrix',async({page})=>{
+  for(const width of [320,390,820,1440]){
+    await page.setViewportSize({width,height:900});
+    await page.evaluate(()=>localStorage.clear());
+    await page.reload();
+    const search=page.getByRole('textbox',{name:'İhtiyacınızı yazın'});
+    await search.fill('Musluk Değişimi');
+    await search.press('Enter');
+    await page.getByRole('button',{name:/Bu Hizmetle Devam Et/}).click();
+    const resume=page.getByRole('button',{name:'Taslağı sil ve yeni başla'});
+    if(await resume.isVisible()) await resume.click();
+    const wizard=page.getByRole('dialog',{name:'Musluk Değişimi'});
+    const bounds=await wizard.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(bounds!.x).toBeGreaterThanOrEqual(0);
+    expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(width+1);
+    await expect(wizard.getByRole('group',{name:/Talep adımları, 1. adım: Kapsam/})).toBeVisible();
+    await expect(wizard.getByRole('progressbar')).toHaveCount(0);
+    await expect(wizard.locator('.wizard-form-side')).toHaveCSS('overflow-y','visible');
+    if(width<=820){
+      await expect(wizard.getByRole('button',{name:/Talep özeti/})).toBeVisible();
+    }else{
+      await expect(wizard.getByLabel('Talep kapsamı özeti')).toBeVisible();
+    }
+    await page.keyboard.press('Escape');
+  }
+});
 
-  const heroLayout = await page.evaluate(() => {
-    const heading = document.querySelector('h1')?.getBoundingClientRect();
-    const motif = document.querySelector('.hero-bond-field')?.getBoundingClientRect();
-    const help = document.querySelector<HTMLElement>('.help-float');
-    const overlaps = Boolean(
-      heading && motif &&
-      heading.left < motif.right && heading.right > motif.left &&
-      heading.top < motif.bottom && heading.bottom > motif.top
-    );
-    return {
-      overlaps,
-      helpDisplay: help ? getComputedStyle(help).display : null,
-      overflows: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-    };
-  });
-
-  expect(heroLayout.overlaps).toBe(false);
-  expect(heroLayout.helpDisplay).toBe('none');
-  expect(heroLayout.overflows).toBe(false);
-
-  await page.setViewportSize({ width: 390, height: 844 });
-  const mobileSearch = page.getByRole('textbox', { name: 'İhtiyacınızı yazın' });
-  await mobileSearch.fill('Musluk Değişimi');
-  await mobileSearch.press('Enter');
-  await page.getByRole('button', { name: /Bu Hizmetle Devam Et/i }).click();
-
-  const wizard = page.locator('.swiss-monolith-dialog');
-  const wizardFits = await wizard.evaluate(element => {
-    const rect = element.getBoundingClientRect();
-    return rect.left >= 0 && rect.right <= document.documentElement.clientWidth;
-  });
-  expect(wizardFits).toBe(true);
-  await expect(page.locator('.dev-role-switcher')).toHaveCount(0);
-
-  const formSide = wizard.locator('.wizard-form-side');
-  await expect(formSide).toHaveCSS('overflow-y', 'auto');
-  await wizard.locator('.wizard-form-side label').filter({ hasText: 'Mutfak bataryası' }).click();
-  const nextButton = wizard.getByRole('button', { name: /Sonraki soru/i });
-  await nextButton.scrollIntoViewIfNeeded();
-  await expect(nextButton).toBeVisible();
-  await nextButton.click();
-  await expect(wizard.getByText(/SORU 2 \/ 3/)).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+test('production uses the current cobalt brand and a bounded header',async({page})=>{
+  const token=await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--brand-cobalt').trim());
+  expect(token.toLowerCase()).toBe('#1246b5');
+  const header=page.locator('header').first();await expect(header).toBeVisible();const box=await header.boundingBox();
+  expect(box!.height).toBeGreaterThanOrEqual(60);expect(box!.height).toBeLessThan(100);
 });

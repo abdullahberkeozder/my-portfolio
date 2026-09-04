@@ -1,0 +1,22 @@
+.mapCard,.region { margin-block:24px; padding:24px; border:1px solid var(--border-subtle,#dce3dc); border-radius:20px; background:var(--brand-parchment,#fffdf5); color:var(--text-primary); min-width:0; }
+.mapHeader { display:flex; justify-content:space-between; align-items:start; gap:20px; }
+.mapHeader > div { min-width:0; }
+.mapHeader h2,.region h2 { margin:6px 0 10px; font-size:clamp(1.4rem,3vw,1.8rem); line-height:1.2; }
+.mapCard p,.region p { line-height:1.55; overflow-wrap:anywhere; }
+.eyebrow { font-size:.875rem; font-weight:700; color:var(--brand-cobalt); }
+.notice { font-size:.875rem; }
+.actions { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-block:16px; }
+.map { display:block; width:100%; height:clamp(240px,30vw,320px); border:0; border-radius:12px; background:var(--brand-lemonade-soft); }
+.mapCard a,.mapCard button,.mapCard summary,.region button,.region select { min-height:44px; }
+.mapHeader > a,.actions a { display:inline-flex; align-items:center; }
+.mapHeader > a { flex-shrink:0; }
+.mapCard button,.region button,.region select { padding:10px 16px; border:1px solid currentColor; border-radius:10px; color:var(--brand-cobalt); background:white; font:inherit; }
+.mapCard button,.mapCard summary,.region button { cursor:pointer; }
+.mapCard summary { padding-block:12px; }
+.attribution { font-size:.875rem; }
+.region { scroll-margin-top:100px; }
+.region form { max-width:420px; }
+.region label { display:block; margin-bottom:8px; font-weight:600; }
+.region select { width:100%; }
+.mapCard :focus-visible,.region :focus-visible { outline:3px solid var(--brand-cobalt); outline-offset:3px; }
+@media(max-width:600px) { .mapCard,.region { padding:16px; }.mapHeader { flex-direction:column; gap:8px; } }

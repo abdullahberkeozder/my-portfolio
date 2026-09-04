@@ -13,6 +13,10 @@ export default function PrivacyPage() {
       intro="Orkestra; hesap, talep, teklif, iş günlüğü ve uyuşmazlık kayıtlarını 6698 sayılı KVKK ve ilgili mevzuat uyarınca güvenle işler."
       sections={[
         {
+          title: 'Bölge haritası',
+          body: 'Hesabınıza kaydettiğiniz şehir, bölge haritasını kişiselleştirmek için kullanılır. Pilot aşamada Ankara gösterilir. OpenStreetMap haritası yüklendiğinde tarayıcınız harita sağlayıcısına bağlanır; sağlayıcı IP adresiniz gibi bağlantı bilgilerini alabilir. Orkestra bu haritaya açık adresinizi, hesap kimliğinizi veya iş kayıtlarınızı göndermez. Haritayı gizleyebilir veya sağlayıcının sitesinde açabilirsiniz.',
+        },
+        {
           title: '1. Hesap, İletişim ve Konum Verileri',
           body: 'Ad, soyad, telefon ve e-posta bilgileriniz hesabınızı yönetmek; ilçe ve mahalle verileriniz ise doğru yerel ustalarla eşleşmenizi sağlamak için kullanılır. Açık adresiniz ve telefon numaranız, siz bir ustanın teklifini kabul edip işi başlatana kadar ustalara açık şekilde gösterilmez.',
         },
