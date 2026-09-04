@@ -37,4 +37,4 @@ Use one ordinary, high-frequency service to prove a coherent request journey bef
 - This slice does not replace the existing draft, matching, quote, acceptance, messaging or job RPCs.
 - Real customer–professional–administrator authorization, Realtime and acceptance races remain in the deferred pre-release suite.
 - The 26 service definitions are technically complete, but language quality and conditional branches still need anonymized request-data calibration.
-- The animated completion receipt remains a separate R2 enhancement and must render only after an authoritative successful submission.
+- The R2 completion receipt is implemented locally and renders only after an authoritative successful submission; release evidence remains pending.

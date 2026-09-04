@@ -144,6 +144,15 @@ describe('RequestWizard', () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
+  it('locks body scroll only while the wizard is mounted',()=>{
+    document.body.style.overflow='auto';
+    const view=render(<RequestWizard service={tvMounting!} onClose={vi.fn()}/>);
+    expect(document.body.style.overflow).toBe('hidden');
+    view.unmount();
+    expect(document.body.style.overflow).toBe('auto');
+    document.body.style.overflow='';
+  });
+
   it('does not hijack Enter on the close button after answering', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();

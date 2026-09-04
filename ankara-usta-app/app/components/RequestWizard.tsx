@@ -1,7 +1,6 @@
 'use client';
 
 import { ChangeEvent, useEffect, useState, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Service, serviceCategories } from '../data/serviceTaxonomy';
 import { getWizardDefinition } from '../data/wizardDefinitions';
@@ -16,6 +15,7 @@ import { trackFunnel } from '../lib/analytics';
 import {WizardLocationStep,WizardMediaStep,WizardQuestionStep,WizardSummaryStep} from './wizard/WizardStepScreens';
 import AccountDraftBoundary, {type DraftScope} from './AccountDraftBoundary';
 import WizardPendingDialog from './WizardPendingDialog';
+import WizardSuccessReceipt from './wizard/WizardSuccessReceipt';
 import {requestDraftKind, requestResumePath, requestRoutingSchema, type RequestTarget} from '../domain/requestRouting';
 import styles from './requestWizardV6.module.css';
 
@@ -91,7 +91,6 @@ export default function RequestWizard(props:Props) {
 }
 
 function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfessional }: Props & {scope:DraftScope}) {
-  const router = useRouter();
   const formRef = useRef<HTMLDivElement>(null);
   const definition = getWizardDefinition(service.id);
   const storageKey = scope.key;
@@ -115,6 +114,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [needsAuth, setNeedsAuth] = useState(false);
+  const [submittedRequestId, setSubmittedRequestId] = useState<string>();
   const resumePath = requestResumePath(service.id,targetProfessionalId);
   const [mediaMessage, setMediaMessage] = useState('');
   const [requestedQuestionIndex, setQuestionIndex] = useState(() => {
@@ -148,7 +148,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
   }, [step, questionIndex]);
 
   useEffect(() => {
-    if (routingConflict) return;
+    if (routingConflict || submittedRequestId) return;
     const draft: LocalDraft = {
       routingMode, targetProfessionalId,
       answers,
@@ -164,7 +164,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
     };
     try { scope.storage.setItem(storageKey, JSON.stringify(draft)); }
     catch { /* The auth handoff explicitly checks storage before leaving. */ }
-  }, [answers, district, idempotencyKey, neighborhood, requestId, step, storageKey, timing, questionIndex, files.length, initialDraft?.pendingMediaCount, scope.storage, routingMode, targetProfessionalId, routingConflict]);
+  }, [answers, district, idempotencyKey, neighborhood, requestId, step, storageKey, timing, questionIndex, files.length, initialDraft?.pendingMediaCount, scope.storage, routingMode, targetProfessionalId, routingConflict, submittedRequestId]);
 
   function filesChanged(event: ChangeEvent<HTMLInputElement>) {
     const selectedFiles = Array.from(event.target.files ?? []);
@@ -328,8 +328,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
       if (!response.ok) throw new Error(body.error ?? 'Talep gönderilemedi.');
       try { scope.storage.removeItem(storageKey); } catch { /* Submission already succeeded. */ }
       trackFunnel('wizard_completed', {serviceId:service.id, deliveryModel:service.deliveryModel});
-      router.push(`/taleplerim/${targetRequestId}/teklifler?created=1`);
-      router.refresh();
+      setSubmittedRequestId(targetRequestId);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Talep gönderilemedi.');
     } finally {
@@ -361,7 +360,8 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
 
         <div className={styles.viewport}>
           <div className={styles.form} ref={formRef}>
-            {targetProfessional && <p className="account-message">Seçili usta: <strong>{targetProfessional.name}</strong> · Başka ustalara gönderilmez.</p>}
+            {submittedRequestId ? <WizardSuccessReceipt requestId={submittedRequestId} serviceName={service.name} district={district} neighborhood={neighborhood} timing={timing} targetProfessionalName={targetProfessional?.name}/> : <>
+            {targetProfessional && <p className="account-message">Seçili usta: <strong>{targetProfessional.name}</strong>. Başka ustalara gönderilmez.</p>}
             <div className={styles.progress} role="status" aria-label={`Talep aşaması: ${stepLabels[step]}`}>
               <span>{stepLabels[step]}</span>
               <span>{step === 0 ? `Soru ${questionIndex + 1}` : `${step + 1} / ${stepLabels.length}`}</span>
@@ -595,6 +595,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                 </div>
               </WizardSummaryStep>
             )}
+            </>}
           </div>
         </div>
       </section>

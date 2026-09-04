@@ -1,0 +1,86 @@
+.stage {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: 480px;
+  padding: 12px 0 24px;
+}
+
+.printer {
+  background: var(--text-primary);
+  border-radius: 12px 12px 5px 5px;
+  box-shadow: 0 12px 28px rgb(8 22 30 / 16%);
+  height: 48px;
+  position: relative;
+  width: calc(100% - 32px);
+  z-index: 1;
+}
+
+.printer::after {
+  background: rgb(3 12 17 / 70%);
+  border-radius: 2px;
+  bottom: 7px;
+  content: '';
+  height: 5px;
+  left: 18px;
+  position: absolute;
+  right: 18px;
+}
+
+.receipt {
+  animation: receipt-feed 560ms cubic-bezier(.23,1,.32,1) both;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
+  border-top: 0;
+  box-shadow: 0 18px 40px rgb(8 22 30 / 12%);
+  padding: 28px 30px 22px;
+  position: relative;
+  transform-origin: top center;
+  width: calc(100% - 64px);
+}
+
+.receipt header { align-items: center; border-bottom: 1px dashed var(--border-default); display: flex; gap: 10px; padding-bottom: 18px; }
+.receipt header div { display: grid; gap: 1px; }
+.receipt header strong { color: var(--text-primary); font-size: 16px; }
+.receipt header span { color: var(--text-secondary); font-size: 12px; }
+
+.confirmation { align-items: flex-start; display: flex; gap: 14px; padding: 24px 0; }
+.confirmation > span { align-items: center; background: var(--brand-lemonade); border-radius: 50%; color: var(--text-primary); display: inline-flex; flex: 0 0 36px; font-weight: 800; height: 36px; justify-content: center; }
+.confirmation p { color: var(--action-primary); font-size: 13px; font-weight: 700; margin: 1px 0 4px; }
+.confirmation h2 { color: var(--text-primary); font-size: clamp(22px,4vw,28px); letter-spacing: -.025em; line-height: 1.15; margin: 0; text-wrap: balance; }
+.confirmation h2:focus { outline: none; }
+
+.receipt dl { border-block: 1px dashed var(--border-default); margin: 0; padding: 8px 0; }
+.receipt dl div { display: grid; gap: 16px; grid-template-columns: 90px minmax(0,1fr); padding: 8px 0; }
+.receipt dt { color: var(--text-secondary); font-size: 13px; }
+.receipt dd { color: var(--text-primary); font-size: 14px; font-weight: 650; margin: 0; overflow-wrap: anywhere; text-align: right; }
+.next { color: var(--text-secondary); font-size: 14px; line-height: 1.55; margin: 18px 0; }
+
+.action { align-items: center; background: var(--action-primary); border-radius: var(--radius-control); color: var(--surface-raised); display: flex; font-weight: 700; justify-content: center; min-height: 48px; padding: 0 18px; }
+.action:focus-visible { outline: 3px solid var(--brand-lemonade); outline-offset: 3px; }
+.action:active { transform: scale(.98); }
+
+.cut {
+  background: linear-gradient(135deg,transparent 7px,var(--surface-raised) 0) 0 0/14px 14px repeat-x,linear-gradient(225deg,transparent 7px,var(--surface-raised) 0) 0 0/14px 14px repeat-x;
+  bottom: -8px;
+  height: 9px;
+  left: -1px;
+  position: absolute;
+  right: -1px;
+}
+
+@keyframes receipt-feed {
+  from { opacity: 0; transform: translateY(-18px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 390px) {
+  .stage { padding-top: 4px; }
+  .printer { width: calc(100% - 16px); }
+  .receipt { padding: 24px 20px 20px; width: calc(100% - 32px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .receipt { animation: none; }
+}
