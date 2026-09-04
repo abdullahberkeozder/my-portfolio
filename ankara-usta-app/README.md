@@ -38,11 +38,11 @@ Orkestra is a local services marketplace prototype designed to connect customers
 
 The interface combines a focused, question-first marketplace flow with an original modular identity for Orkestra.
 
-- A petrol-green, trust-blue, and warm off-white color palette
-- A forest-green, pistachio, trust-blue, warm off-white, and editorial-gray palette
+- A cobalt, golden-yellow, lemonade, parchment, and charcoal color system
 - A six-tile house mark representing an assembled service team and completed work
 - Scroll-linked tile separation/reassembly with a reduced-motion fallback
-- Typeform-inspired question focus and a restrained physical work-receipt summary
+- A focused, single-question request flow with an editable final scope summary
+- A completion receipt reserved for confirmed submissions rather than persistent decoration
 - Explicit mobile layouts for 320 px, 390 px, tablet, and desktop surfaces
 
 ## Technology
@@ -109,6 +109,7 @@ npm run quality
 - Shared fixtures under `tests/fixtures/`
 - Domain glossary and requirements-to-test traceability under `docs/engineering/`
 - Backend, authentication, and storage decisions under `docs/adr/`
+- Five-stage delivery status and release-candidate provenance under `docs/engineering/`
 
 ## Project Structure
 
@@ -165,6 +166,9 @@ Provider setup and operational details are documented in [`services/AnkaraUsta.N
 - Matching weights are explainable but not yet calibrated with production completion data.
 - The notification worker needs separate deployment and server-only Supabase/Resend configuration.
 - Payments and calendar synchronization are not implemented and are not presented as current capabilities.
+- Directed requests, pre-job conversations, and quote revisions remain disabled until isolated multi-account authorization and concurrency checks pass.
+
+Current delivery status is tracked in [`docs/engineering/DELIVERY-STATUS.md`](./docs/engineering/DELIVERY-STATUS.md). A locally implemented feature is not treated as released without multi-account and environment evidence.
 
 ## AI-Assisted Development
 
