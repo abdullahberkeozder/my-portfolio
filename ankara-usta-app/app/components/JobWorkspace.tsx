@@ -1,7 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import WorkspaceTabs from './WorkspaceTabs';
+import {workspaceMutation} from '../lib/workspaceMutation';
+import {useModalDialog} from '../hooks/useModalDialog';
 
 type Role = 'customer' | 'tradesperson' | 'admin';
 type EventRow = {
@@ -103,7 +106,10 @@ export default function JobWorkspace(props: Props) {
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('messages');
   const [message, setMessage] = useState('');
   const [notice, setNotice] = useState('');
+  const [noticeSuccess, setNoticeSuccess] = useState(false);
   const [busy, setBusy] = useState('');
+  const pendingCall = useRef(false);
+  const pendingMessage = useRef<{body:string;idempotencyKey:string}|null>(null);
 
   // Forms
   const [inspectionAt, setInspectionAt] = useState('');
@@ -121,41 +127,46 @@ export default function JobWorkspace(props: Props) {
 
   // Confirmation Modal
   const [confirmAction, setConfirmAction] = useState<{ status: string; label: string } | null>(null);
+  const closeConfirmation = () => { if (!pendingCall.current) setConfirmAction(null); };
+  const confirmationRef = useModalDialog<HTMLDivElement>(Boolean(confirmAction), closeConfirmation);
 
   async function call(url: string, body: unknown, key: string) {
+    if (pendingCall.current) return false;
+    pendingCall.current = true;
     setBusy(key);
     setNotice('');
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    const data = (await response.json()) as { error?: string };
-    setBusy('');
-    if (!response.ok) {
-      setNotice(data.error ?? 'İşlem tamamlanamadı.');
-      return false;
-    }
-    router.refresh();
-    return true;
+    setNoticeSuccess(false);
+    try {
+      const result = await workspaceMutation(url, body, props.currentUserId);
+      if (!result.ok) { setNotice(result.message); return false; }
+      setNotice('İşlem kaydedildi.');
+      setNoticeSuccess(true);
+      router.refresh();
+      return true;
+    } finally { pendingCall.current = false; setBusy(''); }
   }
 
   async function sendMessage(event: React.FormEvent) {
     event.preventDefault();
+    if (pendingCall.current) return;
+    const sentBody = message;
+    if (!pendingMessage.current || pendingMessage.current.body !== message) {
+      pendingMessage.current = { body: message, idempotencyKey: crypto.randomUUID() };
+    }
     if (
       await call(
         `/api/jobs/${props.jobId}/messages`,
-        { body: message, idempotencyKey: crypto.randomUUID() },
+        pendingMessage.current,
         'message'
       )
     ) {
-      setMessage('');
+      pendingMessage.current = null;
+      setMessage(current => current === sentBody ? '' : current);
     }
   }
 
   async function transition(status: string) {
-    setConfirmAction(null);
-    await call(`/api/jobs/${props.jobId}/transition`, { status }, status);
+    if (await call(`/api/jobs/${props.jobId}/transition`, { status }, status)) setConfirmAction(null);
   }
 
   async function proposeInspection(event: React.FormEvent) {
@@ -314,61 +325,22 @@ export default function JobWorkspace(props: Props) {
       </header>
 
       {/* Workspace Tabs Navigation */}
-      <nav className="workspace-tabs-nav" role="tablist" aria-label="İş yönetim sekmeleri">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'messages'}
-          className={`ws-tab-btn ${activeTab === 'messages' ? 'active' : ''}`}
-          onClick={() => setActiveTab('messages')}
-        >
-          💬 Mesaj Odası ({props.messages.length})
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'scope'}
-          className={`ws-tab-btn ${activeTab === 'scope' ? 'active' : ''}`}
-          onClick={() => setActiveTab('scope')}
-        >
-          📑 Kapsam & Değişiklikler ({props.scopeChanges.length})
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'location'}
-          className={`ws-tab-btn ${activeTab === 'location' ? 'active' : ''}`}
-          onClick={() => setActiveTab('location')}
-        >
-          📍 Keşif & Adres
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'timeline'}
-          className={`ws-tab-btn ${activeTab === 'timeline' ? 'active' : ''}`}
-          onClick={() => setActiveTab('timeline')}
-        >
-          📋 Zaman Çizelgesi ({props.events.length})
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'trust'}
-          className={`ws-tab-btn ${activeTab === 'trust' ? 'active' : ''}`}
-          onClick={() => setActiveTab('trust')}
-        >
-          🛡️ Güvence & İşlemler
-        </button>
-      </nav>
+      <WorkspaceTabs<WorkspaceTab> active={activeTab} onChange={setActiveTab} label="İş yönetim sekmeleri" panelId="job-workspace-panel"
+        items={[
+          {id:'messages',label:`Mesajlar (${props.messages.length})`},
+          {id:'scope',label:'Kapsam'},
+          {id:'location',label:'Keşif ve adres'},
+          {id:'timeline',label:'İş geçmişi'},
+          {id:'trust',label:'Onay ve işlemler'},
+        ]} />
 
       {/* Tab Panels */}
       <div className="workspace-tab-body">
         {/* Tab 1: Messages */}
         {activeTab === 'messages' && (
-          <section className="job-tab-panel animate-fade-in" role="tabpanel">
+          <section className="job-tab-panel animate-fade-in" role="tabpanel" id="job-workspace-panel" aria-labelledby={`job-workspace-panel-tab-${activeTab}`} tabIndex={0}>
             <div className="panel-header">
-              <h2>Usta & Müşteri İletişim Odası</h2>
+              <h2>İş mesajları</h2>
               <p>İş kapsamı, randevu saati ve detaylar bu odada kayıt altında tutulur.</p>
             </div>
 
@@ -412,7 +384,7 @@ export default function JobWorkspace(props: Props) {
 
         {/* Tab 2: Scope & Changes */}
         {activeTab === 'scope' && (
-          <section className="job-tab-panel animate-fade-in" role="tabpanel">
+          <section className="job-tab-panel animate-fade-in" role="tabpanel" id="job-workspace-panel" aria-labelledby={`job-workspace-panel-tab-${activeTab}`} tabIndex={0}>
             <div className="panel-header">
               <h2>Kapsam ve Değişiklik Talepleri</h2>
               <p>İş esnasında ortaya çıkan ek işçilik ve malzemeler iki tarafın onayıyla dijital fişe eklenir.</p>
@@ -513,7 +485,7 @@ export default function JobWorkspace(props: Props) {
 
         {/* Tab 3: Location & Inspection */}
         {activeTab === 'location' && (
-          <section className="job-tab-panel animate-fade-in" role="tabpanel">
+          <section className="job-tab-panel animate-fade-in" role="tabpanel" id="job-workspace-panel" aria-labelledby={`job-workspace-panel-tab-${activeTab}`} tabIndex={0}>
             <div className="panel-header">
               <h2>Keşif ve Adres Bilgileri</h2>
               <p>Açık adres yalnızca onaylı ustayla paylaşılır.</p>
@@ -625,9 +597,9 @@ export default function JobWorkspace(props: Props) {
 
         {/* Tab 4: Timeline */}
         {activeTab === 'timeline' && (
-          <section className="job-tab-panel animate-fade-in" role="tabpanel">
+          <section className="job-tab-panel animate-fade-in" role="tabpanel" id="job-workspace-panel" aria-labelledby={`job-workspace-panel-tab-${activeTab}`} tabIndex={0}>
             <div className="panel-header">
-              <h2>Değiştirilemez İş Zaman Çizelgesi</h2>
+              <h2>İş geçmişi</h2>
               <p>Oluşturulma, teklif kabulü, kapsam onayları ve durum geçişleri kronolojik olarak arşivlenir.</p>
             </div>
 
@@ -655,9 +627,9 @@ export default function JobWorkspace(props: Props) {
 
         {/* Tab 5: Trust & Critical Actions */}
         {activeTab === 'trust' && (
-          <section className="job-tab-panel animate-fade-in" role="tabpanel">
+          <section className="job-tab-panel animate-fade-in" role="tabpanel" id="job-workspace-panel" aria-labelledby={`job-workspace-panel-tab-${activeTab}`} tabIndex={0}>
             <div className="panel-header">
-              <h2>Güvence, Onay ve Durum İşlemleri</h2>
+              <h2>Onay ve iş durumu</h2>
               <p>İş akışını tamamlamak, düzeltme istemek veya uyuşmazlık bildirmek için bu alanı kullanın.</p>
             </div>
 
@@ -686,24 +658,27 @@ export default function JobWorkspace(props: Props) {
       </div>
 
       {notice && (
-        <div className="account-alert-box alert-error" role="status">
-          <span>⚠️</span>
+        <div className={`account-alert-box ${noticeSuccess ? 'alert-success' : 'alert-error'}`} role={noticeSuccess ? 'status' : 'alert'}>
           <span>{notice}</span>
         </div>
       )}
 
       {/* Two-Step Confirmation Modal for Irreversible Actions */}
       {confirmAction && (
-        <div className="dialog-backdrop" role="presentation" onClick={() => setConfirmAction(null)}>
+        <div className="dialog-backdrop" role="presentation" onClick={closeConfirmation}>
           <div
             className="request-dialog confirmation-dialog"
+            ref={confirmationRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
+            aria-labelledby="job-confirm-title"
+            aria-describedby="job-confirm-description"
             onClick={e => e.stopPropagation()}
           >
             <span className="account-eyebrow">İŞLEM TEYİDİ</span>
-            <h2>{confirmAction.label} işlemini onaylıyor musunuz?</h2>
-            <p className="confirm-notice">
+            <h2 id="job-confirm-title">{confirmAction.label} işlemini onaylıyor musunuz?</h2>
+            <p className="confirm-notice" id="job-confirm-description">
               {confirmAction.status === 'cancelled' &&
                 'İşi iptal ettiğinizde takvim boşa çıkar ve bu işlem geri alınamaz.'}
               {confirmAction.status === 'completed' &&
@@ -716,10 +691,12 @@ export default function JobWorkspace(props: Props) {
                 'İşin tamamlandığı ve müşterinin nihai onayı beklendiği taraflara bildirilecek.'}
             </p>
             <div className="confirm-actions">
+              {notice && !noticeSuccess && <p role="alert">{notice}</p>}
               <button
                 type="button"
                 className="wizard-secondary"
-                onClick={() => setConfirmAction(null)}
+                data-dialog-initial-focus
+                onClick={closeConfirmation}
                 disabled={Boolean(busy)}
               >
                 Vazgeç

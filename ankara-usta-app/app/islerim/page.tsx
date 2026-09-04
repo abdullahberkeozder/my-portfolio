@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import RetryButton from '../components/RetryButton';
+import { jobStatusLabel } from '../lib/presentationLabels';
 import { redirect } from 'next/navigation';
 import { services } from '../data/serviceTaxonomy';
 import { createSupabaseServerClient } from '../lib/supabase/server';
-import AppHeader from '../components/AppHeader';
 import Pagination from '../components/Pagination';
 
 export const dynamic = 'force-dynamic';
@@ -35,8 +36,8 @@ export default async function JobsPage({searchParams}:{searchParams:Promise<{pag
 
   return (
     <main className="account-shell requests-page">
-      <AppHeader />
-      <div style={{ maxWidth: '1140px', margin: '32px auto', padding: '0 16px' }}>
+
+      <div className="page-body">
         <div className="requests-header">
           <Link className="account-back" href="/">← Ana Sayfa</Link>
           <div>
@@ -46,7 +47,7 @@ export default async function JobsPage({searchParams}:{searchParams:Promise<{pag
         </div>
 
         {error ? (
-          <p className="account-message">İşler yüklenemedi.</p>
+          <section className="account-card" role="alert"><h2>İşler yüklenemedi</h2><p>Bağlantınızı kontrol edip tekrar deneyin.</p><RetryButton /></section>
         ) : jobs.length ? (
           <>
           <div className="request-list">
@@ -55,11 +56,11 @@ export default async function JobsPage({searchParams}:{searchParams:Promise<{pag
               return (
                 <article key={job.id}>
                   <div>
-                    <span>{job.status.replaceAll('_', ' ')}</span>
+                    <span>{jobStatusLabel(job.status)}</span>
                     <h2>{service?.name ?? job.service_requests?.service_id}</h2>
                     <p>{job.customer_id === user.id ? job.tradesperson_profiles?.display_name ?? 'Seçilen usta' : 'Müşteri işi'}</p>
                   </div>
-                  <Link className="dialog-primary" href={`/islerim/${job.id}`}>İşi Aç</Link>
+                  <Link className="dialog-primary" href={`/islerim/${job.id}`}>İşi incele</Link>
                 </article>
               );
             })}
@@ -68,8 +69,9 @@ export default async function JobsPage({searchParams}:{searchParams:Promise<{pag
           </>
         ) : (
           <section className="account-card empty-requests">
-            <h2>Henüz aktif işiniz yok</h2>
-            <p>Bir teklif kabul edildiğinde mesajlar, kapsam ve iş aşamaları burada yönetilir.</p>
+            <h2>Henüz işiniz yok</h2>
+            <p>Bir teklifi kabul ettiğinizde işin kapsamını ve mesajlarını burada takip edebilirsiniz.</p>
+            <Link className="dialog-primary" href="/taleplerim">Taleplerime git</Link>
           </section>
         )}
       </div>

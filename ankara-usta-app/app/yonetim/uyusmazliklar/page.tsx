@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { disputeSlaState } from '../../domain';
 import { createSupabaseServerClient } from '../../lib/supabase/server';
-import AppHeader from '../../components/AppHeader';
 import RealtimeRefresh from '../../components/RealtimeRefresh';
 
 import { getServerUserAndRoles } from '../../lib/authServer';
@@ -42,7 +41,7 @@ export default async function DisputeOperationsPage() {
 
   return (
     <main className="account-shell admin-queue dispute-operations">
-      <AppHeader role="admin" />
+
       <div style={{ maxWidth: '1140px', margin: '32px auto', padding: '0 16px' }}>
         <RealtimeRefresh channelName="admin-dispute-queue" subscriptions={[{ table: 'dispute_cases' }]} label="Uyuşmazlık kuyruğu" />
         <Link className="account-back" href="/yonetim/moderasyon">← Yönetim Paneli</Link>

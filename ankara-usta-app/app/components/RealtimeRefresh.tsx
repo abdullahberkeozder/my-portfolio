@@ -23,6 +23,21 @@ export default function RealtimeRefresh({
   useEffect(() => {
     let refreshTimer: ReturnType<typeof setTimeout> | undefined;
     let disposed = false;
+    function catchUp() {
+      if(disposed || refreshTimer) return;
+      refreshTimer=setTimeout(()=>{refreshTimer=undefined;if(!disposed)router.refresh();},300);
+    }
+    function onVisible(){if(document.visibilityState==='visible')catchUp();}
+    window.addEventListener('online',catchUp);
+    window.addEventListener('focus',catchUp);
+    document.addEventListener('visibilitychange',onVisible);
+    function cleanup(){
+      disposed=true;
+      if(refreshTimer)clearTimeout(refreshTimer);
+      window.removeEventListener('online',catchUp);
+      window.removeEventListener('focus',catchUp);
+      document.removeEventListener('visibilitychange',onVisible);
+    }
 
     try {
       const supabase = createSupabaseBrowserClient();
@@ -37,29 +52,26 @@ export default function RealtimeRefresh({
             table: subscription.table,
             ...(subscription.filter ? { filter: subscription.filter } : {}),
           },
-          () => {
-            if (refreshTimer) clearTimeout(refreshTimer);
-            refreshTimer = setTimeout(() => router.refresh(), 300);
-          }
+          catchUp
         );
       }
 
       channel.subscribe((status: string) => {
         if (disposed) return;
-        if (status === 'SUBSCRIBED') setState('live');
+        if (status === 'SUBSCRIBED') { setState('live'); catchUp(); }
         else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setState('degraded');
         else if (status === 'CLOSED') setState('unavailable');
       });
 
       return () => {
-        disposed = true;
-        if (refreshTimer) clearTimeout(refreshTimer);
+        cleanup();
         void supabase.removeChannel(channel);
       };
     } catch {
       queueMicrotask(() => {
         if (!disposed) setState('unavailable');
       });
+      return cleanup;
     }
   }, [channelName, router, subscriptionsKey]);
 
@@ -69,6 +81,7 @@ export default function RealtimeRefresh({
       <span aria-hidden="true" />
       <span className="sr-only">{label}: </span>
       {copy}
+      <button type="button" onClick={()=>router.refresh()}>Güncel durumu yenile</button>
     </div>
   );
 }

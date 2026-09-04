@@ -1,0 +1,13 @@
+.dialog { padding:0; border:1px solid var(--border-default); border-radius:var(--radius-card); width:min(600px,calc(100vw - 24px)); max-height:calc(100dvh - 24px); color:var(--text-primary); background:var(--surface-raised); }
+.dialog[open] { display:flex; flex-direction:column; }
+.dialog::backdrop { background:rgb(0 0 0 / 45%); }
+.content { padding:24px; overflow-y:auto; min-height:0; overflow-wrap:anywhere; }
+.content h2 { font-size:clamp(1.3rem,4vw,1.8rem); line-height:1.25; }
+.content p,.content li { line-height:1.6; }
+.terms { background:var(--brand-lemonade-soft); padding:16px; border-radius:var(--radius-control); }
+.terms div { display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; margin:8px 0; }
+.terms dd { margin:0; }
+.actions { flex-shrink:0; display:flex; flex-wrap:wrap; gap:12px; padding:16px 24px; border-top:1px solid var(--border-default); padding-bottom:max(16px,env(safe-area-inset-bottom)); }
+.actions button { flex:1 1 160px; min-height:44px; height:auto; padding:12px; white-space:normal; }
+.dialog :focus-visible { outline:3px solid var(--action-primary); outline-offset:3px; }
+@media(max-width:390px) { .content { padding:16px; } .actions { padding-inline:16px; } }
