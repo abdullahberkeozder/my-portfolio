@@ -11,14 +11,13 @@ import { getVisibleWizardQuestions, pruneWizardAnswers } from '../domain';
 import { createSupabaseBrowserClient } from '../lib/supabase/browser';
 import { useModalDialog } from '../hooks/useModalDialog';
 import Button from './Button';
-import WorkReceipt from './WorkReceipt';
 import { normalizeRequestTiming, requestTimings, requestTimingLabel } from '../domain/requestTiming';
 import { trackFunnel } from '../lib/analytics';
 import {WizardLocationStep,WizardMediaStep,WizardQuestionStep,WizardSummaryStep} from './wizard/WizardStepScreens';
 import AccountDraftBoundary, {type DraftScope} from './AccountDraftBoundary';
 import WizardPendingDialog from './WizardPendingDialog';
-import OrchestraLogo from './OrchestraLogo';
 import {requestDraftKind, requestResumePath, requestRoutingSchema, type RequestTarget} from '../domain/requestRouting';
+import styles from './requestWizardV6.module.css';
 
 type Props = { service: Service; onClose: () => void; remoteDraft?: LocalDraft; targetProfessional?: RequestTarget };
 type LocalDraft = {
@@ -78,6 +77,12 @@ const resultContent = {
   },
 };
 
+const deliveryLabels = {
+  package: 'Paket Hizmet',
+  quote: 'Teklif Modeli',
+  inspection: 'Keşif Modeli'
+};
+
 export default function RequestWizard(props:Props) {
   return <AccountDraftBoundary key={requestDraftKind(props.service.id,props.targetProfessional?.id)} kind={requestDraftKind(props.service.id,props.targetProfessional?.id)} ttl={7*86400000}
     renderPending={content=><WizardPendingDialog serviceName={props.service.name} onClose={props.onClose}>{content}</WizardPendingDialog>}>
@@ -112,7 +117,6 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
   const [needsAuth, setNeedsAuth] = useState(false);
   const resumePath = requestResumePath(service.id,targetProfessionalId);
   const [mediaMessage, setMediaMessage] = useState('');
-  const [showMobileReceipt, setShowMobileReceipt] = useState(false);
   const [requestedQuestionIndex, setQuestionIndex] = useState(() => {
     if (Number.isInteger(initialDraft?.questionIndex) && initialDraft!.questionIndex! >= 0) return initialDraft!.questionIndex!;
     const initialQuestions = getVisibleWizardQuestions(definition, initialDraft?.answers ?? {});
@@ -333,100 +337,34 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
     }
   }
 
-  const answeredCount = Object.keys(answers).length;
-
   if (routingConflict) return <WizardPendingDialog serviceName={service.name} onClose={onClose}><p role="alert">Taslağın hedefi bu usta ile eşleşmiyor. Güvenliğiniz için taslak değiştirilmedi.</p></WizardPendingDialog>;
 
   return (
-    <div className="dialog-backdrop wizard-backdrop frosted-backdrop" role="presentation" onClick={onClose}>
+    <div className={styles.backdrop} role="presentation" onClick={onClose}>
       <section
         ref={dialogRef}
         tabIndex={-1}
-        className="request-dialog wizard-dialog swiss-monolith-dialog"
+        className={styles.dialog}
         role="dialog"
         aria-modal="true"
         aria-label={step === 0 ? service.name : undefined}
         aria-labelledby={step !== 0 ? 'wizard-title' : undefined}
         onClick={event => event.stopPropagation()}
       >
-        <header className="wizard-shell-header">
-          <div className="wizard-shell-brand" aria-label="Orkestra">
-            <OrchestraLogo size={28} variant="primary" />
-            <span>Orkestra</span>
-          </div>
-          <div className="wizard-shell-service">
-            <span>{category?.name}</span>
+        <header className={styles.topbar}>
+          <div className={styles.serviceContext}>
+            <span>{category?.name ?? 'Hizmet talebi'}</span>
             <strong>{service.name}</strong>
           </div>
-          <button
-            data-dialog-initial-focus
-            className="dialog-close swiss-close-btn"
-            onClick={onClose}
-            aria-label="Kapat"
-          >
-            <span aria-hidden="true">×</span>
-          </button>
+          <button data-dialog-initial-focus className={styles.close} onClick={onClose} aria-label="Kapat">×</button>
         </header>
 
-        <div className="mobile-receipt-toggle-bar">
-          <button
-            type="button"
-            className="receipt-toggle-btn"
-            onClick={() => setShowMobileReceipt(v => !v)}
-            aria-expanded={showMobileReceipt}
-          >
-            <span className="receipt-toggle-text">
-              Talep özeti
-            </span>
-            <small className="receipt-toggle-hint">
-              {answeredCount}/{questions.length} kapsam · {showMobileReceipt ? 'Gizle ↑' : 'Göster ↓'}
-            </small>
-          </button>
-        </div>
-
-        {showMobileReceipt && (
-          <div className="mobile-receipt-drawer animate-slide-down">
-            <WorkReceipt
-              service={service}
-              answers={answers}
-              questions={questions}
-              district={district}
-              neighborhood={neighborhood}
-              timing={timing}
-              filesCount={files.length}
-
-              step={step}
-              isCompact
-
-            />
-          </div>
-        )}
-
-        <div className={`wizard-split-layout wizard-step-${step}`}>
-          <div className="wizard-form-side" ref={formRef}>
+        <div className={styles.viewport}>
+          <div className={styles.form} ref={formRef}>
             {targetProfessional && <p className="account-message">Seçili usta: <strong>{targetProfessional.name}</strong> · Başka ustalara gönderilmez.</p>}
-            <div className="wizard-step-nav-bar">
-              <div className="wizard-progress-pills" role="group" aria-label={`Talep adımları, ${step + 1}. adım: ${stepLabels[step]}`}>
-                {stepLabels.map((stepLabel, idx) => (
-                  <button
-                    key={stepLabel}
-                    type="button"
-                    className="wizard-stage"
-                    aria-current={idx === step ? 'step' : undefined}
-                    aria-label={`${idx + 1}. adım: ${stepLabel}${idx < step ? ', tamamlandı' : idx === step ? ', mevcut adım' : ''}`}
-                    disabled={(idx > 0 && !scopeComplete) || (idx === 3 && !locationComplete)}
-                    onClick={() => {
-                      if (idx === 0) {
-                        const firstUnanswered = questions.findIndex(question => !question.options.includes(answers[question.id]));
-                        setQuestionIndex(firstUnanswered === -1 ? Math.max(questions.length - 1, 0) : firstUnanswered);
-                      }
-                      setStep(idx);
-                    }}
-                  >
-                    <span aria-hidden="true">{idx < step ? '✓' : idx + 1}</span> {stepLabel}
-                  </button>
-                ))}
-              </div>
+            <div className={styles.progress} role="status" aria-label={`Talep aşaması: ${stepLabels[step]}`}>
+              <span>{stepLabels[step]}</span>
+              <span>{step === 0 ? `Soru ${questionIndex + 1}` : `${step + 1} / ${stepLabels.length}`}</span>
             </div>
 
             {step === 0 && (
@@ -478,7 +416,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                       onClick={() => setQuestionIndex(current => current - 1)}
                       type="button"
                     >
-                      Önceki soru
+                      ← Önceki Soru
                     </Button>
                   )}
                   <Button
@@ -487,7 +425,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                     onClick={continueFromQuestion}
                     type="button"
                   >
-                    {questionIndex === questions.length - 1 ? 'Görsellere devam et' : 'Sonraki soru'}
+                    {questionIndex === questions.length - 1 ? 'Görsel ekleme adımına geç' : 'Sonraki soruya geç'}
                   </Button>
                 </div>
                 {questionIndex === 0 && <p className="wizard-account-note" role="note">
@@ -532,10 +470,10 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
 
                 <div className="wizard-actions-bottom">
                   <Button variant="outline" onClick={() => setStep(0)} type="button">
-                    Geri
+                    Kapsama dön
                   </Button>
                   <Button variant="primary" onClick={() => setStep(2)} type="button">
-                    Konum ve tarihe devam et
+                    Konum ve zamanı ekle
                   </Button>
                 </div>
               </WizardMediaStep>
@@ -588,7 +526,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
 
                 <div className="wizard-actions-bottom">
                   <Button variant="outline" onClick={() => setStep(1)} type="button">
-                    Geri
+                    Görsellere dön
                   </Button>
                   <Button
                     variant="primary"
@@ -596,7 +534,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                     onClick={() => setStep(3)}
                     type="button"
                   >
-                    Talebi kontrol et
+                    Talep kapsamını kontrol et
                   </Button>
                 </div>
               </WizardLocationStep>
@@ -608,6 +546,24 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                 {Boolean(initialDraft?.pendingMediaCount) && files.length === 0 && (
                   <p className="account-message" role="status">Önceki seçiminizdeki dosyalar henüz eklenmedi. <button type="button" onClick={() => setStep(1)}>Görsellere dön ve yeniden ekle</button></p>
                 )}
+
+                <dl className={styles.summary} aria-label="Talep kapsamı">
+                  <div>
+                    <dt>Hizmet</dt><dd>{service.name} <small>{deliveryLabels[service.deliveryModel]}</small></dd>
+                  </div>
+                  {questions.map((question, index) => <div key={question.id}>
+                    <dt>{question.label}</dt><dd>{answers[question.id] || 'Yanıtlanmadı'} <button type="button" onClick={() => { setQuestionIndex(index); setStep(0); }}>Değiştir</button></dd>
+                  </div>)}
+                  <div>
+                    <dt>Konum</dt><dd>{district}, {neighborhood} <button type="button" onClick={() => setStep(2)}>Değiştir</button></dd>
+                  </div>
+                  <div>
+                    <dt>Zamanlama</dt><dd>{requestTimingLabel(timing)} <button type="button" onClick={() => setStep(2)}>Değiştir</button></dd>
+                  </div>
+                  <div>
+                    <dt>Görseller</dt><dd>{files.length ? `${files.length} dosya` : 'Eklenmedi'} <button type="button" onClick={() => setStep(1)}>Değiştir</button></dd>
+                  </div>
+                </dl>
 
                 {(message || scope.guest || needsAuth) && (
                   <p className="account-message" role={message ? 'alert' : 'status'}>
@@ -639,24 +595,6 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                 </div>
               </WizardSummaryStep>
             )}
-          </div>
-
-          {/* Right Side: Live Animated Work Receipt */}
-          <div className="wizard-receipt-side">
-            <div className="receipt-sticky-wrapper">
-              <WorkReceipt
-                service={service}
-                answers={answers}
-                questions={questions}
-                district={district}
-                neighborhood={neighborhood}
-                timing={timing}
-                filesCount={files.length}
-
-                step={step}
-
-              />
-            </div>
           </div>
         </div>
       </section>

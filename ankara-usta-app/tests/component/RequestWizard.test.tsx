@@ -36,14 +36,13 @@ describe('RequestWizard', () => {
   it('restores the exact question rather than jumping to the first unanswered question',()=>{
     localStorage.setItem('ankara-usta:draft:tv-duvar-montaji',JSON.stringify({answers:{'tv-size':'32–49 inç'},district:'',neighborhood:'',timing:'this_week',step:0,questionIndex:0,idempotencyKey:crypto.randomUUID(),updatedAt:Date.now()}));
     render(<RequestWizard service={tvMounting!} onClose={vi.fn()} />);
-    expect(screen.getByRole('group',{name:'Talep adımları, 1. adım: Kapsam'})).toBeInTheDocument();
+    expect(screen.getByRole('status',{name:'Talep aşaması: Kapsam'})).toBeInTheDocument();
   });
 
   it('rejects a restored answer that is no longer an available option',()=>{
     localStorage.setItem('ankara-usta:draft:tv-duvar-montaji',JSON.stringify({answers:{'tv-size':'retired-option'},district:'',neighborhood:'',timing:'this_week',step:0,questionIndex:0,idempotencyKey:crypto.randomUUID(),updatedAt:Date.now()}));
     render(<RequestWizard service={tvMounting!} onClose={vi.fn()}/>);
     expect(screen.getByRole('button',{name:/Sonraki soru/})).toBeDisabled();
-    expect(screen.getByRole('button',{name:/2. adım: Görseller/})).toBeDisabled();
   });
 
   it('presents scope questions progressively and requires an answer before advancing', async () => {
@@ -67,7 +66,7 @@ describe('RequestWizard', () => {
     await user.click(continueButton);
 
     await user.click(screen.getByLabelText('Evet, hazır'));
-    continueButton = screen.getByRole('button', { name: /Görsellere devam et/i });
+    continueButton = screen.getByRole('button', { name: /Görsel ekleme adımına geç/i });
 
     expect(continueButton).toBeEnabled();
   });
@@ -76,7 +75,7 @@ describe('RequestWizard', () => {
     const user = userEvent.setup();
     render(<RequestWizard service={tvMounting!} onClose={vi.fn()} />);
 
-    expect(screen.getByRole('group',{name:'Talep adımları, 1. adım: Kapsam'})).toBeInTheDocument();
+    expect(screen.getByRole('status',{name:'Talep aşaması: Kapsam'})).toBeInTheDocument();
     expect(screen.getByText('Soru 1 / 3')).toBeVisible();
     expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
 
@@ -85,7 +84,7 @@ describe('RequestWizard', () => {
     await user.click(screen.getByLabelText('Beton / tuğla'));
     await user.click(screen.getByRole('button', { name: /Sonraki soru/i }));
     await user.click(screen.getByLabelText('Evet, hazır'));
-    await user.click(screen.getByRole('button', { name: /Görsellere devam et/i }));
+    await user.click(screen.getByRole('button', { name: /Görsel ekleme adımına geç/i }));
 
     const oversized = new File(['x'], 'buyuk-video.mp4', { type: 'video/mp4' });
     Object.defineProperty(oversized, 'size', { value: 52_428_801 });
@@ -100,9 +99,9 @@ describe('RequestWizard', () => {
 
     for (const option of ['32–49 inç', 'Beton / tuğla', 'Evet, hazır']) {
       await user.click(screen.getByLabelText(option));
-      await user.click(screen.getByRole('button', { name: /Sonraki soru|Görsellere devam et/i }));
+      await user.click(screen.getByRole('button', { name: /Sonraki soruya geç|Görsel ekleme adımına geç/i }));
     }
-    await user.click(screen.getByRole('button', { name: /Konum ve Tarih/i }));
+    await user.click(screen.getByRole('button', { name: /Konum ve zamanı ekle/i }));
 
     expect(screen.getByRole('button', { name: 'Bu hafta içinde' })).toHaveAttribute('aria-pressed', 'true');
   });
@@ -118,7 +117,7 @@ describe('RequestWizard', () => {
     await user.click(screen.getByLabelText('Beton / tuğla'));
     await user.click(screen.getByRole('button', { name: /Sonraki soru/i }));
     await user.click(screen.getByLabelText('Evet, hazır'));
-    await user.click(screen.getByRole('button', { name: /Görsellere devam et/i }));
+    await user.click(screen.getByRole('button', { name: /Görsel ekleme adımına geç/i }));
 
     expect(screen.getByRole('dialog', { name: /İsterseniz fotoğraf veya video ekleyin/i })).toBeVisible();
     expect(screen.getByText(/Yüklemeler herkese açık değildir/i)).toBeVisible();
@@ -131,7 +130,7 @@ describe('RequestWizard', () => {
 
     expect(screen.getByRole('dialog', { name: 'TV Duvar Montajı' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Kapat' })).toBeInTheDocument();
-    expect(screen.getByRole('group',{name:'Talep adımları, 1. adım: Kapsam'})).toBeInTheDocument();
+    expect(screen.getByRole('status',{name:'Talep aşaması: Kapsam'})).toBeInTheDocument();
   });
 
   it('moves focus into the modal and closes it with Escape', async () => {
@@ -153,7 +152,7 @@ describe('RequestWizard', () => {
     screen.getByRole('button', {name: 'Kapat'}).focus();
     await user.keyboard('{Enter}');
     expect(onClose).toHaveBeenCalledOnce();
-    expect(screen.getByRole('group',{name:'Talep adımları, 1. adım: Kapsam'})).toBeInTheDocument();
+    expect(screen.getByRole('status',{name:'Talep aşaması: Kapsam'})).toBeInTheDocument();
   });
 
   it('allows selected media to be removed and preserves it after an invalid selection', async () => {
@@ -161,7 +160,7 @@ describe('RequestWizard', () => {
     render(<RequestWizard service={tvMounting!} onClose={vi.fn()} />);
     for (const option of ['32–49 inç', 'Beton / tuğla', 'Evet, hazır']) {
       await user.click(screen.getByLabelText(option));
-      await user.click(screen.getByRole('button', {name: /Sonraki soru|Görsellere devam et/i}));
+      await user.click(screen.getByRole('button', {name: /Sonraki soruya geç|Görsel ekleme adımına geç/i}));
     }
     const input = screen.getByLabelText(/Fotoğraf veya video seçin/i);
     await user.upload(input, new File(['x'], 'test.jpg', {type:'image/jpeg'}));

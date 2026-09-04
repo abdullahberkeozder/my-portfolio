@@ -28,7 +28,7 @@ test('draft refresh requires explicit resume and preserves the selected answers'
   await page.locator('label').filter({has:page.getByRole('radio',{name:'Beton / tuğla',exact:true})}).click();
   await page.getByRole('button',{name:/Sonraki soru/}).click();
   await page.locator('label').filter({has:page.getByRole('radio',{name:'Evet, hazır',exact:true})}).click();
-  await page.getByRole('button',{name:/Görsellere devam et/}).click();
+  await page.getByRole('button',{name:/Görsel ekleme adımına geç/}).click();
   await expect(page.getByRole('heading',{name:'İsterseniz fotoğraf veya video ekleyin'})).toBeFocused();
   await page.reload();
   await search.fill('TV Duvar Montajı');await search.press('Enter');
@@ -36,7 +36,7 @@ test('draft refresh requires explicit resume and preserves the selected answers'
   await expect(page.getByRole('heading',{name:'Kayıtlı taslağınız var'})).toBeVisible();
   await page.getByRole('button',{name:'Hesabımdaki taslağa devam et'}).click();
   await expect(page.getByRole('dialog',{name:'İsterseniz fotoğraf veya video ekleyin'})).toBeVisible();
-  await page.getByRole('button',{name:'Geri',exact:true}).click();
+  await page.getByRole('button',{name:'Kapsama dön',exact:true}).click();
   await expect(page.getByRole('radio',{name:'Evet, hazır',exact:true})).toBeChecked();
 });
 
@@ -71,7 +71,7 @@ test('narrow mobile match and wizard fit without horizontal clipping',async({pag
   }
 });
 
-test('wizard and compact receipt fit the target responsive matrix',async({page})=>{
+test('wizard uses a single task surface across the responsive matrix',async({page})=>{
   for(const width of [320,390,820,1440]){
     await page.setViewportSize({width,height:900});
     await page.evaluate(()=>localStorage.clear());
@@ -87,14 +87,11 @@ test('wizard and compact receipt fit the target responsive matrix',async({page})
     expect(bounds).not.toBeNull();
     expect(bounds!.x).toBeGreaterThanOrEqual(0);
     expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(width+1);
-    await expect(wizard.getByRole('group',{name:/Talep adımları, 1. adım: Kapsam/})).toBeVisible();
+    await expect(wizard.getByRole('status',{name:'Talep aşaması: Kapsam'})).toBeVisible();
     await expect(wizard.getByRole('progressbar')).toHaveCount(0);
-    await expect(wizard.locator('.wizard-form-side')).toHaveCSS('overflow-y','visible');
-    if(width<=820){
-      await expect(wizard.getByRole('button',{name:/Talep özeti/})).toBeVisible();
-    }else{
-      await expect(wizard.getByLabel('Talep kapsamı özeti')).toBeVisible();
-    }
+    await expect(wizard.getByRole('button',{name:/Talep özeti/})).toHaveCount(0);
+    await expect(wizard.getByLabel('Talep kapsamı özeti')).toHaveCount(0);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+1)).toBe(true);
     await page.keyboard.press('Escape');
   }
 });

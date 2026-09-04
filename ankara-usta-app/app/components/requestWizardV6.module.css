@@ -1,0 +1,175 @@
+.backdrop {
+  align-items: center;
+  background: rgb(8 22 30 / 48%);
+  display: grid;
+  inset: 0;
+  justify-items: center;
+  padding: 24px;
+  position: fixed;
+  z-index: var(--z-modal, 500);
+  -webkit-backdrop-filter: blur(10px) saturate(.82);
+  backdrop-filter: blur(10px) saturate(.82);
+}
+
+.dialog {
+  background: var(--surface-page);
+  border: 1px solid color-mix(in srgb, var(--border-default) 82%, transparent);
+  border-radius: 16px;
+  box-shadow: 0 24px 72px rgb(5 25 45 / 20%);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  max-height: min(820px, calc(100dvh - 48px));
+  max-width: 880px;
+  min-height: min(680px, calc(100dvh - 48px));
+  overflow: hidden;
+  width: min(880px, calc(100vw - 48px));
+}
+
+.topbar {
+  align-items: center;
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  justify-content: space-between;
+  min-height: 72px;
+  padding: 12px 20px 12px 28px;
+}
+
+.serviceContext {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.serviceContext span {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.serviceContext strong {
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.close {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: 50%;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 44px;
+  font-size: 24px;
+  height: 44px;
+  justify-content: center;
+  line-height: 1;
+  transition: background-color 180ms cubic-bezier(.23,1,.32,1), transform 180ms cubic-bezier(.23,1,.32,1);
+}
+
+.close:hover { background: var(--brand-lemonade-soft); }
+.close:active { transform: scale(.97); }
+.close:focus-visible { outline: 3px solid color-mix(in srgb, var(--action-primary) 35%, transparent); outline-offset: 2px; }
+
+.viewport {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.form {
+  margin: 0 auto;
+  max-width: 720px;
+  min-height: 100%;
+  padding: 28px 32px 40px;
+}
+
+.progress {
+  align-items: center;
+  border-bottom: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  display: flex;
+  font-size: 14px;
+  justify-content: space-between;
+  line-height: 20px;
+  margin-bottom: 36px;
+  padding-bottom: 12px;
+}
+
+.progress span:first-child { color: var(--action-primary); font-weight: 700; }
+
+.form :global(.wizard-step-content) {
+  animation: v6-enter 200ms cubic-bezier(.23,1,.32,1) both;
+  max-width: none;
+}
+
+.form :global(.step-kicker) {
+  color: var(--text-secondary);
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 20px;
+  text-transform: none;
+}
+
+.form :global(.step-main-title) {
+  color: var(--text-primary);
+  font-size: clamp(28px, 4vw, 40px);
+  letter-spacing: -.03em;
+  line-height: 1.12;
+  margin: 8px 0 12px;
+  text-wrap: balance;
+}
+
+.form :global(.step-sub-desc) { color: var(--text-secondary); font-size: 16px; line-height: 1.55; max-width: 65ch; }
+.form :global(.wizard-choice-fieldset) { display: grid; gap: 10px; margin-top: 28px; }
+.form :global(.swiss-option-card) { background: transparent; border: 1px solid var(--border-default); border-radius: 10px; box-shadow: none; min-height: 60px; padding: 14px 16px; }
+.form :global(.swiss-option-card.checked) { background: var(--brand-lemonade-soft); border-color: var(--action-primary); box-shadow: inset 4px 0 0 var(--brand-lemonade); }
+.form :global(.swiss-option-card:hover) { background: color-mix(in srgb, var(--brand-lemonade-soft) 56%, transparent); box-shadow: none; transform: translateY(-1px); }
+.form :global(.swiss-option-card:focus-within) { outline: 3px solid color-mix(in srgb, var(--action-primary) 28%, transparent); outline-offset: 2px; }
+.form :global(.option-check-badge) { background: transparent; }
+.form :global(.wizard-actions-bottom),
+.form :global(.wizard-actions) { align-items: center; border-top: 1px solid var(--border-default); display: flex; gap: 12px; justify-content: space-between; margin-top: 28px; padding-top: 18px; }
+.form :global(.wizard-actions-bottom > :only-child) { margin-left: auto; }
+.form :global(.wizard-account-note) { background: transparent; border: 0; color: var(--text-secondary); margin: 12px 0 0; padding: 0; }
+
+.summary { border-top: 1px solid var(--border-default); margin: 28px 0 0; }
+.summary > div { align-items: start; border-bottom: 1px solid var(--border-default); display: grid; gap: 20px; grid-template-columns: minmax(130px,.7fr) minmax(0,1.3fr); padding: 16px 0; }
+.summary dt { color: var(--text-secondary); font-size: 14px; line-height: 21px; }
+.summary dd { color: var(--text-primary); font-size: 15px; font-weight: 600; line-height: 22px; margin: 0; overflow-wrap: anywhere; }
+.summary small { color: var(--text-secondary); display: block; font-size: 13px; font-weight: 400; margin-top: 2px; }
+.summary button { background: transparent; border: 0; color: var(--action-primary); cursor: pointer; float: right; font: inherit; font-size: 14px; margin-left: 12px; min-height: 44px; padding: 0 4px; text-decoration: underline; text-underline-offset: 3px; }
+.summary button:focus-visible { outline: 3px solid color-mix(in srgb, var(--action-primary) 28%, transparent); outline-offset: 2px; }
+
+@keyframes v6-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 860px) {
+  .backdrop { align-items: stretch; padding: 0; }
+  .dialog { border: 0; border-radius: 0; height: 100dvh; max-height: 100dvh; min-height: 100dvh; width: 100%; }
+  .topbar { min-height: 64px; padding: 10px 16px; }
+  .form { padding: 24px 20px max(32px, env(safe-area-inset-bottom)); }
+  .progress { margin-bottom: 28px; }
+}
+
+@media (max-width: 390px) {
+  .form { padding-inline: 16px; }
+  .form :global(.step-main-title) { font-size: 28px; }
+  .form :global(.wizard-actions-bottom), .form :global(.wizard-actions) { align-items: stretch; flex-direction: column-reverse; }
+  .form :global(.wizard-actions-bottom .tr-button), .form :global(.wizard-actions .tr-button) { width: 100%; }
+  .summary > div { gap: 6px; grid-template-columns: 1fr; }
+  .summary button { float: none; margin-left: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form :global(.wizard-step-content) { animation: none; }
+  .close { transition: none; }
+}
