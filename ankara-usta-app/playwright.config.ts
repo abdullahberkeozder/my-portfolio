@@ -12,7 +12,10 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // Remote multi-account fixtures mutate one isolated project. Serializing the
+  // required integration run avoids cross-project Realtime load/race noise and
+  // keeps local evidence equivalent to CI.
+  workers: process.env.CI || process.env.REQUIRE_AUTH_E2E === 'true' ? 1 : undefined,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: 'http://localhost:4187',
