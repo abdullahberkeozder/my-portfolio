@@ -14,7 +14,10 @@ const customer=makeClient(), provider=makeClient();
 const runId=randomUUID();
 async function rpc(client,name,args){
   const {data,error}=await client.rpc(name,args);
-  if(error) throw new Error(`${name} failed (${error.code ?? 'unknown'})`);
+  if(error) {
+    const context=[error.message,error.details,error.hint].filter(Boolean).join(' | ');
+    throw new Error(`${name} failed (${error.code ?? 'unknown'}): ${context}`);
+  }
   return Array.isArray(data)?data[0]:data;
 }
 try {
