@@ -108,15 +108,12 @@ export default function AuthForm({
         .select('role')
         .eq('user_id', user.id);
       if (rolesError) throw rolesError;
-      const targetPath = landingPathForRoles(
-        (rolesResult ?? []).map((item: { role: string }) => item.role),
-        requestedPath() ??
-          (professional
-            ? (rolesResult ?? []).some((item: { role: string }) => item.role === 'tradesperson')
-              ? '/usta/talepler'
-              : '/usta-basvurusu'
-            : '/taleplerim')
-      );
+      const roles = (rolesResult ?? []).map((item: { role: string }) => item.role);
+      const requested = requestedPath();
+      const targetPath =
+        mode === 'sign-up' && professional && !roles.includes('tradesperson')
+          ? requested ?? '/usta-basvurusu'
+          : landingPathForRoles(roles, requested);
 
       router.push(targetPath);
       router.refresh();

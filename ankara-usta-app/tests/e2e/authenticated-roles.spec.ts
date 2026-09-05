@@ -28,7 +28,7 @@ async function signIn(
   await page.goto('/giris');
   // Match the exact label text rendered in app/giris/page.tsx
   await page.getByLabel('E-posta Adresi').fill(email);
-  await page.getByLabel('Parola').fill(password);
+  await page.getByLabel('Parola', { exact: true }).fill(password);
   // Match the exact button text rendered in app/giris/page.tsx
   await page.getByRole('button', { name: 'Giriş Yap →' }).click();
 }
@@ -100,7 +100,7 @@ test('korumalı müşteri sayfası girişten sonra başlangıç hedefini korur',
   await expect(page).toHaveURL(/\/giris\?next=%2Fislerim|\/giris\?next=\/islerim/);
 
   await page.getByLabel('E-posta Adresi').fill(process.env.E2E_CUSTOMER_EMAIL!);
-  await page.getByLabel('Parola').fill(process.env.E2E_CUSTOMER_PASSWORD!);
+  await page.getByLabel('Parola', { exact: true }).fill(process.env.E2E_CUSTOMER_PASSWORD!);
   await page.getByRole('button', { name: 'Giriş Yap →' }).click();
 
   await expect(page).toHaveURL(/\/islerim$/, { timeout: 10_000 });
