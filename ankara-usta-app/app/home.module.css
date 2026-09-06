@@ -1,0 +1,60 @@
+.home {
+  color: var(--text-primary);
+  background: var(--surface-page);
+  overflow-wrap: anywhere;
+}
+.hero {
+  padding: clamp(28px, 5vw, 64px) 24px 40px;
+  background: var(--brand-lemonade-soft);
+}
+.heroInner { max-width: 800px; margin-inline: auto; text-align: center; }
+.emblem { display: flex; justify-content: center; margin-bottom: 20px; }
+.title { margin: 0; color: var(--brand-cobalt); font-size: clamp(2rem, 4.5vw, 3.75rem); font-weight: 500; line-height: 1.15; letter-spacing: -.035em; text-wrap: balance; }
+.intro { max-width: 55ch; margin: 20px auto 28px; font-size: 1.0625rem; line-height: 1.6; color: var(--text-secondary); text-wrap: pretty; }
+.search { width: 100%; max-width: 680px; margin: auto; text-align: left; }
+.search label { display: block; margin-bottom: 8px; font-size: .9375rem; font-weight: 600; }
+.searchControls { display: flex; gap: 8px; padding: 8px; border: 1px solid var(--border-default); border-radius: 12px; background: var(--surface-raised); }
+.searchControls:focus-within { border-color: var(--brand-cobalt); }
+.searchControls input { flex: 1; min-width: 0; width: 100%; min-height: 48px; padding: 12px; border: 0; border-radius: 6px; background: transparent; font: inherit; font-size: 1rem; color: var(--text-primary); }
+.searchControls input::placeholder { color: var(--text-secondary); opacity: 1; }
+.searchControls button { flex-shrink: 0; min-height: 48px; padding: 12px 24px; border: 0; border-radius: 8px; background: var(--brand-cobalt); color: var(--brand-lemonade); font: inherit; font-weight: 650; cursor: pointer; }
+.suggestions { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 12px; margin-top: 16px; }
+.suggestions button { min-height: 44px; padding: 10px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--text-secondary); font: inherit; font-size: .875rem; text-decoration: underline; text-underline-offset: 5px; cursor: pointer; }
+.catalog, .process { padding: 40px 24px; }
+.sectionInner { max-width: 1080px; margin-inline: auto; }
+.sectionHeading { margin-bottom: 24px; }
+.sectionHeading h2 { margin: 0 0 10px; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.2; letter-spacing: -.025em; text-wrap: balance; }
+.sectionHeading p { margin: 0; max-width: 65ch; color: var(--text-secondary); line-height: 1.6; }
+.categories { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 32px; align-items: start; }
+.category { min-width: 0; border-bottom: 1px solid var(--border-default); }
+.category summary { display: flex; align-items: center; gap: 12px; min-height: 72px; padding: 16px 8px; list-style: none; cursor: pointer; border-radius: 8px; }
+.category summary::-webkit-details-marker { display: none; }
+.categoryName { flex: 1; font-weight: 600; font-size: 1.0625rem; }
+.categoryCount { color: var(--text-secondary); font-size: .875rem; white-space: nowrap; }
+.categoryIndicator { font-size: 1.5rem; width: 24px; text-align: center; color: var(--brand-cobalt); }
+.category[open] summary { background: var(--brand-lemonade); }
+.category[open] .categoryIndicator { transform: rotate(45deg); }
+.serviceList { list-style: none; padding: 8px 0 16px; margin: 0; }
+.serviceList button { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; width: 100%; padding: 12px; border: 0; border-radius: 6px; background: transparent; color: var(--brand-cobalt); font: inherit; text-align: left; cursor: pointer; }
+.process { padding-top: 32px; padding-bottom: 56px; }
+.steps { padding: 0; margin: 0; list-style: none; counter-reset: process; }
+.steps li { counter-increment: process; position: relative; padding: 8px 0 24px 52px; }
+.steps li::before { content: counter(process); position: absolute; top: 8px; left: 0; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; color: var(--brand-cobalt); background: var(--brand-lemonade); font-weight: 650; }
+.steps h3 { margin: 0 0 8px; font-size: 1.125rem; line-height: 1.4; }
+.steps p { max-width: 65ch; margin: 0; line-height: 1.6; color: var(--text-secondary); text-wrap: pretty; }
+.browseLink { display: flex; align-items: center; min-height: 44px; width: fit-content; margin-top: 12px; color: var(--brand-cobalt); text-decoration: underline; text-underline-offset: 4px; }
+.home :is(button, input, summary, a):focus-visible { outline: 3px solid var(--brand-cobalt); outline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) {
+  .suggestions button:hover, .category summary:hover, .serviceList button:hover { background: var(--brand-lemonade-soft); color: var(--brand-cobalt); }
+  .searchControls button:hover { background: var(--text-primary); }
+}
+@media (max-width: 600px) {
+  .hero { padding: 24px 16px 28px; }
+  .intro { margin: 16px auto 24px; font-size: 1rem; }
+  .catalog, .process { padding: 32px 16px; }
+  .categories { grid-template-columns: 1fr; }
+  .searchControls { flex-direction: column; }
+  .searchControls button { width: 100%; }
+  .category summary { min-height: 64px; }
+  .suggestions { gap: 0 4px; }
+}

@@ -1,0 +1,95 @@
+.container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 16px 0 64px;
+}
+.header {
+  margin-bottom: 28px;
+}
+.kicker {
+  color: var(--brand-cobalt);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: block;
+}
+.title {
+  font-size: clamp(28px, 4vw, 40px);
+  margin: 8px 0 12px;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+.desc {
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 68ch;
+  margin: 0;
+}
+.districtsSection {
+  margin-top: 48px;
+}
+.districtsTitle {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 18px;
+  color: var(--text-primary);
+}
+.districtsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+.districtCard {
+  padding: 20px;
+  background: white;
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-card);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 140ms ease, border-color 140ms ease;
+}
+.districtCard:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand-cobalt);
+}
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cardDistrictName {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.cardBadge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand-cobalt);
+  background: var(--brand-lemonade);
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+.cardDesc {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+.cardNeighborhoods {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+.cardAction {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand-cobalt);
+  text-decoration: none;
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+}

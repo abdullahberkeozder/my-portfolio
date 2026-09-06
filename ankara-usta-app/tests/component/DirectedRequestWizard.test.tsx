@@ -57,7 +57,7 @@ it('preserves target, exact step and key through login handoff and remount',asyn
   const draft=saved();sessionStorage.setItem(key,JSON.stringify(draft));
   const fetchMock=vi.fn().mockResolvedValue({status:401,ok:false,json:async()=>({})});vi.stubGlobal('fetch',fetchMock);
   const view=render(<RequestWizard service={service} targetProfessional={target} onClose={vi.fn()}/>);
-  expect(screen.getByText(/Talebin muhatabı: Test Ustası/)).toBeVisible();
+  expect(screen.getByText('Yalnız Test Ustası için hazırlanıyor.')).toBeVisible();
   await userEvent.click(screen.getByRole('button',{name:'Bu ustaya talebi gönder'}));
   const link=await screen.findByRole('link',{name:'Giriş yap / kayıt ol ve devam et'});
   expect(link).toHaveAttribute('href',`/giris?next=${encodeURIComponent(requestResumePath(service.id,target.id))}`);
@@ -67,7 +67,7 @@ it('preserves target, exact step and key through login handoff and remount',asyn
   expect(stored).toMatchObject({step:3,targetProfessionalId:target.id,idempotencyKey:draft.idempotencyKey});
   view.unmount();fetchMock.mockClear();
   render(<RequestWizard service={service} targetProfessional={target} onClose={vi.fn()}/>);
-  expect(screen.getByText(/Talebin muhatabı: Test Ustası/)).toBeVisible();expect(fetchMock).not.toHaveBeenCalled();
+  expect(screen.getByText('Yalnız Test Ustası için hazırlanıyor.')).toBeVisible();expect(fetchMock).not.toHaveBeenCalled();
 });
 it('fails closed on a cached different recipient without overwriting it',()=>{
   const raw=JSON.stringify({...saved(),targetProfessionalId:crypto.randomUUID()});sessionStorage.setItem(key,raw);

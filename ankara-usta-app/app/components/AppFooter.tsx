@@ -9,7 +9,7 @@ import { navigationContext } from '../lib/navigationModel';
 export default function AppFooter() {
   const pathname = usePathname();
 
-  if (navigationContext(pathname) !== 'public') return null;
+  if (navigationContext(pathname) !== 'public' && pathname !== '/usta-basvurusu') return null;
 
   return (
     <>
@@ -30,6 +30,7 @@ export default function AppFooter() {
             <span className="footer-col-title">HİZMET VE KAPSAM</span>
             <ul className="footer-links-list">
               <li><Link href="/#services">Hizmet kategorileri</Link></li>
+              <li><Link href="/harita">İlçe Sınırları & Harita</Link></li>
               <li><Link href="/nasil-calisir">Nasıl Çalışır?</Link></li>
               <li><Link href="/taleplerim">Taleplerim</Link></li>
               <li><Link href="/islerim">İşlerim</Link></li>

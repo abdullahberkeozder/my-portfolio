@@ -23,6 +23,14 @@ export default function PilotCityMap({cityState,initiallyExpanded=true}:{citySta
       </div>
       <Link href="/hesap#bolge">Hesap bölgemi düzenle</Link>
     </div>
+    <div className={styles.interactiveBanner}>
+      <div className={styles.interactiveBannerText}>
+        <span className={styles.interactiveBannerTag}>YENİ ÖZELLİK</span>
+        <strong>İlçe Sınırları & Usta Dükkanları Haritası</strong>
+        <p>Ankara’nın 9 pilot ilçesinin sınırlarını inceleyin, usta dükkanlarını bulun veya ustanızın atölyesini haritada işaretleyin.</p>
+      </div>
+      <Link href="/harita" className={styles.interactiveBannerBtn}>Detaylı Haritayı Aç →</Link>
+    </div>
     <p className={styles.notice}>Şehir görünümüdür; canlı usta konumu değildir. Açık adresiniz paylaşılmaz. Haritayı açtığınızda tarayıcınız OpenStreetMap’e bağlanır.</p>
     <div className={styles.actions}>
       <button type="button" onClick={()=>{setVisible(value=>!value);setLoadState('loading');}} aria-expanded={visible} aria-controls={mapId}>{visible?'Haritayı gizle':'Ankara haritasını göster'}</button>

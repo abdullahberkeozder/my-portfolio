@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import styles from './howItWorks.module.css';
 
 const customerSteps = [
   {
@@ -56,7 +57,7 @@ const verificationItems = [
     text: 'Telefon, adres, belge ve referans kontrolleri birbirinden bağımsız gösterilir. Kanıtsız alana genel doğrulama iddiası kullanılmaz.',
   },
   {
-    color: '#714d00',
+    color: '#b87c14',
     title: '4. Platform İçi İş Geçmişi',
     text: 'Tamamlanan işler, doğrulanmış değerlendirmeler ve moderasyon kararları platform kayıtlarından üretilir.',
   },
@@ -68,19 +69,16 @@ export default function HowItWorksPage() {
 
   return (
     <main className="account-shell how-it-works-page">
-
-
-      <div style={{ maxWidth: '960px', margin: '48px auto 80px', padding: '0 20px' }}>
-
+      <div className={styles.container}>
         {/* Intro */}
-        <header style={{ marginBottom: '40px', textAlign: 'center' }}>
-          <span style={{ color: 'var(--brand-cobalt)', fontSize: '11px', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+        <header className={styles.header}>
+          <span className={styles.kicker}>
             ŞEFFAF SÜREÇ & GÜVEN REHBERİ
           </span>
-          <h1 style={{ fontSize: 'clamp(28px, 4vw, 44px)', color: 'var(--text-primary)', margin: '12px 0 16px', letterSpacing: '-0.025em', lineHeight: 1.15 }}>
+          <h1 className={styles.title}>
             Sorundan tamamlanan işe,<br />adım adım güvenli yolculuk.
           </h1>
-          <p style={{ maxWidth: '600px', margin: '0 auto', color: 'var(--text-secondary)', fontSize: '16px', lineHeight: 1.6 }}>
+          <p className={styles.desc}>
             Orkestra; belirsiz fiyatları, telefon trafiğini ve usta arayışındaki endişeleri ortadan kaldırmak için tasarlandı.
           </p>
         </header>
@@ -126,29 +124,27 @@ export default function HowItWorksPage() {
         </section>
 
         {/* Verification section */}
-        <section
-          id="dogrulama"
-          style={{ padding: '36px', background: 'white', borderRadius: 'var(--radius-card)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)' }}
-        >
-          <span style={{ color: 'var(--brand-cobalt)', fontSize: '11px', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+        <section id="dogrulama" className={styles.verificationSection}>
+          <span className={styles.verifKicker}>
             BAŞVURU VE BELGE DOĞRULAMASI
           </span>
-          <h2 style={{ fontSize: '22px', color: 'var(--text-primary)', margin: '10px 0 8px', letterSpacing: '-0.02em' }}>
+          <h2 className={styles.verifTitle}>
             Usta onayı ne anlama gelir?
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6, marginBottom: '24px' }}>
+          <p className={styles.verifDesc}>
             Başvuru onayı ile belge doğrulaması aynı şey değildir. Yalnızca kanıtı kontrol edilen alanlar profilde ayrı olarak gösterilir.
           </p>
-          <div style={{ display: 'grid', gap: '12px' }}>
+          <div className={styles.verifList}>
             {verificationItems.map((item, i) => (
               <div
                 key={i}
-                style={{ padding: '16px 20px', background: 'var(--brand-parchment)', borderRadius: 'var(--radius-control)', borderLeft: `4px solid ${item.color}` }}
+                className={styles.verifCard}
+                style={{ borderLeftColor: item.color }}
               >
-                <strong style={{ display: 'block', fontSize: '15px', color: 'var(--text-primary)', marginBottom: '4px' }}>
+                <strong className={styles.verifCardTitle}>
                   {item.title}
                 </strong>
-                <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.55 }}>
+                <p className={styles.verifCardText}>
                   {item.text}
                 </p>
               </div>

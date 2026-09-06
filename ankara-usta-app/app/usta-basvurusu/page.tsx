@@ -1,5 +1,7 @@
 'use client';
 
+import appStyles from './tradespersonApplication.module.css';
+
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { serviceCategories, services } from '../data/serviceTaxonomy';
@@ -254,7 +256,7 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
 
   return (
     <main className="account-shell auth-shell tradesperson-application">
-      <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', marginBottom: '28px', color: 'var(--action-primary)', fontWeight: 600, textDecoration: 'none' }}>
+      <Link href="/" className={appStyles.backLink}>
         ← Orkestra Ana Sayfa
       </Link>
       <form className="application-card" onSubmit={submit}>
@@ -267,14 +269,14 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
         </p>}
 
         {hasDraft && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f0f7f4', border: '1px solid #c3e0d5', borderRadius: '10px', padding: '12px 16px', marginBottom: '8px', gap: '12px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '13px', color: '#2d6652', fontWeight: 600 }}>
+          <div className={appStyles.draftBanner}>
+            <span className={appStyles.draftText}>
               📋 Kaydedilmiş bir taslak bulundu. Kaldığınız yerden devam edebilir veya yeni başvuru başlatabilirsiniz.
             </span>
             <button
               type="button"
               onClick={clearDraft}
-              style={{ fontSize: '12px', fontWeight: 700, color: '#b44040', background: 'transparent', border: '1px solid #e8c4c4', borderRadius: '6px', padding: '6px 12px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+              className={appStyles.draftClearBtn}
             >
               Yeni Başvuru Başlat
             </button>
@@ -301,7 +303,7 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
                 <span className="stepper-num">
                   {index < step ? '✓' : index + 1}
                 </span>
-                <span className="stepper-label" style={{ display: index === step ? undefined : 'none' }}>{label}</span>
+                <span className={`${appStyles.stepperLabel} ${index === step ? appStyles.stepperLabelActive : ''}`}>{label}</span>
               </button>
               {index < applicationSteps.length - 1 && (
                 <div className="stepper-connector" />

@@ -7,8 +7,11 @@ import styles from '../directory.module.css';
 
 export const dynamic = 'force-dynamic';
 
-export default async function PublicTradespersonPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PublicTradespersonPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams?: Promise<{service?:string;district?:string}> }) {
   const { id } = await params;
+  const filters = await searchParams ?? {};
+  const selectedService = services.find(service => service.id === filters.service)?.id;
+  const backQuery = new URLSearchParams({...(selectedService ? {service:selectedService} : {}), ...(filters.district ? {district:filters.district} : {})});
   const supabase = await createSupabaseServerClient();
   const [profileResult, servicesResult, areasResult, reviewsResult, metricsResult, verificationResult] = await Promise.all([
     supabase.from('tradesperson_profiles').select('user_id,display_name,bio,city,application_status').eq('user_id', id).eq('application_status', 'approved').maybeSingle(),
@@ -28,7 +31,7 @@ export default async function PublicTradespersonPage({ params }: { params: Promi
     <main className="account-shell public-profile-page">
 
       <div className="public-profile-container">
-        <Link className="account-back" href="/ustalar">← Ustalara dön</Link>
+        <Link className="account-back" href={`/ustalar?${backQuery}`}>← Ustalara dön</Link>
         <header className="public-profile-hero">
           <div className="public-profile-monogram" aria-hidden="true">{profile.display_name.slice(0, 1).toLocaleUpperCase('tr-TR')}</div>
           <div>
@@ -47,7 +50,7 @@ export default async function PublicTradespersonPage({ params }: { params: Promi
           <p>İşinizi aynı talep adımlarıyla anlatın. Talebiniz diğer ustalara açılmaz. Göndermeden önce giriş yapmanız istenir.</p>
           <form className={styles.filters} action={`/ustalar/${id}/talep`} method="get">
             <label htmlFor="direct-service">Hangi hizmete ihtiyacınız var?
-            <select id="direct-service" name="service" required>{servicesResult.data.map(item=>{const service=services.find(s=>s.id===item.service_id);return service?<option key={service.id} value={service.id}>{service.name}</option>:null;})}</select></label>
+            <select id="direct-service" name="service" required defaultValue={servicesResult.data.some(item=>item.service_id===selectedService)?selectedService:''}><option value="" disabled>Hizmet seçin</option>{servicesResult.data.map(item=>{const service=services.find(s=>s.id===item.service_id);return service?<option key={service.id} value={service.id}>{service.name}</option>:null;})}</select></label>
             <button className="dialog-primary" type="submit">Bu ustadan teklif al</button>
           </form>
         </section> : null}

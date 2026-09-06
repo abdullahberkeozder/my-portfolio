@@ -32,7 +32,7 @@ export function navigationItems(context: NavigationContext, conversations = fals
     ...(conversations ? [{ href: '/gorusmeler', label: 'Görüşmeler' }] : []),
     { href: '/hesap', label: 'Hesap' }, { href: '/#services', label: 'Yeni talep', primary: true },
   ];
-  return [{ href: '/#services', label: 'Hizmetler' }, { href: '/ustalar', label: 'Ustalar' },
+  return [{ href: '/#services', label: 'Hizmetler' }, { href: '/ustalar', label: 'Ustalar' }, { href: '/harita', label: 'Harita' },
     { href: '/nasil-calisir', label: 'Nasıl çalışır?' }, { href: '/hesap', label: 'Hesabım' },
     { href: '/usta/kayit', label: 'Usta olarak katıl' }];
 }

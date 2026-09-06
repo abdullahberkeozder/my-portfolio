@@ -111,7 +111,7 @@ export default function AuthForm({
       const roles = (rolesResult ?? []).map((item: { role: string }) => item.role);
       const requested = requestedPath();
       const targetPath =
-        mode === 'sign-up' && professional && !roles.includes('tradesperson')
+        professional && !roles.includes('tradesperson')
           ? requested ?? '/usta-basvurusu'
           : landingPathForRoles(roles, requested);
 

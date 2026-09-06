@@ -27,6 +27,17 @@ it('closes the match dialog with Escape and restores the search trigger',async()
   const user=userEvent.setup();render(<Home/>);const trigger=within(screen.getByLabelText('Hızlı arama etiketleri')).getByRole('button',{name:'Musluk Değişimi'});
   await user.click(trigger);await user.keyboard('{Escape}');expect(screen.queryByRole('dialog')).not.toBeInTheDocument();expect(trigger).toHaveFocus();
 });
+it('keeps an unmatched search recoverable without selecting a service on the customer behalf',async()=>{
+  const user=userEvent.setup();render(<Home/>);
+  const search=screen.getByRole('textbox',{name:'İhtiyacınızı yazın'});
+  await user.type(search,'zzzzzzzz');
+  await user.click(screen.getByRole('button',{name:'Hizmet bul'}));
+  const dialog=screen.getByRole('dialog',{name:'İhtiyacınızı Doğru Anladık mı?'});
+  expect(within(dialog).getByRole('link',{name:'Kategorilerden hizmet seç'})).toHaveAttribute('href','#services');
+  await user.click(within(dialog).getByRole('button',{name:'Aramayı düzenle'}));
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  expect(search).toHaveValue('zzzzzzzz');
+});
 it.each(['loading','error','not-found'])('uses the current brand in %s state',state=>{
   const view=render(state==='loading'?<Loading/>:state==='error'?<ErrorPage error={new Error('test')} reset={vi.fn()}/>:<NotFound/>);
   expect(screen.getByRole('img',{name:'Orkestra'})).toBeInTheDocument();

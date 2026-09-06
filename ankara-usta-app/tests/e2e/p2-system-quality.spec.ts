@@ -21,10 +21,10 @@ test('privacy controls cannot cover an open mobile menu',async({page})=>{
 });
 
 test('hero no longer forces a full-screen sticky spacer',async({page})=>{
-  await page.goto('/');const inner=page.locator('.orkestra-hero-inner');await expect(inner).toBeVisible();
+  await page.goto('/');const inner=page.getByRole('region',{name:'İşini anlat. Doğru ustayla buluş.'});await expect(inner).toBeVisible();
   await expect(inner).not.toHaveCSS('position','sticky');
   const heading=page.getByRole('heading',{name:/İşini anlat.*Doğru ustayla buluş/});await expect(heading).toBeVisible();
-  const logo=page.locator('.orkestra-hero-emblem');await expect(logo).toHaveCount(1);
+  const logo=inner.locator('.orchestra-directional-logo');await expect(logo).toHaveCount(1);
   const box=await logo.boundingBox();expect(box!.height).toBeGreaterThan(0);expect(box!.y).toBeLessThan(200);
 });
 

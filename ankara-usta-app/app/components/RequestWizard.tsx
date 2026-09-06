@@ -17,7 +17,8 @@ import AccountDraftBoundary, {type DraftScope} from './AccountDraftBoundary';
 import WizardPendingDialog from './WizardPendingDialog';
 import WizardSuccessReceipt from './wizard/WizardSuccessReceipt';
 import {requestDraftKind, requestResumePath, requestRoutingSchema, type RequestTarget} from '../domain/requestRouting';
-import styles from './requestWizardV6.module.css';
+import styles from './requestWizard.module.css';
+import WizardRegionPreview from './wizard/WizardRegionPreview';
 
 type Props = { service: Service; onClose: () => void; remoteDraft?: LocalDraft; targetProfessional?: RequestTarget };
 type LocalDraft = {
@@ -75,12 +76,6 @@ const resultContent = {
     copy: 'Fiyat ve uygulama yöntemi yerinde incelemeye bağlı. Talebiniz keşif yapabilen uygun ustalarla eşleştirilecek.',
     cta: 'Keşif Talebini Gönder',
   },
-};
-
-const deliveryLabels = {
-  package: 'Paket Hizmet',
-  quote: 'Teklif Modeli',
-  inspection: 'Keşif Modeli'
 };
 
 export default function RequestWizard(props:Props) {
@@ -143,7 +138,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
   const stepLabels = ['Kapsam', 'Görseller', 'Konum ve zaman', 'Özet'];
 
   useEffect(() => {
-    if (formRef.current) formRef.current.scrollTop = 0;
+    if (formRef.current?.parentElement) formRef.current.parentElement.scrollTop = 0;
     formRef.current?.querySelector<HTMLElement>('#wizard-title')?.focus({preventScroll:true});
   }, [step, questionIndex]);
 
@@ -338,6 +333,16 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
 
   if (routingConflict) return <WizardPendingDialog serviceName={service.name} onClose={onClose}><p role="alert">Taslağın hedefi bu usta ile eşleşmiyor. Güvenliğiniz için taslak değiştirilmedi.</p></WizardPendingDialog>;
 
+  const authAction = (scope.guest || needsAuth) && <Link className={styles.authAction} href={`/giris?next=${encodeURIComponent(resumePath)}`} onClick={event => {
+    try {
+      scope.storage.setItem(storageKey, JSON.stringify({answers,district,neighborhood,timing,step,questionIndex,idempotencyKey,requestId,routingMode,targetProfessionalId,updatedAt:Date.now(),pendingMediaCount:files.length}));
+      if(scope.guest)sessionStorage.setItem('orkestra:draft-handoff',storageKey);
+    } catch {
+      event.preventDefault();
+      setMessage('Tarayıcı taslağı saklayamıyor. Bu sayfayı açık tutup ayrı sekmede giriş yapın, ardından burada yeniden gönderin.');
+    }
+  }}>Giriş yap / kayıt ol ve devam et</Link>;
+
   return (
     <div className={styles.backdrop} role="presentation" onClick={onClose}>
       <section
@@ -358,13 +363,25 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
           <button data-dialog-initial-focus className={styles.close} onClick={onClose} aria-label="Kapat">×</button>
         </header>
 
+        <div className={styles.workspace}>
+          {!submittedRequestId && <nav className={styles.rail} aria-label="Talep adımları">
+            <p>Talebinizi hazırlayın</p>
+            <ol>{stepLabels.map((label, index) => <li key={label}>
+              <button type="button" aria-current={index === step ? 'step' : undefined}
+                disabled={busy || (index > 0 && !scopeComplete) || (index === 3 && !locationComplete)}
+                onClick={() => setStep(index)}>
+                <span aria-hidden="true">{index + 1}</span>{label}
+              </button>
+            </li>)}</ol>
+            <small>Yanıtlarınızı göndermeden önce değiştirebilirsiniz.</small>
+          </nav>}
         <div className={styles.viewport}>
           <div className={styles.form} ref={formRef}>
             {submittedRequestId ? <WizardSuccessReceipt requestId={submittedRequestId} serviceName={service.name} district={district} neighborhood={neighborhood} timing={timing} targetProfessionalName={targetProfessional?.name}/> : <>
             {targetProfessional && <p className="account-message">Seçili usta: <strong>{targetProfessional.name}</strong>. Başka ustalara gönderilmez.</p>}
             <div className={styles.progress} role="status" aria-label={`Talep aşaması: ${stepLabels[step]}`}>
               <span>{stepLabels[step]}</span>
-              <span>{step === 0 ? `Soru ${questionIndex + 1}` : `${step + 1} / ${stepLabels.length}`}</span>
+              <span>{step + 1} / {stepLabels.length}</span>
             </div>
 
             {step === 0 && (
@@ -374,12 +391,12 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                   {activeQuestion && (
                     <fieldset key={activeQuestion.id} className="wizard-choice-fieldset">
                       <legend className="sr-only">{activeQuestion.label}</legend>
-                      {activeQuestion.options.map((option, idx) => {
+                      {activeQuestion.options.map((option) => {
                         const isChecked = answers[activeQuestion.id] === option;
                         return (
                           <label
                             key={option}
-                            className={`swiss-option-card ${isChecked ? 'checked' : ''}`}
+                            className={styles.choice}
                           >
                             <input
                               type="radio"
@@ -389,11 +406,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                               checked={isChecked}
                               onChange={() => handleSelectOption(option)}
                             />
-                            <div className="option-inner-wrap">
-                              <span className="option-key-badge font-mono" aria-hidden="true">[{idx + 1}]</span>
-                              <span className="option-label-text">{option}</span>
-                            </div>
-                            {isChecked && <span className="option-check-badge">✓ Seçildi</span>}
+                            <span>{option}</span>
                           </label>
 
                         );
@@ -541,62 +554,66 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
             )}
 
             {step === 3 && (
-              <WizardSummaryStep kicker={result.eyebrow} title={result.title} description={result.copy}>
-                <p className="account-message">{targetProfessional ? `Talebin muhatabı: ${targetProfessional.name}.` : 'Uygun ustalardan teklif alınır.'} Talep size bağlıdır; yetkili operasyon ekibi gerektiğinde inceleyebilir.</p>
+              <WizardSummaryStep kicker="" title="Talebiniz hazır mı?" description="İşin ayrıntılarını kontrol edin, ardından teklif almak için gönderin.">
+                {targetProfessional && <p className="account-message">{result.copy}</p>}
+                <p className={styles.visibilityNote}>{targetProfessional ? `Yalnız ${targetProfessional.name} için hazırlanıyor.` : 'Talebiniz, hizmet ve bölgenize uygun ustalara iletilir.'}</p>
                 {Boolean(initialDraft?.pendingMediaCount) && files.length === 0 && (
                   <p className="account-message" role="status">Önceki seçiminizdeki dosyalar henüz eklenmedi. <button type="button" onClick={() => setStep(1)}>Görsellere dön ve yeniden ekle</button></p>
                 )}
 
-                <dl className={styles.summary} aria-label="Talep kapsamı">
-                  <div>
-                    <dt>Hizmet</dt><dd>{service.name} <small>{deliveryLabels[service.deliveryModel]}</small></dd>
-                  </div>
-                  {questions.map((question, index) => <div key={question.id}>
-                    <dt>{question.label}</dt><dd>{answers[question.id] || 'Yanıtlanmadı'} <button type="button" onClick={() => { setQuestionIndex(index); setStep(0); }}>Değiştir</button></dd>
-                  </div>)}
-                  <div>
-                    <dt>Konum</dt><dd>{district}, {neighborhood} <button type="button" onClick={() => setStep(2)}>Değiştir</button></dd>
-                  </div>
-                  <div>
-                    <dt>Zamanlama</dt><dd>{requestTimingLabel(timing)} <button type="button" onClick={() => setStep(2)}>Değiştir</button></dd>
-                  </div>
-                  <div>
-                    <dt>Görseller</dt><dd>{files.length ? `${files.length} dosya` : 'Eklenmedi'} <button type="button" onClick={() => setStep(1)}>Değiştir</button></dd>
-                  </div>
-                </dl>
+                <div className={styles.reviewGrid}>
+                <div className={styles.reviewContent}>
+                  <section className={styles.reviewSection} aria-label="İşin ayrıntıları">
+                    <header className={styles.sectionHeader}>
+                      <h3>{service.name}</h3>
+                      <button type="button" aria-label="Yanıtları düzenle" title="Yanıtları düzenle" onClick={() => {setQuestionIndex(0);setStep(0);}}><span className={styles.editIcon} aria-hidden="true">✎</span></button>
+                    </header>
+                    <dl className={styles.summary} aria-label="Talep kapsamı">
+                      {questions.map(question => <div key={question.id}>
+                        <dt>{question.label}</dt><dd>{answers[question.id] || 'Yanıtlanmadı'}</dd>
+                      </div>)}
+                    </dl>
+                  </section>
+                  <section className={styles.reviewSection} aria-label="Konum ve zaman bilgileri">
+                    <header className={styles.sectionHeader}><h3>Konum ve zaman</h3><button type="button" aria-label="Bölgeyi veya zamanı düzenle" title="Bölgeyi veya zamanı düzenle" onClick={() => setStep(2)}><span className={styles.editIcon} aria-hidden="true">✎</span></button></header>
+                    <dl className={styles.summary}>
+                      <div><dt>İşin yapılacağı yer</dt><dd>{neighborhood}, {district}</dd></div>
+                      <div><dt>Zaman tercihi</dt><dd>{requestTimingLabel(timing)}</dd></div>
+                    </dl>
+                  </section>
+                  <section className={styles.reviewSection} aria-label="Eklenen görseller">
+                    <header className={styles.sectionHeader}><h3>Görseller <span>{files.length ? `${files.length} dosya` : 'İsteğe bağlı'}</span></h3><button type="button" aria-label={files.length ? 'Görselleri düzenle' : 'Görsel ekle'} title={files.length ? 'Görselleri düzenle' : 'Görsel ekle'} onClick={() => setStep(1)}><span className={styles.editIcon} aria-hidden="true">{files.length ? '✎' : '+'}</span></button></header>
+                    <p className={styles.visibilityNote}>{files.length ? files.map(file => file.name).join(', ') : 'Görsel eklemeden devam edebilirsiniz.'}</p>
+                  </section>
+                </div>
+                <WizardRegionPreview district={district} serviceId={service.id} targetProfessionalName={targetProfessional?.name}/>
+                </div>
+                <details className={styles.privacyDetails}><summary>Talebimi kimler görebilir?</summary><p>{targetProfessional ? 'Ustalar arasında yalnız seçtiğiniz usta görebilir.' : 'Talebiniz hizmet ve bölgenize uygun ustalarla paylaşılır.'} Yetkili operasyon ekibi gerektiğinde inceleyebilir. Açık adresiniz bu özette paylaşılmaz.</p></details>
 
                 {(message || scope.guest || needsAuth) && (
                   <p className="account-message" role={message ? 'alert' : 'status'}>
-                    {message || 'Talebinizi göndermek için giriş yapın veya üye olun. Yanıtlarınız ve seçtiğiniz usta korunur; dönüşte bu özeti kontrol edip kendiniz gönderirsiniz.'} {(scope.guest || needsAuth) && <Link className="dialog-primary" href={`/giris?next=${encodeURIComponent(resumePath)}`} onClick={event => {
-                      try {
-                        scope.storage.setItem(storageKey, JSON.stringify({answers,district,neighborhood,timing,step,questionIndex,idempotencyKey,requestId,routingMode,targetProfessionalId,updatedAt:Date.now(),pendingMediaCount:files.length}));
-                        if(scope.guest)sessionStorage.setItem('orkestra:draft-handoff',storageKey);
-                      } catch {
-                        event.preventDefault();
-                        setMessage('Tarayıcı taslağı saklayamıyor. Bu sayfayı açık tutup ayrı sekmede giriş yapın, ardından burada yeniden gönderin.');
-                      }
-                    }}>Giriş yap / kayıt ol ve devam et</Link>}
+                    {message || 'Göndermek için giriş yapın. Yanıtlarınız korunur; dönüşte talebi kendiniz gönderirsiniz.'}
                     {(scope.guest || needsAuth) && files.length > 0 && ' Seçtiğiniz dosyaları dönüşte yeniden eklemeniz gerekecek; yanıtlarınız korunur.'}
                   </p>
                 )}
 
                 <div className="wizard-actions">
-                  <Button variant="outline" onClick={() => setStep(2)} type="button">
-                    Konumu düzenle
-                  </Button>
+                  <span className={styles.submitNote}>Göndermek, teklif kabul etmek değildir.</span>
+                  {authAction}
                   {!scope.guest && !needsAuth && <Button
                     variant="primary"
                     loading={busy}
                     onClick={() => void submitRequest()}
                     type="button"
                   >
-                    {result.cta}
+                    {targetProfessional ? 'Bu ustaya talebi gönder' : 'Talebi gönder'}
                   </Button>}
                 </div>
               </WizardSummaryStep>
             )}
             </>}
           </div>
+        </div>
         </div>
       </section>
     </div>

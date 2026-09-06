@@ -1,0 +1,61 @@
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 24px;
+  color: var(--brand-cobalt);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 140ms ease;
+}
+.backLink:hover {
+  text-decoration: underline;
+  color: var(--brand-cobalt-hover);
+}
+.draftBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f0f7f4;
+  border: 1px solid #c3e0d5;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.draftText {
+  font-size: 13px;
+  color: #2d6652;
+  font-weight: 600;
+}
+.draftClearBtn {
+  font-size: 12px;
+  font-weight: 700;
+  color: #b44040;
+  background: transparent;
+  border: 1px solid #e8c4c4;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 140ms ease;
+}
+.draftClearBtn:hover {
+  background: #fdf2f2;
+}
+.stepperLabel {
+  display: inline;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+@media (max-width: 680px) {
+  .stepperLabel {
+    display: none;
+  }
+  .stepperLabelActive {
+    display: inline;
+  }
+}

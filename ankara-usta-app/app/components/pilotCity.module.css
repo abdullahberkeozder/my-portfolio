@@ -20,3 +20,11 @@
 .region select { width:100%; }
 .mapCard :focus-visible,.region :focus-visible { outline:3px solid var(--brand-cobalt); outline-offset:3px; }
 @media(max-width:600px) { .mapCard,.region { padding:16px; }.mapHeader { flex-direction:column; gap:8px; } }
+
+.interactiveBanner { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-block:16px; padding:16px 20px; background:linear-gradient(135deg, rgba(29,53,87,0.06), rgba(69,123,157,0.08)); border:1.5px solid rgba(29,53,87,0.18); border-radius:14px; flex-wrap:wrap; }
+.interactiveBannerText { min-width:0; }
+.interactiveBannerTag { display:inline-block; font-size:.7rem; font-weight:800; color:var(--brand-cobalt); background:var(--brand-lemonade-soft,#e6f0fa); padding:2px 8px; border-radius:999px; margin-bottom:4px; }
+.interactiveBannerText strong { display:block; font-size:1rem; color:var(--brand-cobalt); margin-bottom:2px; }
+.interactiveBannerText p { margin:0; font-size:.875rem; color:var(--text-secondary,#555); }
+.interactiveBannerBtn { display:inline-flex; align-items:center; gap:6px; padding:10px 18px; background:var(--brand-cobalt,#1d3557); color:white !important; font-weight:700; font-size:.875rem; border-radius:10px; text-decoration:none; flex-shrink:0; transition:transform 0.15s ease; }
+.interactiveBannerBtn:hover { transform:translateY(-1px); }

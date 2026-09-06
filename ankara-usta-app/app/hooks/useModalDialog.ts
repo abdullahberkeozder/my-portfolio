@@ -13,6 +13,7 @@ const focusableSelector = [
 
 const modalStack: HTMLElement[] = [];
 let originalOverflow = '';
+let originalRootOverflow = '';
 
 export function useModalDialog<T extends HTMLElement>(active: boolean, onClose: () => void): RefObject<T | null> {
   const dialogRef = useRef<T>(null);
@@ -28,10 +29,14 @@ export function useModalDialog<T extends HTMLElement>(active: boolean, onClose: 
     if (!dialog) return;
 
     const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    if (!modalStack.length) originalOverflow = document.body.style.overflow;
+    if (!modalStack.length) {
+      originalOverflow = document.body.style.overflow;
+      originalRootOverflow = document.documentElement.style.overflow;
+    }
     modalStack.push(dialog);
     document.body.dataset.modalOpen = 'true';
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
     (dialog.querySelector<HTMLElement>('[data-dialog-initial-focus]') ?? dialog).focus();
 
     function handleKeyDown(event: KeyboardEvent) {
@@ -71,6 +76,7 @@ export function useModalDialog<T extends HTMLElement>(active: boolean, onClose: 
       if (index >= 0) modalStack.splice(index, 1);
       if (!modalStack.length) {
         document.body.style.overflow = originalOverflow;
+        document.documentElement.style.overflow = originalRootOverflow;
         delete document.body.dataset.modalOpen;
       }
       if (previouslyFocused?.isConnected) previouslyFocused.focus({preventScroll:true});
