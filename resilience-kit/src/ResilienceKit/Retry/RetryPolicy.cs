@@ -2,10 +2,7 @@
 
 namespace ResilienceKit.Retry;
 
-/// <summary>
-/// Runs an operation and retries it when it fails, according to <see cref="RetryOptions"/>.
-/// Stateless and thread-safe — one instance can be shared across concurrent callers.
-/// </summary>
+// Runs an operation and retries on failure. Stateless — safe to use as a singleton.
 public sealed class RetryPolicy
 {
     private readonly RetryOptions _options;
@@ -59,7 +56,6 @@ public sealed class RetryPolicy
             }
             catch (Exception ex)
             {
-                // ShouldRetry returned false — surface immediately rather than wrapping.
                 exceptions.Add(ex);
                 break;
             }

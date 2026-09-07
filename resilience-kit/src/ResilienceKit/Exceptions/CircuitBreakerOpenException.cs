@@ -1,9 +1,6 @@
 ﻿namespace ResilienceKit.Exceptions;
 
-/// <summary>
-/// Thrown when a call is attempted while the circuit breaker is open.
-/// <see cref="RetryAfter"/> is how long until the circuit moves to half-open.
-/// </summary>
+// Thrown when a call is attempted while the circuit is open.
 public sealed class CircuitBreakerOpenException : Exception
 {
     public TimeSpan RetryAfter { get; }

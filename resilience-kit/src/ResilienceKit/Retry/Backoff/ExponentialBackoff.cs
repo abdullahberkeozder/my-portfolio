@@ -1,9 +1,9 @@
 ﻿namespace ResilienceKit.Retry.Backoff;
 
 /// <summary>
-/// Doubles the wait after each attempt: base, 2×base, 4×base, up to <paramref name="maxDelay"/>.
+/// Doubles the wait after each attempt: base, 2x base, 4x base, up to <paramref name="maxDelay"/>.
 /// Good for a single caller. If many callers retry together after a shared failure,
-/// use <see cref="ExponentialBackoffWithJitter"/> to scatter the retries.
+/// use <see cref="ExponentialBackoffWithJitter"/> to spread the retries out.
 /// </summary>
 public sealed class ExponentialBackoff : IBackoffStrategy
 {

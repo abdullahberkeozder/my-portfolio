@@ -1,28 +1,19 @@
 ﻿namespace ResilienceKit.CircuitBreaker;
 
-/// <summary>Configuration for a <see cref="CircuitBreakerPolicy"/>.</summary>
+// Configuration for CircuitBreakerPolicy.
 public sealed class CircuitBreakerOptions
 {
-    /// <summary>
-    /// How many consecutive failures open the circuit. Default: 5.
-    /// </summary>
+    // Consecutive failures before the circuit opens. Default: 5.
     public int FailureThreshold { get; init; } = 5;
 
-    /// <summary>
-    /// How long the circuit stays open before allowing a probe request. Default: 30 seconds.
-    /// </summary>
+    // How long the circuit stays open before allowing a probe request. Default: 30s.
     public TimeSpan OpenDuration { get; init; } = TimeSpan.FromSeconds(30);
 
-    /// <summary>
-    /// Returns true if this exception should count toward the failure threshold.
-    /// By default every exception counts. Override to ignore exceptions that should not trip the circuit
-    /// (e.g. validation errors or 4xx responses).
-    /// </summary>
+    // Return true if this exception should count toward the threshold.
+    // Override to ignore validation errors or 4xx responses that are not dependency failures.
     public Func<Exception, bool> IsFailure { get; init; } = _ => true;
 
-    /// <summary>
-    /// Called whenever the circuit changes state. Useful for logging and metrics.
-    /// </summary>
+    // Called on every state transition. Use for logging or metrics.
     public Action<CircuitState, CircuitState>? OnStateChanged { get; init; }
 
     public static CircuitBreakerOptions Default => new();

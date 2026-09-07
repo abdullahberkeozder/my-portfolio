@@ -3,7 +3,6 @@ using ResilienceKit.Retry;
 
 namespace ResilienceKit.Pipeline;
 
-/// <summary>Fluent builder for <see cref="ResiliencePipeline"/>.</summary>
 public sealed class ResiliencePipelineBuilder
 {
     private RetryOptions? _retryOptions;

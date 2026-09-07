@@ -1,10 +1,8 @@
 ﻿namespace ResilienceKit.Retry.Backoff;
 
-/// <summary>
-/// Same fixed delay every time. Simple and predictable.
-/// The downside is that concurrent callers all retry at the same moment —
-/// use <see cref="ExponentialBackoffWithJitter"/> if that is a concern.
-/// </summary>
+// Same fixed delay every attempt. Simple to reason about.
+// If many callers fail at the same time, they all retry simultaneously —
+// use ExponentialBackoffWithJitter to spread them out.
 public sealed class ConstantBackoff : IBackoffStrategy
 {
     private readonly TimeSpan _delay;

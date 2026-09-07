@@ -3,14 +3,9 @@ using ResilienceKit.Retry;
 
 namespace ResilienceKit.Pipeline;
 
-/// <summary>
-/// Composes retry and circuit breaker into a single execution call.
-///
-/// The retry wraps the circuit breaker, not the other way around.
-/// When the circuit is open it throws immediately, which the retry policy counts as a failed attempt —
-/// so the caller gets a fast <see cref="Exceptions.RetryExhaustedException"/> rather than waiting for timeouts.
-/// The trade-off is more circuit state updates per caller, but faster detection of broken dependencies.
-/// </summary>
+// Runs an operation through retry, then circuit breaker.
+// The circuit breaker sits on the inside: when it is open it throws immediately,
+// which the retry counts as a failed attempt — fast exhaustion, no wasted timeouts.
 public sealed class ResiliencePipeline
 {
     private readonly RetryPolicy _retry;

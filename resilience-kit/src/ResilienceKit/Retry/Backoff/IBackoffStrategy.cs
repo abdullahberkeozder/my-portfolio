@@ -1,8 +1,8 @@
 ﻿namespace ResilienceKit.Retry.Backoff;
 
-/// <summary>Defines how long to wait before a retry attempt.</summary>
+// Defines how long to wait before a retry attempt.
 public interface IBackoffStrategy
 {
-    /// <param name="attempt">1-based attempt number (1 = first retry).</param>
+    // attempt is 1-based (1 = first retry after the initial failure).
     TimeSpan GetDelay(int attempt);
 }

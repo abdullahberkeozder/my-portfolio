@@ -2,37 +2,25 @@
 
 namespace ResilienceKit.Retry;
 
-/// <summary>
-/// Configuration for a <see cref="RetryPolicy"/>.
-/// All properties are immutable after construction — safe to share across threads.
-/// </summary>
+// Configuration for RetryPolicy. All properties are init-only — safe to share across threads.
 public sealed class RetryOptions
 {
-    /// <summary>Total number of attempts, including the first call. Default: 3.</summary>
+    // Total attempts including the first call. Default: 3.
     public int MaxAttempts { get; init; } = 3;
 
-    /// <summary>
-    /// Returns true if this exception should trigger a retry.
-    /// By default every exception retries. Override to ignore exceptions that are not transient.
-    /// </summary>
+    // Return true to retry on this exception. Default: retry on everything.
     public Func<Exception, bool> ShouldRetry { get; init; } = _ => true;
 
-    /// <summary>
-    /// How long to wait before each retry attempt.
-    /// Defaults to exponential backoff with jitter starting at 200 ms.
-    /// </summary>
+    // Delay strategy between attempts. Default: exponential with jitter starting at 200 ms.
     public IBackoffStrategy Backoff { get; init; } =
         ExponentialBackoffWithJitter.Starting(TimeSpan.FromMilliseconds(200));
 
-    /// <summary>
-    /// Called after each failed attempt, just before the delay.
-    /// Use this for logging or metrics — not for retry logic itself.
-    /// </summary>
+    // Called after each failed attempt, before the delay. Use for logging or metrics.
     public Action<Exception, int, TimeSpan>? OnRetry { get; init; }
 
     public static RetryOptions Default => new();
 
-    /// <summary>Retries only on <typeparamref name="TException"/>.</summary>
+    // Retry only when the exception is TException.
     public static RetryOptions For<TException>(int maxAttempts = 3)
         where TException : Exception => new()
         {

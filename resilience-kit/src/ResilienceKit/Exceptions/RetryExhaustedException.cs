@@ -1,9 +1,7 @@
 ﻿namespace ResilienceKit.Exceptions;
 
-/// <summary>
-/// Thrown when all retry attempts have been exhausted.
-/// Check <see cref="InnerExceptions"/> to see what failed each time.
-/// </summary>
+// Thrown when all retry attempts have been exhausted.
+// InnerExceptions contains each failure in order.
 public sealed class RetryExhaustedException : Exception
 {
     public int Attempts { get; }

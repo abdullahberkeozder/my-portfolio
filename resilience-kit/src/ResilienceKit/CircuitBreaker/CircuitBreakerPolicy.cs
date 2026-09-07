@@ -2,14 +2,9 @@
 
 namespace ResilienceKit.CircuitBreaker;
 
-/// <summary>
-/// Thread-safe circuit breaker. Tracks consecutive failures and stops calling a dependency
-/// once a threshold is reached, giving it time to recover rather than piling up requests.
-///
-/// Create one instance per protected resource — the state is specific to that dependency.
-/// The implementation uses a plain lock for state transitions. The critical section is tiny
-/// (a few field assignments) so the overhead is not measurable in practice.
-/// </summary>
+// Thread-safe circuit breaker. Opens after N consecutive failures and stays open
+// for a configured duration before allowing one probe request through.
+// Create one instance per protected resource — the state is per-dependency.
 public sealed class CircuitBreakerPolicy
 {
     private readonly CircuitBreakerOptions _options;
@@ -107,7 +102,7 @@ public sealed class CircuitBreakerPolicy
         _options.OnStateChanged?.Invoke(previous, next);
     }
 
-    /// <summary>Resets to Closed and clears the failure count. Useful in tests and admin endpoints.</summary>
+    // Resets to Closed. Useful in tests and admin endpoints.
     public void Reset()
     {
         lock (_lock)
