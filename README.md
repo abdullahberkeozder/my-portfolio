@@ -1,4 +1,4 @@
-# Abdullah Berke Özder | Software Engineering Portfolio
+# Abdullah Özder | Software Engineering Portfolio
 
 I build web applications and backend services, with a focus on how they behave beyond the happy path: failed requests, conflicting updates, permissions, and recovery.
 
