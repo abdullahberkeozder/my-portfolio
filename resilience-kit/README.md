@@ -1,19 +1,42 @@
 ﻿# resilience-kit
 
-Retry and circuit breaker for .NET, with no external dependencies.
+A small C# library for retries, backoff, and circuit breaking, targeting .NET 10.
 
 I built this to understand the patterns from the inside rather than just calling Polly.
-The code is small enough to read in one sitting and the design notes explain the trade-offs I ran into.
+The code and tests explore exception filtering, cancellation, recovery, and policy order.
+The library has no third-party runtime package dependencies; the test project uses xUnit and test tooling.
+
+## Getting started
+
+Install the .NET 10 SDK. From the `my-portfolio` repository root:
+
+```bash
+dotnet restore resilience-kit/ResilienceKit.slnx
+dotnet build resilience-kit/ResilienceKit.slnx --configuration Release --no-restore
+dotnet test resilience-kit/ResilienceKit.slnx --configuration Release --no-build
+```
+
+To use the library in a .NET 10 application, add a project reference, replacing the application path:
+
+```bash
+dotnet add path/to/YourApp.csproj reference resilience-kit/src/ResilienceKit/ResilienceKit.csproj
+```
 
 ---
 
 ## Usage
 
 ```csharp
-// Retry
+using ResilienceKit.Retry;
+using ResilienceKit.Retry.Backoff;
+using ResilienceKit.CircuitBreaker;
+using ResilienceKit.Pipeline;
+
+// Integration snippets: supply your HTTP client, logger, database, and email adapter.
 var retry = new RetryPolicy(new RetryOptions
 {
     MaxAttempts = 3,
+    ShouldRetry = ex => ex is HttpRequestException,
     Backoff = ExponentialBackoffWithJitter.Starting(TimeSpan.FromMilliseconds(200)),
     OnRetry = (ex, attempt, delay) =>
         logger.LogWarning("Attempt {Attempt} failed: {Message}. Retrying in {Delay}ms",
@@ -35,6 +58,14 @@ var pipeline = ResiliencePipeline.Create()
 await pipeline.ExecuteAsync(ct => emailService.SendAsync(message, ct));
 ```
 
+`MaxAttempts` includes the first call. Reuse a circuit breaker or pipeline for the same
+dependency so its state persists between calls. The builder always creates both policies;
+omitted options use their defaults. Pass cancellation tokens through to the underlying operation.
+
+These snippets illustrate integration points, not a complete application. Retrying a write
+or sending an email again is only safe when the application or provider handles duplicates.
+The library itself does not provide idempotency.
+
 ---
 
 ## Why I wrote this instead of using Polly
@@ -46,9 +77,10 @@ different attempt counts, different exception filters, no consistent logging.
 Extracting the policy into a named object gives consistency across call sites,
 a single place to add metrics, and the ability to inject a zero-delay policy in tests.
 
-What I gave up compared to Polly: hedging, rate-based circuit breaking, distributed state,
-and the HttpClientFactory integration. For internal services that don't need those, this is enough.
-**If you need any of those things, use Polly.**
+This implementation has no hedging, sliding-window failure rate, shared circuit state,
+or HTTP-specific integration. For production work I would evaluate an established library
+such as Polly against the actual requirements. This project is an exercise in understanding
+the behavior and its trade-offs, with the limitations below still to address.
 
 ---
 
@@ -74,11 +106,15 @@ to trip across all of them, you need a shared backing store. That is out of scop
 RetryPolicy → CircuitBreakerPolicy → operation
 ```
 
-The circuit breaker is on the inside. When it is open it throws immediately, which the retry
-policy sees as a failure and counts toward its attempt budget. The caller gets a fast
-`RetryExhaustedException` instead of waiting for timeouts. The alternative — circuit breaker
-outside, retry inside — makes the circuit slower to detect a broken dependency because it only
-counts the last failure per caller, not each retry attempt.
+The breaker is inside retry, so it sees every attempted operation, including retries.
+One caller can therefore contribute multiple failures toward the threshold. A breaker
+outside retry would instead see the final outcome of each retry execution.
+
+With defaults, retry also catches `CircuitBreakerOpenException`. The dependency is not
+called while the circuit is open, but backoff delays still apply between attempts.
+The whole pipeline is therefore not guaranteed to fail immediately.
+Use `ShouldRetry` to select relevant transient exceptions and exclude open-circuit rejections
+when appropriate. Excluded operation failures are still wrapped in `RetryExhaustedException`.
 
 ---
 
@@ -101,7 +137,29 @@ and hit the recovering dependency simultaneously. Jitter scatters them.
 dotnet test
 ```
 
-25 tests, all passing. Tests use `ConstantBackoff.Of(TimeSpan.Zero)` so they don't sleep.
+Run this command from the `resilience-kit` directory. The suite covers retry outcomes,
+exception filters, cancellation, callbacks, backoff caps, circuit transitions, and composition.
+Retry tests generally use zero-delay backoff. Several circuit recovery tests use
+`Task.Delay(100)` to let a 50 ms open duration expire, so the suite depends partly on real time.
+
+## Current limitations
+
+- HalfOpen does not reserve a single probe. Concurrent callers can enter, and in-flight
+  results can affect newer circuit state. Locks protect individual mutations, not a fully
+  coordinated recovery cycle.
+- Recovery uses `DateTimeOffset.UtcNow`; there is no injectable clock.
+- Options are not comprehensively validated, including attempt counts, thresholds,
+  open durations, and exponential delay caps.
+- User callbacks and predicates are not isolated from exceptions. State-change callbacks
+  execute inside the state lock; keep them short and non-throwing.
+- Cancellation propagates without retry wrapping or counting as a circuit failure.
+  Cancellation or an excluded exception during HalfOpen leaves that state unchanged.
+- There is no operation timeout, durable job storage, or built-in metrics exporter.
+
+Next steps include an injectable clock, concurrent recovery tests, and option validation.
+The current tests do not establish single-probe safety under concurrent load.
+
+This is a separate portfolio library. It is not currently integrated into the Orkestra notification worker.
 
 ---
 

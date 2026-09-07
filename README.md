@@ -1,118 +1,101 @@
-﻿# Abdullah Berke Ã–zder â€” Software Engineering Portfolio
+# Abdullah Berke Özder | Software Engineering Portfolio
 
-Selected product-oriented applications covering full-stack web development, secure data workflows, automated testing, responsive interface design, and documented architecture decisions.
+I build web applications and backend services, with a focus on how they behave beyond the happy path: failed requests, conflicting updates, permissions, and recovery.
 
-## Orkestra â€” Local Services Marketplace
+This repository brings together marketplace and appointment products, a small C# resilience library, and a hotel operations application. Each project has its own setup and documentation.
 
-> A production-oriented marketplace foundation built with Next.js, TypeScript, Supabase/PostgreSQL, ASP.NET Core, role-based access, API routes, state machines, automated tests, GitHub Actions, and written architecture decisions.
+## Start here
 
-[Project documentation](./ankara-usta-app/README.md) Â· [Architecture decisions](./ankara-usta-app/docs/adr/) Â· [Requirements traceability](./ankara-usta-app/docs/engineering/REQUIREMENTS-TRACEABILITY.md)
-
-Orkestra helps customers describe a household problem, identify the correct service, create a structured request, compare offers, and manage the resulting job. Tradespeople apply with service regions and evidence; administrators review applications, documents, disputes, and moderation decisions.
-
-### Architecture overview
-
-```text
-Next.js / React / TypeScript
-        â”‚ authenticated API routes
-        â–¼
-Supabase Auth + PostgreSQL RPCs + RLS + private Storage
-        â”‚ transactional notification outbox
-        â–¼
-ASP.NET Core notification worker â”€â”€â–º Resend Email API
-```
-
-The browser never receives service-role credentials. Critical mutations are performed by validated server routes and database RPCs. PostgreSQL owns concurrency-sensitive decisions, immutable event order, audit records, and row-level authorization.
-
-### Main workflows
-
-- Natural-language service discovery across six categories and 26 services
-- Conditional request wizard with media, Ankara district/neighborhood, safety guidance, draft recovery, and idempotent submission
-- Tradesperson application, evidence upload, review, expiry, and reassessment
-- Explainable service-area matching and versioned quote comparison
-- Atomic quote acceptance and job creation
-- Ordered messaging, inspection appointments, bilateral scope changes, and job timeline
-- Evidence-backed reviews, disputes, sanctions, appeals, and immutable moderation records
-
-### API and integration design
-
-- Next.js server routes define public HTTP boundaries and normalize client-safe errors.
-- Supabase PostgreSQL functions enforce state transitions and concurrent writes close to the data.
-- RLS and private Storage policies protect customer, tradesperson, document, and media boundaries.
-- An ASP.NET Core worker claims email-only outbox rows with `SKIP LOCKED`, resolves recipients through Supabase Auth Admin, and sends idempotent transactional messages through Resend.
-- Provider failure never rolls back the domain operation; retry and dead-letter state remain in PostgreSQL.
-
-### Testing strategy
-
-- Vitest for domain rules, state machines, validators, taxonomy integrity, and adapters
-- React Testing Library for interactive component behavior
-- Playwright for responsive, accessibility, wizard, auth, and cross-role journeys
-- ASP.NET Core contract tests for outbox processing and provider idempotency
-- Remote Supabase tests for RLS, Storage isolation, concurrency, and multi-user workflows
-
-### Architecture Decision Records
-
-The project documents backend boundaries, authentication, storage, matching, atomic quoting, ordered events, transactional outbox delivery, trust, moderation, and dispute operations under [`ankara-usta-app/docs/adr`](./ankara-usta-app/docs/adr/).
-
-### CI pipeline
-
-GitHub Actions installs pinned Node dependencies, checks repository hygiene, runs lint and TypeScript validation, measures unit/component coverage, creates a production build, builds and tests the .NET integration, and executes Playwright smoke tests. A protected Supabase integration job runs authenticated customer, tradesperson, and administrator journeys on `main` when CI secrets are configured.
-
-### Known limitations
-
-- The public deployment is a product foundation, not an operating marketplace with live Ankara supply.
-- Six high-priority services have specialized question trees; the remaining services use a validated generic flow.
-- Matching weights require calibration with real supply, completion, and cancellation data.
-- The ASP.NET Core email worker is implemented and tested but requires separately deployed infrastructure plus Supabase and Resend server secrets.
-- Payment collection and calendar synchronization are intentionally not claimed as current capabilities.
-
-### Next development steps
-
-1. Deploy the notification worker and validate provider delivery in a staging environment.
-2. Complete specialized question trees for the remaining service backlog.
-3. Add production observability for RPC latency, notification retries, and funnel exits.
-4. Calibrate matching with Ankara pilot data and explicit fairness checks.
-5. Complete release-grade cross-browser and real-device validation.
-
-## Other projects
-
-| Project | Description | Stack |
+| Project | What to explore | Main technologies |
 | --- | --- | --- |
-| [The Welding Expert App](./the-welding-expert-app/) | Appointment, availability, gallery, and administrator workflows for a local welding service. | React, Vite, Supabase, React Query, Styled Components |
-| [The Wild Oasis](./the-wild-oasis/) | Hotel and cabin operations with bookings, dashboards, and administrative workflows. | React, Supabase, React Query, Styled Components |
+| [Orkestra](./ankara-usta-app/README.md) | Service discovery, request-to-quote journeys, database-enforced transitions, and a transactional email worker | TypeScript, Next.js, React, PostgreSQL, Supabase, C#/ASP.NET Core |
+| [Resilience Kit](./resilience-kit/README.md) | Retry policies, backoff, circuit breaking, and the trade-offs of composing them | C#, .NET 10, xUnit |
+| [Umut Usta](./the-welding-expert-app/README.md) | Customer booking, private tracking, team scheduling, and operational analytics | JavaScript, React, TanStack Query, Supabase, Styled Components |
+| [The Wild Oasis](./the-wild-oasis/README.md) | Hotel bookings, cabins, guests, and administrative screens | JavaScript, React, TanStack Query, Supabase, React Hook Form |
 
-## AI-Assisted Development
+For backend and reliability work, start with the [notification worker](./ankara-usta-app/services/AnkaraUsta.NotificationWorker/README.md) and [Resilience Kit](./resilience-kit/README.md).
+For product flows and interfaces, start with [Orkestra](./ankara-usta-app/README.md) or [Umut Usta](./the-welding-expert-app/README.md).
 
-OpenAI Codex was used for requirements analysis, implementation alternatives, test-case discovery, debugging, and documentation. Suggestions were reviewed against domain rules, type safety, automated tests, security requirements, and the repository's architecture decisions. Final architecture, source code, and product decisions remain under human review and ownership.
+## Orkestra | Local services marketplace
 
-## Repository hygiene
+Orkestra is an Ankara-focused marketplace foundation in active development. Customers describe a problem, select a service, create a request, and compare quotes. Tradespeople manage applications and jobs, while administrators review evidence and moderation cases.
 
-- Real environment files, provider keys, service-role credentials, build output, coverage, and local deployment state are ignored.
-- Only `.env.example` templates are versioned.
-- CI runs a tracked-file and high-confidence secret check before application tests.
-- The private psychology project is maintained in a separate repository and excluded from this public portfolio.
+The catalog contains six categories and 26 services, with service-specific question definitions. The request flow supports conditional questions, district and neighborhood selection, private media, draft recovery, and an editable review before submission.
 
-## Local setup
+### Engineering work
 
-```bash
-cd ankara-usta-app
-npm ci
-npm run dev
-```
+- Request and job state machines separate domain rules from the interface.
+- PostgreSQL functions handle concurrency-sensitive operations such as quote acceptance and job creation.
+- Authentication, row-level policies, and private storage define access for customers, tradespeople, and administrators.
+- Versioned quotes, scope changes, messaging, and audit events make the job history inspectable.
+- A separate ASP.NET Core worker processes a transactional notification outbox and integrates with Resend. Delivery retries and dead-letter state are recorded separately from the business operation.
 
-Use [the project README](./ankara-usta-app/README.md) for environment configuration, Supabase migrations, testing, and the optional ASP.NET Core notification worker.
+The email worker has its own deployment and configuration requirements. This repository represents an implemented product foundation; it does not establish live marketplace supply, production traffic, or completed payment integration.
+
+### Design and validation
+
+The customer experience uses a question-first flow, responsive layouts, and a cobalt/yellow visual identity. Domain and component tests cover rules and interactions; Playwright suites exercise browser journeys. Written decisions explain the backend boundaries and delivery model.
+
+[Source](./ankara-usta-app/app/) |
+[Tests](./ankara-usta-app/tests/) |
+[Architecture decisions](./ankara-usta-app/docs/adr/) |
+[Requirements traceability](./ankara-usta-app/docs/engineering/REQUIREMENTS-TRACEABILITY.md) |
+[Notification worker](./ankara-usta-app/services/AnkaraUsta.NotificationWorker/)
+
+## Resilience Kit | Retry and circuit breaker
+
+A small .NET 10 library built to understand how retry policies and circuit breakers interact. It supports configurable exception filters, constant and exponential backoff, jitter, cancellation, and policy composition.
+
+The interesting part is the behavior at the boundaries: how each retry contributes to the failure threshold, how an open circuit affects the retry loop, and what recovery means when requests overlap. The README explains these choices and the remaining concurrency and configuration-validation limitations.
+
+The xUnit suite covers retry outcomes, cancellation, callbacks, circuit transitions, and composition. Some recovery tests use real-time waits. This is a separate learning project and is not currently integrated into Orkestra's notification worker.
+
+[Usage and design notes](./resilience-kit/README.md) |
+[Source](./resilience-kit/src/ResilienceKit/) |
+[Tests](./resilience-kit/tests/ResilienceKit.Tests/)
+
+## Umut Usta | Appointment and service operations
+
+Umut Usta connects customer appointment requests with a protected workspace for a local welding and maintenance business. Customers choose a service and time, submit contact details, and use a private link for tracking and self-service changes.
+
+The project includes availability management, role-based team access, a work gallery, and operational dashboards. Database-backed slot locking handles scheduling conflicts, while analytics capture booking and self-service activity.
+
+The interface work includes a three-step booking flow, mobile layouts, keyboard interaction, and explicit loading, validation, and submission states. Vitest, Testing Library, and Playwright support the critical journeys.
+
+[Project documentation and screenshots](./the-welding-expert-app/README.md) |
+[Source](./the-welding-expert-app/src/) |
+[Browser tests](./the-welding-expert-app/e2e/)
+
+## The Wild Oasis | Hotel operations
+
+A React application for managing bookings, cabins, guests, and hotel settings. It brings together protected routes, server-state management, forms, and reusable administrative interfaces.
+
+[Project documentation](./the-wild-oasis/README.md) |
+[Source](./the-wild-oasis/src/)
+
+## Development and delivery
+
+These are independent projects rather than a single application. Dependencies, environment variables, and commands belong to each project directory.
+
+| Project | Getting started |
+| --- | --- |
+| Orkestra | Node.js 22.13+; see its README for environment setup, then run `npm ci` and `npm run dev` in `ankara-usta-app`. The worker requires .NET 10. |
+| Resilience Kit | Install the .NET 10 SDK, then run `dotnet test resilience-kit/ResilienceKit.slnx` from the repository root. |
+| Umut Usta | Configure the project environment, then run `npm ci` and `npm run dev` in `the-welding-expert-app`. |
+| The Wild Oasis | Follow its README for database and environment setup, then run `npm ci` and `npm run dev` in `the-wild-oasis`. |
+
+The [Orkestra CI workflow](./.github/workflows/ankara-usta-ci.yml) runs repository checks, lint, TypeScript validation, unit/component coverage, a production build, .NET worker checks, and browser tests. Its authenticated integration job requires configured credentials; a skipped job is not evidence that those scenarios passed.
+
+Umut Usta has a [separate workflow](./.github/workflows/welding-app-ci.yml). Resilience Kit's local test command and coverage boundaries are documented in its README; the Orkestra workflow does not run that library's tests.
+
+## How I work
+
+I use AI coding tools to explore implementation options, inspect unfamiliar code, draft tests, and investigate failures. I review the output against the intended behavior and use type checks, tests, and written decisions to evaluate changes. The project documentation records limitations as well as implemented features.
+
+This public repository contains selected work. Private client projects, including the psychology platform, are not included here. Follow each project's environment template; private credentials and deployment secrets do not belong in commits.
 
 ## Contact
 
 - [GitHub](https://github.com/abdullahberkeozder)
 - [LinkedIn](https://www.linkedin.com/in/abdullah-ozder/)
 - Email: abdullahberkeozder@gmail.com
----
-
-## resilience-kit — Retry and Circuit Breaker (.NET)
-
-A lightweight .NET library implementing retry with exponential backoff and a Closed/Open/HalfOpen circuit breaker, with no external dependencies.
-
-Built to understand the patterns from the inside. Includes a fluent pipeline builder, three backoff strategies, configurable exception predicates, and 25 xUnit tests.
-
-[Project and design notes](./resilience-kit/README.md)
