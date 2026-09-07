@@ -1,4 +1,4 @@
-﻿# Abdullah Berke Ã–zder â€” Software Engineering Portfolio
+﻿# Abdullah Özder” Software Engineering Portfolio
 
 Selected product-oriented applications covering full-stack web development, secure data workflows, automated testing, responsive interface design, and documented architecture decisions.
 
