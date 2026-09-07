@@ -39,8 +39,8 @@ Orkestra is a local services marketplace prototype designed to connect customers
 The interface combines a focused, question-first marketplace flow with an original modular identity for Orkestra.
 
 - A cobalt, golden-yellow, lemonade, parchment, and charcoal color system
-- A six-tile house mark representing an assembled service team and completed work
-- Scroll-linked tile separation/reassembly with a reduced-motion fallback
+- A five-circle brand mark with cobalt and yellow variants
+- White and lemonade surfaces with cobalt primary actions
 - A focused, single-question request flow with an editable final scope summary
 - A completion receipt reserved for confirmed submissions rather than persistent decoration
 - Explicit mobile layouts for 320 px, 390 px, tablet, and desktop surfaces
@@ -60,6 +60,8 @@ The interface combines a focused, question-first marketplace flow with an origin
 ## Running the Project
 
 Requirement: Node.js `22.13.0` or newer.
+
+Run these commands inside `ankara-usta-app`, not at the repository root:
 
 ```bash
 npm ci
@@ -159,9 +161,11 @@ Provider setup and operational details are documented in [`services/AnkaraUsta.N
 - The `supabase-integration` CI job runs authenticated role-routing journeys on `main` when all eight required environment secrets are configured: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and the `E2E_CUSTOMER`, `E2E_TRADESPERSON`, and `E2E_ADMIN` email/password pairs.
 - Temporarily, missing integration credentials skip that suite with an explicit workflow warning and summary. This is not a passing authenticated test result. Once configured, strict preflight and test failures remain blocking; lint, type-check, unit tests, build, and smoke tests remain unchanged.
 
+Test coverage is a strategy, not a claim that every suite currently passes. Record the tested commit, environment, viewport and result before treating a journey as verified. Isolated test accounts and synthetic professional profiles must not be presented as live marketplace supply; keep their credentials outside Git and separate from production configuration.
+
 ## Known Limitations
 
-- The hosted demo does not yet operate with a live pool of Ankara tradespeople.
+- The project does not yet establish a live pool of Ankara tradespeople. Sample map records are illustrative, not live professional locations or availability.
 - All 26 catalog services have service-specific question definitions. Their wording and branch quality still require calibration against anonymized production request language.
 - Matching weights are explainable but not yet calibrated with production completion data.
 - The notification worker needs separate deployment and server-only Supabase/Resend configuration.
@@ -178,7 +182,8 @@ OpenAI Codex was used for requirements analysis, implementation alternatives, te
 
 - Matching quality calibration with real Ankara supply and demand data
 - Deploy and observe the ASP.NET Core notification worker in staging
-- Complete specialized question trees for the remaining service backlog
+- Validate service question wording and conditional branches against realistic requests
+- Complete directory, profile and directed-request interaction checks at 320, 390, 820 and 1440 px, including keyboard navigation and mobile auth return
 - Add operational dashboards for RPC latency, outbox retry depth, and funnel exits
 - Validate production email delivery, domain authentication, and unsubscribe boundaries
 

@@ -37,6 +37,8 @@ The email worker has its own deployment and configuration requirements. This rep
 
 The customer experience uses a question-first flow, responsive layouts, and a cobalt/yellow visual identity. Domain and component tests cover rules and interactions; Playwright suites exercise browser journeys. Written decisions explain the backend boundaries and delivery model.
 
+The visual system preserves a five-circle mark and white/lemonade surfaces. Validation is recorded per journey and environment: a passing local browser test is not a production release or proof that every viewport and role has been verified. The next UI validation slice covers the professional directory, profile-to-request navigation, and mobile draft recovery.
+
 [Source](./ankara-usta-app/app/) |
 [Tests](./ankara-usta-app/tests/) |
 [Architecture decisions](./ankara-usta-app/docs/adr/) |
