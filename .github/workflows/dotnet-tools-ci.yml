@@ -1,0 +1,38 @@
+name: .NET tools
+
+on:
+  push:
+    paths: ['devtool-cli/**', 'resilience-kit/**', '.github/workflows/dotnet-tools-ci.yml']
+  pull_request:
+    paths: ['devtool-cli/**', 'resilience-kit/**', '.github/workflows/dotnet-tools-ci.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tools:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - name: Test Resilience Kit
+        run: dotnet test resilience-kit/ResilienceKit.slnx --configuration Release
+      - name: Test DevTool
+        run: dotnet test devtool-cli/DevTool.slnx --configuration Release
+      - name: Pack DevTool
+        run: dotnet pack devtool-cli/src/DevTool/DevTool.csproj --configuration Release --no-build --output devtool-cli/artifacts
+      - name: Install local package
+        run: dotnet tool install --tool-path devtool-cli/.tools --add-source devtool-cli/artifacts AbdullahOzder.DevTool --version 0.1.0
+      - name: Smoke check installed command
+        run: ./devtool-cli/.tools/devtool --help

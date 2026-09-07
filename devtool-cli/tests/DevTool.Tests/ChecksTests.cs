@@ -100,6 +100,26 @@ public sealed class ChecksTests : IDisposable
     }
 
     [Fact]
+    public async Task DiagnosticsDistinguishMissingFileSchemaAndArguments()
+    {
+        var schema = FileWith("invalid.json", """{"version":99,"variables":[]}""");
+        var cases = new[]
+        {
+            (new[] { "check", "--schema", Path.Combine(directory, "missing.json"), "--json" }, "input_not_found"),
+            (new[] { "check", "--schema", schema, "--json" }, "invalid_schema"),
+            (new[] { "check", "--json" }, "invalid_arguments")
+        };
+        foreach (var (args, expected) in cases)
+        {
+            var output = new StringWriter();
+            Assert.Equal(2, await Cli.RunAsync(args, output));
+            using var json = JsonDocument.Parse(output.ToString());
+            Assert.Equal(expected, json.RootElement.GetProperty("checks")[0].GetProperty("name").GetString());
+            Assert.DoesNotContain(directory, output.ToString());
+        }
+    }
+
+    [Fact]
     public async Task InfoUsesProjectDirectoryAndFindsAncestorGlobalJson()
     {
         FileWith("global.json", """{"sdk":{"version":"10.0.100","rollForward":"latestFeature"}}""");

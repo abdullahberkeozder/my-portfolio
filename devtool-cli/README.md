@@ -26,12 +26,14 @@ dotnet tool install --tool-path devtool-cli/.tools --add-source devtool-cli/arti
 
 The executable is `devtool-cli/.tools/devtool` (or `devtool.exe` on Windows).
 This builds a local package; it does not publish anything to NuGet.
+The install directory is not added to PATH. Examples below invoke it explicitly from
+the repository root; PowerShell also resolves devtool.exe at that path.
 
 ## check
 
 ```bash
-devtool check --schema devtool-cli/examples/orkestra-worker.schema.json
-devtool check --schema devtool-cli/examples/orkestra-worker.schema.json --json
+./devtool-cli/.tools/devtool check --schema devtool-cli/examples/orkestra-worker.schema.json
+./devtool-cli/.tools/devtool check --schema devtool-cli/examples/orkestra-worker.schema.json --json
 ```
 
 Reads the current process environment. It does not load .env files, contact a provider,
@@ -74,7 +76,7 @@ when supplied. Sender and API keys are checked only for presence, not provider s
 ## info
 
 ```bash
-devtool info --project ankara-usta-app/services/AnkaraUsta.NotificationWorker/AnkaraUsta.NotificationWorker.csproj --json
+./devtool-cli/.tools/devtool info --project ankara-usta-app/services/AnkaraUsta.NotificationWorker/AnkaraUsta.NotificationWorker.csproj --json
 ```
 
 Reads literal TargetFramework/TargetFrameworks entries, finds the nearest global.json
@@ -106,6 +108,13 @@ Both commands accept --json and write one JSON object to stdout:
 
 CI can invoke the built DLL directly and use its exit code to stop a job. This tool does
 not start the worker automatically; run the worker only after a successful preflight.
+
+Exit-2 reports use a stable check name: invalid_arguments, input_not_found, access_denied,
+input_io_error, invalid_schema, invalid_project_configuration, dotnet_unavailable,
+or dotnet_timeout. Messages describe the cause without exposing raw exception text.
+
+The [tools workflow](../.github/workflows/dotnet-tools-ci.yml) builds and tests this project
+on Windows and Linux, then checks local package installation and the help command.
 
 ## Design and tests
 

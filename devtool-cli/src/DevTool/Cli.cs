@@ -7,6 +7,7 @@ public static class Cli
         Func<string, string?>? environment = null)
     {
         var json = args.Contains("--json");
+        var stage = "arguments";
         Report report;
         try
         {
@@ -27,6 +28,7 @@ public static class Cli
                 else throw new ArgumentException();
             }
             if (path is null) throw new ArgumentException();
+            stage = args[0] == "check" ? "schema" : "project";
             report = args[0] == "check"
                 ? EnvironmentCheck.Evaluate(EnvironmentCheck.Parse(await File.ReadAllTextAsync(path)),
                     environment ?? Environment.GetEnvironmentVariable)
@@ -37,8 +39,20 @@ public static class Cli
             or System.ComponentModel.Win32Exception or TimeoutException or FormatException or OverflowException)
         {
             // Parser and process exceptions may contain configuration values.
+            var (code, message) = error switch
+            {
+                FileNotFoundException or DirectoryNotFoundException =>
+                    ("input_not_found", "Input file or directory was not found. Check the supplied path."),
+                UnauthorizedAccessException => ("access_denied", "Input cannot be accessed. Check file permissions."),
+                System.ComponentModel.Win32Exception => ("dotnet_unavailable", "Cannot start dotnet. Check SDK installation and PATH."),
+                TimeoutException => ("dotnet_timeout", "dotnet exceeded the ten-second timeout."),
+                IOException => ("input_io_error", "Could not read the input file."),
+                _ when stage == "arguments" => ("invalid_arguments", "Invalid arguments. Use --help for syntax."),
+                _ when stage == "schema" => ("invalid_schema", "Invalid schema. Check version, variable names, types and bounds."),
+                _ => ("invalid_project_configuration", "Invalid project or global.json configuration. Check file structure and SDK settings.")
+            };
             report = new(args.FirstOrDefault() is "check" or "info" ? args[0] : "usage", 2,
-                [new("configuration", "fail", "Cannot complete command. Check arguments, readable files, schema format and dotnet availability. Use --help for syntax.")]);
+                [new(code, "fail", message)]);
         }
         await WriteReport(report, json, output);
         return report.ExitCode;

@@ -5,7 +5,7 @@ namespace ResilienceKit.Pipeline;
 
 // Runs an operation through retry, then circuit breaker.
 // The circuit breaker sits on the inside: when it is open it throws immediately,
-// which the retry counts as a failed attempt — fast exhaustion, no wasted timeouts.
+// which retry counts as a failed attempt; configured backoff delays can still apply.
 public sealed class ResiliencePipeline
 {
     private readonly RetryPolicy _retry;

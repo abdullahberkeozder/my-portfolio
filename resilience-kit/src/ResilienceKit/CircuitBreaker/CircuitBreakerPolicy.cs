@@ -2,8 +2,8 @@
 
 namespace ResilienceKit.CircuitBreaker;
 
-// Thread-safe circuit breaker. Opens after N consecutive failures and stays open
-// for a configured duration before allowing one probe request through.
+// Opens after counted failures and resumes calls after a configured duration.
+// State mutations are locked, but HalfOpen does not enforce a single concurrent probe.
 // Create one instance per protected resource — the state is per-dependency.
 public sealed class CircuitBreakerPolicy
 {

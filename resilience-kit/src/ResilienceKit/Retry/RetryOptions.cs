@@ -2,7 +2,7 @@
 
 namespace ResilienceKit.Retry;
 
-// Configuration for RetryPolicy. All properties are init-only — safe to share across threads.
+// Init-only configuration. Custom callbacks and backoff strategies must support concurrent use.
 public sealed class RetryOptions
 {
     // Total attempts including the first call. Default: 3.

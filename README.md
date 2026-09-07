@@ -10,7 +10,7 @@ This repository brings together marketplace and appointment products, a small C#
 | --- | --- | --- |
 | [Orkestra](./ankara-usta-app/README.md) | Service discovery, request-to-quote journeys, database-enforced transitions, and a transactional email worker | TypeScript, Next.js, React, PostgreSQL, Supabase, C#/ASP.NET Core |
 | [Resilience Kit](./resilience-kit/README.md) | Retry policies, backoff, circuit breaking, and the trade-offs of composing them | C#, .NET 10, xUnit |
-| [DevTool CLI](./devtool-cli/README.md) | A .NET CLI tool for validating configuration schemas and extracting project SDK info | C#, .NET 10, xUnit, System.CommandLine |
+| [DevTool CLI](./devtool-cli/README.md) | Environment validation, SDK selection diagnostics, and JSON reports for CI | C#, .NET 10, System.Text.Json, xUnit |
 | [Umut Usta](./the-welding-expert-app/README.md) | Customer booking, private tracking, team scheduling, and operational analytics | JavaScript, React, TanStack Query, Supabase, Styled Components |
 | [The Wild Oasis](./the-wild-oasis/README.md) | Hotel bookings, cabins, guests, and administrative screens | JavaScript, React, TanStack Query, Supabase, React Hook Form |
 
@@ -57,11 +57,11 @@ The xUnit suite covers retry outcomes, cancellation, callbacks, circuit transiti
 
 ## DevTool CLI | Configuration validation and project info
 
-A .NET 10 global tool designed to validate environment variables against a JSON schema and extract SDK requirements from C# project files. Built with `System.CommandLine`, it handles process invocation, standard output parsing, and structured JSON output for consumption by CI/CD pipelines or other scripts.
+A .NET 10 command-line tool for checking environment configuration and inspecting project SDK requirements. It uses a small argument parser and System.Text.Json, with no third-party runtime dependencies. Text and JSON reports include meaningful exit codes for local use and CI.
 
-The `check` command verifies that the environment contains all required secrets and configuration values, without leaking the actual values to the console. It supports strict type validation via `System.Text.Json.Nodes`.
+The `check` command validates required variables and supported formats without printing their values. Typed schema deserialization rejects unsupported fields; it does not validate credentials against external services.
 
-The `info` command determines the correct .NET SDK version for a project by delegating to the `dotnet` CLI, ensuring global.json and roll-forward rules are respected.
+The `info` command reports the SDK selected by dotnet in the project directory, including global.json resolution. Its target-framework comparison is a preliminary major-version check, not a guarantee that restore or build will succeed.
 
 [Usage and source](./devtool-cli/README.md) |
 [Tests](./devtool-cli/tests/DevTool.Tests/)
@@ -99,7 +99,7 @@ These are independent projects rather than a single application. Dependencies, e
 
 The [Orkestra CI workflow](./.github/workflows/ankara-usta-ci.yml) runs repository checks, lint, TypeScript validation, unit/component coverage, a production build, .NET worker checks, and browser tests. Its authenticated integration job requires configured credentials; a skipped job is not evidence that those scenarios passed.
 
-Umut Usta has a [separate workflow](./.github/workflows/welding-app-ci.yml). Resilience Kit's local test command and coverage boundaries are documented in its README; the Orkestra workflow does not run that library's tests.
+Umut Usta has a [separate workflow](./.github/workflows/welding-app-ci.yml). The [.NET tools workflow](./.github/workflows/dotnet-tools-ci.yml) builds and tests Resilience Kit and DevTool CLI on Windows and Linux, then packs and locally installs DevTool for a command smoke check. Test boundaries are documented in each project README.
 
 ## How I work
 

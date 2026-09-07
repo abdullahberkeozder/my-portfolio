@@ -133,6 +133,9 @@ and hit the recovering dependency simultaneously. Jitter scatters them.
 
 ## Running the tests
 
+The [tools workflow](../.github/workflows/dotnet-tools-ci.yml) builds and tests this library
+on Windows and Linux. Test results describe covered behavior, not production readiness.
+
 ```bash
 dotnet test
 ```
