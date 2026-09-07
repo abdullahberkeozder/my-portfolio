@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "variables": [
+    { "name": "NotificationWorker__SupabaseUrl", "type": "url" },
+    { "name": "NotificationWorker__SupabaseServiceRoleKey", "type": "string" },
+    { "name": "NotificationWorker__ResendApiKey", "type": "string" },
+    { "name": "NotificationWorker__FromEmail", "type": "string" },
+    { "name": "NotificationWorker__BatchSize", "type": "integer", "required": false, "min": 1, "max": 2147483647 },
+    { "name": "NotificationWorker__PollIntervalSeconds", "type": "integer", "required": false, "min": 1, "max": 2147483647 }
+  ]
+}

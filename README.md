@@ -10,10 +10,11 @@ This repository brings together marketplace and appointment products, a small C#
 | --- | --- | --- |
 | [Orkestra](./ankara-usta-app/README.md) | Service discovery, request-to-quote journeys, database-enforced transitions, and a transactional email worker | TypeScript, Next.js, React, PostgreSQL, Supabase, C#/ASP.NET Core |
 | [Resilience Kit](./resilience-kit/README.md) | Retry policies, backoff, circuit breaking, and the trade-offs of composing them | C#, .NET 10, xUnit |
+| [DevTool CLI](./devtool-cli/README.md) | A .NET CLI tool for validating configuration schemas and extracting project SDK info | C#, .NET 10, xUnit, System.CommandLine |
 | [Umut Usta](./the-welding-expert-app/README.md) | Customer booking, private tracking, team scheduling, and operational analytics | JavaScript, React, TanStack Query, Supabase, Styled Components |
 | [The Wild Oasis](./the-wild-oasis/README.md) | Hotel bookings, cabins, guests, and administrative screens | JavaScript, React, TanStack Query, Supabase, React Hook Form |
 
-For backend and reliability work, start with the [notification worker](./ankara-usta-app/services/AnkaraUsta.NotificationWorker/README.md) and [Resilience Kit](./resilience-kit/README.md).
+For backend and reliability work, start with the [notification worker](./ankara-usta-app/services/AnkaraUsta.NotificationWorker/README.md), [Resilience Kit](./resilience-kit/README.md), and [DevTool CLI](./devtool-cli/README.md).
 For product flows and interfaces, start with [Orkestra](./ankara-usta-app/README.md) or [Umut Usta](./the-welding-expert-app/README.md).
 
 ## Orkestra | Local services marketplace
@@ -54,6 +55,17 @@ The xUnit suite covers retry outcomes, cancellation, callbacks, circuit transiti
 [Source](./resilience-kit/src/ResilienceKit/) |
 [Tests](./resilience-kit/tests/ResilienceKit.Tests/)
 
+## DevTool CLI | Configuration validation and project info
+
+A .NET 10 global tool designed to validate environment variables against a JSON schema and extract SDK requirements from C# project files. Built with `System.CommandLine`, it handles process invocation, standard output parsing, and structured JSON output for consumption by CI/CD pipelines or other scripts.
+
+The `check` command verifies that the environment contains all required secrets and configuration values, without leaking the actual values to the console. It supports strict type validation via `System.Text.Json.Nodes`.
+
+The `info` command determines the correct .NET SDK version for a project by delegating to the `dotnet` CLI, ensuring global.json and roll-forward rules are respected.
+
+[Usage and source](./devtool-cli/README.md) |
+[Tests](./devtool-cli/tests/DevTool.Tests/)
+
 ## Umut Usta | Appointment and service operations
 
 Umut Usta connects customer appointment requests with a protected workspace for a local welding and maintenance business. Customers choose a service and time, submit contact details, and use a private link for tracking and self-service changes.
@@ -81,6 +93,7 @@ These are independent projects rather than a single application. Dependencies, e
 | --- | --- |
 | Orkestra | Node.js 22.13+; see its README for environment setup, then run `npm ci` and `npm run dev` in `ankara-usta-app`. The worker requires .NET 10. |
 | Resilience Kit | Install the .NET 10 SDK, then run `dotnet test resilience-kit/ResilienceKit.slnx` from the repository root. |
+| DevTool CLI | Install the .NET 10 SDK, then run `dotnet test devtool-cli/DevTool.slnx`. You can pack it via `dotnet pack devtool-cli/src/DevTool/DevTool.csproj --configuration Release`. |
 | Umut Usta | Configure the project environment, then run `npm ci` and `npm run dev` in `the-welding-expert-app`. |
 | The Wild Oasis | Follow its README for database and environment setup, then run `npm ci` and `npm run dev` in `the-wild-oasis`. |
 
@@ -99,3 +112,4 @@ This public repository contains selected work. Private client projects, includin
 - [GitHub](https://github.com/abdullahberkeozder)
 - [LinkedIn](https://www.linkedin.com/in/abdullah-ozder/)
 - Email: abdullahberkeozder@gmail.com
+
