@@ -1,12 +1,12 @@
-# Abdullah Berke Özder — Software Engineering Portfolio
+﻿# Abdullah Berke Ã–zder â€” Software Engineering Portfolio
 
 Selected product-oriented applications covering full-stack web development, secure data workflows, automated testing, responsive interface design, and documented architecture decisions.
 
-## Orkestra — Local Services Marketplace
+## Orkestra â€” Local Services Marketplace
 
 > A production-oriented marketplace foundation built with Next.js, TypeScript, Supabase/PostgreSQL, ASP.NET Core, role-based access, API routes, state machines, automated tests, GitHub Actions, and written architecture decisions.
 
-[Project documentation](./ankara-usta-app/README.md) · [Architecture decisions](./ankara-usta-app/docs/adr/) · [Requirements traceability](./ankara-usta-app/docs/engineering/REQUIREMENTS-TRACEABILITY.md)
+[Project documentation](./ankara-usta-app/README.md) Â· [Architecture decisions](./ankara-usta-app/docs/adr/) Â· [Requirements traceability](./ankara-usta-app/docs/engineering/REQUIREMENTS-TRACEABILITY.md)
 
 Orkestra helps customers describe a household problem, identify the correct service, create a structured request, compare offers, and manage the resulting job. Tradespeople apply with service regions and evidence; administrators review applications, documents, disputes, and moderation decisions.
 
@@ -14,12 +14,12 @@ Orkestra helps customers describe a household problem, identify the correct serv
 
 ```text
 Next.js / React / TypeScript
-        │ authenticated API routes
-        ▼
+        â”‚ authenticated API routes
+        â–¼
 Supabase Auth + PostgreSQL RPCs + RLS + private Storage
-        │ transactional notification outbox
-        ▼
-ASP.NET Core notification worker ──► Resend Email API
+        â”‚ transactional notification outbox
+        â–¼
+ASP.NET Core notification worker â”€â”€â–º Resend Email API
 ```
 
 The browser never receives service-role credentials. Critical mutations are performed by validated server routes and database RPCs. PostgreSQL owns concurrency-sensitive decisions, immutable event order, audit records, and row-level authorization.
@@ -107,3 +107,12 @@ Use [the project README](./ankara-usta-app/README.md) for environment configurat
 - [GitHub](https://github.com/abdullahberkeozder)
 - [LinkedIn](https://www.linkedin.com/in/abdullah-ozder/)
 - Email: abdullahberkeozder@gmail.com
+---
+
+## resilience-kit — Retry and Circuit Breaker (.NET)
+
+A lightweight .NET library implementing retry with exponential backoff and a Closed/Open/HalfOpen circuit breaker, with no external dependencies.
+
+Built to understand the patterns from the inside. Includes a fluent pipeline builder, three backoff strategies, configurable exception predicates, and 25 xUnit tests.
+
+[Project and design notes](./resilience-kit/README.md)
