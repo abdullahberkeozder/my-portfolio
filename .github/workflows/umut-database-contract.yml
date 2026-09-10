@@ -1,0 +1,28 @@
+name: Umut database contract
+on:
+  pull_request:
+    paths: ['the-welding-expert-app/backend-contract/**', 'the-welding-expert-app/supabase/**', '.github/workflows/umut-database-contract.yml']
+  push:
+    branches: [main]
+    paths: ['the-welding-expert-app/backend-contract/**', 'the-welding-expert-app/supabase/**', '.github/workflows/umut-database-contract.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  postgres-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+          cache-dependency-path: the-welding-expert-app/backend-contract/pom.xml
+      - run: mvn -B -f the-welding-expert-app/backend-contract/pom.xml verify
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: umut-database-contract-results
+          path: the-welding-expert-app/backend-contract/target/surefire-reports/
