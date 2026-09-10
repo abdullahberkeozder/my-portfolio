@@ -1,8 +1,8 @@
 # Appointment database contract
 
-Status: test sources compile locally. Execution is blocked by the absence of a
-Docker runtime on the development machine. CI has been defined, not executed.
-Do not interpret this baseline as a verified production schema export.
+Status: PostgreSQL contract CI passed on 2026-09-10 (run 34470901422).
+Local Docker remains unavailable. Critical live function bodies and slot trigger
+were compared read-only; see live-comparison-2026-09-10.md for scope and evidence.
 
 ## Run
 
@@ -32,8 +32,8 @@ behavior, including customer action history and notification outbox. This suite
 does not yet cover that later self-service transaction.
 
 Before adopting a deployment baseline, run inventory.sql read-only in the target
-database and compare definitions with the repository. No production inventory has
-been collected as part of this work. Do not apply this baseline to production.
+database and compare definitions with the repository. A scoped production inventory
+has been collected; it is not a complete schema export. Do not apply this baseline to production.
 
 ## Behavior matrix
 
