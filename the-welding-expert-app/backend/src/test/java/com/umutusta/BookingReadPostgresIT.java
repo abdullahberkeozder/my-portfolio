@@ -5,6 +5,19 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.params.provider.ValueSource;
+import com.sun.net.httpserver.HttpServer;
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.jwk.*;
+import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
+import com.nimbusds.jwt.*;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,10 +29,17 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 class BookingReadPostgresIT {
     static final PostgreSQLContainer DB = new PostgreSQLContainer("postgres:17.6-alpine");
     static final UUID ADMIN = UUID.fromString("00000000-0000-0000-0000-000000000001");
     @Autowired BookingReadService service;
+    @Autowired MockMvc mvc;
+    static final String READER = "booking_reader";
+    static final String PASSWORD = UUID.randomUUID().toString();
+    static final String ISSUER = "https://example.invalid/auth/v1";
+    static RSAKey signingKey;
+    static HttpServer jwks;
     LocalDate today;
 
     @DynamicPropertySource static void database(DynamicPropertyRegistry properties) throws Exception {
@@ -35,12 +55,33 @@ class BookingReadPostgresIT {
                     "migrations/20260910150437_appointment_reservation_transitions.sql")) {
                 s.execute(Files.readString(Path.of(System.getProperty("schema.directory"), file)));
             }
+            // Fixture-only grants: no ownership, role membership or RLS bypass.
+            s.execute("create role booking_reader login nosuperuser nocreatedb nocreaterole noinherit nobypassrls password '" + PASSWORD + "'");
+            s.execute("revoke create on schema public from public; grant usage on schema public to booking_reader");
+            // PUBLIC EXECUTE could otherwise expose SECURITY DEFINER write RPCs.
+            s.execute("revoke execute on all functions in schema public from public");
+            for (String table : List.of("service_configs", "appointment_availability_days",
+                    "appointment_availability_slots", "appointment_requests", "admin_profiles")) {
+                s.execute("grant select on public." + table + " to booking_reader");
+                s.execute("create policy booking_reader_select on public." + table
+                    + " for select to booking_reader using (true)");
+            }
         }
+        signingKey = new RSAKeyGenerator(2048).keyID("test-key").generate();
+        byte[] publicKeys = new JWKSet(signingKey.toPublicJWK()).toString().getBytes(StandardCharsets.UTF_8);
+        jwks = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        jwks.createContext("/keys", exchange -> {
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, publicKeys.length);
+            try (var body = exchange.getResponseBody()) { body.write(publicKeys); }
+            finally { exchange.close(); }
+        });
+        jwks.start();
         properties.add("spring.datasource.url", DB::getJdbcUrl);
-        properties.add("spring.datasource.username", DB::getUsername);
-        properties.add("spring.datasource.password", DB::getPassword);
-        properties.add("spring.security.oauth2.resourceserver.jwt.issuer-uri", () -> "https://example.invalid/auth/v1");
-        properties.add("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", () -> "https://example.invalid/keys");
+        properties.add("spring.datasource.username", () -> READER);
+        properties.add("spring.datasource.password", () -> PASSWORD);
+        properties.add("spring.security.oauth2.resourceserver.jwt.issuer-uri", () -> ISSUER);
+        properties.add("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", () -> "http://127.0.0.1:" + jwks.getAddress().getPort() + "/keys");
     }
     static Connection connect() throws SQLException {
         return DriverManager.getConnection(DB.getJdbcUrl(), DB.getUsername(), DB.getPassword());
@@ -57,7 +98,75 @@ class BookingReadPostgresIT {
         sql("insert into auth.users(id,email) values (?, 'reader@example.invalid')", ADMIN);
         sql("update admin_profiles set status='active', role='admin' where user_id=?", ADMIN);
     }
-    @AfterAll static void stop() { DB.stop(); }
+    @AfterAll static void stop() {
+        if (jwks != null) jwks.stop(0);
+        DB.stop();
+    }
+
+    String token(String variant, String subject) throws Exception {
+        Instant now = Instant.now();
+        var claims = new JWTClaimsSet.Builder().subject(subject)
+            .issuer(variant.equals("issuer") ? "https://wrong.invalid" : ISSUER)
+            .audience(variant.equals("audience") ? "wrong" : "authenticated")
+            .issueTime(java.util.Date.from(now.minusSeconds(600)))
+            .expirationTime(java.util.Date.from(now.plusSeconds(variant.equals("expired") ? -300 : 300)))
+            .build();
+        var jwt = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.RS256).keyID("test-key").build(), claims);
+        RSAKey key = variant.equals("signature") ? new RSAKeyGenerator(2048).generate() : signingKey;
+        jwt.sign(new RSASSASigner(key));
+        return jwt.serialize();
+    }
+
+    @ParameterizedTest @ValueSource(strings = {"signature", "expired", "issuer", "audience"})
+    void invalidSignedTokensAreRejected(String variant) throws Exception {
+        mvc.perform(get("/api/v1/admin/appointments").param("from",today.toString()).param("to",today.toString())
+            .header("Authorization", "Bearer " + token(variant,ADMIN.toString())))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test void verifiedJwtUsesCurrentDatabaseRoleForAuthorization() throws Exception {
+        request(UUID.randomUUID(),today,"new",false);
+        String bearer = "Bearer " + token("valid",ADMIN.toString());
+        mvc.perform(get("/api/v1/admin/appointments").param("from",today.toString()).param("to",today.toString())
+            .header("Authorization",bearer)).andExpect(status().isOk()).andExpect(jsonPath("$.total").value(1));
+        sql("update admin_profiles set role='technician' where user_id=?", ADMIN);
+        mvc.perform(get("/api/v1/admin/appointments").param("from",today.toString()).param("to",today.toString())
+            .header("Authorization",bearer)).andExpect(status().isForbidden());
+        sql("update admin_profiles set role='admin',status='suspended' where user_id=?", ADMIN);
+        mvc.perform(get("/api/v1/admin/appointments").param("from",today.toString()).param("to",today.toString())
+            .header("Authorization",bearer)).andExpect(status().isForbidden());
+    }
+
+    @ParameterizedTest @ValueSource(strings = {"not-a-uuid", "00000000-0000-0000-0000-000000000099"})
+    void invalidOrUnknownSubjectCannotReadAdminData(String subject) throws Exception {
+        mvc.perform(get("/api/v1/admin/appointments").param("from",today.toString()).param("to",today.toString())
+            .header("Authorization","Bearer " + token("valid",subject)))
+            .andExpect(status().is(subject.equals("not-a-uuid") ? 401 : 403));
+    }
+
+    @Test void readerGrantsRejectWritesEvenOutsideReadOnlyTransactions() throws Exception {
+        try (Connection c = DriverManager.getConnection(DB.getJdbcUrl(),READER,PASSWORD);
+             Statement s = c.createStatement()) {
+            assertFalse(c.isReadOnly());
+            try (ResultSet r = s.executeQuery("select current_user, rolsuper, rolbypassrls from pg_roles where rolname=current_user")) {
+                assertTrue(r.next()); assertEquals(READER,r.getString(1));
+                assertFalse(r.getBoolean(2)); assertFalse(r.getBoolean(3));
+            }
+            for (String table : List.of("service_configs", "appointment_availability_days",
+                    "appointment_availability_slots", "appointment_requests", "admin_profiles")) {
+                for (String command : List.of("insert into " + table + " default values",
+                        "delete from " + table, "truncate " + table)) {
+                    assertEquals("42501",assertThrows(SQLException.class, () -> s.execute(command)).getSQLState(),command);
+                }
+            }
+            assertEquals("42501",assertThrows(SQLException.class,
+                () -> s.execute("update appointment_requests set status='confirmed'")).getSQLState());
+            assertEquals("42501",assertThrows(SQLException.class,
+                () -> s.execute("select public.create_appointment_request('Test','05550000000','Kaynak',current_date+10,'09:00')")).getSQLState());
+            assertEquals("42501",assertThrows(SQLException.class,
+                () -> s.execute("select * from auth.users")).getSQLState());
+        }
+    }
 
     UUID day(LocalDate date, String status, boolean visible) throws SQLException {
         UUID id = UUID.randomUUID();

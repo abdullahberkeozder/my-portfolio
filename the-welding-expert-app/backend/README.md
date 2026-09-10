@@ -44,8 +44,19 @@ It covers ordering, nullable DTO fields, SQL date/time conversion, visibility,
 past dates, closed and confirmed slots, archive exclusion, pagination totals,
 current database roles and invalid query bounds. Reports: target/failsafe-reports.
 
-The Supabase auth catalog is a test shim. These tests do not prove JWT signatures,
-production RLS, or deployment reader grants. No external database URL is accepted
-by the integration fixture. Production traffic remains on the existing frontend.
+The Supabase auth catalog is a test shim. Integration tests now serve ephemeral
+RSA public keys from a loopback JWKS server and send signed Bearer tokens through
+MockMvc and the actual auto-configured JWT decoder. They cover invalid signature,
+expired tokens beyond clock skew, wrong issuer/audience, malformed/unknown subjects,
+and role revocation with the same valid token. No decoder or service is mocked.
+
+Spring uses a separate non-owner, non-superuser, NOBYPASSRLS reader. Fixture-only
+SELECT policies and grants cover the five read tables. PUBLIC function execution
+is revoked in the disposable database to prevent SECURITY DEFINER write RPC access.
+Direct JDBC tests disable reliance on read-only transactions and assert SQLSTATE
+42501 for writes, truncate, write RPC calls and auth.users access. Owner connections
+are used only for fixture setup. These fixture grants are not a deployment migration;
+production RLS/grants and ES256/key rotation still require separate validation.
+No external database URL is accepted by the fixture. Production traffic is unchanged.
 
 References: https://docs.spring.io/spring-security/reference/6.5/servlet/oauth2/resource-server/jwt.html
