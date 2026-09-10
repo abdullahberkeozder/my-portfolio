@@ -35,7 +35,8 @@ Testing commands:
   integration execution for a local compilation/package check; not a database pass.
 
 BookingReadPostgresIT starts disposable PostgreSQL 17.6, loads the repository base
-schema, service configuration migration and role migration, then starts the actual
+schema, service configuration migration, role migration and the reservation
+transition migration (`20260910150437_appointment_reservation_transitions.sql`), then starts the actual
 Spring context with Hibernate schema validation. It exercises native queries and
 JPQL through the transactional service proxy, without mocking EntityManager.
 Fixtures use separate committed JDBC connections, outside the read-only service.

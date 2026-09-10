@@ -31,7 +31,8 @@ class BookingReadPostgresIT {
                 create table auth.users(id uuid primary key, email text, raw_user_meta_data jsonb);
                 create function auth.uid() returns uuid language sql as 'select null::uuid';
                 """);
-            for (String file : List.of("welding_appointments_schema.sql", "service_configs_migration.sql", "role_based_access_control.sql")) {
+            for (String file : List.of("welding_appointments_schema.sql", "service_configs_migration.sql", "role_based_access_control.sql",
+                    "migrations/20260910150437_appointment_reservation_transitions.sql")) {
                 s.execute(Files.readString(Path.of(System.getProperty("schema.directory"), file)));
             }
         }
