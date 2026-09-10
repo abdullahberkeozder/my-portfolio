@@ -26,4 +26,7 @@ jobs:
         if: always()
         with:
           name: umut-database-contract-results
-          path: the-welding-expert-app/backend-contract/target/surefire-reports/
+          path: |
+            the-welding-expert-app/backend-contract/target/surefire-reports/
+            the-welding-expert-app/backend/target/surefire-reports/
+            the-welding-expert-app/backend/target/failsafe-reports/

@@ -27,9 +27,24 @@ admin access is checked using verified JWT subject plus current admin_profiles.
 Issuer, signature, expiry and authenticated audience are required. JWKS supports
 RS256/ES256; legacy HS256 is not configured. Confirm project signing mode before rollout.
 
-Current verification: MVC security boundary tests and compilation locally. Existing
-database transaction contracts run separately in PostgreSQL CI. Native read query
-and JPA mapping integration tests against the deployment schema remain a rollout
-gate; do not switch production traffic based solely on MVC tests.
+Testing commands:
+- `mvn -f the-welding-expert-app/backend/pom.xml test`: MVC tests; no Docker.
+- `mvn -f the-welding-expert-app/backend/pom.xml verify`: MVC and real PostgreSQL
+  integration tests through Failsafe; requires Docker. Missing Docker fails the run.
+- `mvn -f the-welding-expert-app/backend/pom.xml verify -DskipITs`: explicitly skip
+  integration execution for a local compilation/package check; not a database pass.
+
+BookingReadPostgresIT starts disposable PostgreSQL 17.6, loads the repository base
+schema, service configuration migration and role migration, then starts the actual
+Spring context with Hibernate schema validation. It exercises native queries and
+JPQL through the transactional service proxy, without mocking EntityManager.
+Fixtures use separate committed JDBC connections, outside the read-only service.
+It covers ordering, nullable DTO fields, SQL date/time conversion, visibility,
+past dates, closed and confirmed slots, archive exclusion, pagination totals,
+current database roles and invalid query bounds. Reports: target/failsafe-reports.
+
+The Supabase auth catalog is a test shim. These tests do not prove JWT signatures,
+production RLS, or deployment reader grants. No external database URL is accepted
+by the integration fixture. Production traffic remains on the existing frontend.
 
 References: https://docs.spring.io/spring-security/reference/6.5/servlet/oauth2/resource-server/jwt.html
