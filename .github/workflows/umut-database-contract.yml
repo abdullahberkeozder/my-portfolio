@@ -1,10 +1,10 @@
 name: Umut database contract
 on:
   pull_request:
-    paths: ['the-welding-expert-app/backend/**', 'the-welding-expert-app/backend-contract/**', 'the-welding-expert-app/supabase/**', '.github/workflows/umut-database-contract.yml']
+    paths: ['the-welding-expert-app/**', '.github/workflows/umut-database-contract.yml']
   push:
     branches: [main]
-    paths: ['the-welding-expert-app/backend/**', 'the-welding-expert-app/backend-contract/**', 'the-welding-expert-app/supabase/**', '.github/workflows/umut-database-contract.yml']
+    paths: ['the-welding-expert-app/**', '.github/workflows/umut-database-contract.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -21,9 +21,26 @@ jobs:
           cache: maven
           cache-dependency-path: the-welding-expert-app/backend-contract/pom.xml
       - run: mvn -B -f the-welding-expert-app/backend-contract/pom.xml verify
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: the-welding-expert-app/package-lock.json
+      - run: npm ci
+        working-directory: the-welding-expert-app
+      - run: npx playwright install --with-deps chromium
+        working-directory: the-welding-expert-app
       - run: mvn -B -f the-welding-expert-app/backend/pom.xml verify
+        env:
+          CI_BROWSER: 'true'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: umut-database-contract-results
-          path: the-welding-expert-app/backend-contract/target/surefire-reports/
+          path: |
+            the-welding-expert-app/backend-contract/target/surefire-reports/
+            the-welding-expert-app/backend/target/surefire-reports/
+            the-welding-expert-app/backend/target/failsafe-reports/
+            the-welding-expert-app/backend/target/browser-staging.log
+            the-welding-expert-app/playwright-spring-report/
+            the-welding-expert-app/test-results/

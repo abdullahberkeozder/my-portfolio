@@ -411,7 +411,7 @@ function CustomerBooking() {
 
   const activeServiceTypes = useMemo(() => {
     return dbServices.length > 0
-      ? dbServices.map((s) => s.title)
+      ? dbServices.map((s) => s.service_key || s.serviceType || s.title)
       : serviceTypes;
   }, [dbServices]);
 

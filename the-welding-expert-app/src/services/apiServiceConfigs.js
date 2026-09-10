@@ -1,4 +1,5 @@
 import { getSupabaseClient } from "./getSupabaseClient";
+import { springReadsEnabled, getSpringServices } from "./springReads";
 
 const TABLE_NAME = "service_configs";
 
@@ -7,6 +8,7 @@ const TABLE_NAME = "service_configs";
  * Anon erişime açık — müşteri tarafı için de kullanılabilir.
  */
 export async function getServiceConfigs() {
+  if (springReadsEnabled) return getSpringServices();
   const supabase = await getSupabaseClient();
   const { data, error } = await supabase
     .from(TABLE_NAME)
