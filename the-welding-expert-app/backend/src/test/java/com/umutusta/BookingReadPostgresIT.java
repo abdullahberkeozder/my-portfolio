@@ -292,7 +292,8 @@ class BookingReadPostgresIT {
         sql("insert into service_configs(service_key,title,description) values ('painting','Duvar boya ve badana','CI PostgreSQL fixture')");
         slot(day(today,"available",true),"09:00",true);
         var builder = new ProcessBuilder("npx","playwright","test","--config=playwright.spring.config.js")
-            .directory(Path.of(System.getProperty("schema.directory")).getParent().toFile()).inheritIO();
+            .directory(Path.of(System.getProperty("schema.directory")).getParent().toFile())
+            .redirectErrorStream(true).redirectOutput(Path.of("target/browser-staging.log").toFile());
         builder.environment().put("CI_SPRING_ORIGIN","http://127.0.0.1:" + port);
         Process browser = builder.start();
         try {
@@ -301,6 +302,7 @@ class BookingReadPostgresIT {
         } finally {
             browser.descendants().forEach(ProcessHandle::destroy);
             browser.destroyForcibly();
+            System.out.println(Files.readString(Path.of("target/browser-staging.log")));
         }
     }
 }

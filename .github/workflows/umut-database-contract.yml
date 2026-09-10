@@ -41,5 +41,6 @@ jobs:
             the-welding-expert-app/backend-contract/target/surefire-reports/
             the-welding-expert-app/backend/target/surefire-reports/
             the-welding-expert-app/backend/target/failsafe-reports/
+            the-welding-expert-app/backend/target/browser-staging.log
             the-welding-expert-app/playwright-spring-report/
             the-welding-expert-app/test-results/
