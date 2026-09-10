@@ -28,13 +28,14 @@ import java.time.*;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 class BookingReadPostgresIT {
     static final PostgreSQLContainer DB = new PostgreSQLContainer("postgres:17.6-alpine");
     static final UUID ADMIN = UUID.fromString("00000000-0000-0000-0000-000000000001");
     @Autowired BookingReadService service;
     @Autowired MockMvc mvc;
+    @org.springframework.boot.test.web.server.LocalServerPort int port;
     static final String READER = "booking_reader";
     static final String PASSWORD = UUID.randomUUID().toString();
     static final String ISSUER = "https://example.invalid/auth/v1";
@@ -52,7 +53,7 @@ class BookingReadPostgresIT {
                 create function auth.uid() returns uuid language sql as 'select null::uuid';
                 """);
             for (String file : List.of("welding_appointments_schema.sql", "service_configs_migration.sql", "role_based_access_control.sql",
-                    "migrations/20260910150437_appointment_reservation_transitions.sql")) {
+                    "analytics_events_migration.sql", "sprint_6_measurement_release.sql", "migrations/20260910150437_appointment_reservation_transitions.sql")) {
                 s.execute(Files.readString(Path.of(System.getProperty("schema.directory"), file)));
             }
             // Fixture-only grants: no ownership, role membership or RLS bypass.
@@ -253,5 +254,53 @@ class BookingReadPostgresIT {
             () -> service.appointments(ADMIN,today,today,null,0,101)).getStatusCode().value());
         assertEquals(400,assertThrows(ResponseStatusException.class,
             () -> service.availability(today,today.plusDays(91))).getStatusCode().value());
+    }
+    @Test void adminFiltersShareCountPredicateAndEscapeSearchWildcards() throws Exception {
+        UUID a=UUID.randomUUID(), b=UUID.randomUUID();
+        request(a,today,"new",true); request(b,today,"new",true);
+        sql("update appointment_requests set lead_quality='outside_area', admin_note='Gate 100%_done', created_at='2026-01-02T10:00:00Z' where id=?",a);
+        sql("update appointment_requests set lead_quality='outside_area', admin_note='Gate 100XXdone', created_at='2026-01-03T10:00:00Z' where id=?",b);
+        var filtered=service.appointments(ADMIN,null,null,null,0,1,true,"100%_", "outside_area",
+            Instant.parse("2026-01-01T00:00:00Z"),Instant.parse("2026-01-04T00:00:00Z"),"newest");
+        assertEquals(1,filtered.total()); assertEquals(a,filtered.items().get(0).id());
+        var newest=service.appointments(ADMIN,null,null,null,0,1,true,"", "outside_area",null,null,"newest");
+        assertEquals(2,newest.total()); assertEquals(b,newest.items().get(0).id());
+        assertEquals(a,service.appointments(ADMIN,null,null,null,1,1,true,"", "outside_area",null,null,"newest").items().get(0).id());
+        assertEquals(0,service.appointments(ADMIN,null,null,null,0,20,false,"",null,null,null,"newest").total());
+        assertEquals(0,service.appointments(ADMIN,null,null,null,0,20,true,"","untagged",null,null,"newest").total());
+        assertEquals(1,service.appointments(ADMIN,null,null,null,0,20,true,"",null,null,Instant.parse("2026-01-03T10:00:00Z"),"newest").total());
+        mvc.perform(get("/api/v1/admin/appointments").param("archived","true").param("search","100%_")
+            .param("leadQuality","outside_area").param("sort","newest").param("page","0").param("size","1")
+            .header("Authorization","Bearer " + token("valid",ADMIN.toString())))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.total").value(1));
+    }
+
+    @Test void invalidAdminFilterValuesAreBadRequests() throws Exception {
+        String bearer="Bearer " + token("valid",ADMIN.toString());
+        for (String parameter : List.of("leadQuality","sort")) {
+            mvc.perform(get("/api/v1/admin/appointments").param(parameter,"invalid").header("Authorization",bearer))
+                .andExpect(status().isBadRequest());
+        }
+        mvc.perform(get("/api/v1/admin/appointments").param("from",today.toString()).header("Authorization",bearer))
+            .andExpect(status().isBadRequest());
+        mvc.perform(get("/api/v1/admin/appointments").param("page","-1").header("Authorization",bearer))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test @org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable(named = "CI_BROWSER", matches = "true")
+    void browserReadsFromTemporarySpringAndPostgres() throws Exception {
+        sql("insert into service_configs(service_key,title,description) values ('painting','Duvar boya ve badana','CI PostgreSQL fixture')");
+        slot(day(today,"available",true),"09:00",true);
+        var builder = new ProcessBuilder("npx","playwright","test","--config=playwright.spring.config.js")
+            .directory(Path.of(System.getProperty("schema.directory")).getParent().toFile()).inheritIO();
+        builder.environment().put("CI_SPRING_ORIGIN","http://127.0.0.1:" + port);
+        Process browser = builder.start();
+        try {
+            assertTrue(browser.waitFor(180, java.util.concurrent.TimeUnit.SECONDS), "Browser staging timed out");
+            assertEquals(0,browser.exitValue(),"Browser staging failed; inspect Playwright artifacts");
+        } finally {
+            browser.descendants().forEach(ProcessHandle::destroy);
+            browser.destroyForcibly();
+        }
     }
 }

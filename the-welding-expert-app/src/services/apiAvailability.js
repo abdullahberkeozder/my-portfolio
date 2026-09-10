@@ -1,4 +1,5 @@
 import { getSupabaseClient } from "./getSupabaseClient";
+import { springReadsEnabled, getSpringAvailability } from "./springReads";
 
 const OPENING_HOUR = 9;
 const CLOSING_HOUR = 21;
@@ -54,6 +55,10 @@ function buildStandardSlotTimes() {
 }
 
 export async function getAvailabilityDays({ startDate, endDate } = {}) {
+  if (springReadsEnabled) {
+    const date = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+    return getSpringAvailability({ startDate: startDate || date, endDate: endDate || startDate || date });
+  }
   const supabase = await getSupabaseClient();
   const today = new Date().toISOString().slice(0, 10);
   const fromDate = startDate || today;

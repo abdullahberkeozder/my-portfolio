@@ -60,3 +60,39 @@ production RLS/grants and ES256/key rotation still require separate validation.
 No external database URL is accepted by the fixture. Production traffic is unchanged.
 
 References: https://docs.spring.io/spring-security/reference/6.5/servlet/oauth2/resource-server/jwt.html
+
+Admin filter compatibility (not yet wired to React):
+- `archived=true` selects archived rows only; default selects active rows.
+- Optional `from`/`to` must be supplied together and filter appointment dates.
+- `createdAfter` is inclusive and `createdBefore` exclusive, using ISO instants.
+- `search` matches the existing eleven text fields, with literal `%`, `_`, `!`.
+  Search is trimmed and limited to 200 characters; query values are bound.
+- `leadQuality`: qualified, unqualified, outside_area, spam, untagged (SQL NULL).
+- `sort=newest` uses createdAt descending with id tie-break; default remains appointment.
+- Pages remain zero-based, size 1..100. A React adapter must subtract one from
+  the existing one-based page; it must not forward `all` filter sentinels.
+- Items/count share all predicates. The limited DTO is unchanged: admin detail
+  fields and the React adapter must be completed before switching the admin UI.
+- Deployment now also requires the existing lead-quality migration. Tests load
+  analytics_events_migration.sql before sprint_6_measurement_release.sql.
+
+## Ephemeral CI staging
+
+The database-contract workflow installs Chromium and sets CI_BROWSER=true.
+The PostgreSQL integration suite starts Spring on a random loopback port with the
+restricted reader, then runs playwright.spring.config.js while its container lives.
+Vite proxies /api/v1 to that port. The browser selects a real PostgreSQL slot via
+Spring and reaches the contact step at mobile and desktop widths. Admin filtering
+is verified separately through authenticated HTTP integration tests.
+
+No repository secrets or production endpoints are required. Synthetic gallery and
+analytics responses are isolated from the real service/availability reads; other
+external browser requests are blocked. There is no booking submission or production
+Auth/Storage parity claim. Playwright reports, screenshots, traces on failure and
+JUnit reports are uploaded together. The runner is destroyed after the job.
+
+VITE_BOOKING_READ_BACKEND=spring enables only the two public read adapters; omitted
+means existing Supabase behavior. Errors do not silently fall back to Supabase.
+CI_SPRING_ORIGIN is a server-only Vite proxy target, not a browser credential.
+Empty days without slots are omitted by the slot API and remain unavailable in UI.
+This is a staging slice, not authorization to switch production or expose writes.

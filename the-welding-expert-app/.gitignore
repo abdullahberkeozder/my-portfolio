@@ -17,6 +17,7 @@ coverage/
 reports/lighthouse/
 test-results/
 playwright-report/
+playwright-spring-report/
 
 .env
 .env.*
