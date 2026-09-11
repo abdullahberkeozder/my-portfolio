@@ -1,4 +1,5 @@
 import { getSupabaseClient } from "./getSupabaseClient";
+import { springCommandsEnabled, createSpringAppointment } from "./springCommands";
 
 const TABLE_NAME = "appointment_requests";
 
@@ -105,6 +106,7 @@ export async function getAppointmentRequests({
 }
 
 export async function createAppointmentRequest(request) {
+  if (springCommandsEnabled) return createSpringAppointment(request);
   const supabase = await getSupabaseClient();
   const { data, error } = await supabase.rpc(
     "create_appointment_request",

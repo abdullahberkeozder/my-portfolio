@@ -34,6 +34,12 @@ class ReadSecurityTest {
         mvc.perform(post("/api/v1/services").with(jwt()).with(csrf())).andExpect(status().isForbidden());
         verifyNoInteractions(service);
     }
+    @Test void commandEndpointsAreClosedByDefault() throws Exception {
+        mvc.perform(post("/api/v1/appointments").with(jwt()).with(csrf()).contentType("application/json").content("{}"))
+            .andExpect(status().isForbidden());
+        mvc.perform(post("/api/v1/admin/appointments/00000000-0000-0000-0000-000000000001/confirm").with(jwt()).with(csrf()))
+            .andExpect(status().isForbidden());
+    }
     @Test void invalidDateRangeIsRejected() {
         assertThrows(ResponseStatusException.class, () -> BookingReadService.validateRange(LocalDate.of(2026,1,2), LocalDate.of(2026,1,1)));
     }

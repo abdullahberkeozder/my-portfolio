@@ -17,6 +17,7 @@ import com.nimbusds.jwt.*;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -35,6 +36,8 @@ class BookingReadPostgresIT {
     static final UUID ADMIN = UUID.fromString("00000000-0000-0000-0000-000000000001");
     @Autowired BookingReadService service;
     @Autowired MockMvc mvc;
+    @Autowired BookingCommandService commands;
+    @Autowired CommandDatabase commandDb;
     @org.springframework.boot.test.web.server.LocalServerPort int port;
     static final String READER = "booking_reader";
     static final String PASSWORD = UUID.randomUUID().toString();
@@ -67,6 +70,14 @@ class BookingReadPostgresIT {
                 s.execute("create policy booking_reader_select on public." + table
                     + " for select to booking_reader using (true)");
             }
+            s.execute("create role booking_writer login nosuperuser nocreatedb nocreaterole noinherit nobypassrls password '" + PASSWORD + "'");
+            s.execute("grant usage on schema public to booking_writer");
+            s.execute("grant select on public.admin_profiles, public.appointment_requests to booking_writer");
+            s.execute("grant update(status) on public.appointment_requests to booking_writer");
+            s.execute("grant execute on function public.create_appointment_request(text,text,text,date,time,text,text,text) to booking_writer");
+            s.execute("create policy writer_profiles on public.admin_profiles for select to booking_writer using (true)");
+            s.execute("create policy writer_requests_read on public.appointment_requests for select to booking_writer using (true)");
+            s.execute("create policy writer_requests_confirm on public.appointment_requests for update to booking_writer using (true) with check (true)");
         }
         signingKey = new RSAKeyGenerator(2048).keyID("test-key").generate();
         byte[] publicKeys = new JWKSet(signingKey.toPublicJWK()).toString().getBytes(StandardCharsets.UTF_8);
@@ -81,6 +92,10 @@ class BookingReadPostgresIT {
         properties.add("spring.datasource.url", DB::getJdbcUrl);
         properties.add("spring.datasource.username", () -> READER);
         properties.add("spring.datasource.password", () -> PASSWORD);
+        properties.add("booking.writes.enabled", () -> "true");
+        properties.add("booking.writer.url", DB::getJdbcUrl);
+        properties.add("booking.writer.username", () -> "booking_writer");
+        properties.add("booking.writer.password", () -> PASSWORD);
         properties.add("spring.security.oauth2.resourceserver.jwt.issuer-uri", () -> ISSUER);
         properties.add("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", () -> "http://127.0.0.1:" + jwks.getAddress().getPort() + "/keys");
     }
@@ -299,10 +314,118 @@ class BookingReadPostgresIT {
         try {
             assertTrue(browser.waitFor(180, java.util.concurrent.TimeUnit.SECONDS), "Browser staging timed out");
             assertEquals(0,browser.exitValue(),"Browser staging failed; inspect Playwright artifacts");
+            try (Connection c=connect(); Statement s=c.createStatement(); ResultSet r=s.executeQuery("select count(*) from appointment_requests where status='new'")) {
+                assertTrue(r.next()); assertEquals(2,r.getInt(1),"Both browser viewports must persist a real pending request");
+            }
         } finally {
             browser.descendants().forEach(ProcessHandle::destroy);
             browser.destroyForcibly();
             System.out.println(Files.readString(Path.of("target/browser-staging.log")));
         }
+    }
+
+    BookingCommandService.CreateRequest pendingRequest() {
+        return new BookingCommandService.CreateRequest("CI Customer","05551234567","Kaynak",today,
+            LocalTime.of(9,0),null,null,"Synthetic fixture");
+    }
+
+    @Test void springCreationDoesNotReserveAndValidationLeavesNoPartialRecord() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        var first=commands.create(pendingRequest());
+        assertNotNull(first.publicToken());
+        commands.create(pendingRequest());
+        assertTrue(service.availability(today,today).get(0).available());
+        mvc.perform(post("/api/v1/appointments").contentType("application/json").content("{}"))
+            .andExpect(status().isBadRequest()).andExpect(jsonPath("$.code").value("invalid_customer_details"));
+        assertEquals(2,service.appointments(ADMIN,today,today,"new",0,20).total());
+    }
+
+    @Test void writerCannotEditDatesDeleteOrInsertDirectly() throws Exception {
+        try (Connection c=DriverManager.getConnection(DB.getJdbcUrl(),"booking_writer",PASSWORD);
+             Statement s=c.createStatement()) {
+            for (String sql:List.of("update appointment_requests set requested_date=current_date",
+                    "delete from appointment_requests", "insert into appointment_requests default values",
+                    "update admin_profiles set role='owner'", "update appointment_availability_slots set is_available=true")) {
+                assertEquals("42501",assertThrows(SQLException.class,()->s.execute(sql)).getSQLState(),sql);
+            }
+        }
+    }
+
+    @Test void springTransactionRollsBackCreationAndConfirmation() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        assertThrows(org.springframework.dao.DataAccessException.class, () -> commandDb.transaction.execute(tx -> {
+            commands.create(pendingRequest());
+            commandDb.jdbc.execute("select 1/0");
+            return null;
+        }));
+        assertEquals(0,service.appointments(ADMIN,today,today,null,0,20).total());
+        var request=commands.create(pendingRequest());
+        assertThrows(org.springframework.dao.DataAccessException.class, () -> commandDb.transaction.execute(tx -> {
+            commands.confirm(ADMIN,request.id());
+            commandDb.jdbc.execute("select 1/0");
+            return null;
+        }));
+        assertEquals(1,service.appointments(ADMIN,today,today,"new",0,20).total());
+        assertTrue(service.availability(today,today).get(0).available());
+    }
+
+    @Test void confirmationRequiresAdminAndRejectsTerminalOrArchivedRequests() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        var request=commands.create(pendingRequest());
+        String path="/api/v1/admin/appointments/"+request.id()+"/confirm";
+        mvc.perform(post(path)).andExpect(status().isUnauthorized());
+        String bearer="Bearer "+token("valid",ADMIN.toString());
+        sql("update admin_profiles set role='technician' where user_id=?",ADMIN);
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isForbidden());
+        sql("update admin_profiles set role='operator' where user_id=?",ADMIN);
+        sql("update appointment_requests set status='cancelled' where id=?",request.id());
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isConflict());
+        sql("update appointment_requests set status='new',archived_at=now() where id=?",request.id());
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isConflict());
+        mvc.perform(post("/api/v1/admin/appointments/"+UUID.randomUUID()+"/confirm").header("Authorization",bearer))
+            .andExpect(status().isNotFound());
+        assertTrue(service.availability(today,today).get(0).available());
+    }
+
+    @Test void parallelHttpConfirmationsProduceOneSuccessAndOneConflict() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        var a=commands.create(pendingRequest()); var b=commands.create(pendingRequest());
+        var client=java.net.http.HttpClient.newHttpClient();
+        String bearer="Bearer "+token("valid",ADMIN.toString());
+        try (Connection lock=connect(); Statement s=lock.createStatement()) {
+            lock.setAutoCommit(false);
+            s.execute("select id from appointment_availability_slots for update");
+            var futures=new ArrayList<java.util.concurrent.CompletableFuture<java.net.http.HttpResponse<String>>>();
+            for (UUID id:List.of(a.id(),b.id())) {
+                var request=java.net.http.HttpRequest.newBuilder(java.net.URI.create("http://127.0.0.1:"+port+"/api/v1/admin/appointments/"+id+"/confirm"))
+                    .timeout(Duration.ofSeconds(25)).header("Authorization",bearer).POST(java.net.http.HttpRequest.BodyPublishers.noBody()).build();
+                futures.add(client.sendAsync(request,java.net.http.HttpResponse.BodyHandlers.ofString()));
+            }
+            long deadline=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
+            boolean waiting=false;
+            try (Connection observer=connect(); Statement query=observer.createStatement()) {
+                while(System.nanoTime()<deadline) {
+                    try (ResultSet r=query.executeQuery("select count(*) from pg_stat_activity where usename='booking_writer' and wait_event_type='Lock'")) {
+                        r.next(); if(r.getInt(1)>=2) { waiting=true; break; }
+                    }
+                    Thread.sleep(25);
+                }
+            }
+            assertTrue(waiting,"Both Spring HTTP transactions must reach a real lock wait");
+            lock.commit();
+            var responses=new ArrayList<java.net.http.HttpResponse<String>>();
+            for(var f:futures) responses.add(f.get(25,java.util.concurrent.TimeUnit.SECONDS));
+            assertEquals(List.of(200,409),responses.stream().map(java.net.http.HttpResponse::statusCode).sorted().toList());
+            assertTrue(responses.stream().filter(r->r.statusCode()==409).findFirst().orElseThrow().body().contains("appointment_slot_unavailable"));
+        }
+        assertEquals(1,service.appointments(ADMIN,today,today,"confirmed",0,20).total());
+        assertEquals(1,service.appointments(ADMIN,today,today,"new",0,20).total());
+        assertFalse(service.availability(today,today).get(0).available());
+        UUID winner=service.appointments(ADMIN,today,today,"confirmed",0,20).items().get(0).id();
+        assertEquals("confirmed",commands.confirm(ADMIN,winner).status());
+        mvc.perform(post("/api/v1/appointments").contentType("application/json").content(
+            "{\"customer_name\":\"CI Customer\",\"customer_phone\":\"05551234567\",\"service_type\":\"Kaynak\",\"requested_date\":\""+today+"\",\"requested_time\":\"09:00\"}"))
+            .andExpect(status().isConflict());
+        assertEquals(2,service.appointments(ADMIN,today,today,null,0,20).total());
     }
 }

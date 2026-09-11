@@ -1,7 +1,7 @@
 # Umut Usta read API - initial implementation
 
 Java 17 / Spring Boot / JPA. The React application is not switched over yet.
-No write endpoints or automatic schema migrations are included.
+Write endpoints are opt-in and disabled by default; no automatic schema migrations are included.
 
 Endpoints:
 - GET /api/v1/services: active services in stable display order.
@@ -95,4 +95,41 @@ VITE_BOOKING_READ_BACKEND=spring enables only the two public read adapters; omit
 means existing Supabase behavior. Errors do not silently fall back to Supabase.
 CI_SPRING_ORIGIN is a server-only Vite proxy target, not a browser credential.
 Empty days without slots are omitted by the slot API and remain unavailable in UI.
-This is a staging slice, not authorization to switch production or expose writes.
+This is a staging slice, not authorization to switch production.
+
+## Opt-in creation and confirmation
+
+`BOOKING_WRITES_ENABLED=true` registers two commands:
+- POST /api/v1/appointments (public, 201): JSON customer_name, customer_phone,
+  service_type, requested_date, requested_time, optional customer_email/message/customer_note.
+  Calls the existing create_appointment_request SQL function inside a Spring
+  TransactionTemplate. Returns id/public_token; pending requests do not reserve slots.
+- POST /api/v1/admin/appointments/{id}/confirm (Bearer JWT): current active
+  owner/admin/operator required. Locks the request row, accepts new/contacted,
+  rejects archived/terminal records, and treats an already-confirmed request as
+  an idempotent success. Updates only status; the existing SQL trigger locks the slot.
+  Missing record is 404, forbidden role 403, slot conflict 409 with code
+  appointment_slot_unavailable. SQL internals are not returned to clients.
+
+The writer uses BOOKING_WRITER_DATABASE_URL/USER/PASSWORD and a separate pool;
+the JPA read datasource remains read-only. Writer SQL is coordinated by Spring's
+DataSourceTransactionManager, not a second ORM model or a replacement slot lock.
+Fixture permissions allow request/profile reads, status-only updates and execution
+of the creation function; direct INSERT/DELETE, date edits and role edits are denied.
+These test-only grants are NOT a production provisioning script.
+
+The CI browser enables VITE_BOOKING_WRITE_BACKEND=spring and submits a real request
+at both viewport sizes. The test checks both pending rows exist after browser exit.
+Tracking-link generation is tested; tracking-page reads, photos and subsequent
+self-service changes still use the old integration and are not tested end-to-end here.
+
+Tests include HTTP parallel confirmations with observable database lock waits,
+one 200 and one 409, invalid creation, terminal/archived guards, and rollback of
+both create and confirm when a later statement fails in the same Spring transaction.
+The raw reader remains unable to write. Default-off endpoint tests run without Docker.
+
+Before production: provision/review writer grants and RLS, request size/rate limits,
+anti-abuse controls, idempotency for uncertain creation retries, schema parity and
+deployment rollback. No automatic retry or Supabase write fallback is implemented.
+Authorization uses the current profile at command entry; it does not promise to
+abort an already-running operation on a concurrent role revocation.
