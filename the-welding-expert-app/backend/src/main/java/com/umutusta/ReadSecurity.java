@@ -14,11 +14,13 @@ class ReadSecurity {
     @Bean SecurityFilterChain apiSecurity(HttpSecurity http, @Value("${booking.writes.enabled:false}") boolean writes) throws Exception {
         if (writes) http.csrf(c -> c.ignoringRequestMatchers(
             PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,"/api/v1/appointments"),
-            PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,"/api/v1/admin/appointments/*/confirm")));
+            PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,"/api/v1/admin/appointments/*/confirm"),
+            PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,"/api/v1/admin/appointments/*/cancel")));
         return http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(a -> {
                 if (writes) a.requestMatchers(HttpMethod.POST,"/api/v1/appointments").permitAll()
-                    .requestMatchers(HttpMethod.POST,"/api/v1/admin/appointments/*/confirm").authenticated();
+                    .requestMatchers(HttpMethod.POST,"/api/v1/admin/appointments/*/confirm",
+                        "/api/v1/admin/appointments/*/cancel").authenticated();
                 a
                 .requestMatchers(HttpMethod.GET, "/api/v1/services", "/api/v1/availability").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/admin/appointments").authenticated()

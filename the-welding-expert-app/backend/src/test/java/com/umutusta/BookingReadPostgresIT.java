@@ -387,6 +387,73 @@ class BookingReadPostgresIT {
         assertTrue(service.availability(today,today).get(0).available());
     }
 
+    @ParameterizedTest @ValueSource(strings = {"new", "contacted", "confirmed"})
+    void cancellationReleasesOnlyItsReservationAndIsIdempotent(String initialStatus) throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        var first=commands.create(pendingRequest());
+        var second=commands.create(pendingRequest());
+        sql("update appointment_requests set status=? where id=?",initialStatus,first.id());
+        String path="/api/v1/admin/appointments/"+first.id()+"/cancel";
+        String bearer="Bearer "+token("valid",ADMIN.toString());
+        mvc.perform(post(path).header("Authorization",bearer))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(first.id().toString()))
+            .andExpect(jsonPath("$.status").value("cancelled"));
+        assertTrue(service.availability(today,today).get(0).available());
+        commands.confirm(ADMIN,second.id());
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isOk());
+        assertFalse(service.availability(today,today).get(0).available());
+        assertEquals(1,service.appointments(ADMIN,today,today,"cancelled",0,20).total());
+        assertEquals(1,service.appointments(ADMIN,today,today,"confirmed",0,20).total());
+        mvc.perform(post("/api/v1/admin/appointments/"+first.id()+"/confirm").header("Authorization",bearer))
+            .andExpect(status().isConflict());
+    }
+
+    @Test void cancellingPendingRequestDoesNotReleaseAnotherReservation() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        var pending=commands.create(pendingRequest());
+        var confirmed=commands.create(pendingRequest());
+        commands.confirm(ADMIN,confirmed.id());
+        commands.cancel(ADMIN,pending.id());
+        assertFalse(service.availability(today,today).get(0).available());
+        assertEquals(1,service.appointments(ADMIN,today,today,"confirmed",0,20).total());
+    }
+
+    @Test void cancellationRollsBackStatusAndSlotTogether() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        var request=commands.create(pendingRequest());
+        commands.confirm(ADMIN,request.id());
+        assertThrows(org.springframework.dao.DataAccessException.class, () -> commandDb.transaction.execute(tx -> {
+            commands.cancel(ADMIN,request.id());
+            commandDb.jdbc.execute("select 1/0");
+            return null;
+        }));
+        assertEquals(1,service.appointments(ADMIN,today,today,"confirmed",0,20).total());
+        assertEquals(0,service.appointments(ADMIN,today,today,"cancelled",0,20).total());
+        assertFalse(service.availability(today,today).get(0).available());
+    }
+
+    @Test void cancellationRejectsUnauthorizedArchivedAndCompletedRequests() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        var request=commands.create(pendingRequest());
+        commands.confirm(ADMIN,request.id());
+        String path="/api/v1/admin/appointments/"+request.id()+"/cancel";
+        String bearer="Bearer "+token("valid",ADMIN.toString());
+        mvc.perform(post(path)).andExpect(status().isUnauthorized());
+        sql("update admin_profiles set role='technician' where user_id=?",ADMIN);
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isForbidden());
+        sql("update admin_profiles set role='operator',status='suspended' where user_id=?",ADMIN);
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isForbidden());
+        sql("update admin_profiles set status='active' where user_id=?",ADMIN);
+        assertFalse(service.availability(today,today).get(0).available());
+        sql("update appointment_requests set status='completed' where id=?",request.id());
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isConflict());
+        assertFalse(service.availability(today,today).get(0).available());
+        sql("update appointment_requests set status='cancelled',archived_at=now() where id=?",request.id());
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isConflict());
+        mvc.perform(post("/api/v1/admin/appointments/"+UUID.randomUUID()+"/cancel").header("Authorization",bearer))
+            .andExpect(status().isNotFound());
+    }
+
     @Test void parallelHttpConfirmationsProduceOneSuccessAndOneConflict() throws Exception {
         slot(day(today,"available",true),"09:00",true);
         var a=commands.create(pendingRequest()); var b=commands.create(pendingRequest());

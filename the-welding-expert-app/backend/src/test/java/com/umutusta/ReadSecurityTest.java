@@ -39,6 +39,8 @@ class ReadSecurityTest {
             .andExpect(status().isForbidden());
         mvc.perform(post("/api/v1/admin/appointments/00000000-0000-0000-0000-000000000001/confirm").with(jwt()).with(csrf()))
             .andExpect(status().isForbidden());
+        mvc.perform(post("/api/v1/admin/appointments/00000000-0000-0000-0000-000000000001/cancel").with(jwt()).with(csrf()))
+            .andExpect(status().isForbidden());
     }
     @Test void invalidDateRangeIsRejected() {
         assertThrows(ResponseStatusException.class, () -> BookingReadService.validateRange(LocalDate.of(2026,1,2), LocalDate.of(2026,1,1)));

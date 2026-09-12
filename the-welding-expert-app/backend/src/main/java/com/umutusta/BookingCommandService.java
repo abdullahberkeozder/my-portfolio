@@ -24,6 +24,7 @@ class BookingCommandService {
                          @JsonProperty("customer_note") String note) {}
     record Created(UUID id, @JsonProperty("public_token") UUID publicToken) {}
     record Confirmed(UUID id, String status) {}
+    record Cancelled(UUID id, String status) {}
     private final CommandDatabase db;
     private final ObjectMapper mapper;
     BookingCommandService(CommandDatabase db, ObjectMapper mapper) { this.db=db; this.mapper=mapper; }
@@ -36,6 +37,26 @@ class BookingCommandService {
                 request.email(), request.message(), request.note());
             try { return mapper.readValue(json,Created.class); }
             catch (JsonProcessingException e) { throw new IllegalStateException("Invalid appointment result",e); }
+        });
+    }
+
+    Cancelled cancel(UUID userId, UUID id) {
+        return db.transaction.execute(tx -> {
+            var profiles = db.jdbc.queryForList("""
+                select role from public.admin_profiles where user_id=? and status='active'
+                and role in ('owner','admin','operator')
+                """,userId);
+            if (profiles.isEmpty()) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            var rows = db.jdbc.queryForList("select status, archived_at from public.appointment_requests where id=? for update",id);
+            if (rows.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            var row=rows.get(0);
+            if (row.get("archived_at") != null || !java.util.Set.of("new","contacted","confirmed","cancelled").contains(row.get("status")))
+                throw new ResponseStatusException(HttpStatus.CONFLICT,"Appointment cannot be cancelled");
+            if (!"cancelled".equals(row.get("status"))) {
+                // The existing trigger releases the reservation in this transaction.
+                db.jdbc.update("update public.appointment_requests set status='cancelled' where id=?",id);
+            }
+            return new Cancelled(id,"cancelled");
         });
     }
 

@@ -27,4 +27,12 @@ class BookingCommandController {
         catch (IllegalArgumentException | NullPointerException e) { throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); }
         return service.confirm(user,id);
     }
+
+    @PostMapping("/admin/appointments/{id}/cancel")
+    BookingCommandService.Cancelled cancel(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
+        UUID user;
+        try { user=UUID.fromString(jwt.getSubject()); }
+        catch (IllegalArgumentException | NullPointerException e) { throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); }
+        return service.cancel(user,id);
+    }
 }
