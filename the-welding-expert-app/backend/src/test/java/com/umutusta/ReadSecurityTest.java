@@ -45,4 +45,15 @@ class ReadSecurityTest {
     @Test void invalidDateRangeIsRejected() {
         assertThrows(ResponseStatusException.class, () -> BookingReadService.validateRange(LocalDate.of(2026,1,2), LocalDate.of(2026,1,1)));
     }
+    @Test void restoreEndpointIsClosedByDefault() throws Exception {
+        mvc.perform(post("/api/v1/admin/appointments/00000000-0000-0000-0000-000000000001/restore")
+                .with(jwt()).with(csrf()))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test void moveEndpointIsClosedByDefault() throws Exception {
+        mvc.perform(post("/api/v1/admin/appointments/00000000-0000-0000-0000-000000000001/move")
+                .with(jwt()).with(csrf()).contentType("application/json").content("{}"))
+            .andExpect(status().isForbidden());
+    }
 }

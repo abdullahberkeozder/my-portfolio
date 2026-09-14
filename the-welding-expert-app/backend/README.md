@@ -61,7 +61,7 @@ No external database URL is accepted by the fixture. Production traffic is uncha
 
 References: https://docs.spring.io/spring-security/reference/6.5/servlet/oauth2/resource-server/jwt.html
 
-Admin filter compatibility (not yet wired to React):
+Admin filter compatibility (opt-in React adapter):
 - `archived=true` selects archived rows only; default selects active rows.
 - Optional `from`/`to` must be supplied together and filter appointment dates.
 - `createdAfter` is inclusive and `createdBefore` exclusive, using ISO instants.
@@ -69,10 +69,11 @@ Admin filter compatibility (not yet wired to React):
   Search is trimmed and limited to 200 characters; query values are bound.
 - `leadQuality`: qualified, unqualified, outside_area, spam, untagged (SQL NULL).
 - `sort=newest` uses createdAt descending with id tie-break; default remains appointment.
-- Pages remain zero-based, size 1..100. A React adapter must subtract one from
-  the existing one-based page; it must not forward `all` filter sentinels.
-- Items/count share all predicates. The limited DTO is unchanged: admin detail
-  fields and the React adapter must be completed before switching the admin UI.
+- Pages remain zero-based, size 1..100. The opt-in React adapter subtracts one
+  from the existing one-based page and omits `all` filter sentinels.
+- Items/count share all predicates. The limited DTO is unchanged: the adapter
+  explicitly reads card details through the existing authenticated Supabase/RLS
+  integration. This hybrid boundary needs real Auth/RLS browser acceptance before rollout.
 - Deployment now also requires the existing lead-quality migration. Tests load
   analytics_events_migration.sql before sprint_6_measurement_release.sql.
 
@@ -122,8 +123,8 @@ This is a staging slice, not authorization to switch production.
 The writer uses BOOKING_WRITER_DATABASE_URL/USER/PASSWORD and a separate pool;
 the JPA read datasource remains read-only. Writer SQL is coordinated by Spring's
 DataSourceTransactionManager, not a second ORM model or a replacement slot lock.
-Fixture permissions allow request/profile reads, status-only updates and execution
-of the creation function; direct INSERT/DELETE, date edits and role edits are denied.
+Fixture permissions allow request/profile reads, status/date/time/archive updates and execution
+of the creation function; direct INSERT/DELETE, customer edits and role edits are denied.
 These test-only grants are NOT a production provisioning script.
 
 The CI browser enables VITE_BOOKING_WRITE_BACKEND=spring and submits a real request
@@ -147,3 +148,62 @@ anti-abuse controls, idempotency for uncertain creation retries, schema parity a
 deployment rollback. No automatic retry or Supabase write fallback is implemented.
 Authorization uses the current profile at command entry; it does not promise to
 abort an already-running operation on a concurrent role revocation.
+
+## Opt-in administrator rescheduling
+
+POST /api/v1/admin/appointments/{id}/move accepts requested_date (ISO date) and
+requested_time (local time), and returns id/status/requested_date/requested_time.
+It uses the existing writes flag and active owner/admin/operator authorization.
+Only non-archived confirmed requests may move. Missing fields or past target days
+(Europe/Istanbul) return 400; missing requests return 404; invalid source state or
+unavailable target returns 409. Same-slot requests preserve the existing reservation.
+There is no new elapsed-hour policy for slots on the current day.
+
+The writer transaction locks the request row and updates date/time together without
+changing status. The existing transition trigger locks both slots in stable order,
+reserves the target and releases the source. Any failure rolls back all changes.
+No Java-side replacement for SQL locking, retry loop or live migration is added.
+The isolated fixture now grants UPDATE on requested_date/requested_time in addition
+to status. Production writer privileges require separate review before enabling this.
+
+New PostgreSQL tests cover same-day/next-day moves, same-target retries, unavailable
+targets, role/state/input guards, rollback and parallel HTTP move/confirmation with
+observed lock waits. These additions are pending CI execution; prior green runs do
+not verify rescheduling. The browser staging slice still covers creation, not a
+rescheduling UI. Customer self-service remains out of scope.
+
+## Opt-in archive restoration
+
+POST /api/v1/admin/appointments/{id}/restore requires the existing writes flag and
+an active owner/admin/operator. Only confirmed requests are supported in this slice;
+other statuses return 409 without changes. Missing requests return 404. A confirmed
+request already outside the archive returns 200 without another update.
+
+The writer locks the request row, then clears only archived_at. The existing SQL
+trigger locks/revalidates the slot and restores the reservation in the same transaction.
+An occupied, closed, hidden or unavailable slot returns 409 appointment_slot_unavailable;
+the original archive timestamp and reservation state remain unchanged. No status,
+date or customer data is changed. The response contains id and status only.
+Existing SQL rules determine slot eligibility; no new past-date or elapsed-hour
+policy is introduced for restoration.
+
+Only the disposable fixture grants the writer UPDATE on archived_at. No production
+grant or schema migration is applied. Tests cover restoration/retry, unavailable
+targets, exact archive timestamp preservation, rollback and authorization/state
+guards. These new PostgreSQL tests are pending CI execution and are not covered by
+the previous green cancellation run. Browser restore acceptance is not covered here.
+
+## Administrator adapter and acceptance
+
+`VITE_BOOKING_ADMIN_BACKEND=spring` enables list/confirm/cancel/move/restore routing.
+Notes, lead quality and archiving remain on the existing Supabase integration.
+Unsupported status transitions are disabled; move is available only for active
+confirmed requests. Mutations refresh both requests and availability after success
+or failure. Slot conflicts show a 409-specific message without automatic write fallback.
+Component/adapter tests cover mapping, pagination/filter reset, supported states,
+move submission and refresh after a conflict.
+
+The PostgreSQL lifecycle acceptance test chains HTTP creation, confirmation, move,
+restore conflict, retry after cancellation and final cancellation. Archive state
+is seeded by fixture SQL because archiving is not a Spring command. This is not a
+real Supabase-authenticated administrator browser test.

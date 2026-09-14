@@ -15,12 +15,15 @@ class ReadSecurity {
         if (writes) http.csrf(c -> c.ignoringRequestMatchers(
             PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,"/api/v1/appointments"),
             PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,"/api/v1/admin/appointments/*/confirm"),
-            PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,"/api/v1/admin/appointments/*/cancel")));
+            PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,"/api/v1/admin/appointments/*/cancel"),
+            PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,"/api/v1/admin/appointments/*/move"),
+            PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST,"/api/v1/admin/appointments/*/restore")));
         return http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(a -> {
                 if (writes) a.requestMatchers(HttpMethod.POST,"/api/v1/appointments").permitAll()
                     .requestMatchers(HttpMethod.POST,"/api/v1/admin/appointments/*/confirm",
-                        "/api/v1/admin/appointments/*/cancel").authenticated();
+                        "/api/v1/admin/appointments/*/cancel", "/api/v1/admin/appointments/*/move",
+                        "/api/v1/admin/appointments/*/restore").authenticated();
                 a
                 .requestMatchers(HttpMethod.GET, "/api/v1/services", "/api/v1/availability").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/admin/appointments").authenticated()

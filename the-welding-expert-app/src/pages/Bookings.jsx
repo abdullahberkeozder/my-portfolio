@@ -38,6 +38,15 @@ import {
 import supabase from "../services/supabase";
 import { getAppointmentAttachments } from "../services/apiAppointmentAttachments";
 import AppointmentAttachmentGallery from "../features/bookings/components/AppointmentAttachmentGallery";
+import { springAdminEnabled } from "../services/springAdmin";
+
+const MoveForm = styled.form`
+  display: grid;
+  gap: 0.8rem;
+  min-width: 0;
+  label { display: grid; gap: 0.4rem; min-width: 0; }
+  input, select { width: 100%; min-width: 0; min-height: 44px; }
+`;
 
 const STATUS_OPTIONS = [
   {
@@ -578,7 +587,7 @@ async function copyToClipboard(value, successMessage) {
   }
 }
 
-function RequestItem({
+export function RequestItem({
   request,
   attachments,
   isUpdating,
@@ -591,6 +600,12 @@ function RequestItem({
   const customerNote = request.customer_note ?? request.notes ?? "";
   const [noteDraft, setNoteDraft] = useState(request.admin_note || "");
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [moveDate, setMoveDate] = useState(request.requested_date || "");
+  const [moveTime, setMoveTime] = useState((request.requested_time || "09:00").slice(0,5));
+  useEffect(() => {
+    setMoveDate(request.requested_date || "");
+    setMoveTime((request.requested_time || "09:00").slice(0,5));
+  }, [request.requested_date, request.requested_time]);
   const status = request.status || "new";
   const statusMeta = getStatusMeta(status);
   const whatsappUrl = buildWhatsAppUrl(request);
@@ -740,11 +755,36 @@ function RequestItem({
           {STATUS_OPTIONS.map((option) => (
             <option
               key={option.value}
+              disabled={springAdminEnabled && option.value !== status &&
+                !((option.value === "confirmed" && ["new", "contacted"].includes(status)) ||
+                  (option.value === "cancelled" && ["new", "contacted", "confirmed"].includes(status)))}
               value={option.value}>
               {option.label}
             </option>
           ))}
         </Select>
+
+        {springAdminEnabled && status === "confirmed" && !request.archived_at && (
+          <MoveForm onSubmit={event => {
+            event.preventDefault();
+            onUpdate({ id: request.id, updates: { requested_date: moveDate, requested_time: moveTime },
+              successMessage: "Randevu yeni zamana taşındı." });
+          }}>
+            <label>Yeni tarih
+              <Select as="input" type="date" required value={moveDate} disabled={isUpdating}
+                onChange={event => setMoveDate(event.target.value)} />
+            </label>
+            <label>Yeni saat
+              <Select value={moveTime} disabled={isUpdating} onChange={event => setMoveTime(event.target.value)}>
+                {["09:00", "11:00", "13:00", "15:00", "17:00", "19:00"].map(time =>
+                  <option key={time} value={time}>{time}</option>)}
+              </Select>
+            </label>
+            <SmallButton type="submit" disabled={isUpdating || !moveDate || !moveTime}>
+              <HiOutlineCalendarDays /> Randevuyu taşı
+            </SmallButton>
+          </MoveForm>
+        )}
 
         <NotesArea
           aria-label="Admin notu"
@@ -808,7 +848,7 @@ function RequestItem({
           {request.archived_at ? (
             <SmallButton
               type="button"
-              disabled={isRestoring}
+              disabled={isRestoring || (springAdminEnabled && status !== "confirmed")}
               onClick={() => onRestore(request.id)}>
               <HiOutlineArrowUturnLeft />
               Arşivden çıkar
@@ -934,13 +974,11 @@ function Bookings() {
     isLoading: isUpdatingRequest,
   } = useMutation({
     mutationFn: updateAppointmentRequest,
+    onSettled: () => Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["appointment-requests"] }),
+      queryClient.invalidateQueries({ queryKey: ["appointment-availability-days"] }),
+    ]),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["appointment-requests"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["appointment-availability-days"],
-      });
       toast.success(variables.successMessage || "Talep güncellendi.");
     },
     onError: (updateError) => {
@@ -969,10 +1007,11 @@ function Bookings() {
     isLoading: isRestoringRequest,
   } = useMutation({
     mutationFn: restoreAppointmentRequest,
+    onSettled: () => Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["appointment-requests"] }),
+      queryClient.invalidateQueries({ queryKey: ["appointment-availability-days"] }),
+    ]),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["appointment-requests"],
-      });
       toast.success("Talep arşivden çıkarıldı.");
     },
     onError: (restoreError) => {

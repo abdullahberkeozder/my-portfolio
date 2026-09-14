@@ -373,7 +373,11 @@ function CustomerAppointmentManage() {
   const { mutate: submitAction, isLoading: isSubmitting, error: submitError } = useMutation({
     mutationFn: submitAppointmentCustomerAction,
     onSuccess: (result, variables) => {
-      const isRepeat = request?.customer_action === variables.action;
+      // Sprint 5: is_repeat backend tarafından hesaplanıp döndürülüyor.
+      // Müşteri talebi (change_requested / cancel_requested) yöneticinin doğrudan
+      // uyguladığı işlemden (move/confirm/cancel) farklıdır: slot değişikliği yapmaz,
+      // yalnızca ekibe değerlendirme isteği gönderir.
+      const isRepeat = Boolean(result?.is_repeat);
       setSubmittedAction({
         action: variables.action,
         submittedAt: result?.submitted_at || new Date().toISOString(),

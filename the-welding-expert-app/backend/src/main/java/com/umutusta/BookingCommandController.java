@@ -28,6 +28,23 @@ class BookingCommandController {
         return service.confirm(user,id);
     }
 
+    @PostMapping("/admin/appointments/{id}/restore")
+    BookingCommandService.Restored restore(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
+        UUID user;
+        try { user=UUID.fromString(jwt.getSubject()); }
+        catch (IllegalArgumentException | NullPointerException e) { throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); }
+        return service.restore(user,id);
+    }
+
+    @PostMapping("/admin/appointments/{id}/move")
+    BookingCommandService.Moved move(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id,
+                                    @RequestBody BookingCommandService.MoveRequest request) {
+        UUID user;
+        try { user=UUID.fromString(jwt.getSubject()); }
+        catch (IllegalArgumentException | NullPointerException e) { throw new ResponseStatusException(HttpStatus.UNAUTHORIZED); }
+        return service.move(user,id,request);
+    }
+
     @PostMapping("/admin/appointments/{id}/cancel")
     BookingCommandService.Cancelled cancel(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
         UUID user;
