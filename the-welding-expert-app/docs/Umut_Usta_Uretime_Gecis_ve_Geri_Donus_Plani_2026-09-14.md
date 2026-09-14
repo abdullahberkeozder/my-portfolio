@@ -43,6 +43,13 @@ kart detayları yetkili Supabase oturumuyla RLS üzerinden okunur. Not/nitelik g
 ve arşivleme mevcut Supabase yolundadır. Spring hatasında otomatik Supabase yazma
 fallback'i veya komut retry'ı yoktur. Aynı istek iki backend'e yazılmaz.
 
+Depodaki [vercel.json](../vercel.json) yalnızca SPA index.html rewrite'ı içerir;
+Spring /api/v1 yönlendirmesi tanımlı değildir. [vite.config.js](../vite.config.js)
+proxy'si yalnızca CI_SPRING_ORIGIN sağlanan geliştirme sunucusunda çalışır, üretim
+build'ine taşınmaz. Bu nedenle sadece Vite bayraklarını açmak üretimde yeterli değildir.
+Vercel panelindeki gerçek env/override değerleri bu çalışmada okunmadı; depodaki
+yapılandırma denetimi, dağıtılmış ortamın doğrulandığı anlamına gelmez.
+
 ## İzole Staging Kabul Kapısı
 
 [CI workflow](../../.github/workflows/umut-database-contract.yml) Java 17,
