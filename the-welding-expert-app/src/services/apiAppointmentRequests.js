@@ -1,4 +1,6 @@
 import { getSupabaseClient } from "./getSupabaseClient";
+import { springCommandsEnabled, createSpringAppointment } from "./springCommands";
+import { springAdminEnabled, getSpringAdminAppointments, updateSpringAdminAppointment } from "./springAdmin";
 
 const TABLE_NAME = "appointment_requests";
 
@@ -11,6 +13,8 @@ const APPOINTMENT_REQUEST_ERROR_MESSAGES = {
   invalid_appointment_time: "Seçtiğiniz saat randevu aralıklarına uygun değil.",
   appointment_slot_unavailable:
     "Seçtiğiniz gün veya saat artık müsait değil. Lütfen başka bir aralık seçin.",
+  cancellation_reason_required:
+    "İptal nedeni belirtmeniz gerekiyor.",
 };
 
 function getAppointmentRequestError(
@@ -40,7 +44,12 @@ export async function getAppointmentRequests({
   search = "",
   status = "",
   leadQuality = "",
+  from = null,
+  to = null,
+  createdBefore = null,
 } = {}) {
+  if (springAdminEnabled) return getSpringAdminAppointments({ showArchived, page, pageSize, fetchAll,
+    createdAfter, createdBefore, search, status, leadQuality, from, to });
   const supabase = await getSupabaseClient();
   let query = supabase
     .from(TABLE_NAME)
@@ -55,6 +64,9 @@ export async function getAppointmentRequests({
   if (createdAfter) {
     query = query.gte("created_at", createdAfter);
   }
+  if (createdBefore) query = query.lt("created_at", createdBefore);
+  if (from) query = query.gte("requested_date", from);
+  if (to) query = query.lte("requested_date", to);
 
   if (status && status !== "all" && status !== "archived") {
     query = query.eq("status", status);
@@ -105,6 +117,7 @@ export async function getAppointmentRequests({
 }
 
 export async function createAppointmentRequest(request) {
+  if (springCommandsEnabled) return createSpringAppointment(request);
   const supabase = await getSupabaseClient();
   const { data, error } = await supabase.rpc(
     "create_appointment_request",
@@ -185,10 +198,15 @@ export async function submitAppointmentCustomerAction({
     );
   }
 
-  return data === true ? { submitted: true } : data;
+  // Sprint 5: submit_appointment_customer_action artık her zaman jsonb döndürüyor:
+  // { submitted, action, submitted_at, action_count, is_repeat }
+  return data;
 }
 
 export async function updateAppointmentRequest({ id, updates }) {
+  if (springAdminEnabled && ["status", "requested_date", "requested_time"].some(key => key in updates)) {
+    return updateSpringAdminAppointment({ id, updates });
+  }
   const supabase = await getSupabaseClient();
   const { data, error } = await supabase
     .from(TABLE_NAME)
@@ -226,6 +244,9 @@ export async function deleteAppointmentRequest(id) {
 }
 
 export async function restoreAppointmentRequest(id) {
+  // Spring aktifken arşivden geri alma /restore endpoint'ine yönlendirilir;
+  // Supabase direct yazma yerine slot yeniden doğrulaması ve atomik rezervasyon kullanılır.
+  if (springAdminEnabled) return updateSpringAdminAppointment({ id, updates: { archived_at: null } });
   const supabase = await getSupabaseClient();
   const { data, error } = await supabase
     .from(TABLE_NAME)

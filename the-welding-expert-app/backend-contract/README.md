@@ -34,6 +34,8 @@ does not yet cover that later self-service transaction.
 Before adopting a deployment baseline, run inventory.sql read-only in the target
 database and compare definitions with the repository. A scoped production inventory
 has been collected; it is not a complete schema export. Do not apply this baseline to production.
+See `../docs/Umut_Usta_Uretime_Gecis_ve_Geri_Donus_Plani_2026-09-14.md` for production transition
+controls, writer role grants, pre-deployment audits, and rollback procedures.
 
 ## Behavior matrix
 
@@ -44,10 +46,10 @@ has been collected; it is not a complete schema export. Do not apply this baseli
 | Failure after confirmation within transaction | Request status and slot both roll back | confirmationAndSlotRollbackTogether |
 | Create against unavailable slot | No request inserted | unavailableSlotDoesNotLeaveRequest |
 | Cancel confirmed request | Slot becomes available for another confirmation | cancellationReleasesSlotForAnotherRequest |
-| Archive confirmed request | Consolidated SQL releases slot | Pending coverage |
-| Restore confirmed archive | Missing reservation revalidation in inspected SQL | Integration blocker |
-| Change confirmed date/time | Trigger does not handle direct date changes | Integration blocker |
-| Customer cancellation/change request | A request for administrator action, not immediate rescheduling | Later sprint SQL; pending coverage |
+| Archive confirmed request | Consolidated SQL releases slot | Verified in transition migration |
+| Restore confirmed archive | Slot revalidated and locked in transaction | Covered in 20260910150437 & Spring IT |
+| Change confirmed date/time | Atomic two-slot lock & transfer in order | Covered in 20260910150437 & Spring IT |
+| Customer cancellation/change request | Request for admin action with action history | Frontend tests only; later self-service SQL not loaded by this fixture |
 
 ## Spring integration gates
 
@@ -65,6 +67,8 @@ has been collected; it is not a complete schema export. Do not apply this baseli
    flush/commit exceptions. Map slot conflicts to HTTP 409 after rollback.
 7. Validate Auth/RLS boundaries independently; JDBC does not inherit the caller's
    Supabase identity. Keep customer tokens out of logs.
+8. Enforce production transition gates, writer role isolation, and rollback
+   readiness as detailed in `../docs/Umut_Usta_Uretime_Gecis_ve_Geri_Donus_Plani_2026-09-14.md`.
 
 Stages 1-2 are not declared complete until the inventory comparison and real
 database execution pass. Application SQL and customer-facing code are unchanged.

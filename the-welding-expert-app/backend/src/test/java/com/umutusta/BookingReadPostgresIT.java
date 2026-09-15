@@ -17,6 +17,7 @@ import com.nimbusds.jwt.*;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -35,6 +36,8 @@ class BookingReadPostgresIT {
     static final UUID ADMIN = UUID.fromString("00000000-0000-0000-0000-000000000001");
     @Autowired BookingReadService service;
     @Autowired MockMvc mvc;
+    @Autowired BookingCommandService commands;
+    @Autowired CommandDatabase commandDb;
     @org.springframework.boot.test.web.server.LocalServerPort int port;
     static final String READER = "booking_reader";
     static final String PASSWORD = UUID.randomUUID().toString();
@@ -67,6 +70,14 @@ class BookingReadPostgresIT {
                 s.execute("create policy booking_reader_select on public." + table
                     + " for select to booking_reader using (true)");
             }
+            s.execute("create role booking_writer login nosuperuser nocreatedb nocreaterole noinherit nobypassrls password '" + PASSWORD + "'");
+            s.execute("grant usage on schema public to booking_writer");
+            s.execute("grant select on public.admin_profiles, public.appointment_requests to booking_writer");
+            s.execute("grant update(status, requested_date, requested_time, archived_at) on public.appointment_requests to booking_writer");
+            s.execute("grant execute on function public.create_appointment_request(text,text,text,date,time,text,text,text) to booking_writer");
+            s.execute("create policy writer_profiles on public.admin_profiles for select to booking_writer using (true)");
+            s.execute("create policy writer_requests_read on public.appointment_requests for select to booking_writer using (true)");
+            s.execute("create policy writer_requests_confirm on public.appointment_requests for update to booking_writer using (true) with check (true)");
         }
         signingKey = new RSAKeyGenerator(2048).keyID("test-key").generate();
         byte[] publicKeys = new JWKSet(signingKey.toPublicJWK()).toString().getBytes(StandardCharsets.UTF_8);
@@ -81,6 +92,10 @@ class BookingReadPostgresIT {
         properties.add("spring.datasource.url", DB::getJdbcUrl);
         properties.add("spring.datasource.username", () -> READER);
         properties.add("spring.datasource.password", () -> PASSWORD);
+        properties.add("booking.writes.enabled", () -> "true");
+        properties.add("booking.writer.url", DB::getJdbcUrl);
+        properties.add("booking.writer.username", () -> "booking_writer");
+        properties.add("booking.writer.password", () -> PASSWORD);
         properties.add("spring.security.oauth2.resourceserver.jwt.issuer-uri", () -> ISSUER);
         properties.add("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", () -> "http://127.0.0.1:" + jwks.getAddress().getPort() + "/keys");
     }
@@ -299,10 +314,435 @@ class BookingReadPostgresIT {
         try {
             assertTrue(browser.waitFor(180, java.util.concurrent.TimeUnit.SECONDS), "Browser staging timed out");
             assertEquals(0,browser.exitValue(),"Browser staging failed; inspect Playwright artifacts");
+            try (Connection c=connect(); Statement s=c.createStatement(); ResultSet r=s.executeQuery("select count(*) from appointment_requests where status='new'")) {
+                assertTrue(r.next()); assertEquals(2,r.getInt(1),"Both browser viewports must persist a real pending request");
+            }
         } finally {
             browser.descendants().forEach(ProcessHandle::destroy);
             browser.destroyForcibly();
             System.out.println(Files.readString(Path.of("target/browser-staging.log")));
         }
+    }
+
+    BookingCommandService.CreateRequest pendingRequest() {
+        return new BookingCommandService.CreateRequest("CI Customer","05551234567","Kaynak",today,
+            LocalTime.of(9,0),null,null,"Synthetic fixture");
+    }
+
+    @Test void springCreationDoesNotReserveAndValidationLeavesNoPartialRecord() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        var first=commands.create(pendingRequest());
+        assertNotNull(first.publicToken());
+        commands.create(pendingRequest());
+        assertTrue(service.availability(today,today).get(0).available());
+        mvc.perform(post("/api/v1/appointments").contentType("application/json").content("{}"))
+            .andExpect(status().isBadRequest()).andExpect(jsonPath("$.code").value("invalid_customer_details"));
+        assertEquals(2,service.appointments(ADMIN,today,today,"new",0,20).total());
+    }
+
+    @Test void writerCannotEditCustomerDataDeleteOrInsertDirectly() throws Exception {
+        try (Connection c=DriverManager.getConnection(DB.getJdbcUrl(),"booking_writer",PASSWORD);
+             Statement s=c.createStatement()) {
+            for (String sql:List.of("update appointment_requests set customer_name='changed'",
+                    "delete from appointment_requests", "insert into appointment_requests default values",
+                    "update admin_profiles set role='owner'", "update appointment_availability_slots set is_available=true")) {
+                assertEquals("42501",assertThrows(SQLException.class,()->s.execute(sql)).getSQLState(),sql);
+            }
+        }
+    }
+
+    @Test void springTransactionRollsBackCreationAndConfirmation() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        assertThrows(org.springframework.dao.DataAccessException.class, () -> commandDb.transaction.execute(tx -> {
+            commands.create(pendingRequest());
+            commandDb.jdbc.execute("select 1/0");
+            return null;
+        }));
+        assertEquals(0,service.appointments(ADMIN,today,today,null,0,20).total());
+        var request=commands.create(pendingRequest());
+        assertThrows(org.springframework.dao.DataAccessException.class, () -> commandDb.transaction.execute(tx -> {
+            commands.confirm(ADMIN,request.id());
+            commandDb.jdbc.execute("select 1/0");
+            return null;
+        }));
+        assertEquals(1,service.appointments(ADMIN,today,today,"new",0,20).total());
+        assertTrue(service.availability(today,today).get(0).available());
+    }
+
+    @Test void confirmationRequiresAdminAndRejectsTerminalOrArchivedRequests() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        var request=commands.create(pendingRequest());
+        String path="/api/v1/admin/appointments/"+request.id()+"/confirm";
+        mvc.perform(post(path)).andExpect(status().isUnauthorized());
+        String bearer="Bearer "+token("valid",ADMIN.toString());
+        sql("update admin_profiles set role='technician' where user_id=?",ADMIN);
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isForbidden());
+        sql("update admin_profiles set role='operator' where user_id=?",ADMIN);
+        sql("update appointment_requests set status='cancelled' where id=?",request.id());
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isConflict());
+        sql("update appointment_requests set status='new',archived_at=now() where id=?",request.id());
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isConflict());
+        mvc.perform(post("/api/v1/admin/appointments/"+UUID.randomUUID()+"/confirm").header("Authorization",bearer))
+            .andExpect(status().isNotFound());
+        assertTrue(service.availability(today,today).get(0).available());
+    }
+
+    @ParameterizedTest @ValueSource(strings = {"new", "contacted", "confirmed"})
+    void cancellationReleasesOnlyItsReservationAndIsIdempotent(String initialStatus) throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        var first=commands.create(pendingRequest());
+        var second=commands.create(pendingRequest());
+        sql("update appointment_requests set status=? where id=?",initialStatus,first.id());
+        String path="/api/v1/admin/appointments/"+first.id()+"/cancel";
+        String bearer="Bearer "+token("valid",ADMIN.toString());
+        mvc.perform(post(path).header("Authorization",bearer))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(first.id().toString()))
+            .andExpect(jsonPath("$.status").value("cancelled"));
+        assertTrue(service.availability(today,today).get(0).available());
+        commands.confirm(ADMIN,second.id());
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isOk());
+        assertFalse(service.availability(today,today).get(0).available());
+        assertEquals(1,service.appointments(ADMIN,today,today,"cancelled",0,20).total());
+        assertEquals(1,service.appointments(ADMIN,today,today,"confirmed",0,20).total());
+        mvc.perform(post("/api/v1/admin/appointments/"+first.id()+"/confirm").header("Authorization",bearer))
+            .andExpect(status().isConflict());
+    }
+
+    @Test void cancellingPendingRequestDoesNotReleaseAnotherReservation() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        var pending=commands.create(pendingRequest());
+        var confirmed=commands.create(pendingRequest());
+        commands.confirm(ADMIN,confirmed.id());
+        commands.cancel(ADMIN,pending.id());
+        assertFalse(service.availability(today,today).get(0).available());
+        assertEquals(1,service.appointments(ADMIN,today,today,"confirmed",0,20).total());
+    }
+
+    @Test void cancellationRollsBackStatusAndSlotTogether() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        var request=commands.create(pendingRequest());
+        commands.confirm(ADMIN,request.id());
+        assertThrows(org.springframework.dao.DataAccessException.class, () -> commandDb.transaction.execute(tx -> {
+            commands.cancel(ADMIN,request.id());
+            commandDb.jdbc.execute("select 1/0");
+            return null;
+        }));
+        assertEquals(1,service.appointments(ADMIN,today,today,"confirmed",0,20).total());
+        assertEquals(0,service.appointments(ADMIN,today,today,"cancelled",0,20).total());
+        assertFalse(service.availability(today,today).get(0).available());
+    }
+
+    @Test void cancellationRejectsUnauthorizedArchivedAndCompletedRequests() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        var request=commands.create(pendingRequest());
+        commands.confirm(ADMIN,request.id());
+        String path="/api/v1/admin/appointments/"+request.id()+"/cancel";
+        String bearer="Bearer "+token("valid",ADMIN.toString());
+        mvc.perform(post(path)).andExpect(status().isUnauthorized());
+        sql("update admin_profiles set role='technician' where user_id=?",ADMIN);
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isForbidden());
+        sql("update admin_profiles set role='operator',status='suspended' where user_id=?",ADMIN);
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isForbidden());
+        sql("update admin_profiles set status='active' where user_id=?",ADMIN);
+        assertFalse(service.availability(today,today).get(0).available());
+        sql("update appointment_requests set status='completed' where id=?",request.id());
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isConflict());
+        assertFalse(service.availability(today,today).get(0).available());
+        sql("update appointment_requests set status='cancelled',archived_at=now() where id=?",request.id());
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isConflict());
+        mvc.perform(post("/api/v1/admin/appointments/"+UUID.randomUUID()+"/cancel").header("Authorization",bearer))
+            .andExpect(status().isNotFound());
+    }
+
+    UUID archivedConfirmation() throws Exception {
+        var request=commands.create(pendingRequest());
+        commands.confirm(ADMIN,request.id());
+        sql("update appointment_requests set archived_at=now() where id=?",request.id());
+        return request.id();
+    }
+
+    Timestamp archiveTimestamp(UUID id) throws Exception {
+        try (Connection c=connect(); PreparedStatement s=c.prepareStatement("select archived_at from appointment_requests where id=?")) {
+            s.setObject(1,id);
+            try (ResultSet r=s.executeQuery()) { assertTrue(r.next()); return r.getTimestamp(1); }
+        }
+    }
+
+    @Test void restoreReservesSlotAndRetryDoesNotReserveAgain() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        UUID id=archivedConfirmation();
+        assertNotNull(archiveTimestamp(id));
+        assertTrue(service.availability(today,today).get(0).available());
+        for(int i=0;i<2;i++) {
+            mvc.perform(post("/api/v1/admin/appointments/"+id+"/restore")
+                .header("Authorization","Bearer "+token("valid",ADMIN.toString())))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.id").value(id.toString()))
+                .andExpect(jsonPath("$.status").value("confirmed"));
+            assertNull(archiveTimestamp(id));
+            assertFalse(service.availability(today,today).get(0).available());
+            assertEquals(1,service.appointments(ADMIN,today,today,"confirmed",0,20).total());
+        }
+    }
+
+    @ParameterizedTest @ValueSource(strings = {"occupied", "closed", "hidden", "unavailable"})
+    void failedRestoreKeepsOriginalArchiveTimestamp(String kind) throws Exception {
+        UUID dayId=day(today,"available",true); slot(dayId,"09:00",true);
+        UUID id=archivedConfirmation(); Timestamp archived=archiveTimestamp(id);
+        if(kind.equals("occupied")) commands.confirm(ADMIN,commands.create(pendingRequest()).id());
+        else if(kind.equals("closed")) sql("update appointment_availability_days set status='closed' where id=?",dayId);
+        else if(kind.equals("hidden")) sql("update appointment_availability_days set is_visible=false where id=?",dayId);
+        else sql("update appointment_availability_slots set is_available=false where day_id=?",dayId);
+        mvc.perform(post("/api/v1/admin/appointments/"+id+"/restore")
+            .header("Authorization","Bearer "+token("valid",ADMIN.toString())))
+            .andExpect(status().isConflict()).andExpect(jsonPath("$.code").value("appointment_slot_unavailable"));
+        assertEquals(archived,archiveTimestamp(id));
+        assertEquals(kind.equals("occupied") ? 1 : 0,service.appointments(ADMIN,today,today,"confirmed",0,20).total());
+        try(Connection c=connect(); Statement s=c.createStatement(); ResultSet r=s.executeQuery("select is_available from appointment_availability_slots")) {
+            assertTrue(r.next()); assertEquals(kind.equals("closed") || kind.equals("hidden"),r.getBoolean(1));
+        }
+    }
+
+    @Test void restoreRollsBackArchiveAndReservationTogether() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        UUID id=archivedConfirmation(); Timestamp archived=archiveTimestamp(id);
+        assertThrows(org.springframework.dao.DataAccessException.class,()->commandDb.transaction.execute(tx -> {
+            commands.restore(ADMIN,id);
+            commandDb.jdbc.execute("select 1/0"); return null;
+        }));
+        assertEquals(archived,archiveTimestamp(id));
+        assertTrue(service.availability(today,today).get(0).available());
+        assertEquals(0,service.appointments(ADMIN,today,today,"confirmed",0,20).total());
+    }
+
+    @Test void restoreRequiresActiveAdminAndConfirmedState() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        UUID id=archivedConfirmation(); Timestamp archived=archiveTimestamp(id);
+        String path="/api/v1/admin/appointments/"+id+"/restore";
+        String bearer="Bearer "+token("valid",ADMIN.toString());
+        mvc.perform(post(path)).andExpect(status().isUnauthorized());
+        sql("update admin_profiles set role='technician' where user_id=?",ADMIN);
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isForbidden());
+        sql("update admin_profiles set role='admin',status='suspended' where user_id=?",ADMIN);
+        mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isForbidden());
+        sql("update admin_profiles set status='active' where user_id=?",ADMIN);
+        mvc.perform(post("/api/v1/admin/appointments/"+UUID.randomUUID()+"/restore").header("Authorization",bearer))
+            .andExpect(status().isNotFound());
+        for(String state:List.of("new","contacted","cancelled","completed")) {
+            sql("update appointment_requests set status=? where id=?",state,id);
+            mvc.perform(post(path).header("Authorization",bearer)).andExpect(status().isConflict());
+            assertEquals(archived,archiveTimestamp(id));
+        }
+        assertTrue(service.availability(today,today).get(0).available());
+    }
+
+    String moveJson(LocalDate date) {
+        return "{\"requested_date\":\""+date+"\",\"requested_time\":\"11:00\"}";
+    }
+
+    void assertReservation(UUID id, LocalDate date, String time, boolean sourceOpen, boolean targetOpen) throws Exception {
+        try (Connection c=connect(); Statement s=c.createStatement();
+             ResultSet r=s.executeQuery("select requested_date,requested_time,status from appointment_requests where id='"+id+"'")) {
+            assertTrue(r.next()); assertEquals(date,r.getDate(1).toLocalDate());
+            assertEquals(LocalTime.parse(time),r.getTime(2).toLocalTime()); assertEquals("confirmed",r.getString(3));
+        }
+        try (Connection c=connect(); Statement s=c.createStatement();
+             ResultSet r=s.executeQuery("select slot_time,is_available from appointment_availability_slots order by slot_time")) {
+            assertTrue(r.next()); assertEquals(sourceOpen,r.getBoolean(2));
+            assertTrue(r.next()); assertEquals(targetOpen,r.getBoolean(2));
+        }
+    }
+
+    @ParameterizedTest @ValueSource(ints = {0, 1})
+    void moveChangesTimeOrDateAndKeepsConfirmation(int days) throws Exception {
+        UUID sourceDay=day(today,"available",true);
+        slot(sourceDay,"09:00",true);
+        LocalDate targetDate=today.plusDays(days);
+        slot(days==0 ? sourceDay : day(targetDate,"available",true),"11:00",true);
+        var request=commands.create(pendingRequest()); commands.confirm(ADMIN,request.id());
+        String path="/api/v1/admin/appointments/"+request.id()+"/move";
+        String bearer="Bearer "+token("valid",ADMIN.toString());
+        for (int i=0;i<2;i++) {
+            mvc.perform(post(path).header("Authorization",bearer).contentType("application/json").content(moveJson(targetDate)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("confirmed"))
+                .andExpect(jsonPath("$.requested_date").value(targetDate.toString()));
+            assertReservation(request.id(),targetDate,"11:00",true,false);
+        }
+    }
+
+    @ParameterizedTest @ValueSource(strings = {"occupied", "hidden", "closed", "unavailable"})
+    void failedMovePreservesOriginalReservation(String kind) throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        UUID targetDay=day(today.plusDays(1),"available",true);
+        slot(targetDay,"11:00",true);
+        var request=commands.create(pendingRequest()); commands.confirm(ADMIN,request.id());
+        if (kind.equals("occupied")) {
+            var other=commands.create(new BookingCommandService.CreateRequest("CI Customer","05551234567","Kaynak",
+                today.plusDays(1),LocalTime.of(11,0),null,null,null));
+            commands.confirm(ADMIN,other.id());
+        } else if (kind.equals("hidden")) sql("update appointment_availability_days set is_visible=false where id=?",targetDay);
+        else if (kind.equals("closed")) sql("update appointment_availability_days set status='closed' where id=?",targetDay);
+        else sql("update appointment_availability_slots set is_available=false where day_id=?",targetDay);
+        mvc.perform(post("/api/v1/admin/appointments/"+request.id()+"/move")
+                .header("Authorization","Bearer "+token("valid",ADMIN.toString()))
+                .contentType("application/json").content(moveJson(today.plusDays(1))))
+            .andExpect(status().isConflict()).andExpect(jsonPath("$.code").value("appointment_slot_unavailable"));
+        assertReservation(request.id(),today,"09:00",false,kind.equals("hidden") || kind.equals("closed"));
+    }
+
+    @Test void moveRollsBackBothSlotsAndDate() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        slot(day(today.plusDays(1),"available",true),"11:00",true);
+        var request=commands.create(pendingRequest()); commands.confirm(ADMIN,request.id());
+        assertThrows(org.springframework.dao.DataAccessException.class, () -> commandDb.transaction.execute(tx -> {
+            commands.move(ADMIN,request.id(),new BookingCommandService.MoveRequest(today.plusDays(1),LocalTime.of(11,0)));
+            commandDb.jdbc.execute("select 1/0"); return null;
+        }));
+        assertReservation(request.id(),today,"09:00",false,true);
+    }
+
+    @Test void moveValidatesRoleStateAndPayload() throws Exception {
+        UUID dayId=day(today,"available",true); slot(dayId,"09:00",true); slot(dayId,"11:00",true);
+        var request=commands.create(pendingRequest());
+        String path="/api/v1/admin/appointments/"+request.id()+"/move";
+        String bearer="Bearer "+token("valid",ADMIN.toString());
+        mvc.perform(post(path).contentType("application/json").content(moveJson(today))).andExpect(status().isUnauthorized());
+        sql("update admin_profiles set role='technician' where user_id=?",ADMIN);
+        mvc.perform(post(path).header("Authorization",bearer).contentType("application/json").content(moveJson(today)))
+            .andExpect(status().isForbidden());
+        sql("update admin_profiles set role='admin' where user_id=?",ADMIN);
+        mvc.perform(post(path).header("Authorization",bearer).contentType("application/json").content(moveJson(today)))
+            .andExpect(status().isConflict());
+        commands.confirm(ADMIN,request.id());
+        for (String body:List.of("{}",moveJson(today.minusDays(1)),"{\"requested_date\":\"invalid\"}"))
+            mvc.perform(post(path).header("Authorization",bearer).contentType("application/json").content(body))
+                .andExpect(status().isBadRequest());
+        mvc.perform(post("/api/v1/admin/appointments/"+UUID.randomUUID()+"/move")
+            .header("Authorization",bearer).contentType("application/json").content(moveJson(today))).andExpect(status().isNotFound());
+        assertReservation(request.id(),today,"09:00",false,true);
+        sql("update appointment_requests set archived_at=now() where id=?",request.id());
+        mvc.perform(post(path).header("Authorization",bearer).contentType("application/json").content(moveJson(today)))
+            .andExpect(status().isConflict());
+    }
+
+    @Test void adminLifecyclePreservesReservationsAcrossCommands() throws Exception {
+        UUID dayId=day(today,"available",true); slot(dayId,"09:00",true); slot(dayId,"11:00",true);
+        String bearer="Bearer "+token("valid",ADMIN.toString());
+        String created=mvc.perform(post("/api/v1/appointments").contentType("application/json").content(
+            "{\"customer_name\":\"CI Lifecycle\",\"customer_phone\":\"05551234567\",\"service_type\":\"Kaynak\",\"requested_date\":\""+today+"\",\"requested_time\":\"09:00\"}"))
+            .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        UUID id=UUID.fromString(new com.fasterxml.jackson.databind.ObjectMapper().readTree(created).get("id").asText());
+        String path="/api/v1/admin/appointments/"+id;
+        assertTrue(service.availability(today,today).stream().allMatch(s -> s.available()));
+        mvc.perform(post(path+"/confirm").header("Authorization",bearer)).andExpect(status().isOk());
+        mvc.perform(post(path+"/move").header("Authorization",bearer).contentType("application/json").content(moveJson(today)))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.requested_date").value(today.toString()));
+        assertReservation(id,today,"11:00",true,false);
+
+        // Archiving still uses the existing integration, so seed that boundary explicitly.
+        sql("update appointment_requests set archived_at=now() where id=?",id);
+        Timestamp original=archiveTimestamp(id);
+        var contender=commands.create(new BookingCommandService.CreateRequest("CI Contender","05551234567","Kaynak",
+            today,LocalTime.of(11,0),null,null,null));
+        String other="/api/v1/admin/appointments/"+contender.id();
+        mvc.perform(post(other+"/confirm").header("Authorization",bearer)).andExpect(status().isOk());
+        mvc.perform(post(path+"/restore").header("Authorization",bearer))
+            .andExpect(status().isConflict()).andExpect(jsonPath("$.code").value("appointment_slot_unavailable"));
+        assertEquals(original,archiveTimestamp(id));
+        mvc.perform(get("/api/v1/admin/appointments").header("Authorization",bearer).param("archived","true"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.total").value(1))
+            .andExpect(jsonPath("$.items[0].id").value(id.toString()));
+        mvc.perform(post(other+"/cancel").header("Authorization",bearer)).andExpect(status().isOk());
+        mvc.perform(post(path+"/restore").header("Authorization",bearer)).andExpect(status().isOk());
+        assertNull(archiveTimestamp(id));
+        assertReservation(id,today,"11:00",true,false);
+        mvc.perform(post(path+"/cancel").header("Authorization",bearer)).andExpect(status().isOk());
+        assertTrue(service.availability(today,today).stream().allMatch(s -> s.available()));
+        mvc.perform(get("/api/v1/admin/appointments").header("Authorization",bearer)
+            .param("status","cancelled").param("page","0").param("size","1"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.total").value(2))
+            .andExpect(jsonPath("$.items.length()").value(1));
+    }
+
+    @Test void parallelMoveAndConfirmationReserveTargetOnlyOnce() throws Exception {
+        UUID dayId=day(today,"available",true); slot(dayId,"09:00",true); slot(dayId,"11:00",true);
+        var moving=commands.create(pendingRequest()); commands.confirm(ADMIN,moving.id());
+        var contender=commands.create(new BookingCommandService.CreateRequest("CI Customer","05551234567","Kaynak",
+            today,LocalTime.of(11,0),null,null,null));
+        var client=java.net.http.HttpClient.newHttpClient();
+        String bearer="Bearer "+token("valid",ADMIN.toString());
+        try (Connection lock=connect(); Statement s=lock.createStatement()) {
+            lock.setAutoCommit(false);
+            s.execute("select id from appointment_availability_slots order by slot_time for update");
+            var move=java.net.http.HttpRequest.newBuilder(java.net.URI.create("http://127.0.0.1:"+port+"/api/v1/admin/appointments/"+moving.id()+"/move"))
+                .timeout(Duration.ofSeconds(25)).header("Authorization",bearer).header("Content-Type","application/json")
+                .POST(java.net.http.HttpRequest.BodyPublishers.ofString(moveJson(today))).build();
+            var confirm=java.net.http.HttpRequest.newBuilder(java.net.URI.create("http://127.0.0.1:"+port+"/api/v1/admin/appointments/"+contender.id()+"/confirm"))
+                .timeout(Duration.ofSeconds(25)).header("Authorization",bearer).POST(java.net.http.HttpRequest.BodyPublishers.noBody()).build();
+            var a=client.sendAsync(move,java.net.http.HttpResponse.BodyHandlers.ofString());
+            var b=client.sendAsync(confirm,java.net.http.HttpResponse.BodyHandlers.ofString());
+            long deadline=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
+            boolean waiting=false;
+            try (Connection observer=connect(); Statement q=observer.createStatement()) {
+                while (System.nanoTime()<deadline) {
+                    try (ResultSet r=q.executeQuery("select count(*) from pg_stat_activity where usename='booking_writer' and wait_event_type='Lock'")) {
+                        r.next(); if(r.getInt(1)>=2) { waiting=true; break; }
+                    }
+                    Thread.sleep(25);
+                }
+            }
+            assertTrue(waiting,"Both HTTP commands must reach a PostgreSQL lock wait");
+            lock.commit();
+            var moved=a.get(25,java.util.concurrent.TimeUnit.SECONDS);
+            var confirmed=b.get(25,java.util.concurrent.TimeUnit.SECONDS);
+            assertEquals(List.of(200,409),java.util.stream.Stream.of(moved,confirmed).map(java.net.http.HttpResponse::statusCode).sorted().toList());
+            assertTrue((moved.statusCode()==409 ? moved : confirmed).body().contains("appointment_slot_unavailable"));
+            assertReservation(moving.id(),today,moved.statusCode()==200 ? "11:00" : "09:00",moved.statusCode()==200,false);
+            try (Connection c=connect(); Statement q=c.createStatement(); ResultSet r=q.executeQuery(
+                    "select count(*) from appointment_requests where status='confirmed' and archived_at is null and requested_time='11:00'")) {
+                assertTrue(r.next()); assertEquals(1,r.getInt(1));
+            }
+        }
+    }
+
+    @Test void parallelHttpConfirmationsProduceOneSuccessAndOneConflict() throws Exception {
+        slot(day(today,"available",true),"09:00",true);
+        var a=commands.create(pendingRequest()); var b=commands.create(pendingRequest());
+        var client=java.net.http.HttpClient.newHttpClient();
+        String bearer="Bearer "+token("valid",ADMIN.toString());
+        try (Connection lock=connect(); Statement s=lock.createStatement()) {
+            lock.setAutoCommit(false);
+            s.execute("select id from appointment_availability_slots for update");
+            var futures=new ArrayList<java.util.concurrent.CompletableFuture<java.net.http.HttpResponse<String>>>();
+            for (UUID id:List.of(a.id(),b.id())) {
+                var request=java.net.http.HttpRequest.newBuilder(java.net.URI.create("http://127.0.0.1:"+port+"/api/v1/admin/appointments/"+id+"/confirm"))
+                    .timeout(Duration.ofSeconds(25)).header("Authorization",bearer).POST(java.net.http.HttpRequest.BodyPublishers.noBody()).build();
+                futures.add(client.sendAsync(request,java.net.http.HttpResponse.BodyHandlers.ofString()));
+            }
+            long deadline=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
+            boolean waiting=false;
+            try (Connection observer=connect(); Statement query=observer.createStatement()) {
+                while(System.nanoTime()<deadline) {
+                    try (ResultSet r=query.executeQuery("select count(*) from pg_stat_activity where usename='booking_writer' and wait_event_type='Lock'")) {
+                        r.next(); if(r.getInt(1)>=2) { waiting=true; break; }
+                    }
+                    Thread.sleep(25);
+                }
+            }
+            assertTrue(waiting,"Both Spring HTTP transactions must reach a real lock wait");
+            lock.commit();
+            var responses=new ArrayList<java.net.http.HttpResponse<String>>();
+            for(var f:futures) responses.add(f.get(25,java.util.concurrent.TimeUnit.SECONDS));
+            assertEquals(List.of(200,409),responses.stream().map(java.net.http.HttpResponse::statusCode).sorted().toList());
+            assertTrue(responses.stream().filter(r->r.statusCode()==409).findFirst().orElseThrow().body().contains("appointment_slot_unavailable"));
+        }
+        assertEquals(1,service.appointments(ADMIN,today,today,"confirmed",0,20).total());
+        assertEquals(1,service.appointments(ADMIN,today,today,"new",0,20).total());
+        assertFalse(service.availability(today,today).get(0).available());
+        UUID winner=service.appointments(ADMIN,today,today,"confirmed",0,20).items().get(0).id();
+        assertEquals("confirmed",commands.confirm(ADMIN,winner).status());
+        mvc.perform(post("/api/v1/appointments").contentType("application/json").content(
+            "{\"customer_name\":\"CI Customer\",\"customer_phone\":\"05551234567\",\"service_type\":\"Kaynak\",\"requested_date\":\""+today+"\",\"requested_time\":\"09:00\"}"))
+            .andExpect(status().isConflict());
+        assertEquals(2,service.appointments(ADMIN,today,today,null,0,20).total());
     }
 }

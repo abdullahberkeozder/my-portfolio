@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("customer chooses a real PostgreSQL slot through Spring", async ({ page }, testInfo) => {
+test("customer creates a real pending PostgreSQL request through Spring", async ({ page }, testInfo) => {
   const unexpected = [];
   await page.route("**/*", async (route) => {
     const url = new URL(route.request().url());
@@ -26,6 +26,16 @@ test("customer chooses a real PostgreSQL slot through Spring", async ({ page }, 
   await page.getByRole("button", { name: "09:00 - 11:00, müsait" }).click();
   await page.getByRole("button", { name: "İletişime Geç" }).click();
   await expect(page.getByLabel("Ad soyad *")).toBeVisible();
+  await page.getByLabel("Ad soyad *").fill("CI Synthetic Customer");
+  await page.getByLabel("Telefon numarası *").fill("05551234567");
+  const created = page.waitForResponse((r) => r.url().endsWith("/api/v1/appointments") && r.request().method() === "POST");
+  await page.getByRole("button", { name: "Talebi Gönder" }).click();
+  const response = await created;
+  expect(response.status()).toBe(201);
+  const result = await response.json();
+  expect(result.id).toMatch(/^[0-9a-f-]{36}$/);
+  await expect(page.getByRole("heading", { name: "Talebiniz alındı" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Talebi Takip Et" })).toHaveAttribute("href", `/appointment/track/${result.public_token}`);
   expect(unexpected).toEqual([]);
-  await page.screenshot({ path: testInfo.outputPath("contact-step.png"), fullPage: true });
+  await page.screenshot({ path: testInfo.outputPath("request-created.png"), fullPage: true });
 });

@@ -11,6 +11,6 @@ export default defineConfig({
   webServer: {
     command: "npm run dev -- --host 127.0.0.1 --port 5293 --strictPort",
     url: "http://127.0.0.1:5293/appointment", reuseExistingServer: false,
-    env: { VITE_BOOKING_READ_BACKEND: "spring", VITE_SUPABASE_URL: "https://staging.invalid", VITE_SUPABASE_ANON_KEY: "synthetic-test-key" },
+    env: { VITE_BOOKING_READ_BACKEND: "spring", VITE_BOOKING_WRITE_BACKEND: "spring", VITE_SUPABASE_URL: "https://staging.invalid", VITE_SUPABASE_ANON_KEY: "synthetic-test-key" },
   },
 });

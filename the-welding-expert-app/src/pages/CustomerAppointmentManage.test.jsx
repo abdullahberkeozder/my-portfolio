@@ -134,4 +134,80 @@ describe("CustomerAppointmentManage", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Randevu takip kaydı bulunamadı.");
     expect(screen.queryByRole("button", { name: "Değişiklik İsteğini Gönder" })).not.toBeInTheDocument();
   });
+
+  it("does not show the action form when status is cancelled", async () => {
+    getPublicAppointmentRequest.mockResolvedValue({ ...baseRequest, status: "cancelled" });
+    renderPage();
+
+    await screen.findByText("Kapı, korkuluk ve kaynak");
+    expect(screen.queryByRole("button", { name: "Değişiklik İsteğini Gönder" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "İptal İsteğini Gönder" })).not.toBeInTheDocument();
+  });
+
+  it("does not show the action form when status is completed", async () => {
+    getPublicAppointmentRequest.mockResolvedValue({ ...baseRequest, status: "completed" });
+    renderPage();
+
+    await screen.findByText("Kapı, korkuluk ve kaynak");
+    expect(screen.queryByRole("button", { name: "Değişiklik İsteğini Gönder" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "İptal İsteğini Gönder" })).not.toBeInTheDocument();
+  });
+
+  it("shows 'Güncel isteğiniz alındı' when backend returns is_repeat: true", async () => {
+    submitAppointmentCustomerAction.mockResolvedValue({
+      submitted: true,
+      action: "change_requested",
+      submitted_at: "2026-07-19T12:00:00.000Z",
+      action_count: 2,
+      is_repeat: true,
+    });
+    renderPage();
+    await screen.findByText("Kapı, korkuluk ve kaynak");
+
+    fireEvent.click(screen.getByRole("button", { name: "Değişiklik İsteğini Gönder" }));
+
+    expect(await screen.findByText("Güncel isteğiniz alındı")).toBeInTheDocument();
+  });
+
+  it("shows 'İsteğiniz ilk kez alındı' when backend returns is_repeat: false", async () => {
+    submitAppointmentCustomerAction.mockResolvedValue({
+      submitted: true,
+      action: "change_requested",
+      submitted_at: "2026-07-19T12:00:00.000Z",
+      action_count: 1,
+      is_repeat: false,
+    });
+    renderPage();
+    await screen.findByText("Kapı, korkuluk ve kaynak");
+
+    fireEvent.click(screen.getByRole("button", { name: "Değişiklik İsteğini Gönder" }));
+
+    expect(await screen.findByText("İsteğiniz ilk kez alındı")).toBeInTheDocument();
+  });
+
+  it("reads isRepeat from backend result, not from cached request state", async () => {
+    // Müşteri talebi (change_requested) yöneticinin doğrudan uyguladığı işlemden farklıdır.
+    // Aynı action türü daha önce gönderilmiş olsa bile backend is_repeat'i belirler.
+    // Bu test: frontend hesaplamasını DEĞİL backend sonucunu kullandığını doğrular.
+    submitAppointmentCustomerAction.mockResolvedValue({
+      submitted: true,
+      action: "change_requested",
+      submitted_at: "2026-07-19T12:00:00.000Z",
+      action_count: 1,
+      is_repeat: false,  // backend: ilk kez
+    });
+    // Ama request'te daha önce aynı action var — eğer frontend hesaplasaydı isRepeat=true olurdu
+    getPublicAppointmentRequest.mockResolvedValue({
+      ...baseRequest,
+      customer_action: "change_requested",
+      customer_action_at: "2026-07-18T12:00:00.000Z",
+    });
+    renderPage();
+    await screen.findByText("Kapı, korkuluk ve kaynak");
+
+    fireEvent.click(screen.getByRole("button", { name: "Değişiklik İsteğini Gönder" }));
+
+    // backend is_repeat: false dedi → "ilk kez" mesajı görünmeli
+    expect(await screen.findByText("İsteğiniz ilk kez alındı")).toBeInTheDocument();
+  });
 });
