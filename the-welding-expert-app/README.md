@@ -241,6 +241,10 @@ The production application is deployed on Vercel. SPA rewrites are defined in [`
 
 **Production:** [https://umut-usta.vercel.app/appointment](https://umut-usta.vercel.app/appointment)
 
+### Backend showcase
+
+The related Spring Boot, JPA/Hibernate, PostgreSQL, JWT, transaction, and slot-locking work is documented separately in the [The Welding Expert App - Spring Backend Showcase](../the-welding-expert-app-spring-backend/README.md). It is a portfolio engineering showcase and is not a production dependency of this Vercel deployment.
+
 ## License
 
 This project is available under the [MIT License](../LICENSE).
