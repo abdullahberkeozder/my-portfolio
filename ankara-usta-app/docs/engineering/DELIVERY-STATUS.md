@@ -1,6 +1,6 @@
 # Orkestra delivery status
 
-Updated: 4 September 2026
+Updated: 19 September 2026
 
 This file is the canonical status summary. Detailed evidence remains in the linked implementation logs and the deferred validation backlog.
 
@@ -31,6 +31,11 @@ No lower status implies a higher one. In particular, local verification is not e
 | Wizard R0/R1 baseline | Yes | Yes | Yes | Not run | No | Single task surface and editable final summary; [wizard research](WIZARD-REDESIGN-RESEARCH-2026-09-04.md) |
 | Golden vertical slice: Musluk Değişimi | Yes | Yes | Yes | No | No | Submission-to-workspace continuity and shared scope are locally covered; [slice evidence](GOLDEN-VERTICAL-SLICE-MUSLUK-2026-09-04.md) |
 | Wizard R2 completion receipt | Yes | Yes | Yes | Not required | No | Rendered only after authoritative submission success; [R2 evidence](WIZARD-R2-SUCCESS-RECEIPT-2026-09-04.md) |
+| U1, service discovery | Yes | Yes | Yes | Not required | No | Local task-focused browser evidence exists; no release record |
+| U2, request preparation | Yes | Yes | Yes | Partial | No | Wizard, editable review and success receipt are present; complete role/device evidence remains open |
+| U3, professional selection | Yes | Yes | Yes | Partial | No | Final staging run: 6/6 Chromium scenarios passed across 320/390/820/1440, mobile auth return and same-browser A → B → A draft isolation; full M0–M4 role matrix remains open |
+| Isolated `orkestra-e2e` environment | Yes | Yes | Yes | Partial | No | Two customers, admin and two synthetic professional personas exist; this is not the full M0–M4 authorization/concurrency gate |
+| R0, source and evidence freeze | Yes | Yes | Yes | Partial | No | Migration history, RPC grants, targeted quality gates and post-migration U3 browser package recorded in [R0 evidence](R0-SOURCE-AND-EVIDENCE-2026-09-19.md) |
 
 ## Rollout flags
 
@@ -43,3 +48,7 @@ No lower status implies a higher one. In particular, local verification is not e
 ## Current release decision
 
 Continue local product development as previously agreed, but do not mark M0-M4 as released and do not enable their flags. Before activation, complete every open item in [Deferred pre-release validation](PRE-RELEASE-VALIDATION-BACKLOG.md) against an explicitly approved isolated Supabase environment.
+
+The isolated environment is no longer hypothetical: `orkestra-e2e` and dedicated synthetic U3 personas were prepared after the original deferred-validation decision. Directed-request auth return, responsive U3 and same-browser customer account-switch isolation have passed there. Complete M0–M4 authorization, Realtime and concurrency evidence remain open. Historical backlog statements saying that no environment or personas exist must therefore be read as superseded, not as current status.
+
+The current sequencing decision is recorded in [Product roadmap, 19 September 2026](PRODUCT-ROADMAP-2026-09-19.md): with U3 account-switch evidence complete, pass the M0–M4 multi-account release gate, then prove the `Musluk Değişimi` golden vertical slice before any new horizontal feature family.

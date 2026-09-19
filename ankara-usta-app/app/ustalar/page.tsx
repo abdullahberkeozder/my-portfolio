@@ -127,9 +127,11 @@ export default async function UstalarIndexPage({
                   Ustaları göster
                 </button>
                 {hasFilters && (
-                  <Link href="/ustalar" className={styles.filterClear}>
+                  // Vinext client navigation can leave the server-rendered filter state unchanged.
+                  // eslint-disable-next-line @next/next/no-html-link-for-pages
+                  <a href="/ustalar" className={styles.filterClear}>
                     Temizle
-                  </Link>
+                  </a>
                 )}
               </form>
               {profiles && profiles.length > 0 && (
@@ -152,9 +154,11 @@ export default async function UstalarIndexPage({
                 </p>
                 <div className={styles.emptyActions}>
                   {hasFilters ? (
-                    <Link href="/ustalar" className={styles.ctaBtn}>
+                    // This recovery action must clear query state with a document navigation.
+                    // eslint-disable-next-line @next/next/no-html-link-for-pages
+                    <a href="/ustalar" className={styles.ctaBtn}>
                       Filtreleri Temizle
-                    </Link>
+                    </a>
                   ) : (
                     <>
                       <Link href="/#services" className={styles.ctaBtn}>
@@ -197,12 +201,12 @@ export default async function UstalarIndexPage({
                           {profile.bio && (
                             <p className="usta-card-bio">{profile.bio}</p>
                           )}
-                          <Link
+                          <a
                             href={`/ustalar/${profile.user_id}?${new URLSearchParams({...(service ? {service} : {}), ...(district ? {district} : {})})}`}
                             className="usta-card-link"
                           >
                             Profili İncele →
-                          </Link>
+                          </a>
                         </div>
                       </div>
                     );

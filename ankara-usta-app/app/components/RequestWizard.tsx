@@ -1,7 +1,6 @@
 'use client';
 
 import { ChangeEvent, useEffect, useState, useCallback, useRef } from 'react';
-import Link from 'next/link';
 import { Service, serviceCategories } from '../data/serviceTaxonomy';
 import { getWizardDefinition } from '../data/wizardDefinitions';
 import { ankaraDistricts, ankaraNeighborhoods } from '../data/ankaraLocations';
@@ -333,7 +332,9 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
 
   if (routingConflict) return <WizardPendingDialog serviceName={service.name} onClose={onClose}><p role="alert">Taslağın hedefi bu usta ile eşleşmiyor. Güvenliğiniz için taslak değiştirilmedi.</p></WizardPendingDialog>;
 
-  const authAction = (scope.guest || needsAuth) && <Link className={styles.authAction} href={`/giris?next=${encodeURIComponent(resumePath)}`} onClick={event => {
+  // Cross the auth boundary with a document navigation after persisting the draft.
+  // Do not depend on the modal's client-router transition completing.
+  const authAction = (scope.guest || needsAuth) && <a className={styles.authAction} href={`/giris?next=${encodeURIComponent(resumePath)}`} onClick={event => {
     try {
       scope.storage.setItem(storageKey, JSON.stringify({answers,district,neighborhood,timing,step,questionIndex,idempotencyKey,requestId,routingMode,targetProfessionalId,updatedAt:Date.now(),pendingMediaCount:files.length}));
       if(scope.guest)sessionStorage.setItem('orkestra:draft-handoff',storageKey);
@@ -341,7 +342,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
       event.preventDefault();
       setMessage('Tarayıcı taslağı saklayamıyor. Bu sayfayı açık tutup ayrı sekmede giriş yapın, ardından burada yeniden gönderin.');
     }
-  }}>Giriş yap / kayıt ol ve devam et</Link>;
+  }}>Giriş yap / kayıt ol ve devam et</a>;
 
   return (
     <div className={styles.backdrop} role="presentation" onClick={onClose}>

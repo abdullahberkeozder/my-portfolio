@@ -20,7 +20,7 @@ export default async function DirectedRequestPage({params,searchParams}:{params:
     client.from('tradesperson_profiles').select('user_id,display_name').eq('user_id',id).eq('application_status','approved').maybeSingle(),
     client.from('tradesperson_services').select('service_id').eq('tradesperson_id',id).eq('service_id',service.id).maybeSingle(),
     client.from('tradesperson_service_areas').select('district').eq('tradesperson_id',id),
-    client.rpc('has_current_professional_verification',{provider_id:id}),
+    client.rpc('get_public_professional_verification',{provider_id:id}),
   ]);
   if(profile.error||offering.error||areas.error||verification.error)return <main className="account-shell"><p role="alert">Usta bilgileri yüklenemedi. Lütfen yeniden deneyin.</p><Link href={`/ustalar/${id}`}>Profile dön</Link></main>;
   if(!profile.data||!offering.data||!areas.data?.length)notFound();

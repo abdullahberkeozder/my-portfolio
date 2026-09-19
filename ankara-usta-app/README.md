@@ -180,11 +180,12 @@ OpenAI Codex was used for requirements analysis, implementation alternatives, te
 
 ## Next Steps
 
-- Matching quality calibration with real Ankara supply and demand data
-- Deploy and observe the ASP.NET Core notification worker in staging
-- Validate service question wording and conditional branches against realistic requests
-- Complete directory, profile and directed-request interaction checks at 320, 390, 820 and 1440 px, including keyboard navigation and mobile auth return
-- Add operational dashboards for RPC latency, outbox retry depth, and funnel exits
-- Validate production email delivery, domain authentication, and unsubscribe boundaries
+- Keep the green R0/U3 directory, profile, public-verification, mobile auth-return and account-switch slice isolated from other project changes
+- Run the M0–M4 authorization, Realtime and concurrency gates in `orkestra-e2e` without silent skips
+- Prove the `Musluk Değişimi` customer–professional–administrator golden journey before expanding the feature surface
+- Deploy and observe the ASP.NET Core notification worker in staging, then add RPC, outbox and funnel operational views
+- Calibrate matching and service questions only after real Ankara pilot data is available
+
+The current sequencing and exit criteria are documented in [`docs/engineering/PRODUCT-ROADMAP-2026-09-19.md`](./docs/engineering/PRODUCT-ROADMAP-2026-09-19.md).
 
 This repository is a full-stack marketplace foundation rather than a static concept: public discovery is connected to identity, durable requests, private media, tradesperson onboarding, evidence review, matching, versioned quotes, ordered job operations, disputes, and a decoupled external-notification integration.

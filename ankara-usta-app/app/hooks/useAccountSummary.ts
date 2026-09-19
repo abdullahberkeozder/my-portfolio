@@ -29,7 +29,9 @@ export function useAccountSummary() {
     const focus=()=>{void reload();};
     void reload();
     let unsubscribe=()=>{};
-    try {const {data}=createSupabaseBrowserClient().auth.onAuthStateChange(()=>{refresh();});unsubscribe=()=>data.subscription.unsubscribe();} catch { /* Endpoint remains the source of truth. */ }
+    // The initial server-backed reload already reads the current session.
+    // INITIAL_SESSION is subscription initialization, not a new auth mutation.
+    try {const {data}=createSupabaseBrowserClient().auth.onAuthStateChange((event:string)=>{if(event!=='INITIAL_SESSION')refresh();});unsubscribe=()=>data.subscription.unsubscribe();} catch { /* Endpoint remains the source of truth. */ }
     const channel=typeof BroadcastChannel!=='undefined'?new BroadcastChannel('orkestra-account'):null;
     if(channel)channel.onmessage=refresh;
     window.addEventListener('orkestra-account-change',refresh);window.addEventListener('focus',focus);

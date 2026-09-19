@@ -1,12 +1,15 @@
 'use client';
 
-import { FormEvent, useRef, useState } from 'react';
+import { FormEvent, useRef, useState, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createSupabaseBrowserClient } from '../lib/supabase/browser';
 import { landingPathForRoles, safeNextPath } from '../lib/authRedirect';
 
 // Eye icon for password toggle
+const subscribeToHydration = () => () => {};
+const clientReady = () => true;
+const serverReady = () => false;
 function EyeIcon({ closed }: { closed?: boolean }) {
   return closed ? (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -31,6 +34,7 @@ export default function AuthForm({
   nextPath?: string | null;
 }) {
   const router = useRouter();
+  const ready = useSyncExternalStore(subscribeToHydration, clientReady, serverReady);
   const [authMode, setAuthMode] = useState<'sign-in' | 'sign-up'>(initialMode);
   const [displayName, setDisplayName] = useState('');
   const professional = audience === 'tradesperson';
@@ -224,7 +228,7 @@ export default function AuthForm({
                 <label htmlFor="auth-name">Ad Soyad</label>
                 <input
                   id="auth-name"
-                  disabled={busy}
+                  disabled={busy || !ready}
                   autoComplete="name"
                   required
                   minLength={2}
@@ -242,7 +246,7 @@ export default function AuthForm({
               <input
                 id="auth-email"
                 ref={emailInput}
-                disabled={busy}
+                disabled={busy || !ready}
                 type="email"
                 autoComplete="email"
                 required
@@ -270,7 +274,7 @@ export default function AuthForm({
               <div className="auth-password-wrap">
                 <input
                   id="auth-password"
-                  disabled={busy}
+                  disabled={busy || !ready}
                   type={showPassword ? 'text' : 'password'}
                   autoComplete={authMode === 'sign-in' ? 'current-password' : 'new-password'}
                   minLength={authMode === 'sign-up' ? 8 : undefined}
@@ -306,7 +310,7 @@ export default function AuthForm({
               <button className="auth-mode-tab" type="button" disabled={busy} onClick={() => {setAuthMode('sign-in'); setRegistrationPending(false); setMessage(null);}}>Mevcut hesabımla giriş yap</button>
               <button className="auth-mode-tab" type="button" disabled={busy} onClick={() => void requestPasswordReset()}>Parolamı yenile</button>
             </div>}
-            <button className="auth-submit-btn" disabled={busy || registrationPending} type="submit">
+            <button className="auth-submit-btn" disabled={!ready || busy || registrationPending} type="submit">
               {busy ? (
                 <>
                   <span className="btn-spinner" aria-hidden="true" />

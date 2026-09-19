@@ -19,7 +19,7 @@ export default async function PublicTradespersonPage({ params, searchParams }: {
     supabase.from('tradesperson_service_areas').select('district,neighborhood').eq('tradesperson_id', id),
     supabase.from('reviews').select('rating,comment,created_at').eq('tradesperson_id', id).eq('moderation_status', 'approved').order('created_at', { ascending: false }).limit(12),
     supabase.from('district_trust_metrics').select('district,completed_jobs,average_rating').eq('tradesperson_id', id).order('completed_jobs', { ascending: false }),
-    supabase.rpc('has_current_professional_verification', { provider_id: id }),
+    supabase.rpc('get_public_professional_verification', { provider_id: id }),
   ]);
 
   if (profileResult.error || !profileResult.data) notFound();
