@@ -1,0 +1,7 @@
+**
+!Dockerfile.vercel
+!.dockerignore
+!pom.xml
+!src
+!src/main
+!src/main/**
