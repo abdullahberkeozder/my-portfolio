@@ -23,6 +23,9 @@
     "test:coverage": "node scripts/run-project-tool.mjs vitest run --coverage",
     "test:e2e": "node scripts/run-project-tool.mjs playwright test",
     "test:remote:phase65": "node scripts/run-phase65-remote.mjs",
+    "test:remote:r2": "node scripts/run-phase65-remote.mjs",
+    "test:remote:r2:m2-m4": "node scripts/run-r2-contracts-remote.mjs",
+    "test:remote:r2:realtime": "node scripts/run-r2-realtime-browser.mjs",
     "quality": "npm run repository:check && npm run styles:check && npm run ui-debt:check && npm run lint && npm run type-check && npm run test:coverage && npm run build && npm run dotnet:check"
   },
   "dependencies": {

@@ -4,6 +4,8 @@ Date: 2026-09-02
 Status: M0–M3, M4 revisions and the M4 acceptance UI/API continuation have source implementations; release remains gated. See [M0/M1 evidence](DIRECTED-REQUESTS-M0-M1.md), [M3 evidence](PREJOB-CONVERSATIONS-M3.md) and [M4 evidence](QUOTE-REVISIONS-M4.md).
 Scope: Orkestra, currently located in `ankara-usta-app`.
 
+Update, 21 September 2026: the M0–M4 core multi-account authorization, concurrency, cleanup and Realtime gate passed in `orkestra-e2e`; feature flags remain off and nothing is released. Follow [delivery status](DELIVERY-STATUS.md) and the [product-maturity roadmap](PRODUCT-MATURITY-ROADMAP-2026-09-21.md) for current sequencing. Later paragraphs describing remote verification as pending are historical implementation notes.
+
 ## 1. Product decision
 
 Use one request lifecycle with two entry paths, not two separate products:

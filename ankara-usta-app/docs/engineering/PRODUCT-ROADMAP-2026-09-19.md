@@ -1,5 +1,7 @@
 # Orkestra ürün ve teslimat yol haritası
 
+> **Tarihsel belge:** Bu belgenin sıralaması 21 Eylül 2026 tarihli [ürün olgunluğu yol haritası](PRODUCT-MATURITY-ROADMAP-2026-09-21.md) ile güncellenmiştir. Buradaki 19 Eylül kararları ve kanıt sınırları geçmiş kayıt olarak korunur.
+
 Güncelleme: 19 Eylül 2026
 Kapsam: ürün öncelikleri, UX/UI, Supabase doğrulaması, çoklu hesap kanıtı ve kontrollü Ankara pilotu
 Durum: planlama belgesi; bu belge tek başına bir özelliği yayınlanmış saymaz.

@@ -13,15 +13,10 @@ grant select on rls_test_context to authenticated;
 
 insert into rls_test_context (customer_id,tradesperson_id)
 select customer.id,tradesperson.id
-from lateral (
-  select id from auth.users order by created_at,id limit 1
-) customer
-cross join lateral (
-  select id from auth.users
-  where id<>customer.id
-    and not exists (select 1 from public.tradesperson_profiles profile where profile.user_id=auth.users.id)
-  order by created_at,id limit 1
-) tradesperson;
+from auth.users customer
+cross join auth.users tradesperson
+where customer.email='u3-customer@orkestra.example'
+  and tradesperson.email='u3-second-customer@orkestra.example';
 
 do $$
 begin
@@ -44,10 +39,6 @@ select tradesperson_id,'professional_certificate','verified',
   'application/pdf',128,now(),tradesperson_id
 from rls_test_context;
 
-select set_config('request.jwt.claim.sub',(select customer_id::text from rls_test_context),true);
-select set_config('request.jwt.claim.role','authenticated',true);
-set local role authenticated;
-
 insert into public.service_requests(
   id,customer_id,service_id,delivery_model,status,answers,district,neighborhood,
   preferred_timing,idempotency_key,submitted_at
@@ -59,6 +50,10 @@ from rls_test_context;
 update public.service_requests
 set status='submitted'
 where id=(select request_id from rls_test_context);
+
+select set_config('request.jwt.claim.sub',(select customer_id::text from rls_test_context),true);
+select set_config('request.jwt.claim.role','authenticated',true);
+set local role authenticated;
 
 do $$
 begin

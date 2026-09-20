@@ -1,7 +1,9 @@
 # M4 — Revision request → next quote version → change summary
 
 Date: 2026-09-03
-Status: **First slice implemented; local application checks passed. SQL execution and multi-account verification pending. Not released.**
+Status at implementation: **First slice implemented; local application checks passed.**
+
+Update, 21 September 2026: **Revision, stale-base, retry, competing acceptance and live scope-change core checks passed in `orkestra-e2e`. Not released.** Final comparison/acceptance UX and accessibility remain in the [product-maturity roadmap](PRODUCT-MATURITY-ROADMAP-2026-09-21.md).
 
 ## Scope and existing foundation
 

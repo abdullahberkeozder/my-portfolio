@@ -1,10 +1,12 @@
 # Deferred pre-release validation
 
+> **21 Eylül 2026 durumu:** R2 çekirdek paketi izole `orkestra-e2e` ortamında M0–M4 yetki, concurrency, cleanup ve dört Realtime browser senaryosunu geçti. Bu belge yine de kapatılmamıştır: kayıt/parola sıfırlama, geniş erişilebilirlik/offline matrisi, advisor/runbook ve kontrollü aktivasyon maddeleri nihai release-candidate aşamasında kalır. Güncel ürün sıralaması için [ürün olgunluğu yol haritasını](PRODUCT-MATURITY-ROADMAP-2026-09-21.md), güncel kanıt seviyesi için [delivery status](DELIVERY-STATUS.md) belgesini kullanın. Eski “ortam/test hesabı yok” ifadeleri tarihsel bağlamdır.
+
 Decision date: 2026-09-02
 Status: Deferred by the user until the final validation stage; not waived or passed.
 Scope: Marketplace M0/M1 directed requests, M2 invitations and their interaction with existing open requests.
 
-Update, 19 September 2026: the original infrastructure assumption below is historical. The isolated `orkestra-e2e` project and dedicated synthetic two-customer, administrator and professional personas now exist. The final R0 package passed 6/6 Chromium scenarios: four responsive directory journeys, one mobile directed auth-return/submission journey and one same-browser A → B → A draft-isolation journey. The checklist is still open because signup/accessibility completeness, complete M0–M4 authorization, Realtime, concurrency and controlled-activation evidence have not passed. Follow [R0 evidence](R0-SOURCE-AND-EVIDENCE-2026-09-19.md), [the current product roadmap](PRODUCT-ROADMAP-2026-09-19.md) and [delivery status](DELIVERY-STATUS.md) for sequencing.
+Update, 19–21 September 2026: the original infrastructure assumption below is historical. The isolated `orkestra-e2e` project and dedicated synthetic two-customer, administrator and professional personas now exist. U3 passed 6/6 Chromium scenarios and the later R2 package passed the M0–M4 core authorization, concurrency, cleanup and Realtime checks. The checklist remains open for signup/password recovery, broader accessibility/offline coverage, database advisor/runbook review and controlled activation. Follow [R0 evidence](R0-SOURCE-AND-EVIDENCE-2026-09-19.md), [the current product-maturity roadmap](PRODUCT-MATURITY-ROADMAP-2026-09-21.md) and [delivery status](DELIVERY-STATUS.md) for sequencing.
 
 Continue product implementation without provisioning Docker, a test project or test accounts for this checklist now. Run this checklist after the planned development work and before enabling or releasing the affected flow. This decision concerns the integration/browser/release checks below, not a blanket removal of targeted unit tests, lint, type-check or build checks during development.
 

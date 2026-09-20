@@ -1,7 +1,9 @@
 # M3 — Request-bound private text conversations
 
 Date: 2026-09-03
-Status: **Implemented; local application checks passed. Database and multi-account verification pending. Not released.**
+Status at implementation: **Implemented; local application checks passed.**
+
+Update, 21 September 2026: **Core database, participant, idempotency, sequence and simultaneous-browser messaging checks passed in `orkestra-e2e`. Not released.** Offline/auth-expiry/accessibility breadth remains a product-maturity and final validation item; see [delivery status](DELIVERY-STATUS.md).
 
 ## Scope and product behavior
 

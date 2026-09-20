@@ -170,7 +170,7 @@ Test coverage is a strategy, not a claim that every suite currently passes. Reco
 - Matching weights are explainable but not yet calibrated with production completion data.
 - The notification worker needs separate deployment and server-only Supabase/Resend configuration.
 - Payments and calendar synchronization are not implemented and are not presented as current capabilities.
-- Directed requests, pre-job conversations, and quote revisions remain disabled until isolated multi-account authorization and concurrency checks pass.
+- Directed requests, pre-job conversations, and quote revisions remain deliberately disabled. Their isolated core authorization, concurrency and Realtime gate has passed, but product-maturity, accessibility, operational and explicit activation decisions remain open.
 
 Current delivery status is tracked in [`docs/engineering/DELIVERY-STATUS.md`](./docs/engineering/DELIVERY-STATUS.md). A locally implemented feature is not treated as released without multi-account and environment evidence.
 
@@ -180,12 +180,13 @@ OpenAI Codex was used for requirements analysis, implementation alternatives, te
 
 ## Next Steps
 
-- Keep the green R0/U3 directory, profile, public-verification, mobile auth-return and account-switch slice isolated from other project changes
-- Run the M0–M4 authorization, Realtime and concurrency gates in `orkestra-e2e` without silent skips
-- Prove the `Musluk Değişimi` customer–professional–administrator golden journey before expanding the feature surface
-- Deploy and observe the ASP.NET Core notification worker in staging, then add RPC, outbox and funnel operational views
-- Calibrate matching and service questions only after real Ankara pilot data is available
+- Consolidate the passing R2 M0–M4 authorization, concurrency, cleanup and Realtime evidence into an isolated Orkestra commit candidate
+- Prove the complete `Musluk Değişimi` customer–professional journey and its administrator dispute branch before expanding the feature surface
+- Finish wizard accessibility, error recovery, account registration/recovery and role-entry browser matrices
+- Complete the professional opportunity, conversation, quote-revision, acceptance and job UI around the verified database contracts
+- Deploy and observe the ASP.NET Core notification worker in staging, then add RPC, outbox and consent-aware funnel operational views
+- Calibrate matching and the highest-value service questions before attempting all 26 services or a live pilot
 
-The current sequencing and exit criteria are documented in [`docs/engineering/PRODUCT-ROADMAP-2026-09-19.md`](./docs/engineering/PRODUCT-ROADMAP-2026-09-19.md).
+The current product priorities and exit criteria are documented in [`docs/engineering/PRODUCT-MATURITY-ROADMAP-2026-09-21.md`](./docs/engineering/PRODUCT-MATURITY-ROADMAP-2026-09-21.md). The earlier 19 September roadmap remains a historical decision record.
 
 This repository is a full-stack marketplace foundation rather than a static concept: public discovery is connected to identity, durable requests, private media, tradesperson onboarding, evidence review, matching, versioned quotes, ordered job operations, disputes, and a decoupled external-notification integration.

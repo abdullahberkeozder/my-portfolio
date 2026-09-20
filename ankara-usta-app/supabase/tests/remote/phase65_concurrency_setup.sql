@@ -18,13 +18,10 @@ revoke all on private.phase65_concurrency_context from public,anon,authenticated
 
 insert into private.phase65_concurrency_context(customer_id,tradesperson_id)
 select customer.id,tradesperson.id
-from lateral(select id from auth.users order by created_at,id limit 1) customer
-cross join lateral(
-  select id from auth.users
-  where id<>customer.id
-    and not exists(select 1 from public.tradesperson_profiles profile where profile.user_id=auth.users.id)
-  order by created_at,id limit 1
-) tradesperson;
+from auth.users customer
+cross join auth.users tradesperson
+where customer.email='u3-customer@orkestra.example'
+  and tradesperson.email='u3-second-customer@orkestra.example';
 
 do $$begin
   if not exists(select 1 from private.phase65_concurrency_context) then

@@ -1,13 +1,29 @@
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { join } from 'node:path';
+import {readFileSync} from 'node:fs';
+import {parseEnv} from 'node:util';
+import {assertStagingTarget} from './staging-target.mjs';
 
 const root = process.cwd();
 const cli = join(root, 'node_modules', 'supabase', 'dist', 'supabase.js');
 const sqlRoot = join(root, 'supabase', 'tests', 'remote');
+const staging=parseEnv(readFileSync(join(root,'.env.e2e.local'),'utf8'));
+assertStagingTarget({...staging,E2E_ALLOW_STAGING_WRITES:process.env.E2E_ALLOW_STAGING_WRITES});
+const projectRef=staging.E2E_STAGING_PROJECT_REF;
+
+const keyLookup=spawnSync(process.execPath,[cli,'projects','api-keys','--project-ref',projectRef,'--reveal','--output','json'],{
+  cwd:root,encoding:'utf8',windowsHide:true,
+});
+if(keyLookup.status!==0)throw new Error('Staging API keys are unavailable.');
+const parsedKeys=JSON.parse(keyLookup.stdout);
+const keys=Array.isArray(parsedKeys)?parsedKeys:parsedKeys.api_keys??parsedKeys.keys;
+const publicKey=keys.find(key=>key.type==='publishable')?.api_key??keys.find(key=>key.name==='anon')?.api_key;
+const serviceKey=keys.find(key=>key.name==='service_role')?.api_key??keys.find(key=>key.type==='secret')?.api_key;
+if(!publicKey||!serviceKey)throw new Error('Staging public/service keys are unavailable.');
 
 function query(file, {showOutput = true} = {}) {
   return new Promise((resolve) => {
-    const child = spawn(process.execPath, [cli, 'db', 'query', '--linked', '--file', join(sqlRoot, file), '--yes'], {
+    const child = spawn(process.execPath, [cli, 'db', 'query', '--linked', '--project-ref', projectRef, '--file', join(sqlRoot, file), '--yes'], {
       cwd: root,
       env: process.env,
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -30,35 +46,13 @@ function requireSuccess(result, label) {
   }
 }
 
-let fixtureCreated = false;
-try {
-  requireSuccess(await query('phase65_hardening.sql'), 'Phase 6.5 hardening suite');
-  requireSuccess(await query('phase65_concurrency_setup.sql'), 'Concurrency fixture setup');
-  fixtureCreated = true;
+requireSuccess(await query('r2_cleanup_orphans.sql'), 'Previous R2 fixture cleanup');
+requireSuccess(await query('phase65_hardening.sql'), 'Phase 6.5 hardening suite');
 
-  const draftResults = await Promise.all([
-    query('phase65_concurrent_draft.sql', {showOutput: false}),
-    query('phase65_concurrent_draft.sql', {showOutput: false}),
-  ]);
-  if (!draftResults.every((result) => result.code === 0)) {
-    throw new Error(`Both idempotent draft upserts must succeed: ${draftResults.map((result) => result.code).join(', ')}\n${draftResults.map((result,index) => `draft-${index+1}:\n${result.stdout}\n${result.stderr}`).join('\n')}`);
-  }
-  console.log('Concurrent idempotent draft upserts: 2/2 succeeded');
-
-  const acceptanceResults = await Promise.all([
-    query('phase65_concurrent_quote_accept.sql', {showOutput: false}),
-    query('phase65_concurrent_quote_accept.sql', {showOutput: false}),
-  ]);
-  const successfulAcceptances = acceptanceResults.filter((result) => result.code === 0).length;
-  if (successfulAcceptances !== 1) {
-    throw new Error(`Exactly one parallel quote acceptance must succeed; observed ${successfulAcceptances}\n${acceptanceResults.map((result,index) => `accept-${index+1}:\n${result.stdout}\n${result.stderr}`).join('\n')}`);
-  }
-  console.log('Parallel quote acceptance: exactly 1/2 succeeded');
-
-  requireSuccess(await query('phase65_concurrency_verify.sql'), 'Concurrency invariant verification');
-} finally {
-  if (fixtureCreated) {
-    const cleanup = await query('phase65_concurrency_cleanup.sql');
-    if (cleanup.code !== 0) process.exitCode = 1;
-  }
-}
+const concurrency=spawnSync(process.execPath,[join(root,'scripts','run-phase65-data-concurrency.mjs')],{
+  cwd:root,stdio:'inherit',windowsHide:true,
+  env:{...process.env,...staging,E2E_ALLOW_STAGING_WRITES:'true',E2E_SUPABASE_KEY:publicKey,E2E_SUPABASE_SERVICE_ROLE_KEY:serviceKey},
+});
+const cleanup=query('r2_cleanup_orphans.sql');
+if(concurrency.status!==0){await cleanup;throw new Error('Data API concurrency suite failed.');}
+requireSuccess(await cleanup,'Post-run R2 fixture cleanup');

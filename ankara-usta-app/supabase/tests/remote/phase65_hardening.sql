@@ -19,13 +19,10 @@ grant select,update on phase65_context to authenticated,service_role;
 
 insert into phase65_context(customer_id,tradesperson_id)
 select customer.id,tradesperson.id
-from lateral(select id from auth.users order by created_at,id limit 1) customer
-cross join lateral(
-  select id from auth.users
-  where id<>customer.id
-    and not exists(select 1 from public.tradesperson_profiles profile where profile.user_id=auth.users.id)
-  order by created_at,id limit 1
-) tradesperson;
+from auth.users customer
+cross join auth.users tradesperson
+where customer.email='u3-customer@orkestra.example'
+  and tradesperson.email='u3-second-customer@orkestra.example';
 
 do $$begin
   if not exists(select 1 from phase65_context) then
@@ -142,9 +139,14 @@ end$$;
 -- Worker failure advances retry state without reverting the accepted scope change.
 reset role;
 set local role service_role;
+-- Keep this rollback fixture deterministic even when staging contains an
+-- existing notification backlog from earlier browser evidence.
+update public.notification_outbox
+set next_attempt_at='1970-01-01 00:00:00+00'
+where event_id=(select scope_event_id from phase65_context);
 update phase65_context set notification_id=(
   select claimed.id
-  from public.claim_notification_batch('phase65-worker',100) claimed
+  from public.claim_notification_batch('phase65-worker',1) claimed
   where claimed.event_id=(select scope_event_id from phase65_context)
   order by claimed.id limit 1
 );
