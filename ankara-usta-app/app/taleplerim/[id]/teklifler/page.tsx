@@ -11,6 +11,7 @@ import { getWizardDefinition } from '../../../data/wizardDefinitions';
 import type { DeliveryModel, RequestStatus } from '../../../domain/models';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
 import RequestScopeSummary,{RequestJourney} from '../../../components/RequestScopeSummary';
+import RequestStatusBadge from '../../../components/RequestStatusBadge';
 
 export const dynamic='force-dynamic';
 
@@ -43,9 +44,32 @@ export default async function CustomerQuotesPage({params,searchParams}:{params:P
   return <main className="account-shell customer-quotes">
     <RealtimeRefresh channelName={`customer-quotes-${id}`} subscriptions={[{table:'service_requests',filter:`id=eq.${id}`},{table:'matching_runs',filter:`request_id=eq.${id}`},{table:'request_matches',filter:`request_id=eq.${id}`},{table:'quotes',filter:`request_id=eq.${id}`},{table:'jobs',filter:`request_id=eq.${id}`},...(direct&&directedRequestsEnabled()?[{table:'request_invitations',filter:`request_id=eq.${id}`}]:[])]} label="Talep çalışma alanı"/>
     <Link className="account-back" href="/taleplerim">← Taleplerim</Link>
-    <header><span>TALEP ÇALIŞMA ALANI</span><h1>{service?.name??request.service_id}</h1><p>{request.neighborhood}, {request.district}</p></header>
+    <header>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '8px' }}>
+        <span className="workspace-eyebrow">TALEP ÇALIŞMA ALANI</span>
+        <RequestStatusBadge status={request.status} quoteCount={quotes.length} />
+        {direct && (
+          <span className="match-score-badge" style={{ background: '#f5f0fc', color: '#5d25b0' }}>
+            Ustaya Özel Talep
+          </span>
+        )}
+      </div>
+      <h1 className="workspace-title">{service?.name??request.service_id}</h1>
+      <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0', fontSize: '14px' }}>📍 {request.neighborhood}, {request.district}</p>
+    </header>
     {created&&<p className="account-message" role="status">Talebiniz kaydedildi. Eşleşme ve teklif durumunu bu sayfadan takip edebilirsiniz.</p>}
     <RequestJourney status={request.status as RequestStatus} quoteCount={quotes.length} jobHref={job?.id?`/islerim/${job.id}`:undefined}/>
+    {request.status==='provider_selected'&&job?.id&&(
+      <div style={{ margin: '18px 0', padding: '16px 20px', background: '#eafaf1', border: '1px solid #b7ebd1', borderRadius: 'var(--radius-card)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+        <div>
+          <b style={{ color: '#0f6848', fontSize: '15px' }}>✓ Teklif kabul edildi ve iş başlatıldı</b>
+          <p style={{ margin: '4px 0 0', color: 'var(--text-secondary)', fontSize: '13px' }}>Ustayla mesajlaşma, iş detayları ve onay adımlarını iş ekranından takip edebilirsiniz.</p>
+        </div>
+        <Link href={`/islerim/${job.id}`} className="cta-action-primary">
+          İş Ekranına Git →
+        </Link>
+      </div>
+    )}
     {jobError&&request.status==='provider_selected'&&<p role="alert">İş bağlantısı yüklenemedi. İşlerim alanından güncel kaydı kontrol edin.</p>}
     <RequestScopeSummary serviceName={service?.name??request.service_id} deliveryModel={(service?.deliveryModel??request.delivery_model) as DeliveryModel} questions={questions} answers={request.answers??{}} district={request.district} neighborhood={request.neighborhood} timing={request.preferred_timing??''}/>
     <RequestConversationLinks requestId={id}/>

@@ -11,19 +11,10 @@ import { directedRequestsEnabled } from '../lib/directedRequests';
 import RequestInvitationPanel from '../components/RequestInvitationPanel';
 import RealtimeRefresh from '../components/RealtimeRefresh';
 import PilotCityMap from '../components/PilotCityMap';
-import {pilotCityState} from '../lib/pilotCity';
+import { pilotCityState } from '../lib/pilotCity';
+import RequestStatusBadge from '../components/RequestStatusBadge';
 
 export const dynamic = 'force-dynamic';
-
-const statusLabels: Record<string, string> = {
-  draft: 'Taslak',
-  submitted: 'Gönderildi',
-  matching: 'Ustalar aranıyor',
-  quotes_received: 'Teklifler geldi',
-  provider_selected: 'Usta seçildi',
-  cancelled: 'İptal edildi',
-  expired: 'Süresi doldu',
-};
 
 export default async function MyRequestsPage({
   searchParams,
@@ -53,6 +44,7 @@ export default async function MyRequestsPage({
   const directIds = (requests ?? [])
     .filter((r) => r.routing_mode === 'direct' && r.status !== 'draft')
     .map((r) => r.id);
+
   const invitations =
     directedRequestsEnabled() && directIds.length
       ? await supabase
@@ -62,9 +54,46 @@ export default async function MyRequestsPage({
           .in('request_id', directIds)
       : null;
 
+  // Defensive queries for quote counts and jobs associated with requests
+  const requestIds = (requests ?? []).map((r) => r.id);
+  const quotesCountMap = new Map<string, number>();
+  const jobsMap = new Map<string, string>();
+
+  if (requestIds.length > 0) {
+    try {
+      const quotesQuery = supabase
+        .from('quotes')
+        .select('request_id, status');
+      if (typeof quotesQuery.in === 'function') {
+        const { data: quotesData } = await quotesQuery
+          .in('request_id', requestIds)
+          .in('status', ['submitted', 'accepted']);
+        for (const q of quotesData ?? []) {
+          quotesCountMap.set(q.request_id, (quotesCountMap.get(q.request_id) ?? 0) + 1);
+        }
+      }
+    } catch {
+      // Non-blocking in mock environments
+    }
+
+    try {
+      const jobsQuery = supabase
+        .from('jobs')
+        .select('id, request_id')
+        .eq('customer_id', user.id);
+      if (typeof jobsQuery.in === 'function') {
+        const { data: jobsData } = await jobsQuery.in('request_id', requestIds);
+        for (const j of jobsData ?? []) {
+          jobsMap.set(j.request_id, j.id);
+        }
+      }
+    } catch {
+      // Non-blocking in mock environments
+    }
+  }
+
   return (
     <main className="account-shell requests-page">
-
       {directedRequestsEnabled() && (
         <RealtimeRefresh
           channelName={`my-invitations-${user.id}`}
@@ -73,25 +102,24 @@ export default async function MyRequestsPage({
         />
       )}
       <div className="page-body">
-        {/* Page header */}
-        <div className="requests-header">
+        {/* Workspace header */}
+        <div className="workspace-header">
           <div>
-            <span style={{ color: 'var(--brand-cobalt)', fontSize: '11px', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase' }}>MÜŞTERİ ALANI</span>
-            <h1 style={{ margin: '6px 0 0', fontSize: 'clamp(24px, 4vw, 36px)', letterSpacing: '-0.025em' }}>Taleplerim</h1>
+            <span className="workspace-eyebrow">MÜŞTERİ ÇALIŞMA ALANI</span>
+            <h1 className="workspace-title">Taleplerim</h1>
           </div>
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div className="workspace-actions">
             {prejobChatEnabled() && (
               <Link
                 href="/gorusmeler"
-                style={{ fontSize: '14px', fontWeight: 600, color: 'var(--brand-cobalt)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                className="cta-action-neutral"
               >
                 Görüşmelerim →
               </Link>
             )}
             <Link
-              className="dialog-primary"
+              className="cta-action-primary"
               href="/#services"
-              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
             >
               + Yeni Talep
             </Link>
@@ -100,7 +128,7 @@ export default async function MyRequestsPage({
 
         {/* Error state */}
         {error ? (
-          <div className="empty-state">
+          <div className="empty-state" role="alert">
             <span className="empty-state-icon" role="img" aria-label="Hata">⚠️</span>
             <h2>Talepler yüklenemedi</h2>
             <p>Bir bağlantı sorunu oluştu. Sayfayı yenileyerek tekrar deneyin.</p>
@@ -108,7 +136,7 @@ export default async function MyRequestsPage({
           </div>
         ) : requests?.length ? (
           <>
-            <div className="request-list" style={{ display: 'grid', gap: '10px' }}>
+            <div className="request-list" style={{ display: 'grid', gap: '14px' }}>
               {requests.map((request) => {
                 const service = services.find((item) => item.id === request.service_id);
                 const isDraft = request.status === 'draft';
@@ -129,32 +157,40 @@ export default async function MyRequestsPage({
                   ? 'Kapsam tamamlandı'
                   : `${answerCount}/${definition.questions.length} soru yanıtlandı`;
 
+                const quoteCount = quotesCountMap.get(request.id);
+                const jobId = jobsMap.get(request.id);
+
                 return (
                   <article
                     key={request.id}
-                    className={`request-card ${isDraft ? 'request-card-draft' : ''}`}
-                    style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '16px', alignItems: 'start', padding: '20px 24px', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', background: isDraft ? 'var(--brand-lemonade-soft)' : 'white', boxShadow: 'var(--shadow-card)', borderColor: isDraft ? '#e8d980' : 'var(--border-default)' }}
+                    className={`workspace-card ${isDraft ? 'workspace-card-draft' : ''}`}
+                    data-testid={`request-card-${request.id}`}
                   >
                     <div>
-                      {/* Status badge */}
-                      <span className={`status-badge status-${request.status}`}>
-                        {statusLabels[request.status] ?? request.status}
-                      </span>
-
-                      <p className="request-card-title">
-                        {service?.name ?? request.service_id}
-                      </p>
-
-                      <div className="request-card-meta">
-                        {request.neighborhood && request.district ? (
-                          <span>{request.neighborhood}, {request.district}</span>
-                        ) : (
-                          <span style={{ color: '#d4a017' }}>📍 Konum henüz eklenmedi</span>
-                        )}
+                      {/* Header with status badge & service */}
+                      <div className="workspace-card-header">
+                        <RequestStatusBadge status={request.status} quoteCount={quoteCount} />
                         {request.routing_mode === 'direct' && (
+                          <span className="match-score-badge" style={{ background: '#f5f0fc', color: '#5d25b0' }}>
+                            Ustaya özel talep
+                          </span>
+                        )}
+                      </div>
+
+                      <h2 className="workspace-card-title">
+                        {service?.name ?? request.service_id}
+                      </h2>
+
+                      <div className="workspace-card-meta">
+                        {request.neighborhood && request.district ? (
+                          <span>📍 {request.neighborhood}, {request.district}</span>
+                        ) : (
+                          <span style={{ color: 'var(--status-warning)' }}>📍 Konum henüz eklenmedi</span>
+                        )}
+                        {request.preferred_timing && (
                           <>
-                            <span className="request-card-meta-dot" />
-                            <span>Ustaya özel talep</span>
+                            <span className="workspace-card-meta-dot" />
+                            <span>Zaman tercihi eklendi</span>
                           </>
                         )}
                       </div>
@@ -179,13 +215,14 @@ export default async function MyRequestsPage({
                     </div>
 
                     {/* Actions column */}
-                    <div className="request-card-actions-col">
-                      <time className="request-card-time">
+                    <div className="workspace-card-actions-col">
+                      <time className="workspace-card-time">
                         {new Intl.DateTimeFormat('tr-TR', {
                           dateStyle: 'medium',
                           timeStyle: 'short',
                         }).format(new Date(request.updated_at))}
                       </time>
+
                       {isDraft ? (
                         <DraftActions
                           requestId={request.id}
@@ -195,10 +232,42 @@ export default async function MyRequestsPage({
                             missing.length ? `Eksik: ${missing.join(', ')}` : 'Göndermeye hazır'
                           }
                         />
+                      ) : request.status === 'quotes_received' ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end', width: '100%' }}>
+                          <Link
+                            href={`/taleplerim/${request.id}/teklifler`}
+                            className="cta-action-primary"
+                          >
+                            Teklifleri Karşılaştır {quoteCount ? `(${quoteCount})` : ''} →
+                          </Link>
+                          <Link
+                            href={`/taleplerim/${request.id}/teklifler`}
+                            className="cta-action-neutral"
+                            style={{ fontSize: '12px' }}
+                          >
+                            Eşleşme ve teklifler →
+                          </Link>
+                        </div>
+                      ) : request.status === 'provider_selected' && jobId ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end', width: '100%' }}>
+                          <Link
+                            href={`/islerim/${jobId}`}
+                            className="cta-action-primary"
+                          >
+                            İş Ekranına Git →
+                          </Link>
+                          <Link
+                            href={`/taleplerim/${request.id}/teklifler`}
+                            className="cta-action-neutral"
+                            style={{ fontSize: '12px' }}
+                          >
+                            Eşleşme ve teklifler →
+                          </Link>
+                        </div>
                       ) : (
                         <Link
                           href={`/taleplerim/${request.id}/teklifler`}
-                          className="request-card-action"
+                          className="cta-action-secondary"
                         >
                           Eşleşme ve teklifler →
                         </Link>
@@ -212,32 +281,21 @@ export default async function MyRequestsPage({
           </>
         ) : (
           /* Empty state */
-          <section className="empty-state" style={{ background: 'white', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', padding: '48px', textAlign: 'center' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 600, margin: '0 0 12px' }}>Henüz talebiniz yok</h2>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
+          <section className="account-card empty-requests" style={{ textAlign: 'center' }}>
+            <h2>Henüz talebiniz yok</h2>
+            <p style={{ color: 'var(--text-secondary)', margin: '12px 0 24px' }}>
               Ev işleriniz için profesyonel yardım almaya hazır mısınız? Hizmeti seçin,
               kapsamı belirleyin, teklifleri karşılaştırın.
             </p>
             <Link
-              className="dialog-primary"
+              className="cta-action-primary"
               href="/#services"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textDecoration: 'none',
-                background: 'var(--brand-cobalt)',
-                color: 'white',
-                minHeight: '44px',
-                padding: '0 24px',
-                borderRadius: 'var(--radius-control)'
-              }}
             >
               İlk Talebimi Oluştur
             </Link>
           </section>
         )}
-        <PilotCityMap cityState={pilotCityState(user.user_metadata)} initiallyExpanded={false}/>
+        <PilotCityMap cityState={pilotCityState(user.user_metadata)} initiallyExpanded={false} />
       </div>
     </main>
   );
