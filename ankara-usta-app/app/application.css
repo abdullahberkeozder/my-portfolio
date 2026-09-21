@@ -6788,3 +6788,27 @@ button, [role="button"], a.dialog-primary, input[type="submit"] {
   display: flex;
   justify-content: center;
 }
+.wizard-pilot-note {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary, #4b5563);
+  background: var(--surface-brand-soft, #f4f7fa);
+  border-left: 3px solid var(--color-brand, #0C338C);
+  padding: 8px 12px;
+  border-radius: 0 var(--radius-control, 6px) var(--radius-control, 6px) 0;
+  margin: 8px 0;
+}
+.service-pilot-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #0C338C;
+  background: #e8f0fe;
+  border: 1px solid #bfdbfe;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+  vertical-align: middle;
+}

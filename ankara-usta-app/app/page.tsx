@@ -3,7 +3,8 @@
 import { FormEvent, useEffect, useState } from 'react';
 import {useRouter} from 'next/navigation';
 import { serviceCategories, services, servicesByCategory } from './data/serviceTaxonomy';
-import { getServiceSafetyGuidance, packageScopePreview } from './data/serviceGuidance';
+import { getServiceSafetyGuidance, getCalibratedServiceScope } from './data/serviceGuidance';
+import { isCorePilotService } from './data/pilotCoverage';
 import { ClassificationResult, classifyService } from './lib/classifyService';
 import RequestWizard from './components/RequestWizard';
 import OrchestraLogo from './components/OrchestraLogo';
@@ -227,7 +228,12 @@ export default function Home() {
                       {serviceCategories.find(c => c.id === selectedClassificationService?.categoryId)?.name}
                     </span>
                   </div>
-                  <h3 className={matchStyles.serviceTitle}>{selectedClassificationService?.name}</h3>
+                  <h3 className={matchStyles.serviceTitle}>
+                    {selectedClassificationService?.name}
+                    {selectedClassificationService && isCorePilotService(selectedClassificationService.id) && (
+                      <span className="service-pilot-badge">Öncelikli Pilot</span>
+                    )}
+                  </h3>
                   <p className={matchStyles.rationale}>
                     {classification.candidates.find(candidate => candidate.service.id === selectedServiceId)?.explanation}
                   </p>
@@ -242,40 +248,43 @@ export default function Home() {
                 </div>
 
                 {/* Scope Guidance accordion */}
-                {selectedClassificationService && (
-                  <details className={matchStyles.details}>
-                    <summary className={matchStyles.summary}>
-                      <span>Kapsam hakkında</span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </summary>
-                    <div className={matchStyles.scope}>
-                      <p className={matchStyles.scopeNote}>Bunlar genel kapsam başlıklarıdır. Kesin işçilik, malzeme ve hariç işler ustanın teklifinde netleşir.</p>
-                      <div className={matchStyles.scopeColumn}>
-                        <strong>✓ Dahil Olanlar</strong>
-                        <ul>
-                          {packageScopePreview.included.map((item: string) => (
-                            <li key={item}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className={matchStyles.scopeColumn}>
-                        <strong>✕ Dahil Olmayanlar</strong>
-                        <ul>
-                          {packageScopePreview.excluded.map((item: string) => (
-                            <li key={item}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      {selectedSafetyGuidance && (
-                        <div className={matchStyles.safety}>
-                          <strong>Önemli Güvenlik Notu ({selectedSafetyGuidance.title}):</strong> {selectedSafetyGuidance.body}
+                {selectedClassificationService && (() => {
+                  const scope = getCalibratedServiceScope(selectedClassificationService.id);
+                  return (
+                    <details className={matchStyles.details}>
+                      <summary className={matchStyles.summary}>
+                        <span>Kapsam hakkında</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </summary>
+                      <div className={matchStyles.scope}>
+                        <p className={matchStyles.scopeNote}>Bunlar genel kapsam başlıklarıdır. Kesin işçilik, malzeme ve hariç işler ustanın teklifinde netleşir.</p>
+                        <div className={matchStyles.scopeColumn}>
+                          <strong>✓ Dahil Olanlar</strong>
+                          <ul>
+                            {scope.included.map((item: string) => (
+                              <li key={item}>{item}</li>
+                            ))}
+                          </ul>
                         </div>
-                      )}
-                    </div>
-                  </details>
-                )}
+                        <div className={matchStyles.scopeColumn}>
+                          <strong>✕ Dahil Olmayanlar</strong>
+                          <ul>
+                            {scope.excluded.map((item: string) => (
+                              <li key={item}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        {selectedSafetyGuidance && (
+                          <div className={matchStyles.safety}>
+                            <strong>Önemli Güvenlik Notu ({selectedSafetyGuidance.title}):</strong> {selectedSafetyGuidance.body}
+                          </div>
+                        )}
+                      </div>
+                    </details>
+                  );
+                })()}
 
                 {/* Alternative Candidates */}
                 {classification.candidates.length > 1 && (

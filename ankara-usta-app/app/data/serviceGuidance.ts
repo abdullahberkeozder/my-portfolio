@@ -1,8 +1,14 @@
 import { Service } from './serviceTaxonomy';
+import { getServiceCalibration } from './pilotCoverage';
 
 export type ServiceSafetyGuidance = {
   title: string;
   body: string;
+};
+
+export type ServiceScopeGuidance = {
+  included: readonly string[];
+  excluded: readonly string[];
 };
 
 export const packageScopePreview = {
@@ -31,4 +37,15 @@ const safetyGuidanceByServiceId: Record<string, ServiceSafetyGuidance> = {
 
 export function getServiceSafetyGuidance(service?: Service | null) {
   return service ? safetyGuidanceByServiceId[service.id] : undefined;
+}
+
+export function getCalibratedServiceScope(serviceId: string): ServiceScopeGuidance {
+  const cal = getServiceCalibration(serviceId);
+  if (cal) {
+    return {
+      included: cal.includedScope,
+      excluded: cal.excludedScope,
+    };
+  }
+  return packageScopePreview;
 }

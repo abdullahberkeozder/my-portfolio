@@ -48,7 +48,6 @@ export default async function AdminTradespersonQueuePage({
   }));
 
   const totalCount = count ?? applications.length;
-  const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
     <main className="account-shell admin-queue">

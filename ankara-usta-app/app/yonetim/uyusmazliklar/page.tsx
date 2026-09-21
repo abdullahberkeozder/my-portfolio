@@ -50,7 +50,6 @@ export default async function DisputeOperationsPage({
   ).length;
 
   const totalCount = count ?? disputes.length;
-  const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
     <main className="account-shell admin-queue dispute-operations">

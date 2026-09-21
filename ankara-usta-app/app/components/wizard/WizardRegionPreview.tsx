@@ -2,6 +2,7 @@
 
 import {useState} from 'react';
 import {ankaraDistrictsGeo} from '../../data/ankaraMapGeo';
+import {getPilotCoverage} from '../../data/pilotCoverage';
 import styles from '../requestWizard.module.css';
 
 /** District context only. Seed shop pins and illustrative district counts are never used. */
@@ -11,12 +12,14 @@ export default function WizardRegionPreview({district, serviceId, targetProfessi
   const [visible, setVisible] = useState(false);
   const area = ankaraDistrictsGeo.find(item => item.name === district);
   if (!area) return null;
+  const coverage = getPilotCoverage(district, serviceId);
   const [lat, lon] = area.latLngCenter;
   const bbox = `${lon - .07},${lat - .045},${lon + .07},${lat + .045}`;
   const directory = `/ustalar?${new URLSearchParams({service: serviceId, district})}`;
   return <aside className={styles.region} aria-label="Seçilen hizmet bölgesi">
     <h3>Bölge önizlemesi</h3>
     <p>{district}, Ankara</p>
+    <p className="wizard-pilot-note">{coverage.message}</p>
     {visible ? <>
       <iframe key={district} title={`${district} bölge haritası`}
         src={`https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik`}
