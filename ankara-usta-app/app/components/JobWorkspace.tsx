@@ -26,6 +26,17 @@ type ScopeRow = {
   duration_delta_minutes: number;
   status: string;
 };
+export type AcceptedQuoteTerms = {
+  id: string;
+  version: number;
+  labor_amount_kurus: number;
+  material_amount_kurus: number;
+  estimated_duration_minutes: number;
+  warranty_days: number;
+  included_scope: string[];
+  excluded_scope: string[];
+  note: string | null;
+};
 type AddressRow = { address_line: string; building: string | null; apartment: string | null; directions: string | null } | null;
 type Props = {
   jobId: string;
@@ -37,7 +48,11 @@ type Props = {
   appointments: AppointmentRow[];
   scopeChanges: ScopeRow[];
   address: AddressRow;
+  acceptedQuote?: AcceptedQuoteTerms | null;
 };
+
+const formatTRY = (kurus: number) =>
+  new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(kurus / 100);
 
 type WorkspaceTab = 'messages' | 'timeline' | 'scope' | 'location' | 'trust';
 
@@ -389,6 +404,103 @@ export default function JobWorkspace(props: Props) {
               <h2>Kapsam ve Değişiklik Talepleri</h2>
               <p>İş esnasında ortaya çıkan ek işçilik ve malzemeler iki tarafın onayıyla dijital fişe eklenir.</p>
             </div>
+
+            {/* Immutable Contract Reference (Agreed Quote) */}
+            {props.acceptedQuote && (
+              <article className="contract-terms-card" aria-label="Kabul edilen sözleşme şartları">
+                <div className="contract-terms-header">
+                  <div>
+                    <span className="workspace-eyebrow">DEĞİŞMEZ SÖZLEŞME REFERANSI</span>
+                    <h3 className="contract-terms-title">
+                      Kabul Edilen Fiş / Orijinal Teklif (Sürüm {props.acceptedQuote.version})
+                    </h3>
+                  </div>
+                  <span className="req-status-badge req-status-success">✓ Sözleşme Sabitlendi</span>
+                </div>
+
+                <div className="contract-financials-grid">
+                  <div className="contract-metric">
+                    <span>Toplam Tutar</span>
+                    <strong>{formatTRY(props.acceptedQuote.labor_amount_kurus + props.acceptedQuote.material_amount_kurus)}</strong>
+                  </div>
+                  <div className="contract-metric">
+                    <span>İşçilik Tutarı</span>
+                    <b>{formatTRY(props.acceptedQuote.labor_amount_kurus)}</b>
+                  </div>
+                  <div className="contract-metric">
+                    <span>Malzeme Durumu</span>
+                    <b>{props.acceptedQuote.material_amount_kurus > 0 ? formatTRY(props.acceptedQuote.material_amount_kurus) : '0 ₺ (Müşteriye Ait)'}</b>
+                  </div>
+                  <div className="contract-metric">
+                    <span>Tahmini Süre</span>
+                    <b>{props.acceptedQuote.estimated_duration_minutes} dakika</b>
+                  </div>
+                  <div className="contract-metric">
+                    <span>İşçilik Garantisi</span>
+                    <b>{props.acceptedQuote.warranty_days} gün</b>
+                  </div>
+                </div>
+
+                {props.acceptedQuote.included_scope?.length > 0 && (
+                  <div className="contract-scope-section">
+                    <h4 className="contract-scope-title">Dahil Edilen Kapsam:</h4>
+                    <ul className="matrix-scope-list">
+                      {props.acceptedQuote.included_scope.map((item, idx) => (
+                        <li key={idx}>✓ {item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {props.acceptedQuote.excluded_scope?.length > 0 && (
+                  <div className="contract-scope-section">
+                    <h4 className="contract-scope-title">Hariç Tutulan Kapsam:</h4>
+                    <ul className="matrix-scope-list excluded">
+                      {props.acceptedQuote.excluded_scope.map((item, idx) => (
+                        <li key={idx}>✕ {item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {props.acceptedQuote.note && (
+                  <p className="contract-note-box">
+                    {`"${props.acceptedQuote.note}"`}
+                  </p>
+                )}
+              </article>
+            )}
+
+            {/* Live Financial Balance (Original + Approved Scope Changes) */}
+            {(() => {
+              const approvedChanges = props.scopeChanges.filter(item => item.status === 'approved');
+              const approvedDeltaKurus = approvedChanges.reduce((sum, item) => sum + item.labor_delta_kurus + item.material_delta_kurus, 0);
+              const baseTotalKurus = props.acceptedQuote ? props.acceptedQuote.labor_amount_kurus + props.acceptedQuote.material_amount_kurus : 0;
+              const currentTotalKurus = baseTotalKurus + approvedDeltaKurus;
+
+              if (baseTotalKurus === 0 && approvedChanges.length === 0) return null;
+
+              return (
+                <div className="contract-summary-card">
+                  <div className="contract-summary-row">
+                    <div>
+                      <span className="contract-balance-label">GÜNCEL TOPLAM İŞ BEDELİ</span>
+                      <div className="contract-balance-amount">
+                        {formatTRY(currentTotalKurus)}
+                      </div>
+                    </div>
+                    <div className="contract-balance-detail">
+                      <div>Orijinal Sözleşme: <b>{formatTRY(baseTotalKurus)}</b></div>
+                      {approvedDeltaKurus !== 0 && (
+                        <div className={approvedDeltaKurus > 0 ? 'contract-delta-pos' : 'contract-delta-neg'}>
+                          {approvedDeltaKurus > 0 ? `+${formatTRY(approvedDeltaKurus)} Onaylanan Zeyilname` : `${formatTRY(approvedDeltaKurus)} Onaylanan Zeyilname`}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
 
             <div className="scope-items-list">
               {props.scopeChanges.length > 0 ? (

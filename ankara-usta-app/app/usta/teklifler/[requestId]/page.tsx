@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import {quoteRevisionsEnabled} from '../../../lib/quoteRevisions';
+import {revisionFieldLabels} from '../../../domain/quoteRevision';
 import RequestConversationLinks from '../../../components/RequestConversationLinks';
 import {notFound,redirect} from 'next/navigation';
 import {requestTimingLabel} from '../../../domain/requestTiming';
@@ -27,6 +28,13 @@ export default async function TradespersonQuotePage({params}:{params:Promise<{re
   ]);
   if(requestError||matchError||quoteError)return <main className="account-shell"><p role="alert">Talep bilgileri yüklenemedi. Lütfen tekrar deneyin.</p></main>;
   if(!request)notFound();
+
+  const revisionResult = (quoteRevisionsEnabled() && latestQuote)
+    ? await supabase.from('quote_revision_requests').select('id,fields,reason,created_at').eq('quote_id',latestQuote.id).maybeSingle()
+    : null;
+  if(revisionResult?.error)return <main className="account-shell"><p role="alert">Talep bilgileri yüklenemedi. Lütfen tekrar deneyin.</p></main>;
+  const revisionFeedback = revisionResult?.data;
+
   const direct=request.routing_mode==='direct';
   const invitationResult=direct&&directedRequestsEnabled()?await supabase.from('request_invitations').select('*').eq('request_id',requestId).eq('professional_id',user.id).maybeSingle():null;
   if(invitationResult?.error)return <main className="account-shell"><p role="alert">Davet durumu yüklenemedi.</p></main>;
@@ -37,7 +45,7 @@ export default async function TradespersonQuotePage({params}:{params:Promise<{re
   const active=['submitted','matching','quotes_received'].includes(request.status);
   const revisionHref=quoteRevisionsEnabled()&&latestQuote?`/teklifler/${latestQuote.id}`:undefined;
   return <main className="account-shell quote-workspace">
-    <RealtimeRefresh channelName={`tradesperson-quote-${requestId}`} subscriptions={[{table:'service_requests',filter:`id=eq.${requestId}`},{table:'request_matches',filter:`request_id=eq.${requestId}`},{table:'quotes',filter:`request_id=eq.${requestId}`},...(direct?[{table:'request_invitations',filter:`request_id=eq.${requestId}`}]:[])]} label="Talep ve teklif"/>
+    <RealtimeRefresh channelName={`tradesperson-quote-${requestId}`} subscriptions={[{table:'service_requests',filter:`id=eq.${requestId}`},{table:'request_matches',filter:`request_id=eq.${requestId}`},{table:'quotes',filter:`request_id=eq.${requestId}`},...(direct?[{table:'request_invitations',filter:`request_id=eq.${requestId}`}]:[]),...(latestQuote?[{table:'quote_revision_requests',filter:`quote_id=eq.${latestQuote.id}`}]:[])]} label="Talep ve teklif"/>
     <Link className="account-back" href="/usta/talepler">← İş fırsatları</Link>
     <section className="match-context">
       <span>{direct?'SİZE ÖZEL TALEP':`EŞLEŞME PUANI ${match?.score}`}</span>
@@ -48,7 +56,35 @@ export default async function TradespersonQuotePage({params}:{params:Promise<{re
     <RequestScopeSummary serviceName={service?.name??request.service_id} deliveryModel={(service?.deliveryModel??request.delivery_model) as DeliveryModel} questions={questions} answers={request.answers??{}} district={request.district} neighborhood={request.neighborhood} timing={request.preferred_timing??''}/>
     {!active&&<p className="account-message">Bu talep yeni teklif veya ret yanıtı kabul etmiyor.</p>}
     <RequestConversationLinks requestId={requestId} professionalId={user.id}/>
-    {revisionHref&&<section className="account-card"><h2>Teklifiniz ve revizyonlar</h2><Link href={revisionHref}>Müşterinin isteğini ve sürüm geçmişini incele →</Link></section>}
+
+    {revisionFeedback && latestQuote && (
+      <section className="revision-request-alert" role="alert" aria-label="Müşteri revizyon talebi">
+        <div className="revision-request-alert-header">
+          <span className="revision-request-alert-icon">⚠️</span>
+          <strong className="revision-request-alert-title">Müşteri Teklif Revizyonu İstedi (Sürüm {latestQuote.version})</strong>
+        </div>
+        <p className="revision-request-alert-desc">
+          Müşteri aşağıdaki konularda teklifinizi güncellemenizi talep etti:
+        </p>
+        <div className="revision-request-tags-row">
+          {(revisionFeedback.fields as (keyof typeof revisionFieldLabels)[]).map(f => (
+            <span key={f} className="objective-pill revision-field-pill">
+              {revisionFieldLabels[f] ?? f}
+            </span>
+          ))}
+        </div>
+        <blockquote className="revision-request-quote">
+          {`"${revisionFeedback.reason}"`}
+        </blockquote>
+        {revisionHref && (
+          <Link className="dialog-primary revision-prepare-btn" href={revisionHref}>
+            Yeni Sürüm (v{latestQuote.version + 1}) Hazırla ve Gönder →
+          </Link>
+        )}
+      </section>
+    )}
+
+    {revisionHref&&!revisionFeedback&&<section className="account-card"><h2>Teklifiniz ve revizyonlar</h2><Link href={revisionHref}>Müşterinin isteğini ve sürüm geçmişini incele →</Link></section>}
     {direct&&invitation?<RequestInvitationPanel key={invitation.status} invitation={invitation} serviceId={request.service_id} role="professional" canRespond={active} quoteVersion={!revisionHref&&match?latestQuote?.version??0:undefined}/>:active&&!revisionHref&&<QuoteForm requestId={requestId} currentVersion={latestQuote?.version??0}/>}
     {direct&&!match&&active&&<p className="account-message">Teklif için hizmet, bölge, belge ve müsaitlik koşullarının eşleşmesi gerekir. <Link href="/usta/musaitlik">Müsaitliğinizi kontrol edin</Link>; müşteri uygunluk kontrolünü yenileyebilir. Daveti reddetmek için eşleşme gerekmez.</p>}
   </main>;

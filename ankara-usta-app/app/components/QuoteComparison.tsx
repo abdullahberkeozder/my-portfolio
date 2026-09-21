@@ -143,7 +143,14 @@ export default function QuoteComparison({ quotes: inputQuotes, currentUserId, ca
                   return (
                     <th key={professionalKey(quote)} className={`matrix-quote-th ${isLowest ? 'highlight-th' : ''}`}>
                       <div className="quote-th-header">
-                        <span className="quote-th-badge">TEKLİF SÜRÜMÜ {quote.version}</span>
+                        <div className="matrix-th-meta-row">
+                          <span className="quote-th-badge">TEKLİF SÜRÜMÜ {quote.version}</span>
+                          {quote.version > 1 && (
+                            <span className="objective-pill matrix-revision-pill">
+                              Revize (v{quote.version})
+                            </span>
+                          )}
+                        </div>
                         <h4 className="quote-th-name">{quote.tradespersonName}</h4>
                         <div className="quote-th-total">{money(total)}</div>
                         {isLowest && <span className="objective-pill lowest-pill">En Düşük Toplam</span>}
@@ -255,7 +262,11 @@ export default function QuoteComparison({ quotes: inputQuotes, currentUserId, ca
                     >
                       {quote.status === 'accepted' ? 'Kabul edildi' : busy === quote.id ? 'İşleniyor…' : 'Bu teklifi kabul et'}
                     </button>
-                    {quote.detailHref&&<Link className="account-back" href={quote.detailHref}>Sürümleri incele / revizyon iste →</Link>}
+                    {quote.detailHref && (
+                      <Link className="cta-action-neutral matrix-revision-link" href={quote.detailHref}>
+                        Sürüm Geçmişi ve Revizyon →
+                      </Link>
+                    )}
                   </td>
                 ))}
               </tr>

@@ -6417,3 +6417,188 @@ button, [role="button"], a.dialog-primary, input[type="submit"] {
     text-align: center;
   }
 }
+
+/* ─── P3: Immutable Contract & Revision Display ─── */
+.contract-terms-card {
+  padding: 22px 24px;
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-card);
+  background: white;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(8, 55, 45, 0.04);
+}
+.contract-terms-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-default);
+  padding-bottom: 12px;
+  flex-wrap: wrap;
+}
+.contract-terms-title {
+  margin: 4px 0 0;
+  font-size: 18px;
+  color: var(--text-primary);
+}
+.contract-financials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.contract-metric {
+  padding: 10px 12px;
+  border-radius: var(--radius-control);
+  background: var(--surface-brand-soft, #f4f7fa);
+  border: 1px solid var(--border-default);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.contract-metric span {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.contract-metric b,
+.contract-metric strong {
+  font-size: 15px;
+  color: var(--text-primary);
+}
+.contract-metric strong {
+  font-size: 18px;
+  color: var(--brand-cobalt);
+}
+.contract-scope-section {
+  margin-top: 12px;
+}
+.contract-scope-title {
+  font-size: 13px;
+  margin: 0 0 6px;
+  color: var(--text-secondary);
+}
+.contract-note-box {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-style: italic;
+  background: #f8faf9;
+  padding: 10px 14px;
+  border-radius: var(--radius-control);
+}
+.contract-summary-card {
+  padding: 16px 20px;
+  border-radius: var(--radius-control);
+  background: #f8faf9;
+  border: 1px solid var(--border-default);
+  margin-bottom: 20px;
+}
+.contract-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.contract-balance-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.contract-balance-amount {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--brand-cobalt);
+  margin-top: 2px;
+}
+.contract-balance-detail {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: right;
+}
+.contract-delta-pos {
+  color: #b25e00;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.contract-delta-neg {
+  color: #0f6848;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* Quote Comparison Pill & Action additions */
+.matrix-th-meta-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.matrix-revision-pill {
+  background: #e0f2fe;
+  color: #0369a1;
+  margin: 0;
+}
+.matrix-revision-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+/* Tradesperson Quote Revision Request Alert */
+.revision-request-alert {
+  padding: 18px 20px;
+  border: 1.5px solid #fae69e;
+  border-radius: var(--radius-card);
+  background: #fefcf3;
+  margin-bottom: 20px;
+}
+.revision-request-alert-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.revision-request-alert-icon {
+  font-size: 18px;
+}
+.revision-request-alert-title {
+  color: #8a4b00;
+  font-size: 15px;
+}
+.revision-request-alert-desc {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.revision-request-tags-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.revision-field-pill {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+.revision-request-quote {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  background: #ffffff;
+  border-radius: var(--radius-control);
+  border: 1px solid #fae69e;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-primary);
+}
+.revision-prepare-btn {
+  display: inline-block;
+  text-decoration: none;
+}
