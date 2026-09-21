@@ -56,6 +56,7 @@ it('retains the confirmed quote after a network failure and retries it before na
   expect(fetcher.mock.calls.map(call=>call[0])).toEqual(['/api/quotes/1/accept','/api/quotes/1/accept']);
   expect(JSON.parse(fetcher.mock.calls[1][1].body)).toEqual({expectedUserId:'customer'});
   await waitFor(()=>expect(navigation.push).toHaveBeenCalledWith('/islerim/job-1'));
+  expect(navigation.refresh).not.toHaveBeenCalled();
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });
 it('prevents duplicate clicks and escape while acceptance is pending',async()=>{
@@ -72,6 +73,7 @@ it('prevents duplicate clicks and escape while acceptance is pending',async()=>{
   expect(screen.getByRole('dialog')).toBeVisible();
   finish({ok:true,json:async()=>({accepted:true,jobId:null})});
   await waitFor(()=>expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+  expect(navigation.refresh).toHaveBeenCalledTimes(1);
   expect(screen.getByRole('link',{name:'İşlerime git →'})).toHaveAttribute('href','/islerim');
 });
 it('does not offer another acceptance for closed requests or already accepted quotes',()=>{

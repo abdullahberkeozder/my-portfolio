@@ -1,16 +1,52 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
+import type {AuthChangeEvent, Session, User} from '@supabase/supabase-js';
 import { createSupabaseBrowserClient } from '../lib/supabase/browser';
 import NeighborhoodBond from '../components/NeighborhoodBond';
 
 export default function PasswordUpdatePage() {
+  const [client] = useState<ReturnType<typeof createSupabaseBrowserClient>>(() => createSupabaseBrowserClient());
+  const [recoveryState, setRecoveryState] = useState<'checking' | 'ready' | 'invalid' | 'success'>('checking');
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const {data: {subscription}} = client.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
+      if (active && session?.user) setRecoveryState(current => current === 'success' ? current : 'ready');
+    });
+
+    void (async () => {
+      const fragment = new URLSearchParams(window.location.hash.slice(1));
+      const isRecovery = fragment.get('type') === 'recovery';
+      const accessToken = fragment.get('access_token');
+      const refreshToken = fragment.get('refresh_token');
+
+      if (isRecovery && accessToken && refreshToken) {
+        window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+        const {error} = await client.auth.setSession({access_token: accessToken, refresh_token: refreshToken});
+        if (error) {
+          if (active) setRecoveryState('invalid');
+          return;
+        }
+      }
+
+      const {data}: {data: {user: User | null}} = await client.auth.getUser();
+      if (active) setRecoveryState(data.user ? 'ready' : 'invalid');
+    })().catch(() => {
+      if (active) setRecoveryState('invalid');
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, [client]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -23,13 +59,16 @@ export default function PasswordUpdatePage() {
 
     setBusy(true);
     setMessage(null);
-    const { error } = await createSupabaseBrowserClient().auth.updateUser({ password });
+    const { error } = await client.auth.updateUser({ password });
     setBusy(false);
 
     if (error) {
       setMessage({ type: 'error', text: 'Parola güncellenemedi. Sıfırlama bağlantısının süresi dolmuş olabilir.' });
     } else {
-      setMessage({ type: 'success', text: 'Parolanız başarıyla güncellendi! Artık yeni parolanızla giriş yapabilirsiniz.' });
+      setPassword('');
+      setConfirmation('');
+      setRecoveryState('success');
+      setMessage({ type: 'success', text: 'Parolanız başarıyla güncellendi.' });
     }
   }
 
@@ -55,7 +94,36 @@ export default function PasswordUpdatePage() {
             </p>
           </div>
 
-          <form className="account-form" onSubmit={submit}>
+          {recoveryState === 'checking' && (
+            <div className="account-alert-box" role="status" aria-live="polite">
+              Sıfırlama bağlantısı doğrulanıyor…
+            </div>
+          )}
+
+          {recoveryState === 'invalid' && (
+            <div className="account-form">
+              <div className="account-alert-box alert-error" role="alert">
+                Bu sıfırlama bağlantısı geçersiz veya süresi dolmuş. Giriş sayfasından yeni bir bağlantı isteyin.
+              </div>
+              <Link href="/giris" className="dialog-primary account-submit-btn">
+                Yeni bağlantı iste
+              </Link>
+            </div>
+          )}
+
+          {recoveryState === 'success' && message && (
+            <div className="account-form">
+              <div className="account-alert-box alert-success" role="status" aria-live="polite">
+                <span className="alert-icon" aria-hidden="true">✓</span>
+                <span>{message.text}</span>
+              </div>
+              <Link href="/hesap" className="dialog-primary account-submit-btn">
+                Hesabıma git
+              </Link>
+            </div>
+          )}
+
+          {recoveryState === 'ready' && <form className="account-form" onSubmit={submit}>
             <div className="form-field-group">
               <label htmlFor="reset-new-password">Yeni Parola</label>
               <div className="password-input-wrap">
@@ -72,6 +140,7 @@ export default function PasswordUpdatePage() {
                 <button
                   type="button"
                   className="password-toggle-btn"
+                  aria-label={showPassword ? 'Parolayı gizle' : 'Parolayı göster'}
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? 'Gizle' : 'Göster'}
@@ -94,16 +163,16 @@ export default function PasswordUpdatePage() {
             </div>
 
             {message && (
-              <div className={`account-alert-box alert-${message.type}`} role="status">
-                <span className="alert-icon">{message.type === 'success' ? '✓' : '⚠️'}</span>
+              <div className={`account-alert-box alert-${message.type}`} role={message.type === 'error' ? 'alert' : 'status'}>
+                <span className="alert-icon" aria-hidden="true">{message.type === 'success' ? '✓' : '⚠️'}</span>
                 <span>{message.text}</span>
               </div>
             )}
 
             <button className="dialog-primary account-submit-btn" disabled={busy} type="submit">
-              {busy ? 'Güncelleniyor…' : 'Parolayı Güncelle ve Giriş Yap →'}
+              {busy ? 'Güncelleniyor…' : 'Parolayı güncelle'}
             </button>
-          </form>
+          </form>}
 
           <footer className="account-card-footer">
             <p>

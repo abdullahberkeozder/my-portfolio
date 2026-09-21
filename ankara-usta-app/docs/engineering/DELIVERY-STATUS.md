@@ -29,7 +29,7 @@ No lower status implies a higher one. In particular, local verification is not e
 | M4, acceptance continuation | Yes | Yes | Yes | Yes | No | Competing acceptance and single-authoritative-result contract passed; final product UI/accessibility remains in the maturity roadmap |
 | M5, inquiry and operational inbox | Yes | No | No | No | No | Planned in [marketplace plan](MARKETPLACE-REQUEST-AND-CONVERSATION-PLAN.md) |
 | Wizard R0/R1 baseline | Yes | Yes | Yes | Not run | No | Single task surface and editable final summary; [wizard research](WIZARD-REDESIGN-RESEARCH-2026-09-04.md) |
-| Golden vertical slice: Musluk Değişimi | Yes | Yes | Yes | No | No | Submission-to-workspace continuity and shared scope are locally covered; [slice evidence](GOLDEN-VERTICAL-SLICE-MUSLUK-2026-09-04.md) |
+| Golden vertical slice: Musluk Değişimi | Yes | Yes | Yes | Yes | No | Deterministic RPC, real-browser customer–professional happy path and independent customer–professional–admin dispute path passed with scoped cleanup; [P1 inventory](P1-GOLDEN-MUSLUK-INVENTORY-2026-09-21.md) |
 | Wizard R2 completion receipt | Yes | Yes | Yes | Not required | No | Rendered only after authoritative submission success; [R2 evidence](WIZARD-R2-SUCCESS-RECEIPT-2026-09-04.md) |
 | U1, service discovery | Yes | Yes | Yes | Not required | No | Local task-focused browser evidence exists; no release record |
 | U2, request preparation | Yes | Yes | Yes | Partial | No | Wizard, editable review and success receipt are present; complete role/device evidence remains open |
@@ -51,6 +51,6 @@ No lower status implies a higher one. In particular, local verification is not e
 
 Continue local product development, but do not mark M0–M4 as released and do not enable their flags. The isolated technical gate has passed; the next constraint is product maturity rather than environment availability.
 
-The R2 source and evidence are now consolidated into a clean Orkestra staged candidate. The next product slice is the complete `Musluk Değişimi` golden vertical journey, followed by wizard/accessibility and account/recovery matrices and the customer–professional agreement UI. Release-stage advisor, rollback, offline/accessibility and controlled-activation checks remain in [Deferred pre-release validation](PRE-RELEASE-VALIDATION-BACKLOG.md).
+The R2 source and evidence are consolidated. Both the customer–professional `Musluk Değişimi` happy path and its independent administrator dispute fixture now pass in the isolated environment. P1 is multi-account verified but not released. The next product gate is the remaining wizard/accessibility and account/recovery matrix. Release-stage advisor, rollback, offline/accessibility and controlled-activation checks remain in [Deferred pre-release validation](PRE-RELEASE-VALIDATION-BACKLOG.md).
 
 The current sequencing decision is recorded in [Product maturity roadmap, 21 September 2026](PRODUCT-MATURITY-ROADMAP-2026-09-21.md). The 19 September roadmap is retained only as historical context.

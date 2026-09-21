@@ -56,6 +56,10 @@ export function isPathAllowedForRoles(roles: UserRole[], targetPath: string): bo
     return true;
   }
 
+  // Every persisted account has at least one database role. The account
+  // center is shared across customer, professional and operations workspaces.
+  if (targetPath === '/hesap') return roles.length > 0;
+
   return roles.some(role => {
     const prefixes = roleAllowedRoutePrefixes[role] || [];
     return prefixes.some(prefix => targetPath.startsWith(prefix));

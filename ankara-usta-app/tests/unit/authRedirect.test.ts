@@ -1,11 +1,17 @@
 import {describe,expect,it} from 'vitest';
-import {landingPathForRoles,safeNextPath} from '../../app/lib/authRedirect';
+import {isPathAllowedForRoles,landingPathForRoles,safeNextPath} from '../../app/lib/authRedirect';
 
 describe('auth redirects',()=>{
   it('preserves the wizard return query for new and existing accounts',()=>{
     const next='/?resume=1&service=tv-duvar-montaji';
     expect(landingPathForRoles([],next)).toBe(next);
     expect(landingPathForRoles(['customer'],next)).toBe(next);
+  });
+
+  it('returns an authenticated user to the shared account center with its query string', () => {
+    expect(landingPathForRoles(['customer'], '/hesap?workspace=customer')).toBe('/hesap?workspace=customer');
+    expect(landingPathForRoles(['tradesperson'], '/hesap?workspace=professional')).toBe('/hesap?workspace=professional');
+    expect(isPathAllowedForRoles([], '/hesap')).toBe(false);
   });
   it('rejects external and protocol-relative redirects',()=>{
     expect(safeNextPath('https://example.com')).toBeNull();

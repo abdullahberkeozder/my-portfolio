@@ -18,13 +18,13 @@ Timing uses `urgent`, `this_week`, `next_two_weeks`, `flexible`. Legacy labels a
 
 The unit suite checks every visible answer branch for all 26 services and exact parity with the generated SQL payload. It does not execute PostgreSQL. Apply and validate the migration in staging before production; do not interpret source parity as an RLS test.
 
-`scripts/test-marketplace-journey.mjs` performs a real two-account RPC journey without mocks. It is NOT a browser or Realtime delivery test. It requires a disposable staging database with migrations applied and a customer plus an approved, currently verified provider offering TV mounting in Çankaya with current-week availability.
+`scripts/test-marketplace-journey.mjs` performs the real two-account `Musluk Değişimi` RPC journey without mocks. It is NOT a browser or Realtime delivery test. It requires the isolated staging database with migrations applied and the dedicated customer plus an approved, currently verified provider offering `musluk-degisimi` in Sincan/Törekent with current-week availability.
 
 Required environment variables: `E2E_SUPABASE_URL`, `E2E_SUPABASE_KEY` (publishable key), `E2E_CUSTOMER_EMAIL`, `E2E_CUSTOMER_PASSWORD`, `E2E_TRADESPERSON_EMAIL`, `E2E_TRADESPERSON_PASSWORD`, and `E2E_ALLOW_STAGING_WRITES=true`.
 
 Also set `E2E_STAGING_PROJECT_REF` to the separate staging project reference. The runner rejects the production reference `qzrktfyouloqxjbkhjce`, mismatched endpoints and missing explicit write opt-in before authentication. Store credentials only in an ignored local environment file or CI secrets, never in this document.
 
-Run `node scripts/test-marketplace-journey.mjs`. Missing configuration fails instead of reporting a skipped test as a pass. This test creates persistent test requests/jobs/reviews and may enqueue notifications. Disable external delivery on staging. Audit records are not deleted; reset the disposable database after inspection. Never point it at production or reuse real users.
+Run it through `npm run test:remote:p1:musluk` with explicit staging-write consent. Missing configuration fails instead of reporting a skipped test as a pass. The wrapper removes only the fixed golden fixture before and after the run, including immutable audit-linked rows through the isolated SQL cleanup. Disable external delivery on staging. Never point it at production or reuse real users.
 
 ### Remote verification — 2026-09-02
 

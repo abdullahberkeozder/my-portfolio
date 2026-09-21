@@ -26,6 +26,11 @@
     "test:remote:r2": "node scripts/run-phase65-remote.mjs",
     "test:remote:r2:m2-m4": "node scripts/run-r2-contracts-remote.mjs",
     "test:remote:r2:realtime": "node scripts/run-r2-realtime-browser.mjs",
+    "test:remote:p1:musluk": "node scripts/run-p1-musluk-remote.mjs",
+    "test:remote:p1:browser": "node scripts/run-p1-musluk-browser.mjs",
+    "test:remote:p1:dispute": "node scripts/run-p1-admin-dispute-browser.mjs",
+    "test:remote:account-recovery": "node scripts/run-account-recovery-browser.mjs",
+    "test:remote:u4": "node scripts/run-u4-browser.mjs",
     "quality": "npm run repository:check && npm run styles:check && npm run ui-debt:check && npm run lint && npm run type-check && npm run test:coverage && npm run build && npm run dotnet:check"
   },
   "dependencies": {

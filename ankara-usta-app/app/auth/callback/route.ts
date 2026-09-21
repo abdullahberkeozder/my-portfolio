@@ -11,5 +11,12 @@ export async function GET(request: Request) {
     const {error} = await supabase.auth.exchangeCodeForSession(code);
     if (!error) return NextResponse.redirect(new URL(next, url.origin));
   }
+  // Recovery links can use the implicit flow and keep the authenticated
+  // tokens in the URL fragment. Fragments never reach this route, but the
+  // browser carries them to this same-origin redirect. Only the recovery page
+  // may receive that fallback; it independently verifies the resulting user.
+  if (!code && next === '/parola-yenile') {
+    return NextResponse.redirect(new URL(next, url.origin));
+  }
   return NextResponse.redirect(new URL(`/giris?authError=callback&next=${encodeURIComponent(next)}`, url.origin));
 }

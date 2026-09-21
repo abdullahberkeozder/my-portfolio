@@ -41,3 +41,41 @@ for (const width of [320, 390, 820, 1440]) {
     await expect(page.locator('html')).not.toHaveCSS('overflow','hidden');
   });
 }
+
+test('wizard traps keyboard focus, keeps controls usable and restores the opener', async ({page}) => {
+  await page.setViewportSize({width: 390, height: 844});
+  await page.goto('/');
+  const opener = page.getByLabel('Hızlı arama etiketleri').getByRole('button', {name:'Musluk Değişimi'});
+  await opener.focus();
+  await opener.press('Enter');
+  const classification = page.getByRole('dialog', {name:'İhtiyacınızı doğru anladık mı?'});
+  await classification.getByRole('button', {name:'Bu Hizmetle Devam Et →'}).click();
+
+  const wizard = page.getByRole('dialog', {name:'Musluk Değişimi'});
+  await expect(wizard.getByRole('heading', {name:'Hangi musluk/batarya değişecek?'})).toBeFocused();
+  const controls = wizard.locator('button:visible, select:visible, a[href]:visible');
+  for (let index = 0; index < await controls.count(); index += 1) {
+    const box = await controls.nth(index).boundingBox();
+    expect(box, `control ${index} should have a box`).not.toBeNull();
+    expect(box!.height, `control ${index} should be at least 44px tall`).toBeGreaterThanOrEqual(44);
+  }
+  const choices = wizard.locator('label').filter({has:wizard.getByRole('radio')});
+  for (let index = 0; index < await choices.count(); index += 1) {
+    const box = await choices.nth(index).boundingBox();
+    expect(box, `choice ${index} should have a box`).not.toBeNull();
+    expect(box!.height, `choice ${index} should be at least 44px tall`).toBeGreaterThanOrEqual(44);
+  }
+
+  await page.keyboard.press('Shift+Tab');
+  await expect(wizard.getByRole('radio').last()).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(wizard.getByRole('button', {name:'Kapat'})).toBeFocused();
+  for (let index = 0; index < await controls.count() + await choices.count() + 2; index += 1) {
+    await page.keyboard.press('Tab');
+    expect(await wizard.evaluate((dialog) => dialog.contains(document.activeElement))).toBe(true);
+  }
+  await page.keyboard.press('Escape');
+  await expect(wizard).toHaveCount(0);
+  await expect(opener).toBeFocused();
+  await expect(page.locator('html')).not.toHaveCSS('overflow','hidden');
+});

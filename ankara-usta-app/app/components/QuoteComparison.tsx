@@ -77,8 +77,11 @@ export default function QuoteComparison({ quotes: inputQuotes, currentUserId, ca
       setAccepted(true);
       setConfirmQuote(null);
       setMessage(`${quote.tradespersonName} ustanın teklifi kabul edildi.`);
+      // Do not race a destination navigation with a refresh of this page.
+      // Vinext can keep the customer on the comparison route when both are
+      // scheduled together, even though acceptance and job creation succeed.
       if (body.jobId) router.push(`/islerim/${body.jobId}`);
-      router.refresh();
+      else router.refresh();
     } catch {
       setError('Yanıt alınamadı; işlem gerçekleşmiş olabilir. Aynı teklifi yeniden deneyebilir veya işlerinizi kontrol edebilirsiniz.');
     } finally {
