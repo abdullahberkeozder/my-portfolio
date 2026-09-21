@@ -6602,3 +6602,173 @@ button, [role="button"], a.dialog-primary, input[type="submit"] {
   display: inline-block;
   text-decoration: none;
 }
+
+/* P4 Artisan Verification, Account Center Status & Admin Document Review */
+.artisan-status-card {
+  padding: 20px;
+  border-radius: var(--radius-card);
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  margin-bottom: 20px;
+}
+.artisan-status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.artisan-status-title {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text-primary);
+}
+.artisan-feedback-box {
+  padding: 12px 16px;
+  border-radius: var(--radius-control);
+  background: #fefcf3;
+  border: 1px solid #fae69e;
+  font-size: 13px;
+  color: #8a4b00;
+  margin-bottom: 14px;
+}
+.artisan-action-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-weight: 700;
+  color: var(--brand-cobalt);
+  text-decoration: none;
+}
+.artisan-action-link:hover {
+  text-decoration: underline;
+}
+.artisan-verified-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+.artisan-badge-pro {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+.artisan-badges-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.artisan-status-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 8px;
+}
+.artisan-links-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.artisan-update-btn {
+  display: inline-block;
+  text-decoration: none;
+}
+
+/* Admin Document Review Styles */
+.admin-doc-card {
+  padding: 14px 16px;
+  border-radius: var(--radius-control);
+  background: #ffffff;
+  border: 1px solid var(--border-default);
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.admin-doc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.admin-doc-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.admin-doc-preview-link {
+  font-size: 12px;
+  color: var(--brand-cobalt);
+  font-weight: 600;
+  text-decoration: none;
+}
+.admin-doc-preview-link:hover {
+  text-decoration: underline;
+}
+.admin-doc-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-default);
+}
+.admin-expiry-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.admin-expiry-input {
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--border-default);
+}
+.admin-btn-verify {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-control);
+  background: #0f6848;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+}
+.admin-btn-verify:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.admin-btn-reject {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: var(--radius-control);
+  background: #fff;
+  color: #c53030;
+  border: 1px solid #feb2b2;
+  cursor: pointer;
+}
+.admin-btn-reject:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.admin-badge-notice {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: 8px 12px;
+  background: var(--surface-brand-soft, #f4f7fa);
+  border-radius: var(--radius-control);
+  margin-top: 8px;
+}
