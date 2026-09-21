@@ -43,4 +43,27 @@ describe('mapDatabaseError', () => {
     expect(mapped.code).toBe('INTERNAL_ERROR');
     expect(mapped.message).toBe('İşlem sırasında bir hata oluştu.');
   });
+
+  it('handles string messages directly with 400 default status and correlationId', () => {
+    const mapped = mapDatabaseError('Oturum açmanız gerekiyor.');
+    expect(mapped.status).toBe(400);
+    expect(mapped.code).toBe('USER_ERROR');
+    expect(mapped.message).toBe('Oturum açmanız gerekiyor.');
+    expect(mapped.correlationId).toMatch(/^err_/);
+  });
+
+  it('jsonApiError returns a standardized response with no-store headers and correlationId', async () => {
+    const { jsonApiError } = await import('../../app/lib/apiErrors');
+    const response = jsonApiError('Geçersiz istek', undefined, 400);
+
+    expect(response.status).toBe(400);
+    expect(response.headers.get('Cache-Control')).toBe('private, no-store');
+
+    const body = await response.json();
+    expect(body).toMatchObject({
+      error: 'Geçersiz istek',
+      code: 'USER_ERROR',
+      correlationId: expect.stringMatching(/^err_/),
+    });
+  });
 });

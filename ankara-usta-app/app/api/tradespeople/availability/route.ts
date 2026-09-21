@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
+import { jsonApiError } from '../../../lib/apiErrors';
 
 const availabilitySchema=z.object({
   availableFrom:z.iso.date(),
@@ -14,7 +15,7 @@ export async function POST(request:Request){
     const payload=availabilitySchema.parse(await request.json());
     const supabase=await createSupabaseServerClient();
     const {data:{user}}=await supabase.auth.getUser();
-    if(!user)return NextResponse.json({error:'Oturum açmanız gerekiyor.'},{status:401});
+    if(!user)return jsonApiError('Oturum açmanız gerekiyor.',undefined,401);
     const {data,error}=await supabase.from('tradesperson_availability').upsert({
       tradesperson_id:user.id,
       available_from:payload.availableFrom,
@@ -26,6 +27,6 @@ export async function POST(request:Request){
     if(error)throw error;
     return NextResponse.json({availability:data});
   }catch(error){
-    return NextResponse.json({error:error instanceof Error?error.message:'Müsaitlik kaydedilemedi.'},{status:400});
+    return jsonApiError(error,'Müsaitlik kaydedilemedi.',400);
   }
 }

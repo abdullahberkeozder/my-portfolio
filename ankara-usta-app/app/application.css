@@ -6772,3 +6772,19 @@ button, [role="button"], a.dialog-primary, input[type="submit"] {
   border-radius: var(--radius-control);
   margin-top: 8px;
 }
+.admin-queue-container {
+  max-width: 1140px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+.admin-queue-header {
+  margin-top: 16px;
+}
+.admin-tabs-nav {
+  margin-top: 24px;
+}
+.admin-pagination-wrapper {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}

@@ -41,6 +41,44 @@ describe('consent-gated funnel analytics',()=>{
     window.removeEventListener('orkestra:analytics',listener);
   });
 
+  it('scrubs extended sensitive fields such as notes, description, answers and storage_path',()=>{
+    localStorage.setItem('ankara_analytics_consent','accepted');
+    const listener=vi.fn();window.addEventListener('orkestra:analytics',listener);
+    trackFunnel('wizard_abandoned',{
+      serviceId:'musluk-degisimi',
+      stepIndex:2,
+      durationSeconds:45,
+      description:'Private customer text with sensitive details',
+      notes:'Personal phone and note',
+      answers:'A: 5 katlı bina',
+      storage_path:'user-123/secret_doc.pdf',
+    });
+    expect(listener).toHaveBeenCalledOnce();
+    const props = listener.mock.calls[0][0].detail.properties;
+    expect(props).toEqual({
+      serviceId:'musluk-degisimi',
+      stepIndex:2,
+      durationSeconds:45,
+    });
+    expect(props).not.toHaveProperty('description');
+    expect(props).not.toHaveProperty('notes');
+    expect(props).not.toHaveProperty('answers');
+    expect(props).not.toHaveProperty('storage_path');
+    window.removeEventListener('orkestra:analytics',listener);
+  });
+
+  it('tracks reliability and lifecycle events like first_quote_received and duplicate_submission_blocked',()=>{
+    localStorage.setItem('ankara_analytics_consent','accepted');
+    const listener=vi.fn();window.addEventListener('orkestra:analytics',listener);
+    trackFunnel('first_quote_received',{serviceId:'klima-bakimi',elapsedSeconds:1800});
+    trackFunnel('duplicate_submission_blocked',{serviceId:'klima-bakimi'});
+    trackFunnel('auth_return_completed',{serviceId:'klima-bakimi',returnTarget:'/taleplerim'});
+    trackFunnel('realtime_reconnected',{channel:'job-123'});
+
+    expect(listener).toHaveBeenCalledTimes(4);
+    window.removeEventListener('orkestra:analytics',listener);
+  });
+
   it('uses sendBeacon only when an endpoint is configured',()=>{
     localStorage.setItem('ankara_analytics_consent','accepted');
     vi.stubEnv('NEXT_PUBLIC_ANALYTICS_ENDPOINT','https://analytics.example.test/events');

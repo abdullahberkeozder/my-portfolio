@@ -25,12 +25,23 @@ export const ALLOWED_EVENTS = new Set([
   'service_selected',
   'wizard_started',
   'wizard_completed',
+  'wizard_abandoned',
   'draft_resumed',
   'quote_profile_opened',
+
+  // Authentication return
+  'auth_return_completed',
+  'auth_return_failed',
+
+  // Reliability & duplicates
+  'duplicate_submission_blocked',
+  'realtime_reconnected',
+  'realtime_disconnected',
 
   // Quote lifecycle (client-observable)
   'quote_accepted',
   'quote_rejected',
+  'first_quote_received',
   'first_qualified_quote_received',
 
   // Job lifecycle (supplement server events)
@@ -59,6 +70,12 @@ const SENSITIVE_KEYS = new Set([
   'name',
   'display_name',
   'tc_no',
+  'details',
+  'notes',
+  'description',
+  'original_name',
+  'storage_path',
+  'answers',
 ]);
 
 function sanitizeProperties(

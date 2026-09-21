@@ -1,3 +1,5 @@
+import { NextResponse } from 'next/server';
+
 export type PublicApiError = {
   code: string;
   message: string;
@@ -22,6 +24,15 @@ const ERROR_CODE_MAP: Record<string, { message: string; status: number }> = {
 
 export function mapDatabaseError(error: unknown, fallbackMessage = 'İşlem sırasında bir hata oluştu.'): PublicApiError {
   const correlationId = `err_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+
+  if (typeof error === 'string') {
+    return {
+      code: 'USER_ERROR',
+      message: error,
+      correlationId,
+      status: 400,
+    };
+  }
 
   if (typeof error === 'object' && error !== null) {
     const errObj = error as { code?: string; message?: string; status?: number };
@@ -62,4 +73,20 @@ export function publicErrorBody(error: unknown, fallbackMessage?: string) {
     correlationId: mapped.correlationId,
     status: mapped.status,
   };
+}
+
+export function jsonApiError(error: unknown, fallbackMessage?: string, statusOverride?: number) {
+  const mapped = mapDatabaseError(error, fallbackMessage);
+  const status = statusOverride ?? mapped.status;
+  return NextResponse.json(
+    {
+      error: mapped.message,
+      code: mapped.code,
+      correlationId: mapped.correlationId,
+    },
+    {
+      status,
+      headers: { 'Cache-Control': 'private, no-store' },
+    }
+  );
 }
