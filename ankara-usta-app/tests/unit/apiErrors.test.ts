@@ -7,6 +7,7 @@ describe('mapDatabaseError', () => {
     const mapped = mapDatabaseError(error);
 
     expect(mapped.status).toBe(409);
+    expect(mapped.code).toBe('CONFLICT');
     expect(mapped.message).toContain('zaten mevcut');
     expect(mapped.correlationId).toMatch(/^err_/);
   });
@@ -24,6 +25,7 @@ describe('mapDatabaseError', () => {
     const mapped = mapDatabaseError(error);
 
     expect(mapped.status).toBe(404);
+    expect(mapped.code).toBe('NOT_FOUND');
     expect(mapped.message).toContain('Aranan kayıt bulunamadı');
   });
 
@@ -32,6 +34,7 @@ describe('mapDatabaseError', () => {
     const mapped = mapDatabaseError(error);
 
     expect(mapped.status).toBe(403);
+    expect(mapped.code).toBe('FORBIDDEN');
     expect(mapped.message).toContain('yetkiniz bulunmuyor');
   });
 
@@ -58,6 +61,7 @@ describe('mapDatabaseError', () => {
 
     expect(response.status).toBe(400);
     expect(response.headers.get('Cache-Control')).toBe('private, no-store');
+    expect(response.headers.get('X-Correlation-ID')).toMatch(/^err_/);
 
     const body = await response.json();
     expect(body).toMatchObject({
@@ -65,5 +69,20 @@ describe('mapDatabaseError', () => {
       code: 'USER_ERROR',
       correlationId: expect.stringMatching(/^err_/),
     });
+  });
+
+  it('maps raised database exceptions to a public conflict without exposing the message',()=>{
+    const mapped=mapDatabaseError({code:'P0001',message:'private function detail'},'İşlem artık uygulanamıyor.');
+    expect(mapped).toMatchObject({code:'CONFLICT',status:409,message:'İşlem artık uygulanamıyor.'});
+    expect(mapped.message).not.toContain('private');
+  });
+
+  it('jsonPublicError creates a stable public code without leaking internals',async()=>{
+    const {jsonPublicError}=await import('../../app/lib/apiErrors');
+    const response=jsonPublicError('AUTH_REQUIRED','Oturum açmanız gerekiyor.',401);
+    expect(response.status).toBe(401);
+    const body=await response.json() as {correlationId:string};
+    expect(body).toMatchObject({error:'Oturum açmanız gerekiyor.',code:'AUTH_REQUIRED',correlationId:expect.stringMatching(/^err_/)});
+    expect(response.headers.get('X-Correlation-ID')).toBe(body.correlationId);
   });
 });

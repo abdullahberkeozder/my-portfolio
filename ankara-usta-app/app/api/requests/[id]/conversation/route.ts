@@ -3,18 +3,18 @@ import {z} from 'zod';
 import {conversationActionSchema,conversationQuerySchema} from '../../../../domain/requestConversation';
 import {createSupabaseServerClient} from '../../../../lib/supabase/server';
 import {prejobChatEnabled} from '../../../../lib/prejobChat';
-import {publicErrorBody} from '../../../../lib/apiErrors';
+import {jsonApiError,jsonPublicError} from '../../../../lib/apiErrors';
 
 async function handle(request:Request,context:{params:Promise<{id:string}>},write:boolean){
   try{
-    if(!prejobChatEnabled())return NextResponse.json({error:'İş öncesi görüşmeler henüz açılmadı.'},{status:503});
+    if(!prejobChatEnabled())return jsonPublicError('FEATURE_DISABLED','İş öncesi görüşmeler henüz açılmadı.',503);
     const {id}=await context.params;z.uuid().parse(id);
     const supabase=await createSupabaseServerClient();
     const {data:{user}}=await supabase.auth.getUser();
-    if(!user)return NextResponse.json({error:'Görüşme için giriş yapın.'},{status:401});
+    if(!user)return jsonPublicError('AUTH_REQUIRED','Görüşme için giriş yapın.',401);
     const raw=write?await request.json():Object.fromEntries(new URL(request.url).searchParams);
     const expectedUserId=z.object({expectedUserId:z.uuid()}).parse(raw).expectedUserId;
-    if(expectedUserId!==user.id)return NextResponse.json({error:'Hesap değişti. Görüşmeyi yeniden açın.'},{status:409});
+    if(expectedUserId!==user.id)return jsonPublicError('ACCOUNT_CHANGED','Hesap değişti. Görüşmeyi yeniden açın.',409);
     const input=write?conversationActionSchema.parse(raw):conversationQuerySchema.parse(raw);
     const action='action' in input?input.action:'fetch';
     const {data,error}=await supabase.rpc('request_conversation',{
@@ -25,9 +25,8 @@ async function handle(request:Request,context:{params:Promise<{id:string}>},writ
     if(error)throw error;
     return NextResponse.json(data,{headers:{'Cache-Control':'private, no-store'}});
   }catch(error){
-    if(error instanceof z.ZodError||error instanceof SyntaxError)return NextResponse.json({error:'Mesajı ve görüşme bilgilerini kontrol edin.'},{status:400});
-    const body=publicErrorBody(error,'Görüşme yüklenemedi veya artık mesaj kabul etmiyor. Tekrar deneyin.');
-    return NextResponse.json(body,{status:body.status});
+    if(error instanceof z.ZodError||error instanceof SyntaxError)return jsonPublicError('INVALID_INPUT','Mesajı ve görüşme bilgilerini kontrol edin.',400);
+    return jsonApiError(error,'Görüşme yüklenemedi veya artık mesaj kabul etmiyor. Tekrar deneyin.');
   }
 }
 export const GET=(request:Request,context:{params:Promise<{id:string}>})=>handle(request,context,false);

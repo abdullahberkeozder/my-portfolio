@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createSupabaseServerClient } from '../../../../lib/supabase/server';
-import { publicErrorBody } from '../../../../lib/apiErrors';
+import {jsonApiError,jsonPublicError} from '../../../../lib/apiErrors';
 
 const mediaSchema = z.object({
   storagePath: z.string().trim().min(1).max(500),
@@ -15,9 +15,9 @@ export async function POST(request: Request, context: {params: Promise<{id: stri
     const payload = mediaSchema.parse(await request.json());
     const supabase = await createSupabaseServerClient();
     const {data: {user}} = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({error: 'Oturum açmanız gerekiyor.'}, {status: 401});
+    if (!user) return jsonPublicError('AUTH_REQUIRED','Oturum açmanız gerekiyor.',401);
     if (!payload.storagePath.startsWith(`${user.id}/${id}/`)) {
-      return NextResponse.json({error: 'Medya yolu geçersiz.'}, {status: 403});
+      return jsonPublicError('INVALID_MEDIA_PATH','Medya yolu geçersiz.',403);
     }
 
     const {data, error} = await supabase.from('request_media').upsert({
@@ -30,7 +30,7 @@ export async function POST(request: Request, context: {params: Promise<{id: stri
     if (error) throw error;
     return NextResponse.json({media: data});
   } catch (error) {
-    const body = publicErrorBody(error, 'Medya kaydı tamamlanamadı.');
-    return NextResponse.json(body, {status: body.status});
+    if(error instanceof z.ZodError||error instanceof SyntaxError)return jsonPublicError('INVALID_INPUT','Medya bilgilerini kontrol edin.',400);
+    return jsonApiError(error,'Medya kaydı tamamlanamadı.');
   }
 }

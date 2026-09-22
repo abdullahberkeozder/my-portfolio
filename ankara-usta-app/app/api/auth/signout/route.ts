@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
+import {jsonApiError,jsonPublicError} from '../../../lib/apiErrors';
 
 export async function POST(request: Request) {
-  if(request.headers.get('origin')!==new URL(request.url).origin)return NextResponse.json({error:'İstek doğrulanamadı.'},{status:403});
+  if(request.headers.get('origin')!==new URL(request.url).origin)return jsonPublicError('INVALID_ORIGIN','İstek doğrulanamadı.',403);
   try {
     const supabase = await createSupabaseServerClient();
     const {error}=await supabase.auth.signOut({scope:'local'});
-    if(error)return NextResponse.json({error:'Oturum kapatılamadı. Yeniden deneyin.'},{status:502,headers:{'Cache-Control':'no-store'}});
+    if(error)return jsonApiError(error,'Oturum kapatılamadı. Yeniden deneyin.',502);
 
     const response = NextResponse.json({ success: true, redirect: '/giris' },{headers:{'Cache-Control':'no-store'}});
     // Clear simulated dev role cookie on sign out
@@ -17,10 +18,7 @@ export async function POST(request: Request) {
     });
 
     return response;
-  } catch {
-    return NextResponse.json(
-      { error: 'Çıkış yapılamadı.' },
-      { status: 500 }
-    );
+  } catch(error) {
+    return jsonApiError(error,'Çıkış yapılamadı.');
   }
 }

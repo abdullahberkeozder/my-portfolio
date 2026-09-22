@@ -3,17 +3,24 @@ import { ZodError } from 'zod';
 import { validateRequestDraft } from '../../../domain/requestPersistence';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
 import { directedRequestsEnabled } from '../../../lib/directedRequests';
-import { publicErrorBody } from '../../../lib/apiErrors';
+import {jsonApiError,jsonPublicError} from '../../../lib/apiErrors';
+import { isPilotIntakeEnabled, INTAKE_PAUSED_RESPONSE } from '../../../lib/pilotIntake';
 
 export async function POST(request: Request) {
   try {
+    if (!isPilotIntakeEnabled()) {
+      return jsonPublicError(INTAKE_PAUSED_RESPONSE.code, INTAKE_PAUSED_RESPONSE.message, INTAKE_PAUSED_RESPONSE.status);
+    }
     const supabase = await createSupabaseServerClient();
     const {data: {user}} = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({error: 'Oturum açmanız gerekiyor.'}, {status: 401});
+    if (!user)return jsonPublicError('AUTH_REQUIRED','Oturum açmanız gerekiyor.',401);
 
-    const {payload, service} = validateRequestDraft(await request.json());
+    let validated:ReturnType<typeof validateRequestDraft>;
+    try{validated=validateRequestDraft(await request.json());}
+    catch{return jsonPublicError('INVALID_INPUT','Talep verisi geçersiz. Hizmet ve kapsamı kontrol edin.',400);}
+    const {payload,service}=validated;
     if (payload.routingMode === 'direct' && !directedRequestsEnabled()) {
-      return NextResponse.json({error:'Ustaya özel talepler henüz kullanıma açılmadı.'},{status:503});
+      return jsonPublicError('FEATURE_DISABLED','Ustaya özel talepler henüz kullanıma açılmadı.',503);
     }
     const {data, error} = await supabase
       .rpc(payload.routingMode === 'direct' ? 'upsert_direct_request_draft' : 'upsert_request_draft', {
@@ -30,12 +37,11 @@ export async function POST(request: Request) {
 
     if (error) throw error;
     if (data?.target_professional_id && data.target_professional_id !== payload.targetProfessionalId) {
-      return NextResponse.json({error:'Taslağın hedef ustası değiştirilemez. Yeni bir talep başlatın.'},{status:409});
+      return jsonPublicError('TARGET_PROFESSIONAL_CHANGED','Taslağın hedef ustası değiştirilemez. Yeni bir talep başlatın.',409);
     }
     return NextResponse.json({request: data});
   } catch (error) {
-    if(error instanceof ZodError || error instanceof Error) return NextResponse.json({error:'Talep verisi geçersiz. Hizmet ve kapsamı kontrol edin.'},{status:400});
-    const body=publicErrorBody(error,'Taslak kaydedilemedi. Seçilen ustanın hizmet ve bölge uygunluğunu kontrol edin.');
-    return NextResponse.json(body,{status:body.status});
+    if(error instanceof ZodError||error instanceof SyntaxError)return jsonPublicError('INVALID_INPUT','Talep verisi geçersiz. Hizmet ve kapsamı kontrol edin.',400);
+    return jsonApiError(error,'Taslak kaydedilemedi. Seçilen ustanın hizmet ve bölge uygunluğunu kontrol edin.');
   }
 }

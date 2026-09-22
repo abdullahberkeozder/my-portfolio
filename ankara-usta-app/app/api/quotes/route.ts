@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { quoteVersionInputSchema } from '../../domain';
-import { publicErrorBody } from '../../lib/apiErrors';
+import {jsonApiError,jsonPublicError} from '../../lib/apiErrors';
 import { createSupabaseServerClient } from '../../lib/supabase/server';
 
 const createQuoteSchema=quoteVersionInputSchema.extend({requestId:z.string().uuid()});
@@ -11,7 +11,7 @@ export async function POST(request:Request){
     const payload=createQuoteSchema.parse(await request.json());
     const supabase=await createSupabaseServerClient();
     const {data:{user}}=await supabase.auth.getUser();
-    if(!user)return NextResponse.json({error:'Oturum açmanız gerekiyor.'},{status:401});
+    if(!user)return jsonPublicError('AUTH_REQUIRED','Oturum açmanız gerekiyor.',401);
     const {data,error}=await supabase.rpc('create_quote_version',{
       p_request_id:payload.requestId,
       p_labor_amount_kurus:payload.laborAmountKurus,
@@ -25,9 +25,8 @@ export async function POST(request:Request){
     if(error)throw error;
     return NextResponse.json({quote:data});
   }catch(error){
-    // Use publicErrorBody to avoid leaking raw Supabase / PostgreSQL messages
-    const err=publicErrorBody(error,'Teklif kaydedilemedi.');
-    return NextResponse.json({error:err.error,code:err.code,correlationId:err.correlationId},{status:err.status});
+    if(error instanceof z.ZodError||error instanceof SyntaxError)return jsonPublicError('INVALID_INPUT','Teklif alanlarını kontrol edin.',400);
+    return jsonApiError(error,'Teklif kaydedilemedi.');
   }
 }
 

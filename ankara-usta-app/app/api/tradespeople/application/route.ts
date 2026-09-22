@@ -1,18 +1,21 @@
 import { NextResponse } from 'next/server';
 import { tradespersonDocumentInputSchema, validateTradespersonApplication } from '../../../domain/tradespersonApplication';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
-import { jsonApiError } from '../../../lib/apiErrors';
+import {jsonApiError,jsonPublicError} from '../../../lib/apiErrors';
+import {z} from 'zod';
 
 export async function POST(request:Request){
   try{
     const input=await request.json() as {document?:unknown};
-    const payload=validateTradespersonApplication(input);
-    const document=tradespersonDocumentInputSchema.parse(input.document);
+    let payload:ReturnType<typeof validateTradespersonApplication>;
+    let document:z.infer<typeof tradespersonDocumentInputSchema>;
+    try{payload=validateTradespersonApplication(input);document=tradespersonDocumentInputSchema.parse(input.document);}
+    catch{return jsonPublicError('INVALID_INPUT','Başvuru bilgilerini kontrol edin.',400);}
     const supabase=await createSupabaseServerClient();
     const {data:{user}}=await supabase.auth.getUser();
-    if(!user)return jsonApiError('Oturum açmanız gerekiyor.',undefined,401);
+    if(!user)return jsonPublicError('AUTH_REQUIRED','Oturum açmanız gerekiyor.',401);
 
-    if(!document.storagePath.startsWith(`${user.id}/`))return jsonApiError('Belge yolu geçersiz.',undefined,403);
+    if(!document.storagePath.startsWith(`${user.id}/`))return jsonPublicError('INVALID_DOCUMENT_PATH','Belge yolu geçersiz.',403);
     const {data:profile,error:submitError}=await supabase.rpc('submit_tradesperson_application',{
       p_display_name:payload.displayName,p_bio:payload.bio,p_service_ids:payload.serviceIds,
       p_districts:payload.districts,p_reference:payload.reference??null,
@@ -22,6 +25,7 @@ export async function POST(request:Request){
     if(submitError)throw submitError;
     return NextResponse.json({profile});
   }catch(error){
-    return jsonApiError(error,'Başvuru kaydedilemedi.',400);
+    if(error instanceof z.ZodError||error instanceof SyntaxError)return jsonPublicError('INVALID_INPUT','Başvuru bilgilerini kontrol edin.',400);
+    return jsonApiError(error,'Başvuru kaydedilemedi.');
   }
 }

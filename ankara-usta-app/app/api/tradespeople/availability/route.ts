@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
-import { jsonApiError } from '../../../lib/apiErrors';
+import {jsonApiError,jsonPublicError} from '../../../lib/apiErrors';
 
 const availabilitySchema=z.object({
   availableFrom:z.iso.date(),
@@ -15,7 +15,7 @@ export async function POST(request:Request){
     const payload=availabilitySchema.parse(await request.json());
     const supabase=await createSupabaseServerClient();
     const {data:{user}}=await supabase.auth.getUser();
-    if(!user)return jsonApiError('Oturum açmanız gerekiyor.',undefined,401);
+    if(!user)return jsonPublicError('AUTH_REQUIRED','Oturum açmanız gerekiyor.',401);
     const {data,error}=await supabase.from('tradesperson_availability').upsert({
       tradesperson_id:user.id,
       available_from:payload.availableFrom,
@@ -27,6 +27,7 @@ export async function POST(request:Request){
     if(error)throw error;
     return NextResponse.json({availability:data});
   }catch(error){
-    return jsonApiError(error,'Müsaitlik kaydedilemedi.',400);
+    if(error instanceof z.ZodError||error instanceof SyntaxError)return jsonPublicError('INVALID_INPUT','Müsaitlik bilgilerini kontrol edin.',400);
+    return jsonApiError(error,'Müsaitlik kaydedilemedi.');
   }
 }

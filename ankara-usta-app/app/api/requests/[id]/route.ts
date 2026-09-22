@@ -1,23 +1,22 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
-import { publicErrorBody } from '../../../lib/apiErrors';
+import {jsonApiError,jsonPublicError} from '../../../lib/apiErrors';
 
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     const {id} = await context.params;
-    if (!z.uuid().safeParse(id).success) return NextResponse.json({error:'Talep kimliği geçersiz.'},{status:400});
+    if (!z.uuid().safeParse(id).success)return jsonPublicError('INVALID_INPUT','Talep kimliği geçersiz.',400);
     const supabase = await createSupabaseServerClient();
     const {data:{user}} = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({error:'Oturum açmanız gerekiyor.'},{status:401});
+    if (!user)return jsonPublicError('AUTH_REQUIRED','Oturum açmanız gerekiyor.',401);
     const {data,error} = await supabase.from('service_requests')
       .select('*')
       .eq('id',id).eq('customer_id',user.id).eq('status','draft').single();
     if (error) throw error;
     return NextResponse.json({request:data});
   } catch (error) {
-    const body=publicErrorBody(error,'Taslak yüklenemedi.');
-    return NextResponse.json(body,{status:body.status});
+    return jsonApiError(error,'Taslak yüklenemedi.');
   }
 }
 
@@ -28,13 +27,13 @@ export async function DELETE(
   try {
     const { id } = await context.params;
     if (!z.uuid().safeParse(id).success) {
-      return NextResponse.json({ error: 'Talep kimliği geçersiz.' }, { status: 400 });
+      return jsonPublicError('INVALID_INPUT','Talep kimliği geçersiz.',400);
     }
 
     const supabase = await createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      return NextResponse.json({ error: 'Oturum açmanız gerekiyor.' }, { status: 401 });
+      return jsonPublicError('AUTH_REQUIRED','Oturum açmanız gerekiyor.',401);
     }
 
     const { data: existing, error: readError } = await supabase
@@ -44,11 +43,11 @@ export async function DELETE(
       .single();
 
     if (readError || !existing) {
-      return NextResponse.json({ error: 'Talep bulunamadı.' }, { status: 404 });
+      return jsonPublicError('NOT_FOUND','Talep bulunamadı.',404);
     }
 
     if (existing.customer_id !== user.id) {
-      return NextResponse.json({ error: 'Bu işlem için yetkiniz yok.' }, { status: 403 });
+      return jsonPublicError('FORBIDDEN','Bu işlem için yetkiniz yok.',403);
     }
 
     if (existing.status === 'draft') {
@@ -67,7 +66,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    const body=publicErrorBody(error,'Talep silinemedi.');
-    return NextResponse.json(body,{status:body.status});
+    return jsonApiError(error,'Talep silinemedi.');
   }
 }

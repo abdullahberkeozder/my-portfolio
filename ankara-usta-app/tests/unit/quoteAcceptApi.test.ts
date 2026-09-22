@@ -38,6 +38,14 @@ it('dispatches to the existing RPC and returns the created job', async () => {
   expect(await (await send()).json()).toMatchObject({ jobId: other });
   expect(mock.rpc).toHaveBeenCalledWith('accept_quote', { p_quote_id: id });
 });
+it('waits for the committed job handoff when the first post-RPC read is stale', async () => {
+  mock.read
+    .mockResolvedValueOnce({ data: null, error: null })
+    .mockResolvedValueOnce({ data: null, error: null })
+    .mockResolvedValueOnce({ data: { id: other }, error: null });
+  expect(await (await send()).json()).toMatchObject({ accepted: true, jobId: other });
+  expect(mock.read).toHaveBeenCalledTimes(3);
+});
 it('recovers a simulated lost race only when the same accepted quote has a job', async () => {
   mock.rpc.mockResolvedValue({ data: null, error: { code: 'P0001', message: 'private SQL' } });
   mock.read.mockResolvedValueOnce({ data: null }).mockResolvedValueOnce({ data: { id: other } });
