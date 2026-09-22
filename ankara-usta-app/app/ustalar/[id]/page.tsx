@@ -23,8 +23,12 @@ export default async function PublicTradespersonPage({ params, searchParams }: {
   ]);
 
   if (profileResult.error || !profileResult.data) notFound();
+  if (verificationResult.error) {
+    return <main className="account-shell"><p role="alert">Usta doğrulama bilgisi şu anda alınamıyor. Lütfen yeniden deneyin.</p><Link href="/ustalar">Ustalara dön</Link></main>;
+  }
+  if (verificationResult.data !== true) notFound();
   const profile = profileResult.data;
-  const hasLoadError = servicesResult.error || areasResult.error || reviewsResult.error || metricsResult.error || verificationResult.error;
+  const hasLoadError = servicesResult.error || areasResult.error || reviewsResult.error || metricsResult.error;
   const serviceNames = (servicesResult.data ?? []).map(item => services.find(service => service.id === item.service_id)?.name ?? item.service_id);
 
   return (
@@ -40,7 +44,7 @@ export default async function PublicTradespersonPage({ params, searchParams }: {
             <p>{profile.bio}</p>
             <div className="profile-badges">
               <span>Başvuru onaylı</span>
-              {verificationResult.data === true && <span>Mesleki belge güncel</span>}
+              <span>Mesleki belge güncel</span>
             </div>
           </div>
         </header>

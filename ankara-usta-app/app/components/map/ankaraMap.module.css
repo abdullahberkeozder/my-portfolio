@@ -90,14 +90,13 @@
   background: var(--brand-parchment);
   border-bottom: 1px solid var(--border-default);
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: thin;
 }
 
 .districtPill {
-  min-height: 34px;
+  min-height: 44px;
   padding: 0 14px;
   border-radius: 18px;
   border: 1px solid var(--border-default);
@@ -107,7 +106,7 @@
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: all 140ms ease;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
 }
 
 .districtPill:hover {
@@ -493,19 +492,18 @@
 }
 
 .pinNotification { background:#e6f7f1; border-bottom:1px solid #a7ebd4; color:#0d7a5f; }
-.searchBox { margin-left:auto; display:flex; align-items:center; }
-.searchInput { padding:7px 12px; border:1px solid var(--border-subtle,#dce3dc); border-radius:8px; font-size:.85rem; background:#fff; color:var(--text-primary,#1c2826); min-width:200px; }
+.searchBox { display:flex; flex:1 1 220px; align-items:center; }
+.searchInput { width:100%; min-height:44px; padding:7px 12px; border:1px solid var(--border-subtle,#dce3dc); border-radius:8px; font-size:.85rem; background:#fff; color:var(--text-primary,#1c2826); min-width:0; }
 .searchInput:focus { outline:2px solid var(--brand-cobalt,#1d3557); }
 
 .categoryRow {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
   background: var(--surface-subtle, #f8fbfb);
   border-bottom: 1px solid var(--border-subtle, #e5ebeb);
-  overflow-x: auto;
-  scrollbar-width: thin;
 }
 .categoryRowLabel {
   font-size: 0.75rem;
@@ -529,8 +527,8 @@
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: all 140ms ease;
-  min-height: 34px;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+  min-height: 44px;
 }
 .categoryChip:hover {
   border-color: var(--brand-cobalt, #1d3557);

@@ -82,7 +82,10 @@ test('hesap merkezi adı ve şehri günceller, navbarı yeniler ve yerel çıkı
     await page.getByRole('button', {name: 'Şehri kaydet'}).click();
     expect((await cityResponse).ok()).toBe(true);
     await expect(page.getByText('Şehriniz Ankara olarak kaydedildi.', {exact: true})).toBeVisible();
-    await expect(page.getByText('Hesabınıza kaydettiğiniz şehir: Ankara.')).toBeVisible();
+    await expect(page.getByText('Kayıtlı şehir: Ankara', {exact: true})).toBeVisible();
+    await page.reload();
+    await expect(page.getByText('Kayıtlı şehir: Ankara', {exact: true})).toBeVisible();
+    await expect(page.getByLabel('Görünen ad')).toHaveValue(changedName);
 
     await page.getByLabel('Görünen ad').fill(originalName);
     await page.getByRole('button', {name: 'Değişiklikleri kaydet'}).click();

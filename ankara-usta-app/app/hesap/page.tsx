@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation';
 import AccountSignOut from '../components/AccountSignOut';
 import AccountProfileForm from '../components/AccountProfileForm';
 import AccountCityForm from '../components/AccountCityForm';
-import PilotCityMap from '../components/PilotCityMap';
 import {pilotCityState} from '../lib/pilotCity';
 import { createSupabaseServerClient } from '../lib/supabase/server';
 
@@ -135,7 +134,6 @@ export default async function AccountPage({searchParams}: {searchParams?:Promise
 
         {!loadError&&<AccountProfileForm key={`profile-${user.id}`} userId={user.id} initialName={profile?.display_name??''}/>}
         <AccountCityForm key={`city-${user.id}`} userId={user.id} saved={pilotCityState(user.user_metadata)==='ankara'}/>
-        <PilotCityMap cityState={pilotCityState(user.user_metadata)}/>
         <section id="oturum" className="account-card"><h2>Oturum ve gizlilik</h2><p>Bu tarayıcıdaki oturumunuzu kapatabilirsiniz.</p><Link href="/gizlilik">Gizlilik metnini incele</Link><AccountSignOut/></section>
       </div>
     </main>

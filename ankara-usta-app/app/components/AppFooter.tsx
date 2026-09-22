@@ -30,7 +30,6 @@ export default function AppFooter() {
             <span className="footer-col-title">HİZMET VE KAPSAM</span>
             <ul className="footer-links-list">
               <li><Link href="/#services">Hizmet kategorileri</Link></li>
-              <li><Link href="/harita">İlçe Sınırları & Harita</Link></li>
               <li><Link href="/nasil-calisir">Nasıl Çalışır?</Link></li>
               <li><Link href="/taleplerim">Taleplerim</Link></li>
               <li><Link href="/islerim">İşlerim</Link></li>

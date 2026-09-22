@@ -37,6 +37,18 @@ export function useModalDialog<T extends HTMLElement>(active: boolean, onClose: 
     document.body.dataset.modalOpen = 'true';
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
+    if (!dialog.hasAttribute('aria-modal')) {
+      dialog.setAttribute('aria-modal', 'true');
+    }
+    const siblingsToHide: HTMLElement[] = [];
+    if (modalStack.length === 1) {
+      Array.from(document.body.children).forEach(child => {
+        if (child instanceof HTMLElement && !child.contains(dialog) && !child.hasAttribute('aria-hidden')) {
+          child.setAttribute('aria-hidden', 'true');
+          siblingsToHide.push(child);
+        }
+      });
+    }
     (dialog.querySelector<HTMLElement>('[data-dialog-initial-focus]') ?? dialog).focus();
 
     function handleKeyDown(event: KeyboardEvent) {
@@ -79,6 +91,7 @@ export function useModalDialog<T extends HTMLElement>(active: boolean, onClose: 
         document.body.style.overflow = originalOverflow;
         document.documentElement.style.overflow = originalRootOverflow;
         delete document.body.dataset.modalOpen;
+        siblingsToHide.forEach(el => el.removeAttribute('aria-hidden'));
       }
       if (previouslyFocused?.isConnected) previouslyFocused.focus({preventScroll:true});
     };

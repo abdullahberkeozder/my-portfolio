@@ -1,36 +1,52 @@
 import InfoPage from '../components/InfoPage';
 
 export const metadata = {
-  title: 'Gizlilik Politikası | Orkestra',
-  description: 'Orkestra kişisel verilerin korunması, medya yayın izinleri ve veri güvenliği ilkeleri.',
+  title: 'Gizlilik Politikası ve KVKK Aydınlatma Metni | Orkestra',
+  description: 'Orkestra kişisel verilerin korunması, 6698 sayılı KVKK hakları, açık adres gizliliği ve veri güvenliği ilkeleri.',
 };
 
 export default function PrivacyPage() {
   return (
     <InfoPage
-      eyebrow="GİZLİLİK POLİTİKASI & KVKK"
-      title="Bilgileriniz ve evinizin mahremiyeti işin gerektirdiği ölçüde korunur."
-      intro="Orkestra; hesap, talep, teklif, iş günlüğü ve uyuşmazlık kayıtlarını 6698 sayılı KVKK ve ilgili mevzuat uyarınca güvenle işler."
+      eyebrow="GİZLİLİK POLİTİKASI VE KVKK AYDINLATMA METNİ"
+      title="Kişisel verileriniz ve evinizin mahremiyeti kanun güvencesiyle korunur."
+      intro="Orkestra platformu (Pilot Uygulama), 6698 sayılı Kişisel Verilerin Korunması Kanunu ('KVKK') uyarınca veri sorumlusu sıfatıyla kişisel verilerinizi şeffaflık, amaçla sınırlılık ve yüksek güvenlik ilkeleriyle işler."
       sections={[
         {
-          title: 'Bölge haritası',
-          body: 'Hesabınıza kaydettiğiniz şehir, bölge haritasını kişiselleştirmek için kullanılır. Pilot aşamada Ankara gösterilir. OpenStreetMap haritası yüklendiğinde tarayıcınız harita sağlayıcısına bağlanır; sağlayıcı IP adresiniz gibi bağlantı bilgilerini alabilir. Orkestra bu haritaya açık adresinizi, hesap kimliğinizi veya iş kayıtlarınızı göndermez. Haritayı gizleyebilir veya sağlayıcının sitesinde açabilirsiniz.',
+          title: '1. Veri Sorumlusu ve Kapsam',
+          body: 'Bu aydınlatma metni, Orkestra platformunu ziyaret eden, hizmet talebi oluşturan müşteriler ve zanaatkar başvurusunda bulunan meslek profesyonellerinin kişisel verilerinin işlenmesine ilişkin usul ve esasları açıklar.',
         },
         {
-          title: '1. Hesap, İletişim ve Konum Verileri',
-          body: 'Ad, soyad, telefon ve e-posta bilgileriniz hesabınızı yönetmek; ilçe ve mahalle verileriniz ise doğru yerel ustalarla eşleşmenizi sağlamak için kullanılır. Açık adresiniz ve telefon numaranız, siz bir ustanın teklifini kabul edip işi başlatana kadar ustalara açık şekilde gösterilmez.',
+          title: '2. İşlenen Kişisel Veri Kategorileri',
+          body: 'Platform üzerinden toplanan kişisel veriler şunlardır:',
+          items: [
+            'Kimlik ve İletişim Verileri: Ad, soyad, telefon numarası, e-posta adresi.',
+            'Konum ve Adres Verileri: Hizmet eşleşmesi için ilçe ve mahalle bilgisi; teklif kabulünden sonra işin ifası için tam açık adres.',
+            'Talep ve İş Kayıtları: Problem tanımı, kapsam yanıtları, randevu tarihleri, iş fotoğrafları, teklif dökümleri ve mesajlaşma kayıtları.',
+            'Mesleki Bilgiler (Ustalar için): Mesleki yeterlilik belgeleri, ustalık/kalfalık belgesi, çalışma bölgeleri ve referans bilgileri.',
+            'İşlem Güvenliği Verileri: IP adresi, oturum belirteçleri ve sistem denetim kayıtları.',
+          ],
         },
         {
-          title: '2. Fotoğraf, Video ve Medya Yayın İzinleri',
-          body: 'Talep ve iş günlüğü sırasında yüklediğiniz fotoğraflar varsayılan olarak gizlidir ve yalnızca işin tarafları ile yetkili operasyon ekibine açıktır. Ustanın tamamlanan iş fotoğraflarını kendi profilinde veya portföyünde sergileyebilmesi, müşterinin uygulama içerisinden vereceği "Medya Yayın İzni" onayına bağlıdır. Müşteri izni olmaksızın ev içi veya özel mülkiyet görselleri kamusal alanda paylaşılamaz.',
+          title: '3. Veri İşleme Amaçları ve Hukuki Sebepleri',
+          body: 'Kişisel verileriniz KVKK Madde 5 ve 6 hükümleri uyarınca şu hukuki sebeplerle işlenir: Sözleşmenin kurulması ve ifası (talebin ustalara iletilmesi, teklif karşılaştırma, iş günlüğü), veri sorumlusunun meşru menfaati (sahte arzın ve dolandırıcılığın önlenmesi, platform denetimi) ve kanuni yükümlülüklerin yerine getirilmesi.',
         },
         {
-          title: '3. Kanıt Dosyaları ve Uyuşmazlık Kayıtları',
-          body: 'Uyuşmazlık veya şikâyet süreçlerinde taraflarca sunulan ses kayıtları, mesaj dökümleri, faturalar ve teknik belgeler şifrelenmiş alanda saklanır. Bu veriler yalnız uyuşmazlık hakem heyeti ve platform operasyon ekibi tarafından hukuki ve operasyonel çözüm amacıyla incelenir.',
+          title: '4. Açık Adres Gizliliği ve Veri Aktarımı İlkeleri',
+          body: 'Evinizin mahremiyeti temel önceliğimizdir. Bu doğrultuda şu katı aktarım kuralları uygulanır:',
+          items: [
+            'Adres Gizliliği: İlçe ve mahalle verisi ustalarla eşleşmede kullanılır; tam açık adresiniz ve telefon numaranız, siz bir ustanın teklifini sistem üzerinden kabul edene kadar ustalara kesinlikle gösterilmez.',
+            'Medya Yayın İzni: Yüklediğiniz iş fotoğrafları varsayılan olarak gizlidir. Ustanın tamamlanan iş görselini profilinde yayınlayabilmesi, müşterinin açık "Medya Yayın İzni" vermesine bağlıdır.',
+            'Üçüncü Taraflarla Paylaşım: Verileriniz ticari veya reklam amaçlı üçüncü taraflara satılmaz; yalnızca işin ifası için yetkili taraflarla ve mevzuat gerektirdiğinde adli mercilerle paylaşılır.',
+          ],
         },
         {
-          title: '4. Rol Bazlı Veri İzolasyonu',
-          body: 'Müşteri, usta ve yönetici hesapları kesin yetki sınırlarıyla ayrılmıştır. Hiçbir usta veya üçüncü taraf, diğer müşterilerin geçmiş taleplerine veya özel iş detaylarına erişemez.',
+          title: '5. Veri Güvenliği ve Satır Bazlı Yetki İzolasyonu',
+          body: 'Veritabanı düzeyinde Row-Level Security (RLS) politikaları uygulanır. Müşteri, usta ve yönetici hesapları kesin yetki sınırlarıyla ayrılmıştır; hiçbir usta yetkisi dışındaki taleplere veya diğer kullanıcıların özel detaylarına erişemez.',
+        },
+        {
+          title: '6. İlgili Kişi Hakları (KVKK Madde 11) ve Başvuru',
+          body: 'KVKK\'nın 11. maddesi uyarınca kullanıcılarımız; kişisel verilerinin işlenip işlenmediğini öğrenme, işlenmişse buna ilişkin bilgi talep etme, işlenme amacını ve bunların amacına uygun kullanılıp kullanılmadığını öğrenme, verilerin düzeltilmesini veya silinmesini isteme hakkına sahiptir. Başvurularınızı destek@ankarausta.app adresine iletebilirsiniz.',
         },
       ]}
     />

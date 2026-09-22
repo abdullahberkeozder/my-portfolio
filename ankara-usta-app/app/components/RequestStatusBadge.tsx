@@ -1,15 +1,11 @@
 import React from 'react';
+import {
+  REQUEST_STATUS_DICTIONARY,
+  type RequestStatus,
+  type StatusTone,
+} from '../lib/requestStatusResolver';
 
-export type RequestStatusType =
-  | 'draft'
-  | 'submitted'
-  | 'matching'
-  | 'quotes_received'
-  | 'provider_selected'
-  | 'completed'
-  | 'cancelled'
-  | 'expired'
-  | string;
+export type RequestStatusType = RequestStatus | string;
 
 export interface RequestStatusBadgeProps {
   status: RequestStatusType;
@@ -19,17 +15,8 @@ export interface RequestStatusBadgeProps {
 
 export const statusToneMap: Record<
   string,
-  { label: string; tone: 'neutral' | 'info' | 'success' | 'warning' | 'danger' | 'accent' }
-> = {
-  draft: { label: 'Taslak', tone: 'warning' },
-  submitted: { label: 'Gönderildi', tone: 'info' },
-  matching: { label: 'Ustalar Aranıyor', tone: 'info' },
-  quotes_received: { label: 'Teklifler Geldi', tone: 'success' },
-  provider_selected: { label: 'Usta Seçildi', tone: 'accent' },
-  completed: { label: 'Tamamlandı', tone: 'success' },
-  cancelled: { label: 'İptal Edildi', tone: 'neutral' },
-  expired: { label: 'Süresi Doldu', tone: 'danger' },
-};
+  { label: string; tone: StatusTone; description?: string }
+> = REQUEST_STATUS_DICTIONARY;
 
 export default function RequestStatusBadge({
   status,

@@ -7,9 +7,17 @@ import styles from './directory.module.css';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Onaylı Ustalar | Orkestra',
+  title: 'Doğrulanmış Ustalar | Orkestra',
   description:
-    'Başvurusu onaylı ustaları hizmet ve ilçeye göre keşfedin. Mesleki belge durumunu profilde inceleyin.',
+    'Başvurusu onaylı ve mesleki belgesi güncel ustaları hizmet ve ilçeye göre keşfedin.',
+};
+
+type PublicProfessionalRow = {
+  user_id: string;
+  display_name: string;
+  bio: string | null;
+  city: string | null;
+  total_count: number;
 };
 
 export default async function UstalarIndexPage({
@@ -32,21 +40,17 @@ export default async function UstalarIndexPage({
 
   const supabase = await createSupabaseServerClient();
 
-  let query = supabase
-    .from('tradesperson_profiles')
-    .select(
-      'user_id, display_name, bio, city, tradesperson_services!inner(service_id), tradesperson_service_areas!inner(district)',
-      { count: 'exact' }
-    )
-    .eq('application_status', 'approved')
-    .order('display_name', { ascending: true })
-    .order('user_id', { ascending: true });
-  if (service) query = query.eq('tradesperson_services.service_id', service);
-  if (district) query = query.eq('tradesperson_service_areas.district', district);
-  const { data: profiles, error, count } = await query.range(
-    (page - 1) * pageSize,
-    page * pageSize - 1
+  const { data: directoryRows, error } = await supabase.rpc(
+    'list_public_verified_professionals',
+    {
+      p_service_id: service ?? null,
+      p_district: district ?? null,
+      p_offset: (page - 1) * pageSize,
+      p_limit: pageSize,
+    }
   );
+  const profiles = (directoryRows ?? []) as PublicProfessionalRow[];
+  const count = profiles[0]?.total_count ?? 0;
 
   if (error) {
     return (
@@ -65,18 +69,29 @@ export default async function UstalarIndexPage({
 
   const tradespersonIds = (profiles ?? []).map((p) => p.user_id);
   const serviceMap: Record<string, string[]> = {};
+  const areaMap: Record<string, string[]> = {};
 
   if (tradespersonIds.length > 0) {
-    const { data: serviceRows } = await supabase
-      .from('tradesperson_services')
-      .select('tradesperson_id, service_id')
-      .in('tradesperson_id', tradespersonIds);
+    const [{ data: serviceRows }, { data: areaRows }] = await Promise.all([
+      supabase
+        .from('tradesperson_services')
+        .select('tradesperson_id, service_id')
+        .in('tradesperson_id', tradespersonIds),
+      supabase
+        .from('tradesperson_service_areas')
+        .select('tradesperson_id, district')
+        .in('tradesperson_id', tradespersonIds),
+    ]);
 
     for (const row of serviceRows ?? []) {
       const name = services.find((s) => s.id === row.service_id)?.name;
       if (!name) continue;
       if (!serviceMap[row.tradesperson_id]) serviceMap[row.tradesperson_id] = [];
       serviceMap[row.tradesperson_id].push(name);
+    }
+    for (const row of areaRows ?? []) {
+      if (!areaMap[row.tradesperson_id]) areaMap[row.tradesperson_id] = [];
+      areaMap[row.tradesperson_id].push(row.district);
     }
   }
 
@@ -136,17 +151,15 @@ export default async function UstalarIndexPage({
               </form>
               {profiles && profiles.length > 0 && (
                 <span className={styles.resultCount}>
-                  {count ?? profiles.length} usta
+                  {count} usta
                 </span>
               )}
             </div>
-            <details className={styles.mapHelp}><summary>Bölgeyi haritada incele</summary><p>Usta sonuçları aşağıdaki gerçek profil listesidir. Harita gösterimi örnek dükkân kayıtları içerir; canlı usta konumu veya müsaitlik bilgisi değildir.</p><Link href="/harita">Örnek bölge haritasını aç</Link></details>
-
             {/* Content List */}
             {!profiles || profiles.length === 0 ? (
               <div className={styles.emptyState}>
                 <span className={styles.emptyIcon} role="img" aria-label="Rehber">🛠️</span>
-                <h2 className={styles.emptyTitle}>Bu kriterlere uygun onaylı usta bulunamadı</h2>
+                <h2 className={styles.emptyTitle}>Bu kriterlere uygun doğrulanmış usta bulunamadı</h2>
                 <p className={styles.emptyDesc}>
                   {hasFilters
                     ? 'Filtre tercihlerinizi genişletmeyi deneyebilir veya tüm ustaları görmek için filtreleri temizleyebilirsiniz.'
@@ -188,7 +201,7 @@ export default async function UstalarIndexPage({
                           {initials}
                         </div>
                         <div className="usta-card-body">
-                          <span className="usta-card-badge">Başvuru onaylı</span>
+                          <span className="usta-card-badge">Mesleki belge güncel</span>
                           <h2 className="usta-card-name">{profile.display_name}</h2>
                           {profileServices.length > 0 && (
                             <p className="usta-card-services">
@@ -196,8 +209,8 @@ export default async function UstalarIndexPage({
                               {profileServices.length > 3 ? ` +${profileServices.length - 3}` : ''}
                             </p>
                           )}
-                          <p className={styles.areaLabel}>Hizmet bölgesi: {[...new Set((profile.tradesperson_service_areas ?? []).map((area: {district:string}) => area.district))].join(', ') || 'Profilde inceleyin'}</p>
-                          <small className={styles.evidenceHint}>Mesleki belge ve değerlendirme bilgileri profilde.</small>
+                          <p className={styles.areaLabel}>Hizmet bölgesi: {[...new Set(areaMap[profile.user_id] ?? [])].join(', ') || 'Profilde inceleyin'}</p>
+                          <small className={styles.evidenceHint}>Başvuru ve güncel mesleki belge kontrolü tamamlandı.</small>
                           {profile.bio && (
                             <p className="usta-card-bio">{profile.bio}</p>
                           )}
@@ -221,7 +234,7 @@ export default async function UstalarIndexPage({
                     </Link>
                   )}
                   <span className={styles.pageInfo}>Sayfa {page}</span>
-                  {page * pageSize < (count ?? 0) && (
+                  {page * pageSize < count && (
                     <Link href={pageHref(page + 1)} className={styles.pageBtn}>
                       Sonraki →
                     </Link>

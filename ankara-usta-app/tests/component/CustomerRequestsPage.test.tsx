@@ -7,13 +7,14 @@ const mockState = vi.hoisted(() => ({
   requests: [] as Record<string, unknown>[],
   quotes: [] as Record<string, unknown>[],
   jobs: [] as Record<string, unknown>[],
-  error: null as null | { message: string },
+  errors: {} as Record<string, { message: string } | undefined>,
+  authError: null as null | { name: string },
 }));
 
 vi.mock('../../app/lib/supabase/server', () => ({
   createSupabaseServerClient: async () => {
     return {
-      auth: { getUser: async () => ({ data: { user: mockState.user } }) },
+      auth: { getUser: async () => ({ data: { user: mockState.user }, error: mockState.authError }) },
       from: (table: string) => {
         let returnData: unknown = mockState.requests;
         if (table === 'quotes') returnData = mockState.quotes;
@@ -22,7 +23,7 @@ vi.mock('../../app/lib/supabase/server', () => ({
 
         const queryObj: Record<string, unknown> = {
           data: returnData,
-          error: table === 'service_requests' ? mockState.error : null,
+          error: mockState.errors[table] ?? null,
           count: Array.isArray(returnData) ? returnData.length : 0,
         };
 
@@ -48,7 +49,8 @@ afterEach(() => {
   mockState.requests = [];
   mockState.quotes = [];
   mockState.jobs = [];
-  mockState.error = null;
+  mockState.errors = {};
+  mockState.authError = null;
 });
 
 describe('MyRequestsPage (Customer Workspace)', () => {
@@ -82,6 +84,8 @@ describe('MyRequestsPage (Customer Workspace)', () => {
       'href',
       '/taleplerim/req-quote-1/teklifler'
     );
+    // P1.1: Çift CTA kaldırıldı; aynı sayfaya giden mükerrer "Eşleşme ve teklifler →" linki bulunmamalıdır.
+    expect(screen.queryByRole('link', { name: 'Eşleşme ve teklifler →' })).not.toBeInTheDocument();
   });
 
   it('renders provider_selected request with direct job link', async () => {
@@ -100,5 +104,62 @@ describe('MyRequestsPage (Customer Workspace)', () => {
     render(await MyRequestsPage({ searchParams: Promise.resolve({}) }));
     expect(screen.getByText('Usta Seçildi')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'İş Ekranına Git →' })).toHaveAttribute('href', '/islerim/job-xyz');
+    // P1.1: Usta seçildiğinde tek birincil link iş odasıdır, mükerrer eşleşme linki yoktur.
+    expect(screen.queryByRole('link', { name: 'Eşleşme ve teklifler →' })).not.toBeInTheDocument();
+  });
+
+  it('keeps requests visible and reports a partial quote summary failure', async () => {
+    mockState.requests = [
+      {
+        id: 'req-partial-1',
+        service_id: 'musluk-tamiri',
+        status: 'quotes_received',
+        district: 'Sincan',
+        neighborhood: 'Fatih',
+        updated_at: '2026-09-21T10:00:00Z',
+      },
+    ];
+    mockState.errors.quotes = { message: 'private SQL detail' };
+
+    render(await MyRequestsPage({ searchParams: Promise.resolve({}) }));
+    expect(screen.getByTestId('request-card-req-partial-1')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Bazı güncel bilgiler alınamadı');
+    expect(screen.queryByText('Henüz talebiniz yok')).not.toBeInTheDocument();
+  });
+
+  it('falls back to the jobs workspace when a selected request job link cannot be verified', async () => {
+    mockState.requests = [
+      {
+        id: 'req-selected-fallback',
+        service_id: 'musluk-tamiri',
+        status: 'provider_selected',
+        district: 'Çankaya',
+        neighborhood: 'Kızılay',
+        updated_at: '2026-09-21T11:00:00Z',
+      },
+    ];
+    mockState.errors.jobs = { message: 'private SQL detail' };
+
+    render(await MyRequestsPage({ searchParams: Promise.resolve({}) }));
+    expect(screen.getByRole('link', { name: 'İşlerimde Kontrol Et →' })).toHaveAttribute('href', '/islerim');
+    expect(screen.getByText('İş bağlantısı henüz doğrulanamadı.')).toBeInTheDocument();
+  });
+
+  it('offers recovery instead of an active matching action for an expired request', async () => {
+    mockState.requests = [
+      {
+        id: 'req-expired-1',
+        service_id: 'musluk-tamiri',
+        status: 'expired',
+        district: 'Çankaya',
+        neighborhood: 'Kızılay',
+        updated_at: '2026-09-21T11:00:00Z',
+      },
+    ];
+
+    render(await MyRequestsPage({ searchParams: Promise.resolve({}) }));
+    expect(screen.getByText('Süresi Doldu')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Yeni Talep Oluştur →' })).toHaveAttribute('href', '/#services');
+    expect(screen.queryByRole('link', { name: 'Eşleşme ve teklifler →' })).not.toBeInTheDocument();
   });
 });

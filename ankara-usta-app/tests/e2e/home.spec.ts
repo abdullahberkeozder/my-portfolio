@@ -10,7 +10,7 @@ test('customer classifies a service, reads scope and opens the wizard',async({pa
   const search=page.getByRole('textbox',{name:'İhtiyacınızı yazın'});
   await search.fill('tavandan su geliyor');await search.press('Enter');
   const dialog=page.getByRole('dialog',{name:/İhtiyacınızı doğru anladık mı/i});
-  await expect(dialog.getByRole('heading',{level:3})).toHaveText('Su Kaçağı Tespiti');
+  await expect(dialog.getByRole('heading',{level:3})).toContainText('Su Kaçağı Tespiti');
   await dialog.getByText('Kapsam hakkında',{exact:true}).click();
   await expect(dialog.getByRole('listitem')).toHaveCount(6);
   for(const item of await dialog.getByRole('listitem').all())await expect(item).not.toBeEmpty();

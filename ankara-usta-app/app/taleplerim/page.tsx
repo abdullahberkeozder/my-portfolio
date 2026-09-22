@@ -10,9 +10,9 @@ import Pagination from '../components/Pagination';
 import { directedRequestsEnabled } from '../lib/directedRequests';
 import RequestInvitationPanel from '../components/RequestInvitationPanel';
 import RealtimeRefresh from '../components/RealtimeRefresh';
-import PilotCityMap from '../components/PilotCityMap';
-import { pilotCityState } from '../lib/pilotCity';
 import RequestStatusBadge from '../components/RequestStatusBadge';
+import { resolveCustomerRequestAction } from '../lib/requestStatusResolver';
+import WorkspacePartialNotice from '../components/WorkspacePartialNotice';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,7 +27,21 @@ export default async function MyRequestsPage({
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser();
+  if (authError && authError.name !== 'AuthSessionMissingError') {
+    return (
+      <main className="account-shell requests-page">
+        <div className="page-body">
+          <div className="empty-state" role="alert">
+            <h1>Oturum bilgisi doğrulanamadı</h1>
+            <p>Hesabınızı ve taleplerinizi güvenle gösterebilmek için bağlantıyı yeniden deneyin.</p>
+            <RetryButton />
+          </div>
+        </div>
+      </main>
+    );
+  }
   if (!user) redirect('/giris?next=/taleplerim');
 
   const {
@@ -58,6 +72,8 @@ export default async function MyRequestsPage({
   const requestIds = (requests ?? []).map((r) => r.id);
   const quotesCountMap = new Map<string, number>();
   const jobsMap = new Map<string, string>();
+  let quotesSummaryFailed = false;
+  let jobsSummaryFailed = false;
 
   if (requestIds.length > 0) {
     try {
@@ -65,15 +81,16 @@ export default async function MyRequestsPage({
         .from('quotes')
         .select('request_id, status');
       if (typeof quotesQuery.in === 'function') {
-        const { data: quotesData } = await quotesQuery
+        const { data: quotesData, error: quotesError } = await quotesQuery
           .in('request_id', requestIds)
           .in('status', ['submitted', 'accepted']);
+        if (quotesError) quotesSummaryFailed = true;
         for (const q of quotesData ?? []) {
           quotesCountMap.set(q.request_id, (quotesCountMap.get(q.request_id) ?? 0) + 1);
         }
       }
     } catch {
-      // Non-blocking in mock environments
+      quotesSummaryFailed = true;
     }
 
     try {
@@ -82,13 +99,14 @@ export default async function MyRequestsPage({
         .select('id, request_id')
         .eq('customer_id', user.id);
       if (typeof jobsQuery.in === 'function') {
-        const { data: jobsData } = await jobsQuery.in('request_id', requestIds);
+        const { data: jobsData, error: jobsError } = await jobsQuery.in('request_id', requestIds);
+        if (jobsError) jobsSummaryFailed = true;
         for (const j of jobsData ?? []) {
           jobsMap.set(j.request_id, j.id);
         }
       }
     } catch {
-      // Non-blocking in mock environments
+      jobsSummaryFailed = true;
     }
   }
 
@@ -136,6 +154,9 @@ export default async function MyRequestsPage({
           </div>
         ) : requests?.length ? (
           <>
+            {(quotesSummaryFailed || jobsSummaryFailed || invitations?.error) && (
+              <WorkspacePartialNotice message="Talepleriniz gösteriliyor, ancak teklif sayıları, davet yanıtları veya iş bağlantıları güncel olmayabilir. İşlem yapmadan önce yeniden deneyin." />
+            )}
             <div className="request-list" style={{ display: 'grid', gap: '14px' }}>
               {requests.map((request) => {
                 const service = services.find((item) => item.id === request.service_id);
@@ -159,6 +180,13 @@ export default async function MyRequestsPage({
 
                 const quoteCount = quotesCountMap.get(request.id);
                 const jobId = jobsMap.get(request.id);
+                const actionRes = resolveCustomerRequestAction({
+                  requestId: request.id,
+                  status: request.status,
+                  quoteCount,
+                  jobId,
+                  isDraft,
+                });
 
                 return (
                   <article
@@ -232,45 +260,26 @@ export default async function MyRequestsPage({
                             missing.length ? `Eksik: ${missing.join(', ')}` : 'Göndermeye hazır'
                           }
                         />
-                      ) : request.status === 'quotes_received' ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end', width: '100%' }}>
-                          <Link
-                            href={`/taleplerim/${request.id}/teklifler`}
-                            className="cta-action-primary"
-                          >
-                            Teklifleri Karşılaştır {quoteCount ? `(${quoteCount})` : ''} →
-                          </Link>
-                          <Link
-                            href={`/taleplerim/${request.id}/teklifler`}
-                            className="cta-action-neutral"
-                            style={{ fontSize: '12px' }}
-                          >
-                            Eşleşme ve teklifler →
-                          </Link>
-                        </div>
-                      ) : request.status === 'provider_selected' && jobId ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end', width: '100%' }}>
-                          <Link
-                            href={`/islerim/${jobId}`}
-                            className="cta-action-primary"
-                          >
-                            İş Ekranına Git →
-                          </Link>
-                          <Link
-                            href={`/taleplerim/${request.id}/teklifler`}
-                            className="cta-action-neutral"
-                            style={{ fontSize: '12px' }}
-                          >
-                            Eşleşme ve teklifler →
-                          </Link>
-                        </div>
                       ) : (
-                        <Link
-                          href={`/taleplerim/${request.id}/teklifler`}
-                          className="cta-action-secondary"
-                        >
-                          Eşleşme ve teklifler →
-                        </Link>
+                        <div className="workspace-card-fallback-actions">
+                          {actionRes.primaryAction && (
+                            <Link
+                              href={actionRes.primaryAction.href}
+                              className={`cta-action-${actionRes.primaryAction.variant}`}
+                            >
+                              {actionRes.primaryAction.label}
+                            </Link>
+                          )}
+                          {actionRes.secondaryAction && (
+                            <Link
+                              href={actionRes.secondaryAction.href}
+                              className={`cta-action-${actionRes.secondaryAction.variant}`}
+                            >
+                              {actionRes.secondaryAction.label}
+                            </Link>
+                          )}
+                          {actionRes.helperText && <span>{actionRes.helperText}</span>}
+                        </div>
                       )}
                     </div>
                   </article>
@@ -295,7 +304,6 @@ export default async function MyRequestsPage({
             </Link>
           </section>
         )}
-        <PilotCityMap cityState={pilotCityState(user.user_metadata)} initiallyExpanded={false} />
       </div>
     </main>
   );

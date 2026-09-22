@@ -28,7 +28,10 @@ export default function AppHeader({ conversations = false }: { conversations?: b
   const links = account.status==='ready'&&account.user
     ? navigationItems(effectiveContext,conversations).filter(item=>item.href!=='/hesap')
     : navigationItems(context==='auth'?'auth':'public',conversations).filter(item=>item.href!=='/hesap'&&item.href!=='/usta/kayit');
-  if(account.user&&context==='public')links.unshift({href:'/ustalar',label:'Ustalar'},{href:'/#services',label:'Hizmetler'});
+  if(account.user&&context==='public'){
+    if(!links.some(item=>item.href==='/ustalar'))links.unshift({href:'/ustalar',label:'Ustalar'});
+    if(!links.some(item=>item.href==='/#services'))links.unshift({href:'/#services',label:'Hizmetler'});
+  }
   const accountLinks=<>
     {account.status==='loading'?<p role="status">Hesap kontrol ediliyor…</p>:account.status==='error'?<p role="status">Hesap yüklenemedi. <Link href="/hesap">Hesabı kontrol et</Link></p>:account.user?<>
       <Link href={accountHref} onClick={()=>setOpen(false)}>Hesap ayarları</Link>
@@ -49,7 +52,7 @@ export default function AppHeader({ conversations = false }: { conversations?: b
       target.focus({ preventScroll: true });
     });
   }
-  const items = links.map(item => <Link key={item.href} href={item.href}
+  const items = links.map(item => <Link key={`${item.href}-${item.label}`} href={item.href}
     aria-current={navigationActive(pathname, item.href) ? 'page' : undefined}
     className={item.primary ? styles.primary : undefined}
     onClick={event => navigate(event, item.href)}>{item.label}</Link>);

@@ -7,21 +7,26 @@ const mockState = vi.hoisted(() => ({
   matches: [] as Record<string, unknown>[],
   invitations: [] as Record<string, unknown>[],
   quotes: [] as Record<string, unknown>[],
-  error: null as null | { message: string },
+  jobs: [] as Record<string, unknown>[],
+  role: { role: 'tradesperson' } as null | { role: string },
+  errors: {} as Record<string, { message: string } | undefined>,
+  authError: null as null | { name: string },
 }));
 
 vi.mock('../../app/lib/supabase/server', () => ({
   createSupabaseServerClient: async () => {
     return {
-      auth: { getUser: async () => ({ data: { user: mockState.user } }) },
+      auth: { getUser: async () => ({ data: { user: mockState.user }, error: mockState.authError }) },
       from: (table: string) => {
         let returnData: unknown = mockState.matches;
         if (table === 'request_invitations') returnData = mockState.invitations;
         if (table === 'quotes') returnData = mockState.quotes;
+        if (table === 'jobs') returnData = mockState.jobs;
+        if (table === 'user_roles') returnData = mockState.role;
 
         const queryObj: Record<string, unknown> = {
           data: returnData,
-          error: mockState.error,
+          error: mockState.errors[table] ?? null,
           count: Array.isArray(returnData) ? returnData.length : 0,
         };
 
@@ -47,7 +52,10 @@ afterEach(() => {
   mockState.matches = [];
   mockState.invitations = [];
   mockState.quotes = [];
-  mockState.error = null;
+  mockState.jobs = [];
+  mockState.role = { role: 'tradesperson' };
+  mockState.errors = {};
+  mockState.authError = null;
 });
 
 describe('TradespersonRequestsPage (Artisan Workspace)', () => {
@@ -144,10 +152,11 @@ describe('TradespersonRequestsPage (Artisan Workspace)', () => {
         material_amount_kurus: 50000,
       },
     ];
+    mockState.jobs = [{ id: 'job-win', request_id: 'req-opp-3' }];
 
     render(await TradespersonRequestsPage({ searchParams: Promise.resolve({ view: 'open' }) }));
     expect(screen.getByText('✓ Teklifiniz Kabul Edildi')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'İş Ekranına Git →' })).toHaveAttribute('href', '/islerim');
+    expect(screen.getByRole('link', { name: 'İş Ekranına Git →' })).toHaveAttribute('href', '/islerim/job-win');
   });
 
   it('renders direct invitation view with specific badge and panel', async () => {
@@ -158,7 +167,7 @@ describe('TradespersonRequestsPage (Artisan Workspace)', () => {
         customer_id: 'cust-xyz',
         professional_id: 'pro-123',
         status: 'awaiting',
-        response_due_at: '2026-09-22T12:00:00Z',
+        response_due_at: '2099-09-22T12:00:00Z',
         service_requests: {
           service_id: 'musluk-tamiri',
           district: 'Sincan',
@@ -172,5 +181,60 @@ describe('TradespersonRequestsPage (Artisan Workspace)', () => {
     render(await TradespersonRequestsPage({ searchParams: Promise.resolve({ view: 'direct' }) }));
     expect(screen.getByText('🎯 Size Özel Davet')).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Özel talep durumu' })).toBeInTheDocument();
+  });
+
+  it('does not present an expired direct invitation as an actionable opportunity', async () => {
+    mockState.invitations = [
+      {
+        id: 'inv-expired',
+        request_id: 'req-direct-expired',
+        customer_id: 'cust-xyz',
+        professional_id: 'pro-123',
+        status: 'awaiting',
+        response_due_at: '2020-01-01T00:00:00Z',
+        service_requests: {
+          service_id: 'musluk-tamiri',
+          district: 'Sincan',
+          neighborhood: 'Fatih',
+          preferred_timing: 'flexible_few_days',
+          status: 'submitted',
+        },
+      },
+    ];
+
+    render(await TradespersonRequestsPage({ searchParams: Promise.resolve({ view: 'direct' }) }));
+    expect(screen.getAllByText('Yanıt süresi doldu').length).toBeGreaterThan(0);
+    expect(screen.getByText('Bu fırsat için yeni işlem yapılamaz')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Talebi İncele / Teklif Ver →' })).not.toBeInTheDocument();
+  });
+
+  it('keeps opportunities visible when quote summaries fail', async () => {
+    mockState.matches = [
+      {
+        request_id: 'req-partial-pro',
+        score: 90,
+        service_requests: {
+          service_id: 'musluk-tamiri',
+          district: 'Sincan',
+          neighborhood: 'Fatih',
+          preferred_timing: 'flexible_few_days',
+          status: 'submitted',
+        },
+      },
+    ];
+    mockState.errors.quotes = { message: 'private SQL detail' };
+
+    render(await TradespersonRequestsPage({ searchParams: Promise.resolve({ view: 'open' }) }));
+    expect(screen.getByTestId('opportunity-card-req-partial-pro')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Bazı güncel bilgiler alınamadı');
+  });
+
+  it('shows an explicit safe state to a customer opening the tradesperson workspace', async () => {
+    mockState.role = null;
+
+    render(await TradespersonRequestsPage({ searchParams: Promise.resolve({ view: 'open' }) }));
+    expect(screen.getByRole('alert')).toHaveTextContent('Usta alanına erişiminiz yok');
+    expect(screen.getByRole('link', { name: 'Müşteri alanına dön' })).toHaveAttribute('href', '/taleplerim');
+    expect(screen.queryByText('Henüz size özel talep yok')).not.toBeInTheDocument();
   });
 });

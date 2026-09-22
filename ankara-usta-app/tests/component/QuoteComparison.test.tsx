@@ -4,7 +4,9 @@ import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
 import QuoteComparison,{type ComparableQuote} from '../../app/components/QuoteComparison';
 
 const navigation=vi.hoisted(()=>({refresh:vi.fn(),push:vi.fn()}));
+const jobNavigation=vi.hoisted(()=>({navigateToJob:vi.fn()}));
 vi.mock('next/navigation',()=>({useRouter:()=>navigation}));
+vi.mock('../../app/lib/jobNavigation',()=>jobNavigation);
 beforeEach(()=>{
   vi.clearAllMocks();
   // jsdom does not implement native modal focus/inert behavior; real browser QA is deferred.
@@ -55,7 +57,7 @@ it('retains the confirmed quote after a network failure and retries it before na
   await user.click(screen.getByRole('button',{name:'Şartları onayla ve kabul et'}));
   expect(fetcher.mock.calls.map(call=>call[0])).toEqual(['/api/quotes/1/accept','/api/quotes/1/accept']);
   expect(JSON.parse(fetcher.mock.calls[1][1].body)).toEqual({expectedUserId:'customer'});
-  await waitFor(()=>expect(navigation.push).toHaveBeenCalledWith('/islerim/job-1'));
+  await waitFor(()=>expect(jobNavigation.navigateToJob).toHaveBeenCalledWith('job-1'));
   expect(navigation.refresh).not.toHaveBeenCalled();
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });

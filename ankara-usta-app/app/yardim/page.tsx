@@ -1,43 +1,46 @@
 import InfoPage from '../components/InfoPage';
 
 export const metadata = {
-  title: 'Yardım Merkezi & Şikâyet Çözümü | Orkestra',
-  description: 'Orkestra platformu talep oluşturma, zanaatkar seçimi, uyuşmazlık çözümü ve SLA süreleri rehberi.',
+  title: 'Yardım ve Süreç Rehberi | Orkestra',
+  description: 'Orkestra platformunda talep oluşturma, usta tekliflerini değerlendirme, dijital iş günlüğü ve uyuşmazlık kayıt süreci rehberi.',
 };
-
 
 export default function HelpPage() {
   return (
     <InfoPage
-      eyebrow="YARDIM & ÇÖZÜM MERKEZİ"
-      title="İşin her adımında ihtiyaç duyduğunuz destek yanınızda."
-      intro="Talep oluşturma, teklif değerlendirme, iş takibi veya uyuşmazlık yönetimi ile ilgili tüm sorularınızın yanıtlarını burada bulabilirsiniz."
+      eyebrow="YARDIM VE SÜREÇ REHBERİ"
+      title="Hizmet sürecinin her adımında şeffaf ve kayıtlı ilerleyin."
+      intro="Talep oluşturma, usta tekliflerini karşılaştırma, iş günlüğü takibi ve olası aksaklıklarda kayıt oluşturma adımlarına dair rehber."
       sections={[
         {
-          title: '1. Talep Oluşturma ve Doğru Hizmeti Bulma',
-          body: 'Ana sayfada ihtiyacınızı kendi cümlelerinizle arama kutusuna yazın. Akıllı eşleştirme motorumuz 26 uzmanlık alanından en uygun hizmet modelini (Paket, Teklif veya Keşif) önerir.',
+          title: '1. Talep Oluşturma ve Hizmet Seçimi',
+          body: 'İhtiyacınızı kendi cümlelerinizle arama kutusuna yazarak ya da hizmet kataloğundan seçerek başlayabilirsiniz. Sistem, Ankara ilçeniz ve probleminizin niteliğine göre uygun hizmet kategorisini ve kapsam sorularını belirler.',
           items: [
-            'Paket Hizmet: Kapsamı ve fiyatı baştan belli standart işler (avize montajı, musluk tamiri vb.).',
-            'Teklif Karşılaştırma: Özelleştirilmiş işler için ilçenizdeki ustalardan doğrudan fiyat ve süre teklifi alma.',
-            'Keşif: Yerinde tespit gerektiren büyük tadilat ve boya projeleri.',
+            'Teklif Karşılaştırma: Ustalar, belirttiğiniz detaylara göre işçilik ücreti, malzeme, tahmini süre ve garanti şartlarını içeren tekliflerini iletir.',
+            'Keşif ve Tespit: Kapsamı yerinde incelenmesi gereken durumlar için taraflar randevu saati belirler.',
+            'Şeffaf Kapsam: Her hizmette nelerin dahil, nelerin hariç olduğu açık sorularla netleştirilir; sürpriz ek masrafların önüne geçilir.',
           ],
         },
         {
-          title: '2. İş Takibi ve Dijital İş Günlüğü Nasıl Kullanılır?',
-          body: 'Ustanın teklifini kabul ettiğinizde iş kaydınız "İşlerim" alanında açılır. Randevu saati, malzeme listesi, yapılan işlemler ve fotoğraflar burada tarihli olarak kaydedilir. Taraflar mesajlaşma üzerinden güvenle iletişim kurabilir.',
-        },
-        {
-          title: '3. Şikâyet ve Uyuşmazlık Yönetimi (SLA Süreleri)',
-          body: 'İşin vaat edilen kapsama uymaması, gecikmesi veya hasar oluşması durumunda iş sayfasından "Uyuşmazlık Bildirimi" başlatabilirsiniz.',
+          title: '2. Teklif Kabulü ve Dijital İş Günlüğü',
+          body: 'Gelen teklifleri inceleyip bir ustanın teklifini kabul ettiğinizde, sistem üzerinde taraflara özel iş kaydı açılır. Açık adres ve doğrudan iletişim bilgileri yalnızca bu aşamadan sonra işin yürütülmesi amacıyla paylaşılır.',
           items: [
-            'Kanıt Yükleme: Taraflara 24 saat kanıt ve beyan süresi tanınır.',
-            'Operasyon İncelemesi: Orkestra uzman heyeti dosyayı azami 48 saat içinde inceleyerek gerekçeli karar oluşturur.',
-            'İtiraz Hakkı: Karara 72 saat içinde yeni kanıtla itiraz edilebilir.',
+            'Tarihli Kayıtlar: Randevu zamanı, malzeme listesi ve yapılan müdahaleler iş sayfasına kaydedilir.',
+            'Kapsam Değişikliği: İş sırasında ek onarım veya malzeme gerekirse, ustanın teklif ettiği kapsam değişikliği müşteri tarafından onaylanmadan geçerlilik kazanmaz.',
           ],
         },
         {
-          title: '4. İletişim ve Acil Destek',
-          body: 'Platform operasyon ekibine hafta içi 08:30 – 19:00, Cumartesi 09:00 – 17:00 saatleri arasında destek paneli veya iletisim@ankarausta.app üzerinden ulaşabilirsiniz.',
+          title: '3. Uyuşmazlık Kaydı ve Moderasyon İncelemesi',
+          body: 'İşin kararlaştırılan kapsama uymaması, taahhüt edilen sürede tamamlanmaması veya usta ile mutabakat sağlanamaması halinde iş detay ekranından "Uyuşmazlık Bildirimi" oluşturulabilir.',
+          items: [
+            'Karşılıklı Kanıt Sunumu: Taraflar açıklama, fotoğraf ve belgelerini uyuşmazlık dosyasına ekler.',
+            'Kayıt Bütünlüğü: Platform; dijital iş günlüğü, onaylanmış kapsam maddeleri ve tarafların yazılı beyanlarını tarafsız bir inceleme zemini olarak saklar.',
+            'Pilot Moderasyon Değerlendirmesi: Yetkili platform yöneticileri uyuşmazlık dosyasını inceleyerek taraflarla iletişime geçer ve sistem içi çözüm sürecini yürütür.',
+          ],
+        },
+        {
+          title: '4. Pilot Destek ve Geri Bildirim',
+          body: 'Orkestra kontrollü pilot döneminde platform kullanımına ilişkin soru, öneri ve destek taleplerinizi destek@ankarausta.app adresine iletebilirsiniz. Pilot döneminde talepler sırayla incelenerek en kısa sürede dönüş sağlanır.',
         },
       ]}
     />

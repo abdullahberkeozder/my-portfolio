@@ -20,7 +20,7 @@ export default function AccountCityForm({userId,saved}:{userId:string;saved:bool
   }
   return <section id="bolge" className={styles.region} aria-labelledby="account-city-title">
     <h2 id="account-city-title">Hesap bölgeniz</h2>
-    <p>Harita için yalnız şehir bilgisi kaydedilir. Bu seçim talebinizin açık adresini veya ustanın çalışma ilçelerini değiştirmez.</p>
+    <p>Şehir bilgisi, hesabınızdaki bölge tercihini ve gelecekte sunulabilecek yerel hizmetleri belirlemek için kullanılır. Açık adresiniz burada saklanmaz.</p>
     <form onSubmit={save}>
       <label htmlFor="account-city">Şehir</label>
       <select id="account-city" name="city" defaultValue="Ankara" disabled={busy}><option value="Ankara">Ankara</option></select>

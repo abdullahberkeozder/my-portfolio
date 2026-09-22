@@ -161,7 +161,7 @@ export default function Home() {
                   <span className={styles.categoryCount}>{servicesByCategory(category.id).length} hizmet</span>
                   <span className={styles.categoryIndicator} aria-hidden="true">+</span>
                 </summary>
-                <ul className={styles.serviceList}>
+                <ul className={`${styles.serviceList} category-service-list`}>
                   {servicesByCategory(category.id).map(service => (
                     <li key={service.id}><button type="button" onClick={() => {
                       trackFunnel('wizard_started', { serviceId: service.id });

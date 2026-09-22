@@ -5,6 +5,7 @@ import AppFooter from './components/AppFooter';
 import ConsentBanner from './components/ConsentBanner';
 import ProductFrame from './components/ProductFrame';
 import { prejobChatEnabled } from './lib/prejobChat';
+import { getRobotsMetadata } from './lib/seoMetadata';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -37,10 +38,7 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.svg',
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: getRobotsMetadata(),
   other: {
     'build-commit': process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.GITHUB_SHA ?? 'local-working-tree',
   },

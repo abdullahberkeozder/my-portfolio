@@ -153,7 +153,7 @@ button {
 .match-rationale{margin:12px 0 20px;padding:16px;border-radius: var(--radius-control);background:var(--tr-neutral-soft);color:var(--text-primary)}.match-rationale b{font-size: 12px; line-height: 16px}.match-rationale p{margin:6px 0;color:#40534d;line-height:1.5}.match-rationale span{display:block;color:var(--text-secondary);font-size:12px;line-height:1.5}.classification-alternative{margin:-8px 0 16px;color:var(--text-secondary);font-size:12px}
 .footer-inner{grid-template-columns:1.3fr repeat(3,1fr);gap:48px}.footer-inner a:hover{text-decoration:underline;text-underline-offset:4px}.footer-brand strong{font-size:24px}.footer-brand p{max-width:240px;line-height:1.5}.footer-bond{--bond-size:64px;margin-bottom:8px}.footer-note{margin-top:16px;color:#d7dde3;font-size: 12px; line-height: 16px}
 .help-float{position:fixed;right:20px;left:auto;bottom:24px;z-index:99;height:44px;padding:0 20px;border:0;border-radius:24px;background:var(--text-primary);color:white;font-weight:600;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,0.2);display:inline-flex;align-items:center;gap:8px;text-decoration:none;transition:transform 180ms ease,background 180ms ease}.help-float:hover{background:var(--action-primary);transform:translateY(-2px)}
-.account-shell{position:relative;isolation:isolate}.account-shell:before{content:'';position:fixed;right:-48px;top:96px;z-index:-1;width:180px;height:180px;border-radius:50%;background-image:url('/mahalle-bagi-figma-frame.png');background-repeat:no-repeat;background-size:360% 220%;background-position:30.77% 60.83%;opacity:.07}.account-shell:after{content:'';position:fixed;left:-24px;bottom:48px;z-index:-1;width:48px;height:48px;border-radius: var(--radius-control);background:var(--action-primary);box-shadow:48px 0 0 var(--action-primary),48px 48px 0 var(--action-primary),96px 48px 0 var(--action-primary);opacity:.06}.account-back{display:inline-flex;align-items:center;gap:8px}.account-back:after{content:'Mahalle Bağı';padding-left:8px;border-left:1px solid #cfe4dc;color:var(--text-secondary);font-size: 12px; line-height: 16px;font-weight:600}
+.account-shell{position:relative;isolation:isolate}.account-shell:before{content:'';position:fixed;right:-48px;top:96px;z-index:-1;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(27,77,143,0.12) 0%,transparent 70%);opacity:.8}.account-shell:after{content:'';position:fixed;left:-24px;bottom:48px;z-index:-1;width:48px;height:48px;border-radius: var(--radius-control);background:var(--action-primary);box-shadow:48px 0 0 var(--action-primary),48px 48px 0 var(--action-primary),96px 48px 0 var(--action-primary);opacity:.06}.account-back{display:inline-flex;align-items:center;gap:8px}.account-back:after{content:'Orkestra';padding-left:8px;border-left:1px solid rgba(27,77,143,0.25);color:var(--text-secondary);font-size: 12px; line-height: 16px;font-weight:600}
 .info-page{max-width:960px;margin:auto}.info-page article{max-width:760px;padding:40px;background:white;border:1px solid var(--border-default);border-radius: var(--radius-card)}.info-page h1{margin:8px 0 16px;font-size:48px;line-height:1.1;letter-spacing:-1.5px}.info-page h2{margin:32px 0 8px;font-size:24px}.info-page p,.info-page li{color:var(--text-secondary);line-height:1.7}.info-page ul{padding-left:20px}.info-page .info-eyebrow{color:var(--action-primary);font-size:12px;font-weight:700;letter-spacing:.08em}.info-actions{margin-top:32px;display:flex;flex-wrap:wrap;gap:12px}.info-actions a{padding:12px 16px;border:1px solid var(--action-primary);border-radius: var(--radius-control);color:var(--action-primary);font-weight: 600}.info-actions a:first-child{background:var(--action-primary);color:white}
 @media(max-width:760px){.footer-inner{grid-template-columns:1fr 1fr;gap:32px;padding-inline:24px}.info-page article{padding:24px}.info-page h1{font-size:36px}}
 @media(max-width:520px){.footer-inner{grid-template-columns:1fr}.footer-brand{padding-bottom:16px;border-bottom:1px solid rgb(255 255 255 / 18%)}.account-back:after{display:none}.account-shell:before{right:-96px}.info-page h1{font-size:30px}}
@@ -298,7 +298,7 @@ body{background:var(--surface-page);color:var(--text-primary)}.tr-section,
   to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-/* Mahalle Bagi Semantic Role Styles */
+/* Orkestra Semantic Role Styles */
 .neighborhood-bond {
   display: inline-flex;
   align-items: center;
@@ -6361,6 +6361,24 @@ button, [role="button"], a.dialog-primary, input[type="submit"] {
   font-variant-numeric: tabular-nums;
 }
 
+.workspace-partial-notice {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border: 1px solid #e4cf75;
+  border-radius: var(--radius-control);
+  background: var(--brand-lemonade-soft, #fffceb);
+  color: var(--text-primary);
+}
+.workspace-partial-notice strong { display: block; font-size: 14px; }
+.workspace-partial-notice p { margin: 3px 0 0; color: var(--text-secondary); font-size: 13px; line-height: 1.45; }
+.workspace-partial-notice button { flex: none; min-height: 44px; }
+.workspace-card-fallback-actions { width: 100%; display: grid; justify-items: end; gap: 7px; }
+.workspace-card-fallback-actions span { color: var(--text-secondary); font-size: 12px; line-height: 1.4; text-align: right; }
+
 /* Artisan workspace specific */
 .tradesperson-nav-tabs {
   display: flex;
@@ -6401,6 +6419,10 @@ button, [role="button"], a.dialog-primary, input[type="submit"] {
 }
 
 @media(max-width: 720px) {
+  .workspace-partial-notice { align-items: stretch; flex-direction: column; }
+  .workspace-partial-notice button { width: 100%; }
+  .workspace-card-fallback-actions { justify-items: stretch; }
+  .workspace-card-fallback-actions span { text-align: left; }
   .workspace-card {
     grid-template-columns: 1fr;
     gap: 16px;

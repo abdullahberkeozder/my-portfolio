@@ -18,6 +18,7 @@ function env(name: typeof required[number]) {
 
 test('müşteri gerçek kurtarma bağlantısıyla parolasını değiştirir ve hesap erişimini korur', async ({page}) => {
   test.setTimeout(90_000);
+  test.skip(process.env.REQUIRE_AUTH_E2E !== 'true', 'Only run with active remote Supabase credentials.');
   for (const name of required) env(name);
   expect(env('E2E_SUPABASE_URL')).toBe('https://hyuijuafuayzultbjvjb.supabase.co');
   const url = env('E2E_SUPABASE_URL');

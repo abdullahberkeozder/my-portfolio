@@ -63,10 +63,6 @@ vi.mock('../../app/components/AccountCityForm', () => ({
   default: () => <div data-testid="city-form">Şehir Formu</div>,
 }));
 
-vi.mock('../../app/components/PilotCityMap', () => ({
-  default: () => <div data-testid="city-map">Şehir Haritası</div>,
-}));
-
 vi.mock('../../app/components/AccountSignOut', () => ({
   default: () => <button type="button">Çıkış Yap</button>,
 }));

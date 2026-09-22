@@ -2,14 +2,15 @@ import Link from 'next/link';
 import { prejobChatEnabled } from '../../lib/prejobChat';
 import { redirect } from 'next/navigation';
 import { requestTimingLabel } from '../../domain/requestTiming';
-import { type RequestInvitation } from '../../domain/requestInvitation';
+import { invitationState, type RequestInvitation } from '../../domain/requestInvitation';
 import { services } from '../../data/serviceTaxonomy';
 import { createSupabaseServerClient } from '../../lib/supabase/server';
 import { directedRequestsEnabled } from '../../lib/directedRequests';
 import RequestInvitationPanel from '../../components/RequestInvitationPanel';
 import RealtimeRefresh from '../../components/RealtimeRefresh';
-import PilotCityMap from '../../components/PilotCityMap';
-import { pilotCityState } from '../../lib/pilotCity';
+import RetryButton from '../../components/RetryButton';
+import WorkspacePartialNotice from '../../components/WorkspacePartialNotice';
+import { resolveTradespersonOpportunityAction } from '../../lib/requestStatusResolver';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,6 +41,20 @@ type MyQuoteSummary = {
   material_amount_kurus: number;
 };
 
+function WorkspaceFailure({ title, message }: { title: string; message: string }) {
+  return (
+    <main className="account-shell requests-page">
+      <div className="page-body">
+        <div className="empty-state" role="alert">
+          <h1>{title}</h1>
+          <p>{message}</p>
+          <RetryButton />
+        </div>
+      </div>
+    </main>
+  );
+}
+
 export default async function TradespersonRequestsPage({
   searchParams,
 }: {
@@ -53,8 +68,35 @@ export default async function TradespersonRequestsPage({
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser();
+  if (authError && authError.name !== 'AuthSessionMissingError') {
+    return <WorkspaceFailure title="Oturum bilgisi doğrulanamadı" message="Usta çalışma alanını güvenle açabilmek için bağlantıyı yeniden deneyin." />;
+  }
   if (!user) redirect('/giris?next=/usta/talepler');
+
+  const { data: tradespersonRole, error: roleError } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id)
+    .eq('role', 'tradesperson')
+    .maybeSingle();
+  if (roleError) {
+    return <WorkspaceFailure title="Yetki bilgisi doğrulanamadı" message="Usta hesabınızın erişim durumu alınamadı. Lütfen yeniden deneyin." />;
+  }
+  if (!tradespersonRole) {
+    return (
+      <main className="account-shell requests-page">
+        <div className="page-body">
+          <section className="empty-state" role="alert">
+            <h1>Usta alanına erişiminiz yok</h1>
+            <p>Bu alan yalnız usta rolü etkinleştirilmiş hesaplar tarafından kullanılabilir.</p>
+            <Link className="cta-action-primary" href="/taleplerim">Müşteri alanına dön</Link>
+          </section>
+        </div>
+      </main>
+    );
+  }
 
   let rows: Opportunity[] = [];
   let invitations: InvitationRow[] = [];
@@ -98,6 +140,9 @@ export default async function TradespersonRequestsPage({
   // Load existing quotes submitted by this tradesperson for these requests
   const requestIds = rows.map((r) => r.request_id);
   const myQuotesMap = new Map<string, MyQuoteSummary>();
+  const jobsMap = new Map<string, string>();
+  let quotesSummaryFailed = false;
+  let jobsSummaryFailed = false;
 
   if (requestIds.length > 0) {
     try {
@@ -106,13 +151,28 @@ export default async function TradespersonRequestsPage({
         .select('id, request_id, version, status, labor_amount_kurus, material_amount_kurus')
         .eq('tradesperson_id', user.id);
       if (typeof quotesQuery.in === 'function') {
-        const { data: myQuotes } = await quotesQuery.in('request_id', requestIds);
+        const { data: myQuotes, error: quotesError } = await quotesQuery.in('request_id', requestIds);
+        if (quotesError) quotesSummaryFailed = true;
         for (const q of (myQuotes ?? []) as unknown as MyQuoteSummary[]) {
           myQuotesMap.set(q.request_id, q);
         }
       }
     } catch {
-      // Non-blocking in mock environments
+      quotesSummaryFailed = true;
+    }
+
+    try {
+      const jobsQuery = supabase
+        .from('jobs')
+        .select('id, request_id')
+        .eq('tradesperson_id', user.id);
+      if (typeof jobsQuery.in === 'function') {
+        const { data: jobs, error: jobsError } = await jobsQuery.in('request_id', requestIds);
+        if (jobsError) jobsSummaryFailed = true;
+        for (const job of jobs ?? []) jobsMap.set(job.request_id, job.id);
+      }
+    } catch {
+      jobsSummaryFailed = true;
     }
   }
 
@@ -175,13 +235,32 @@ export default async function TradespersonRequestsPage({
             Talepler yüklenemedi. Lütfen sayfayı yenileyin.
           </p>
         ) : rows.length ? (
+          <>
+          {(quotesSummaryFailed || jobsSummaryFailed) && (
+            <WorkspacePartialNotice message="Fırsatlarınız gösteriliyor, ancak teklif veya iş bağlantıları güncel olmayabilir. İşlem yapmadan önce yeniden deneyin." />
+          )}
           <div className="request-list" style={{ display: 'grid', gap: '14px' }}>
             {rows.map((row) => {
               const request = row.service_requests;
               if (!request) return null;
               const invitation = invitations.find((i) => i.request_id === row.request_id);
               const myQuote = myQuotesMap.get(row.request_id);
+              const jobId = jobsMap.get(row.request_id);
               const service = services.find((s) => s.id === request.service_id);
+              const directState = invitation ? invitationState(invitation, Date.now()) : null;
+              const opportunityClosed =
+                request.status === 'provider_selected' ||
+                request.status === 'expired' ||
+                request.status === 'cancelled' ||
+                directState === 'expired' ||
+                directState === 'declined' ||
+                directState === 'broadened';
+              const actionRes = resolveTradespersonOpportunityAction({
+                requestId: row.request_id,
+                opportunityClosed,
+                myQuote,
+                jobId,
+              });
 
               return (
                 <article key={row.request_id} className="workspace-card" data-testid={`opportunity-card-${row.request_id}`}>
@@ -198,24 +277,18 @@ export default async function TradespersonRequestsPage({
                         </span>
                       ) : null}
 
-                      {myQuote ? (
-                        myQuote.status === 'accepted' ? (
+                      {myQuote?.status === 'accepted' ? (
                           <span className="req-status-badge req-status-success">
                             ✓ Teklifiniz Kabul Edildi
                           </span>
-                        ) : request.status === 'provider_selected' ? (
+                      ) : opportunityClosed ? (
                           <span className="req-status-badge req-status-neutral">
-                            Başka Usta Seçildi
+                            {directState === 'expired' || request.status === 'expired' ? 'Yanıt Süresi Doldu' : 'Fırsat Kapandı'}
                           </span>
-                        ) : (
+                      ) : myQuote ? (
                           <span className="req-status-badge req-status-info">
                             Teklifiniz İletildi (v{myQuote.version} · {Math.round((myQuote.labor_amount_kurus + myQuote.material_amount_kurus) / 100).toLocaleString('tr-TR')} ₺)
                           </span>
-                        )
-                      ) : request.status === 'provider_selected' ? (
-                        <span className="req-status-badge req-status-neutral">
-                          Talep Kapandı
-                        </span>
                       ) : (
                         <span className="req-status-badge req-status-warning">
                           Yeni Fırsat
@@ -257,28 +330,31 @@ export default async function TradespersonRequestsPage({
 
                   {/* Actions Column */}
                   <div className="workspace-card-actions-col">
-                    {myQuote?.status === 'accepted' ? (
-                      <Link className="cta-action-primary" href="/islerim">
-                        İş Ekranına Git →
-                      </Link>
-                    ) : myQuote ? (
-                      <Link className="cta-action-secondary" href={`/usta/teklifler/${row.request_id}`}>
-                        Teklifi İncele / Güncelle →
-                      </Link>
-                    ) : request.status === 'provider_selected' ? (
-                      <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                        Fırsat kapandı
-                      </span>
-                    ) : (
-                      <Link className="cta-action-primary" href={`/usta/teklifler/${row.request_id}`}>
-                        Talebi İncele / Teklif Ver →
-                      </Link>
-                    )}
+                    <div className="workspace-card-fallback-actions">
+                      {actionRes.primaryAction && (
+                        <Link
+                          className={`cta-action-${actionRes.primaryAction.variant}`}
+                          href={actionRes.primaryAction.href}
+                        >
+                          {actionRes.primaryAction.label}
+                        </Link>
+                      )}
+                      {actionRes.secondaryAction && (
+                        <Link
+                          className={`cta-action-${actionRes.secondaryAction.variant}`}
+                          href={actionRes.secondaryAction.href}
+                        >
+                          {actionRes.secondaryAction.label}
+                        </Link>
+                      )}
+                      {actionRes.helperText && <span>{actionRes.helperText}</span>}
+                    </div>
                   </div>
                 </article>
               );
             })}
           </div>
+          </>
         ) : (
           <section className="account-card empty-requests" style={{ textAlign: 'center' }}>
             <h2>{view === 'direct' ? 'Henüz size özel talep yok' : 'Uygun açık talep bulunamadı'}</h2>
@@ -308,8 +384,6 @@ export default async function TradespersonRequestsPage({
           )}
         </nav>
 
-        {/* Pilot City Map */}
-        <PilotCityMap cityState={pilotCityState(user.user_metadata)} />
       </div>
     </main>
   );

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '../lib/supabase/browser';
 
 export type RealtimeSubscription = { table: string; filter?: string };
-type ConnectionState = 'connecting' | 'live' | 'degraded' | 'unavailable';
+export type ConnectionState = 'connecting' | 'live' | 'degraded' | 'unavailable';
 
 export default function RealtimeRefresh({
   channelName,
@@ -18,31 +18,55 @@ export default function RealtimeRefresh({
 }) {
   const router = useRouter();
   const [state, setState] = useState<ConnectionState>('connecting');
+  const [reconnectCount, setReconnectCount] = useState(0);
   const subscriptionsKey = JSON.stringify(subscriptions);
 
   useEffect(() => {
     let refreshTimer: ReturnType<typeof setTimeout> | undefined;
     let disposed = false;
+
     function catchUp() {
-      if(disposed || refreshTimer) return;
-      refreshTimer=setTimeout(()=>{refreshTimer=undefined;if(!disposed)router.refresh();},300);
+      if (disposed || refreshTimer) return;
+      refreshTimer = setTimeout(() => {
+        refreshTimer = undefined;
+        if (!disposed) router.refresh();
+      }, 300);
     }
-    function onVisible(){if(document.visibilityState==='visible')catchUp();}
-    window.addEventListener('online',catchUp);
-    window.addEventListener('focus',catchUp);
-    document.addEventListener('visibilitychange',onVisible);
-    function cleanup(){
-      disposed=true;
-      if(refreshTimer)clearTimeout(refreshTimer);
-      window.removeEventListener('online',catchUp);
-      window.removeEventListener('focus',catchUp);
-      document.removeEventListener('visibilitychange',onVisible);
+
+    function onVisible() {
+      if (document.visibilityState === 'visible') catchUp();
+    }
+
+    function onOffline() {
+      if (disposed) return;
+      setState('unavailable');
+    }
+
+    function onOnline() {
+      if (disposed) return;
+      setState('connecting');
+      catchUp();
+    }
+
+    window.addEventListener('offline', onOffline);
+    window.addEventListener('online', onOnline);
+    window.addEventListener('focus', catchUp);
+    document.addEventListener('visibilitychange', onVisible);
+
+    function cleanup() {
+      disposed = true;
+      if (refreshTimer) clearTimeout(refreshTimer);
+      window.removeEventListener('offline', onOffline);
+      window.removeEventListener('online', onOnline);
+      window.removeEventListener('focus', catchUp);
+      document.removeEventListener('visibilitychange', onVisible);
     }
 
     try {
       const supabase = createSupabaseBrowserClient();
-      let channel = supabase.channel(channelName);
+      let channel = supabase.channel(`${channelName}_${reconnectCount}`);
       const stableSubscriptions = JSON.parse(subscriptionsKey) as RealtimeSubscription[];
+
       for (const subscription of stableSubscriptions) {
         channel = channel.on(
           'postgres_changes',
@@ -58,9 +82,14 @@ export default function RealtimeRefresh({
 
       channel.subscribe((status: string) => {
         if (disposed) return;
-        if (status === 'SUBSCRIBED') { setState('live'); catchUp(); }
-        else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setState('degraded');
-        else if (status === 'CLOSED') setState('unavailable');
+        if (status === 'SUBSCRIBED') {
+          setState('live');
+          catchUp();
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          setState('degraded');
+        } else if (status === 'CLOSED') {
+          setState('unavailable');
+        }
       });
 
       return () => {
@@ -73,15 +102,38 @@ export default function RealtimeRefresh({
       });
       return cleanup;
     }
-  }, [channelName, router, subscriptionsKey]);
+  }, [channelName, router, subscriptionsKey, reconnectCount]);
 
-  const copy = state === 'live' ? 'Canlı' : state === 'connecting' ? 'Bağlanıyor' : 'Yenileme gerekebilir';
+  function handleAction() {
+    if (state !== 'live') {
+      setState('connecting');
+      setReconnectCount(c => c + 1);
+    }
+    router.refresh();
+  }
+
+  const copy = state === 'live'
+    ? 'Canlı'
+    : state === 'connecting'
+    ? 'Bağlanıyor…'
+    : state === 'degraded'
+    ? 'Bağlantı zayıf'
+    : 'Bağlantı kesildi';
+
+  const buttonLabel = state === 'live' ? 'Güncel durumu yenile' : 'Yeniden bağlan';
+
   return (
-    <div className={`realtime-indicator is-${state}`} role="status" aria-live="polite">
+    <div
+      className={`realtime-indicator is-${state}`}
+      role="status"
+      aria-live={state === 'unavailable' ? 'assertive' : 'polite'}
+    >
       <span aria-hidden="true" />
       <span className="sr-only">{label}: </span>
       {copy}
-      <button type="button" onClick={()=>router.refresh()}>Güncel durumu yenile</button>
+      <button type="button" onClick={handleAction}>
+        {buttonLabel}
+      </button>
     </div>
   );
 }

@@ -19,7 +19,15 @@ export default async function JobPage({params}:{params:Promise<{id:string}>}){
   if(authError&&authError.name!=='AuthSessionMissingError')return <LoadFailure/>;
   if(!user)redirect('/giris?next='+encodeURIComponent('/islerim/'+id));
   const {data:job,error:jobError}=await supabase.from('jobs').select('id,status,customer_id,tradesperson_id,accepted_quote_id').eq('id',id).maybeSingle();if(jobError)return <LoadFailure/>;if(!job)notFound();
-  const role=job.customer_id===user.id?'customer':job.tradesperson_id===user.id?'tradesperson':'admin';
+  let role:'customer'|'tradesperson'|'admin';
+  if(job.customer_id===user.id)role='customer';
+  else if(job.tradesperson_id===user.id)role='tradesperson';
+  else {
+    const {data:operatorRole,error:roleError}=await supabase.from('user_roles').select('role').eq('user_id',user.id).in('role',['admin','moderator']).limit(1).maybeSingle();
+    if(roleError)return <LoadFailure/>;
+    if(!operatorRole)notFound();
+    role='admin';
+  }
 
   const [
     eventsResult,

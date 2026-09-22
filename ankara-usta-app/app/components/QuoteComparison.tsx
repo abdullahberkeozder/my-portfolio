@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import QuoteAcceptDialog from './QuoteAcceptDialog';
+import { navigateToJob } from '../lib/jobNavigation';
 
 export type ComparableQuote = {
   id: string;
@@ -77,10 +78,10 @@ export default function QuoteComparison({ quotes: inputQuotes, currentUserId, ca
       setAccepted(true);
       setConfirmQuote(null);
       setMessage(`${quote.tradespersonName} ustanın teklifi kabul edildi.`);
-      // Do not race a destination navigation with a refresh of this page.
-      // Vinext can keep the customer on the comparison route when both are
-      // scheduled together, even though acceptance and job creation succeed.
-      if (body.jobId) router.push(`/islerim/${body.jobId}`);
+      // This transaction boundary intentionally uses a document navigation.
+      // A request Realtime refresh can otherwise overtake Vinext's soft RSC
+      // navigation and leave the customer on the now-closed comparison page.
+      if (body.jobId) navigateToJob(body.jobId);
       else router.refresh();
     } catch {
       setError('Yanıt alınamadı; işlem gerçekleşmiş olabilir. Aynı teklifi yeniden deneyebilir veya işlerinizi kontrol edebilirsiniz.');

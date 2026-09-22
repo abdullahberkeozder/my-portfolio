@@ -21,8 +21,7 @@ for(const width of [320,390,820,1440]) {
     }
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
     await page.screenshot({path:testInfo.outputPath(`directory-${width}.png`),fullPage:true});
-    await page.getByText('Bölgeyi haritada incele',{exact:true}).click();
-    await expect(page.getByText('Harita gösterimi örnek dükkân kayıtları içerir',{exact:false})).toBeVisible();
+    await expect(page.getByRole('link',{name:'Harita',exact:true})).toHaveCount(0);
     await card.getByRole('link',{name:'Profili İncele →'}).focus();
     await page.keyboard.press('Enter');
     await expect(page.getByRole('heading',{level:1})).toContainText('TEST PROFİLİ · Uzun İsimli');
@@ -38,8 +37,9 @@ for(const width of [320,390,820,1440]) {
     await page.getByRole('link',{name:'Filtreleri Temizle',exact:true}).click();
     await expect(page.getByRole('combobox',{name:'İlçe',exact:true})).toHaveValue('');
     await expect(page.getByRole('combobox',{name:'Hizmet',exact:true})).toHaveValue('');
-    await page.goto('/harita');
-    await expect(page.getByRole('heading',{name:'Örnek bölge haritası'})).toBeVisible();
-    await expect(page.getByText('Bu gösterimdeki dükkânlar ve sayılar örnek veridir.',{exact:false})).toBeVisible();
+    await page.goto('/concepts/harita');
+    await expect(page.getByRole('heading',{name:'Temsili Ankara haritası'})).toBeVisible();
+    await expect(page.getByText('Bu sayfadaki noktalar gerçek işletme, usta, doğrulama, puan veya müsaitlik verisi değildir.',{exact:false})).toBeVisible();
+    await expect(page.getByRole('button',{name:/teklif/i})).toHaveCount(0);
   });
 }

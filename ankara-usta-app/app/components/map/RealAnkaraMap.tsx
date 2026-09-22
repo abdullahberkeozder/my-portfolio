@@ -3,19 +3,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ankaraDistrictsGeo, ShopPin, findDistrictByLatLng } from '../../data/ankaraMapGeo';
+import { ankaraDistrictsGeo, ShopPin } from '../../data/ankaraMapGeo';
 import styles from './ankaraMap.module.css';
 
 interface RealAnkaraMapProps {
   filteredPins: ShopPin[];
   selectedDistrict: string;
   onSelectDistrict: (districtId: string) => void;
-  emergencyOnly: boolean;
-  pinMode: boolean;
-  onSelectShop: (shop: ShopPin) => void;
-  onStartQuote: (shop: ShopPin) => void;
-  onPlacePin: (coords: { lat: number; lng: number; districtName: string }) => void;
-  placedPinCoords: { lat: number; lng: number } | null;
 }
 
 function getCategoryColor(type: ShopPin['categoryIcon']): string {
@@ -47,22 +41,14 @@ export default function RealAnkaraMap({
   filteredPins,
   selectedDistrict,
   onSelectDistrict,
-  emergencyOnly,
-  pinMode,
-  onSelectShop,
-  onStartQuote,
-  onPlacePin,
-  placedPinCoords,
 }: RealAnkaraMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const polygonLayerGroupRef = useRef<L.FeatureGroup | null>(null);
   const markerLayerGroupRef = useRef<L.FeatureGroup | null>(null);
-  const placementMarkerRef = useRef<L.Marker | null>(null);
 
   const [activeLayer, setActiveLayer] = useState<'streets' | 'satellite'>('streets');
-  const [locating, setLocating] = useState<boolean>(false);
 
   // 1. Initialize Leaflet Map once with real OpenStreetMap Gold Standard
   useEffect(() => {
@@ -130,27 +116,6 @@ export default function RealAnkaraMap({
     tileLayerRef.current = newLayer;
   }, [activeLayer]);
 
-  // 3. Handle map click in Pin Mode
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-
-    function handleClick(e: L.LeafletMouseEvent) {
-      if (!pinMode) return;
-      const detected = findDistrictByLatLng(e.latlng.lat, e.latlng.lng);
-      onPlacePin({
-        lat: Number(e.latlng.lat.toFixed(5)),
-        lng: Number(e.latlng.lng.toFixed(5)),
-        districtName: detected.name,
-      });
-    }
-
-    map.on('click', handleClick);
-    return () => {
-      map.off('click', handleClick);
-    };
-  }, [pinMode, onPlacePin]);
-
   // 4. Render / Update District Polygons
   useEffect(() => {
     const layerGroup = polygonLayerGroupRef.current;
@@ -168,20 +133,18 @@ export default function RealAnkaraMap({
       });
 
       polygon.bindTooltip(
-        '<strong>' + district.name + ' İlçesi</strong><br/><span style="font-size:11px">' + district.tradeCount + ' Aktif Usta Dükkanı</span>',
+        '<strong>' + district.name + '</strong><br/><span style="font-size:11px">Temsili konsept bölgesi</span>',
         { sticky: true, direction: 'top' }
       );
 
       polygon.on('click', (e) => {
         L.DomEvent.stopPropagation(e);
-        if (!pinMode) {
-          onSelectDistrict(isSelected ? 'all' : district.id);
-        }
+        onSelectDistrict(isSelected ? 'all' : district.id);
       });
 
       polygon.addTo(layerGroup);
     });
-  }, [selectedDistrict, pinMode, onSelectDistrict]);
+  }, [selectedDistrict, onSelectDistrict]);
 
   // 5. Update Camera Viewport based on selectedDistrict
   useEffect(() => {
@@ -211,7 +174,7 @@ export default function RealAnkaraMap({
       const lng = pin.latLng?.lng ?? 32.8530;
       const color = getCategoryColor(pin.categoryIcon);
       const iconSvg = getCategorySvgIcon(pin.categoryIcon);
-      const isPulse = emergencyOnly && pin.isEmergency;
+      const isPulse = false;
 
       const markerHtml = `
         <div class="${styles.leafletMarkerPin} ${isPulse ? styles.leafletMarkerPulse : ''}" style="--pin-color: ${color};">
@@ -236,19 +199,12 @@ export default function RealAnkaraMap({
 
       const popupHtml = `
         <div class="${styles.leafletPopupCard}">
-          ${pin.isEmergency ? '<span class="' + styles.emergencyBadge + '">🚨 7/24 Nöbetçi</span>' : ''}
-          <span class="${styles.infoBadge}">✓ Doğrulanmış Usta</span>
+          <span class="${styles.infoBadge}">Temsili kayıt</span>
           <h4 class="${styles.infoTitle}">${pin.name}</h4>
           <div class="${styles.infoOwner}">${pin.ownerName} · ${pin.category}</div>
           <div class="${styles.infoMeta}">
-            <span>📍 ${pin.address}</span>
-            <span>📞 ${pin.phone}</span>
-            <span>⭐ ${pin.rating} (${pin.reviewCount} onaylı yorum)</span>
-          </div>
-          <div class="${styles.infoActions}">
-            <button type="button" class="${styles.infoActionPrimary}" id="quote-btn-${pin.id}">
-              Bu Ustadan Teklif Al →
-            </button>
+            <span>Bölge: ${pin.address}</span>
+            <span>Canlı ürün verisi değildir</span>
           </div>
         </div>
       `;
@@ -258,81 +214,9 @@ export default function RealAnkaraMap({
         className: 'custom-leaflet-popup',
       });
 
-      marker.on('popupopen', () => {
-        onSelectShop(pin);
-        const btn = document.getElementById('quote-btn-' + pin.id);
-        if (btn) {
-          btn.onclick = () => onStartQuote(pin);
-        }
-      });
-
       marker.addTo(layerGroup);
     });
-  }, [filteredPins, emergencyOnly, onSelectShop, onStartQuote]);
-
-  // 7. Temporary placement marker when placing a new shop
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-
-    if (placementMarkerRef.current) {
-      placementMarkerRef.current.remove();
-      placementMarkerRef.current = null;
-    }
-
-    if (placedPinCoords) {
-      const placementHtml = `
-        <div class="${styles.leafletMarkerPin}" style="--pin-color: #ea4335;">
-          <div class="${styles.leafletPulseRing}"></div>
-          <div class="${styles.leafletTeardrop}" style="background-color: #ea4335;">
-            <div class="${styles.leafletInnerIcon}">📍</div>
-          </div>
-        </div>
-      `;
-      const placementIcon = L.divIcon({
-        html: placementHtml,
-        className: 'custom-leaflet-marker',
-        iconSize: [36, 42],
-        iconAnchor: [18, 42],
-      });
-
-      const marker = L.marker([placedPinCoords.lat, placedPinCoords.lng], {
-        icon: placementIcon,
-        draggable: true,
-      });
-
-      marker.on('dragend', () => {
-        const pos = marker.getLatLng();
-        const detected = findDistrictByLatLng(pos.lat, pos.lng);
-        onPlacePin({
-          lat: Number(pos.lat.toFixed(5)),
-          lng: Number(pos.lng.toFixed(5)),
-          districtName: detected.name,
-        });
-      });
-
-      marker.addTo(map);
-      placementMarkerRef.current = marker;
-    }
-  }, [placedPinCoords, onPlacePin]);
-
-  function handleLocateMe() {
-    if (!navigator.geolocation || !mapRef.current) return;
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocating(false);
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        mapRef.current?.flyTo([lat, lng], 14, { duration: 1.2 });
-      },
-      () => {
-        setLocating(false);
-        mapRef.current?.flyTo([39.9255, 32.8530], 13, { duration: 1 });
-      },
-      { timeout: 8000 }
-    );
-  }
+  }, [filteredPins]);
 
   function handleResetView() {
     onSelectDistrict('all');
@@ -348,7 +232,7 @@ export default function RealAnkaraMap({
             type="button"
             className={styles.mapLayerBtn + (activeLayer === 'streets' ? ' ' + styles.mapLayerBtnActive : '')}
             onClick={() => setActiveLayer('streets')}
-            title="Google Maps Tarzı Gerçek Sokak Haritası"
+            title="Sokak haritası"
           >
             🗺️ Sokak
           </button>
@@ -356,22 +240,13 @@ export default function RealAnkaraMap({
             type="button"
             className={styles.mapLayerBtn + (activeLayer === 'satellite' ? ' ' + styles.mapLayerBtnActive : '')}
             onClick={() => setActiveLayer('satellite')}
-            title="Gerçek Uydu Görüntüsü"
+            title="Uydu görüntüsü"
           >
             🛰️ Uydu
           </button>
         </div>
 
         <div className={styles.mapQuickActions}>
-          <button
-            type="button"
-            className={styles.mapActionBtn}
-            onClick={handleLocateMe}
-            title="Mevcut Konumuma Odaklan"
-            disabled={locating}
-          >
-            {locating ? '⏳' : '🎯'} Konumum
-          </button>
           <button
             type="button"
             className={styles.mapActionBtn}
@@ -385,9 +260,9 @@ export default function RealAnkaraMap({
 
       <div
         ref={containerRef}
-        className={styles.realMapContainer + (pinMode ? ' ' + styles.mapViewportCrosshair : '')}
+        className={styles.realMapContainer}
         role="application"
-        aria-label="Google Maps Tarzı Gerçek Ankara Sokak ve Zanaatkar Haritası"
+        aria-label="Temsili Ankara bölge haritası"
       />
     </div>
   );
