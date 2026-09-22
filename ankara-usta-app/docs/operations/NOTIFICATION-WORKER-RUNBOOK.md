@@ -4,7 +4,8 @@
 - **Runtime**: .NET 10 (ASP.NET Core Hosted Worker)
 - **Database**: PostgreSQL / Supabase
 - **External Provider**: Resend Transactional Email API (`api.resend.com`)
-- **Status**: Production & Staging Operations Reference
+- **Status**: Taslak operasyon sözleşmesi — staging provası bekliyor
+- **Kanıt Seviyesi**: .NET 10 servis kodu, transactional outbox RPC'leri (`claim_email_notification_batch`, `mark_notification_result`) ve sözleşme testleri doğrulanmıştır. Canlı Resend DNS yapılandırması ve sürekli worker hosting provası Aşama 3 kapsamında icra edilecektir.
 
 ---
 
@@ -37,7 +38,7 @@ Domain işlemleri ile bildirim kuyruğu satırları (`public.notification_outbox
 
 ---
 
-## 2. Dış Servis Sözleşmeleri ve İzinler
+## 2. Dış Servis Sözleşmeleri ve İzinler [UYGULANMIŞ]
 
 1. **Supabase Data REST RPC (`claim_email_notification_batch`)**:
    - `service_role` yetkisi ile çağrılır (`PUBLIC`, `anon`, `authenticated` erişimi revoked).
@@ -54,7 +55,7 @@ Domain işlemleri ile bildirim kuyruğu satırları (`public.notification_outbox
 
 ---
 
-## 3. Durum Yaşam Döngüsü ve Yeniden Deneme (Retry / Dead-Letter)
+## 3. Durum Yaşam Döngüsü ve Yeniden Deneme (Retry / Dead-Letter) [UYGULANMIŞ]
 
 ### 3.1. Durumlar
 - `pending`: Yeni eklenmiş, işlenmeyi bekleyen bildirim.
@@ -81,7 +82,7 @@ Her başarısız denemede `next_attempt_at` aşağıdaki kurala göre ötelenir:
 
 ---
 
-## 4. İdempotency ve Çift Gönderim Güvencesi
+## 4. İdempotency ve Çift Gönderim Güvencesi [UYGULANMIŞ]
 
 Ağ seviyesindeki kesintiler veya worker yeniden başlatmaları durumunda kullanıcılara mükerrer e-posta gitmesini önlemek için:
 1. `ResendEmailSender`, her istekte `Idempotency-Key` başlığı olarak kararlı `ankara_usta_notification_{id}` değerini iletir.
@@ -90,7 +91,7 @@ Ağ seviyesindeki kesintiler veya worker yeniden başlatmaları durumunda kullan
 
 ---
 
-## 5. Yapılandırma ve Çevre Değişkenleri
+## 5. Yapılandırma ve Çevre Değişkenleri [UYGULANMIŞ]
 
 Worker, `.NET` yapılandırma sağlayıcıları (`appsettings.json` veya ortam değişkenleri) üzerinden beslenir:
 
@@ -108,7 +109,7 @@ Worker, `.NET` yapılandırma sağlayıcıları (`appsettings.json` veya ortam d
 
 ---
 
-## 6. İzleme ve Sağlık Kontrolü (Health Check)
+## 6. İzleme ve Sağlık Kontrolü (Health Check) [UYGULANMIŞ]
 
 Worker servisi hafif bir HTTP sunucusu barındırır ve `GET /health` uç noktasını sunar:
 
@@ -137,7 +138,7 @@ curl http://localhost:5000/health
 
 ---
 
-## 7. Operasyon ve Sorun Giderme Prosedürleri
+## 7. Operasyon ve Sorun Giderme Prosedürleri [MANUEL PROSEDÜR]
 
 ### 7.1. Dead-Letter Kuyruğunu İnceleme
 8 deneme sonunda teslim edilemeyen kayıtları listelemek için veritabanında çalıştırılacak sorgu:
@@ -167,10 +168,10 @@ where channel = 'email'
 
 ---
 
-## 8. Staging ve Yayın Öncesi Kontrol Listesi
+## 8. Staging ve Yayın Öncesi Kontrol Listesi [STAGING PROVASI BEKLİYOR]
 
-- [ ] Supabase üzerinde `claim_email_notification_batch` ve `mark_notification_result` RPC fonksiyonları migrate edilmiş olmalıdır.
-- [ ] `tradesperson-documents` ve outbox tablolarının RLS politikaları doğrulanmalıdır.
-- [ ] Resend üzerinde `ankarausta.com` (veya staging alan adı) DNS kayıtları (SPF, DKIM, DMARC) onaylanmış olmalıdır.
-- [ ] Worker container'ı deploy edildiğinde `/health` uç noktası `configured: true` dönmelidir.
-- [ ] Test kullanıcısı oluşturularak bir durum geçişi veya mesaj tetiklenmeli, outbox kaydının `pending -> processing -> sent` geçişi gözlenmeli ve Resend Dashboard üzerinde `Idempotency-Key` kontrol edilmelidir.
+- [x] Supabase üzerinde `claim_email_notification_batch` ve `mark_notification_result` RPC fonksiyonları migrate edilmiş ve test edilmiştir.
+- [x] `tradesperson-documents` ve outbox tablolarının RLS politikaları doğrulanmıştır.
+- [ ] Resend üzerinde alan adı DNS kayıtları (SPF, DKIM, DMARC) onaylanmalıdır.
+- [ ] Worker container'ı staging ortamına deploy edildiğinde `/health` uç noktası `configured: true` dönmelidir.
+- [ ] Staging test kullanıcısı ile durum geçişi tetiklenmeli, outbox kaydının `pending -> processing -> sent` geçişi ve Resend üzerindeki `Idempotency-Key` canlı olarak gözlenmelidir.
