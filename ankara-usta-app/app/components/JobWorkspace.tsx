@@ -5,6 +5,7 @@ import { useRef, useState } from 'react';
 import WorkspaceTabs from './WorkspaceTabs';
 import {workspaceMutation} from '../lib/workspaceMutation';
 import {useModalDialog} from '../hooks/useModalDialog';
+import { calculateEscrowAutoReleaseDeadline } from '../domain';
 
 type Role = 'customer' | 'tradesperson' | 'admin';
 type EventRow = {
@@ -115,6 +116,61 @@ const lines = (value: string) =>
     .split('\n')
     .map(item => item.trim())
     .filter(Boolean);
+
+function getEscrowDetails(status: string, role: Role, autoReleaseDate: string | null) {
+  switch (status) {
+    case 'scheduled':
+      return {
+        badge: '🔒 Kart Provizyonu Alındı',
+        title: 'Ödeme Provizyonda Bekletiliyor',
+        desc: 'İşçilik tutarı banka havuzunda güvenceye alınmıştır. Usta işe başlayana kadar kartınızdan tahsil edilmez.',
+      };
+    case 'inspection_scheduled':
+      return {
+        badge: '🔍 Keşif Randevusu Devrede',
+        title: 'Keşif Sonrası Nihai Tutar Güncellenecek',
+        desc: 'Keşif tamamlandıktan sonra kapsam ve malzeme mutabakatına göre provizyon teyit edilecektir.',
+      };
+    case 'in_progress':
+      return {
+        badge: '🛡️ Havuzda Bloke Altında',
+        title: 'Güvenli Havuz Koruması Aktif',
+        desc: 'Usta işi icra ederken işçilik tutarı Orkestra emanet havuzunda güvendedir. Doğrudan aktarılmaz.',
+      };
+    case 'awaiting_customer_approval':
+      return {
+        badge: '⏳ 72s Onay & Geri Sayım',
+        title: 'İş Teslim Edildi · Onay Bekleniyor',
+        desc: autoReleaseDate
+          ? `Müşteri onayladığında tutar serbest bırakılır. Düzeltme istenirse havuzda kalmaya devam eder. Hareketsizlik durumunda son işlem: ${new Intl.DateTimeFormat('tr-TR', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(autoReleaseDate))} (72s Auto-release / BR-06).`
+          : 'Müşteri onayladığında tutar serbest bırakılır. Düzeltme istenirse havuzda kalmaya devam eder (72 saatlik SLA devrede).',
+      };
+    case 'completed':
+      return {
+        badge: '✅ Ustanın Hesabına Aktarıldı',
+        title: 'Emanet Başarıyla Çözümlendi',
+        desc: 'Müşteri memnuniyet onayıyla birlikte işçilik bedeli ustanın hesabına serbest bırakılmış ve dijital garanti başlamıştır.',
+      };
+    case 'disputed':
+      return {
+        badge: '⚖️ Hakem İncelemesinde Donduruldu',
+        title: 'Ödeme Hakem Kararına Kadar Askıda',
+        desc: 'Tarafların sunduğu kanıtlar incelenene kadar havuzdaki bloke çözülmez; hakem heyeti kararına göre iade veya aktarım yapılır.',
+      };
+    case 'cancelled':
+      return {
+        badge: '↩️ Kart Provizyonu İptal Edildi',
+        title: 'Ödeme İadesi Gerçekleştirildi',
+        desc: 'İş başlatılmadan iptal edildiği için bloke edilen tutar kartınıza eksiksiz iade edilmiştir.',
+      };
+    default:
+      return {
+        badge: '🛡️ Orkestra Havuz Koruması',
+        title: 'Güvenli Ödeme Takibi',
+        desc: 'Ödeme akışı Orkestra kuralları çerçevesinde korunmaktadır.',
+      };
+  }
+}
 
 export default function JobWorkspace(props: Props) {
   const router = useRouter();
@@ -268,7 +324,7 @@ export default function JobWorkspace(props: Props) {
       return props.role === 'customer'
         ? {
             title: 'Usta işi tamamladı · Onayınız bekleniyor',
-            desc: 'Yapılan işi inceleyin. Memnunsanız onaylayarak işi tamamlayın veya düzeltme isteyin.',
+            desc: 'Yapılan işi inceleyin. 72 saatlik güvenli havuz süresi devrededir. Onayladığınızda tutar ustaya aktarılır; eksik varsa düzeltme isteyebilirsiniz.',
             cta: 'İşi İncele ve Onayla',
             targetTab: 'trust' as WorkspaceTab,
           }
@@ -323,6 +379,15 @@ export default function JobWorkspace(props: Props) {
   const nextAction = getNextImmediateAction();
   const statusInfo = statusDisplayNames[props.status] || { label: props.status, tone: 'tone-gray' };
   const availableActions = statusActions[props.role][props.status] ?? [];
+
+  // Escrow & 72-Hour Auto-Release Inactivity calculations (SRS: FR-15, BR-06)
+  const lastDeliveryEvent = props.events.find(
+    e => e.event_type === 'status_changed' && (e.payload as any)?.new_status === 'awaiting_customer_approval'
+  ) ?? props.events.find(e => e.event_type === 'status_changed');
+  const autoReleaseDeadline = props.status === 'awaiting_customer_approval' && lastDeliveryEvent
+    ? calculateEscrowAutoReleaseDeadline(lastDeliveryEvent.created_at)
+    : null;
+  const escrowInfo = getEscrowDetails(props.status, props.role, autoReleaseDeadline);
 
   return (
     <div className="job-workspace-shell">
@@ -521,6 +586,23 @@ export default function JobWorkspace(props: Props) {
                 </div>
               );
             })()}
+
+            {/* Escrow Havuz Güvencesi Kartı (SRS: FR-15, BR-06 / SDD: 4.4) */}
+            <article className="escrow-protection-card" aria-label="Emanet ödeme havuz güvencesi">
+              <div className="escrow-header">
+                <div>
+                  <span className="escrow-eyebrow">ORKESTRA GÜVENLİ HAVUZ (ESCROW) GÜVENCESİ</span>
+                  <h3 className="escrow-title">{escrowInfo.title}</h3>
+                </div>
+                <span className="escrow-badge">{escrowInfo.badge}</span>
+              </div>
+              <p className="escrow-desc">{escrowInfo.desc}</p>
+              {autoReleaseDeadline && props.status === 'awaiting_customer_approval' && (
+                <div className="escrow-sla-highlight">
+                  ⏳ <strong>72 Saatlik Otomatik Serbest Bırakma:</strong> İş teslim alındıktan sonra 72 saat içinde onay veya düzeltme bildirilmezse tutar otomatik olarak ustaya aktarılacaktır (İş Kuralı: BR-06).
+                </div>
+              )}
+            </article>
 
             <div className="scope-items-list">
               {props.scopeChanges.length > 0 ? (
@@ -796,6 +878,23 @@ export default function JobWorkspace(props: Props) {
                 </div>
               </div>
             )}
+
+            {/* Escrow Status Banner on Trust Tab */}
+            <div className="escrow-protection-card" aria-label="Emanet ödeme durumu">
+              <div className="escrow-header">
+                <div>
+                  <span className="escrow-eyebrow">ÖDEME VE HAVUZ GÜVENCESİ</span>
+                  <h3 className="escrow-title">{escrowInfo.title}</h3>
+                </div>
+                <span className="escrow-badge">{escrowInfo.badge}</span>
+              </div>
+              <p className="escrow-desc">{escrowInfo.desc}</p>
+              {autoReleaseDeadline && props.status === 'awaiting_customer_approval' && (
+                <div className="escrow-sla-highlight">
+                  ⏳ Son İşlem Tarihi: <strong>{new Intl.DateTimeFormat('tr-TR', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(autoReleaseDeadline))}</strong> (72 saatlik süre dolduğunda otomatik aktarım sağlanır).
+                </div>
+              )}
+            </div>
 
             <div className="status-actions-box">
               <h3>Mevcut Durumda Yapabileceğiniz İşlemler</h3>
