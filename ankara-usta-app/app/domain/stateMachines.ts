@@ -1,7 +1,7 @@
-import { Job, JobStatus, Request, RequestStatus, TradespersonApplicationStatus } from './models';
+import { EscrowPaymentStatus, Job, JobStatus, Request, RequestStatus, TradespersonApplicationStatus } from './models';
 
 export class InvalidStateTransitionError extends Error {
-  constructor(entity: 'Request' | 'Job' | 'TradespersonApplication', from: string, to: string) {
+  constructor(entity: 'Request' | 'Job' | 'TradespersonApplication' | 'EscrowPayment', from: string, to: string) {
     super(`${entity} cannot transition from "${from}" to "${to}".`);
     this.name = 'InvalidStateTransitionError';
   }
@@ -69,5 +69,24 @@ export function canTransitionTradespersonApplication(from: TradespersonApplicati
 export function assertTradespersonApplicationTransition(from: TradespersonApplicationStatus, to: TradespersonApplicationStatus) {
   if (!canTransitionTradespersonApplication(from, to)) {
     throw new InvalidStateTransitionError('TradespersonApplication', from, to);
+  }
+}
+
+const escrowPaymentTransitions: Readonly<Record<EscrowPaymentStatus, readonly EscrowPaymentStatus[]>> = {
+  pending: ['authorized', 'refunded'],
+  authorized: ['held_in_escrow', 'refunded'],
+  held_in_escrow: ['released_to_tradesperson', 'partially_refunded', 'refunded'],
+  released_to_tradesperson: [],
+  partially_refunded: ['released_to_tradesperson', 'refunded'],
+  refunded: [],
+};
+
+export function canTransitionEscrowPayment(from: EscrowPaymentStatus, to: EscrowPaymentStatus) {
+  return escrowPaymentTransitions[from]?.includes(to) ?? false;
+}
+
+export function assertEscrowPaymentTransition(from: EscrowPaymentStatus, to: EscrowPaymentStatus) {
+  if (!canTransitionEscrowPayment(from, to)) {
+    throw new InvalidStateTransitionError('EscrowPayment', from, to);
   }
 }

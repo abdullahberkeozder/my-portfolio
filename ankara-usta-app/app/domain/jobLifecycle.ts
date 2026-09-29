@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import type { JobParticipantRole,JobStatus } from './models';
-import { canTransitionJob,InvalidStateTransitionError } from './stateMachines';
+import type { EscrowPaymentStatus, JobParticipantRole, JobStatus } from './models';
+import { canTransitionEscrowPayment, canTransitionJob, InvalidStateTransitionError } from './stateMachines';
 
 export const jobMessageInputSchema=z.object({
   body:z.string().trim().min(1).max(4000),
@@ -55,6 +55,52 @@ export function canActorTransitionJob(from:JobStatus,to:JobStatus,actor:JobParti
 export function assertActorCanTransitionJob(from:JobStatus,to:JobStatus,actor:JobParticipantRole){
   if(!canActorTransitionJob(from,to,actor))throw new InvalidStateTransitionError('Job',from,to);
 }
+
+const escrowTransitionActors: Partial<Record<`${EscrowPaymentStatus}->${EscrowPaymentStatus}`, readonly JobParticipantRole[]>> = {
+  'pending->authorized': ['customer', 'system'],
+  'pending->refunded': ['customer', 'admin', 'system'],
+  'authorized->held_in_escrow': ['system', 'admin'],
+  'authorized->refunded': ['admin', 'system'],
+  'held_in_escrow->released_to_tradesperson': ['customer', 'admin', 'system'],
+  'held_in_escrow->partially_refunded': ['customer', 'admin', 'system'],
+  'held_in_escrow->refunded': ['admin', 'system'],
+  'partially_refunded->released_to_tradesperson': ['customer', 'admin', 'system'],
+  'partially_refunded->refunded': ['admin'],
+};
+
+export function canActorTransitionEscrowPayment(from: EscrowPaymentStatus, to: EscrowPaymentStatus, actor: JobParticipantRole) {
+  return canTransitionEscrowPayment(from, to) && Boolean(escrowTransitionActors[`${from}->${to}`]?.includes(actor));
+}
+
+export function assertActorCanTransitionEscrowPayment(from: EscrowPaymentStatus, to: EscrowPaymentStatus, actor: JobParticipantRole) {
+  if (!canActorTransitionEscrowPayment(from, to, actor)) {
+    throw new InvalidStateTransitionError('EscrowPayment', from, to);
+  }
+}
+
+export const ESCROW_AUTO_RELEASE_HOURS = 72;
+
+export function calculateEscrowAutoReleaseDeadline(deliveredAtIso: string): string {
+  const deliveredDate = new Date(deliveredAtIso);
+  if (isNaN(deliveredDate.getTime())) {
+    throw new Error('Geçersiz teslimat zaman damgası.');
+  }
+  const deadline = new Date(deliveredDate.getTime() + ESCROW_AUTO_RELEASE_HOURS * 60 * 60 * 1000);
+  return deadline.toISOString();
+}
+
+export function isEscrowEligibleForAutoRelease(deliveredAtIso: string, nowIso?: string): boolean {
+  const deadline = new Date(calculateEscrowAutoReleaseDeadline(deliveredAtIso)).getTime();
+  const now = nowIso ? new Date(nowIso).getTime() : Date.now();
+  return now >= deadline;
+}
+
+export const escrowReleaseInputSchema = z.object({
+  jobId: z.uuid(),
+  idempotencyKey: z.uuid(),
+  releaseReason: z.enum(['customer_acceptance', 'auto_release_72h', 'arbitration_award']),
+  note: z.string().trim().max(1000).optional(),
+});
 
 export function notificationRetryDelaySeconds(attempt:number){
   if(!Number.isInteger(attempt)||attempt<1)throw new Error('Attempt must be a positive integer.');

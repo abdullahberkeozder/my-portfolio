@@ -17,15 +17,12 @@ import matchStyles from './components/serviceMatch.module.css';
 import styles from './home.module.css';
 import { trackFunnel } from './lib/analytics';
 
-/* ─── Statik vitrin verisi (görsel katman) ─── */
-const FEATURED_PROS = [
-  { id: 'p1', name: 'Ahmet K.',    rating: 4.9, jobs: 143, service: 'Tesisat',        district: 'Çankaya',   verified: true  },
-  { id: 'p2', name: 'Mehmet Y.',   rating: 4.8, jobs: 97,  service: 'Elektrik',       district: 'Keçiören',  verified: true  },
-  { id: 'p3', name: 'Ali D.',      rating: 5.0, jobs: 76,  service: 'Mobilya Montaj', district: 'Mamak',     verified: true  },
-  { id: 'p4', name: 'Hasan Ç.',    rating: 4.7, jobs: 212, service: 'Boya & Tadilat', district: 'Etimesgut', verified: true  },
-  { id: 'p5', name: 'Ömer Ş.',     rating: 4.9, jobs: 58,  service: 'Temizlik',       district: 'Sincan',    verified: false },
-  { id: 'p6', name: 'Kadir T.',    rating: 4.8, jobs: 134, service: 'Kaynak',         district: 'Pursaklar', verified: true  },
-] as const;
+type FeaturedProfessional = {
+  userId: string;
+  displayName: string;
+  bio: string | null;
+  city: string | null;
+};
 
 const REVIEWS = [
   { id: 'r1', name: 'Seda K.',  service: 'Musluk Değişimi', text: 'Çok hızlı geldi, temiz çalıştı. Tavsiyelere uydu, hiç sorun çıkarmadı.' },
@@ -73,6 +70,23 @@ export default function Home() {
   const [dialog, setDialog] = useState(false);
   const [classification, setClassification] = useState<ClassificationResult | null>(null);
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  const [featuredPros, setFeaturedPros] = useState<FeaturedProfessional[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    void fetch('/api/tradespeople/featured')
+      .then(async res => {
+        if (!res.ok) throw new Error('Usta verisi alınamadı');
+        return res.json() as Promise<{ professionals: FeaturedProfessional[] }>;
+      })
+      .then(data => {
+        if (active && data?.professionals) {
+          setFeaturedPros(data.professionals);
+        }
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
   const [wizardServiceId, setWizardServiceId] = useState<string | null>(null);
   const [remoteDraft, setRemoteDraft] = useState<Parameters<typeof RequestWizard>[0]['remoteDraft']>();
   const classificationDialogRef = useModalDialog<HTMLElement>(dialog, () => setDialog(false));
@@ -310,25 +324,41 @@ export default function Home() {
             </Link>
           </div>
           <div className={styles.proScroll} role="list">
-            {FEATURED_PROS.map(pro => (
-              <Link
-                key={pro.id}
-                href={`/ustalar?district=${encodeURIComponent(pro.district)}`}
-                className={styles.proCard}
-                role="listitem"
-              >
-                <div className={styles.proAvatarWrap}>
-                  <Avatar name={pro.name} size="lg" verified={pro.verified} />
+            {featuredPros.length > 0 ? (
+              featuredPros.map(pro => (
+                <Link
+                  key={pro.userId}
+                  href={`/ustalar/${encodeURIComponent(pro.userId)}`}
+                  className={styles.proCard}
+                  role="listitem"
+                >
+                  <div className={styles.proAvatarWrap}>
+                    <Avatar name={pro.displayName} size="lg" verified={true} />
+                  </div>
+                  <span className={styles.proName}>{pro.displayName}</span>
+                  {pro.bio && <span className={styles.proBioSnippet}>{pro.bio}</span>}
+                  <span className={styles.proDistrict}>{pro.city || 'Ankara'}</span>
+                  <span className={styles.proBadgeVerified}>🛡️ Doğrulanmış Usta</span>
+                </Link>
+              ))
+            ) : (
+              <div className={styles.proPilotNotice}>
+                <div className={styles.pilotBadge}>🚀 Ankara Pilot Aşaması</div>
+                <h3 className={styles.pilotTitle}>Doğrulama Süreci Devam Ediyor</h3>
+                <p className={styles.pilotText}>
+                  Orkestra&apos;da hiçbir zaman sahte veya simüle usta profili listelenmez (<strong>TRUST-01</strong>).
+                  Mesleki yeterlilik ve kimlik belgeleri incelenen ilk ustalarımız onaylandıkça burada yer alacaktır.
+                </p>
+                <div className={styles.pilotActions}>
+                  <Link href="/usta/basvuru" className={styles.pilotJoinBtn}>
+                    Usta Olarak Başvur →
+                  </Link>
+                  <Link href="/ustalar" className={styles.pilotExploreBtn}>
+                    Usta Dizinini İncele
+                  </Link>
                 </div>
-                <span className={styles.proName}>{pro.name}</span>
-                <div className={styles.proRating}>
-                  <RatingStars rating={pro.rating} size="sm" showScore />
-                </div>
-                <span className={styles.proJobs}>{pro.jobs} tamamlanan iş</span>
-                <span className={styles.proServiceTag}>{pro.service}</span>
-                <span className={styles.proDistrict}>{pro.district}</span>
-              </Link>
-            ))}
+              </div>
+            )}
           </div>
         </div>
       </section>

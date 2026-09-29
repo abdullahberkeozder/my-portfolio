@@ -54,6 +54,31 @@ export const jobStatuses = [
 ] as const;
 export type JobStatus = (typeof jobStatuses)[number];
 
+export const escrowPaymentStatuses = [
+  'pending',
+  'authorized',
+  'held_in_escrow',
+  'released_to_tradesperson',
+  'partially_refunded',
+  'refunded',
+] as const;
+export type EscrowPaymentStatus = (typeof escrowPaymentStatuses)[number];
+
+export type EscrowPayment = {
+  id: string;
+  jobId: string;
+  customerId: string;
+  tradespersonId: string;
+  laborAmountKurus: number;
+  materialAmountKurus: number;
+  status: EscrowPaymentStatus;
+  autoReleaseDeadline?: string;
+  releasedAt?: string;
+  refundedAmountKurus?: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Service = {
   id: string;
   categoryId: string;
