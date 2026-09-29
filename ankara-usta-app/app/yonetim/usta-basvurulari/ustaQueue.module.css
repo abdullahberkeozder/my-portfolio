@@ -1,0 +1,109 @@
+.filterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: var(--surface-raised, #ffffff);
+  padding: 16px 20px;
+  border: 1px solid var(--border-default, #e2e8f0);
+  border-radius: var(--radius-card, 12px);
+  margin-bottom: 24px;
+}
+
+.filterChips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filterChip {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  background: var(--surface-brand-soft, #f1f5f9);
+  color: var(--text-secondary, #475569);
+  border: 1px solid transparent;
+  transition: all var(--motion-fast, 120ms);
+}
+
+.filterChip:hover {
+  background: #e2e8f0;
+}
+
+.filterChipActive {
+  background: var(--brand-lemonade, #fff4b8);
+  color: #0b132b;
+  border-color: var(--brand-yellow, #ffdd00);
+  font-weight: 700;
+}
+
+.countNotice {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-secondary, #64748b);
+}
+
+.mykBanner {
+  margin: 14px 0 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-control, 8px);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.mykVerified {
+  background: #ecfdf5;
+  border: 1.5px solid #a7f3d0;
+  color: #065f46;
+}
+
+.mykPending {
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  color: #92400e;
+}
+
+.mykMissing {
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  color: #991b1b;
+}
+
+.mykTitle {
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mykExpiry {
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+.publicBadgeStatus {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border-default, #e2e8f0);
+  font-size: 0.75rem;
+  color: var(--text-secondary, #64748b);
+}
+
+.publicBadgeEligible {
+  color: #059669;
+  font-weight: 700;
+}
+
+.publicBadgeIneligible {
+  color: #d97706;
+  font-weight: 600;
+}

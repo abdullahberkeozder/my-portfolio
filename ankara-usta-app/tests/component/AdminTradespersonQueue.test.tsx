@@ -148,4 +148,38 @@ describe('AdminTradespersonQueuePage (P5)', () => {
 
     expect(screen.getByRole('navigation', { name: /sayfa/i })).toBeInTheDocument();
   });
+
+  it('highlights verified MYK certificate and public directory badge eligibility', async () => {
+    mockState.applications = [
+      {
+        user_id: 'tp-verified',
+        display_name: 'Ahmet Usta',
+        bio: 'Sertifikalı elektrik teknisyeni.',
+        application_status: 'approved',
+        submitted_at: '2026-09-20T10:00:00Z',
+        review_note: null,
+        tradesperson_services: [{ service_id: 'elektrik-tesisati' }],
+        tradesperson_service_areas: [{ district: 'Yenimahalle' }],
+        tradesperson_documents: [
+          {
+            id: 'doc-myk-1',
+            kind: 'professional_certificate',
+            status: 'verified',
+            original_name: 'MYK_Elektrik_Seviye4.pdf',
+            expires_at: '2028-12-31',
+            storage_path: 'docs/myk.pdf',
+          },
+        ],
+        tradesperson_references: [],
+      },
+    ];
+    mockState.count = 1;
+
+    render(await AdminTradespersonQueuePage({ searchParams: Promise.resolve({ page: '1' }) }));
+
+    expect(screen.getByText(/MYK \/ Ustalık Belgesi:/i)).toBeInTheDocument();
+    expect(screen.getByText(/DOĞRULANDI/i)).toBeInTheDocument();
+    expect(screen.getByText(/Geçerlilik: 2028-12-31/i)).toBeInTheDocument();
+    expect(screen.getByText(/Kamusal Dizin Doğrulama Rozetine Uygun/i)).toBeInTheDocument();
+  });
 });

@@ -68,6 +68,7 @@ export default async function DisputeOperationsPage({
           <Link className="active" href="/yonetim/uyusmazliklar">
             Uyuşmazlıklar <b>{totalCount}</b>
           </Link>
+          <Link href="/yonetim/denetim-izi">Denetim İzi</Link>
         </nav>
 
         {error ? (
