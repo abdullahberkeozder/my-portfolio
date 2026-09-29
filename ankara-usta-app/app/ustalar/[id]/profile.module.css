@@ -1,0 +1,105 @@
+/* ─── Usta Public Profile — Service Area Section ────────────────────────── */
+
+/* Service Area Card container — spans full width in the grid */
+.serviceAreaCard {
+  grid-column: 1 / -1;
+}
+
+/* Header row: title + district count badge */
+.serviceAreaHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.serviceAreaEyebrow {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brand-cobalt, #0b132b);
+  opacity: 0.55;
+  margin-bottom: 4px;
+}
+
+.serviceAreaTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.serviceAreaCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 14px;
+  background: var(--brand-lemonade-soft, #fef9c3);
+  color: #7a6800;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Map wrapper */
+.serviceAreaMapWrapper {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1.5px solid var(--border-default, #e2e8f0);
+  box-shadow: 0 4px 16px rgba(11, 19, 43, 0.06);
+  margin-bottom: 16px;
+}
+
+/* District chips strip below map */
+.serviceAreaChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.areaChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  background: #f1f5f9;
+  color: var(--text-secondary, #475569);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  transition: border-color 100ms;
+}
+
+.areaChipPrimary {
+  background: #fffbeb;
+  color: #78350f;
+  border-color: rgba(234, 179, 8, 0.5);
+}
+
+/* Empty state text */
+.serviceAreaEmpty {
+  color: var(--text-secondary, #64748b);
+  font-size: 0.875rem;
+  padding: 12px 0 4px;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .serviceAreaHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .serviceAreaTitle {
+    font-size: 1rem;
+  }
+}

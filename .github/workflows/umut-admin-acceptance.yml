@@ -1,0 +1,43 @@
+name: Umut admin acceptance
+on:
+  pull_request:
+    paths: ['the-welding-expert-app/**', '.github/workflows/umut-admin-acceptance.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-admin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      UMUT_ADMIN_CI: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+          cache-dependency-path: the-welding-expert-app/backend/pom.xml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: the-welding-expert-app/package-lock.json
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.117.0
+      - run: npm ci
+        working-directory: the-welding-expert-app
+      - run: npx playwright install --with-deps chromium
+        working-directory: the-welding-expert-app
+      - run: mvn -B -f the-welding-expert-app/backend/pom.xml package -DskipTests
+      - name: Real Auth and PostgreSQL admin acceptance
+        run: node e2e/admin-ci/run.mjs
+        working-directory: the-welding-expert-app
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: umut-admin-acceptance
+          retention-days: 3
+          path: the-welding-expert-app/playwright-admin-report/

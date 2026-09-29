@@ -270,6 +270,20 @@ export default function UstalarSplitView({
           )}
         </div>
       )}
+
+      {/* Floating Mobile Toggle — visible on tablet/mobile in split or list mode */}
+      {viewMode !== 'map' && (
+        <div className={styles.floatingMobileBar} aria-hidden="true">
+          <button
+            type="button"
+            className={styles.floatingMobileBtn}
+            onClick={() => setViewMode('map')}
+          >
+            <span>🗺️</span>
+            <span>Haritada Gör</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

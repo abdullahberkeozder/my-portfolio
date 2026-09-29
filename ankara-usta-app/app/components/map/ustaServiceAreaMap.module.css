@@ -1,0 +1,79 @@
+/* UstaServiceAreaMap – profile polygon map styles */
+
+.mapRoot {
+  position: relative;
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.mapContainer {
+  width: 100%;
+  height: 100%;
+}
+
+/* District name labels rendered as Leaflet DivIcons */
+.districtLabel {
+  background: rgba(255, 221, 0, 0.92);
+  color: #0b132b;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-family: 'Inter', system-ui, sans-serif;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(11, 19, 43, 0.15);
+  letter-spacing: 0.02em;
+}
+
+.districtLabelPrimary {
+  background: #0b132b;
+  color: #ffdd00;
+  border-color: #ffdd00;
+  font-size: 0.75rem;
+}
+
+/* Empty state overlay when no districts */
+.emptyOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(248, 250, 252, 0.85);
+  color: #64748b;
+  pointer-events: none;
+}
+
+.emptyOverlay span {
+  font-size: 2.5rem;
+}
+
+.emptyOverlay p {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Override Leaflet defaults inside our container */
+.mapContainer :global(.leaflet-control-zoom) {
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+}
+
+.mapContainer :global(.leaflet-control-zoom a) {
+  border-radius: 6px !important;
+  color: #0b132b !important;
+  font-weight: 700 !important;
+}
+
+.mapContainer :global(.leaflet-control-attribution) {
+  font-size: 0.625rem !important;
+  background: rgba(255, 255, 255, 0.75) !important;
+  border-radius: 4px 0 0 0 !important;
+}
