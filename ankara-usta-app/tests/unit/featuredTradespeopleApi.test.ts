@@ -7,6 +7,18 @@ vi.mock('../../app/lib/supabase/server', () => ({
 
 import { createSupabaseServerClient } from '../../app/lib/supabase/server';
 
+type FeaturedResponse = {
+  hasSyntheticArtisans: boolean;
+  pilotStatus: string;
+  professionals: Array<{
+    userId: string;
+    displayName: string;
+    bio: string;
+    city: string;
+  }>;
+  totalCount: number;
+};
+
 describe('GET /api/tradespeople/featured (SRS: FR-05, NFR-05 TRUST-01)', () => {
   it('returns verified professionals when available in directory', async () => {
     const mockRpc = vi.fn().mockResolvedValue({
@@ -24,11 +36,11 @@ describe('GET /api/tradespeople/featured (SRS: FR-05, NFR-05 TRUST-01)', () => {
 
     vi.mocked(createSupabaseServerClient).mockResolvedValue({
       rpc: mockRpc,
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof createSupabaseServerClient>>);
 
     const response = await GET();
     expect(response.status).toBe(200);
-    const body = (await response.json()) as any;
+    const body = (await response.json()) as FeaturedResponse;
 
     expect(body.hasSyntheticArtisans).toBe(false);
     expect(body.pilotStatus).toBe('active');
@@ -55,11 +67,11 @@ describe('GET /api/tradespeople/featured (SRS: FR-05, NFR-05 TRUST-01)', () => {
 
     vi.mocked(createSupabaseServerClient).mockResolvedValue({
       rpc: mockRpc,
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof createSupabaseServerClient>>);
 
     const response = await GET();
     expect(response.status).toBe(200);
-    const body = (await response.json()) as any;
+    const body = (await response.json()) as FeaturedResponse;
 
     expect(body.hasSyntheticArtisans).toBe(false);
     expect(body.pilotStatus).toBe('onboarding');

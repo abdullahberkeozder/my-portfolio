@@ -382,7 +382,7 @@ export default function JobWorkspace(props: Props) {
 
   // Escrow & 72-Hour Auto-Release Inactivity calculations (SRS: FR-15, BR-06)
   const lastDeliveryEvent = props.events.find(
-    e => e.event_type === 'status_changed' && (e.payload as any)?.new_status === 'awaiting_customer_approval'
+    e => e.event_type === 'status_changed' && (e.payload as Record<string, unknown> | null)?.new_status === 'awaiting_customer_approval'
   ) ?? props.events.find(e => e.event_type === 'status_changed');
   const autoReleaseDeadline = props.status === 'awaiting_customer_approval' && lastDeliveryEvent
     ? calculateEscrowAutoReleaseDeadline(lastDeliveryEvent.created_at)
