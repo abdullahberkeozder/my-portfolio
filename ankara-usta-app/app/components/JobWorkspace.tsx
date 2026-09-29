@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import WorkspaceTabs from './WorkspaceTabs';
@@ -895,6 +896,19 @@ export default function JobWorkspace(props: Props) {
                 </div>
               )}
             </div>
+
+            {/* Disputed Status Notice */}
+            {props.status === 'disputed' && (
+              <div className="account-alert-box alert-error" role="region" aria-label="Uyuşmazlık Hakemlik Uyarısı">
+                <div>
+                  <strong>⚖️ Bu İş İçin Hakemlik Süreci Devam Ediyor</strong>
+                  <p>Orkestra moderasyon ve bağımsız hakem heyeti tarafların kanıt ve beyanlarını incelemektedir.</p>
+                </div>
+                <Link href="/uyusmazliklar" className="status-trigger-btn btn-primary">
+                  Uyuşmazlık Dosyalarını Gör →
+                </Link>
+              </div>
+            )}
 
             <div className="status-actions-box">
               <h3>Mevcut Durumda Yapabileceğiniz İşlemler</h3>
