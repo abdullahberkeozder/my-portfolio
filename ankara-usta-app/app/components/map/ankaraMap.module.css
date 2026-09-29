@@ -1467,3 +1467,56 @@
   color: #0b132b;
 }
 
+/* Airbnb Style Directory Tradesperson Map Marker */
+.ustaMapMarker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  color: #0b132b;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1.5px solid #0b132b;
+  box-shadow: 0 4px 14px rgba(11, 19, 43, 0.18);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.ustaMapMarker:hover,
+.ustaMapMarkerActive {
+  background: #0b132b;
+  color: #ffdd00;
+  border-color: #ffdd00;
+  transform: scale(1.14) translateY(-3px);
+  box-shadow: 0 8px 22px rgba(11, 19, 43, 0.35);
+  z-index: 1000 !important;
+}
+
+.ustaMapMarkerIcon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.ustaMapMarkerName {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ustaMapMarkerRating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 10.5px;
+  color: #d97706;
+  font-weight: 800;
+}
+
+.ustaMapMarkerActive .ustaMapMarkerRating {
+  color: #ffdd00;
+}
+

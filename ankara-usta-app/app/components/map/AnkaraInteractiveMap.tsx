@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic';
 import { ankaraDistrictsGeo } from '../../data/ankaraMapGeo';
 import styles from './ankaraMap.module.css';
 
+import type { TradespersonMapMarker } from './RealAnkaraMap';
+
 const RealAnkaraMap = dynamic(() => import('./RealAnkaraMap'), {
   ssr: false,
   loading: () => (
@@ -21,6 +23,9 @@ export interface AnkaraInteractiveMapProps {
   mode?: 'discovery' | 'picker';
   compact?: boolean;
   onLocationSelect?: (district: string, neighborhood?: string) => void;
+  tradespeopleMarkers?: TradespersonMapMarker[];
+  activeTradespersonId?: string | null;
+  onSelectTradespersonMarker?: (id: string) => void;
 }
 
 export default function AnkaraInteractiveMap({
@@ -29,6 +34,9 @@ export default function AnkaraInteractiveMap({
   mode = 'discovery',
   compact = false,
   onLocationSelect,
+  tradespeopleMarkers,
+  activeTradespersonId,
+  onSelectTradespersonMarker,
 }: AnkaraInteractiveMapProps) {
   const [selectedDistrict, setSelectedDistrict] = useState(initialDistrict ?? 'all');
   const [selectedNeighborhood, setSelectedNeighborhood] = useState(initialNeighborhood ?? '');
@@ -182,6 +190,9 @@ export default function AnkaraInteractiveMap({
           onConfirmLocation={(dist, neigh) => {
             if (onLocationSelect) onLocationSelect(dist, neigh);
           }}
+          tradespeopleMarkers={tradespeopleMarkers}
+          activeTradespersonId={activeTradespersonId}
+          onSelectTradespersonMarker={onSelectTradespersonMarker}
         />
       </div>
 

@@ -12,8 +12,22 @@ import {
 } from '../../data/ankaraMapGeo';
 import styles from './ankaraMap.module.css';
 
+export interface TradespersonMapMarker {
+  id: string;
+  name: string;
+  services: string[];
+  district: string;
+  neighborhood?: string;
+  rating?: number;
+  latLng: [number, number];
+  badge?: string;
+}
+
 export interface RealAnkaraMapProps {
   filteredPins?: ShopPin[];
+  tradespeopleMarkers?: TradespersonMapMarker[];
+  activeTradespersonId?: string | null;
+  onSelectTradespersonMarker?: (id: string) => void;
   selectedDistrict: string;
   selectedNeighborhood?: string;
   onSelectDistrict: (districtId: string) => void;
@@ -50,12 +64,16 @@ export default function RealAnkaraMap({
   onSelectNeighborhood,
   mode = 'discovery',
   onConfirmLocation,
+  tradespeopleMarkers,
+  activeTradespersonId,
+  onSelectTradespersonMarker,
 }: RealAnkaraMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const polygonLayerGroupRef = useRef<L.FeatureGroup | null>(null);
   const hubLayerGroupRef = useRef<L.FeatureGroup | null>(null);
+  const ustaLayerGroupRef = useRef<L.FeatureGroup | null>(null);
   const targetMarkerRef = useRef<L.Marker | null>(null);
   const userGpsMarkerRef = useRef<L.Marker | null>(null);
 
@@ -94,6 +112,7 @@ export default function RealAnkaraMap({
 
     polygonLayerGroupRef.current = L.featureGroup().addTo(map);
     hubLayerGroupRef.current = L.featureGroup().addTo(map);
+    ustaLayerGroupRef.current = L.featureGroup().addTo(map);
     mapRef.current = map;
 
     const timer = setTimeout(() => {
@@ -177,6 +196,63 @@ export default function RealAnkaraMap({
       }
     });
   }, [selectedDistrict, onSelectDistrict]);
+
+  // 3.5 Render Tradesperson Directory Markers (Airbnb Split-View)
+  useEffect(() => {
+    const ustaGroup = ustaLayerGroupRef.current;
+    if (!ustaGroup) return;
+
+    ustaGroup.clearLayers();
+    if (!tradespeopleMarkers || tradespeopleMarkers.length === 0) return;
+
+    tradespeopleMarkers.forEach(usta => {
+      const isHighlighted = activeTradespersonId === usta.id;
+      const markerHtml = `
+        <div class="${styles.ustaMapMarker} ${isHighlighted ? styles.ustaMapMarkerActive : ''}">
+          <span class="${styles.ustaMapMarkerIcon}">🛠️</span>
+          <span class="${styles.ustaMapMarkerName}">${usta.name}</span>
+          ${usta.rating ? `<span class="${styles.ustaMapMarkerRating}">★ ${usta.rating.toFixed(1)}</span>` : ''}
+        </div>
+      `;
+
+      const icon = L.divIcon({
+        html: markerHtml,
+        className: '',
+        iconSize: [130, 28],
+        iconAnchor: [65, 14],
+      });
+
+      const marker = L.marker(usta.latLng, {
+        icon,
+        zIndexOffset: isHighlighted ? 1500 : 100,
+      });
+
+      marker.on('click', () => {
+        if (onSelectTradespersonMarker) {
+          onSelectTradespersonMarker(usta.id);
+        }
+      });
+
+      marker.bindPopup(`
+        <div style="font-family: inherit; font-size: 13px; color: #0b132b; min-width: 170px; padding: 4px;">
+          <div style="font-weight: 800; font-size: 14px; margin-bottom: 2px;">${usta.name}</div>
+          <div style="font-size: 11px; color: #64748b; margin-bottom: 6px;">
+            ${usta.services.slice(0, 2).join(' · ')}
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <span style="font-size: 11px; font-weight: 700; color: #047857; background: #d1fae5; padding: 2px 6px; border-radius: 4px;">
+              ${usta.badge ?? 'Doğrulanmış Usta'}
+            </span>
+            <a href="/ustalar/${usta.id}" style="font-size: 12px; font-weight: 700; color: #1246B5; text-decoration: none;">
+              İncele →
+            </a>
+          </div>
+        </div>
+      `);
+
+      marker.addTo(ustaGroup);
+    });
+  }, [tradespeopleMarkers, activeTradespersonId, onSelectTradespersonMarker]);
 
   // 4. Animated Yemeksepeti / Getir Target Pin Drop
   const dropTargetPin = useCallback((latLng: [number, number], label: string) => {

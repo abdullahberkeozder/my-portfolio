@@ -1,0 +1,174 @@
+/* Airbnb Style Split-View for Ustalar Directory */
+
+.splitPageWrapper {
+  width: 100%;
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 16px 20px 64px;
+}
+
+.viewModeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-default, #e2e8f0);
+}
+
+.viewModeToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-raised, #f1f5f9);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border-default, #e2e8f0);
+}
+
+.viewToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #64748b);
+  cursor: pointer;
+  transition: all 120ms ease;
+  text-decoration: none;
+}
+
+.viewToggleBtn:hover {
+  color: var(--text-primary, #0f172a);
+}
+
+.viewToggleBtnActive {
+  background: #ffffff;
+  color: var(--brand-cobalt, #0b132b);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.splitSummaryBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--brand-cobalt, #0b132b);
+  background: var(--brand-lemonade-soft, #fef9c3);
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+/* Split-View Layout (Desktop 2-Column) */
+.splitLayout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  position: relative;
+}
+
+.splitListPane {
+  flex: 1 1 54%;
+  min-width: 0;
+}
+
+.splitMapPane {
+  flex: 1 1 46%;
+  position: sticky;
+  top: 84px;
+  height: calc(100vh - 110px);
+  min-height: 600px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(11, 19, 43, 0.08);
+  border: 1.5px solid var(--border-default, #e2e8f0);
+}
+
+.splitMapPane :global(.leaflet-container),
+.splitMapPane [class*="realMapContainer"] {
+  height: 100% !important;
+  min-height: 600px;
+}
+
+/* Single Column Grid for Split Mode */
+.gridSplit {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+}
+
+/* Full Width Grid for List-Only Mode */
+.gridFull {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+}
+
+/* Card Interactive Styles */
+.cardInteractive {
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+  cursor: pointer;
+}
+
+.cardInteractive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(11, 19, 43, 0.08);
+}
+
+.cardHighlighted {
+  border-color: #ffdd00 !important;
+  box-shadow: 0 0 0 2px #ffdd00, 0 10px 28px rgba(255, 221, 0, 0.25) !important;
+  transform: translateY(-3px);
+}
+
+/* Floating Mobile Map Switcher */
+.floatingMobileBar {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .splitLayout {
+    flex-direction: column;
+  }
+
+  .splitMapPane {
+    position: static;
+    height: 480px;
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .floatingMobileBar {
+    display: flex;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    border-radius: 999px;
+  }
+
+  .floatingMobileBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #0b132b;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 700;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+  }
+}
