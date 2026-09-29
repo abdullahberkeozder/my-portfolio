@@ -18,6 +18,7 @@ import WizardSuccessReceipt from './wizard/WizardSuccessReceipt';
 import {requestDraftKind, requestResumePath, requestRoutingSchema, type RequestTarget} from '../domain/requestRouting';
 import styles from './requestWizard.module.css';
 import WizardRegionPreview from './wizard/WizardRegionPreview';
+import AnkaraInteractiveMap from './map/AnkaraInteractiveMap';
 
 type Props = { service: Service; onClose: () => void; remoteDraft?: LocalDraft; targetProfessional?: RequestTarget };
 type LocalDraft = {
@@ -132,6 +133,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [district, setDistrict] = useState(initialDraft?.district ?? '');
   const [neighborhood, setNeighborhood] = useState(initialDraft?.neighborhood ?? '');
+  const [locationMode, setLocationMode] = useState<'map' | 'list'>('map');
   const [timing, setTiming] = useState(() => {
     try { return normalizeRequestTiming(initialDraft?.timing ?? 'this_week'); }
     catch { return 'this_week' as const; }
@@ -599,28 +601,91 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
               <WizardLocationStep kicker="KONUM VE ZAMAN" title="İş nerede ve ne zaman yapılacak?" description="Açık adresiniz teklif onaylanana kadar gizli tutulur; yalnızca ilçe ve mahalle bilgisi paylaşılır.">
 
                 <div className="swiss-location-form">
-                  <div className="form-row-2col">
-                    <label className="swiss-field">
-                      <span>İlçe Seçin</span>
-                      <select value={district} onChange={event => { setDistrict(event.target.value); setNeighborhood(''); }}>
-                        <option value="">İlçe seçin</option>
-                        {ankaraDistricts.filter(item => !targetProfessional || targetProfessional.districts.includes(item)).map(item => (
-                          <option key={item}>{item}</option>
-                        ))}
-                      </select>
-                    </label>
-                    <label className="swiss-field">
-                      <span>Mahalle / Semt</span>
-                      <select
-                        value={neighborhood}
-                        onChange={event => setNeighborhood(event.target.value)}
-                        disabled={!district}
-                      >
-                        <option value="">{district ? 'Mahalle seçin' : 'Önce ilçe seçin'}</option>
-                        {availableNeighborhoods.map(item => <option key={item}>{item}</option>)}
-                      </select>
-                    </label>
+                  <div className={styles.locationModeToggle} role="tablist" aria-label="Konum Seçim Yöntemi">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={locationMode === 'map'}
+                      className={`${styles.locationModeBtn} ${locationMode === 'map' ? styles.locationModeBtnActive : ''}`}
+                      onClick={() => setLocationMode('map')}
+                    >
+                      🗺️ Harita ile Seç
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={locationMode === 'list'}
+                      className={`${styles.locationModeBtn} ${locationMode === 'list' ? styles.locationModeBtnActive : ''}`}
+                      onClick={() => setLocationMode('list')}
+                    >
+                      📋 Liste ile Seç
+                    </button>
                   </div>
+
+                  {locationMode === 'map' ? (
+                    <div>
+                      <AnkaraInteractiveMap
+                        initialDistrict={district}
+                        initialNeighborhood={neighborhood}
+                        mode="picker"
+                        compact={true}
+                        onLocationSelect={(dist, neigh) => {
+                          setDistrict(dist);
+                          if (neigh) {
+                            setNeighborhood(neigh);
+                          }
+                        }}
+                      />
+
+                      {district && (
+                        <div className={styles.selectedLocationBadge}>
+                          <div className={styles.selectedLocationText}>
+                            <span>📍</span>
+                            <span>
+                              <strong>{district}</strong>
+                              {neighborhood ? ` / ${neighborhood} Mahallesi` : ' (Lütfen mahalle seçin)'}
+                            </span>
+                          </div>
+                          <span className={styles.selectedLocationTag}>
+                            {neighborhood ? '✓ Konum Belirlendi' : '⚡ Mahalle Seçimi Bekleniyor'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="form-row-2col">
+                      <label className="swiss-field">
+                        <span>İlçe Seçin</span>
+                        <select
+                          value={district}
+                          onChange={event => {
+                            setDistrict(event.target.value);
+                            setNeighborhood('');
+                          }}
+                        >
+                          <option value="">İlçe seçin</option>
+                          {ankaraDistricts
+                            .filter(item => !targetProfessional || targetProfessional.districts.includes(item))
+                            .map(item => (
+                              <option key={item}>{item}</option>
+                            ))}
+                        </select>
+                      </label>
+                      <label className="swiss-field">
+                        <span>Mahalle / Semt</span>
+                        <select
+                          value={neighborhood}
+                          onChange={event => setNeighborhood(event.target.value)}
+                          disabled={!district}
+                        >
+                          <option value="">{district ? 'Mahalle seçin' : 'Önce ilçe seçin'}</option>
+                          {availableNeighborhoods.map(item => (
+                            <option key={item}>{item}</option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                  )}
 
                   <div className="timing-choice-group">
                     <span className="timing-label">Tercih Edilen Zaman:</span>

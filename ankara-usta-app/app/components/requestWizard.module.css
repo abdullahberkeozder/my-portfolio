@@ -314,3 +314,73 @@
   .priceRangeValue { font-size: .875rem; }
   .priceRangeNote { font-size: .625rem; }
 }
+
+/* Location selector mode toggle */
+.locationModeToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: var(--surface-raised, #f8fafc);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border-default, #e2e8f0);
+  width: fit-content;
+}
+
+.locationModeBtn {
+  padding: 7px 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #64748b);
+  cursor: pointer;
+  transition: all 120ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.locationModeBtn:hover {
+  color: var(--text-primary, #0f172a);
+}
+
+.locationModeBtnActive {
+  background: #ffffff;
+  color: var(--brand-cobalt, #0b132b);
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.selectedLocationBadge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin-top: 14px;
+  margin-bottom: 8px;
+}
+
+.selectedLocationText {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: #166534;
+  font-weight: 600;
+}
+
+.selectedLocationTag {
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+}

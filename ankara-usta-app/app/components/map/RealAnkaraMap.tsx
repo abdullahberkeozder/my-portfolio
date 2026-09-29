@@ -1,86 +1,104 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ankaraDistrictsGeo, ShopPin } from '../../data/ankaraMapGeo';
+import Link from 'next/link';
+import {
+  ankaraDistrictsGeo,
+  findDistrictByLatLng,
+  getNeighborhoodCoordinates,
+  type ShopPin,
+} from '../../data/ankaraMapGeo';
 import styles from './ankaraMap.module.css';
 
-interface RealAnkaraMapProps {
-  filteredPins: ShopPin[];
+export interface RealAnkaraMapProps {
+  filteredPins?: ShopPin[];
   selectedDistrict: string;
+  selectedNeighborhood?: string;
   onSelectDistrict: (districtId: string) => void;
+  onSelectNeighborhood?: (neighborhood: string) => void;
+  mode?: 'discovery' | 'picker';
+  onConfirmLocation?: (district: string, neighborhood?: string) => void;
 }
 
-function getCategoryColor(type: ShopPin['categoryIcon']): string {
-  switch (type) {
-    case 'plumbing': return '#1246b5';
-    case 'electric': return '#b45309';
-    case 'carpentry': return '#78350f';
-    case 'paint': return '#047857';
-    default: return '#ea4335';
-  }
-}
-
-function getCategorySvgIcon(type: ShopPin['categoryIcon']): string {
-  switch (type) {
-    case 'plumbing':
-      return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>';
-    case 'electric':
-      return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
-    case 'carpentry':
-      return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 12-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L12 9"/><path d="M17.64 15 22 10.64"/><path d="m20.91 3.26-6.36 6.36"/></svg>';
-    case 'paint':
-      return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z"/><path d="m5 2 5 5"/><path d="M2 13h15"/><path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z"/></svg>';
-    default:
-      return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>';
-  }
-}
+const TILE_LAYERS = {
+  streets: {
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    maxZoom: 19,
+    subdomains: 'abcd',
+    attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  },
+  light: {
+    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    maxZoom: 19,
+    subdomains: 'abcd',
+    attribution: '&copy; CARTO &copy; OpenStreetMap',
+  },
+  satellite: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    maxZoom: 18,
+    subdomains: '',
+    attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+  },
+};
 
 export default function RealAnkaraMap({
-  filteredPins,
   selectedDistrict,
+  selectedNeighborhood,
   onSelectDistrict,
+  onSelectNeighborhood,
+  mode = 'discovery',
+  onConfirmLocation,
 }: RealAnkaraMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const polygonLayerGroupRef = useRef<L.FeatureGroup | null>(null);
-  const markerLayerGroupRef = useRef<L.FeatureGroup | null>(null);
+  const hubLayerGroupRef = useRef<L.FeatureGroup | null>(null);
+  const targetMarkerRef = useRef<L.Marker | null>(null);
+  const userGpsMarkerRef = useRef<L.Marker | null>(null);
 
-  const [activeLayer, setActiveLayer] = useState<'streets' | 'satellite'>('streets');
+  const [activeLayer, setActiveLayer] = useState<'streets' | 'light' | 'satellite'>('streets');
+  const [gpsLoading, setGpsLoading] = useState(false);
+  const [closedDistrict, setClosedDistrict] = useState<string | null>(null);
+  const activeDistrictGeo = ankaraDistrictsGeo.find(
+    d => d.id === selectedDistrict || d.name.toLowerCase() === selectedDistrict.toLowerCase()
+  );
+  const drawerOpen = Boolean(activeDistrictGeo && closedDistrict !== activeDistrictGeo.id);
 
-  // 1. Initialize Leaflet Map once with real OpenStreetMap Gold Standard
+  // 1. Initialize Leaflet Map
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
     const map = L.map(containerRef.current, {
       center: [39.9255, 32.8530], // Ankara Center (Kızılay)
-      zoom: 12,
+      zoom: 11,
       minZoom: 9,
       maxZoom: 19,
-      zoomControl: true,
-      attributionControl: true,
+      zoomControl: false, // We use custom sleek buttons
+      attributionControl: false,
     });
 
-    // Default: OpenStreetMap (Full Turkish labels, real roads, neighborhoods, verified live!)
-    const tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
+    const layerConfig = TILE_LAYERS.streets;
+    const tileLayer = L.tileLayer(layerConfig.url, {
+      maxZoom: layerConfig.maxZoom,
+      subdomains: layerConfig.subdomains,
+      attribution: layerConfig.attribution,
     }).addTo(map);
 
     tileLayerRef.current = tileLayer;
 
-    // Scale bar like Google Maps
-    L.control.scale({ metric: true, imperial: false, position: 'bottomright' }).addTo(map);
+    // Small scale bar bottom-left
+    L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map);
 
     polygonLayerGroupRef.current = L.featureGroup().addTo(map);
-    markerLayerGroupRef.current = L.featureGroup().addTo(map);
+    hubLayerGroupRef.current = L.featureGroup().addTo(map);
     mapRef.current = map;
 
     const timer = setTimeout(() => {
       map.invalidateSize();
-    }, 200);
+    }, 150);
 
     return () => {
       clearTimeout(timer);
@@ -89,7 +107,7 @@ export default function RealAnkaraMap({
     };
   }, []);
 
-  // 2. Handle Layer Switching (Sokak vs Uydu)
+  // 2. Handle Layer Switch
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -98,149 +116,240 @@ export default function RealAnkaraMap({
       tileLayerRef.current.remove();
     }
 
-    let url = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-    let maxZoom = 19;
-    let attribution = '&copy; OpenStreetMap contributors';
-
-    if (activeLayer === 'satellite') {
-      url = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
-      maxZoom = 18;
-      attribution = 'Esri, Maxar, Earthstar Geographics';
-    }
-
-    const newLayer = L.tileLayer(url, {
-      maxZoom,
-      attribution,
+    const config = TILE_LAYERS[activeLayer];
+    const newLayer = L.tileLayer(config.url, {
+      maxZoom: config.maxZoom,
+      subdomains: config.subdomains,
+      attribution: config.attribution,
     }).addTo(map);
 
     tileLayerRef.current = newLayer;
   }, [activeLayer]);
 
-  // 4. Render / Update District Polygons
+  // 3. Render / Update District Polygons & Hub Badges
   useEffect(() => {
-    const layerGroup = polygonLayerGroupRef.current;
-    if (!layerGroup) return;
-    layerGroup.clearLayers();
+    const polyGroup = polygonLayerGroupRef.current;
+    const hubGroup = hubLayerGroupRef.current;
+    if (!polyGroup || !hubGroup) return;
 
-    ankaraDistrictsGeo.forEach((district) => {
+    polyGroup.clearLayers();
+    hubGroup.clearLayers();
+
+    ankaraDistrictsGeo.forEach(district => {
       const isSelected = selectedDistrict === district.id || selectedDistrict === district.name;
+
+      // District boundary polygon
       const polygon = L.polygon(district.polygonLatLngs, {
-        color: isSelected ? '#1d3557' : '#0284c7',
+        color: isSelected ? '#0b132b' : '#3b82f6',
         weight: isSelected ? 3.5 : 1.5,
         dashArray: isSelected ? undefined : '5, 5',
-        fillColor: isSelected ? '#38bdf8' : district.color,
-        fillOpacity: isSelected ? 0.22 : 0.05,
+        fillColor: isSelected ? '#ffdd00' : district.color,
+        fillOpacity: isSelected ? 0.22 : 0.06,
+        className: isSelected ? styles.polygonSelected : '',
       });
 
       polygon.bindTooltip(
-        '<strong>' + district.name + '</strong><br/><span style="font-size:11px">Temsili konsept bölgesi</span>',
-        { sticky: true, direction: 'top' }
+        `<div style="font-family: inherit; font-size: 12px; font-weight: 700; color: #0b132b;">📍 ${district.name} · ${district.tradeCount} Usta</div>`,
+        { sticky: true, direction: 'top', opacity: 0.95 }
       );
 
-      polygon.on('click', (e) => {
+      polygon.on('click', e => {
         L.DomEvent.stopPropagation(e);
         onSelectDistrict(isSelected ? 'all' : district.id);
       });
 
-      polygon.addTo(layerGroup);
+      polygon.addTo(polyGroup);
+
+      // District Hub Badge at centroid (Only visible when no specific district is selected)
+      if (selectedDistrict === 'all') {
+        const hubIcon = L.divIcon({
+          html: `<div class="${styles.districtHubBadge}">📍 ${district.name} (${district.tradeCount})</div>`,
+          className: '',
+          iconSize: [110, 26],
+          iconAnchor: [55, 13],
+        });
+
+        const hubMarker = L.marker(district.latLngCenter, { icon: hubIcon });
+        hubMarker.on('click', () => {
+          onSelectDistrict(district.id);
+        });
+        hubMarker.addTo(hubGroup);
+      }
     });
   }, [selectedDistrict, onSelectDistrict]);
 
-  // 5. Update Camera Viewport based on selectedDistrict
+  // 4. Animated Yemeksepeti / Getir Target Pin Drop
+  const dropTargetPin = useCallback((latLng: [number, number], label: string) => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (targetMarkerRef.current) {
+      targetMarkerRef.current.remove();
+    }
+
+    const pinHtml = `
+      <div class="${styles.targetPinWrapper}">
+        <div class="${styles.targetPinRadar}"></div>
+        <div class="${styles.targetPinTeardrop}">
+          <span class="${styles.targetPinIcon}">⚡</span>
+        </div>
+      </div>
+    `;
+
+    const pinIcon = L.divIcon({
+      html: pinHtml,
+      className: '',
+      iconSize: [44, 44],
+      iconAnchor: [22, 44],
+      popupAnchor: [0, -44],
+    });
+
+    const marker = L.marker(latLng, { icon: pinIcon }).addTo(map);
+
+    marker.bindPopup(
+      `<div style="font-family: inherit; font-size: 13px; font-weight: 700; color: #0b132b; text-align: center;">
+        📍 ${label}<br/>
+        <span style="font-size: 11px; font-weight: 600; color: #059669;">⚡ 20–30 Dk Usta Sevk Bölgesi</span>
+      </div>`,
+      { closeButton: false }
+    );
+
+    targetMarkerRef.current = marker;
+  }, []);
+
+  // 5. Smooth Camera Glide Animation (Yemeksepeti / Getir Style FlyTo)
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
     if (selectedDistrict === 'all') {
-      map.flyTo([39.9255, 32.8530], 11, { duration: 0.8 });
-    } else {
-      const district = ankaraDistrictsGeo.find(
-        (d) => d.id === selectedDistrict || d.name.toLowerCase() === selectedDistrict.toLowerCase()
-      );
-      if (district) {
-        map.flyToBounds(district.bounds, { padding: [40, 40], duration: 0.8 });
+      // Zoom out to macro Ankara
+      map.flyTo([39.9255, 32.8530], 11, {
+        duration: 1.25,
+        easeLinearity: 0.25,
+      });
+
+      if (targetMarkerRef.current) {
+        targetMarkerRef.current.remove();
+        targetMarkerRef.current = null;
       }
+    } else if (activeDistrictGeo) {
+      // If a specific neighborhood is chosen, fly deep into it
+      if (selectedNeighborhood) {
+        const nCoords = getNeighborhoodCoordinates(activeDistrictGeo.name, selectedNeighborhood);
+        if (nCoords) {
+          map.flyTo(nCoords, 15.5, {
+            duration: 1.1,
+            easeLinearity: 0.2,
+          });
+          dropTargetPin(nCoords, `${selectedNeighborhood}, ${activeDistrictGeo.name}`);
+          return;
+        }
+      }
+
+      // Fly to district boundary
+      map.flyToBounds(activeDistrictGeo.bounds, {
+        padding: [60, 60],
+        duration: 1.25,
+        easeLinearity: 0.25,
+      });
+
+      dropTargetPin(activeDistrictGeo.latLngCenter, activeDistrictGeo.name);
     }
-  }, [selectedDistrict]);
+  }, [selectedDistrict, selectedNeighborhood, activeDistrictGeo, dropTargetPin]);
 
-  // 6. Render Shop Pins Markers
-  useEffect(() => {
-    const layerGroup = markerLayerGroupRef.current;
-    if (!layerGroup) return;
-    layerGroup.clearLayers();
+  // 6. Geolocation (Konumumu Bul)
+  function handleLocateMe() {
+    if (!navigator.geolocation) {
+      alert('Tarayıcınız konum servisini desteklemiyor.');
+      return;
+    }
 
-    filteredPins.forEach((pin) => {
-      const lat = pin.latLng?.lat ?? 39.9255;
-      const lng = pin.latLng?.lng ?? 32.8530;
-      const color = getCategoryColor(pin.categoryIcon);
-      const iconSvg = getCategorySvgIcon(pin.categoryIcon);
-      const isPulse = false;
+    setGpsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        setGpsLoading(false);
+        const { latitude, longitude } = pos.coords;
+        const map = mapRef.current;
+        if (!map) return;
 
-      const markerHtml = `
-        <div class="${styles.leafletMarkerPin} ${isPulse ? styles.leafletMarkerPulse : ''}" style="--pin-color: ${color};">
-          ${isPulse ? '<div class="' + styles.leafletPulseRing + '"></div>' : ''}
-          <div class="${styles.leafletTeardrop}" style="background-color: ${color};">
-            <div class="${styles.leafletInnerIcon}">
-              ${iconSvg}
-            </div>
-          </div>
-        </div>
-      `;
+        // User blue pulsating marker
+        if (userGpsMarkerRef.current) {
+          userGpsMarkerRef.current.remove();
+        }
 
-      const customIcon = L.divIcon({
-        html: markerHtml,
-        className: 'custom-leaflet-marker',
-        iconSize: [32, 38],
-        iconAnchor: [16, 38],
-        popupAnchor: [0, -38],
-      });
+        const gpsIcon = L.divIcon({
+          html: `<div class="${styles.userGpsDot}"></div>`,
+          className: '',
+          iconSize: [16, 16],
+          iconAnchor: [8, 8],
+        });
 
-      const marker = L.marker([lat, lng], { icon: customIcon });
+        userGpsMarkerRef.current = L.marker([latitude, longitude], { icon: gpsIcon }).addTo(map);
 
-      const popupHtml = `
-        <div class="${styles.leafletPopupCard}">
-          <span class="${styles.infoBadge}">Temsili kayıt</span>
-          <h4 class="${styles.infoTitle}">${pin.name}</h4>
-          <div class="${styles.infoOwner}">${pin.ownerName} · ${pin.category}</div>
-          <div class="${styles.infoMeta}">
-            <span>Bölge: ${pin.address}</span>
-            <span>Canlı ürün verisi değildir</span>
-          </div>
-        </div>
-      `;
+        // Find nearest Ankara district
+        const nearest = findDistrictByLatLng(latitude, longitude);
+        onSelectDistrict(nearest.id);
 
-      marker.bindPopup(popupHtml, {
-        maxWidth: 320,
-        className: 'custom-leaflet-popup',
-      });
+        map.flyTo([latitude, longitude], 14.5, {
+          duration: 1.2,
+          easeLinearity: 0.25,
+        });
+      },
+      () => {
+        setGpsLoading(false);
+        // Default fallback to Ankara Kızılay if location denied
+        onSelectDistrict('cankaya');
+      },
+      { timeout: 8000 }
+    );
+  }
 
-      marker.addTo(layerGroup);
-    });
-  }, [filteredPins]);
+  function handleZoomIn() {
+    mapRef.current?.zoomIn();
+  }
+
+  function handleZoomOut() {
+    mapRef.current?.zoomOut();
+  }
 
   function handleResetView() {
     onSelectDistrict('all');
-    mapRef.current?.flyTo([39.9255, 32.8530], 11, { duration: 0.8 });
+    if (onSelectNeighborhood) onSelectNeighborhood('');
   }
+
+  const startRequestUrl = activeDistrictGeo
+    ? `/?district=${encodeURIComponent(activeDistrictGeo.name)}${
+        selectedNeighborhood ? `&neighborhood=${encodeURIComponent(selectedNeighborhood)}` : ''
+      }&resume=1`
+    : '/';
 
   return (
     <div className={styles.realMapOuter}>
-      {/* Google Maps Style Floating Control Bar */}
-      <div className={styles.mapFloatingBar} role="toolbar" aria-label="Harita Görünüm ve Konum Kontrolleri">
+      {/* Top Floating Control Bar */}
+      <div className={styles.mapFloatingBar} role="toolbar" aria-label="Harita Görünüm Kontrolleri">
         <div className={styles.mapLayerSelector}>
           <button
             type="button"
-            className={styles.mapLayerBtn + (activeLayer === 'streets' ? ' ' + styles.mapLayerBtnActive : '')}
+            className={`${styles.mapLayerBtn} ${activeLayer === 'streets' ? styles.mapLayerBtnActive : ''}`}
             onClick={() => setActiveLayer('streets')}
-            title="Sokak haritası"
+            title="Sokak Haritası"
           >
             🗺️ Sokak
           </button>
           <button
             type="button"
-            className={styles.mapLayerBtn + (activeLayer === 'satellite' ? ' ' + styles.mapLayerBtnActive : '')}
+            className={`${styles.mapLayerBtn} ${activeLayer === 'light' ? styles.mapLayerBtnActive : ''}`}
+            onClick={() => setActiveLayer('light')}
+            title="Açık Harita"
+          >
+            ☀️ Sade
+          </button>
+          <button
+            type="button"
+            className={`${styles.mapLayerBtn} ${activeLayer === 'satellite' ? styles.mapLayerBtnActive : ''}`}
             onClick={() => setActiveLayer('satellite')}
-            title="Uydu görüntüsü"
+            title="Uydu Görüntüsü"
           >
             🛰️ Uydu
           </button>
@@ -251,19 +360,104 @@ export default function RealAnkaraMap({
             type="button"
             className={styles.mapActionBtn}
             onClick={handleResetView}
-            title="Ankara Merkeze Sıfırla"
+            title="Tüm Ankara görünümüne dön"
           >
-            ⟲ Ankara Merkez
+            ⟲ Tüm Ankara
           </button>
         </div>
       </div>
 
+      {/* Right Side Floating Controls (Zoom + GPS) */}
+      <div className={styles.floatingControlsRight}>
+        <div className={styles.zoomBtnGroup}>
+          <button type="button" className={styles.zoomBtn} onClick={handleZoomIn} title="Yakınlaştır" aria-label="Yakınlaştır">
+            +
+          </button>
+          <button type="button" className={styles.zoomBtn} onClick={handleZoomOut} title="Uzaklaştır" aria-label="Uzaklaştır">
+            −
+          </button>
+        </div>
+
+        <button
+          type="button"
+          className={styles.gpsBtn}
+          onClick={handleLocateMe}
+          title="Konumumu Bul"
+          aria-label="Konumumu Bul"
+          disabled={gpsLoading}
+        >
+          {gpsLoading ? '⏳' : '🎯'}
+        </button>
+      </div>
+
+      {/* Main Leaflet Viewport */}
       <div
         ref={containerRef}
         className={styles.realMapContainer}
         role="application"
-        aria-label="Temsili Ankara bölge haritası"
+        aria-label="İnteraktif Ankara Haritası"
       />
+
+      {/* Yemeksepeti / Getir Style Bottom Drawer */}
+      {drawerOpen && activeDistrictGeo && (
+        <div className={styles.getirDrawer} role="region" aria-label="Seçilen Bölge Bilgileri">
+          <div className={styles.drawerHeader}>
+            <div className={styles.drawerTitleGroup}>
+              <h3 className={styles.drawerDistrictName}>📍 {activeDistrictGeo.name}</h3>
+              <span className={styles.drawerSlaBadge}>⚡ 20–30 dk Sevk SLA</span>
+            </div>
+            <button
+              type="button"
+              className={styles.drawerCloseBtn}
+              onClick={() => setClosedDistrict(activeDistrictGeo.id)}
+              aria-label="Kapat"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className={styles.drawerNeighborhoodTitle}>Mahalle / Semt Seçimi:</div>
+          <div className={styles.drawerPillsRow}>
+            {activeDistrictGeo.neighborhoods.map(nb => {
+              const isNbActive = selectedNeighborhood?.toLowerCase() === nb.toLowerCase();
+              return (
+                <button
+                  key={nb}
+                  type="button"
+                  className={`${styles.drawerPill} ${isNbActive ? styles.drawerPillActive : ''}`}
+                  onClick={() => {
+                    if (onSelectNeighborhood) {
+                      onSelectNeighborhood(isNbActive ? '' : nb);
+                    }
+                  }}
+                >
+                  {nb}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className={styles.drawerFooter}>
+            <span className={styles.drawerTradeCount}>
+              👥 <strong>{activeDistrictGeo.tradeCount}</strong> doğrulanmış usta aktif
+            </span>
+
+            {mode === 'picker' && onConfirmLocation ? (
+              <button
+                type="button"
+                className={styles.drawerCtaBtn}
+                onClick={() => onConfirmLocation(activeDistrictGeo.name, selectedNeighborhood)}
+              >
+                ✓ Bu Konumu Seç
+              </button>
+            ) : (
+              <Link href={startRequestUrl} className={styles.drawerCtaBtn}>
+                ⚡ Fiyat Teklifi Al →
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

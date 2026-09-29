@@ -302,3 +302,89 @@ function isPointInPolygon(point: [number, number], polygon: [number, number][]):
 
   return inside;
 }
+
+export const ankaraNeighborhoodCoordinates: Record<string, Record<string, [number, number]>> = {
+  'Çankaya': {
+    'Ayrancı': [39.8940, 32.8520],
+    'Bahçelievler': [39.9230, 32.8220],
+    'Balgat': [39.8970, 32.8180],
+    'Çayyolu': [39.8830, 32.7010],
+    'Dikmen': [39.8750, 32.8360],
+    'Kızılay': [39.9208, 32.8541],
+    'Oran': [39.8450, 32.8420],
+    'Ümitköy': [39.8980, 32.7080],
+  },
+  'Keçiören': {
+    'Aktepe': [40.0150, 32.8750],
+    'Bağlum': [40.0520, 32.8450],
+    'Etlik': [39.9720, 32.8320],
+    'İncirli': [39.9820, 32.8540],
+    'Kalaba': [39.9920, 32.8680],
+    'Ovacık': [40.0210, 32.8300],
+  },
+  'Yenimahalle': {
+    'Batıkent': [39.9710, 32.7230],
+    'Demetevler': [39.9650, 32.7960],
+    'İvedik': [39.9920, 32.7680],
+    'Ostim': [39.9880, 32.7480],
+    'Şentepe': [39.9840, 32.8020],
+    'Yuva': [40.0120, 32.7050],
+  },
+  'Etimesgut': {
+    'Bağlıca': [39.8920, 32.6520],
+    'Elvankent': [39.9520, 32.6320],
+    'Eryaman': [39.9850, 32.6450],
+    'Göksu': [39.9980, 32.6350],
+    'Şaşmaz': [39.9380, 32.7050],
+    'Yapracık': [39.8450, 32.5400],
+  },
+  'Mamak': {
+    'Abidinpaşa': [39.9240, 32.8940],
+    'Akdere': [39.9150, 32.9120],
+    'Boğaziçi': [39.9020, 32.9350],
+    'Ege': [39.9080, 32.9250],
+    'Hüseyingazi': [39.9580, 32.9420],
+    'Natoyolu': [39.9180, 32.9280],
+  },
+  'Sincan': {
+    'Fatih': [39.9750, 32.5520],
+    'Plevne': [39.9620, 32.5780],
+    'Temelli': [39.7420, 32.3680],
+    'Törekent': [39.9950, 32.5420],
+    'Yenikent': [40.0380, 32.4980],
+  },
+  'Gölbaşı': {
+    'Bahçelievler': [39.7890, 32.8120],
+    'İncek': [39.8180, 32.7240],
+    'Karşıyaka': [39.7910, 32.8060],
+    'Kızılcaşar': [39.8320, 32.7410],
+    'Taşpınar': [39.8210, 32.7750],
+  },
+  'Altındağ': {
+    'Aydınlıkevler': [39.9650, 32.8720],
+    'Hacı Bayram': [39.9440, 32.8580],
+    'Karapürçek': [39.9880, 32.9550],
+    'Önder': [39.9520, 32.8980],
+    'Ulubey': [39.9480, 32.8880],
+  },
+  'Pursaklar': {
+    'Altınova': [40.0520, 32.9450],
+    'Fatih': [40.0350, 32.8880],
+    'Merkez': [40.0380, 32.8980],
+    'Saray': [40.0650, 32.8850],
+    'Tevfik İleri': [40.0310, 32.9050],
+  },
+};
+
+export function getNeighborhoodCoordinates(districtName: string, neighborhoodName: string): [number, number] | null {
+  const normDist = Object.keys(ankaraNeighborhoodCoordinates).find(
+    d => d.toLowerCase() === districtName.toLowerCase()
+  );
+  if (!normDist) return null;
+  const distCoords = ankaraNeighborhoodCoordinates[normDist];
+  const normNeigh = Object.keys(distCoords).find(
+    n => n.toLowerCase() === neighborhoodName.toLowerCase()
+  );
+  return normNeigh ? distCoords[normNeigh] : null;
+}
+

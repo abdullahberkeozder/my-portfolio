@@ -2,7 +2,7 @@
 
 import { useId, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { ankaraDistrictsGeo, type ShopPin } from '../../data/ankaraMapGeo';
+import { ankaraDistrictsGeo } from '../../data/ankaraMapGeo';
 import styles from './ankaraMap.module.css';
 
 const RealAnkaraMap = dynamic(() => import('./RealAnkaraMap'), {
@@ -10,122 +10,197 @@ const RealAnkaraMap = dynamic(() => import('./RealAnkaraMap'), {
   loading: () => (
     <div className={styles.mapLoadingSkeleton} role="status" aria-live="polite">
       <div className={styles.mapLoadingSpinner} />
-      <span>Temsili harita yükleniyor...</span>
+      <span>İnteraktif Ankara haritası yükleniyor...</span>
     </div>
   ),
 });
 
-const tradeCategories = [
-  { id: 'all', label: 'Tüm branşlar' },
-  { id: 'plumbing', label: 'Tesisat' },
-  { id: 'electric', label: 'Elektrik' },
-  { id: 'carpentry', label: 'Marangozluk' },
-  { id: 'paint', label: 'Boya' },
-  { id: 'repair', label: 'Montaj' },
-];
+export interface AnkaraInteractiveMapProps {
+  initialDistrict?: string;
+  initialNeighborhood?: string;
+  mode?: 'discovery' | 'picker';
+  compact?: boolean;
+  onLocationSelect?: (district: string, neighborhood?: string) => void;
+}
 
-const conceptCategories: Array<Pick<ShopPin, 'category' | 'categoryIcon' | 'serviceId'>> = [
-  { category: 'Tesisat', categoryIcon: 'plumbing', serviceId: 'musluk-degisimi' },
-  { category: 'Elektrik', categoryIcon: 'electric', serviceId: 'priz-anahtar' },
-  { category: 'Marangozluk', categoryIcon: 'carpentry', serviceId: 'mobilya-kurulumu' },
-  { category: 'Boya', categoryIcon: 'paint', serviceId: 'tek-oda-boya' },
-  { category: 'Montaj', categoryIcon: 'repair', serviceId: 'tv-duvar-montaji' },
-];
-
-const conceptPins: ShopPin[] = ankaraDistrictsGeo.map((district, index) => {
-  const category = conceptCategories[index % conceptCategories.length];
-  return {
-  ...category,
-  id: `concept-point-${district.id}`,
-  name: `Temsili ${category.category} noktası`,
-  ownerName: 'Temsili kayıt',
-  district: district.name,
-  neighborhood: district.neighborhoods[0] ?? 'Örnek bölge',
-  address: `${district.name} bölgesi`,
-  phone: 'Gösterilmez',
-  rating: 0,
-  reviewCount: 0,
-  verifiedBadge: false,
-  coords: district.center,
-  latLng: { lat: district.latLngCenter[0], lng: district.latLngCenter[1] },
-  isCustom: false,
-  };
-});
-
-export default function AnkaraInteractiveMap({ initialDistrict }: { initialDistrict?: string }) {
+export default function AnkaraInteractiveMap({
+  initialDistrict,
+  initialNeighborhood,
+  mode = 'discovery',
+  compact = false,
+  onLocationSelect,
+}: AnkaraInteractiveMapProps) {
   const [selectedDistrict, setSelectedDistrict] = useState(initialDistrict ?? 'all');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState(initialNeighborhood ?? '');
+  const [prevDistrict, setPrevDistrict] = useState(initialDistrict);
+  const [prevNeighborhood, setPrevNeighborhood] = useState(initialNeighborhood);
+
+  if (initialDistrict !== prevDistrict) {
+    setPrevDistrict(initialDistrict);
+    setSelectedDistrict(initialDistrict ?? 'all');
+  }
+
+  if (initialNeighborhood !== prevNeighborhood) {
+    setPrevNeighborhood(initialNeighborhood);
+    setSelectedNeighborhood(initialNeighborhood ?? '');
+  }
+
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputId = useId();
 
-  const filteredPins = useMemo(() => {
-    const query = searchQuery.trim().toLocaleLowerCase('tr-TR');
-    return conceptPins.filter(pin => {
-      const districtMatches = selectedDistrict === 'all' || pin.district.toLocaleLowerCase('tr-TR') === selectedDistrict.toLocaleLowerCase('tr-TR');
-      const categoryMatches = selectedCategory === 'all' || pin.categoryIcon === selectedCategory;
-      const queryMatches = !query || [pin.category, pin.district, pin.neighborhood]
-        .some(value => value.toLocaleLowerCase('tr-TR').includes(query));
-      return districtMatches && categoryMatches && queryMatches;
+  const activeDistrict = ankaraDistrictsGeo.find(
+    d => d.id === selectedDistrict || d.name.toLowerCase() === selectedDistrict.toLowerCase()
+  );
+
+  // Search filtered results
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim().toLocaleLowerCase('tr-TR');
+    if (!q) return [];
+
+    const matches: { district: string; neighborhood?: string; label: string }[] = [];
+    ankaraDistrictsGeo.forEach(d => {
+      if (d.name.toLocaleLowerCase('tr-TR').includes(q)) {
+        matches.push({ district: d.id, label: `📍 ${d.name} İlçesi` });
+      }
+      d.neighborhoods.forEach(n => {
+        if (n.toLocaleLowerCase('tr-TR').includes(q)) {
+          matches.push({ district: d.id, neighborhood: n, label: `🏡 ${n} Mahallesi (${d.name})` });
+        }
+      });
     });
-  }, [searchQuery, selectedCategory, selectedDistrict]);
+    return matches.slice(0, 6);
+  }, [searchQuery]);
+
+  function handleSelectResult(item: { district: string; neighborhood?: string }) {
+    setSelectedDistrict(item.district);
+    setSelectedNeighborhood(item.neighborhood ?? '');
+    setSearchQuery('');
+    if (onLocationSelect) {
+      const distName = ankaraDistrictsGeo.find(d => d.id === item.district)?.name ?? item.district;
+      onLocationSelect(distName, item.neighborhood);
+    }
+  }
+
+  function handleDistrictClick(districtId: string) {
+    setSelectedDistrict(districtId);
+    setSelectedNeighborhood('');
+    if (onLocationSelect && districtId !== 'all') {
+      const distName = ankaraDistrictsGeo.find(d => d.id === districtId)?.name ?? districtId;
+      onLocationSelect(distName, '');
+    }
+  }
+
+  function handleNeighborhoodClick(neighborhood: string) {
+    setSelectedNeighborhood(neighborhood);
+    if (onLocationSelect && activeDistrict) {
+      onLocationSelect(activeDistrict.name, neighborhood);
+    }
+  }
+
+  const isCompact = compact || mode === 'picker';
 
   return (
-    <section className={styles.mapWrapper} aria-labelledby="concept-map-title">
-      <div className={styles.mapHeader}>
-        <div className={styles.headerTitleGroup}>
-          <span className={styles.eyebrow}>ÜRÜN DIŞI KONSEPT</span>
-          <h2 className={styles.title} id="concept-map-title">Bölge ve yoğunluk fikri</h2>
-          <p className={styles.subtitle}>
-            İşaretler yalnız arayüz davranışını göstermek için üretilmiştir. Gerçek usta, işletme, konum, puan veya doğrulama bilgisi içermez.
-          </p>
+    <section
+      className={`${styles.mapWrapper} ${isCompact ? styles.mapWrapperCompact : ''}`}
+      aria-labelledby={isCompact ? undefined : 'interactive-map-title'}
+    >
+      {!isCompact && (
+        <div className={styles.mapHeader}>
+          <div className={styles.headerTitleGroup}>
+            <span className={styles.eyebrow}>ANKARA CANLI SEVK VE HİZMET HARİTASI</span>
+            <h2 className={styles.title} id="interactive-map-title">
+              {activeDistrict ? `${activeDistrict.name} Bölgesi ve Usta Sevk Ağı` : 'Ankara Pilot İlçe ve Sevk Ağı'}
+            </h2>
+            <p className={styles.subtitle}>
+              İlçenizi veya mahallenizi seçerek ortalama sevk sürelerini, pilot bölge kapsamını ve doğrulanmış usta yoğunluğunu inceleyebilirsiniz.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className={styles.filterRow} aria-label="Temsili harita filtreleri">
+      <div className={styles.filterRow} aria-label="Harita filtreleri">
         <div className={styles.searchBox}>
-          <label htmlFor={searchInputId} className="sr-only">Bölge veya branş ara</label>
-          <input id={searchInputId} type="search" placeholder="Bölge veya branş ara" value={searchQuery}
-            onChange={event => setSearchQuery(event.target.value)} className={styles.searchInput} />
-        </div>
-        <button type="button" className={styles.districtPill + (selectedDistrict === 'all' ? ` ${styles.districtPillActive}` : '')}
-          onClick={() => setSelectedDistrict('all')}>Tüm pilot ilçeler</button>
-        {ankaraDistrictsGeo.map(district => (
-          <button key={district.id} type="button"
-            className={styles.districtPill + ((selectedDistrict === district.id || selectedDistrict === district.name) ? ` ${styles.districtPillActive}` : '')}
-            onClick={() => setSelectedDistrict(district.id)}>{district.name}</button>
-        ))}
-      </div>
+          <label htmlFor={searchInputId} className="sr-only">
+            İlçe veya mahalle ara (Örn: Çankaya, Batıkent, Tunalı)
+          </label>
+          <input
+            id={searchInputId}
+            type="search"
+            placeholder="İlçe veya mahalle ara (Örn: Çayyolu, Ayrancı...)"
+            value={searchQuery}
+            onChange={event => setSearchQuery(event.target.value)}
+            className={styles.searchInput}
+          />
 
-      <div className={styles.categoryRow} aria-label="Temsili branş filtresi">
-        <span className={styles.categoryRowLabel}>Branş</span>
-        {tradeCategories.map(category => (
-          <button key={category.id} type="button" aria-pressed={selectedCategory === category.id}
-            className={styles.categoryChip + (selectedCategory === category.id ? ` ${styles.categoryChipActive}` : '')}
-            onClick={() => setSelectedCategory(category.id)}><span>{category.label}</span></button>
+          {searchResults.length > 0 && (
+            <div className={styles.searchResultsDropdown}>
+              {searchResults.map((res, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className={styles.searchResultItem}
+                  onClick={() => handleSelectResult(res)}
+                >
+                  {res.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <button
+          type="button"
+          className={`${styles.districtPill} ${selectedDistrict === 'all' ? styles.districtPillActive : ''}`}
+          onClick={() => handleDistrictClick('all')}
+        >
+          Tüm Ankara
+        </button>
+
+        {ankaraDistrictsGeo.map(district => (
+          <button
+            key={district.id}
+            type="button"
+            className={`${styles.districtPill} ${
+              selectedDistrict === district.id || selectedDistrict === district.name
+                ? styles.districtPillActive
+                : ''
+            }`}
+            onClick={() => handleDistrictClick(district.id)}
+          >
+            {district.name}
+          </button>
         ))}
       </div>
 
       <div className={styles.mapViewport}>
-        {filteredPins.length === 0 && (
-          <div className={styles.emptyMapCard} role="status">
-            <h3>Temsili nokta bulunamadı</h3>
-            <p>Filtreleri temizleyerek konsept noktalarının tamamını yeniden gösterebilirsiniz.</p>
-            <button type="button" className={styles.emptyResetBtn} onClick={() => {
-              setSelectedDistrict('all');
-              setSelectedCategory('all');
-              setSearchQuery('');
-            }}>Filtreleri temizle</button>
-          </div>
-        )}
-        <RealAnkaraMap filteredPins={filteredPins} selectedDistrict={selectedDistrict}
-          onSelectDistrict={setSelectedDistrict} />
+        <RealAnkaraMap
+          selectedDistrict={selectedDistrict}
+          selectedNeighborhood={selectedNeighborhood}
+          onSelectDistrict={handleDistrictClick}
+          onSelectNeighborhood={handleNeighborhoodClick}
+          mode={mode}
+          onConfirmLocation={(dist, neigh) => {
+            if (onLocationSelect) onLocationSelect(dist, neigh);
+          }}
+        />
       </div>
 
-      <div className={styles.statsBar} aria-label="Temsili harita özeti">
-        <div className={styles.statsItem}><span>Görünüm</span><strong>{selectedDistrict === 'all' ? '9 pilot ilçe' : 'Seçili ilçe'}</strong></div>
-        <div className={styles.statsItem}><span>Temsili nokta</span><strong>{filteredPins.length}</strong></div>
-        <div className={styles.statsItem}><span>Ürün durumu</span><strong>Canlı değil</strong></div>
-      </div>
+      {!isCompact && (
+        <div className={styles.statsBar} aria-label="Harita özet bilgileri">
+          <div className={styles.statsItem}>
+            <span>Seçili Bölge</span>
+            <strong>{activeDistrict ? activeDistrict.name : '9 Pilot İlçe'}</strong>
+          </div>
+          <div className={styles.statsItem}>
+            <span>Ortalama Sevk</span>
+            <strong>⚡ 20–30 Dakika</strong>
+          </div>
+          <div className={styles.statsItem}>
+            <span>Garanti Kapsamı</span>
+            <strong>🛡️ 48 Saat Düzeltme SLA</strong>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
