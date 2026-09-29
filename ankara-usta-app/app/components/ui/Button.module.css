@@ -1,0 +1,46 @@
+﻿/* Button — Orkestra V3 UI Library */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1.5px solid transparent; border-radius: var(--radius-control, 8px);
+  font-family: var(--font-heading, sans-serif); font-weight: 700; cursor: pointer;
+  white-space: nowrap; text-decoration: none; position: relative; overflow: hidden;
+  outline: none; -webkit-tap-highlight-color: transparent; user-select: none;
+  transition: background var(--motion-fast,120ms) cubic-bezier(.32,.72,0,1),
+    border-color var(--motion-fast,120ms) cubic-bezier(.32,.72,0,1),
+    color var(--motion-fast,120ms) cubic-bezier(.32,.72,0,1),
+    box-shadow var(--motion-fast,120ms) cubic-bezier(.32,.72,0,1),
+    transform var(--motion-fast,120ms) cubic-bezier(.32,.72,0,1);
+}
+.btn:focus-visible { outline: 2.5px solid var(--brand-cobalt,#1246B5); outline-offset: 2px; box-shadow: 0 0 0 4px rgba(18,70,181,.16); }
+.btn:active:not(:disabled) { transform: translateY(1px) scale(.99); }
+.btn:disabled { opacity: .46; cursor: not-allowed; pointer-events: none; }
+.fullWidth { width: 100%; }
+.sm { height:32px; padding:0 14px; font-size:12px; line-height:16px; gap:6px; border-radius:calc(var(--radius-control,8px) - 2px); }
+.md { height:44px; padding:0 22px; font-size:14px; line-height:20px; }
+.lg { height:52px; padding:0 30px; font-size:15px; line-height:22px; border-radius:calc(var(--radius-control,8px) + 2px); }
+.iconOnly.sm { padding:0; width:32px; }
+.iconOnly.md { padding:0; width:44px; }
+.iconOnly.lg { padding:0; width:52px; }
+.primary { background:linear-gradient(135deg,var(--brand-cobalt,#1246B5) 0%,hsl(218,83%,33%) 100%); color:#fff; box-shadow:0 2px 8px rgba(18,70,181,.28); }
+.primary:hover:not(:disabled) { background:linear-gradient(135deg,var(--brand-cobalt-hover,#0C338C) 0%,hsl(218,83%,25%) 100%); box-shadow:0 6px 20px rgba(18,70,181,.36); transform:translateY(-1px); }
+.secondary { background:var(--surface-brand-soft,#eef2fb); color:var(--brand-cobalt,#1246B5); border-color:var(--brand-cobalt,#1246B5); }
+.secondary:hover:not(:disabled) { background:hsl(218,83%,94%); box-shadow:var(--elevation-1); transform:translateY(-1px); }
+.outline { background:var(--surface-raised,#fff); color:var(--text-primary,#1246B5); border-color:var(--border-default,#dce2df); }
+.outline:hover:not(:disabled) { border-color:var(--brand-cobalt,#1246B5); color:var(--brand-cobalt,#1246B5); background:var(--surface-brand-soft,#eef2fb); box-shadow:var(--elevation-1); }
+.ghost { background:transparent; color:var(--brand-cobalt,#1246B5); }
+.ghost:hover:not(:disabled) { background:var(--surface-brand-soft,#eef2fb); }
+.danger { background:linear-gradient(135deg,#c0392b 0%,#8b2020 100%); color:#fff; box-shadow:0 2px 8px rgba(139,32,32,.26); }
+.danger:hover:not(:disabled) { background:linear-gradient(135deg,#a93226 0%,#7b1c1c 100%); box-shadow:0 6px 20px rgba(139,32,32,.36); transform:translateY(-1px); }
+.loading { cursor:wait; pointer-events:none; }
+.label { display:inline-flex; align-items:center; gap:8px; transition:opacity var(--motion-fast,120ms); }
+.loading .label { opacity:0; }
+.spinner { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+.spinnerRing { width:18px; height:18px; border-radius:50%; border:2.5px solid currentColor; border-right-color:transparent; animation:btnSpin .72s linear infinite; }
+.sm .spinnerRing { width:14px; height:14px; border-width:2px; }
+.lg .spinnerRing { width:22px; height:22px; border-width:3px; }
+.primary .spinnerRing,.danger .spinnerRing { border-color:rgba(255,255,255,.85); border-right-color:transparent; }
+.secondary .spinnerRing,.ghost .spinnerRing,.outline .spinnerRing { border-color:var(--brand-cobalt,#1246B5); border-right-color:transparent; }
+@keyframes btnSpin { to { transform:rotate(360deg); } }
+.btn::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at center,rgba(255,255,255,.28) 0%,transparent 70%); opacity:0; transform:scale(0); transition:transform .4s ease,opacity .4s ease; border-radius:inherit; pointer-events:none; }
+.btn:active:not(:disabled)::before { opacity:1; transform:scale(2.2); transition:transform 0ms,opacity 0ms; }
+.iconLeft,.iconRight { display:inline-flex; flex-shrink:0; line-height:0; }

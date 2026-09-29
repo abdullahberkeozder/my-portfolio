@@ -139,6 +139,79 @@ const CALIBRATED_SERVICES: Record<string, ServiceCalibration> = {
       'Mobilya taşıma / hamaliye işleri',
     ],
   },
+  'avize-montaji': {
+    serviceId: 'avize-montaji',
+    name: 'Avize Montajı',
+    deliveryModel: 'package',
+    isCorePilot: false,
+    priorityRank: 6,
+    shortSummary: 'Tavan askı aparatının sabitlenmesi, elektrik bağlantısı ve lamba montajı.',
+    includedScope: [
+      'Eski aydınlatma armatürünün sökülmesi',
+      'Tavan kanca/dübel bağlantısının montajı ve taşıma kontrolü',
+      'Kablo klemens bağlantısı, faz kontrolü ve çalışma testi',
+    ],
+    excludedScope: [
+      'Yeni avize ve ampul malzeme bedelleri',
+      'Tavan sıva/alçı tadilatı veya delik kapatma',
+      'Tavana sıfırdan yeni elektrik hattı çekilmesi',
+    ],
+    safetyProtocol: 'Montaj öncesi odanın aydınlatma sigortasını ana panodan kapatın.',
+  },
+  'kornis-perde-montaji': {
+    serviceId: 'kornis-perde-montaji',
+    name: 'Korniş Montajı',
+    deliveryModel: 'package',
+    isCorePilot: false,
+    priorityRank: 7,
+    shortSummary: 'Korniş tavan montajı, ray hizalaması ve sağlam dübel montajı.',
+    includedScope: [
+      'Tavan ölçüsüne göre korniş hizalama ve delik delme',
+      'Beton/alçıpan tipine uygun dübel ve vidalama',
+      'Ray geçiş ve kilit kontrolü',
+    ],
+    excludedScope: [
+      'Korniş rayı ve perde ruletleri malzeme bedeli',
+      'Tül ve perde asımı / ütüleme işleri',
+      'Asma tavan metal taşıyıcı karkas montajı',
+    ],
+  },
+  'klozet-rezervuar': {
+    serviceId: 'klozet-rezervuar',
+    name: 'Klozet ve Rezervuar Onarımı',
+    deliveryModel: 'quote',
+    isCorePilot: false,
+    priorityRank: 8,
+    shortSummary: 'İç takım değişimi, su kaçıran şamandıra tamiri ve sızdırmazlık.',
+    includedScope: [
+      'Rezervuar iç takımı arıza tespiti',
+      'Şamandıra ve boşaltma contası değişimi/ayarı',
+      'Su dolum ve tahliye sızdırmazlık testi',
+    ],
+    excludedScope: [
+      'Rezervuar iç takım ve yedek parça malzeme bedeli',
+      'Klozet taşı seramik değişimi veya komple söküm',
+      'Bina ana pis su borusu tıkanıklıkları',
+    ],
+  },
+  'ev-temizligi': {
+    serviceId: 'ev-temizligi',
+    name: 'Ev Temizliği',
+    deliveryModel: 'package',
+    isCorePilot: false,
+    priorityRank: 9,
+    shortSummary: 'Standart ev temizliği; zemin silme, toz alma ve mutfak/banyo dezenfeksiyonu.',
+    includedScope: [
+      'Zeminlerin süpürülmesi ve paspaslanması',
+      'Ulaşılabilir mobilya ve yüzeylerin tozunun alınması',
+      'Mutfak tezgahı, lavabo ve banyo/klozet temizliği',
+    ],
+    excludedScope: [
+      'İnşaat / tadilat sonrası harç ve boya kazıma işleri',
+      'Dış cephe tehlikeli pencere silme',
+      'Koltuk / halı yıkama makinesiyle derin yıkama',
+    ],
+  },
 };
 
 export type PilotCoverageResult = {

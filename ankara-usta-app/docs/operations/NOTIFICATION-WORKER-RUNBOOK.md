@@ -66,8 +66,10 @@ Domain işlemleri ile bildirim kuyruğu satırları (`public.notification_outbox
 
 ### 3.2. Lease ve Kilit Mekanizması
 - İşlem kilitlemesi `FOR UPDATE SKIP LOCKED` ile yapılır; birden fazla worker kopyası aynı anda birbirini engellemeden çalışabilir.
-- **Worker Lease Zaman Aşımı**: `5 dakika`. Bir worker çökerse veya kilit düşerse, `status = 'processing' AND updated_at < now() - interval '5 minutes'` koşulu sayesinde kayıt otomatik olarak kuyruğa döner ve başka bir worker tarafından devralınır.
-- **pg_cron Kurtarma Görevi**: `notification-outbox-recovery` her 10 dakikada bir (`*/10 * * * *`) kilitli kalmış bildirimleri sıfırlar.
+- **Worker Lease Zaman Aşımı**: `5 dakika`. Claim RPC'si, `processing` durumunda beş dakikadan eski ve deneme sayısı sekizden küçük kaydı yeni worker'a doğrudan devreder; ara bir `retrying` geçişi zorunlu değildir.
+- **pg_cron Kurtarma Görevi**: `notification-outbox-recovery` her 10 dakikada bir (`*/10 * * * *`), **15 dakikadan eski** processing kayıtlarını kontrol eder. Deneme sayısı sekize ulaşmışsa `dead`, aksi halde `retrying` olur. İki eşik farklıdır.
+
+22 Eylül izole SQL provası: [retry/dead-letter/lease kanıtı](../engineering/NOTIFICATION-RECOVERY-REHEARSAL-2026-09-22.md).
 
 ### 3.3. Artımlı Bekleme (Exponential Backoff)
 Her başarısız denemede `next_attempt_at` aşağıdaki kurala göre ötelenir:
@@ -98,18 +100,37 @@ Worker, `.NET` yapılandırma sağlayıcıları (`appsettings.json` veya ortam d
 | Değişken | Açıklama | Örnek Değer |
 |---|---|---|
 | `NotificationWorker__SupabaseUrl` | Supabase proje adresi | `https://your-project.supabase.co` |
-| `NotificationWorker__SupabaseServiceRoleKey` | Supabase admin yetkili anahtarı (Gizli) | `eyJhbGci...` |
+| `NotificationWorker__SupabaseSecretKey` | Supabase Secret API key (yalnız sunucu, gizli) | `sb_secret_...` |
 | `NotificationWorker__ResendApiKey` | Resend API yetkilendirme anahtarı (Gizli) | `re_...` |
 | `NotificationWorker__FromEmail` | Gönderici e-posta adresi (Doğrulanmış alan adı) | `Orkestra <bildirim@ankarausta.com>` |
 | `NotificationWorker__PollIntervalSeconds` | Kuyruk boşken bekleme aralığı (5 - 300 sn) | `10` |
 | `NotificationWorker__BatchSize` | Tek seferde talep edilecek bildirim sayısı (1 - 100) | `25` |
 
 > [!WARNING]
-> `SupabaseServiceRoleKey` ve `ResendApiKey` kesinlikle kaynak kod depolarına (`git`) eklenmemeli, CI secret yönetimi veya cloud environment store üzerinden inject edilmelidir.
+> `SupabaseSecretKey` ve `ResendApiKey` kesinlikle kaynak kod depolarına (`git`) eklenmemeli, CI secret yönetimi veya cloud environment store üzerinden inject edilmelidir. Secret API key JWT değildir; yalnız `apikey` başlığında gönderilir, `Authorization: Bearer` olarak kullanılmaz.
 
 ---
 
 ## 6. İzleme ve Sağlık Kontrolü (Health Check) [UYGULANMIŞ]
+
+22 Eylül güncellemesi: Liveness için `/health/live`, yapılandırma readiness kontrolü
+için `/health/ready` kullanılır. Readiness eksik/geçersiz yapılandırmada HTTP 503 ve
+`{"status":"not_ready","scope":"configuration","configured":false}` döner;
+geçerli yapılandırmada HTTP 200, `status: ready`, `configured: true` döner.
+Bu sonuç anahtarların çalıştığını, domain doğrulamasını, veritabanına erişimi veya
+e-posta teslimini kanıtlamaz. Yapılandırma başlangıçta okunur; değişiklikten sonra
+servis yeniden başlatılmalıdır. Health çağrıları dış servislere bağlanmaz.
+
+`/health` geriye uyumlu liveness adresidir. Aşağıdaki örneklerdeki HTTP 200,
+readiness veya teslimat başarı göstergesi olarak kullanılmamalıdır; yanıt ayrıca
+`scope: process` taşır.
+
+Yerel test kanıtı: Sekiz yapılandırma senaryosu gerçek loopback HTTP üzerinden
+liveness, readiness durum kodu ve sırların yanıta sızmamasını kontrol eder.
+Sahte bağımlılıklarla sağlayıcı hatası/alıcısız kayıt başarısız olarak işaretlenir;
+kapanış iptali sonuç yazmadan yayılır. Retry zamanlaması, sekizinci denemede dead
+geçişi ve süresi dolan lease'in tekrar alınması bu .NET testleriyle kanıtlanmaz;
+bunlar izole PostgreSQL ve staging worker provasında ayrıca doğrulanmalıdır.
 
 Worker servisi hafif bir HTTP sunucusu barındırır ve `GET /health` uç noktasını sunar:
 
@@ -150,12 +171,10 @@ order by updated_at desc;
 ```
 
 ### 7.2. Dead-Letter Bildirimi Yeniden Tetikleme
-Sorun çözüldükten sonra (örneğin kullanıcının geçersiz e-posta adresi düzeltildiğinde veya Resend kotası açıldığında):
-```sql
-update public.notification_outbox
-set status = 'pending', attempts = 0, next_attempt_at = now(), last_error = null
-where id = <NOTIFICATION_ID> and status = 'dead';
-```
+Mevcut kaydın `attempts` sayacını sıfırlamayın: lease fencing bu monoton
+nesil numarasına dayanır. Dead-letter yeniden kuyruğa alma bu dilimde kapalıdır.
+Önce provider teslim kaydı/idempotency durumu incelenmeli; ayrı ve denetlenebilir
+bir redrive sözleşmesi tasarlanmadan manuel reset yapılmamalıdır.
 
 ### 7.3. Kilitlenmiş Görevleri Manuel Kurtarma
 ```sql
@@ -173,5 +192,5 @@ where channel = 'email'
 - [x] Supabase üzerinde `claim_email_notification_batch` ve `mark_notification_result` RPC fonksiyonları migrate edilmiş ve test edilmiştir.
 - [x] `tradesperson-documents` ve outbox tablolarının RLS politikaları doğrulanmıştır.
 - [ ] Resend üzerinde alan adı DNS kayıtları (SPF, DKIM, DMARC) onaylanmalıdır.
-- [ ] Worker container'ı staging ortamına deploy edildiğinde `/health` uç noktası `configured: true` dönmelidir.
+- [ ] Staging worker `/health/live` için 200, geçerli yapılandırmada `/health/ready` için 200; eksik yapılandırma provasında readiness 503 dönmelidir. Gerçek teslimat ayrıca ölçülmelidir.
 - [ ] Staging test kullanıcısı ile durum geçişi tetiklenmeli, outbox kaydının `pending -> processing -> sent` geçişi ve Resend üzerindeki `Idempotency-Key` canlı olarak gözlenmelidir.

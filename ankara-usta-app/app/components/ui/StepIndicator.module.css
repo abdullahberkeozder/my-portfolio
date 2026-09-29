@@ -1,0 +1,82 @@
+.stepperContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  margin: 16px 0 24px;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  text-align: center;
+}
+
+.stepNode {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  background: var(--surface-raised, #ffffff);
+  border: 2px solid var(--border-default, #d1d5db);
+  color: var(--text-secondary, #64748b);
+  transition: all var(--motion-fast, 120ms);
+}
+
+.stepItemActive .stepNode {
+  background: var(--brand-cobalt, #1246B5);
+  border-color: var(--brand-cobalt, #1246B5);
+  color: #ffffff;
+  box-shadow: 0 0 0 4px var(--brand-lemonade, #FFF8CC);
+}
+
+.stepItemCompleted .stepNode {
+  background: var(--brand-cobalt, #1246B5);
+  border-color: var(--brand-cobalt, #1246B5);
+  color: #ffffff;
+}
+
+.stepLabel {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+}
+
+.stepItemActive .stepLabel {
+  color: var(--brand-cobalt, #1246B5);
+  font-weight: 700;
+}
+
+.stepItemCompleted .stepLabel {
+  color: var(--text-primary, #17233B);
+}
+
+.connectorLine {
+  position: absolute;
+  top: 16px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: var(--border-default, #e2e8f0);
+  z-index: 1;
+}
+
+.connectorProgress {
+  height: 100%;
+  background: var(--brand-cobalt, #1246B5);
+  transition: width var(--motion-base, 200ms);
+}
+
+@media (max-width: 600px) {
+  .stepLabel { display: none; }
+}

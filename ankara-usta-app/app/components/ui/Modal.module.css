@@ -1,0 +1,139 @@
+﻿/* Modal & BottomSheet — Orkestra V3 UI Library */
+
+/* Backdrop */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: var(--overlay-dark, rgba(11,27,61,.72));
+  backdrop-filter: blur(4px) saturate(0.9);
+  -webkit-backdrop-filter: blur(4px) saturate(0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  animation: overlayIn var(--motion-fast,120ms) both;
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Dialog panel */
+.dialog {
+  position: relative;
+  background: var(--surface-raised, #ffffff);
+  border-radius: var(--radius-surface, 16px);
+  box-shadow: var(--elevation-4, 0 20px 60px rgba(18,70,181,.16),0 8px 20px rgba(0,0,0,.08));
+  width: 100%;
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  outline: none;
+  animation: dialogIn var(--motion-spring, 420ms) cubic-bezier(.22,1,.36,1) both;
+}
+
+@keyframes dialogIn {
+  from { opacity: 0; transform: scale(.94) translateY(12px); }
+  to   { opacity: 1; transform: scale(1)  translateY(0); }
+}
+
+/* Size variants */
+.sm  { max-width: 400px; }
+.md  { max-width: 560px; }
+.lg  { max-width: 720px; }
+.xl  { max-width: 920px; }
+.full { max-width: 100%; margin: 0; border-radius: 0; height: 100dvh; max-height: 100dvh; }
+
+/* Inner layout */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 28px 0;
+}
+
+.title {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  color: var(--text-primary, #1246B5);
+  margin: 0;
+}
+
+.closeBtn {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--surface-muted, #f0f4f2);
+  color: var(--text-secondary, #526368);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--motion-fast,120ms), color var(--motion-fast,120ms);
+}
+.closeBtn:hover  { background: var(--surface-brand-soft,#eef2fb); color: var(--brand-cobalt,#1246B5); }
+.closeBtn:focus-visible { outline: 2.5px solid var(--brand-cobalt,#1246B5); outline-offset: 2px; }
+
+.body {
+  padding: 20px 28px;
+  color: var(--text-secondary, #526368);
+  line-height: 1.65;
+}
+
+.footer {
+  padding: 0 28px 24px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* Bottom Sheet (mobile) */
+.sheetOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: var(--overlay-dark, rgba(11,27,61,.72));
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: overlayIn var(--motion-fast,120ms) both;
+}
+
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 901;
+  background: var(--surface-raised, #fff);
+  border-radius: var(--radius-surface, 16px) var(--radius-surface, 16px) 0 0;
+  box-shadow: var(--elevation-4);
+  max-height: 92dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  outline: none;
+  animation: sheetIn var(--motion-spring, 420ms) cubic-bezier(.22,1,.36,1) both;
+}
+
+@keyframes sheetIn {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.dragHandle {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border-default, #dce2df);
+  margin: 12px auto 0;
+}
+
+@media (min-width: 600px) {
+  .sheet { max-width: 560px; left: 50%; transform: translateX(-50%) translateY(100%); border-radius: var(--radius-surface,16px) var(--radius-surface,16px) 0 0; }
+}

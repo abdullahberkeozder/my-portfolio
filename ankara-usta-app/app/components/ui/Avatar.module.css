@@ -1,0 +1,89 @@
+﻿/* Avatar — Orkestra V3 UI Library */
+.wrapper {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+/* Sizes */
+.xs  { width:24px;  height:24px;  }
+.sm  { width:32px;  height:32px;  }
+.md  { width:44px;  height:44px;  }
+.lg  { width:56px;  height:56px;  }
+.xl  { width:72px;  height:72px;  }
+.xxl { width:96px;  height:96px;  }
+
+/* Image */
+.image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  border: 2px solid var(--surface-raised, #fff);
+  box-shadow: var(--elevation-1, 0 1px 3px rgba(18,70,181,.06));
+}
+
+/* Initials fallback */
+.initials {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: var(--surface-brand-soft, #eef2fb);
+  color: var(--brand-cobalt, #1246B5);
+  border: 2px solid var(--glass-border, rgba(18,70,181,.12));
+  user-select: none;
+}
+
+.xs  .initials { font-size: 9px; }
+.sm  .initials { font-size: 11px; }
+.md  .initials { font-size: 14px; }
+.lg  .initials { font-size: 18px; }
+.xl  .initials { font-size: 22px; }
+.xxl .initials { font-size: 30px; }
+
+/* Verification badge overlay */
+.verifiedBadge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: var(--brand-yellow, #FFDD00);
+  border: 2px solid var(--surface-raised, #fff);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-night, #0B1B3D);
+}
+
+.xs  .verifiedBadge { width:10px; height:10px; font-size:6px;  border-width:1.5px; }
+.sm  .verifiedBadge { width:13px; height:13px; font-size:7px;  }
+.md  .verifiedBadge { width:16px; height:16px; font-size:9px;  }
+.lg  .verifiedBadge { width:20px; height:20px; font-size:11px; }
+.xl  .verifiedBadge { width:24px; height:24px; font-size:13px; }
+.xxl .verifiedBadge { width:30px; height:30px; font-size:16px; }
+
+/* Status dot (online / busy / offline) */
+.statusDot {
+  position: absolute;
+  bottom: 1px;
+  left: 1px;
+  border-radius: 50%;
+  border: 2px solid var(--surface-raised, #fff);
+}
+.online  .statusDot { background: #16a34a; }
+.busy    .statusDot { background: #ea580c; }
+.offline .statusDot { background: var(--border-default, #dce2df); }
+
+.xs  .statusDot { width:7px;  height:7px; }
+.sm  .statusDot { width:9px;  height:9px; }
+.md  .statusDot { width:11px; height:11px; }
+.lg  .statusDot { width:14px; height:14px; }
+.xl  .statusDot { width:16px; height:16px; }
+.xxl .statusDot { width:20px; height:20px; }

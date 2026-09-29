@@ -16,3 +16,29 @@ export const disputeStatusSchema=z.enum(disputeStatuses);
 export function canPublishWorkMedia(consent:boolean,status:string){return consent&&status==='approved';}
 export function canCreateReview(jobStatus:string,customerId:string,actorId:string){return jobStatus==='completed'&&customerId===actorId;}
 export function shouldPublishTrustMetric(completedJobs:number){return Number.isInteger(completedJobs)&&completedJobs>=5;}
+
+export type TradespersonTier = 'apprentice' | 'journeyman' | 'master' | 'grandmaster';
+
+export interface TradespersonLevelInfo {
+  tier: TradespersonTier;
+  title: string;
+  badge: string;
+  minJobs: number;
+  minRating: number;
+}
+
+export function calculateTradespersonLevel(completedJobs: number, averageRating: number): TradespersonLevelInfo {
+  const jobs = Math.max(0, Math.floor(completedJobs || 0));
+  const rating = Number.isFinite(averageRating) ? averageRating : 0;
+
+  if (jobs >= 50 && rating >= 4.85) {
+    return { tier: 'grandmaster', title: 'Elit Baş Usta', badge: '💎', minJobs: 50, minRating: 4.85 };
+  }
+  if (jobs >= 20 && rating >= 4.75) {
+    return { tier: 'master', title: 'Onaylı Usta', badge: '🥇', minJobs: 20, minRating: 4.75 };
+  }
+  if (jobs >= 5 && rating >= 4.5) {
+    return { tier: 'journeyman', title: 'Deneyimli Kalfa', badge: '🥈', minJobs: 5, minRating: 4.5 };
+  }
+  return { tier: 'apprentice', title: 'Yeni Katılan Zanaatkâr', badge: '🥉', minJobs: 0, minRating: 0 };
+}

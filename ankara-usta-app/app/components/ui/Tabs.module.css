@@ -1,0 +1,109 @@
+﻿/* Tabs — Orkestra V3 UI Library */
+
+/* Container */
+.tabs { display: flex; flex-direction: column; gap: 0; }
+
+/* Tab list */
+.list {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  position: relative;
+}
+
+/* ── Underline variant ── */
+.underline .list {
+  border-bottom: 2px solid var(--border-default, #dce2df);
+  gap: 0;
+}
+
+.underline .tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 44px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary, #526368);
+  background: transparent;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: color var(--motion-fast,120ms), border-color var(--motion-fast,120ms);
+  white-space: nowrap;
+  outline: none;
+}
+.underline .tab:hover:not(.active):not(:disabled) { color: var(--text-primary, #1246B5); }
+.underline .tab.active {
+  color: var(--brand-cobalt, #1246B5);
+  border-bottom-color: var(--brand-cobalt, #1246B5);
+}
+.underline .tab:focus-visible {
+  outline: 2px solid var(--brand-cobalt, #1246B5);
+  outline-offset: -2px;
+  border-radius: var(--radius-control, 8px) var(--radius-control, 8px) 0 0;
+}
+
+/* ── Pill variant ── */
+.pill .list {
+  background: var(--surface-muted, #f0f4f2);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.pill .tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #526368);
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background var(--motion-fast,120ms), color var(--motion-fast,120ms), box-shadow var(--motion-fast,120ms);
+  white-space: nowrap;
+  outline: none;
+}
+.pill .tab:hover:not(.active):not(:disabled) { color: var(--text-primary, #1246B5); background: rgba(18,70,181,.06); }
+.pill .tab.active {
+  background: var(--surface-raised, #fff);
+  color: var(--brand-cobalt, #1246B5);
+  box-shadow: var(--elevation-1, 0 1px 3px rgba(18,70,181,.06));
+}
+.pill .tab:focus-visible { outline: 2px solid var(--brand-cobalt, #1246B5); outline-offset: 2px; }
+
+/* Disabled tab */
+.tab:disabled { opacity: .4; cursor: not-allowed; }
+
+/* Badge count inside tab */
+.tabBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--surface-brand-soft, #eef2fb);
+  color: var(--brand-cobalt, #1246B5);
+}
+.active .tabBadge { background: var(--brand-cobalt, #1246B5); color: #fff; }
+
+/* Panel */
+.panel {
+  padding-top: 20px;
+  animation: panelIn var(--motion-fast,120ms) both;
+}
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

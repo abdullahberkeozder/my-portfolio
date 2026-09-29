@@ -1,0 +1,62 @@
+﻿/* Card — Orkestra V3 UI Library */
+.card {
+  border-radius: var(--radius-card, 12px);
+  background: var(--surface-raised, #ffffff);
+  transition: box-shadow var(--motion-fast,120ms) cubic-bezier(.32,.72,0,1),
+    transform var(--motion-fast,120ms) cubic-bezier(.32,.72,0,1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Padding sizes */
+.padNone  { padding: 0; }
+.padSm    { padding: 16px; }
+.padMd    { padding: 24px; }
+.padLg    { padding: 32px; }
+
+/* Elevated — white card with layered shadow */
+.elevated {
+  background: var(--surface-raised, #ffffff);
+  box-shadow: var(--shadow-card, 0 2px 12px rgba(18,70,181,.07),0 1px 3px rgba(0,0,0,.05));
+  border: 1px solid rgba(18,70,181,.06);
+}
+
+/* Flat — blends into page surface */
+.flat {
+  background: var(--surface-page, #FAF8F5);
+  border: 1px solid var(--border-default, #dce2df);
+}
+
+/* Interactive — elevated + hover lift + subtle shimmer overlay */
+.interactive {
+  background: var(--surface-raised, #ffffff);
+  box-shadow: var(--elevation-1, 0 1px 3px rgba(18,70,181,.06));
+  border: 1px solid rgba(18,70,181,.08);
+  cursor: pointer;
+}
+.interactive::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(18,70,181,.04) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity var(--motion-fast,120ms);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.interactive:hover {
+  box-shadow: var(--shadow-card-hover, 0 8px 28px rgba(18,70,181,.12),0 2px 8px rgba(0,0,0,.06));
+  transform: translateY(-2px);
+  border-color: rgba(18,70,181,.16);
+}
+.interactive:hover::after { opacity: 1; }
+.interactive:active { transform: translateY(0); }
+
+/* Glass — frosted glass */
+.glass {
+  background: var(--glass-bg, rgba(255,255,255,.70));
+  backdrop-filter: var(--glass-blur, blur(20px) saturate(1.6));
+  -webkit-backdrop-filter: var(--glass-blur, blur(20px) saturate(1.6));
+  border: 1px solid var(--glass-border, rgba(18,70,181,.12));
+  box-shadow: var(--glass-shadow, 0 8px 32px rgba(18,70,181,.10),0 2px 8px rgba(0,0,0,.06));
+}

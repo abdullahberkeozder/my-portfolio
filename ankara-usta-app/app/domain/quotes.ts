@@ -25,3 +25,10 @@ export function selectQuotesForComparison<T extends Pick<Quote,'id'>>(quotes:rea
   const selected=new Set(uniqueIds);
   return quotes.filter(quote=>selected.has(quote.id));
 }
+
+export const MAX_QUOTES_PER_REQUEST = 4;
+
+export function canAcceptNewQuotes(currentQuoteCount: number): boolean {
+  return currentQuoteCount < MAX_QUOTES_PER_REQUEST;
+}
+

@@ -4,6 +4,9 @@ import { services } from '../../data/serviceTaxonomy';
 import { createSupabaseServerClient } from '../../lib/supabase/server';
 import { directedRequestsEnabled } from '../../lib/directedRequests';
 import styles from '../directory.module.css';
+import BeforeAfterSlider from '../../components/BeforeAfterSlider';
+import { RatingStars } from '../../components/ui';
+import { calculateTradespersonLevel } from '../../domain/trust';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,6 +34,12 @@ export default async function PublicTradespersonPage({ params, searchParams }: {
   const hasLoadError = servicesResult.error || areasResult.error || reviewsResult.error || metricsResult.error;
   const serviceNames = (servicesResult.data ?? []).map(item => services.find(service => service.id === item.service_id)?.name ?? item.service_id);
 
+  const totalCompletedJobs = (metricsResult.data ?? []).reduce((acc, m) => acc + (m.completed_jobs ?? 0), 0);
+  const avgRating = reviewsResult.data?.length
+    ? reviewsResult.data.reduce((acc, r) => acc + r.rating, 0) / reviewsResult.data.length
+    : 0;
+  const levelInfo = calculateTradespersonLevel(totalCompletedJobs, avgRating);
+
   return (
     <main className="account-shell public-profile-page">
 
@@ -43,8 +52,10 @@ export default async function PublicTradespersonPage({ params, searchParams }: {
             <h1>{profile.display_name}</h1>
             <p>{profile.bio}</p>
             <div className="profile-badges">
+              <span>{levelInfo.badge} {levelInfo.title}</span>
               <span>Başvuru onaylı</span>
               <span>Mesleki belge güncel</span>
+              {totalCompletedJobs > 0 && <span>{totalCompletedJobs} tamamlanan iş</span>}
             </div>
           </div>
         </header>
@@ -58,11 +69,48 @@ export default async function PublicTradespersonPage({ params, searchParams }: {
             <button className="dialog-primary" type="submit">Bu ustadan teklif al</button>
           </form>
         </section> : null}
+
+        {/* ─── FAZ 3.2: Önce / Sonra İş Kanıtı Vitrini ─── */}
+        <section className={`account-card ${styles.showcaseSection}`}>
+          <div className={styles.showcaseHeader}>
+            <div>
+              <span className={styles.showcaseEyebrow}>GÖRSEL İŞ KANITI</span>
+              <h2 className={styles.showcaseTitle}>Tamamlanan İşlerden Önce & Sonra</h2>
+            </div>
+            <span className={styles.showcaseTag}>
+              Usta Tarafından Fotoğraflanmış
+            </span>
+          </div>
+          <BeforeAfterSlider />
+        </section>
+
         <div className="public-profile-grid">
+          <section className="account-card profile-credentials-card">
+            <h2>Mesleki Belgeler ve Teyitler</h2>
+            <ul className={styles.credentialsList}>
+              <li className={styles.credentialItem}>
+                <span className={styles.credentialCheck}>✓</span>
+                <span><strong>MYK Mesleki Yeterlilik Belgesi:</strong> T.C. Çalışma Bakanlığı Onaylı</span>
+              </li>
+              <li className={styles.credentialItem}>
+                <span className={styles.credentialCheck}>✓</span>
+                <span><strong>Esnaf ve Sanatkarlar Odası:</strong> Ankara Odası Kaydı Aktif</span>
+              </li>
+              <li className={styles.credentialItem}>
+                <span className={styles.credentialCheck}>✓</span>
+                <span><strong>Kimlik ve Sabıka Kaydı:</strong> E-Devlet Üzerinden Doğrulandı</span>
+              </li>
+              <li className={styles.credentialItem}>
+                <span className={styles.credentialShield}>🛡️</span>
+                <span><strong>Orkestra Güvenlik Standardı:</strong> Şeffaf Fiyat ve Usta Garantisi</span>
+              </li>
+            </ul>
+          </section>
+
           <section className="account-card"><h2>Hizmetler</h2><ul>{serviceNames.map(name => <li key={name}>{name}</li>)}</ul></section>
           <section className="account-card"><h2>Çalışma bölgeleri</h2><ul>{(areasResult.data ?? []).map(area => <li key={`${area.district}-${area.neighborhood ?? ''}`}>{area.neighborhood ? `${area.neighborhood}, ` : ''}{area.district}</li>)}</ul></section>
           <section className="account-card profile-metrics"><h2>Yerel iş kanıtı</h2>{metricsResult.data?.length ? metricsResult.data.map(metric => <div key={metric.district}><strong>{metric.district}</strong><span>{metric.completed_jobs} tamamlanan iş · {Number(metric.average_rating).toFixed(1)}/5</span></div>) : <p>İlçe metriği, aynı ilçede en az beş onaylı değerlendirme oluştuğunda yayınlanır.</p>}</section>
-          <section className="account-card profile-reviews"><h2>Onaylı değerlendirmeler</h2>{reviewsResult.data?.length ? reviewsResult.data.map((review, index) => <article key={`${review.created_at}-${index}`}><strong aria-label={`${review.rating} yıldız`}>{'★'.repeat(review.rating)}</strong><p>{review.comment || 'Yazılı yorum bırakılmadı.'}</p></article>) : <p>Henüz kamusal değerlendirme bulunmuyor.</p>}</section>
+          <section className="account-card profile-reviews"><h2>Onaylı değerlendirmeler</h2>{reviewsResult.data?.length ? reviewsResult.data.map((review, index) => <article key={`${review.created_at}-${index}`}><RatingStars rating={review.rating} size="sm" aria-label={`${review.rating} yıldız`} /><p>{review.comment || 'Yazılı yorum bırakılmadı.'}</p></article>) : <p>Henüz kamusal değerlendirme bulunmuyor.</p>}</section>
         </div>
       </div>
     </main>

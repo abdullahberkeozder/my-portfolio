@@ -1,7 +1,8 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-import {useRouter} from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { serviceCategories, services, servicesByCategory } from './data/serviceTaxonomy';
 import { getServiceSafetyGuidance, getCalibratedServiceScope } from './data/serviceGuidance';
 import { isCorePilotService } from './data/pilotCoverage';
@@ -10,12 +11,64 @@ import RequestWizard from './components/RequestWizard';
 import OrchestraLogo from './components/OrchestraLogo';
 import { useModalDialog } from './hooks/useModalDialog';
 import Button from './components/Button';
+import FlatRateServices from './components/FlatRateServices';
+import { Avatar, RatingStars } from './components/ui';
 import matchStyles from './components/serviceMatch.module.css';
 import styles from './home.module.css';
 import { trackFunnel } from './lib/analytics';
 
+/* ─── Statik vitrin verisi (görsel katman) ─── */
+const FEATURED_PROS = [
+  { id: 'p1', name: 'Ahmet K.',    rating: 4.9, jobs: 143, service: 'Tesisat',        district: 'Çankaya',   verified: true  },
+  { id: 'p2', name: 'Mehmet Y.',   rating: 4.8, jobs: 97,  service: 'Elektrik',       district: 'Keçiören',  verified: true  },
+  { id: 'p3', name: 'Ali D.',      rating: 5.0, jobs: 76,  service: 'Mobilya Montaj', district: 'Mamak',     verified: true  },
+  { id: 'p4', name: 'Hasan Ç.',    rating: 4.7, jobs: 212, service: 'Boya & Tadilat', district: 'Etimesgut', verified: true  },
+  { id: 'p5', name: 'Ömer Ş.',     rating: 4.9, jobs: 58,  service: 'Temizlik',       district: 'Sincan',    verified: false },
+  { id: 'p6', name: 'Kadir T.',    rating: 4.8, jobs: 134, service: 'Kaynak',         district: 'Pursaklar', verified: true  },
+] as const;
+
+const REVIEWS = [
+  { id: 'r1', name: 'Seda K.',  service: 'Musluk Değişimi', text: 'Çok hızlı geldi, temiz çalıştı. Tavsiyelere uydu, hiç sorun çıkarmadı.' },
+  { id: 'r2', name: 'Murat T.', service: 'TV Duvar Montajı', text: 'Duvar beton ama hiç sorun çıkarmadan halletti. Kesinlikle tavsiye ederim.' },
+  { id: 'r3', name: 'Ayşe B.',  service: 'Tek Oda Boya',    text: 'Fiyat makul, iş kalitesi çok iyiydi. Tekrar çalışırım kesinlikle.' },
+  { id: 'r4', name: 'Can D.',   service: 'Elektrik Arızası', text: 'Akşam saatlerinde bile geldi. Hızlı ve profesyonel bir hizmet aldım.' },
+] as const;
+
+/* Ankara skyline SVG motifi */
+function AnkaraSkyline() {
+  return (
+    <svg
+      className={styles.skylineSvg}
+      viewBox="0 0 1200 140"
+      preserveAspectRatio="none"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <rect x="0"   y="110" width="80"  height="30" fill="rgba(255,255,255,.04)" rx="3"/>
+      <rect x="90"  y="90"  width="60"  height="50" fill="rgba(255,255,255,.04)" rx="3"/>
+      <rect x="160" y="70"  width="100" height="70" fill="rgba(255,255,255,.04)" rx="3"/>
+      {/* Atakule */}
+      <rect x="270" y="10"  width="22"  height="130" fill="rgba(255,255,255,.06)" rx="3"/>
+      <polygon points="274,10 288,10 281,0" fill="rgba(255,255,255,.06)"/>
+      <rect x="260" y="110" width="42" height="30" fill="rgba(255,255,255,.05)" rx="2"/>
+      {/* Orta bloklar */}
+      <rect x="305" y="55"  width="90"  height="85" fill="rgba(255,255,255,.04)" rx="3"/>
+      <rect x="405" y="40"  width="130" height="100" fill="rgba(255,255,255,.04)" rx="3"/>
+      <rect x="545" y="75"  width="70"  height="65" fill="rgba(255,255,255,.04)" rx="3"/>
+      <rect x="625" y="85"  width="180" height="55" fill="rgba(255,255,255,.03)" rx="3"/>
+      <rect x="815" y="50"  width="95"  height="90" fill="rgba(255,255,255,.04)" rx="3"/>
+      <rect x="920" y="90"  width="80"  height="50" fill="rgba(255,255,255,.04)" rx="3"/>
+      <rect x="1010" y="70" width="100" height="70" fill="rgba(255,255,255,.04)" rx="3"/>
+      <rect x="1120" y="95" width="80"  height="45" fill="rgba(255,255,255,.03)" rx="3"/>
+      {/* Ground */}
+      <rect x="0" y="135" width="1200" height="5" fill="rgba(255,255,255,.08)"/>
+    </svg>
+  );
+}
+
 export default function Home() {
-  const router=useRouter();
+  const router = useRouter();
   const [query, setQuery] = useState('');
   const [dialog, setDialog] = useState(false);
   const [classification, setClassification] = useState<ClassificationResult | null>(null);
@@ -31,10 +84,10 @@ export default function Home() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const draftId = params.get('draftId');
+    const draftId  = params.get('draftId');
     const serviceId = params.get('service');
     if (params.get('resume') === '1' && serviceId && services.some(service => service.id === serviceId)) {
-      queueMicrotask(() => {setRemoteDraft(undefined);setWizardServiceId(serviceId);});
+      queueMicrotask(() => { setRemoteDraft(undefined); setWizardServiceId(serviceId); });
       return;
     }
     if (!draftId || !serviceId) return;
@@ -61,12 +114,11 @@ export default function Home() {
     return () => { active = false; };
   }, [router]);
 
-
   function submitSearch(event: FormEvent) {
     event.preventDefault();
     if (!query.trim()) return;
     const result = classifyService(query);
-    trackFunnel('service_search', {candidateCount: result.candidates.length});
+    trackFunnel('service_search', { candidateCount: result.candidates.length });
     setClassification(result);
     setSelectedServiceId(result.candidates[0]?.service.id ?? null);
     setDialog(true);
@@ -84,56 +136,62 @@ export default function Home() {
   function continueToWizard() {
     if (!selectedServiceId) return;
     setDialog(false);
-    trackFunnel('wizard_started', {serviceId:selectedServiceId});
+    trackFunnel('wizard_started', { serviceId: selectedServiceId });
     setWizardServiceId(selectedServiceId);
   }
 
   return (
     <main className={styles.home}>
 
-
+      {/* ── HERO ──────────────────────────────────── */}
       <section className={styles.hero} aria-labelledby="hero-title">
+        <div className={styles.heroCanvas} aria-hidden="true">
+          <div className={styles.gridDots} />
+          <AnkaraSkyline />
+        </div>
+
         <div className={styles.heroInner}>
           <div className={styles.emblem}>
-            <OrchestraLogo size={48} variant="primary" />
+            <OrchestraLogo size={52} variant="primary" />
           </div>
 
-          <div>
-            <h1 id="hero-title" className={styles.title}>
-              İşini anlat.<br />Doğru ustayla buluş.
-            </h1>
-          </div>
+          <h1 id="hero-title" className={styles.title}>
+            İşini anlat.<br />
+            <span className={styles.titleAccent}>Doğru ustayla</span> buluş.
+          </h1>
+
           <p className={styles.intro}>
-            Evde yapılacak bir iş mi var? Ankara’da hizmetini bul, kapsamı belirle, teklifleri karşılaştır.
+            Evde yapılacak bir iş mi var? Ankara&apos;da hizmetini bul,
+            kapsamı belirle, teklifleri karşılaştır.
           </p>
 
-          {/* Global Search Shell */}
           <form className={styles.search} role="search" onSubmit={submitSearch}>
-            <label htmlFor="service-search-input">
+            <label htmlFor="service-search-input" className={styles.searchLabel}>
               İhtiyacınızı yazın
             </label>
-            <div className={styles.searchControls}>
-            <input
-              id="service-search-input"
-              value={query}
-              onChange={event => setQuery(event.target.value)}
-              placeholder="Örn. mutfak musluğum su kaçırıyor"
-              required
-              maxLength={500}
-            />
-            <button type="submit" aria-label="Hizmet bul">
-              Hizmet bul →
-            </button>
+            <div className={styles.searchGlass}>
+              <input
+                id="service-search-input"
+                className={styles.searchInput}
+                value={query}
+                onChange={event => setQuery(event.target.value)}
+                placeholder="Örn. mutfak musluğum su kaçırıyor"
+                required
+                maxLength={500}
+                autoComplete="off"
+              />
+              <button type="submit" className={styles.searchBtn} aria-label="Hizmet bul">
+                Hizmet bul →
+              </button>
             </div>
           </form>
 
-          {/* Quick Search Chips */}
           <div className={styles.suggestions} aria-label="Hızlı arama etiketleri">
-            {['Musluk Değişimi', 'Tek Oda Boya', 'Avize Montajı'].map(hint => (
+            {['Musluk Değişimi', 'Tek Oda Boya', 'Avize Montajı', 'Elektrik Arızası', 'Ev Temizliği'].map(hint => (
               <button
+                key={hint}
                 type="button"
                 onClick={() => startClassification(hint)}
-                key={hint}
               >
                 {hint}
               </button>
@@ -142,32 +200,57 @@ export default function Home() {
         </div>
       </section>
 
-      <section className={styles.catalog} id="services" tabIndex={-1} aria-labelledby="ensemble-title">
+      {/* ── GÜVEN BANDI ───────────────────────────── */}
+      <div className={styles.trustBand} aria-label="Platform güven göstergeleri">
+        <div className={styles.trustInner}>
+          {([
+            ['5',     'Öncelikli Pilot İlçe'],
+            ['26',    'Standart Kapsamlı Hizmet'],
+            ['%100',  'Belge Doğrulamalı Usta'],
+            ['3',     'Net Teklif Karşılaştırma'],
+          ] as const).map(([num, label]) => (
+            <div key={label} className={styles.trustStat}>
+              <span className={styles.trustNum}>{num}</span>
+              <span className={styles.trustLabel}>{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── HİZMET KATALOĞU ───────────────────────── */}
+      <section className={styles.catalog} id="services" tabIndex={-1} aria-labelledby="catalog-title">
         <div className={styles.sectionInner}>
           <div className={styles.sectionHeading}>
-            <h2 id="ensemble-title">
-              Hizmetleri keşfedin
-            </h2>
-            <p>
-              Bir kategori açın, ihtiyacınıza uygun hizmeti seçin.
-            </p>
+            <h2 id="catalog-title">Hizmetleri keşfedin</h2>
+            <p>Bir kategori açın, ihtiyacınıza uygun hizmeti seçin.</p>
           </div>
 
           <div className={styles.categories}>
             {serviceCategories.map(category => (
               <details key={category.id} className={styles.category} name="service-category">
                 <summary>
-                  <span className={styles.categoryName}>{category.name}</span>
-                  <span className={styles.categoryCount}>{servicesByCategory(category.id).length} hizmet</span>
-                  <span className={styles.categoryIndicator} aria-hidden="true">+</span>
+                  <span className={styles.categoryIcon} aria-hidden="true">{category.icon}</span>
+                  <span className={styles.categoryMeta}>
+                    <span className={styles.categoryName}>{category.name}</span>
+                    <span className={styles.categoryDesc}>{category.description[0]}</span>
+                  </span>
+                  <span className={styles.categoryCount}>{servicesByCategory(category.id).length}</span>
+                  <span className={styles.categoryChevron} aria-hidden="true">›</span>
                 </summary>
-                <ul className={`${styles.serviceList} category-service-list`}>
+                <ul className={styles.serviceList}>
                   {servicesByCategory(category.id).map(service => (
-                    <li key={service.id}><button type="button" onClick={() => {
-                      trackFunnel('wizard_started', { serviceId: service.id });
-                      setRemoteDraft(undefined);
-                      setWizardServiceId(service.id);
-                    }}>{service.name} <span aria-hidden="true">→</span></button></li>
+                    <li key={service.id}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          trackFunnel('wizard_started', { serviceId: service.id });
+                          setRemoteDraft(undefined);
+                          setWizardServiceId(service.id);
+                        }}
+                      >
+                        {service.name}
+                      </button>
+                    </li>
                   ))}
                 </ul>
               </details>
@@ -176,32 +259,106 @@ export default function Home() {
         </div>
       </section>
 
-      <section className={styles.process} aria-labelledby="guarantee-title">
+      {/* ── SABİT PAKET HİZMETLER (TASKRABBIT MODELİ) ── */}
+      <section className={styles.flatRateSection}>
+        <div className={styles.sectionInner}>
+          <FlatRateServices
+            onSelectService={serviceId => {
+              trackFunnel('wizard_started', { serviceId, source: 'flat_rate_package' });
+              setRemoteDraft(undefined);
+              setWizardServiceId(serviceId);
+            }}
+          />
+        </div>
+      </section>
+
+      {/* ── NASIL ÇALIŞIR ─────────────────────────── */}
+      <section className={styles.process} aria-labelledby="process-title">
         <div className={styles.sectionInner}>
           <div className={styles.sectionHeading}>
-            <h2 id="guarantee-title">Talebinizden işin tamamlanmasına</h2>
+            <h2 id="process-title">Talebinizden işin tamamlanmasına</h2>
             <p>Ustayı siz seçin, anlaştığınız kapsamı birlikte takip edin.</p>
           </div>
           <ol className={styles.steps}>
-            <li>
-              <h3>Yapılacak işi anlatın</h3>
-              <p>Hizmeti seçin; konum, zaman ve işin ayrıntılarını ekleyin. Göndermeden önce özetinizi kontrol edin.</p>
-            </li>
-            <li>
-              <h3>Teklifleri karşılaştırın</h3>
-              <p>Fiyatı ve kapsamı inceleyin. Karar vermeden önce ustayla ayrıntıları konuşun.</p>
-            </li>
-            <li>
-              <h3>Anlaşın ve işi takip edin</h3>
-              <p>Kabul ettiğiniz teklif, mesajlar ve iş kayıtları aynı yerde kalsın. İş tamamlandığında değerlendirin.</p>
-            </li>
+            {([
+              ['📋', 'İhtiyacı ve kapsamı belirleyin', 'Hizmeti seçin; konum, zaman ve işin ayrıntılarını ekleyin. Göndermeden önce özetinizi kontrol edin.'],
+              ['⚖️', 'En fazla 3 teklifi kıyaslayın',   'İşçilik, malzeme, süre ve garanti şartlarını yan yana inceleyin. Karar vermeden önce ustayla konuşun.'],
+              ['✅', 'İş günlüğüyle takip edin',        'Kabul ettiğiniz teklif sözleşmeye dönüşsün. Öncesi/sonrası kanıtlar ve dijital işçilik belgesiyle iş tamamlansın.'],
+            ] as const).map(([, title, desc], index) => (
+              <li key={title} className={styles.step}>
+                <div className={styles.stepOrb} aria-hidden="true">
+                  {index + 1}
+                </div>
+                <h3>{title}</h3>
+                <p>{desc}</p>
+              </li>
+            ))}
           </ol>
         </div>
       </section>
 
+      {/* ── ÖNCÜ USTALAR ──────────────────────────── */}
+      <section className={styles.proSection} aria-labelledby="pros-title">
+        <div className={styles.sectionInner}>
+          <div className={styles.sectionHeadingRow}>
+            <div className={styles.sectionHeading}>
+              <h2 id="pros-title">Öne Çıkan Ustalar</h2>
+              <p>Ankara pilotunda başvurusu onaylı ve mesleki belgesi teyitli ustalar.</p>
+            </div>
+            <Link href="/ustalar" className={styles.seeAllProsBtn}>
+              Tüm Doğrulanmış Ustalar →
+            </Link>
+          </div>
+          <div className={styles.proScroll} role="list">
+            {FEATURED_PROS.map(pro => (
+              <Link
+                key={pro.id}
+                href={`/ustalar?district=${encodeURIComponent(pro.district)}`}
+                className={styles.proCard}
+                role="listitem"
+              >
+                <div className={styles.proAvatarWrap}>
+                  <Avatar name={pro.name} size="lg" verified={pro.verified} />
+                </div>
+                <span className={styles.proName}>{pro.name}</span>
+                <div className={styles.proRating}>
+                  <RatingStars rating={pro.rating} size="sm" showScore />
+                </div>
+                <span className={styles.proJobs}>{pro.jobs} tamamlanan iş</span>
+                <span className={styles.proServiceTag}>{pro.service}</span>
+                <span className={styles.proDistrict}>{pro.district}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
+      {/* ── MÜŞTERİ YORUMLARI ─────────────────────── */}
+      <section className={styles.reviewSection} aria-labelledby="reviews-title">
+        <div className={styles.sectionInner}>
+          <div className={styles.sectionHeading}>
+            <h2 id="reviews-title">Müşteri Yorumları</h2>
+            <p>Gerçek kullanıcı deneyimlerinden seçmeler.</p>
+          </div>
+          <div className={styles.reviews}>
+            {REVIEWS.map(review => (
+              <blockquote key={review.id} className={styles.reviewCard}>
+                <RatingStars rating={5} size="sm" aria-label="5 üzerinden 5 yıldız" className={styles.reviewStars} />
+                <p className={styles.reviewText}>{review.text}</p>
+                <footer className={styles.reviewFooter}>
+                  <Avatar name={review.name} size="sm" />
+                  <div className={styles.reviewMeta}>
+                    <span className={styles.reviewName}>{review.name}</span>
+                    <span className={styles.reviewService}>{review.service}</span>
+                  </div>
+                </footer>
+              </blockquote>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      {/* Classification Match Dialog */}
+      {/* ── HİZMET SINIFLANDIRMA DİYALOĞU ────────── */}
       {dialog && classification && (
         <div className={matchStyles.backdrop} role="presentation" onClick={() => setDialog(false)}>
           <section
@@ -216,13 +373,19 @@ export default function Home() {
             <button data-dialog-initial-focus className={matchStyles.close} onClick={() => setDialog(false)} aria-label="Kapat">×</button>
             <span className={matchStyles.eyebrow}>HİZMET EŞLEŞTİRME</span>
             <h2 id="dialog-title">İhtiyacınızı Doğru Anladık mı?</h2>
-            <p className={matchStyles.query}>“{classification.query}”</p>
+            <p className={matchStyles.query}>&ldquo;{classification.query}&rdquo;</p>
             {classification.candidates.length > 0 ? (
               <>
                 <div className={matchStyles.hero}>
                   <div className={matchStyles.meta}>
                     <span className={matchStyles.confidence}>
-                      {selectedServiceId !== classification.candidates[0]?.service.id ? 'Alternatif hizmet' : classification.confidence === 'high' ? '✓ Güçlü Eşleşme' : classification.confidence === 'medium' ? '● Muhtemel Eşleşme' : '○ Birlikte Netleştirelim'}
+                      {selectedServiceId !== classification.candidates[0]?.service.id
+                        ? 'Alternatif hizmet'
+                        : classification.confidence === 'high'
+                          ? '✓ Güçlü Eşleşme'
+                          : classification.confidence === 'medium'
+                            ? '● Muhtemel Eşleşme'
+                            : '○ Birlikte Netleştirelim'}
                     </span>
                     <span className={matchStyles.category}>
                       {serviceCategories.find(c => c.id === selectedClassificationService?.categoryId)?.name}
@@ -239,15 +402,12 @@ export default function Home() {
                   </p>
                 </div>
 
-                {/* Primary & Secondary Action CTAs */}
                 <div className={matchStyles.actions}>
                   <Button variant="primary" type="button" disabled={!selectedServiceId} onClick={continueToWizard}>
                     Bu Hizmetle Devam Et →
                   </Button>
-
                 </div>
 
-                {/* Scope Guidance accordion */}
                 {selectedClassificationService && (() => {
                   const scope = getCalibratedServiceScope(selectedClassificationService.id);
                   return (
@@ -262,19 +422,11 @@ export default function Home() {
                         <p className={matchStyles.scopeNote}>Bunlar genel kapsam başlıklarıdır. Kesin işçilik, malzeme ve hariç işler ustanın teklifinde netleşir.</p>
                         <div className={matchStyles.scopeColumn}>
                           <strong>✓ Dahil Olanlar</strong>
-                          <ul>
-                            {scope.included.map((item: string) => (
-                              <li key={item}>{item}</li>
-                            ))}
-                          </ul>
+                          <ul>{scope.included.map((item: string) => <li key={item}>{item}</li>)}</ul>
                         </div>
                         <div className={matchStyles.scopeColumn}>
                           <strong>✕ Dahil Olmayanlar</strong>
-                          <ul>
-                            {scope.excluded.map((item: string) => (
-                              <li key={item}>{item}</li>
-                            ))}
-                          </ul>
+                          <ul>{scope.excluded.map((item: string) => <li key={item}>{item}</li>)}</ul>
                         </div>
                         {selectedSafetyGuidance && (
                           <div className={matchStyles.safety}>
@@ -286,21 +438,23 @@ export default function Home() {
                   );
                 })()}
 
-                {/* Alternative Candidates */}
                 {classification.candidates.length > 1 && (
                   <div className={matchStyles.alternatives}>
                     <span className={matchStyles.alternativesLabel}>Diğer Olası Hizmetler:</span>
                     <div className={matchStyles.chips}>
-                      {classification.candidates.filter(candidate => candidate.service.id !== selectedServiceId).slice(0, 3).map(candidate => (
-                        <button
-                          type="button"
-                          key={candidate.service.id}
-                          className={matchStyles.chip}
-                          onClick={() => setSelectedServiceId(candidate.service.id)}
-                        >
-                          {candidate.service.name}
-                        </button>
-                      ))}
+                      {classification.candidates
+                        .filter(candidate => candidate.service.id !== selectedServiceId)
+                        .slice(0, 3)
+                        .map(candidate => (
+                          <button
+                            type="button"
+                            key={candidate.service.id}
+                            className={matchStyles.chip}
+                            onClick={() => setSelectedServiceId(candidate.service.id)}
+                          >
+                            {candidate.service.name}
+                          </button>
+                        ))}
                     </div>
                   </div>
                 )}
@@ -316,7 +470,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Progressive Step Wizard Dialog */}
+      {/* ── TALEP SİHİRBAZI ───────────────────────── */}
       {wizardServiceId && (() => {
         const wizardService = services.find(s => s.id === wizardServiceId);
         if (!wizardService) return null;
@@ -328,6 +482,7 @@ export default function Home() {
           />
         );
       })()}
+
     </main>
   );
 }

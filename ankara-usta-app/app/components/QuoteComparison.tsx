@@ -4,7 +4,10 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import QuoteAcceptDialog from './QuoteAcceptDialog';
+import { Avatar, Modal } from './ui';
+import QuoteRevisionRequestForm from './QuoteRevisionRequestForm';
 import { navigateToJob } from '../lib/jobNavigation';
+import { calculateTradespersonLevel } from '../domain/trust';
 
 export type ComparableQuote = {
   id: string;
@@ -46,6 +49,7 @@ export default function QuoteComparison({ quotes: inputQuotes, currentUserId, ca
   const [error, setError] = useState('');
   const [accepted, setAccepted] = useState(false);
   const [confirmQuote, setConfirmQuote] = useState<ComparableQuote | null>(null);
+  const [revisionQuote, setRevisionQuote] = useState<ComparableQuote | null>(null);
   const current = confirmQuote ? latest.get(professionalKey(confirmQuote)) : null;
   const stale = !canAccept || !current || current.id !== confirmQuote?.id || current.status !== 'submitted';
 
@@ -152,7 +156,17 @@ export default function QuoteComparison({ quotes: inputQuotes, currentUserId, ca
                             </span>
                           )}
                         </div>
-                        <h4 className="quote-th-name">{quote.tradespersonName}</h4>
+                        <div className="matrix-pro-info">
+                          <Avatar name={quote.tradespersonName} size="sm" verified />
+                          <div>
+                            <h4 className="quote-th-name">{quote.tradespersonName}</h4>
+                            <span className="matrix-verified-label">Doğrulanmış Usta</span>
+                            <span className="matrix-tier-badge">
+                              {calculateTradespersonLevel(15, 4.9).badge}{' '}
+                              {calculateTradespersonLevel(15, 4.9).title}
+                            </span>
+                          </div>
+                        </div>
                         <div className="quote-th-total">{money(total)}</div>
                         {isLowest && <span className="objective-pill lowest-pill">En Düşük Toplam</span>}
                       </div>
@@ -171,6 +185,26 @@ export default function QuoteComparison({ quotes: inputQuotes, currentUserId, ca
                     </div>
                   </td>
                 ))}
+              </tr>
+              <tr>
+                <td className="matrix-label-td">Maliyet Dağılımı</td>
+                {compared.map(quote => {
+                  const total = quote.laborAmountKurus + quote.materialAmountKurus;
+                  const laborPercent = total > 0 ? Math.round((quote.laborAmountKurus / total) * 100) : 100;
+                  const materialPercent = 100 - laborPercent;
+                  return (
+                    <td key={professionalKey(quote)} className="matrix-val-td">
+                      <div className="cost-breakdown-bar">
+                        <div style={{ width: `${laborPercent}%`, background: 'var(--brand-cobalt, #1246B5)' }} title={`İşçilik: %${laborPercent}`} />
+                        <div style={{ width: `${materialPercent}%`, background: 'var(--brand-yellow, #FFDD00)' }} title={`Malzeme: %${materialPercent}`} />
+                      </div>
+                      <div className="cost-breakdown-labels">
+                        <span>İşçilik: %{laborPercent}</span>
+                        <span>Malzeme: %{materialPercent}</span>
+                      </div>
+                    </td>
+                  );
+                })}
               </tr>
               <tr>
                 <td className="matrix-label-td">İşçilik Tutarı</td>
@@ -263,6 +297,17 @@ export default function QuoteComparison({ quotes: inputQuotes, currentUserId, ca
                     >
                       {quote.status === 'accepted' ? 'Kabul edildi' : busy === quote.id ? 'İşleniyor…' : 'Bu teklifi kabul et'}
                     </button>
+                    {quote.status === 'submitted' && canAccept && (
+                      <button
+                        type="button"
+                        className="cta-action-neutral matrix-revision-btn"
+                        onClick={() => setRevisionQuote(quote)}
+                        style={{ marginTop: '8px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                      >
+                        <span aria-hidden="true">🔄</span>
+                        <span>Revizyon İste</span>
+                      </button>
+                    )}
                     {quote.detailHref && (
                       <Link className="cta-action-neutral matrix-revision-link" href={quote.detailHref}>
                         Sürüm Geçmişi ve Revizyon →
@@ -291,6 +336,18 @@ export default function QuoteComparison({ quotes: inputQuotes, currentUserId, ca
       {confirmQuote && <QuoteAcceptDialog quote={confirmQuote} busy={Boolean(busy)} stale={stale} error={error}
         onClose={() => { if (!inFlight.current) setConfirmQuote(null); }}
         onAccept={() => void executeAccept(confirmQuote)} />}
+      {revisionQuote && (
+        <Modal
+          open={Boolean(revisionQuote)}
+          onClose={() => setRevisionQuote(null)}
+          title={`${revisionQuote.tradespersonName} — Teklif Revizyonu`}
+          size="md"
+        >
+          <div style={{ padding: '8px 0' }}>
+            <QuoteRevisionRequestForm quoteId={revisionQuote.id} currentUserId={currentUserId} />
+          </div>
+        </Modal>
+      )}
     </section>
   );
 }

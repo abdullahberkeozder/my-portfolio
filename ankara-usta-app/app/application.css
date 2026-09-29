@@ -2408,8 +2408,9 @@ details[open] .accordion-chevron {
 }
 
 .picker-checkbox-card.active {
-  border-color: var(--action-primary);
-  background: #eef7f2;
+  border-color: var(--brand-cobalt, #1246B5);
+  background: var(--surface-brand-soft, #eef2fb);
+  box-shadow: inset 0 0 0 1px var(--brand-cobalt, #1246B5);
 }
 
 .picker-checkbox-card.disabled {
@@ -2469,8 +2470,9 @@ details[open] .accordion-chevron {
 }
 
 .matrix-quote-th.highlight-th {
-  background: #eef7f2;
-  border-top: 3px solid var(--action-primary);
+  background: var(--brand-lemonade-soft, #FFFDF0);
+  border-top: 3px solid var(--brand-cobalt, #1246B5);
+  box-shadow: inset 0 2px 8px rgba(18, 70, 181, 0.04);
 }
 
 .quote-th-header {
@@ -2510,8 +2512,10 @@ details[open] .accordion-chevron {
 }
 
 .lowest-pill {
-  background: #0d7a5f;
+  background: var(--brand-cobalt, #1246B5);
   color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(18, 70, 181, 0.25);
 }
 
 .warranty-pill {
@@ -6834,3 +6838,148 @@ button, [role="button"], a.dialog-primary, input[type="submit"] {
   margin-left: 8px;
   vertical-align: middle;
 }
+
+/* ==========================================================================
+   FAZ 1 - Orkestra V3 Design Token Extensions (2026-09-24)
+   Tokens are additive; nothing above is changed. Component CSS lives in
+   app/components/ui/*.module.css to keep this file under the 7 252-line budget.
+   ========================================================================== */
+:root {
+  /* Night Blue - Gece Mavisi (V3 third pillar) */
+  --brand-night:           #0B1B3D;
+  --brand-night-dim:       hsl(222, 69%, 12%);
+  --brand-night-surface:   hsl(222, 45%, 96%);
+
+  /* HSL aliases for dynamic tinting */
+  --brand-cobalt-h:        218;
+  --brand-cobalt-s:        83%;
+  --brand-cobalt-l:        39%;
+  --brand-yellow-h:        52;
+  --brand-yellow-s:        100%;
+  --brand-yellow-l:        50%;
+
+  /* Glassmorphism */
+  --glass-bg:              rgba(255, 255, 255, 0.70);
+  --glass-bg-dark:         rgba(11, 27, 61, 0.64);
+  --glass-border:          rgba(18, 70, 181, 0.12);
+  --glass-border-light:    rgba(255, 255, 255, 0.40);
+  --glass-blur:            blur(20px) saturate(1.6);
+  --glass-shadow:          0 8px 32px rgba(18, 70, 181, 0.10), 0 2px 8px rgba(0,0,0,0.06);
+
+  /* 4-step Elevation Scale */
+  --elevation-1:  0 1px 3px  rgba(18,70,181,0.06), 0 1px 2px  rgba(0,0,0,0.04);
+  --elevation-2:  0 4px 12px rgba(18,70,181,0.08), 0 2px 4px  rgba(0,0,0,0.05);
+  --elevation-3:  0 8px 28px rgba(18,70,181,0.12), 0 4px 8px  rgba(0,0,0,0.06);
+  --elevation-4:  0 20px 60px rgba(18,70,181,0.16), 0 8px 20px rgba(0,0,0,0.08);
+
+  /* Motion Scale (extends --motion-standard: 180ms) */
+  --motion-instant: 80ms  cubic-bezier(0.32, 0.72, 0, 1);
+  --motion-fast:    120ms cubic-bezier(0.32, 0.72, 0, 1);
+  --motion-slow:    360ms cubic-bezier(0.32, 0.72, 0, 1);
+  --motion-spring:  420ms cubic-bezier(0.22, 1.00, 0.36, 1);
+  --motion-bounce:  520ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Overlay */
+  --overlay-light: rgba(255, 255, 255, 0.88);
+  --overlay-dark:  rgba(11, 27, 61, 0.72);
+}
+
+/* Interactive Revision Button */
+.matrix-revision-btn {
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-sm, 6px);
+  border: 1.5px solid var(--border-default);
+  background: #ffffff;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--motion-fast, 120ms);
+}
+.matrix-revision-btn:hover {
+  border-color: var(--brand-cobalt, #1246B5);
+  color: var(--brand-cobalt, #1246B5);
+  background: var(--surface-brand-soft, #eef2fb);
+}
+
+/* Dispatch Quick Status (TaskRabbit Model) */
+.dispatch-quick-status-card {
+  padding: 16px;
+  background: var(--surface-raised, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: var(--radius-card, 12px);
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.dispatch-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--brand-cobalt, #1246B5);
+}
+.dispatch-buttons-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.dispatch-chip-btn {
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-subtle, #cbd5e1);
+  background: var(--bg-surface, #f8fafc);
+  color: var(--text-primary, #0f172a);
+  cursor: pointer;
+  transition: all var(--motion-fast, 120ms);
+}
+.dispatch-chip-btn:hover:not(:disabled) {
+  background: var(--surface-brand-soft, #eef2fb);
+  border-color: var(--brand-cobalt, #1246B5);
+  color: var(--brand-cobalt, #1246B5);
+  transform: translateY(-1px);
+}
+
+/* Cost Breakdown Bar in Matrix */
+.cost-breakdown-bar {
+  display: flex;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: #e2e8f0;
+  margin-bottom: 4px;
+}
+.cost-breakdown-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.matrix-pro-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+.matrix-verified-label {
+  font-size: 10px;
+  color: var(--brand-cobalt, #1246B5);
+  font-weight: 600;
+  display: block;
+}
+.matrix-tier-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--surface-brand-soft, #eef2fb);
+  color: var(--brand-cobalt, #1246B5);
+  display: inline-block;
+  margin-top: 2px;
+}
+
+

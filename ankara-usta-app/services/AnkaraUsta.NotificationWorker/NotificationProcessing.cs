@@ -12,6 +12,7 @@ public sealed class NotificationBatchProcessor(
 
         foreach (var notification in notifications)
         {
+            string? deliveryError = null;
             try
             {
                 var recipient = await outbox.ResolveRecipientEmailAsync(notification.RecipientId, cancellationToken);
@@ -25,9 +26,8 @@ public sealed class NotificationBatchProcessor(
                     recipient,
                     renderer.Render(notification),
                     cancellationToken);
-                await outbox.MarkResultAsync(notification.Id, true, null, cancellationToken);
                 logger.LogInformation(
-                    "Delivered notification {NotificationId} through provider message {ProviderId}",
+                    "Provider accepted notification {NotificationId} through message {ProviderId}; acknowledgement pending",
                     notification.Id,
                     providerId);
             }
@@ -37,9 +37,13 @@ public sealed class NotificationBatchProcessor(
             }
             catch (Exception exception)
             {
-                logger.LogWarning(exception, "Notification {NotificationId} will be retried", notification.Id);
-                await outbox.MarkResultAsync(notification.Id, false, exception.Message, cancellationToken);
+                logger.LogWarning(exception, "Notification {NotificationId} delivery failed; acknowledgement pending", notification.Id);
+                deliveryError = exception.Message;
             }
+            // An acknowledgement failure is not a delivery failure. Never make a
+            // second result write using an obsolete lease; leave recovery to the queue.
+            await outbox.MarkResultAsync(notification.Id, workerId, notification.Attempts,
+                deliveryError is null, deliveryError, cancellationToken);
         }
 
         return notifications.Count;

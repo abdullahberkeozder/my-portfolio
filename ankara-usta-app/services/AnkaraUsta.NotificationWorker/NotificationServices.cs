@@ -10,7 +10,8 @@ public interface ISupabaseOutboxClient
 {
     Task<IReadOnlyList<OutboxNotification>> ClaimEmailBatchAsync(string workerId, int limit, CancellationToken cancellationToken);
     Task<string?> ResolveRecipientEmailAsync(Guid recipientId, CancellationToken cancellationToken);
-    Task MarkResultAsync(long notificationId, bool succeeded, string? error, CancellationToken cancellationToken);
+    Task MarkResultAsync(long notificationId, string workerId, int attempt, bool succeeded, string? error, CancellationToken cancellationToken);
+    Task ProbeAsync(CancellationToken cancellationToken);
 }
 
 public interface IEmailSender
@@ -21,6 +22,19 @@ public interface IEmailSender
 public sealed class SupabaseOutboxClient(HttpClient httpClient, NotificationWorkerOptions options) : ISupabaseOutboxClient
 {
     private readonly Uri _baseUri = new(options.SupabaseUrl.TrimEnd('/') + "/");
+
+    public async Task ProbeAsync(CancellationToken cancellationToken)
+    {
+        using var request = CreateRequest(HttpMethod.Get, "rest/v1/");
+        using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException(
+                $"Supabase read-only REST probe failed with status {(int)response.StatusCode}.",
+                null,
+                response.StatusCode);
+        }
+    }
 
     public async Task<IReadOnlyList<OutboxNotification>> ClaimEmailBatchAsync(
         string workerId,
@@ -54,6 +68,8 @@ public sealed class SupabaseOutboxClient(HttpClient httpClient, NotificationWork
 
     public async Task MarkResultAsync(
         long notificationId,
+        string workerId,
+        int attempt,
         bool succeeded,
         string? error,
         CancellationToken cancellationToken)
@@ -62,6 +78,8 @@ public sealed class SupabaseOutboxClient(HttpClient httpClient, NotificationWork
         request.Content = JsonContent.Create(new
         {
             p_id = notificationId,
+            p_worker_id = workerId,
+            p_attempt = attempt,
             p_succeeded = succeeded,
             p_error = error
         });
@@ -72,8 +90,9 @@ public sealed class SupabaseOutboxClient(HttpClient httpClient, NotificationWork
     private HttpRequestMessage CreateRequest(HttpMethod method, string relativePath)
     {
         var request = new HttpRequestMessage(method, new Uri(_baseUri, relativePath));
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", options.SupabaseServiceRoleKey);
-        request.Headers.Add("apikey", options.SupabaseServiceRoleKey);
+        // Modern Supabase secret API keys are opaque keys, not JWTs. Send them
+        // only via apikey; putting them in Authorization: Bearer is invalid.
+        request.Headers.Add("apikey", options.SupabaseSecretKey);
         return request;
     }
 

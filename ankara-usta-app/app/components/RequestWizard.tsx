@@ -84,6 +84,37 @@ export default function RequestWizard(props:Props) {
   </AccountDraftBoundary>;
 }
 
+
+// Statik piyasa fiyat aralıkları (görsel katman)
+const SERVICE_PRICE_RANGES: Record<string, { min: number; max: number }> = {
+  'mobilya-kurulumu':          { min:  500, max: 1500 },
+  'tv-duvar-montaji':          { min:  400, max:  800 },
+  'kornis-perde-montaji':      { min:  300, max:  700 },
+  'raf-tablo-montaji':         { min:  200, max:  500 },
+  'avize-montaji':             { min:  350, max:  750 },
+  'elektrik-arizasi':          { min:  400, max: 2000 },
+  'priz-anahtar':              { min:  200, max:  600 },
+  'sigorta-pano':              { min:  400, max: 1500 },
+  'elektrik-hatti':            { min:  600, max: 3000 },
+  'su-kacagi':                 { min:  500, max: 3000 },
+  'musluk-degisimi':           { min:  300, max:  800 },
+  'gider-acma':                { min:  200, max:  600 },
+  'klozet-rezervuar':          { min:  350, max: 1200 },
+  'tesisat-onarim':            { min:  400, max: 1500 },
+  'tek-oda-boya':              { min: 1500, max: 4000 },
+  'duvar-alci':                { min:  500, max: 2500 },
+  'fayans-onarimi':            { min:  600, max: 2000 },
+  'silikon-yenileme':          { min:  250, max:  700 },
+  'bahce-kapisi':              { min:  800, max: 3000 },
+  'korkuluk':                  { min:  600, max: 2500 },
+  'metal-kapi-mentese':        { min:  300, max: 1200 },
+  'ozel-demir-imalati':        { min: 1500, max: 8000 },
+  'ev-temizligi':              { min:  600, max: 1500 },
+  'detayli-temizlik':          { min: 1000, max: 2500 },
+  'tadilat-sonrasi-temizlik':  { min:  800, max: 2500 },
+  'cam-temizligi':             { min:  400, max: 1200 },
+};
+
 function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfessional }: Props & {scope:DraftScope}) {
   const formRef = useRef<HTMLDivElement>(null);
   const definition = getWizardDefinition(service.id);
@@ -97,6 +128,8 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
   const [step, setStep] = useState(initialDraft?.step ?? 0);
   const [answers, setAnswers] = useState<Record<string, string>>(initialDraft?.answers ?? {});
   const [files, setFiles] = useState<File[]>([]);
+  const [dragOver, setDragOver] = useState(false);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [district, setDistrict] = useState(initialDraft?.district ?? '');
   const [neighborhood, setNeighborhood] = useState(initialDraft?.neighborhood ?? '');
   const [timing, setTiming] = useState(() => {
@@ -160,26 +193,47 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
     catch { /* The auth handoff explicitly checks storage before leaving. */ }
   }, [answers, district, idempotencyKey, neighborhood, requestId, step, storageKey, timing, questionIndex, files.length, initialDraft?.pendingMediaCount, scope.storage, routingMode, targetProfessionalId, routingConflict, submittedRequestId]);
 
-  function filesChanged(event: ChangeEvent<HTMLInputElement>) {
-    const selectedFiles = Array.from(event.target.files ?? []);
-    if (!selectedFiles.length) return;
-    if (selectedFiles.some(file => !['image/jpeg', 'image/png', 'image/webp', 'video/mp4'].includes(file.type))) {
-      event.target.value = '';
+  // Ortak doğrulama — hem <input> hem drag-drop kullanır
+  function validateAndAddFiles(incoming: File[]) {
+    if (!incoming.length) return;
+    if (incoming.some(f => !['image/jpeg', 'image/png', 'image/webp', 'video/mp4'].includes(f.type))) {
       setMediaMessage('JPG, PNG, WebP veya MP4 biçiminde dosya seçin.');
       return;
     }
-    const oversized = selectedFiles.find(file => file.size > 52_428_800);
+    const oversized = incoming.find(f => f.size > 52_428_800);
     if (oversized) {
-      event.target.value = '';
       setMediaMessage(`${oversized.name} 50 MB sınırını aşıyor. Daha küçük bir dosya seçin.`);
       return;
     }
     setMediaMessage('');
-    setFiles(current => [...current, ...selectedFiles.filter(file => !current.some(existing =>
-      existing.name === file.name && existing.size === file.size && existing.lastModified === file.lastModified))]);
+    setFiles(curr => [...curr, ...incoming.filter(f => !curr.some(ex =>
+      ex.name === f.name && ex.size === f.size && ex.lastModified === f.lastModified))]);
+  }
+
+  function filesChanged(event: ChangeEvent<HTMLInputElement>) {
+    validateAndAddFiles(Array.from(event.target.files ?? []));
     event.target.value = '';
   }
 
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) { e.preventDefault(); setDragOver(true); }
+  function handleDragLeave() { setDragOver(false); }
+  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setDragOver(false);
+    validateAndAddFiles(Array.from(e.dataTransfer.files));
+  }
+
+  // Önizleme URL'leri — files her değiştiğinde yeniden üret
+  useEffect(() => {
+    const urls = files.map(f => f.type.startsWith('image/') ? URL.createObjectURL(f) : '');
+    const timer = setTimeout(() => {
+      setPreviewUrls(urls);
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      urls.forEach(u => { if (u) URL.revokeObjectURL(u); });
+    };
+  }, [files]);
   const saveDraft = useCallback(async (showAuthError = false) => {
     // Guests may complete the wizard locally; membership is required only to persist/publish.
     if (scope.guest) return undefined;
@@ -374,6 +428,21 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                 <span aria-hidden="true">{index + 1}</span>{label}
               </button>
             </li>)}</ol>
+            {/* Fiyat aralığı göstergesi */}
+            {(() => {
+              const pr = SERVICE_PRICE_RANGES[service.id];
+              if (!pr) return null;
+              return (
+                <div className={styles.priceRange}>
+                  <span className={styles.priceRangeIcon}>💰</span>
+                  <div className={styles.priceRangeBody}>
+                    <span className={styles.priceRangeLabel}>Tahmini piyasa aralığı</span>
+                    <span className={styles.priceRangeValue}>{pr.min.toLocaleString('tr-TR')} – {pr.max.toLocaleString('tr-TR')} ₺</span>
+                    <span className={styles.priceRangeNote}>İşçilik, malzeme ve kapsamla değişir</span>
+                  </div>
+                </div>
+              );
+            })()}
             <small>Yanıtlarınızı göndermeden önce değiştirebilirsiniz.</small>
           </nav>}
         <div className={styles.viewport}>
@@ -451,30 +520,63 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
             {step === 1 && (
               <WizardMediaStep kicker="GÖRSELLER" title="İsterseniz fotoğraf veya video ekleyin" description="Bu adım isteğe bağlıdır. Görseller ustanın işi daha net anlamasını ve doğru fiyat vermesini sağlar.">
 
-                <label className="frosted-upload-zone">
+                {/* ── Premium sürükle-bırak yükleme alanı ── */}
+                <div
+                  className={[styles.dropZone, dragOver ? styles.dropZoneDragging : ''].filter(Boolean).join(' ')}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  aria-label="Sürükle bırak veya tıkla"
+                >
                   <input
                     type="file"
                     accept="image/jpeg,image/png,image/webp,video/mp4"
                     multiple
                     onChange={filesChanged}
+                    aria-label="Fotoğraf veya video seçin"
                   />
-                  <div className="upload-zone-icon">📷</div>
-                  <strong>Fotoğraf veya video seçin</strong>
-                  <small>JPG, PNG, WebP veya MP4 · Dosya başına maks. 50 MB</small>
+                  <span className={styles.dropZoneIcon} aria-hidden="true">
+                    {dragOver ? '📂' : '📷'}
+                  </span>
+                  <strong className={styles.dropZoneTitle}>
+                    {dragOver ? 'Bırakın, eklensin!' : 'Sürükle bırak veya tıkla'}
+                  </strong>
+                  <span className={styles.dropZoneHint}>
+                    JPG · PNG · WebP · MP4 &nbsp;·&nbsp; Maks. 50 MB
+                  </span>
                   {files.length > 0 && (
-                    <span className="upload-file-success">
-                      ✓ {files.length} dosya seçildi · Gönderirken yüklenecek
+                    <span className={styles.dropZoneCount}>
+                      ✓ {files.length} dosya hazır
                     </span>
                   )}
-                </label>
+                </div>
 
-                {files.length > 0 && <ul className="wizard-selected-files">
-                  {files.map((file, index) => <li key={`${file.name}-${file.size}-${file.lastModified}`}>
-                    <span>{file.name}</span>
-                    <button type="button" onClick={() => setFiles(current => current.filter((_, i) => i !== index))}
-                      aria-label={`${file.name} dosyasını kaldır`}>Kaldır</button>
-                  </li>)}
-                </ul>}
+                {/* ── Görsel önizleme ızgarası ── */}
+                {files.length > 0 && (
+                  <div className={styles.previewGrid}>
+                    {files.map((file, index) => (
+                      <div key={`${file.name}-${file.size}-${file.lastModified}`} className={styles.previewItem}>
+                        {previewUrls[index] ? (
+                          <div className={styles.previewImageWrap}>
+                            <img src={previewUrls[index]} alt={file.name} className={styles.previewImg} />
+                            <span className={styles.previewFileName}>{file.name}</span>
+                          </div>
+                        ) : (
+                          <div className={styles.previewVideo}>
+                            <span className={styles.previewVideoIcon}>🎬</span>
+                            <span className={styles.previewVideoName}>{file.name}</span>
+                          </div>
+                        )}
+                        <button
+                          type="button"
+                          className={styles.previewRemove}
+                          onClick={() => setFiles(curr => curr.filter((_, i) => i !== index))}
+                          aria-label={`${file.name} dosyasını kaldır`}
+                        >×</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {mediaMessage && <p className="wizard-inline-error" role="alert">{mediaMessage}</p>}
 

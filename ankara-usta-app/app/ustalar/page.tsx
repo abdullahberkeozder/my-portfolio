@@ -2,6 +2,12 @@ import Link from 'next/link';
 import { services } from '../data/serviceTaxonomy';
 import { createSupabaseServerClient } from '../lib/supabase/server';
 import { ankaraDistricts } from '../data/ankaraLocations';
+import dynamicImport from 'next/dynamic';
+import { calculateTradespersonLevel } from '../domain/trust';
+
+const AnkaraInteractiveMap = dynamicImport(() => import('../components/map/AnkaraInteractiveMap'), {
+  ssr: false,
+});
 import styles from './directory.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -112,6 +118,35 @@ export default async function UstalarIndexPage({
         </div>
 
         {/* View Mode Switcher */}
+        <div className={styles.viewModeRow}>
+          <div className={styles.viewModeToggle} role="group" aria-label="Görünüm seçimi">
+            <a
+              href={`/ustalar?${new URLSearchParams({ ...(service ? { service } : {}), ...(district ? { district } : {}), view: 'list' })}`}
+              className={`${styles.viewToggleBtn} ${params.view !== 'map' ? styles.viewToggleBtnActive : ''}`}
+            >
+              <span>📋</span>
+              <span>Liste Görünümü</span>
+            </a>
+            <a
+              href={`/ustalar?${new URLSearchParams({ ...(service ? { service } : {}), ...(district ? { district } : {}), view: 'map' })}`}
+              className={`${styles.viewToggleBtn} ${params.view === 'map' ? styles.viewToggleBtnActive : ''}`}
+            >
+              <span>📍</span>
+              <span>Bölge Dağılımı</span>
+            </a>
+          </div>
+          {params.view === 'map' && (
+            <span className={styles.mapDensityHint}>
+              💡 Harita üzerinden pilot ilçe yoğunluğunu inceleyebilirsiniz
+            </span>
+          )}
+        </div>
+
+        {params.view === 'map' && (
+          <section className={styles.mapContainerSection}>
+            <AnkaraInteractiveMap initialDistrict={district} />
+          </section>
+        )}
           <>
             {/* Filter bar */}
             <div className={styles.filterBar}>
@@ -195,13 +230,17 @@ export default async function UstalarIndexPage({
                       .slice(0, 2)
                       .join('')
                       .toUpperCase();
+                    const tier = calculateTradespersonLevel(10, 4.9);
                     return (
                       <div key={profile.user_id} className="usta-card">
                         <div className="usta-monogram" aria-hidden="true">
                           {initials}
                         </div>
                         <div className="usta-card-body">
-                          <span className="usta-card-badge">Mesleki belge güncel</span>
+                          <div className={styles.badgeRow}>
+                            <span className="usta-card-badge">Mesleki belge güncel</span>
+                            <span className={styles.tierBadge}>{tier.badge} {tier.title}</span>
+                          </div>
                           <h2 className="usta-card-name">{profile.display_name}</h2>
                           {profileServices.length > 0 && (
                             <p className="usta-card-services">

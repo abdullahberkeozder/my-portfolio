@@ -15,11 +15,6 @@ builder.Services.AddHostedService<NotificationDeliveryWorker>();
 
 var app = builder.Build();
 
-app.MapGet("/health", () => Results.Ok(new
-{
-    status = "ok",
-    integration = "supabase-outbox-to-resend",
-    configured = options.IsConfigured
-}));
+app.MapNotificationHealthEndpoints(options);
 
 await app.RunAsync();

@@ -151,7 +151,7 @@ update phase65_context set notification_id=(
   order by claimed.id limit 1
 );
 with result as (
-  select * from public.mark_notification_result((select notification_id from phase65_context),false,'phase65 simulated delivery failure')
+  select * from public.mark_notification_result((select notification_id from phase65_context),'phase65-worker',1,false,'phase65 simulated delivery failure')
 )
 update phase65_context set
   notification_status=result.status,

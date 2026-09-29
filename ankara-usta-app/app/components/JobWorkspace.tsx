@@ -139,6 +139,7 @@ export default function JobWorkspace(props: Props) {
   const [building, setBuilding] = useState(props.address?.building ?? '');
   const [apartment, setApartment] = useState(props.address?.apartment ?? '');
   const [directions, setDirections] = useState(props.address?.directions ?? '');
+  const [reworkReason, setReworkReason] = useState('');
 
   // Confirmation Modal
   const [confirmAction, setConfirmAction] = useState<{ status: string; label: string } | null>(null);
@@ -181,7 +182,26 @@ export default function JobWorkspace(props: Props) {
   }
 
   async function transition(status: string) {
-    if (await call(`/api/jobs/${props.jobId}/transition`, { status }, status)) setConfirmAction(null);
+    const isRework = status === 'in_progress' && props.status === 'awaiting_customer_approval';
+    if (await call(`/api/jobs/${props.jobId}/transition`, { status }, status)) {
+      if (isRework && reworkReason.trim()) {
+        await call(
+          `/api/jobs/${props.jobId}/messages`,
+          { body: `[DÜZELTME / REWORK TALEBİ]: ${reworkReason.trim()}`, idempotencyKey: crypto.randomUUID() },
+          'rework-message'
+        );
+        setReworkReason('');
+      }
+      setConfirmAction(null);
+    }
+  }
+
+  async function sendQuickDispatchStatus(text: string) {
+    await call(
+      `/api/jobs/${props.jobId}/messages`,
+      { body: text, idempotencyKey: crypto.randomUUID() },
+      'dispatch'
+    );
   }
 
   async function proposeInspection(event: React.FormEvent) {
@@ -745,6 +765,38 @@ export default function JobWorkspace(props: Props) {
               <p>İş akışını tamamlamak, düzeltme istemek veya uyuşmazlık bildirmek için bu alanı kullanın.</p>
             </div>
 
+            {props.role === 'tradesperson' && (props.status === 'scheduled' || props.status === 'in_progress') && (
+              <div className="dispatch-quick-status-card">
+                <span className="dispatch-label">Hızlı Sevk Durumu (TaskRabbit Modeli)</span>
+                <div className="dispatch-buttons-row">
+                  <button
+                    type="button"
+                    className="dispatch-chip-btn"
+                    disabled={Boolean(busy)}
+                    onClick={() => void sendQuickDispatchStatus('🚗 Yoldayım, tahmini varış sürem 20-30 dakika.')}
+                  >
+                    🚗 Yoldayım (20-30 dk)
+                  </button>
+                  <button
+                    type="button"
+                    className="dispatch-chip-btn"
+                    disabled={Boolean(busy)}
+                    onClick={() => void sendQuickDispatchStatus('📍 Adrese ulaştım, hazırlıkları tamamlayıp işe başlıyorum.')}
+                  >
+                    📍 Adresteyim & Başlıyorum
+                  </button>
+                  <button
+                    type="button"
+                    className="dispatch-chip-btn"
+                    disabled={Boolean(busy)}
+                    onClick={() => void sendQuickDispatchStatus('🔧 Malzeme / parça temini için kısa süreliğine ayrıldım.')}
+                  >
+                    🔧 Malzeme Teminindeyim
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="status-actions-box">
               <h3>Mevcut Durumda Yapabileceğiniz İşlemler</h3>
               {availableActions.length > 0 ? (
@@ -797,11 +849,33 @@ export default function JobWorkspace(props: Props) {
                 'İşi onayladığınızda iş günlüğü kilitlenir ve ustaya memnuniyet teyidi iletilir.'}
               {confirmAction.status === 'disputed' &&
                 'Uyuşmazlık bildirildiğinde Orkestra moderasyon masası devreye girer ve taraflardan kanıt istenir.'}
-              {confirmAction.status === 'in_progress' &&
+              {confirmAction.status === 'in_progress' && props.status === 'awaiting_customer_approval' &&
+                'Düzeltme talebiniz iletildiğinde iş "Devam ediyor" durumuna döner ve usta için 48 saatlik düzeltme süreci başlar.'}
+              {confirmAction.status === 'in_progress' && props.status !== 'awaiting_customer_approval' &&
                 'İş durumu "Devam ediyor" olarak güncellenecek.'}
               {confirmAction.status === 'awaiting_customer_approval' &&
                 'İşin tamamlandığı ve müşterinin nihai onayı beklendiği taraflara bildirilecek.'}
             </p>
+
+            {confirmAction.status === 'in_progress' && props.status === 'awaiting_customer_approval' && (
+              <div className="form-field-group">
+                <label htmlFor="rework-reason-input">
+                  <strong>Eksik veya Düzeltilmesi Gereken Noktalar (Zorunlu)</strong>
+                </label>
+                <textarea
+                  id="rework-reason-input"
+                  required
+                  rows={3}
+                  value={reworkReason}
+                  onChange={e => setReworkReason(e.target.value)}
+                  placeholder="Örn: Lavabo altındaki bağlantı contasından hafif su sızıyor, tekrar sıkılması gerekiyor."
+                />
+                <small className="text-secondary">
+                  Bu açıklama ustaya anlık bildirim olarak iletilir ve 48 saatlik düzeltme süreci başlar.
+                </small>
+              </div>
+            )}
+
             <div className="confirm-actions">
               {notice && !noticeSuccess && <p role="alert">{notice}</p>}
               <button
@@ -817,7 +891,7 @@ export default function JobWorkspace(props: Props) {
                 type="button"
                 className="dialog-primary"
                 onClick={() => void transition(confirmAction.status)}
-                disabled={Boolean(busy)}
+                disabled={Boolean(busy) || (confirmAction.status === 'in_progress' && props.status === 'awaiting_customer_approval' && !reworkReason.trim())}
               >
                 {busy === confirmAction.status ? 'İşleniyor…' : 'Evet, İşlemi Onayla →'}
               </button>

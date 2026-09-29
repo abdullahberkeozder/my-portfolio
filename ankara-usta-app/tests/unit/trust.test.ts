@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {canCreateReview,canPublishWorkMedia,disputeInputSchema,moderationDecisionInputSchema,reviewInputSchema,shouldPublishTrustMetric,workLogEntryInputSchema} from '../../app/domain';
+import {calculateTradespersonLevel,canCreateReview,canPublishWorkMedia,disputeInputSchema,moderationDecisionInputSchema,reviewInputSchema,shouldPublishTrustMetric,workLogEntryInputSchema} from '../../app/domain';
 
 describe('trust, review and moderation rules',()=>{
   it('allows reviews only from the customer after completion',()=>{
@@ -24,5 +24,27 @@ describe('trust, review and moderation rules',()=>{
     expect(disputeInputSchema.safeParse({category:'quality',description:'Teslim edilen iş kabul edilen kapsamla uyuşmuyor.'}).success).toBe(true);
     expect(shouldPublishTrustMetric(4)).toBe(false);
     expect(shouldPublishTrustMetric(5)).toBe(true);
+  });
+
+  it('determines tradesperson level based on completed jobs and rating', () => {
+    // New artisan
+    expect(calculateTradespersonLevel(0, 0)).toEqual(
+      expect.objectContaining({ tier: 'apprentice', title: 'Yeni Katılan Zanaatkâr', badge: '🥉' })
+    );
+
+    // Journeyman
+    expect(calculateTradespersonLevel(5, 4.6)).toEqual(
+      expect.objectContaining({ tier: 'journeyman', title: 'Deneyimli Kalfa', badge: '🥈' })
+    );
+
+    // Master
+    expect(calculateTradespersonLevel(25, 4.8)).toEqual(
+      expect.objectContaining({ tier: 'master', title: 'Onaylı Usta', badge: '🥇' })
+    );
+
+    // Grandmaster
+    expect(calculateTradespersonLevel(60, 4.95)).toEqual(
+      expect.objectContaining({ tier: 'grandmaster', title: 'Elit Baş Usta', badge: '💎' })
+    );
   });
 });
