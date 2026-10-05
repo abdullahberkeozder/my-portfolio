@@ -104,7 +104,7 @@ describe('GET /api/jobs/[id]/escrow (SRS: FR-15, BR-06)', () => {
     });
 
     expect(res.status).toBe(200);
-    const body = (await res.json()) as any;
+    const body = (await res.json()) as { escrow: Record<string, unknown> };
     expect(body.escrow).toMatchObject({
       jobId,
       status: 'held_in_escrow',
@@ -169,7 +169,7 @@ describe('GET /api/jobs/[id]/escrow (SRS: FR-15, BR-06)', () => {
     });
 
     expect(res.status).toBe(200);
-    const body = (await res.json()) as any;
+    const body = (await res.json()) as { escrow: Record<string, unknown> };
     expect(body.escrow.autoReleaseDeadline).toBe('2026-10-04T10:00:00.000Z');
   });
 });
@@ -192,7 +192,7 @@ describe('POST /api/jobs/[id]/escrow/release (SRS: FR-15, BR-06)', () => {
 
     const res = await releaseEscrow(req, { params: Promise.resolve({ id: jobId }) });
     expect(res.status).toBe(200);
-    const body = (await res.json()) as any;
+    const body = (await res.json()) as { escrowPayment: Record<string, unknown> };
 
     expect(body.escrowPayment).toMatchObject({
       id: idempotencyKey,

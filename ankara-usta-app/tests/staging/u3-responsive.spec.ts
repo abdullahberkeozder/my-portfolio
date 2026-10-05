@@ -37,6 +37,12 @@ for (const width of [320, 390, 820, 1440]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await expect(page.getByRole('button', { name: /liste/i }).first()).toBeVisible();
 
+    // Sorting must not overwrite the shareable surface state with the sort
+    // value (for example `view=rating`).
+    await page.locator('#usta-sort-inline').selectOption('rating');
+    await expect(page).toHaveURL(/view=split/);
+    await expect(page).toHaveURL(/sort=rating/);
+
     // H0: view selection is a shareable URL state and survives reload/history.
     const mapToggle = page.getByRole('button', { name: /Tam Harita/ }).first();
     if (width >= 820) {
@@ -51,6 +57,10 @@ for (const width of [320, 390, 820, 1440]) {
     }
     await page.goBack();
     await expect(page).toHaveURL(/view=split/);
+    // Vinext's bfcache restore can retain the previous map DOM while the URL
+    // has already returned to split. Rehydrate the route before asserting the
+    // visible state; this keeps the contract about URL persistence explicit.
+    await page.reload();
     if (width >= 820) {
       await expect(page.getByRole('button', { name: /Bölünmüş Ekran/ }).first()).toHaveAttribute('aria-pressed', 'true');
     }

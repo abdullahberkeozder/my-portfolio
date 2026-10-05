@@ -45,7 +45,7 @@ describe('/api/requests/quick POST', () => {
     const response = await send(validPayload);
     expect(response.status).toBe(200);
 
-    const data = (await response.json()) as Record<string, any>;
+    const data = (await response.json()) as Record<string, unknown>;
     expect(data.ok).toBe(true);
     expect(data.leadRef).toMatch(/^ANK-\d{4}$/);
     expect(data.ustaId).toBe('usta-123');
@@ -61,7 +61,7 @@ describe('/api/requests/quick POST', () => {
     const response = await send(validPayload);
     expect(response.status).toBe(200);
 
-    const data = (await response.json()) as Record<string, any>;
+    const data = (await response.json()) as Record<string, unknown>;
     expect(data.ok).toBe(true);
     expect(data.userId).toBeNull();
     expect(data.leadRef).toMatch(/^ANK-\d{4}$/);
@@ -72,7 +72,7 @@ describe('/api/requests/quick POST', () => {
     const response = await send(invalid);
 
     expect(response.status).toBe(400);
-    const data = (await response.json()) as Record<string, any>;
+    const data = (await response.json()) as Record<string, unknown>;
     expect(data.code).toBe('INVALID_INPUT');
   });
 
@@ -81,7 +81,7 @@ describe('/api/requests/quick POST', () => {
     const response = await send(invalid);
 
     expect(response.status).toBe(400);
-    const data = (await response.json()) as Record<string, any>;
+    const data = (await response.json()) as Record<string, unknown>;
     expect(data.code).toBe('INVALID_INPUT');
   });
 
@@ -91,7 +91,7 @@ describe('/api/requests/quick POST', () => {
     const response = await send(validPayload);
     expect(response.status).toBe(503);
 
-    const data = (await response.json()) as Record<string, any>;
+    const data = (await response.json()) as Record<string, unknown>;
     expect(data.code).toBe('INTAKE_PAUSED');
   });
 });
