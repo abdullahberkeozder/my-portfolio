@@ -107,4 +107,41 @@ describe('JobWorkspace Escrow Protection (SRS: FR-15, BR-06 / SDD: 4.4)', () => 
     expect(escrowCard).toHaveTextContent('✅ Ustanın Hesabına Aktarıldı');
     expect(escrowCard).toHaveTextContent('Emanet Başarıyla Çözümlendi');
   });
+
+  it('displays transparent financial breakdown and confirmation modal with payout details', () => {
+    render(
+      <JobWorkspace
+        jobId="job-1"
+        currentUserId="customer-1"
+        role="customer"
+        status="awaiting_customer_approval"
+        events={[]}
+        messages={[]}
+        appointments={[]}
+        scopeChanges={[]}
+        address={null}
+        acceptedQuote={sampleQuote}
+      />
+    );
+
+    // 1. Verify breakdown on Kapsam tab
+    fireEvent.click(screen.getByRole('tab', { name: 'Kapsam' }));
+    const breakdown = screen.getByLabelText('Emanet ödeme dökümü');
+    expect(breakdown).toHaveTextContent('İşçilik Tutarı');
+    expect(breakdown).toHaveTextContent('1.200');
+    expect(breakdown).toHaveTextContent('Malzeme / Ek');
+    expect(breakdown).toHaveTextContent('300');
+    expect(breakdown).toHaveTextContent('Toplam Havuz Güvencesi');
+    expect(breakdown).toHaveTextContent('1.500');
+
+    // 2. Open confirmation modal from Onay ve işlemler tab
+    fireEvent.click(screen.getByRole('tab', { name: 'Onay ve işlemler' }));
+    fireEvent.click(screen.getByRole('button', { name: 'İşi onaylayın ve tamamlayın' }));
+
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toBeInTheDocument();
+    expect(dialog).toHaveTextContent('İşi onaylayın ve tamamlayın işlemini onaylıyor musunuz?');
+    expect(dialog).toHaveTextContent('1.500');
+    expect(dialog).toHaveTextContent('tutarındaki ödeme ustanın hesabına aktarılacak');
+  });
 });

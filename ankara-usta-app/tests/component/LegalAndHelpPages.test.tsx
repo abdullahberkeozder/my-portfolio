@@ -16,6 +16,7 @@ describe('HelpPage (/yardim) Truth & Evidence Alignment', { timeout: 15000 }, ()
     expect(screen.getByRole('heading', { level: 2, name: /Teklif Kabulü ve Dijital İş Günlüğü/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: /Uyuşmazlık Kaydı ve Moderasyon İncelemesi/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2, name: /Pilot Destek ve Geri Bildirim/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: /Ankara 9 Pilot İlçe Saha Operasyonu ve WhatsApp Destek Hattı/i })).toBeInTheDocument();
   });
 
   it('does not promise a fictional arbitration panel or unverified SLAs', () => {

@@ -9,6 +9,7 @@ import {POST as transition} from '../../app/api/jobs/[id]/transition/route';
 import {POST as respondInspection} from '../../app/api/inspections/[id]/respond/route';
 import {POST as respondScope} from '../../app/api/scope-changes/[id]/respond/route';
 import {POST as upload} from '../../app/api/jobs/[id]/work-log/route';
+import {POST as escrowRelease} from '../../app/api/jobs/[id]/escrow/release/route';
 const mocks=vi.hoisted(()=>({getUser:vi.fn(),rpc:vi.fn(),from:vi.fn(),storage:vi.fn()}));
 vi.mock('../../app/lib/supabase/server',()=>({createSupabaseServerClient:async()=>({auth:{getUser:mocks.getUser},rpc:mocks.rpc,from:mocks.from,storage:{from:mocks.storage}})}));
 const id='f31e936b-d492-4d9b-a44a-a6ce932976d0';
@@ -23,6 +24,7 @@ const routes=[
   {name:'transition',handler:transition,body:{status:'in_progress'}},
   {name:'respondInspection',handler:respondInspection,body:{accept:true}},
   {name:'respondScope',handler:respondScope,body:{approve:true}},
+  {name:'escrowRelease',handler:escrowRelease,body:{releaseReason:'customer_acceptance',idempotencyKey:id}},
 ];
 describe.each(routes)('$name session-bound API',({handler,body})=>{
   const send=(identity:string|null=id,payload:unknown=body)=>handler(new Request('https://orkestra.invalid/api/action',{method:'POST',headers:identity?{'X-Orkestra-Expected-User':identity}:{},body:JSON.stringify(payload)}),{params:Promise.resolve({id})});

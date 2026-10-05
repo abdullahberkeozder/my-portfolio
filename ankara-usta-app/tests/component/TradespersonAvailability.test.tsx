@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import TradespersonAvailabilityPage from '../../app/usta/musaitlik/page';
+import AvailabilityForm from '../../app/usta/musaitlik/AvailabilityForm';
 
 describe('TradespersonAvailabilityPage', () => {
   beforeEach(() => {
@@ -9,7 +9,7 @@ describe('TradespersonAvailabilityPage', () => {
   });
 
   it('renders the availability management header, preset buttons and time slots', () => {
-    render(<TradespersonAvailabilityPage />);
+    render(<AvailabilityForm />);
 
     expect(screen.getByText('USTA ÇALIŞMA TAKVİMİ')).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 1, name: /İş Alabileceğiniz Zamanları Belirleyin/i })).toBeInTheDocument();
@@ -29,7 +29,7 @@ describe('TradespersonAvailabilityPage', () => {
     });
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<TradespersonAvailabilityPage />);
+    render(<AvailabilityForm />);
 
     const urgentCheckbox = screen.getByLabelText(/Acil \/ Aynı Gün Taleplerini Kabul Ediyorum/i);
     await user.click(urgentCheckbox);

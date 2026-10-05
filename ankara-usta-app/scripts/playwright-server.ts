@@ -1,9 +1,36 @@
 import {spawn} from 'node:child_process';
+import {readdirSync} from 'node:fs';
 import {createConnection} from 'node:net';
-import {resolve} from 'node:path';
+import {join, resolve} from 'node:path';
 import {setTimeout as delay} from 'node:timers/promises';
 
 const port = 4187;
+const minimumNode = [22, 13, 0];
+
+function isCompatibleNode(version:string) {
+  const current = version.split('.').map(Number);
+  return current[0] > minimumNode[0]
+    || (current[0] === minimumNode[0] && (current[1] > minimumNode[1]
+      || (current[1] === minimumNode[1] && current[2] >= minimumNode[2])));
+}
+
+function resolveProjectNode() {
+  if (isCompatibleNode(process.versions.node)) return process.execPath;
+  if (process.platform !== 'win32') return null;
+  const toolsDirectory = join(process.cwd(), '.tools');
+  try {
+    return readdirSync(toolsDirectory, {withFileTypes:true})
+      .filter((entry) => entry.isDirectory() && /^node-v\d+\.\d+\.\d+-win-x64$/.test(entry.name))
+      .map((entry) => ({
+        executable: join(toolsDirectory, entry.name, 'node.exe'),
+        version: entry.name.slice('node-v'.length, -'-win-x64'.length),
+      }))
+      .filter((candidate) => isCompatibleNode(candidate.version))
+      .sort((left, right) => right.version.localeCompare(left.version, undefined, {numeric:true}))[0]?.executable ?? null;
+  } catch {
+    return null;
+  }
+}
 async function portInUse() {
   return new Promise<boolean>((done) => {
     const socket = createConnection({host:'127.0.0.1',port});
@@ -17,7 +44,11 @@ async function portInUse() {
 /** Own one Vinext process, never kill by executable name or adopt an existing server. */
 export default async function setup() {
   if (await portInUse()) throw new Error(`E2E port ${port} is already occupied; existing process left untouched.`);
-  const child = spawn(process.execPath, [resolve('node_modules/vinext/dist/cli.js'),'start','--port',String(port)], {
+  const nodeExecutable = resolveProjectNode();
+  if (!nodeExecutable) {
+    throw new Error(`Playwright E2E için Node.js ${minimumNode.join('.')} veya daha yeni bir sürüm gerekli; sistem Node ${process.versions.node}, proje portable runtime bulunamadı.`);
+  }
+  const child = spawn(nodeExecutable, [resolve('node_modules/vinext/dist/cli.js'),'start','--port',String(port)], {
     shell:false, windowsHide:true, stdio:['ignore','inherit','inherit'],
     env:{...process.env,PLAYWRIGHT_TEST:'1'},
   });

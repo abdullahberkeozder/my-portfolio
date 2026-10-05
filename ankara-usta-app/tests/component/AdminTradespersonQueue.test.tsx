@@ -182,4 +182,38 @@ describe('AdminTradespersonQueuePage (P5)', () => {
     expect(screen.getByText(/Geçerlilik: 2028-12-31/i)).toBeInTheDocument();
     expect(screen.getByText(/Kamusal Dizin Doğrulama Rozetine Uygun/i)).toBeInTheDocument();
   });
+
+  it('renders structured vocational credential box with certificate number and checklist', async () => {
+    mockState.applications = [
+      {
+        user_id: 'tp-structured',
+        display_name: 'Metin Usta',
+        bio: 'MYK belgeli iklimlendirme ve kombi teknisyeni.',
+        application_status: 'submitted',
+        submitted_at: '2026-09-20T11:00:00Z',
+        review_note: null,
+        tradesperson_services: [{ service_id: 'kombi-bakimi' }],
+        tradesperson_service_areas: [{ district: 'Keçiören' }],
+        tradesperson_documents: [
+          {
+            id: 'doc-myk-2',
+            kind: 'professional_certificate',
+            status: 'pending',
+            original_name: '[MYK-level_4-YB21/004812] kombi_ustalik.pdf',
+            expires_at: '2029-06-30',
+            storage_path: 'docs/myk_kombi.pdf',
+          },
+        ],
+        tradesperson_references: [],
+      },
+    ];
+    mockState.count = 1;
+
+    render(await AdminTradespersonQueuePage({ searchParams: Promise.resolve({ page: '1' }) }));
+
+    expect(screen.getByText('Metin Usta')).toBeInTheDocument();
+    expect(screen.getByText(/YB21\/004812/)).toBeInTheDocument();
+    expect(screen.getByText(/✓ Biçim Kontrolü Başarılı/)).toBeInTheDocument();
+    expect(screen.getByText(/✓ Ankara Saha Masası Yetki Alanı/)).toBeInTheDocument();
+  });
 });

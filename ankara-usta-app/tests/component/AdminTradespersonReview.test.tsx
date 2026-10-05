@@ -208,4 +208,23 @@ describe('AdminReviewControls (P4)', () => {
       })
     );
   });
+
+  it('populates review note when a quick template button is clicked (FAZ 6.6)', async () => {
+    render(
+      <AdminReviewControls
+        tradespersonId="tp-1"
+        status="under_review"
+        documents={baseDocuments}
+        references={[]}
+      />
+    );
+
+    const noteInput = screen.getByLabelText(/İnceleme notu/) as HTMLTextAreaElement;
+    expect(noteInput.value).toBe('');
+
+    const templateBtn = screen.getByRole('button', { name: '✓ MYK Onay' });
+    await userEvent.click(templateBtn);
+
+    expect(noteInput.value).toBe('MYK Seviye 4 mesleki yeterlilik belgesi ve oda sicili doğrulandı.');
+  });
 });
