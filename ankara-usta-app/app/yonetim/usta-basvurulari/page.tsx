@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import AdminReviewControls from '../../components/AdminReviewControls';
 import { services } from '../../data/serviceTaxonomy';
+import { parseVocationalCredentialFromDoc, vocationalCredentialTypeLabels, vocationalLevelLabels } from '../../domain/tradespersonApplication';
 import { createSupabaseServerClient } from '../../lib/supabase/server';
 import RetryButton from '../../components/RetryButton';
 import Pagination from '../../components/Pagination';
@@ -159,6 +160,7 @@ export default async function AdminTradespersonQueuePage({
                 d => d.kind === 'professional_certificate'
               );
               const isProfCertVerified = isCertificateValid(profCert?.status, profCert?.expires_at);
+              const parsedCred = profCert ? parseVocationalCredentialFromDoc(profCert.original_name, profCert.kind) : null;
 
               return (
                 <article key={application.user_id}>
@@ -194,6 +196,33 @@ export default async function AdminTradespersonQueuePage({
                         </span>
                       )}
                     </div>
+
+                    {parsedCred && (
+                      <div className={styles.vocationalMetaBox}>
+                        <div className={styles.vocationalMetaRow}>
+                          <span className={styles.vocationalMetaLabel}>Akreditasyon:</span>
+                          <strong>
+                            {vocationalCredentialTypeLabels[parsedCred.certificateType ?? 'myk']}
+                            {parsedCred.level ? ` · ${vocationalLevelLabels[parsedCred.level] ?? parsedCred.level}` : ''}
+                          </strong>
+                        </div>
+                        {parsedCred.certificateNumber && (
+                          <div className={styles.vocationalMetaRow}>
+                            <span className={styles.vocationalMetaLabel}>Belge / Sicil No:</span>
+                            <code className={styles.vocationalCode}>{parsedCred.certificateNumber}</code>
+                          </div>
+                        )}
+                        <div className={styles.vocationalMetaChecklist}>
+                          <span className={styles.checkItem}>✓ Biçim Kontrolü Başarılı</span>
+                          <span className={styles.checkItem}>✓ Ankara Saha Masası Yetki Alanı</span>
+                          {profCert?.expires_at && (
+                            <span className={styles.checkItem}>
+                              {isProfCertVerified ? '✓ Geçerli Tarih' : '⏳ Tarih Kontrol Edilmeli'}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                     <div className={styles.publicBadgeStatus}>
                       {isProfCertVerified ? (

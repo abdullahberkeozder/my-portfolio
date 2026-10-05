@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { tradespersonDocumentInputSchema, validateTradespersonApplication } from '../../../domain/tradespersonApplication';
+import { encodeDocumentNameWithCredential, tradespersonDocumentInputSchema, validateTradespersonApplication } from '../../../domain/tradespersonApplication';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
 import {jsonApiError,jsonPublicError} from '../../../lib/apiErrors';
 import {z} from 'zod';
@@ -16,10 +16,14 @@ export async function POST(request:Request){
     if(!user)return jsonPublicError('AUTH_REQUIRED','Oturum açmanız gerekiyor.',401);
 
     if(!document.storagePath.startsWith(`${user.id}/`))return jsonPublicError('INVALID_DOCUMENT_PATH','Belge yolu geçersiz.',403);
+    const finalOriginalName = payload.vocationalCredential
+      ? encodeDocumentNameWithCredential(document.originalName, payload.vocationalCredential)
+      : document.originalName;
+
     const {data:profile,error:submitError}=await supabase.rpc('submit_tradesperson_application',{
       p_display_name:payload.displayName,p_bio:payload.bio,p_service_ids:payload.serviceIds,
       p_districts:payload.districts,p_reference:payload.reference??null,
-      p_document:{storagePath:document.storagePath,kind:document.kind,originalName:document.originalName,
+      p_document:{storagePath:document.storagePath,kind:document.kind,originalName:finalOriginalName,
         contentType:document.contentType,byteSize:document.byteSize,expiresAt:document.expiresAt??null},
     }).single();
     if(submitError)throw submitError;

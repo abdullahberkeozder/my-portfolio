@@ -9,7 +9,7 @@ export function draftAccountKey(kind:string,userId:string) {
 }
 
 // Local drafts are a convenience, never authorization. Server RLS still owns access.
-export default function AccountDraftBoundary({kind,ttl,children,renderPending=content=>content}:{kind:string;ttl:number;children:(scope:DraftScope)=>ReactNode;renderPending?:(content:ReactNode)=>ReactNode}) {
+export default function AccountDraftBoundary({kind,ttl,children,renderPending=content=>content,requireAuth=false}:{kind:string;ttl:number;children:(scope:DraftScope)=>ReactNode;renderPending?:(content:ReactNode)=>ReactNode;requireAuth?:boolean}) {
   const [scope,setScope]=useState<DraftScope>();
   const [error,setError]=useState(false);
   const [retry,setRetry]=useState(0);
@@ -54,6 +54,11 @@ export default function AccountDraftBoundary({kind,ttl,children,renderPending=co
   },[kind,ttl,retry]);
   if(error)return renderPending(<section role="alert" className="account-card">Taslak hesabı doğrulanamadı. Verilerinizi korumak için form açılmadı. <button onClick={()=>{setError(false);setRetry(n=>n+1);}}>Yeniden dene</button></section>);
   if(!scope)return renderPending(<p role="status">Hesap ve taslak kontrol ediliyor…</p>);
+  // Guard: if requireAuth is set and the resolved user is anonymous, redirect to signup
+  if(requireAuth&&scope.guest){
+    if(typeof window!=='undefined')window.location.href='/usta/kayit?next=/usta-basvurusu';
+    return renderPending(<p role="status">Giriş sayfasına yönlendiriliyorsunuz…</p>);
+  }
   return <DraftChoice key={scope.key} scope={scope} kind={kind} renderPending={renderPending}>{children}</DraftChoice>;
 }
 

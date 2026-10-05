@@ -59,3 +59,83 @@
     display: inline;
   }
 }
+
+.vocationalFieldsCard {
+  background: var(--surface-raised, #ffffff);
+  border: 1px solid var(--border-default, #e2e8f0);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.vocationalCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.vocationalCardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vocationalBadgeCandidate {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.vocationalInputHelp {
+  font-size: 11px;
+  color: var(--text-secondary, #64748b);
+  margin-top: 3px;
+  display: block;
+}
+
+.vocationalPreviewBox {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.vocationalPreviewIcon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.vocationalPreviewContent strong {
+  display: block;
+  font-size: 13px;
+  color: #166534;
+  margin-bottom: 3px;
+}
+
+.vocationalPreviewContent p {
+  font-size: 12px;
+  color: #15803d;
+  margin: 0;
+  line-height: 1.4;
+}

@@ -306,6 +306,10 @@ export default async function TradespersonRequestsPage({
                       <span>📍 {request.neighborhood}, {request.district}</span>
                       <span className="workspace-card-meta-dot" />
                       <span>{requestTimingLabel(request.preferred_timing)}</span>
+                      <span className="workspace-card-meta-dot" />
+                      <span className="workspace-card-kvkk-badge" title="Açık adres teklif kabulünde açılır">
+                        🛡️ KVKK Korumalı (~300m)
+                      </span>
                     </div>
 
                     {/* Invitation Panel or Match Reasons */}

@@ -384,3 +384,35 @@
   padding: 2px 8px;
   border-radius: 999px;
 }
+
+.kvkkPrivacyNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-top: 10px;
+  margin-bottom: 8px;
+}
+
+.kvkkNoticeIcon {
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.kvkkNoticeBody strong {
+  display: block;
+  font-size: 0.8125rem;
+  color: #1e40af;
+  margin-bottom: 2px;
+}
+
+.kvkkNoticeBody p {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: #2563eb;
+}
+

@@ -44,3 +44,32 @@ validateServiceCatalog(serviceCategories, services);
 
 export const servicesByCategory = (categoryId: string) => services.filter((service) => service.categoryId === categoryId);
 export const popularServices = services.filter((service) => service.popularRank).sort((a,b) => (a.popularRank ?? 99) - (b.popularRank ?? 99));
+
+export const SERVICE_PRICE_RANGES: Record<string, { min: number; max: number }> = {
+  'mobilya-kurulumu':          { min:  500, max: 1500 },
+  'tv-duvar-montaji':          { min:  400, max:  800 },
+  'kornis-perde-montaji':      { min:  300, max:  700 },
+  'raf-tablo-montaji':         { min:  200, max:  500 },
+  'avize-montaji':             { min:  350, max:  750 },
+  'elektrik-arizasi':          { min:  400, max: 2000 },
+  'priz-anahtar':              { min:  200, max:  600 },
+  'sigorta-pano':              { min:  400, max: 1500 },
+  'elektrik-hatti':            { min:  600, max: 3000 },
+  'su-kacagi':                 { min:  500, max: 3000 },
+  'musluk-degisimi':           { min:  300, max:  800 },
+  'gider-acma':                { min:  200, max:  600 },
+  'klozet-rezervuar':          { min:  350, max: 1200 },
+  'tesisat-onarim':            { min:  400, max: 1500 },
+  'tek-oda-boya':              { min: 1500, max: 4000 },
+  'duvar-alci':                { min:  500, max: 2500 },
+  'fayans-onarimi':            { min:  600, max: 2000 },
+  'silikon-yenileme':          { min:  250, max:  700 },
+  'bahce-kapisi':              { min:  800, max: 3000 },
+  'korkuluk':                  { min:  600, max: 2500 },
+  'metal-kapi-mentese':        { min:  300, max: 1200 },
+  'ozel-demir-imalati':        { min: 1500, max: 8000 },
+  'ev-temizligi':              { min:  600, max: 1500 },
+  'detayli-temizlik':          { min: 1000, max: 2500 },
+  'tadilat-sonrasi-temizlik':  { min:  800, max: 2500 },
+  'cam-temizligi':             { min:  400, max: 1200 },
+};

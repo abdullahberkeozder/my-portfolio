@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import ctrlStyles from './adminReviewControls.module.css';
 
 type DocumentRow = {
   id: string;
@@ -45,6 +46,13 @@ const applicationActions: Record<string, { action: string; label: string }[]> = 
   reassessment_required: [{ action: 'start_review', label: 'İncelemeyi başlat' }],
   suspended: [{ action: 'start_review', label: 'Tekrar incele' }],
 };
+
+const quickTemplates = [
+  { label: '✓ MYK Onay', text: 'MYK Seviye 4 mesleki yeterlilik belgesi ve oda sicili doğrulandı.' },
+  { label: '✓ MEB Ustalık Onay', text: 'MEB 3308 sayılı kanun ustalık belgesi doğrulandı.' },
+  { label: '⚠ Okunaksız Belge', text: 'Yüklenen belge görseli flu ve okunaksız; lütfen net bir PDF veya fotoğraf yükleyin.' },
+  { label: '❌ Geçersiz/Süresi Dolmuş', text: 'Belge geçerlilik süresi dolmuş veya kimlik bilgileriyle uyuşmuyor.' },
+];
 
 export default function AdminReviewControls({ tradespersonId, status, documents, references }: Props) {
   const router = useRouter();
@@ -111,6 +119,20 @@ export default function AdminReviewControls({ tradespersonId, status, documents,
           placeholder="Kararın kısa ve doğrulanabilir gerekçesi"
         />
       </label>
+
+      <div className={ctrlStyles.quickTemplateBar}>
+        <span className={ctrlStyles.quickTemplateLabel}>Hızlı Şablonlar:</span>
+        {quickTemplates.map(tpl => (
+          <button
+            key={tpl.label}
+            type="button"
+            className={ctrlStyles.quickTemplateBtn}
+            onClick={() => setNote(tpl.text)}
+          >
+            {tpl.label}
+          </button>
+        ))}
+      </div>
 
       <div className="admin-documents">
         <h3>Belgeler</h3>

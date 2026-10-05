@@ -350,7 +350,7 @@ export default function Home() {
                   Mesleki yeterlilik ve kimlik belgeleri incelenen ilk ustalarımız onaylandıkça burada yer alacaktır.
                 </p>
                 <div className={styles.pilotActions}>
-                  <Link href="/usta/basvuru" className={styles.pilotJoinBtn}>
+                  <Link href="/usta-basvurusu" className={styles.pilotJoinBtn}>
                     Usta Olarak Başvur →
                   </Link>
                   <Link href="/ustalar" className={styles.pilotExploreBtn}>

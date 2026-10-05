@@ -598,6 +598,24 @@ export default function JobWorkspace(props: Props) {
                 <span className="escrow-badge">{escrowInfo.badge}</span>
               </div>
               <p className="escrow-desc">{escrowInfo.desc}</p>
+              {props.acceptedQuote && (
+                <div className="escrow-breakdown-grid" aria-label="Emanet ödeme dökümü">
+                  <div className="escrow-breakdown-item">
+                    <span className="escrow-breakdown-label">İşçilik Tutarı</span>
+                    <strong className="escrow-breakdown-val">₺{(props.acceptedQuote.labor_amount_kurus / 100).toLocaleString('tr-TR')}</strong>
+                  </div>
+                  {props.acceptedQuote.material_amount_kurus > 0 && (
+                    <div className="escrow-breakdown-item">
+                      <span className="escrow-breakdown-label">Malzeme / Ek</span>
+                      <strong className="escrow-breakdown-val">₺{(props.acceptedQuote.material_amount_kurus / 100).toLocaleString('tr-TR')}</strong>
+                    </div>
+                  )}
+                  <div className="escrow-breakdown-item escrow-total">
+                    <span className="escrow-breakdown-label">Toplam Havuz Güvencesi</span>
+                    <strong className="escrow-breakdown-val">₺{((props.acceptedQuote.labor_amount_kurus + props.acceptedQuote.material_amount_kurus) / 100).toLocaleString('tr-TR')}</strong>
+                  </div>
+                </div>
+              )}
               {autoReleaseDeadline && props.status === 'awaiting_customer_approval' && (
                 <div className="escrow-sla-highlight">
                   ⏳ <strong>72 Saatlik Otomatik Serbest Bırakma:</strong> İş teslim alındıktan sonra 72 saat içinde onay veya düzeltme bildirilmezse tutar otomatik olarak ustaya aktarılacaktır (İş Kuralı: BR-06).
@@ -890,6 +908,24 @@ export default function JobWorkspace(props: Props) {
                 <span className="escrow-badge">{escrowInfo.badge}</span>
               </div>
               <p className="escrow-desc">{escrowInfo.desc}</p>
+              {props.acceptedQuote && (
+                <div className="escrow-breakdown-grid" aria-label="Emanet ödeme dökümü">
+                  <div className="escrow-breakdown-item">
+                    <span className="escrow-breakdown-label">İşçilik Tutarı</span>
+                    <strong className="escrow-breakdown-val">₺{(props.acceptedQuote.labor_amount_kurus / 100).toLocaleString('tr-TR')}</strong>
+                  </div>
+                  {props.acceptedQuote.material_amount_kurus > 0 && (
+                    <div className="escrow-breakdown-item">
+                      <span className="escrow-breakdown-label">Malzeme / Ek</span>
+                      <strong className="escrow-breakdown-val">₺{(props.acceptedQuote.material_amount_kurus / 100).toLocaleString('tr-TR')}</strong>
+                    </div>
+                  )}
+                  <div className="escrow-breakdown-item escrow-total">
+                    <span className="escrow-breakdown-label">Toplam Havuz Güvencesi</span>
+                    <strong className="escrow-breakdown-val">₺{((props.acceptedQuote.labor_amount_kurus + props.acceptedQuote.material_amount_kurus) / 100).toLocaleString('tr-TR')}</strong>
+                  </div>
+                </div>
+              )}
               {autoReleaseDeadline && props.status === 'awaiting_customer_approval' && (
                 <div className="escrow-sla-highlight">
                   ⏳ Son İşlem Tarihi: <strong>{new Intl.DateTimeFormat('tr-TR', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(autoReleaseDeadline))}</strong> (72 saatlik süre dolduğunda otomatik aktarım sağlanır).
@@ -958,8 +994,23 @@ export default function JobWorkspace(props: Props) {
             <p className="confirm-notice" id="job-confirm-description">
               {confirmAction.status === 'cancelled' &&
                 'İşi iptal ettiğinizde takvim boşa çıkar ve bu işlem geri alınamaz.'}
-              {confirmAction.status === 'completed' &&
-                'İşi onayladığınızda iş günlüğü kilitlenir ve ustaya memnuniyet teyidi iletilir.'}
+              {confirmAction.status === 'completed' && (
+                <>
+                  İşi onayladığınızda emanet havuzunda güvenceye alınan
+                  {props.acceptedQuote && (
+                    <strong>
+                      {' '}
+                      ₺
+                      {(
+                        (props.acceptedQuote.labor_amount_kurus +
+                          props.acceptedQuote.material_amount_kurus) /
+                        100
+                      ).toLocaleString('tr-TR')}{' '}
+                    </strong>
+                  )}
+                  tutarındaki ödeme ustanın hesabına aktarılacak, iş günlüğü kilitlenecek ve dijital garanti başlayacaktır.
+                </>
+              )}
               {confirmAction.status === 'disputed' &&
                 'Uyuşmazlık bildirildiğinde Orkestra moderasyon masası devreye girer ve taraflardan kanıt istenir.'}
               {confirmAction.status === 'in_progress' && props.status === 'awaiting_customer_approval' &&

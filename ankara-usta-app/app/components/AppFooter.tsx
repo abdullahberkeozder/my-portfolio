@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import OrchestraLogo from './OrchestraLogo';
 import OrkestraWordmark from './OrkestraWordmark';
+import WhatsAppSupportPill from './WhatsAppSupportPill';
 import { navigationContext } from '../lib/navigationModel';
 
 export default function AppFooter() {
@@ -30,6 +31,8 @@ export default function AppFooter() {
             <span className="footer-col-title">HİZMET VE KAPSAM</span>
             <ul className="footer-links-list">
               <li><Link href="/#services">Hizmet kategorileri</Link></li>
+              <li><Link href="/ustalar">Doğrulanmış Usta Dizini</Link></li>
+              <li><Link href="/harita">Ankara Usta Haritası</Link></li>
               <li><Link href="/nasil-calisir">Nasıl Çalışır?</Link></li>
               <li><Link href="/taleplerim">Taleplerim</Link></li>
               <li><Link href="/islerim">İşlerim</Link></li>
@@ -41,6 +44,7 @@ export default function AppFooter() {
             <span className="footer-col-title">USTALAR İÇİN</span>
             <ul className="footer-links-list">
               <li><Link href="/usta-basvurusu">Orkestraya Katıl (Usta Başvurusu)</Link></li>
+              <li><Link href="/usta/giris">Usta Girişi</Link></li>
               <li><Link href="/nasil-calisir#dogrulama">Belge Doğrulama Süreci</Link></li>
               <li><Link href="/usta/talepler">Bölgesel İş Talepleri</Link></li>
               <li><Link href="/usta/musaitlik">Müsaitlik Takvimi</Link></li>
@@ -51,6 +55,16 @@ export default function AppFooter() {
             <span className="footer-col-title">YARDIM VE BİLGİ</span>
             <ul className="footer-links-list">
               <li><Link href="/yardim">Yardım ve Çözüm Merkezi</Link></li>
+              <li>
+                <a
+                  href="https://wa.me/903128000606"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Ankara Pilot Saha Koordinasyon WhatsApp Hattı"
+                >
+                  💬 WhatsApp Saha Destek
+                </a>
+              </li>
               <li><Link href="/gizlilik">Gizlilik ve KVKK Politikası</Link></li>
               <li><Link href="/kullanim-kosullari">Kullanım Koşulları</Link></li>
               <li><span className="footer-badge-note">Mesleki belge kontrolü tamamlanmadan rozet verilmez</span></li>
@@ -72,25 +86,8 @@ export default function AppFooter() {
         </div>
       </footer>
 
-
-      <Link className="help-float" href="/yardim" aria-label="Yardım Merkezi">
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-          <line x1="12" y1="17" x2="12.01" y2="17" />
-        </svg>
-        <span>Yardım</span>
-      </Link>
+      {/* FAZ 6.3: Thumb-Zone Floating Support Capsule & Menu */}
+      <WhatsAppSupportPill />
     </>
   );
 }

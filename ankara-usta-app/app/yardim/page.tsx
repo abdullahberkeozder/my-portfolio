@@ -42,6 +42,15 @@ export default function HelpPage() {
           title: '4. Pilot Destek ve Geri Bildirim',
           body: 'Orkestra kontrollü pilot döneminde platform kullanımına ilişkin soru, öneri ve destek taleplerinizi destek@ankarausta.app adresine iletebilirsiniz. Pilot döneminde talepler sırayla incelenerek en kısa sürede dönüş sağlanır.',
         },
+        {
+          title: '5. Ankara 9 Pilot İlçe Saha Operasyonu ve WhatsApp Destek Hattı',
+          body: 'Orkestra; Çankaya, Yenimahalle, Keçiören, Mamak, Altındağ, Etimesgut, Sincan, Gölbaşı ve Pursaklar olmak üzere Ankara’nın 9 pilot ilçesinde canlı saha koordinasyonu yürütür. Saha sorularınız, acil durumlar ve usta yönlendirmeleri için WhatsApp Destek Hattı (+90 312 800 06 06) üzerinden koordinasyon ekibimize anında ulaşabilirsiniz.',
+          items: [
+            'Canlı Saha Çalışma Saatleri: Hafta içi 08:30 – 19:00, Cumartesi 09:00 – 17:00.',
+            'Acil Nöbetçi Ekip: Pazar günleri sıhhi tesisat ve elektrik acil durumları için nöbetçi saha zanaatkâr ekipleri görev başındadır.',
+            'Zanaat Merkezleri Transit SLA: Siteler (Mobilya & Ahşap), Ostim/İvedik (Metal & Mekanik) ve Rüzgarlı (Tesisat) merkezlerinden pilot ilçelere ortalama 20–30 dakikada lojistik sevk takibi sağlanır.',
+          ],
+        },
       ]}
     />
   );

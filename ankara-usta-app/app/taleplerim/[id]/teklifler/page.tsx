@@ -24,7 +24,7 @@ export default async function CustomerQuotesPage({params,searchParams}:{params:P
   const created=(await searchParams).created==='1';
   const supabase=await createSupabaseServerClient();
   const {data:{user}}=await supabase.auth.getUser();
-  if(!user)redirect('/giris');
+  if(!user)redirect(`/giris?next=${encodeURIComponent(`/taleplerim/${id}/teklifler`)}`);
   const [{data:request,error:requestError},{data:run,error:runError},{data:matchRows,error:matchError},{data:quoteRows,error},{data:job,error:jobError}]=await Promise.all([
     supabase.from('service_requests').select('*').eq('id',id).eq('customer_id',user.id).maybeSingle(),
     supabase.from('matching_runs').select('supply_state,eligible_count,recommended_action,calculated_at').eq('request_id',id).maybeSingle(),
@@ -59,6 +59,12 @@ export default async function CustomerQuotesPage({params,searchParams}:{params:P
     </header>
     {created&&<p className="account-message" role="status">Talebiniz kaydedildi. Eşleşme ve teklif durumunu bu sayfadan takip edebilirsiniz.</p>}
     <RequestJourney status={request.status as RequestStatus} quoteCount={quotes.length} jobHref={job?.id?`/islerim/${job.id}`:undefined}/>
+    {request.status !== 'provider_selected' && (
+      <div className="kvkk-assurance-banner" role="note">
+        <span aria-hidden="true">🛡️</span>
+        <span><strong>KVKK 6698 Adres Güvencesi:</strong> Açık ev adresiniz teklif aşamasında ustalara kapalıdır; yalnızca teklifini kabul edeceğiniz usta iş başladığında açık adresinizi görebilir.</span>
+      </div>
+    )}
     {request.status==='provider_selected'&&job?.id&&(
       <div style={{ margin: '18px 0', padding: '16px 20px', background: '#eafaf1', border: '1px solid #b7ebd1', borderRadius: 'var(--radius-card)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
         <div>

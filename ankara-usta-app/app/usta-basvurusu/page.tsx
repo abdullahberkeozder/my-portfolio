@@ -5,7 +5,16 @@ import appStyles from './tradespersonApplication.module.css';
 import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { serviceCategories, services } from '../data/serviceTaxonomy';
-import { ankaraDistricts } from '../domain/tradespersonApplication';
+import {
+  ankaraDistricts,
+  encodeDocumentNameWithCredential,
+  validateVocationalCertificateNumber,
+  vocationalCredentialTypeLabels,
+  vocationalLevelLabels,
+  type VocationalCredential,
+  type VocationalCredentialType,
+  type VocationalLevel,
+} from '../domain/tradespersonApplication';
 import { createSupabaseBrowserClient } from '../lib/supabase/browser';
 import Button from '../components/Button';
 import AccountDraftBoundary, {type DraftScope} from '../components/AccountDraftBoundary';
@@ -35,7 +44,7 @@ const districtClusters: Record<string, typeof ankaraDistricts[number][]> = {
 };
 
 export default function TradespersonApplicationPage() {
-  return <AccountDraftBoundary kind="application" ttl={2*60*60*1000}>{scope=><ScopedApplication scope={scope}/>}</AccountDraftBoundary>;
+  return <AccountDraftBoundary kind="application" ttl={2*60*60*1000} requireAuth={true}>{scope=><ScopedApplication scope={scope}/>}</AccountDraftBoundary>;
 }
 
 function ScopedApplication({scope}:{scope:DraftScope}) {
@@ -49,6 +58,10 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
   const [relationship, setRelationship] = useState('');
   const [referencePhone, setReferencePhone] = useState('');
   const [documentKind, setDocumentKind] = useState<keyof typeof documentKinds>('professional_certificate');
+  const [certificateType, setCertificateType] = useState<VocationalCredentialType>('myk');
+  const [certificateNumber, setCertificateNumber] = useState('');
+  const [vocationalLevel, setVocationalLevel] = useState<VocationalLevel>('level_4');
+  const [issuingAuthority, setIssuingAuthority] = useState('');
   const [expiresAt, setExpiresAt] = useState('');
   const [file, setFile] = useState<File>();
   const [busy, setBusy] = useState(false);
@@ -74,6 +87,10 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
     setRelationship('');
     setReferencePhone('');
     setDocumentKind('professional_certificate');
+    setCertificateType('myk');
+    setCertificateNumber('');
+    setVocationalLevel('level_4');
+    setIssuingAuthority('');
     setExpiresAt('');
     setStep(0);
     setHasDraft(false);
@@ -97,6 +114,10 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
             relationship?: string;
             referencePhone?: string;
             documentKind?: keyof typeof documentKinds;
+            certificateType?: VocationalCredentialType;
+            certificateNumber?: string;
+            vocationalLevel?: VocationalLevel;
+            issuingAuthority?: string;
             expiresAt?: string;
           };
           if (!draft.updatedAt || Date.now() - draft.updatedAt > DRAFT_TTL_MS) {
@@ -112,6 +133,10 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
           if (draft.relationship) setRelationship(draft.relationship);
           if (draft.referencePhone) setReferencePhone(draft.referencePhone);
           if (draft.documentKind) setDocumentKind(draft.documentKind);
+          if (draft.certificateType) setCertificateType(draft.certificateType);
+          if (draft.certificateNumber) setCertificateNumber(draft.certificateNumber);
+          if (draft.vocationalLevel) setVocationalLevel(draft.vocationalLevel);
+          if (draft.issuingAuthority) setIssuingAuthority(draft.issuingAuthority);
           if (draft.expiresAt) setExpiresAt(draft.expiresAt);
           if(Number.isInteger(draft.step)&&draft.step!>=0&&draft.step!<=4)setStep(draft.step!);
         }
@@ -143,6 +168,10 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
           relationship,
           referencePhone,
           documentKind,
+          certificateType,
+          certificateNumber,
+          vocationalLevel,
+          issuingAuthority,
           expiresAt,
         })
       );
@@ -150,7 +179,7 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
       } catch { queueMicrotask(() => { if (active) setDraftSaveState('unavailable'); }); }
     }
     return () => { active = false; };
-  }, [draftReady, displayName, bio, serviceIds, districts, referenceName, relationship, referencePhone, documentKind, expiresAt,step,draftKey,scope.storage]);
+  }, [draftReady, displayName, bio, serviceIds, districts, referenceName, relationship, referencePhone, documentKind, certificateType, certificateNumber, vocationalLevel, issuingAuthority, expiresAt, step, draftKey, scope.storage]);
 
   function toggle(value: string, current: string[], setter: (value: string[]) => void) {
     setter(current.includes(value) ? current.filter(item => item !== value) : [...current, value]);
@@ -162,27 +191,33 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
   }
 
   function nextStep() {
-    const valid =
-      step === 0
-        ? displayName.trim().length >= 2 && bio.trim().length >= 20
-        : step === 1
-        ? serviceIds.length > 0
-        : step === 2
-        ? districts.length > 0
-        : step === 3
-        ? Boolean(file)
-        : true;
+    let valid = true;
+    let errorMsg = '';
+
+    if (step === 0) {
+      valid = displayName.trim().length >= 2 && bio.trim().length >= 20;
+      if (!valid) errorMsg = 'Adınızı/işletmenizi ve en az 20 karakterlik uzmanlık açıklamanızı tamamlayın.';
+    } else if (step === 1) {
+      valid = serviceIds.length > 0;
+      if (!valid) errorMsg = 'Lütfen sunabileceğiniz en az bir hizmet seçin.';
+    } else if (step === 2) {
+      valid = districts.length > 0;
+      if (!valid) errorMsg = 'En az bir çalışma bölgesi/ilçe seçin.';
+    } else if (step === 3) {
+      if (!file) {
+        valid = false;
+        errorMsg = 'Devam etmek için bir mesleki veya kimlik belgesi yükleyin.';
+      } else if (documentKind === 'professional_certificate') {
+        const certCheck = validateVocationalCertificateNumber(certificateType, certificateNumber);
+        if (!certCheck.valid) {
+          valid = false;
+          errorMsg = certCheck.message;
+        }
+      }
+    }
 
     if (!valid) {
-      setMessage(
-        step === 0
-          ? 'Adınızı/işletmenizi ve en az 20 karakterlik uzmanlık açıklamanızı tamamlayın.'
-          : step === 1
-          ? 'Lütfen sunabileceğiniz en az bir hizmet seçin.'
-          : step === 2
-          ? 'En az bir çalışma bölgesi/ilçe seçin.'
-          : 'Devam etmek için bir mesleki veya kimlik belgesi yükleyin.'
-      );
+      setMessage(errorMsg);
       return;
     }
     setMessage('');
@@ -200,13 +235,28 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
       .from('tradesperson-verification')
       .upload(storagePath, file, { contentType: file.type, upsert: false });
     if (error) throw error;
+    
+    const vocationalCredential: VocationalCredential | undefined =
+      documentKind === 'professional_certificate' && certificateNumber.trim()
+        ? {
+            certificateType,
+            certificateNumber: certificateNumber.trim(),
+            level: vocationalLevel,
+            issuingAuthority: issuingAuthority.trim() || undefined,
+            expiryDate: expiresAt || undefined,
+          }
+        : undefined;
+
+    const originalName = encodeDocumentNameWithCredential(file.name, vocationalCredential);
+
     return {
       kind: documentKind,
       storagePath,
-      originalName: file.name,
+      originalName,
       contentType: file.type,
       byteSize: file.size,
       expiresAt: expiresAt || undefined,
+      vocationalCredential,
     };
   }
 
@@ -223,7 +273,22 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
       const response = await fetch('/api/tradespeople/application', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ displayName, bio, serviceIds, districts, reference, document }),
+        body: JSON.stringify({
+          displayName,
+          bio,
+          serviceIds,
+          districts,
+          reference,
+          document: {
+            kind: document.kind,
+            storagePath: document.storagePath,
+            originalName: document.originalName,
+            contentType: document.contentType,
+            byteSize: document.byteSize,
+            expiresAt: document.expiresAt,
+          },
+          vocationalCredential: document.vocationalCredential,
+        }),
       });
       const body = (await response.json()) as { error?: string };
       if (response.status === 401) {
@@ -498,6 +563,99 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
                 />
               </label>
             </div>
+
+            {documentKind === 'professional_certificate' && (
+              <div className={appStyles.vocationalFieldsCard}>
+                <div className={appStyles.vocationalCardHeader}>
+                  <span className={appStyles.vocationalCardTitle}>
+                    🏅 Mesleki Yeterlilik & Sicil Bilgileri
+                  </span>
+                  <span className={appStyles.vocationalBadgeCandidate}>
+                    ✓ Doğrulama Rozet Adayı
+                  </span>
+                </div>
+
+                <div className="application-fields columns">
+                  <label>
+                    Akreditasyon Türü
+                    <select
+                      value={certificateType}
+                      onChange={e => setCertificateType(e.target.value as VocationalCredentialType)}
+                    >
+                      {Object.entries(vocationalCredentialTypeLabels).map(([val, lbl]) => (
+                        <option key={val} value={val}>{lbl}</option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label>
+                    Belge / Sicil Numarası
+                    <input
+                      required
+                      type="text"
+                      value={certificateNumber}
+                      onChange={e => setCertificateNumber(e.target.value)}
+                      placeholder={
+                        certificateType === 'myk'
+                          ? 'Örn: YB21/004812 veya 15UY0205-4'
+                          : certificateType === 'meb_mastery'
+                          ? 'Örn: UST-2023-9941'
+                          : certificateType === 'chamber_registry'
+                          ? 'Örn: ANK-14022'
+                          : '10 haneli VKN veya 11 haneli TCKN'
+                      }
+                    />
+                    <small className={appStyles.vocationalInputHelp}>
+                      {certificateType === 'myk'
+                        ? 'MYK Belge veya Ulusal Yeterlilik Kodu'
+                        : certificateType === 'tax_plate'
+                        ? 'Vergi Kimlik Numarası'
+                        : 'Resmi oda veya bakanlık sicil numarası'}
+                    </small>
+                  </label>
+                </div>
+
+                <div className="application-fields columns">
+                  <label>
+                    Yeterlilik Seviyesi
+                    <select
+                      value={vocationalLevel}
+                      onChange={e => setVocationalLevel(e.target.value as VocationalLevel)}
+                    >
+                      {Object.entries(vocationalLevelLabels).map(([val, lbl]) => (
+                        <option key={val} value={val}>{lbl}</option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label>
+                    Düzenleyen Yetkili Kuruluş
+                    <input
+                      type="text"
+                      value={issuingAuthority}
+                      onChange={e => setIssuingAuthority(e.target.value)}
+                      placeholder="Örn: Mesleki Yeterlilik Kurumu / ANKESOB"
+                    />
+                  </label>
+                </div>
+
+                {certificateNumber.trim().length >= 3 && (
+                  <div className={appStyles.vocationalPreviewBox}>
+                    <span className={appStyles.vocationalPreviewIcon}>🛡️</span>
+                    <div className={appStyles.vocationalPreviewContent}>
+                      <strong>
+                        {vocationalCredentialTypeLabels[certificateType]} · {vocationalLevelLabels[vocationalLevel]}
+                      </strong>
+                      <p>
+                        Belge No: <b>{certificateNumber.trim()}</b>.
+                        Başvurunuz onaylandığında Orkestra Kamusal Usta Dizininde &ldquo;Doğrulanmış Mesleki Belge&rdquo; rozeti profilinize tanımlanacaktır.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {file && (
               <div className="selected-file-badge">
                 <span>📎 Seçilen dosya: <strong>{file.name}</strong> ({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
@@ -526,6 +684,12 @@ function ScopedApplication({scope}:{scope:DraftScope}) {
               <div className="review-block">
                 <span>Doğrulama Belgesi</span>
                 <strong>{documentKinds[documentKind]}</strong>
+                {documentKind === 'professional_certificate' && certificateNumber && (
+                  <p>
+                    {vocationalCredentialTypeLabels[certificateType]} · {vocationalLevelLabels[vocationalLevel]} · No: <b>{certificateNumber}</b>
+                    {issuingAuthority ? ` · ${issuingAuthority}` : ''}
+                  </p>
+                )}
                 <small>{file?.name} ({(file ? file.size / 1024 / 1024 : 0).toFixed(2)} MB)</small>
               </div>
             </section>

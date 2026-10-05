@@ -13,6 +13,7 @@ import {createSupabaseServerClient} from '../../../lib/supabase/server';
 import {directedRequestsEnabled} from '../../../lib/directedRequests';
 import RequestScopeSummary from '../../../components/RequestScopeSummary';
 import type {DeliveryModel} from '../../../domain/models';
+import KvkkMaskedLocationMapClient from '../../../components/map/KvkkMaskedLocationMapClient';
 
 export const dynamic='force-dynamic';
 
@@ -20,7 +21,7 @@ export default async function TradespersonQuotePage({params}:{params:Promise<{re
   const {requestId}=await params;
   const supabase=await createSupabaseServerClient();
   const {data:{user}}=await supabase.auth.getUser();
-  if(!user)redirect('/giris');
+  if(!user)redirect(`/giris?next=${encodeURIComponent(`/usta/teklifler/${requestId}`)}`);
   const [{data:request,error:requestError},{data:match,error:matchError},{data:latestQuote,error:quoteError}]=await Promise.all([
     supabase.from('service_requests').select('*').eq('id',requestId).maybeSingle(),
     supabase.from('request_matches').select('score,reasons').eq('request_id',requestId).eq('tradesperson_id',user.id).maybeSingle(),
@@ -53,6 +54,13 @@ export default async function TradespersonQuotePage({params}:{params:Promise<{re
       <p>{request.neighborhood}, {request.district} · {requestTimingLabel(request.preferred_timing??'')}</p>
       {match&&<ul>{(match.reasons as string[]).map(reason=><li key={reason}>{reason}</li>)}</ul>}
     </section>
+    <KvkkMaskedLocationMapClient
+      district={request.district}
+      neighborhood={request.neighborhood}
+      serviceCategory={service?.categoryId}
+      serviceName={service?.name ?? request.service_id}
+      height={250}
+    />
     <RequestScopeSummary serviceName={service?.name??request.service_id} deliveryModel={(service?.deliveryModel??request.delivery_model) as DeliveryModel} questions={questions} answers={request.answers??{}} district={request.district} neighborhood={request.neighborhood} timing={request.preferred_timing??''}/>
     {!active&&<p className="account-message">Bu talep yeni teklif veya ret yanıtı kabul etmiyor.</p>}
     <RequestConversationLinks requestId={requestId} professionalId={user.id}/>

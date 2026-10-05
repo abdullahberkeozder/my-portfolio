@@ -42,3 +42,76 @@ export function calculateTradespersonLevel(completedJobs: number, averageRating:
   }
   return { tier: 'apprentice', title: 'Yeni Katılan Zanaatkâr', badge: '🥉', minJobs: 0, minRating: 0 };
 }
+
+export interface CertificateScopeSnapshot {
+  quoteId: string | null;
+  laborAmountKurus: number;
+  materialAmountKurus: number;
+  totalAmountKurus: number;
+  includedScope: string[];
+  excludedScope: string[];
+  warrantyDays: number;
+}
+
+export function parseCertificateScopeSnapshot(snapshot: unknown): CertificateScopeSnapshot {
+  if (!snapshot || typeof snapshot !== 'object') {
+    return {
+      quoteId: null,
+      laborAmountKurus: 0,
+      materialAmountKurus: 0,
+      totalAmountKurus: 0,
+      includedScope: [],
+      excludedScope: [],
+      warrantyDays: 0,
+    };
+  }
+  const obj = snapshot as Record<string, unknown>;
+  const quoteId = typeof obj.quote_id === 'string' ? obj.quote_id : null;
+  const laborAmountKurus = typeof obj.labor_amount_kurus === 'number' && Number.isFinite(obj.labor_amount_kurus) ? Math.max(0, Math.floor(obj.labor_amount_kurus)) : 0;
+  const materialAmountKurus = typeof obj.material_amount_kurus === 'number' && Number.isFinite(obj.material_amount_kurus) ? Math.max(0, Math.floor(obj.material_amount_kurus)) : 0;
+  const includedScope = Array.isArray(obj.included_scope) ? obj.included_scope.filter((s): s is string => typeof s === 'string' && s.trim().length > 0) : [];
+  const excludedScope = Array.isArray(obj.excluded_scope) ? obj.excluded_scope.filter((s): s is string => typeof s === 'string' && s.trim().length > 0) : [];
+  const warrantyDays = typeof obj.warranty_days === 'number' && Number.isFinite(obj.warranty_days) ? Math.max(0, Math.floor(obj.warranty_days)) : 0;
+
+  return {
+    quoteId,
+    laborAmountKurus,
+    materialAmountKurus,
+    totalAmountKurus: laborAmountKurus + materialAmountKurus,
+    includedScope,
+    excludedScope,
+    warrantyDays,
+  };
+}
+
+export function calculateWarrantyStatus(issuedAt: string, warrantyEndsAt: string | null): {
+  status: 'active' | 'expired' | 'unspecified';
+  remainingDays: number | null;
+} {
+  if (!warrantyEndsAt) {
+    return { status: 'unspecified', remainingDays: null };
+  }
+  const end = new Date(warrantyEndsAt).getTime();
+  const now = Date.now();
+  if (isNaN(end)) {
+    return { status: 'unspecified', remainingDays: null };
+  }
+  const diffMs = end - now;
+  if (diffMs <= 0) {
+    return { status: 'expired', remainingDays: 0 };
+  }
+  const remainingDays = Math.ceil(diffMs / 86400000);
+  return { status: 'active', remainingDays };
+}
+
+export function generateCertificateVerificationHash(certificateNumber: string, jobId: string): string {
+  let hash = 0x811c9dc5;
+  const str = `${certificateNumber}:${jobId}`;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  const code = (hash >>> 0).toString(16).toUpperCase().padStart(8, '0');
+  return `ORK-${certificateNumber}-${code}`;
+}
+

@@ -21,9 +21,24 @@ export default function AppHeader({ conversations = false }: { conversations?: b
   const roles=account.user?.roles??[];
   const professional=roles.includes('tradesperson');
   const operations=roles.includes('admin')||roles.includes('moderator');
-  const effectiveContext=account.user
-    ? context==='operations'&&operations?'operations':context==='professional'&&professional?'professional':context==='auth'?'auth':'customer'
-    : context==='auth'?'auth':'public';
+  // Determine effective navigation context based on user role and current URL.
+  // Shared routes (islerim, uyusmazliklar, gorusmeler) are marked 'customer' by
+  // navigationContext() but a logged-in tradesperson should see professional nav items.
+  let effectiveContext: 'operations'|'professional'|'customer'|'auth'|'public';
+  if (!account.user) {
+    effectiveContext = context === 'auth' ? 'auth' : 'public';
+  } else if (context === 'operations' && operations) {
+    effectiveContext = 'operations';
+  } else if (context === 'professional' && professional) {
+    effectiveContext = 'professional';
+  } else if (context === 'customer' && professional && !roles.includes('customer')) {
+    // Tradesperson-only user on a shared route → show professional nav
+    effectiveContext = 'professional';
+  } else if (context === 'auth') {
+    effectiveContext = 'auth';
+  } else {
+    effectiveContext = 'customer';
+  }
   const accountHref=`/hesap?workspace=${effectiveContext==='professional'?'professional':effectiveContext==='operations'?'operations':'customer'}`;
   const links = account.status==='ready'&&account.user
     ? navigationItems(effectiveContext,conversations).filter(item=>item.href!=='/hesap')

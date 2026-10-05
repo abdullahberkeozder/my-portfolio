@@ -51,8 +51,8 @@ export function isPathAllowedForRoles(roles: UserRole[], targetPath: string): bo
   
   // Public routes always allowed
   if (['/kayit','/usta/giris','/usta/kayit'].includes(targetPath)) return true;
-  const publicPrefixes = ['/giris', '/parola-yenile', '/auth', '/yardim', '/nasil-calisir', '/usta-basvurusu', '/gizlilik', '/kullanim-kosullari'];
-  if (targetPath === '/' || targetPath === '/ustalar' || targetPath.startsWith('/ustalar/') || publicPrefixes.some(prefix => targetPath.startsWith(prefix))) {
+  const publicPrefixes = ['/giris', '/parola-yenile', '/auth', '/yardim', '/nasil-calisir', '/usta-basvurusu', '/usta/basvuru', '/gizlilik', '/kullanim-kosullari'];
+  if (targetPath === '/' || targetPath === '/ustalar' || targetPath === '/harita' || targetPath.startsWith('/ustalar/') || targetPath.startsWith('/ankara/') || publicPrefixes.some(prefix => targetPath.startsWith(prefix))) {
     return true;
   }
 

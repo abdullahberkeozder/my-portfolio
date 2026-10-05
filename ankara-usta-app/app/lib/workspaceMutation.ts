@@ -20,7 +20,7 @@ export async function workspaceMutation(url:string,body:unknown,expectedUserId:s
         :'İşlemin sonucu doğrulanamadı. Yeniden göndermeden önce kaydı kontrol edin.';
       return {ok:false,message:message+ref,uncertain:response.status>=500};
     }
-    const acknowledged=['message','entry','review','job','address','appointment','scopeChange','dispute']
+    const acknowledged=['message','entry','review','job','address','appointment','scopeChange','dispute','escrow','escrowPayment']
       .some(key=>key in data && (data as Record<string,unknown>)[key]!=null);
     if(!acknowledged)throw new Error('Missing acknowledgement');
     return {ok:true};
