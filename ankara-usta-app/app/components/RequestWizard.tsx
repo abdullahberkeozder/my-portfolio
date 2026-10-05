@@ -20,7 +20,7 @@ import styles from './requestWizard.module.css';
 import WizardRegionPreview from './wizard/WizardRegionPreview';
 import AnkaraInteractiveMap from './map/AnkaraInteractiveMap';
 
-type Props = { service: Service; onClose: () => void; remoteDraft?: LocalDraft; targetProfessional?: RequestTarget };
+type Props = { service: Service; onClose: () => void; remoteDraft?: LocalDraft; targetProfessional?: RequestTarget; initialDistrict?: string };
 type LocalDraft = {
   answers: Record<string, string>;
   district: string;
@@ -87,7 +87,7 @@ export default function RequestWizard(props:Props) {
 
 
 
-function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfessional }: Props & {scope:DraftScope}) {
+function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfessional, initialDistrict }: Props & {scope:DraftScope}) {
   const formRef = useRef<HTMLDivElement>(null);
   const definition = getWizardDefinition(service.id);
   const storageKey = scope.key;
@@ -102,7 +102,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
   const [files, setFiles] = useState<File[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-  const [district, setDistrict] = useState(initialDraft?.district ?? '');
+  const [district, setDistrict] = useState(initialDraft?.district ?? initialDistrict ?? '');
   const [neighborhood, setNeighborhood] = useState(initialDraft?.neighborhood ?? '');
   const [locationMode, setLocationMode] = useState<'map' | 'list'>('map');
   const [timing, setTiming] = useState(() => {

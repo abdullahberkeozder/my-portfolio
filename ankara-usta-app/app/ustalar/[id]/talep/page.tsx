@@ -8,9 +8,9 @@ import DirectedRequestEntry from '../../../components/DirectedRequestEntry';
 
 export const dynamic='force-dynamic';
 
-export default async function DirectedRequestPage({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{service?:string;draftId?:string;resume?:string}>}) {
+export default async function DirectedRequestPage({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{service?:string;district?:string;draftId?:string;resume?:string}>}) {
   const {id}=await params;
-  const {service:serviceId,draftId}=await searchParams;
+  const {service:serviceId,district:districtId,draftId}=await searchParams;
   if(!z.uuid().safeParse(id).success)notFound();
   if(!directedRequestsEnabled())return <main className="account-shell"><section className="account-card"><h1>Ustaya özel talepler henüz açılmadı</h1><p>Talebiniz başka ustalara gönderilmedi.</p><Link href={`/ustalar/${id}`}>Profile dön</Link></section></main>;
   const service=services.find(item=>item.id===serviceId);
@@ -34,5 +34,7 @@ export default async function DirectedRequestPage({params,searchParams}:{params:
     if(error||!data)notFound();
     remoteDraft={answers:data.answers??{},district:data.district??'',neighborhood:data.neighborhood??'',timing:data.preferred_timing??'this_week',step:0,idempotencyKey:data.idempotency_key,requestId:data.id,updatedAt:Date.parse(data.updated_at),routingMode:'direct' as const,targetProfessionalId:id};
   }
-  return <main className="account-shell"><DirectedRequestEntry service={service} target={{id,name:profile.data.display_name,districts:[...new Set(areas.data.map(area=>area.district))]}} remoteDraft={remoteDraft}/></main>;
+  const targetDistricts=[...new Set(areas.data.map(area=>area.district))];
+  const initialDistrict=districtId && targetDistricts.includes(districtId) ? districtId : undefined;
+  return <main className="account-shell"><DirectedRequestEntry service={service} target={{id,name:profile.data.display_name,districts:targetDistricts}} initialDistrict={initialDistrict} remoteDraft={remoteDraft}/></main>;
 }

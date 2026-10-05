@@ -1,5 +1,6 @@
 'use client';
 import {ReactNode,useEffect,useState} from 'react';
+import {useRouter} from 'next/navigation';
 import type {AuthChangeEvent,Session} from '@supabase/supabase-js';
 import {createSupabaseBrowserClient} from '../lib/supabase/browser';
 
@@ -13,6 +14,7 @@ export default function AccountDraftBoundary({kind,ttl,children,renderPending=co
   const [scope,setScope]=useState<DraftScope>();
   const [error,setError]=useState(false);
   const [retry,setRetry]=useState(0);
+  const router=useRouter();
   useEffect(()=>{
     let active=true;
     let revision=0;
@@ -52,11 +54,13 @@ export default function AccountDraftBoundary({kind,ttl,children,renderPending=co
     });
     return()=>{active=false;subscription.unsubscribe();};
   },[kind,ttl,retry]);
+  useEffect(()=>{
+    if(requireAuth&&scope?.guest) router.replace('/usta/kayit?next=/usta-basvurusu');
+  },[requireAuth,router,scope?.guest]);
   if(error)return renderPending(<section role="alert" className="account-card">Taslak hesabı doğrulanamadı. Verilerinizi korumak için form açılmadı. <button onClick={()=>{setError(false);setRetry(n=>n+1);}}>Yeniden dene</button></section>);
   if(!scope)return renderPending(<p role="status">Hesap ve taslak kontrol ediliyor…</p>);
   // Guard: if requireAuth is set and the resolved user is anonymous, redirect to signup
   if(requireAuth&&scope.guest){
-    if(typeof window!=='undefined')window.location.href='/usta/kayit?next=/usta-basvurusu';
     return renderPending(<p role="status">Giriş sayfasına yönlendiriliyorsunuz…</p>);
   }
   return <DraftChoice key={scope.key} scope={scope} kind={kind} renderPending={renderPending}>{children}</DraftChoice>;

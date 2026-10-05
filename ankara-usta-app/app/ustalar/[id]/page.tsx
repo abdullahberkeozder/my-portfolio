@@ -148,7 +148,11 @@ export default async function PublicTradespersonPage({
               İşinizi aynı talep adımlarıyla anlatın. Talebiniz diğer ustalara açılmaz. Göndermeden
               önce giriş yapmanız istenir.
             </p>
-            <form className={styles.filters} action={`/ustalar/${id}/talep`} method="get">
+            <form
+              className={styles.filters}
+              action={`/ustalar/${id}/talep${filters.district ? `?district=${encodeURIComponent(filters.district)}` : ''}`}
+              method="get"
+            >
               <label htmlFor="direct-service">
                 Hangi hizmete ihtiyacınız var?
                 <select
