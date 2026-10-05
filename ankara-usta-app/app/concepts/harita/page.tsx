@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default async function MapConceptPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: 'split' | 'list' | 'map'; district?: string; service?: string }>;
+  searchParams: Promise<{ view?: 'split' | 'list' | 'map'; district?: string; service?: string; sort?: string }>;
 }) {
   const params = await searchParams;
 
@@ -59,6 +59,7 @@ export default async function MapConceptPage({
   const demoDistrictsList = ['Çankaya', 'Yenimahalle', 'Keçiören', 'Altındağ', 'Etimesgut', 'Mamak'];
 
   const initialView = params.view === 'map' ? 'map' : params.view === 'list' ? 'list' : 'split';
+  const initialSortMode = params.sort === 'rating' || params.sort === 'jobs' ? params.sort : 'recommended';
 
   return (
     <main className={`account-shell ${styles.shellSplit}`}>
@@ -123,6 +124,8 @@ export default async function MapConceptPage({
           selectedDistrict={params.district}
           baseHref="/concepts/harita"
           initialView={initialView}
+          initialSortMode={initialSortMode}
+          profileHrefBase="/concepts/harita/usta"
         />
       </div>
     </main>

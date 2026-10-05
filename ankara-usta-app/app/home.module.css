@@ -31,7 +31,7 @@
 
 /* Quick suggestions */
 .suggestions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 20px; }
-.suggestions button { min-height: 34px; padding: 5px 16px; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; background: rgba(255,255,255,.09); backdrop-filter: blur(10px); color: rgba(255,255,255,.82); font: inherit; font-size: .875rem; font-weight: 500; cursor: pointer; transition: all var(--motion-fast,120ms); }
+.suggestions button { min-height: 34px; padding: 5px 16px; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; background: rgba(255,255,255,.09); backdrop-filter: blur(10px); color: rgba(255,255,255,.82); font: inherit; font-size: .875rem; font-weight: 500; cursor: pointer; transition: color var(--motion-fast,120ms), background-color var(--motion-fast,120ms), border-color var(--motion-fast,120ms), transform var(--motion-fast,120ms); }
 .suggestions button:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.48); color: #fff; }
 .suggestions button:focus-visible { outline: 2px solid var(--brand-yellow); outline-offset: 2px; }
 
@@ -218,4 +218,3 @@
   .categories { grid-template-columns: 1fr; }
   .steps { grid-template-columns: 1fr; }
 }
-

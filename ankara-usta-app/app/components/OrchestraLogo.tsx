@@ -3,10 +3,10 @@ type OrchestraLogoProps = {
   className?: string;
   color?: string;
   accentColor?: string;
-  variant?: 'primary' | 'inverse' | 'emerald' | 'dark' | 'burgundy' | 'gold' | 'white' | 'pistachio';
+  variant?: 'primary' | 'inverse';
 };
 
-/** Preserved five-circle mark. Primary is cobalt; inverse is yellow. */
+/** The five-circle Orkestra mark. Product surfaces use cobalt or its inverse yellow lockup. */
 export default function OrchestraLogo({
   size = 36,
   className = '',
@@ -14,7 +14,7 @@ export default function OrchestraLogo({
   accentColor,
   variant = 'primary',
 }: OrchestraLogoProps) {
-  const inverse = ['inverse', 'white', 'pistachio'].includes(variant);
+  const inverse = variant === 'inverse';
   const fill = color ?? (inverse ? 'var(--brand-yellow, #FFDD00)' : 'var(--brand-cobalt, #1246B5)');
 
   return (

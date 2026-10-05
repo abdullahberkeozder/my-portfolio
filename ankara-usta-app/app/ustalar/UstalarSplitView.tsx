@@ -2,7 +2,7 @@
 
 import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { ANKARA_PILOT_SUPPORT, buildWhatsAppSupportUrl } from '../lib/pilotSupport';
 import AnkaraInteractiveMap from '../components/map/AnkaraInteractiveMap';
 import { generateUstaMapMarkers, type TradespersonMetrics } from './ustaCoordinates';
@@ -31,7 +31,10 @@ export interface UstalarSplitViewProps {
   hasFilters: boolean;
   baseHref: string;
   initialView?: 'split' | 'list' | 'map';
+  initialSortMode?: 'recommended' | 'rating' | 'jobs';
   hasDbError?: boolean;
+  /** Optional detail route prefix for non-production directory concepts. */
+  profileHrefBase?: string;
 }
 
 export const VIRTUAL_BATCH_SIZE = 24;
@@ -165,11 +168,15 @@ export default function UstalarSplitView({
   hasFilters,
   baseHref,
   initialView = 'split',
+  initialSortMode = 'recommended',
   hasDbError = false,
+  profileHrefBase = '/ustalar',
 }: UstalarSplitViewProps) {
   const router = useSafeRouter();
   const pathname = useSafePathname();
+  const searchParams = useSearchParams();
   const [viewMode, setViewMode] = useState<'split' | 'list' | 'map'>(initialView);
+  const displayedViewMode = viewMode;
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [activeUstaId, setActiveUstaId] = useState<string | null>(null);
   const [hoveredPinId, setHoveredPinId] = useState<string | null>(null);
@@ -183,13 +190,14 @@ export default function UstalarSplitView({
   const [virtualLimit, setVirtualLimit] = useState(VIRTUAL_BATCH_SIZE);
   const [searchQuery, setSearchQuery] = useState('');
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
-  const [sortMode, setSortMode] = useState<'recommended' | 'rating' | 'jobs'>('recommended');
+  const [sortMode, setSortMode] = useState<'recommended' | 'rating' | 'jobs'>(initialSortMode);
   const [trustModalOpen, setTrustModalOpen] = useState(false);
   const cardRefs = useRef<Record<string, HTMLElement | null>>({});
   const mobileCardRefs = useRef<Record<string, HTMLElement | null>>({});
   const mobileCarouselRef = useRef<HTMLDivElement | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const prevVisibleRef = useRef<string[] | null>(null);
+  const activeFilterCount = Number(Boolean(selectedService)) + Number(Boolean(selectedDistrict)) + Number(Boolean(searchQuery));
 
   // Quick Quote Modal state (Plerdy WML-011 / WML-017 / WML-018 / WML-022 / WML-023)
   interface QuoteModalState {
@@ -297,7 +305,7 @@ export default function UstalarSplitView({
     params.delete('page');
     // Keep the selected view in the URL even for the default split view. This
     // makes filter changes, refresh, and browser history preserve one state.
-    params.set('view', viewMode);
+    params.set('view', displayedViewMode);
     if (key === 'service') {
       if (value) params.set('service', value);
       else params.delete('service');
@@ -307,13 +315,14 @@ export default function UstalarSplitView({
     }
     const qs = params.toString();
     router.push(`${pathname}${qs ? `?${qs}` : ''}`);
-  }, [router, pathname, viewMode]);
+  }, [router, pathname, displayedViewMode]);
 
-  // Keep browser history and the mounted client view in sync. This listener
-  // also covers native back/forward navigation after a view transition.
+  // Keep browser history and the mounted client view in sync. Next's router
+  // updates the query string without changing pathname, so the reactive
+  // searchParams signal is the source of truth; popstate remains as a native
+  // history fallback for direct browser navigation.
   useEffect(() => {
-    const syncViewFromUrl = () => {
-      const requestedView = new URLSearchParams(window.location.search).get('view');
+    const syncViewFromUrl = (requestedView: string | null) => {
       const nextView: 'split' | 'list' | 'map' =
         requestedView === 'list' || requestedView === 'map' || requestedView === 'split'
           ? requestedView
@@ -321,9 +330,22 @@ export default function UstalarSplitView({
       setViewMode((current) => (current === nextView ? current : nextView));
     };
 
-    window.addEventListener('popstate', syncViewFromUrl);
-    return () => window.removeEventListener('popstate', syncViewFromUrl);
-  }, []);
+    syncViewFromUrl(searchParams.get('view'));
+    const handlePopState = () => syncViewFromUrl(new URLSearchParams(window.location.search).get('view'));
+    const handlePageShow = () => syncViewFromUrl(new URLSearchParams(window.location.search).get('view'));
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') handlePageShow();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener('pageshow', handlePageShow);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('pageshow', handlePageShow);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [searchParams]);
 
   useEffect(() => {
     filterSelectionRef.current = {
@@ -466,20 +488,27 @@ export default function UstalarSplitView({
     params.set('view', mode);
     const qs = params.toString();
     const nextUrl = `${pathname}${qs ? `?${qs}` : ''}`;
-    if (typeof window !== 'undefined') {
-      // A full navigation is intentional here: the directory data is server
-      // filtered, so the URL and server-rendered view must change together.
-      // It also keeps this contract reliable in both Next and Vinext.
-      window.location.assign(nextUrl);
-    } else {
-      router.push(nextUrl);
-    }
+    // View changes only alter the mounted client surface. Native history keeps
+    // back/forward deterministic even when the RSC server payload is cached.
+    window.history.pushState({}, '', nextUrl);
+    window.dispatchEvent(new PopStateEvent('popstate'));
     const labels: Record<string, string> = {
       split: 'Bölünmüş ekran (split-view) görünümü aktif.',
       list: 'Liste görünümü aktif.',
       map: 'Tam harita görünümü aktif.',
     };
     setLiveAnnouncement(labels[mode] ?? `${mode} görünümü`);
+  }
+
+  function handleSortModeChange(mode: 'recommended' | 'rating' | 'jobs') {
+    setSortMode(mode);
+    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+    params.set('sort', mode);
+    // Sorting is orthogonal to the selected surface. Preserve the current
+    // list/map/split view instead of writing an invalid `view=rating` value.
+    params.set('view', displayedViewMode);
+    const qs = params.toString();
+    router.replace(`${pathname}${qs ? `?${qs}` : ''}`);
   }
 
   function handleResetSpatialFilter() {
@@ -662,7 +691,7 @@ export default function UstalarSplitView({
     const areaNames = [...new Set(areaMap[profile.user_id] ?? [])];
     const { craftsman, workshop } = parseCraftsmanName(profile.display_name);
     const primaryDistrict = areaNames[0] || 'Çankaya';
-    const profileHref = `/ustalar/${profile.user_id}?${new URLSearchParams({
+    const profileHref = `${profileHrefBase}/${profile.user_id}?${new URLSearchParams({
       ...(selectedService ? { service: selectedService } : {}),
       ...(selectedDistrict ? { district: selectedDistrict } : {}),
     })}`;
@@ -729,14 +758,15 @@ export default function UstalarSplitView({
             </div>
           </div>
 
-          {/* Subtitle Row: Workshop · District */}
+          {/* One compact context line keeps the card scannable without repeating the CTA. */}
           <p className={styles.cardSubtitleRow}>
             <span className={styles.cardWorkshopSub}>{workshop || primaryService}</span>
+            <span className={styles.cardSubtitleDot} aria-hidden="true">·</span>
+            <span className={styles.cardDistrictSub}>{primaryDistrict}</span>
           </p>
 
           <div className={styles.cardSignalRow} aria-label="Öne çıkan bilgiler">
             <span className={styles.cardSignal}>{primaryService}</span>
-            <span className={styles.cardSignal}>{primaryDistrict}</span>
             <span className={styles.cardSignalMuted}>{completedJobs > 0 ? `${completedJobs} iş` : 'Yeni profil'}</span>
           </div>
 
@@ -745,13 +775,12 @@ export default function UstalarSplitView({
             <Link
               href={profileHref}
               className={styles.cardCtaPrimary}
-              aria-label="Profili aç ve talep oluştur"
+              aria-label={`${craftsman} — Profili aç ve talep oluştur`}
               title={`${craftsman} profilini ve hizmet seçeneklerini aç`}
               tabIndex={-1}
             >
-              <span>Profili incele →</span>
+              <span>Profili aç →</span>
             </Link>
-            <span className={styles.cardActionHint}>Talep oluşturma ve uygunluk profilde</span>
           </div>
         </div>
       </article>
@@ -775,9 +804,9 @@ export default function UstalarSplitView({
         <div className={styles.viewModeToggle} role="group" aria-label="Görünüm Seçimi">
           <button
             type="button"
-            className={`${styles.viewToggleBtn} ${viewMode === 'split' ? styles.viewToggleBtnActive : ''}`}
+            className={`${styles.viewToggleBtn} ${displayedViewMode === 'split' ? styles.viewToggleBtnActive : ''}`}
             onClick={() => handleViewModeChange('split')}
-            aria-pressed={viewMode === 'split'}
+            aria-pressed={displayedViewMode === 'split'}
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" className={styles.toggleIcon}>
               <rect x="1" y="1" width="6.5" height="14" rx="2" fill="currentColor" opacity="0.9"/>
@@ -788,9 +817,9 @@ export default function UstalarSplitView({
           </button>
           <button
             type="button"
-            className={`${styles.viewToggleBtn} ${viewMode === 'list' ? styles.viewToggleBtnActive : ''}`}
+            className={`${styles.viewToggleBtn} ${displayedViewMode === 'list' ? styles.viewToggleBtnActive : ''}`}
             onClick={() => handleViewModeChange('list')}
-            aria-pressed={viewMode === 'list'}
+            aria-pressed={displayedViewMode === 'list'}
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" className={styles.toggleIcon}>
               <rect x="1" y="2" width="14" height="2.5" rx="1.25" fill="currentColor"/>
@@ -802,9 +831,9 @@ export default function UstalarSplitView({
           </button>
           <button
             type="button"
-            className={`${styles.viewToggleBtn} ${viewMode === 'map' ? styles.viewToggleBtnActive : ''}`}
+            className={`${styles.viewToggleBtn} ${displayedViewMode === 'map' ? styles.viewToggleBtnActive : ''}`}
             onClick={() => handleViewModeChange('map')}
-            aria-pressed={viewMode === 'map'}
+            aria-pressed={displayedViewMode === 'map'}
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" className={styles.toggleIcon}>
               <circle cx="8" cy="6.5" r="2.5" stroke="currentColor" strokeWidth="1.8"/>
@@ -830,7 +859,7 @@ export default function UstalarSplitView({
             <select
               id="usta-sort-inline"
               value={sortMode}
-              onChange={(e) => setSortMode(e.target.value as 'recommended' | 'rating' | 'jobs')}
+              onChange={(e) => handleSortModeChange(e.target.value as 'recommended' | 'rating' | 'jobs')}
             >
               <option value="recommended">Önerilen</option>
               <option value="rating">En yüksek puan</option>
@@ -849,32 +878,6 @@ export default function UstalarSplitView({
             </button>
           )}
 
-          {/* Emergency Dispatch Pill (Plerdy WML-002 / WML-004: Direct click-to-call & emergency dispatch) */}
-          <a
-            href={`tel:${ANKARA_PILOT_SUPPORT.phoneTel}`}
-            className={styles.emergencyDispatchPill}
-            onClick={(e) => {
-              if (typeof window !== 'undefined' && window.innerWidth >= 768) {
-                e.preventDefault();
-                handleOpenEmergencyCall(undefined, selectedDistrict, selectedService);
-              }
-            }}
-            title={`Ankara 7/24 Nöbetçi Usta & Acil Sevk Hattı: ${ANKARA_PILOT_SUPPORT.phoneDisplay}`}
-            aria-label={`Ankara acil usta sevk hattını ara: ${ANKARA_PILOT_SUPPORT.phoneDisplay}`}
-          >
-            <span className={styles.emergencyIconPulse} aria-hidden="true">📞</span>
-            <span className={styles.emergencyPillLabelFull}>Acil Sevk: {ANKARA_PILOT_SUPPORT.phoneDisplay}</span>
-            <span className={styles.emergencyPillLabelShort}>Acil Ara</span>
-          </a>
-
-          {displayedProfiles.length > VIRTUAL_BATCH_SIZE && (
-            <span
-              className={styles.virtualPerfBadge}
-              title="DOM düğüm şişmesini önleyen 60 FPS Sanal Liste Aktif"
-            >
-              ⚡ 60 FPS Sanal Liste ({virtualizedProfiles.length} / {displayedProfiles.length})
-            </span>
-          )}
         </div>
       </div>
 
@@ -954,7 +957,7 @@ export default function UstalarSplitView({
         >
           <span aria-hidden="true">☷</span>
           <span>Filtrele</span>
-          {searchQuery ? <span className={styles.advancedFilterCount}>1</span> : null}
+          {activeFilterCount > 0 ? <span className={styles.advancedFilterCount}>{activeFilterCount}</span> : null}
         </button>
 
         {/* Clear all filters */}
@@ -1018,11 +1021,26 @@ export default function UstalarSplitView({
               </button>
             )}
           </div>
+          <a
+            href={`tel:${ANKARA_PILOT_SUPPORT.phoneTel}`}
+            className={styles.emergencyDispatchPill}
+            onClick={(e) => {
+              if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                e.preventDefault();
+                handleOpenEmergencyCall(undefined, selectedDistrict, selectedService);
+              }
+            }}
+            aria-label={`Ankara acil usta sevk hattını ara: ${ANKARA_PILOT_SUPPORT.phoneDisplay}`}
+          >
+            <span className={styles.emergencyIconPulse} aria-hidden="true">📞</span>
+            <span className={styles.emergencyPillLabelFull}>Acil destek: {ANKARA_PILOT_SUPPORT.phoneDisplay}</span>
+            <span className={styles.emergencyPillLabelShort}>Acil Ara</span>
+          </a>
         </div>
       )}
 
       {/* Content Area according to viewMode */}
-      {viewMode === 'map' ? (
+      {displayedViewMode === 'map' ? (
         <div>
           <div className={dirStyles.mapContainerSection}>
             <AnkaraInteractiveMap
@@ -1073,10 +1091,10 @@ export default function UstalarSplitView({
           </div>
         </div>
       ) : (
-        <div className={`${viewMode === 'split' ? styles.splitLayout : ''} ${isMapExpanded ? styles.splitLayoutExpanded : ''}`}>
+        <div className={`${displayedViewMode === 'split' ? styles.splitLayout : ''} ${isMapExpanded ? styles.splitLayoutExpanded : ''}`}>
           {/* Left Column: Scrollable List of Usta Cards */}
           <div
-            className={`${viewMode === 'split' ? styles.splitListPane : ''} ${isMapExpanded ? styles.splitListPaneHidden : ''}`}
+            className={`${displayedViewMode === 'split' ? styles.splitListPane : ''} ${isMapExpanded ? styles.splitListPaneHidden : ''}`}
             role="region"
             aria-label="Doğrulanmış Usta Listesi"
           >
@@ -1128,11 +1146,11 @@ export default function UstalarSplitView({
             ) : (
               <>
                 <div
-                  className={viewMode === 'split' ? styles.gridSplit : styles.gridFull}
+                  className={displayedViewMode === 'split' ? styles.gridSplit : styles.gridFull}
                   role="list"
                   aria-label="Doğrulanmış ustalar"
                 >
-                  {virtualizedProfiles.map((profile, idx) => renderUstaCard(profile, idx, viewMode === 'split'))}
+                  {virtualizedProfiles.map((profile, idx) => renderUstaCard(profile, idx, displayedViewMode === 'split'))}
                 </div>
 
                 {displayedProfiles.length > virtualLimit && (
@@ -1172,7 +1190,7 @@ export default function UstalarSplitView({
           </div>
 
           {/* Right Column: Sticky Synchronized Ankara Map in Split View */}
-          {viewMode === 'split' && (
+          {displayedViewMode === 'split' && (
             <div
               className={`${styles.splitMapPane} ${isMapExpanded ? styles.splitMapPaneExpanded : ''}`}
               role="region"
@@ -1368,7 +1386,7 @@ export default function UstalarSplitView({
                           const primaryService = profileServices[0] || 'Genel Zanaat';
                           const areaNames = [...new Set(areaMap[profile.user_id] ?? [])];
                           const primaryDistrict = areaNames[0] || 'Çankaya';
-                          const profileHref = `/ustalar/${profile.user_id}?${new URLSearchParams({
+                          const profileHref = `${profileHrefBase}/${profile.user_id}?${new URLSearchParams({
                             ...(selectedService ? { service: selectedService } : {}),
                             ...(selectedDistrict ? { district: selectedDistrict } : {}),
                           })}`;
@@ -1381,6 +1399,7 @@ export default function UstalarSplitView({
                               }}
                               tabIndex={0}
                               role="listitem"
+                              aria-current={isCardActive ? 'true' : undefined}
                               aria-label={`${craftsman}, ${primaryService}, ${primaryDistrict}. Enter ile profili aç, ok tuşlarıyla ustalar arasında gezin.`}
                               className={`${styles.mobileCarouselCard} ${
                                 isCardActive ? styles.mobileCarouselCardActive : ''
@@ -1424,7 +1443,7 @@ export default function UstalarSplitView({
                                   <Link
                                     href={profileHref}
                                     className={styles.mobileCtaPrimary}
-                                    aria-label="Profili aç ve talep oluştur"
+                                    aria-label={`${craftsman} — Profili aç ve talep oluştur`}
                                     tabIndex={-1}
                                   >
                                     Profili incele →
@@ -1472,7 +1491,7 @@ export default function UstalarSplitView({
       )}
 
       {/* Floating Mobile Toggle — visible only in list mode */}
-      {viewMode === 'list' && (
+      {displayedViewMode === 'list' && (
         <div className={styles.floatingMobileBar}>
           <button
             type="button"

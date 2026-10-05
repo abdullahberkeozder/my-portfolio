@@ -60,7 +60,7 @@
   background: transparent;
   color: #64748b;
   cursor: pointer;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
   text-decoration: none;
 }
 
@@ -160,7 +160,7 @@
   border-radius: 999px;
   border: 1px solid #cbd5e1;
   cursor: pointer;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
@@ -374,6 +374,11 @@
   margin: 0;
 }
 
+.advancedFilterDrawer .emergencyDispatchPill {
+  min-height: 44px;
+  height: 44px;
+}
+
 .sortControl {
   display: inline-flex;
   align-items: center;
@@ -405,6 +410,8 @@
     align-items: stretch;
     flex-direction: column;
     gap: 10px;
+    border-color: #f4d97a;
+    background: #fffdf4;
   }
 
   .advancedFilterHeader {
@@ -477,7 +484,7 @@
   cursor: pointer;
   border: 1.5px solid transparent;
   white-space: nowrap;
-  transition: all 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
   letter-spacing: -0.01em;
   line-height: 1;
 }
@@ -530,7 +537,7 @@
   border: 1px solid #fecaca;
   text-decoration: none;
   white-space: nowrap;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
   letter-spacing: -0.01em;
 }
 
@@ -684,7 +691,7 @@
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(15, 23, 42, 0.12);
-  transition: all 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
   letter-spacing: -0.01em;
 }
 
@@ -1411,6 +1418,7 @@
   min-height: 44px;
   padding-inline: 16px;
   flex: 0 0 auto;
+  min-width: 136px;
 }
 
 .cardCtaPrimary:hover,
@@ -1600,7 +1608,6 @@
     min-height: 28px;
   }
 
-  .emergencyDispatchPill,
   .virtualPerfBadge {
     display: none !important;
   }
@@ -1739,6 +1746,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
+    flex-shrink: 0;
   }
 
   .mobileSnapModeBtn {
@@ -1851,8 +1859,8 @@
   }
 
   .mobileCarouselCardActive {
-    border-color: #0f172a !important;
-    box-shadow: 0 0 0 2px #0f172a, 0 8px 24px rgba(15, 23, 42, 0.16) !important;
+    border-color: #1d4ed8 !important;
+    box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.22), 0 8px 24px rgba(15, 23, 42, 0.16) !important;
     transform: scale(1.015);
   }
 
@@ -2140,13 +2148,21 @@
   }
 
   .mobileEmptyState {
-    padding: 16px;
+    display: grid;
+    place-items: center;
+    gap: 6px;
+    min-height: 148px;
+    padding: 18px 16px;
     text-align: center;
     width: 100%;
+    background: #fffdf4;
+    border: 1px solid #f4d97a;
+    border-radius: 14px;
   }
 
   .mobileEmptyState p {
     font-size: 0.8125rem;
+    font-weight: 650;
     color: #64748b;
     margin: 0 0 8px;
   }
@@ -2155,6 +2171,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    min-height: 44px;
     padding: 6px 14px;
     background: #0b132b;
     color: #ffffff;
@@ -2163,6 +2180,11 @@
     border-radius: 999px;
     border: none;
     cursor: pointer;
+  }
+
+  .mobileResetBtn:focus-visible {
+    outline: 3px solid #2563eb;
+    outline-offset: 2px;
   }
 
   .floatingMobileBar {
@@ -2204,6 +2226,22 @@
 
   .floatingMobileBtn:active {
     transform: scale(0.96);
+  }
+
+  .filterSearchInput {
+    height: 44px;
+  }
+
+  .filterSearchClearBtn {
+    width: 40px;
+    height: 40px;
+    right: 2px;
+    font-size: 15px;
+  }
+
+  .filterSearchClearBtn:focus-visible {
+    outline: 3px solid #2563eb;
+    outline-offset: 1px;
   }
 }
 

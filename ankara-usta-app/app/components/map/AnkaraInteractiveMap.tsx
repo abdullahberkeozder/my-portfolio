@@ -91,7 +91,8 @@ export default function AnkaraInteractiveMap({
     try {
       const saved = localStorage.getItem('orkestra_preferred_district');
       if (saved && ankaraDistrictsGeo.some(d => d.id === saved || d.name.toLowerCase() === saved.toLowerCase())) {
-        setSelectedDistrict(saved);
+        const frame = window.requestAnimationFrame(() => setSelectedDistrict(saved));
+        return () => window.cancelAnimationFrame(frame);
       }
     } catch {
       // Safe fallback — localStorage may be unavailable

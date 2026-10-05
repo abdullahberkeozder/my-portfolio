@@ -24,13 +24,14 @@ type PublicProfessionalRow = {
 export default async function UstalarIndexPage({
   searchParams,
 }: {
-  searchParams: Promise<{ service?: string; district?: string; page?: string; view?: string }>;
+  searchParams: Promise<{ service?: string; district?: string; page?: string; view?: string; sort?: string }>;
 }) {
   const params = await searchParams;
   const service = services.some((s) => s.id === params.service) ? params.service : undefined;
   const district = ankaraDistricts.find((d) => d === params.district);
   const page = Math.min(1000, Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1));
   const pageSize = 12;
+  const sortMode = params.sort === 'rating' || params.sort === 'jobs' ? params.sort : 'recommended';
 
   const baseHref = `/ustalar?${new URLSearchParams({
     ...(service ? { service } : {}),
@@ -197,6 +198,7 @@ export default async function UstalarIndexPage({
           baseHref={baseHref}
           hasDbError={hasDbError}
           initialView={params.view === 'map' ? 'map' : params.view === 'list' ? 'list' : 'split'}
+          initialSortMode={sortMode}
         />
       </div>
     </main>

@@ -13,11 +13,19 @@ import {
   ankaraCraftHubs,
   calculateDispatchSla,
   clusterShops,
-  chaikinSmooth,
   type ShopPin,
   type GeoCluster,
 } from '../../data/ankaraMapGeo';
 import styles from './ankaraMap.module.css';
+
+type MapKeyboardEvent = L.LeafletEvent & { originalEvent?: KeyboardEvent };
+
+declare global {
+  interface Window {
+    __openUstaPopup?: (id: string) => void;
+    __ustaMarkers?: Record<string, L.Marker>;
+  }
+}
 
 export interface TradespersonMapMarker {
   id: string;
@@ -135,13 +143,16 @@ export default function RealAnkaraMap({
   const [tileLoadError, setTileLoadError] = useState(false);
 
   const onVisibleTradespeopleChangeRef = useRef(onVisibleTradespeopleChange);
-  onVisibleTradespeopleChangeRef.current = onVisibleTradespeopleChange;
   const onSelectTradespersonMarkerRef = useRef(onSelectTradespersonMarker);
-  onSelectTradespersonMarkerRef.current = onSelectTradespersonMarker;
   const onHoverTradespersonMarkerRef = useRef(onHoverTradespersonMarker);
-  onHoverTradespersonMarkerRef.current = onHoverTradespersonMarker;
   const searchThisAreaRef = useRef(searchThisArea);
-  searchThisAreaRef.current = searchThisArea;
+
+  useEffect(() => {
+    onVisibleTradespeopleChangeRef.current = onVisibleTradespeopleChange;
+    onSelectTradespersonMarkerRef.current = onSelectTradespersonMarker;
+    onHoverTradespersonMarkerRef.current = onHoverTradespersonMarker;
+    searchThisAreaRef.current = searchThisArea;
+  }, [onVisibleTradespeopleChange, onSelectTradespersonMarker, onHoverTradespersonMarker, searchThisArea]);
 
   const [manualLocation, setManualLocation] = useState<{
     lat: number;
@@ -296,12 +307,13 @@ export default function RealAnkaraMap({
   useEffect(() => {
     if (!resetTrigger || !mapRef.current) return;
     mapRef.current.flyTo([39.9255, 32.8530], 11, { duration: 0.8 });
-    setSearchThisArea(true);
-    searchThisAreaRef.current = true;
-    onVisibleTradespeopleChangeRef.current?.(null);
-    if (tradespeopleMarkers) {
-      setVisibleMarkerCount(tradespeopleMarkers.length);
-    }
+    const frame = requestAnimationFrame(() => {
+      setSearchThisArea(true);
+      searchThisAreaRef.current = true;
+      onVisibleTradespeopleChangeRef.current?.(null);
+      if (tradespeopleMarkers) setVisibleMarkerCount(tradespeopleMarkers.length);
+    });
+    return () => cancelAnimationFrame(frame);
   }, [resetTrigger, tradespeopleMarkers]);
 
 
@@ -569,20 +581,10 @@ export default function RealAnkaraMap({
 
     markersToRender.forEach(usta => {
       const isHighlighted = activeTradespersonId === usta.id;
-      // Determine service icon from first service tag
-      const serviceIconMap: Record<string, string> = {
-        'tesisat': '🔧', 'musluk': '🔧', 'plumbing': '🔧',
-        'elektrik': '⚡', 'electric': '⚡', 'pano': '⚡',
-        'ahşap': '🪚', 'mobilya': '🪚', 'carpentry': '🪚',
-        'boya': '🎨', 'badana': '🎨', 'paint': '🎨',
-        'metal': '🛠️', 'kaynak': '🛠️', 'repair': '🛠️',
-      };
       const firstService = (usta.services[0] ?? '').toLowerCase();
-      const serviceIcon = Object.entries(serviceIconMap).find(([k]) =>
-        firstService.includes(k)
-      )?.[1] ?? '🛠️';
 
-      // Airbnb 2026 Whisper Pin Standard: Calm neutral price pill by default; expands on hover/active
+      // Keep the overview quiet: price/rating details appear only for the active
+      // pin or on hover, while the default state remains a compact location token.
       const ratingText = usta.rating ? usta.rating.toFixed(1) : '4.9';
       const priceText = usta.priceEstimate ?? (firstService.includes('elektrik') ? '₺500' : firstService.includes('tesisat') ? '₺550' : '₺450');
       const reviewCount = usta.reviewCount ?? 28;
@@ -591,7 +593,7 @@ export default function RealAnkaraMap({
       const markerHtml = `
         <div class="${styles.airbnbMapPill} ${isHighlighted ? styles.airbnbMapPillActive : ''}">
           <span class="${styles.airbnbPillDefault}">
-            <span class="${styles.airbnbPillPrice}">${priceText}</span>
+            <span class="${styles.airbnbPillDot}" aria-hidden="true">●</span>
           </span>
           <span class="${styles.airbnbPillExpanded}">
             <span class="${styles.airbnbPillRating}">★ ${ratingText}</span>
@@ -679,7 +681,7 @@ export default function RealAnkaraMap({
         }
       });
 
-      marker.on('keypress', (e: any) => {
+      marker.on('keypress', (e: MapKeyboardEvent) => {
         if (e.originalEvent?.key === 'Enter' || e.originalEvent?.key === ' ') {
           L.DomEvent.stopPropagation(e);
           marker.openPopup();
@@ -689,7 +691,7 @@ export default function RealAnkaraMap({
         }
       });
 
-      marker.on('keydown', (e: any) => {
+      marker.on('keydown', (e: MapKeyboardEvent) => {
         if (e.originalEvent?.key === 'Escape') {
           marker.closePopup();
         }
@@ -746,13 +748,13 @@ export default function RealAnkaraMap({
     });
 
     if (typeof window !== 'undefined') {
-      (window as any).__openUstaPopup = (id: string) => {
+      window.__openUstaPopup = (id: string) => {
         const m = ustaMarkersMapRef.current[id];
         if (m) m.openPopup();
       };
-      (window as any).__ustaMarkers = ustaMarkersMapRef.current;
+      window.__ustaMarkers = ustaMarkersMapRef.current;
     }
-  }, [tradespeopleMarkers, mapMoveCounter]);
+  }, [tradespeopleMarkers, mapMoveCounter, activeTradespersonId]);
 
   // 3.5b Real-Time Active Marker Highlight & Halo without re-creating layer (60 FPS & Persistent Popups)
   useEffect(() => {
@@ -967,7 +969,7 @@ export default function RealAnkaraMap({
     return () => {
       map.off('click', handleMapClick);
     };
-  }, [onShopSelected]);
+  }, [onShopSelected, isSplitPane]);
 
   // 4. Clean Target Pin Drop
   const dropTargetPin = useCallback((latLng: [number, number], label: string) => {
@@ -1127,7 +1129,7 @@ export default function RealAnkaraMap({
       }`}
     >
       {/* Airbnb Benchmark: "Bu bölgede ara" Floating Toggle Pill (Top-Center) */}
-      <div className={styles.airbnbSearchAreaPill} role="status">
+      <div className={styles.airbnbSearchAreaPill} aria-label="Harita bölge araması">
         <label className={styles.airbnbSearchAreaLabel}>
           <input
             type="checkbox"
@@ -1135,7 +1137,7 @@ export default function RealAnkaraMap({
             onChange={e => handleToggleSearchThisArea(e.target.checked)}
             className={styles.airbnbSearchAreaCheckbox}
           />
-          <span>
+          <span role="status" aria-live="polite" aria-atomic="true">
             Bu bölgede ara
             {visibleMarkerCount !== null ? ` (${visibleMarkerCount} usta)` : ''}
           </span>
@@ -1168,7 +1170,7 @@ export default function RealAnkaraMap({
       )}
 
       {tradespeopleMarkers?.length === 0 ? (
-        <div className={styles.mapEmptyState} role="status">
+        <div className={styles.mapEmptyState} aria-live="polite" aria-atomic="true">
           <strong>Bu bölgede henüz uygun usta yok</strong>
           <span>Haritayı genişletin veya aramayı tüm Ankara için açın.</span>
           <button type="button" onClick={() => handleToggleSearchThisArea(false)}>
@@ -1176,7 +1178,7 @@ export default function RealAnkaraMap({
           </button>
         </div>
       ) : searchThisArea && visibleMarkerCount === 0 ? (
-        <div className={styles.mapEmptyState} role="status">
+        <div className={styles.mapEmptyState} aria-live="polite" aria-atomic="true">
           <strong>Bu bölgede usta bulunamadı</strong>
           <span>Haritayı taşıyın veya aramayı genişletin.</span>
           <button type="button" onClick={() => handleToggleSearchThisArea(false)}>
