@@ -28,11 +28,12 @@ export interface UstaServiceAreaMapProps {
   height?: number;
 }
 
-// Brand colours
-const COLOR_ACTIVE = '#ffdd00';     // Orkestra Lemonade — primary service area
-const COLOR_PRIMARY = '#0b132b';    // Orkestra Cobalt — primary district outline
-const COLOR_MUTED = '#e2e8f0';      // Non-service district fill
-const COLOR_MUTED_STROKE = '#cbd5e1';
+// Crisp, authoritative municipal palette (Active vs Inactive Districts)
+const COLOR_ACTIVE = '#e2e8f0';
+const COLOR_PRIMARY = '#1d4ed8';
+const COLOR_ACTIVE_STROKE = '#334155';
+const COLOR_MUTED = 'transparent';
+const COLOR_MUTED_STROKE = 'rgba(148, 163, 184, 0.40)';
 
 export default function UstaServiceAreaMap({
   districts,
@@ -56,10 +57,10 @@ export default function UstaServiceAreaMap({
     });
     mapRef.current = map;
 
-    // Minimal CartoDB light basemap
+    // Minimal clean light basemap
     L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
-      { maxZoom: 14, subdomains: 'abcd' }
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+      { maxZoom: 16 }
     ).addTo(map);
 
     // ── 2. Normalise input district names ──────────────────────────────
@@ -68,7 +69,7 @@ export default function UstaServiceAreaMap({
     );
     const primaryName = primaryDistrict?.toLowerCase().trim();
 
-    // ── 3. Draw all 9 pilot districts ─────────────────────────────────
+    // ── 3. Draw all 9 pilot districts (Exact Administrative Boundaries) ─
     const boundsPoints: L.LatLng[] = [];
     const activeFeatures: L.LatLng[] = [];
 
@@ -84,10 +85,11 @@ export default function UstaServiceAreaMap({
       void L.polygon(
         district.polygonLatLngs.map(([lat, lng]) => L.latLng(lat, lng)),
         {
-          fillColor: isService ? COLOR_ACTIVE : COLOR_MUTED,
-          fillOpacity: isService ? (isPrimary ? 0.72 : 0.52) : 0.2,
-          color: isService ? (isPrimary ? COLOR_PRIMARY : '#b8960c') : COLOR_MUTED_STROKE,
-          weight: isService ? (isPrimary ? 3 : 1.5) : 1,
+          fillColor: isService ? (isPrimary ? '#dbeafe' : COLOR_ACTIVE) : COLOR_MUTED,
+          fillOpacity: isService ? (isPrimary ? 0.28 : 0.16) : 0.02,
+          color: isService ? (isPrimary ? COLOR_PRIMARY : COLOR_ACTIVE_STROKE) : COLOR_MUTED_STROKE,
+          weight: isService ? (isPrimary ? 2.2 : 1.6) : 0.9,
+          dashArray: isService ? undefined : '3, 4',
         }
       ).addTo(map);
 

@@ -19,16 +19,60 @@
   height: 380px;
 }
 
-.mapHeader {
-  padding: 18px 24px;
-  background: white;
-  border-bottom: 1px solid var(--border-default);
+/* Base Canvas Viewport & Stage Architecture (Canvas-First Benchmark) */
+.mapViewport {
+  position: relative;
+  width: 100%;
+  flex: 1;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
+  flex-direction: column;
+  min-height: 640px;
+  overflow: hidden;
 }
+
+.realMapOuter {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 640px;
+}
+
+/* Split-Pane mode: fills parent container height entirely */
+.mapWrapperSplitPane {
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+.mapWrapperSplitPane .mapViewport {
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+}
+
+.mapWrapperSplitPane .realMapOuter {
+  height: 100%;
+  min-height: 0;
+  flex: 1;
+}
+
+.mapWrapperSplitPane .realMapContainer,
+.mapWrapperSplitPane .mapLoadingSkeleton {
+  height: 100%;
+  min-height: 0;
+  border-radius: 0;
+  border: none;
+}
+
+/* Apple Maps benchmark: Canvas First — outer header band is hidden.
+   All controls live as floating islands directly on the map canvas. */
+.mapHeader {
+  display: none;
+}
+
 
 .headerTitleGroup {
   display: flex;
@@ -134,13 +178,14 @@
 .mapViewport {
   position: relative;
   width: 100%;
+  flex: 1;
   min-height: 520px;
-  background: radial-gradient(circle at center, #ffffff 0%, #f4f8fc 100%);
+  background: #f0f3f7;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   cursor: default;
   user-select: none;
+  overflow: hidden;
 }
 
 .mapViewportCrosshair {
@@ -768,30 +813,43 @@
 /* Real Ankara Leaflet Map Engine Styles (Option B) */
 .realMapContainer {
   width: 100%;
-  height: 640px;
+  flex: 1;
+  min-height: 640px;
   border-radius: var(--radius-card);
   position: relative;
   overflow: hidden;
   z-index: 1;
-  background-color: #e2e8f0;
+  background-color: #f1f4f8;
   border: 1px solid var(--border-default);
+}
+
+/* Rosenholtz Feature Congestion & Nordic calm canvas: clean, high contrast roads */
+.lightModeCanvas :global(.leaflet-tile-pane),
+.declutteredMapContainer.lightModeCanvas :global(.leaflet-tile-pane) {
+  filter: grayscale(0.22) saturate(0.68) contrast(1.04) brightness(1.02);
+}
+
+.streetsModeCanvas :global(.leaflet-tile-pane) {
+  filter: none;
 }
 
 .mapLoadingSkeleton {
   width: 100%;
-  height: 640px;
+  flex: 1;
+  min-height: 640px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 14px;
-  background: #f8fafc;
+  background: #f0f3f7;
   color: var(--text-secondary);
   font-size: 14px;
   font-weight: 600;
   border-radius: var(--radius-card);
   border: 1px solid var(--border-default);
 }
+
 
 .mapLoadingSpinner {
   width: 40px;
@@ -925,7 +983,12 @@
 .realMapOuter {
   position: relative;
   width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
+
 
 .mapFloatingBar {
   position: absolute;
@@ -1083,53 +1146,28 @@
 }
 
 .targetPinTeardrop {
-  width: 38px;
-  height: 38px;
-  background: linear-gradient(135deg, #0b132b 0%, #1c2541 100%);
-  border: 2.5px solid #ffdd00;
+  width: 36px;
+  height: 36px;
+  background: #0f172a;
+  border: 2px solid #ffffff;
   border-radius: 50% 50% 50% 0;
   transform: rotate(-45deg);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 20px rgba(11, 19, 43, 0.45);
-  animation: pinBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.35);
+  animation: pinBounce 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   z-index: 10;
 }
 
 .targetPinIcon {
   transform: rotate(45deg);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1;
 }
 
 .targetPinRadar {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: rgba(255, 221, 0, 0.8);
-  box-shadow: 0 0 10px rgba(255, 221, 0, 0.6);
-  z-index: 5;
-}
-
-.targetPinRadar::before,
-.targetPinRadar::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  border: 2px solid rgba(255, 221, 0, 0.6);
-  animation: radarWave 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-}
-
-.targetPinRadar::after {
-  animation-delay: 0.8s;
+  display: none;
 }
 
 @keyframes pinBounce {
@@ -1216,8 +1254,8 @@
 
 .districtHubBadge:hover {
   transform: scale(1.08);
-  background: #0b132b;
-  border-color: #ffdd00;
+  background: #0f172a;
+  border-color: #0f172a;
 }
 
 /* Neighborhood Pill Marker on Map */
@@ -1238,9 +1276,9 @@
 
 .neighborhoodMapPill:hover,
 .neighborhoodMapPillActive {
-  background: #ffdd00;
-  color: #0b132b;
-  border-color: #eab308;
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
   font-weight: 700;
   transform: scale(1.06);
 }
@@ -1348,9 +1386,9 @@
 }
 
 .drawerPillActive {
-  background: #0b132b;
-  color: #ffdd00;
-  border-color: #0b132b;
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
   font-weight: 700;
 }
 
@@ -1374,21 +1412,22 @@
   align-items: center;
   gap: 6px;
   padding: 9px 18px;
-  background: var(--brand-yellow, #ffdd00);
-  color: #0b132b;
+  background: #0f172a;
+  color: #ffffff;
   font-size: 0.875rem;
-  font-weight: 800;
+  font-weight: 700;
   border: none;
   border-radius: 8px;
   text-decoration: none;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(255, 221, 0, 0.35);
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+  transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease;
 }
 
 .drawerCtaBtn:hover {
+  background: #1e293b;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(255, 221, 0, 0.45);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);
 }
 
 .drawerCloseBtn {
@@ -1467,56 +1506,1402 @@
   color: #0b132b;
 }
 
-/* Airbnb Style Directory Tradesperson Map Marker */
-.ustaMapMarker {
+/* ==========================================================================
+   Airbnb Benchmark: Interactive Oval Rating Pill Markers
+   ========================================================================== */
+
+.airbnbDivIconWrapper {
+  background: transparent !important;
+  border: none !important;
+}
+
+.airbnbMapPill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 3px;
   background: #ffffff;
-  color: #0b132b;
-  padding: 4px 10px;
-  border-radius: 20px;
-  border: 1.5px solid #0b132b;
-  box-shadow: 0 4px 14px rgba(11, 19, 43, 0.18);
-  font-size: 11.5px;
+  color: #0f172a;
+  border: 1.5px solid rgba(15, 23, 42, 0.18);
+  border-radius: 999px;
+  /* Tighter padding for compact ₺400+ format — prevents overlap */
+  padding: 3px 8px;
+  font-size: 11px;
   font-weight: 700;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(255,255,255,0.9);
   cursor: pointer;
   white-space: nowrap;
+  user-select: none;
+  /* position:relative needed so z-index works on Leaflet DivIcon elements */
+  position: relative;
+  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), background 140ms ease, color 140ms ease, border-color 140ms ease, box-shadow 160ms ease;
+}
+
+.airbnbMapPill:hover {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+  transform: scale(1.1) translateY(-3px);
+  position: relative;
+  z-index: 2500;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.32), 0 0 0 2px #ffffff;
+}
+
+.airbnbMapPillActive {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #0f172a !important;
+  transform: scale(1.14) translateY(-3px);
+  position: relative;
+  z-index: 2500 !important;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.2), 0 8px 24px rgba(15, 23, 42, 0.35) !important;
+  animation: pillResonancePulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes pillResonancePulse {
+  0% {
+    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.2), 0 8px 24px rgba(15, 23, 42, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 6px rgba(15, 23, 42, 0.07), 0 12px 30px rgba(15, 23, 42, 0.45);
+  }
+}
+
+.airbnbPillRating {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #ffdd00;
+  line-height: 1;
+}
+
+.airbnbPillPrice {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  transition: color 140ms ease;
+}
+
+.airbnbPillDefault {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.airbnbPillExpanded {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.airbnbPillName {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.airbnbPillActivePrice {
+  font-size: 11px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.airbnbMapPill:hover .airbnbPillDefault,
+.airbnbMapPillActive .airbnbPillDefault {
+  display: none;
+}
+
+.airbnbMapPill:hover .airbnbPillExpanded,
+.airbnbMapPillActive .airbnbPillExpanded {
+  display: inline-flex;
+}
+
+.airbnbMapPill:hover .airbnbPillPrice,
+.airbnbMapPillActive .airbnbPillPrice {
+  color: #cbd5e1;
+}
+
+/* Leaflet Airbnb Custom Popup Wrapper */
+.airbnbCustomPopupWrapper {
+  margin-bottom: 5px;
+}
+
+.airbnbCustomPopupWrapper :global(.leaflet-popup-content-wrapper) {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 18px;
+  box-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.22), 0 4px 12px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  padding: 0;
+  overflow: hidden;
+}
+
+.airbnbCustomPopupWrapper :global(.leaflet-popup-content) {
+  margin: 0;
+  line-height: 1.4;
+  width: 250px !important;
+}
+
+.airbnbCustomPopupWrapper :global(.leaflet-popup-tip-container) {
+  width: 30px;
+  height: 14px;
+}
+
+.airbnbCustomPopupWrapper :global(.leaflet-popup-tip) {
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+}
+
+.airbnbCustomPopupWrapper :global(.leaflet-popup-close-button) {
+  color: #64748b !important;
+  font-size: 16px !important;
+  top: 10px !important;
+  right: 10px !important;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  background: #f1f5f9 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  padding: 0 !important;
+  transition: all 140ms ease !important;
+}
+
+.airbnbCustomPopupWrapper :global(.leaflet-popup-close-button:hover) {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Airbnb-Style Floating Listing Card Popup */
+.airbnbPopupCard {
+  font-family: inherit;
+  width: 100%;
+  padding: 14px 16px;
+  box-sizing: border-box;
+}
+
+.airbnbPopupHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.airbnbPopupAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  flex-shrink: 0;
+  border: 1px solid #cbd5e1;
+  letter-spacing: -0.02em;
+}
+
+.airbnbPopupHeaderInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.airbnbPopupCategory {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.airbnbPopupBadge {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #065f46;
+  background: #d1fae5;
+  padding: 1.5px 7px;
+  border-radius: 999px;
+  display: inline-block;
+  align-self: flex-start;
+  letter-spacing: -0.01em;
+}
+
+.airbnbPopupTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.airbnbPopupRatingRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: #475569;
+  margin-bottom: 12px;
+}
+
+.airbnbPopupStar {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.airbnbPopupReviews {
+  color: #64748b;
+  font-size: 11px;
+}
+
+.airbnbPopupDot {
+  color: #cbd5e1;
+}
+
+.airbnbPopupDistrict {
+  color: #334155;
+  font-weight: 600;
+  font-size: 11.5px;
+}
+
+.airbnbPopupFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+  gap: 8px;
+}
+
+.airbnbPopupPrice strong {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.airbnbPopupPrice small {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.airbnbPopupActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.airbnbPopupQuoteBtn {
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #eff6ff;
+  color: #1d4ed8 !important;
+  border: 1px solid #bfdbfe;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 140ms ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.airbnbPopupQuoteBtn:hover {
+  background: #1d4ed8;
+  color: #ffffff !important;
+  border-color: #1d4ed8;
+}
+
+.airbnbPopupCta {
+  padding: 5px 11px;
+  border-radius: 20px;
+  background: #0f172a;
+  color: #ffffff !important;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 140ms ease;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+  display: inline-flex;
+  align-items: center;
+}
+
+.airbnbPopupCta:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.28);
+}
+
+/* ==========================================================================
+   Airbnb Benchmark: "Bu bölgede ara" (Search as I move) Floating Pill
+   ========================================================================== */
+
+.airbnbSearchAreaPill {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 24px;
+  padding: 6px 14px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  pointer-events: auto;
+  max-width: calc(100% - 24px);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.airbnbSearchAreaPill:hover {
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.15);
+  transform: translateX(-50%) translateY(-1px);
+}
+
+.airbnbSearchAreaLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0f172a;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.airbnbSearchAreaCheckbox {
+  accent-color: #0f172a;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.airbnbResetSpatialBtn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: all 140ms ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.airbnbResetSpatialBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.mapStatusBanner,
+.mapEmptyState {
+  position: absolute;
+  left: 50%;
+  z-index: 1001;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(92%, 420px);
+  padding: 10px 14px;
+  border: 1px solid #dbe4ee;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
+  color: #0f172a;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.mapStatusBanner {
+  top: 58px;
+}
+
+.mapEmptyState {
+  top: 50%;
+  flex-direction: column;
+  align-items: flex-start;
+  transform: translate(-50%, -50%);
+}
+
+.mapEmptyState span {
+  color: #64748b;
+}
+
+.mapStatusBanner button,
+.mapEmptyState button {
+  min-height: 36px;
+  border: 1px solid #0f3e4a;
+  border-radius: 9px;
+  padding: 0 11px;
+  background: #0f3e4a;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mapStatusBanner button:hover,
+.mapEmptyState button:hover {
+  background: #1d5964;
+}
+
+.mapStatusBanner button:focus-visible,
+.mapEmptyState button:focus-visible,
+.airbnbSearchAreaCheckbox:focus-visible,
+.airbnbResetSpatialBtn:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.28);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  .airbnbSearchAreaPill {
+    top: 8px;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .airbnbSearchAreaLabel {
+    font-size: 10.5px;
+    gap: 5px;
+  }
+  .airbnbResetSpatialBtn {
+    font-size: 10px;
+    padding: 2px 7px;
+    margin-left: 6px;
+  }
+  .mapStatusBanner {
+    top: 48px;
+    font-size: 10.5px;
+  }
+  .mapEmptyState {
+    width: min(88%, 280px);
+    font-size: 11px;
+  }
+}
+
+/* Split Pane Dedicated Controls (Airbnb Clean Map standard) */
+.splitBottomLeftControls {
+  position: absolute;
+  bottom: 20px;
+  left: 14px;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+.splitBottomRightControls {
+  position: absolute;
+  bottom: 20px;
+  right: 14px;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+/* ==========================================================================
+   Airbnb Benchmark: Quiet 32px Usta Token Pins (no text labels on map)
+   Rapor Araştırma 1 (Rosenholtz Clutter) + Araştırma 2 (Fitts 48px hitbox)
+   ========================================================================== */
+.ustaMapMarker {
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border: 2px solid #0b132b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(11, 19, 43, 0.22);
+  cursor: pointer;
+  position: relative;
+  /* Fitts Law: invisible 48x48 hit-box via pseudo-element */
   transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+/* 48x48px elastic hit area — MacKenzie & Buxton (1992) */
+.ustaMapMarker::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 48px;
+  height: 48px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
 }
 
 .ustaMapMarker:hover,
 .ustaMapMarkerActive {
-  background: #0b132b;
-  color: #ffdd00;
-  border-color: #ffdd00;
-  transform: scale(1.14) translateY(-3px);
-  box-shadow: 0 8px 22px rgba(11, 19, 43, 0.35);
-  z-index: 1000 !important;
+  background: #0f172a;
+  border-color: #0f172a;
+  box-shadow: 0 0 0 2px #ffffff, 0 8px 24px rgba(15, 23, 42, 0.35);
+  transform: scale(1.22) translateY(-3px);
+  z-index: 1500;
 }
 
 .ustaMapMarkerIcon {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1;
 }
 
-.ustaMapMarkerName {
-  max-width: 120px;
+/* Legacy: hide name/rating spans — only icon shown on map */
+.ustaMapMarkerName,
+.ustaMapMarkerRating {
+  display: none;
+}
+
+/* ==========================================================================
+   Apple Maps & Wolt Benchmark: Floating Search & Filter Island
+   ========================================================================== */
+
+
+.floatingSearchIsland {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 1000;
+  width: calc(100% - 28px);
+  max-width: 440px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12), 0 1px 3px rgba(15, 23, 42, 0.06);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: auto;
+  transition: box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.floatingSearchIsland:focus-within {
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.16);
+  border-color: #cbd5e1;
+}
+
+/* Split-Pane benchmark (Airbnb): left list controls filters, keep map search compact */
+.mapWrapperSplitPane .compactChipsRow {
+  display: none;
+}
+
+.mapWrapperSplitPane .floatingSearchIsland {
+  max-width: 280px;
+}
+
+.searchBarRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 0 12px;
+  height: 38px;
+}
+
+.searchBarIcon {
+  font-size: 14px;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.cleanSearchInput {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+  outline: none;
+  font-family: inherit;
+}
+
+.cleanSearchInput::placeholder {
+  color: #94a3b8;
+}
+
+.searchResultsDropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 260px;
+  overflow-y: auto;
+  z-index: 1200;
+}
+
+.searchResultItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 120ms ease;
+  font-family: inherit;
+}
+
+.searchResultItem:hover,
+.searchResultItem:focus-visible {
+  background: #eff6ff;
+  outline: none;
+}
+
+.searchResultTitle {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.searchResultSubtitle {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.searchResultBadge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: #475569;
+  width: fit-content;
+  margin-top: 2px;
+}
+
+.compactChipsRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.compactChipsRow::-webkit-scrollbar {
+  display: none;
+}
+
+.compactChip {
+  padding: 5px 11px;
+  height: 28px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 140ms ease;
+  flex-shrink: 0;
+}
+
+.compactChip:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.compactChipActive {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+}
+
+.compactChipActive:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   Floating Utility Stack (Top-Right: Layer Switcher, GPS, Reset)
+   ========================================================================== */
+
+.floatingUtilityStack {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+/* In Split-Pane mode: offset below the mini expand button (User Request) */
+.mapWrapperSplitPane .floatingUtilityStack {
+  top: 54px;
+}
+
+.utilityControlGroup {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.utilityBtn {
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: #334155;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.utilityBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.utilityBtn + .utilityBtn {
+  border-top: 1px solid #e2e8f0;
+}
+
+.layerPillToggle {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  gap: 2px;
+}
+
+.layerOptionBtn {
+  border: none;
+  background: transparent;
+  padding: 5px 10px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 140ms ease;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.layerOptionBtn:hover {
+  color: #1d4ed8;
+  background: rgba(29, 78, 216, 0.06);
+}
+
+/* Active layer button: vibrant blue accent — high discoverability */
+.layerOptionBtnActive {
+  background: #1d4ed8;
+  color: #ffffff;
+  box-shadow: 0 1px 4px rgba(29, 78, 216, 0.35);
+}
+
+.layerOptionBtnActive:hover {
+  background: #1e40af;
+  color: #ffffff;
+}
+
+@media (max-width: 767px) {
+  .floatingSearchIsland {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    width: calc(100% - 20px);
+    max-width: none;
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .floatingUtilityStack {
+    top: auto;
+    bottom: 24px;
+    right: 12px;
+    z-index: 990;
+  }
+  .layerPillToggle {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Airbnb Benchmark: Quiet 32px Craft Token Pins & Hover Tooltips
+   ========================================================================== */
+
+.craftPinToken {
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border: 1.5px solid #1e293b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.18);
+  cursor: pointer;
+  position: relative;
+  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 160ms ease, background 140ms ease;
+}
+
+.craftPinToken:hover {
+  transform: scale(1.2) translateY(-2px);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.28);
+  z-index: 1500;
+}
+
+.craftPinTokenActive {
+  background: #0f172a;
+  border-color: #0f172a;
+  box-shadow: 0 0 0 2px #ffffff, 0 8px 24px rgba(15, 23, 42, 0.35);
+  transform: scale(1.22) translateY(-3px);
+}
+
+.craftPinIcon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.cleanPinTooltip {
+  background: #0f172a;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Ankara Craft Triangle Hubs (Siteler, Ostim, Rüzgarlı) & Dispatch SLA
+   ========================================================================== */
+
+.craftHubToken {
+  padding: 3px 8px;
+  height: 24px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.craftHubToken:hover {
+  transform: translateY(-1px);
+  border-color: #0f172a;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.14);
+  z-index: 1500;
+}
+
+.craftHubLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.craftHubTooltip {
+  background: #0f172a;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
+  white-space: nowrap;
+}
+
+.sheetDispatchBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 7px 11px;
+  font-size: 11.5px;
+  color: #1e40af;
+}
+
+.dispatchHubIcon {
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.dispatchHubText {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.dispatchHubText strong {
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+/* ==========================================================================
+   Ankara Zen Dynamic Supercluster Tokens (Zoom 10-12 Density Reducer)
+   ========================================================================== */
+
+.clusterPinToken {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 3.5px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.24);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.clusterPinToken:hover {
+  transform: scale(1.08) translateY(-2px);
+  border-color: #ffffff;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.35);
+}
+
+.clusterBadgeLabel {
+  letter-spacing: -0.01em;
+}
+
+.clusterBadgeCount {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  padding: 1px 5px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.clusterShopMiniList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.clusterShopMiniItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 120ms ease, border-color 120ms ease;
+  width: 100%;
+  text-align: left;
+}
+
+.clusterShopMiniItem:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+
+/* ==========================================================================
+   Uber / Bolt Benchmark: Minimal Target Pin (Natural Tap-to-Drop)
+   ========================================================================== */
+
+.minimalTargetPin {
+  width: 34px;
+  height: 34px;
+  background: #ef4444;
+  border: 2px solid #ffffff;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+  animation: pinBounce 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.minimalTargetPin span {
+  transform: rotate(45deg);
+  font-size: 15px;
+  line-height: 1;
+}
+
+.targetPinPulseRing {
+  display: none;
+}
+
+/* ==========================================================================
+   Google Maps & Wolt Benchmark: Unified Contextual Bottom Sheet
+   ========================================================================== */
+
+.unifiedBottomSheet {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  right: 14px;
+  max-width: 520px;
+  margin: 0 auto;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 18px;
+  padding: 16px 18px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.05);
+  animation: drawerSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sheetContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sheetTopRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sheetTitleCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sheetEyebrow {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.sheetMainTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.3;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.ustaMapMarkerRating {
+.sheetCloseBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 140ms ease;
+  flex-shrink: 0;
+}
+
+.sheetCloseBtn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.sheetBadgesRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sheetRatingBadge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #b45309;
+  background: #fef3c7;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.sheetCategoryBadge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #047857;
+  background: #dcfce7;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.sheetSlaBadge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1d4ed8;
+  background: #dbeafe;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.sheetSubText {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.sheetChipsScroll {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding: 2px 0;
+}
+
+/* Mini stat cards grid for district bottom sheet (usta count / SLA / hub) */
+.sheetStatCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-bottom: 2px;
+}
+
+.sheetStatCard {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.sheetStatCardLabel {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.sheetStatCardValue {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.sheetStatCardSub {
+  font-size: 9px;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.sheetNeighborhoodChip {
+  padding: 4px 9px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.sheetNeighborhoodChip:hover {
+  border-color: #0f172a;
+  color: #0f172a;
+}
+
+.sheetNeighborhoodChipActive {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #0f172a !important;
+  font-weight: 700;
+}
+
+.sheetBottomActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.sheetDetailInfo {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.sheetPrimaryCta {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  font-size: 10.5px;
-  color: #d97706;
-  font-weight: 800;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+  transition: all 140ms ease;
+  white-space: nowrap;
 }
 
-.ustaMapMarkerActive .ustaMapMarkerRating {
-  color: #ffdd00;
+.sheetPrimaryCta:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.28);
 }
 
+@keyframes drawerSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pinBounce {
+  0% {
+    opacity: 0;
+    transform: translateY(-24px) scale(0.6) rotate(-45deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(4px) scale(1.08) rotate(-45deg);
+  }
+  100% {
+    transform: translateY(0) scale(1) rotate(-45deg);
+  }
+}
+
+@keyframes pulseSubtle {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* ─── Airbnb & Apple Maps Organic District Boundary Styles ─── */
+.districtPolygonOrganic {
+  transition: stroke 160ms cubic-bezier(0.25, 1, 0.5, 1),
+              stroke-width 160ms cubic-bezier(0.25, 1, 0.5, 1),
+              fill-opacity 160ms cubic-bezier(0.25, 1, 0.5, 1);
+  cursor: pointer;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.districtPolygonOrganic:hover {
+  cursor: pointer;
+}
+
+.polygonSelected {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ambientFocusMask {
+  pointer-events: none;
+  transition: opacity 240ms cubic-bezier(0.25, 1, 0.5, 1);
+}

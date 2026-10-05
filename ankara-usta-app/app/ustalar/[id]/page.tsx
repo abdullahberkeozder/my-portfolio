@@ -100,10 +100,12 @@ export default async function PublicTradespersonPage({
     serviceDistricts[0] ??
     undefined;
 
+  const backHref = backQuery.toString() ? `/ustalar?${backQuery}` : '/ustalar';
+
   return (
     <main className="account-shell public-profile-page">
       <div className="public-profile-container">
-        <Link className="account-back" href={`/ustalar?${backQuery}`}>
+        <Link className="account-back" href={backHref}>
           ← Ustalara dön
         </Link>
 
