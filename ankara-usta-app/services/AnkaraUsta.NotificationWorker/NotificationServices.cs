@@ -90,11 +90,20 @@ public sealed class SupabaseOutboxClient(HttpClient httpClient, NotificationWork
     private HttpRequestMessage CreateRequest(HttpMethod method, string relativePath)
     {
         var request = new HttpRequestMessage(method, new Uri(_baseUri, relativePath));
-        // Modern Supabase secret API keys are opaque keys, not JWTs. Send them
-        // only via apikey; putting them in Authorization: Bearer is invalid.
+        // Always identify the project with apikey. Modern sb_secret_* keys are
+        // opaque and must not be sent as Bearer tokens. Legacy service_role JWTs
+        // also need Authorization so PostgREST evaluates the service_role claim
+        // and applies the function grant correctly.
         request.Headers.Add("apikey", options.SupabaseSecretKey);
+        if (LooksLikeJwt(options.SupabaseSecretKey))
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", options.SupabaseSecretKey);
+        }
         return request;
     }
+
+    private static bool LooksLikeJwt(string value)
+        => value.Count(character => character == '.') == 2;
 
     private static async Task EnsureSuccessAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {

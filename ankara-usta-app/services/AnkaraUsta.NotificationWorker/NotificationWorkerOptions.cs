@@ -10,6 +10,7 @@ public sealed class NotificationWorkerOptions
     public string FromEmail { get; init; } = string.Empty;
     public int BatchSize { get; init; } = 25;
     public int PollIntervalSeconds { get; init; } = 15;
+    public bool RunOnce { get; init; }
 
     public bool IsConfigured =>
         Uri.TryCreate(SupabaseUrl, UriKind.Absolute, out var uri) &&

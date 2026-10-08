@@ -4,8 +4,8 @@
 - **Runtime**: .NET 10 (ASP.NET Core Hosted Worker)
 - **Database**: PostgreSQL / Supabase
 - **External Provider**: Resend Transactional Email API (`api.resend.com`)
-- **Status**: Taslak operasyon sözleşmesi — staging provası bekliyor
-- **Kanıt Seviyesi**: .NET 10 servis kodu, transactional outbox RPC'leri (`claim_email_notification_batch`, `mark_notification_result`) ve sözleşme testleri doğrulanmıştır. Canlı Resend DNS yapılandırması ve sürekli worker hosting provası Aşama 3 kapsamında icra edilecektir.
+- **Status**: Staging tek-batch provası tamamlandı; sürekli hosting ve özel domain yayını bekliyor
+- **Kanıt Seviyesi**: .NET 10 servis kodu, transactional outbox RPC'leri (`claim_email_notification_batch`, `mark_notification_result`) ve sözleşme testleri doğrulanmıştır. İzole `orkestra-e2e` ortamında gerçek Supabase Auth çözümleme ve Resend teslimatı gözlendi: fixture `-9220922003`, `pending -> processing -> sent`, `attempts=1`, `last_error=null`, 2026-10-08 12:15:57 UTC. Bu kanıt tek-batch (`NotificationWorker__RunOnce=true`) kapsamındadır; sürekli worker hosting ve özel domain yayını ayrıca doğrulanmalıdır.
 
 ---
 
@@ -105,9 +105,10 @@ Worker, `.NET` yapılandırma sağlayıcıları (`appsettings.json` veya ortam d
 | `NotificationWorker__FromEmail` | Gönderici e-posta adresi (Doğrulanmış alan adı) | `Orkestra <bildirim@ankarausta.com>` |
 | `NotificationWorker__PollIntervalSeconds` | Kuyruk boşken bekleme aralığı (5 - 300 sn) | `10` |
 | `NotificationWorker__BatchSize` | Tek seferde talep edilecek bildirim sayısı (1 - 100) | `25` |
+| `NotificationWorker__RunOnce` | Kontrollü staging provasında tek batch işleyip kapanır; sürekli çalışmada `false`/boş bırakılır | `true` |
 
 > [!WARNING]
-> `SupabaseSecretKey` ve `ResendApiKey` kesinlikle kaynak kod depolarına (`git`) eklenmemeli, CI secret yönetimi veya cloud environment store üzerinden inject edilmelidir. Secret API key JWT değildir; yalnız `apikey` başlığında gönderilir, `Authorization: Bearer` olarak kullanılmaz.
+> `SupabaseSecretKey` ve `ResendApiKey` kesinlikle kaynak kod depolarına (`git`) eklenmemeli, CI secret yönetimi veya cloud environment store üzerinden inject edilmelidir. Modern `sb_secret_...` anahtarları yalnız `apikey` başlığında gönderilir; legacy JWT `service_role` anahtarları uyumluluk için `apikey` ve `Authorization: Bearer` başlıklarını birlikte kullanır.
 
 ---
 
@@ -185,12 +186,23 @@ where channel = 'email'
   and updated_at < now() - interval '5 minutes';
 ```
 
+### 7.4. Yanlış veya Test Dışı Alıcıları Ayırma
+Resend test hesabı yalnızca hesap sahibinin alıcı adresine gönderim yapar. `403`
+alan kayıtları topluca silinmemeli veya körlemesine yeniden kuyruğa alınmamalıdır.
+Önce alıcının Auth adresi ve provider kısıtı doğrulanır; ardından kayıtlar
+`dead` durumuna alınmadan önce operasyon kararı ve redrive sözleşmesi gerekir.
+Staging provasında tek kaydı izole etmek için `NotificationWorker__RunOnce=true`
+ve UUID/ID sınırlı bir fixture kullanılmalıdır. Bu prosedür production verisi
+silmez ve yanlış alıcıları otomatik olarak yeniden denemez.
+
 ---
 
-## 8. Staging ve Yayın Öncesi Kontrol Listesi [STAGING PROVASI BEKLİYOR]
+## 8. Staging ve Yayın Öncesi Kontrol Listesi [TEK-BATCH STAGING PROVASI TAMAMLANDI]
 
 - [x] Supabase üzerinde `claim_email_notification_batch` ve `mark_notification_result` RPC fonksiyonları migrate edilmiş ve test edilmiştir.
 - [x] `tradesperson-documents` ve outbox tablolarının RLS politikaları doğrulanmıştır.
 - [ ] Resend üzerinde alan adı DNS kayıtları (SPF, DKIM, DMARC) onaylanmalıdır.
+- [ ] Özel domain doğrulanana kadar `onboarding@resend.dev` yalnızca kontrollü test alıcısıyla kullanılmalıdır.
 - [ ] Staging worker `/health/live` için 200, geçerli yapılandırmada `/health/ready` için 200; eksik yapılandırma provasında readiness 503 dönmelidir. Gerçek teslimat ayrıca ölçülmelidir.
-- [ ] Staging test kullanıcısı ile durum geçişi tetiklenmeli, outbox kaydının `pending -> processing -> sent` geçişi ve Resend üzerindeki `Idempotency-Key` canlı olarak gözlenmelidir.
+- [x] Staging test kullanıcısı ile durum geçişi tetiklendi; fixture `-9220922003` için outbox `pending -> processing -> sent` geçişi ve Resend provider mesaj kabulü canlı olarak gözlendi. `RunOnce` modu ile tek kayıt işlendi; provider mesaj ID'si loglandı.
+- [ ] Sürekli worker hosting, eski/yanlış alıcıların dead-letter davranışı ve özel domain DNS doğrulaması ayrıca tamamlanmalıdır.

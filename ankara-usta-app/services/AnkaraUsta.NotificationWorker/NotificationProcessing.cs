@@ -73,6 +73,11 @@ public sealed class NotificationDeliveryWorker(
                 await using var scope = scopeFactory.CreateAsyncScope();
                 var processor = scope.ServiceProvider.GetRequiredService<NotificationBatchProcessor>();
                 var count = await processor.ProcessOnceAsync(_workerId, options.BatchSize, stoppingToken);
+                if (options.RunOnce)
+                {
+                    logger.LogInformation("Run-once mode completed after processing {Count} notification(s).", count);
+                    break;
+                }
                 if (count == 0)
                 {
                     await Task.Delay(pollInterval, stoppingToken);
