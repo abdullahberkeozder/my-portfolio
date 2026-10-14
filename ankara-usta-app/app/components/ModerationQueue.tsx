@@ -2,6 +2,7 @@
 import {useRouter} from 'next/navigation';
 import Image from 'next/image';
 import {useRef,useState} from 'react';
+import styles from './moderationQueue.module.css';
 
 type Item={id:string;entityType:'work_log_entry'|'review'|'dispute';title:string;description:string;meta:string;previewUrl?:string|null};
 export default function ModerationQueue({items}:{items:Item[]}) {
@@ -25,23 +26,23 @@ export default function ModerationQueue({items}:{items:Item[]}) {
     }catch{setFeedback({id:key,error:true,message:'Yanıt alınamadı. Gerekçeniz korunuyor; yeniden karar vermeden önce kuyruğu yenileyip kontrol edin.'});}
     finally{pending.current=false;setBusy('');}
   }
-  return <div className="moderation-list">{items.map(item=>{
+  return <div className={styles.list}>{items.map(item=>{
     const key=`${item.entityType}-${item.id}`;
     const notice=feedback?.id===key?feedback:null;
-    return <article key={key}>
+    return <article className={styles.item} key={key}>
       {item.previewUrl&&<Image unoptimized width={600} height={450} src={item.previewUrl} alt="İncelenecek iş görseli"/>}
-      <div className="moderation-copy"><span>{item.entityType==='review'?'Değerlendirme':item.entityType==='dispute'?'Uyuşmazlık':'İş günlüğü'}</span><h2>{item.title}</h2><p>{item.description}</p><small>{item.meta}</small></div>
-      <div className="moderation-controls">
+      <div className={styles.copy}><span className={styles.type}>{item.entityType==='review'?'Değerlendirme':item.entityType==='dispute'?'Uyuşmazlık':'İş günlüğü'}</span><h2>{item.title}</h2><p>{item.description}</p><small>{item.meta}</small></div>
+      <div className={styles.form}>
         <label htmlFor={`mod-reason-${key}`}>Karar gerekçesi (zorunlu)</label>
-        <p id={`mod-hint-${key}`}>En az 10 karakter. İncelemeyi ve kararınızın nedenini açıkça belirtin.</p>
+        <p className={styles.hint} id={`mod-hint-${key}`}>En az 10 karakter. Gerekçe denetim izine kaydedilir.</p>
         <textarea id={`mod-reason-${key}`} minLength={10} maxLength={2000} required disabled={Boolean(busy)} value={reasons[key]??''}
           aria-describedby={`mod-hint-${key}`} aria-invalid={notice?.error||undefined}
           onChange={event=>setReasons(current=>({...current,[key]:event.target.value}))}/>
-        <div>{item.entityType==='dispute'?<button className="dialog-primary" type="button" disabled={Boolean(busy)} onClick={()=>void decide(item,'warn')}>İncelemeye al</button>:<>
+        <div className={styles.actions}>{item.entityType==='dispute'?<button className="dialog-primary" type="button" disabled={Boolean(busy)} onClick={()=>void decide(item,'warn')}>İncelemeye al</button>:<>
           <button className="dialog-primary" type="button" disabled={Boolean(busy)} onClick={()=>void decide(item,'approve')}>{busy===key?'Kaydediliyor…':'Onayla'}</button>
-          <button className="wizard-secondary" type="button" disabled={Boolean(busy)} onClick={()=>void decide(item,'reject')}>Reddet</button>
+          <button className={styles.reject} type="button" disabled={Boolean(busy)} onClick={()=>void decide(item,'reject')}>Reddet</button>
         </>}</div>
-        {notice&&<p role={notice.error?'alert':'status'}>{notice.message}</p>}
+        {notice&&<p className={styles.notice} role={notice.error?'alert':'status'}>{notice.message}</p>}
       </div>
     </article>;
   })}</div>;

@@ -76,7 +76,7 @@ describe('DisputeOperationsPage (P5)', () => {
 
     render(await DisputeOperationsPage({ searchParams: Promise.resolve({ page: '1' }) }));
 
-    expect(screen.getByRole('heading', { name: 'Uyuşmazlık kuyruğu temiz' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'İncelenecek uyuşmazlık yok' })).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 

@@ -57,9 +57,9 @@ describe('User Disputes Index Page (app/uyusmazliklar/page.tsx)', () => {
     const ui = await DisputesIndexPage();
     render(ui);
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Uyuşmazlık Dosyalarınız');
-    expect(screen.getByText('Aktif Bir Uyuşmazlığınız Bulunmuyor')).toBeInTheDocument();
-    expect(screen.getByText('İşlerimi Görüntüle →')).toHaveAttribute('href', '/islerim');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Uyuşmazlık dosyalarınız');
+    expect(screen.getByText('Aktif bir uyuşmazlığınız bulunmuyor')).toBeInTheDocument();
+    expect(screen.getByText('İşlerimi görüntüle →')).toHaveAttribute('href', '/islerim');
     expect(screen.getAllByText('0')).toHaveLength(3);
   });
 
@@ -90,17 +90,17 @@ describe('User Disputes Index Page (app/uyusmazliklar/page.tsx)', () => {
     render(ui);
 
     // Summary statistics cards
-    expect(screen.getByText('Aktif İnceleme')).toBeInTheDocument();
-    expect(screen.getByText('Çözümlenen / Kapanan')).toBeInTheDocument();
+    expect(screen.getByText('Aktif inceleme')).toBeInTheDocument();
+    expect(screen.getByText('Çözümlenen veya kapanan')).toBeInTheDocument();
 
     // Dispute details
-    expect(screen.getByText('Kanıt Bekleniyor')).toBeInTheDocument();
+    expect(screen.getByText('Kanıt bekleniyor')).toBeInTheDocument();
     expect(screen.getByText('Çözümlendi')).toBeInTheDocument();
-    expect(screen.getByText('İşçilik Kalitesi · Dosya #disp-111')).toBeInTheDocument();
+    expect(screen.getByText('İşçilik kalitesi · Dosya #disp-111')).toBeInTheDocument();
     expect(screen.getByText('Banyo bataryası montajı sonrası contadan su sızmaya devam ediyor.')).toBeInTheDocument();
 
     // Action button linking to /uyusmazliklar/[id]
-    const detailLinks = screen.getAllByRole('link', { name: /Dosyayı ve Kanıtları Aç/i });
+    const detailLinks = screen.getAllByRole('link', { name: /Dosya #disp-/i });
     expect(detailLinks).toHaveLength(2);
     expect(detailLinks[0]).toHaveAttribute('href', '/uyusmazliklar/disp-1111-2222-3333-4444');
     expect(detailLinks[1]).toHaveAttribute('href', '/uyusmazliklar/disp-5555-6666-7777-8888');
@@ -111,6 +111,6 @@ describe('User Disputes Index Page (app/uyusmazliklar/page.tsx)', () => {
     const ui = await DisputesIndexPage();
     render(ui);
 
-    expect(screen.getByText('Dosyalar Yüklenemedi')).toBeInTheDocument();
+    expect(screen.getByText('Dosyalar yüklenemedi')).toBeInTheDocument();
   });
 });

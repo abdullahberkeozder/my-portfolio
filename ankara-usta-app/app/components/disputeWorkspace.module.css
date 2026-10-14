@@ -1,0 +1,15 @@
+.caseWorkspace :global(.dispute-hero) { padding: 0 0 24px; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; border-bottom: 1px solid var(--border-default); border-radius: 0; background: transparent; color: var(--text-primary); }
+.caseWorkspace :global(.dispute-hero span) { color: var(--brand-cobalt); font-size: .8rem; letter-spacing: 0; }
+.caseWorkspace :global(.dispute-hero h1) { margin: 6px 0 10px; font-size: clamp(1.8rem, 4vw, 2.5rem); text-transform: none; }
+.caseWorkspace :global(.dispute-hero p) { max-width: 70ch; margin: 0; color: var(--text-secondary); }
+.caseWorkspace :global(.sla-chip) { border: 1px solid #b9dbc9; background: #edf8f1; }
+.caseWorkspace :global(.sla-chip.due_soon) { border-color: #ead59a; background: #fff8e5; }
+.caseWorkspace :global(.sla-chip.overdue) { border-color: #e5b4ae; background: #fff1ef; }
+.caseWorkspace :global(.dispute-stage-summary) { margin: 18px 0 24px; }
+.caseWorkspace :global(.job-panel) { background: var(--surface-raised); }
+.caseWorkspace :global(.panel-heading span) { color: var(--brand-cobalt); letter-spacing: 0; }
+.caseWorkspace :global(.operator-panel) { border-top: 1px solid var(--border-default); }
+.caseWorkspace :global(.operator-panel)::before { content: 'Yalnız operasyon ekibi'; display: block; width: fit-content; margin-bottom: 12px; color: #8a5b00; font-size: .78rem; font-weight: 750; }
+.caseWorkspace :global(.evidence-grid:empty)::after { content: 'Henüz kanıt eklenmedi.'; color: var(--text-secondary); }
+.caseWorkspace :global(.timeline-row i) { background: var(--brand-cobalt); }
+@media (max-width: 680px) { .caseWorkspace :global(.dispute-hero) { grid-template-columns: 1fr; } }

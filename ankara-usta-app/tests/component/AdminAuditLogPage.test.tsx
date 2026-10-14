@@ -64,8 +64,8 @@ describe('Admin Audit Log Page (app/yonetim/denetim-izi/page.tsx)', () => {
 
     render(await AdminAuditLogPage());
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Değiştirilemez Denetim İzi (Audit Log)');
-    const adminNav = screen.getByRole('navigation', { name: 'Yönetim Sekmeleri' });
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Değiştirilemez denetim izi');
+    const adminNav = screen.getByRole('navigation', { name: 'Yönetim bölümleri' });
     expect(within(adminNav).getByRole('link', { name: /Usta Başvuruları/i })).toHaveAttribute('href', '/yonetim/usta-basvurulari');
     expect(within(adminNav).getByRole('link', { name: /Uyuşmazlıklar/i })).toHaveAttribute('href', '/yonetim/uyusmazliklar');
   });
@@ -100,7 +100,7 @@ describe('Admin Audit Log Page (app/yonetim/denetim-izi/page.tsx)', () => {
     render(await AdminAuditLogPage());
 
     expect(screen.getByText(/Yönetici \(admin-11\)/i)).toBeInTheDocument();
-    expect(screen.getByText(/Sistem \(Otomatik Görev\)/i)).toBeInTheDocument();
+    expect(screen.getByText('Sistem')).toBeInTheDocument();
     expect(screen.getByText(/MYK belgesi ve referanslar doğrulandı\./i)).toBeInTheDocument();
     expect(screen.getByText(/Otomatik günlük süre sonu tetiklendi\./i)).toBeInTheDocument();
     expect(screen.getByText(/under_review/i)).toBeInTheDocument();
@@ -113,6 +113,6 @@ describe('Admin Audit Log Page (app/yonetim/denetim-izi/page.tsx)', () => {
     render(await AdminAuditLogPage());
 
     expect(screen.getByRole('alert')).toBeInTheDocument();
-    expect(screen.getByText('Denetim Kayıtları Yüklenemedi')).toBeInTheDocument();
+    expect(screen.getByText('Denetim kayıtları yüklenemedi')).toBeInTheDocument();
   });
 });
