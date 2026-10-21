@@ -5,9 +5,9 @@ Kapsam: `ankara-usta-app` çalışma alanı; Git kökü üst klasördeki `my-por
 
 ## Mevcut durum kaydı
 
-- `main`: `dc59590` (`chore(workflow): add bounded Gemini orchestration contract`).
+- `main`: `588285e` (`docs(workflow): refresh worktree stabilization baseline`).
 - `origin/main`: `31fb39f`; local `main` remote'un bir commit önünde ve henüz push edilmedi.
-- `codex/clean-baseline`: `dc59590` tabanlı temiz geliştirme worktree'si. Stabilizasyon planı bu dalda güncellenmektedir.
+- `codex/clean-baseline`: `588285e` tabanlı temiz geliştirme worktree'si. Stabilizasyon planı bu dalda güncellenmektedir.
 - `codex/worktree-preservation`: önceki büyük kullanıcı çalışma ağacını taşıyan koruma dalı; runtime, test/tooling ve araştırma/evidence değişiklikleri burada tutulur.
 - U5 checkpoint'i `31fb39f` ile zaten sabitlendi; orchestration sözleşmesi `dc59590` ile ayrı atomik commit olarak main'e alındı.
 - `.env*`, `.next`, `node_modules`, `coverage`, `test-results`, `.orchestration/runs` gibi yerel/üretilmiş alanlar korunuyor ve temizleme yapılmıyor.
