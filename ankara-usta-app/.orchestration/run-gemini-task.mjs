@@ -160,6 +160,30 @@ export function resolveGitIndexSignature(canonicalRoot) {
     const content = fs.readFileSync(gitIndexPath);
     const hash = crypto.createHash('sha256').update(content).digest('hex');
 
+    // Validate the index trailer without mutating the index. Git writes a
+    // SHA-1 trailer for normal repositories and a SHA-256 trailer when the
+    // repository uses the sha256 object format. This distinguishes a genuine
+    // raw tamper (invalid checksum) from a stat-cache refresh (valid checksum).
+    const objectFormatResult = spawnSync('git', ['rev-parse', '--show-object-format'], {
+      cwd: canonicalRoot,
+      shell: false,
+      windowsHide: true,
+      timeout: 3000,
+      stdio: ['ignore', 'pipe', 'ignore'],
+      encoding: 'utf8'
+    });
+    const objectFormat = objectFormatResult.status === 0 && objectFormatResult.stdout?.trim() === 'sha256'
+      ? 'sha256'
+      : 'sha1';
+    const checksumLength = objectFormat === 'sha256' ? 32 : 20;
+    let checksumValid = null;
+    if (content.length > checksumLength) {
+      const payload = content.subarray(0, content.length - checksumLength);
+      const expected = content.subarray(content.length - checksumLength);
+      const actual = crypto.createHash(objectFormat).update(payload).digest();
+      checksumValid = actual.length === expected.length && actual.equals(expected);
+    }
+
     // Git may rewrite only its stat-cache metadata when a client runs a
     // read-only discovery command. Compare the logical staged entries for
     // preservation decisions, while retaining the raw file hash as evidence.
@@ -193,6 +217,7 @@ export function resolveGitIndexSignature(canonicalRoot) {
         size: stat.size,
         mtimeMs: stat.mtimeMs,
         hash,
+        checksumValid,
         entryHash,
         treeHash
       },
@@ -525,7 +550,9 @@ export function compareSnapshots(before, after) {
   const afterSig = after.gitIndexSignature;
 
   if (beforeSig && afterSig && beforeSig !== 'unavailable' && afterSig !== 'unavailable') {
-    if (beforeSig.treeHash && afterSig.treeHash) {
+    if (beforeSig.checksumValid === true && afterSig.checksumValid === false) {
+      gitIndexModified = true;
+    } else if (beforeSig.treeHash && afterSig.treeHash) {
       gitIndexModified = beforeSig.treeHash !== afterSig.treeHash;
     } else if (beforeSig.treeHash && !afterSig.treeHash) {
       gitIndexModified = true;
