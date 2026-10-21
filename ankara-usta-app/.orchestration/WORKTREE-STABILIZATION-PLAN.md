@@ -5,9 +5,9 @@ Kapsam: `ankara-usta-app` çalışma alanı; Git kökü üst klasördeki `my-por
 
 ## Mevcut durum kaydı
 
-- `main`: `588285e` (`docs(workflow): refresh worktree stabilization baseline`).
+- `main`: bu belgenin commit edildiği yerel stabilizasyon ucu; kesin SHA için `git log -1 --oneline main` kullanılmalı.
 - `origin/main`: `31fb39f`; local `main` remote'un bir commit önünde ve henüz push edilmedi.
-- `codex/clean-baseline`: `588285e` tabanlı temiz geliştirme worktree'si. Stabilizasyon planı bu dalda güncellenmektedir.
+- `codex/clean-baseline`: `main` ile aynı yerel stabilizasyon ucunu taşıyan temiz geliştirme worktree'si.
 - `codex/worktree-preservation`: önceki büyük kullanıcı çalışma ağacını taşıyan koruma dalı; runtime, test/tooling ve araştırma/evidence değişiklikleri burada tutulur.
 - U5 checkpoint'i `31fb39f` ile zaten sabitlendi; orchestration sözleşmesi `dc59590` ile ayrı atomik commit olarak main'e alındı.
 - `.env*`, `.next`, `node_modules`, `coverage`, `test-results`, `.orchestration/runs` gibi yerel/üretilmiş alanlar korunuyor ve temizleme yapılmıyor.
