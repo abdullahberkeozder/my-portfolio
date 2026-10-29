@@ -8,7 +8,7 @@
   "scripts": {
     "styles:check": "node scripts/verify-style-entrypoints.mjs",
     "repository:check": "node scripts/verify-repository-hygiene.mjs",
-    "routes:check": "node scripts/run-project-tool.mjs vitest run tests/unit/routeManifestFilesystem.test.ts tests/unit/apiRouteManifestFilesystem.test.ts",
+    "routes:check": "node scripts/audit-routes.mjs",
     "dotnet:check": "dotnet build services/AnkaraUsta.NotificationWorker/AnkaraUsta.NotificationWorker.csproj --configuration Release && dotnet run --project services/AnkaraUsta.NotificationWorker.Tests/AnkaraUsta.NotificationWorker.Tests.csproj --configuration Release",
     "ui-debt:check": "node scripts/audit-ui-debt.mjs",
     "predev": "npm run styles:check",

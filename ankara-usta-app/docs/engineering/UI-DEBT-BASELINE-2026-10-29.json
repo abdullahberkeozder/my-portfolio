@@ -1,0 +1,16 @@
+{
+  "version": "2026-10-29",
+  "budgets": {
+    "cssLines": 7899,
+    "important": 380,
+    "mediaQueries": 67,
+    "inlineStyles": 53
+  },
+  "previousBudget": {
+    "cssLines": 7252,
+    "important": 569,
+    "mediaQueries": 59,
+    "inlineStyles": 71
+  },
+  "rationale": "Landing, wizard, discovery, loading and route surface rollout changed the accepted CSS scope. This is a ratchet baseline, not a permission to increase debt: future changes must stay at or below these measured values, and a later cleanup should lower them."
+}
