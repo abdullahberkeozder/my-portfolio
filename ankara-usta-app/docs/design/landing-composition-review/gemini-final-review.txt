@@ -1,0 +1,31 @@
+### 1. Uyuşmazlıklar ve Ödünleşimler (Trade-offs)
+
+Codex’in itirazı haklı; önceki B tercihimdeki editoryal yaklaşım kusurludur. B varyantındaki 2x2 manşet kartı, editoryal dergi estetiği sunsa da nesnel ve savunulabilir bir veri modeli olmadan ilk ustayı "öne çıkarılmış/sponsorlu" göstererek tarafsız kamu-hizmet güvenini zedeler. 
+
+Buna karşın A varyantının iki sütunlu eşit (3:2) ızgarası adil ve güven vericidir; ancak kart kabukları (card shells) tamamen kaldırıldığında içerik sınırları belirsizleşip yorucu, tekdüze bir e-ticaret kataloğuna dönüşme riski taşır.
+
+Kullanıcının "premium tasarımda belirgin bölüm sınırları bulunmaz" tezine katılmıyorum; Codex'e katılıyorum. Yalnızca gürültü üreten dekoratif dış çerçeveler elenmelidir. Arama odağı, girdi alanları ve liste başlangıcı arasındaki işlevsel ayrım korunmazsa hiyerarşi çöker.
+
+---
+
+### 2. Koşullu Yön Tercihi: Varyant A
+
+Tercihim **koşullu olarak Varyant A**'dır. 
+
+*Koşul:* B'nin yarattığı taraflı sıralama algısı sosyal fayda odaklı bir rehber için etik risktir. A'nın katalog tekdüzeliği ise kontrollü negatif alan, tipografik kontrast ve mikro-gruplamalarla çözülebilir bir tasarım problemidir.
+
+---
+
+### 3. Sonraki 3 Değişiklik
+
+1. **İşlevsel Boşluk ve Odak:** Kart kabukları olmaksızın, 720px arama bloğu ile liste başlangıcı arasına belirgin dikey negatif alan ve yumuşak zemin geçişi verilerek işlevsel ayrım çizgiler olmadan sağlanmalı.
+2. **Meta Veri ve Mikro-Gruplama:** 18px başlık, 14px "temsili" usta/bölge bilgisi ve 44px yer imi ikonu arasındaki dikey ritim sabitlenmeli; sınır çizgisi olmadan da bilginin tek bir ustaya ait olduğu net okunmalı.
+3. **Prototip Durumunun Belirtilmesi:** Gerçek usta listelemeyen ilçe seçicisinin prototip niteliği arayüzde açıkça hissettirilmeli; arama bileşeni ile temsili sonuçlar arasındaki beklenti şeffaf yönetilmeli.
+
+---
+
+### 4. Kod/Tasarım Çıkarımı ve Görsel Gözlem Ayrımı
+
+Tarayıcı `file://` protokol kısıtı nedeniyle yeni bir render alınmamış ve arayüz canlı ortamda **gözlemlenmemiştir**. 
+
+Bu incelemedeki tüm tespitler; CSS parametreleri (52px başlık, 720px/52px arama elemanları, 3:2 grid oranları) ve DOM hiyerarşisi üzerinden yapılan **tasarım ve kod çıkarımlarıdır**. Testlerin geçtiği ya da kodun uygulandığı yönünde bir iddia bulunmamaktadır.

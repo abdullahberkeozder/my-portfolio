@@ -1,0 +1,510 @@
+[
+  {
+    "width": 320,
+    "status": 200,
+    "metrics": {
+      "title": "Doğrulanmış Ustalar | Orkestra",
+      "bodyText": "İçeriğe Atla\norkestra\nMenü\nUsta listesi yüklenemedi\n\nBir bağlantı sorunu oluştu. Lütfen daha sonra tekrar deneyin.\n\nTekrar dene\nAna sayfaya dön\norkestra\n\nAnkara’nın 9 pilot ilçesinde ev işi talebi oluşturma, teklif karşılaştırma ve iş takibi.\n\nHİZMET VE KAPSAM\nHizmet kategorileri\nDoğrulanmış Usta Dizini\nAnkara Usta Haritası\nNasıl Çalışır?\nTaleplerim\nİşlerim\nKullanıcı Girişi\nUSTALAR İÇİN\nOrkestraya Katıl (Usta Başvurusu)\nUsta Girişi\nBelge Doğrulama Süreci\nBölgesel İş Talepleri\nMüsaitlik Takvimi\nYARDIM VE BİLGİ\nYardım ve Çözüm Merkezi\nWhatsApp Saha Destek\nGizlilik ve KVKK Politikası\nKullanım Koşulları\nMesleki belge kontrolü tamamlanmadan rozet verilmez\nHizmet Bölgeleri:\nÇankaya\n·\nYenimahalle\n·\nKeçiören\n·\nMamak\n·\nAltındağ\n·\nEtimesgut\n·\nSincan\n·\nGölbaşı\n·\nPursaklar\n© 2026 Orkestra. Tüm hakları saklıdır.\nBaşkent Zanaat Ekosistemi\n·\nAhilik Güvencesi\n·\n9 Pilot İlçe\n💬\nSaha Destek & Yardım",
+      "documentWidth": 320,
+      "viewportWidth": 320,
+      "scrollHeight": 2069,
+      "split": null,
+      "list": null,
+      "map": null,
+      "drawer": null,
+      "carousel": null,
+      "badge": null,
+      "support": [
+        {
+          "text": "Yardım ve Çözüm Merkezi",
+          "cls": "",
+          "rect": {
+            "x": 24,
+            "y": 1638.6875,
+            "width": 162.125,
+            "height": 20.25
+          }
+        },
+        {
+          "text": "WhatsApp Saha Destek",
+          "cls": "",
+          "rect": {
+            "x": 24,
+            "y": 1669.6875,
+            "width": 149.109375,
+            "height": 20.25
+          }
+        },
+        {
+          "text": "💬Saha Destek & Yardım",
+          "cls": "_floatingCapsuleBtn_10mfa_197 ",
+          "rect": {
+            "x": 262,
+            "y": 780,
+            "width": 44,
+            "height": 44
+          }
+        }
+      ],
+      "buttons": 3,
+      "links": 23,
+      "images": [],
+      "focusables": 26
+    },
+    "keyboard": [
+      {
+        "tag": "A",
+        "text": "İçeriğe Atla",
+        "aria": null,
+        "cls": "skip-link"
+      },
+      {
+        "tag": "A",
+        "text": "orkestra",
+        "aria": "Orkestra ana sayfa",
+        "cls": "_brand_17qn5_58"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Menü",
+        "aria": null,
+        "cls": "_menu_17qn5_320"
+      },
+      {
+        "tag": "A",
+        "text": "Tekrar dene",
+        "aria": null,
+        "cls": "_ctaBtn_1umzl_78"
+      },
+      {
+        "tag": "A",
+        "text": "Ana sayfaya dön",
+        "aria": null,
+        "cls": "_secondaryBtn_1umzl_232"
+      },
+      {
+        "tag": "A",
+        "text": "Hizmet kategorileri",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Doğrulanmış Usta Dizini",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Ankara Usta Haritası",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Nasıl Çalışır?",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Taleplerim",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "İşlerim",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Kullanıcı Girişi",
+        "aria": null,
+        "cls": ""
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "status": 200,
+    "metrics": {
+      "title": "Doğrulanmış Ustalar | Orkestra",
+      "bodyText": "İçeriğe Atla\norkestra\nMenü\nUsta listesi yüklenemedi\n\nBir bağlantı sorunu oluştu. Lütfen daha sonra tekrar deneyin.\n\nTekrar dene\nAna sayfaya dön\norkestra\n\nAnkara’nın 9 pilot ilçesinde ev işi talebi oluşturma, teklif karşılaştırma ve iş takibi.\n\nHİZMET VE KAPSAM\nHizmet kategorileri\nDoğrulanmış Usta Dizini\nAnkara Usta Haritası\nNasıl Çalışır?\nTaleplerim\nİşlerim\nKullanıcı Girişi\nUSTALAR İÇİN\nOrkestraya Katıl (Usta Başvurusu)\nUsta Girişi\nBelge Doğrulama Süreci\nBölgesel İş Talepleri\nMüsaitlik Takvimi\nYARDIM VE BİLGİ\nYardım ve Çözüm Merkezi\nWhatsApp Saha Destek\nGizlilik ve KVKK Politikası\nKullanım Koşulları\nMesleki belge kontrolü tamamlanmadan rozet verilmez\nHizmet Bölgeleri:\nÇankaya\n·\nYenimahalle\n·\nKeçiören\n·\nMamak\n·\nAltındağ\n·\nEtimesgut\n·\nSincan\n·\nGölbaşı\n·\nPursaklar\n© 2026 Orkestra. Tüm hakları saklıdır.\nBaşkent Zanaat Ekosistemi\n·\nAhilik Güvencesi\n·\n9 Pilot İlçe\n💬\nSaha Destek & Yardım",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "scrollHeight": 2027,
+      "split": null,
+      "list": null,
+      "map": null,
+      "drawer": null,
+      "carousel": null,
+      "badge": null,
+      "support": [
+        {
+          "text": "Yardım ve Çözüm Merkezi",
+          "cls": "",
+          "rect": {
+            "x": 24,
+            "y": 1638.6875,
+            "width": 162.125,
+            "height": 20.25
+          }
+        },
+        {
+          "text": "WhatsApp Saha Destek",
+          "cls": "",
+          "rect": {
+            "x": 24,
+            "y": 1669.6875,
+            "width": 149.109375,
+            "height": 20.25
+          }
+        },
+        {
+          "text": "💬Saha Destek & Yardım",
+          "cls": "_floatingCapsuleBtn_10mfa_197 ",
+          "rect": {
+            "x": 332,
+            "y": 780,
+            "width": 44,
+            "height": 44
+          }
+        }
+      ],
+      "buttons": 3,
+      "links": 23,
+      "images": [],
+      "focusables": 26
+    },
+    "keyboard": [
+      {
+        "tag": "A",
+        "text": "İçeriğe Atla",
+        "aria": null,
+        "cls": "skip-link"
+      },
+      {
+        "tag": "A",
+        "text": "orkestra",
+        "aria": "Orkestra ana sayfa",
+        "cls": "_brand_17qn5_58"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Menü",
+        "aria": null,
+        "cls": "_menu_17qn5_320"
+      },
+      {
+        "tag": "A",
+        "text": "Tekrar dene",
+        "aria": null,
+        "cls": "_ctaBtn_1umzl_78"
+      },
+      {
+        "tag": "A",
+        "text": "Ana sayfaya dön",
+        "aria": null,
+        "cls": "_secondaryBtn_1umzl_232"
+      },
+      {
+        "tag": "A",
+        "text": "Hizmet kategorileri",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Doğrulanmış Usta Dizini",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Ankara Usta Haritası",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Nasıl Çalışır?",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Taleplerim",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "İşlerim",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Kullanıcı Girişi",
+        "aria": null,
+        "cls": ""
+      }
+    ]
+  },
+  {
+    "width": 820,
+    "status": 200,
+    "metrics": {
+      "title": "Doğrulanmış Ustalar | Orkestra",
+      "bodyText": "İçeriğe Atla\norkestra\nMenü\nUsta listesi yüklenemedi\n\nBir bağlantı sorunu oluştu. Lütfen daha sonra tekrar deneyin.\n\nTekrar dene\nAna sayfaya dön\norkestra\n\nAnkara’nın 9 pilot ilçesinde ev işi talebi oluşturma, teklif karşılaştırma ve iş takibi.\n\nHİZMET VE KAPSAM\nHizmet kategorileri\nDoğrulanmış Usta Dizini\nAnkara Usta Haritası\nNasıl Çalışır?\nTaleplerim\nİşlerim\nKullanıcı Girişi\nUSTALAR İÇİN\nOrkestraya Katıl (Usta Başvurusu)\nUsta Girişi\nBelge Doğrulama Süreci\nBölgesel İş Talepleri\nMüsaitlik Takvimi\nYARDIM VE BİLGİ\nYardım ve Çözüm Merkezi\nWhatsApp Saha Destek\nGizlilik ve KVKK Politikası\nKullanım Koşulları\nMesleki belge kontrolü tamamlanmadan rozet verilmez\nHizmet Bölgeleri:\nÇankaya\n·\nYenimahalle\n·\nKeçiören\n·\nMamak\n·\nAltındağ\n·\nEtimesgut\n·\nSincan\n·\nGölbaşı\n·\nPursaklar\n© 2026 Orkestra. Tüm hakları saklıdır.\nBaşkent Zanaat Ekosistemi\n·\nAhilik Güvencesi\n·\n9 Pilot İlçe\n💬\nSaha Destek & Yardım",
+      "documentWidth": 820,
+      "viewportWidth": 820,
+      "scrollHeight": 1609,
+      "split": null,
+      "list": null,
+      "map": null,
+      "drawer": null,
+      "carousel": null,
+      "badge": null,
+      "support": [
+        {
+          "text": "Yardım ve Çözüm Merkezi",
+          "cls": "",
+          "rect": {
+            "x": 428,
+            "y": 1326,
+            "width": 162.125,
+            "height": 20.25
+          }
+        },
+        {
+          "text": "WhatsApp Saha Destek",
+          "cls": "",
+          "rect": {
+            "x": 428,
+            "y": 1357,
+            "width": 149.109375,
+            "height": 20.25
+          }
+        },
+        {
+          "text": "💬Saha Destek & Yardım",
+          "cls": "_floatingCapsuleBtn_10mfa_197 ",
+          "rect": {
+            "x": 579.484375,
+            "y": 832,
+            "width": 220.515625,
+            "height": 44
+          }
+        }
+      ],
+      "buttons": 3,
+      "links": 23,
+      "images": [],
+      "focusables": 26
+    },
+    "keyboard": [
+      {
+        "tag": "A",
+        "text": "İçeriğe Atla",
+        "aria": null,
+        "cls": "skip-link"
+      },
+      {
+        "tag": "A",
+        "text": "orkestra",
+        "aria": "Orkestra ana sayfa",
+        "cls": "_brand_17qn5_58"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Menü",
+        "aria": null,
+        "cls": "_menu_17qn5_320"
+      },
+      {
+        "tag": "A",
+        "text": "Tekrar dene",
+        "aria": null,
+        "cls": "_ctaBtn_1umzl_78"
+      },
+      {
+        "tag": "A",
+        "text": "Ana sayfaya dön",
+        "aria": null,
+        "cls": "_secondaryBtn_1umzl_232"
+      },
+      {
+        "tag": "A",
+        "text": "Hizmet kategorileri",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Doğrulanmış Usta Dizini",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Ankara Usta Haritası",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Nasıl Çalışır?",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Taleplerim",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "İşlerim",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Kullanıcı Girişi",
+        "aria": null,
+        "cls": ""
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "status": 200,
+    "metrics": {
+      "title": "Doğrulanmış Ustalar | Orkestra",
+      "bodyText": "İçeriğe Atla\norkestra\nKeşfet\nUstalar\nGiriş yap\nHizmet ver\nUsta listesi yüklenemedi\n\nBir bağlantı sorunu oluştu. Lütfen daha sonra tekrar deneyin.\n\nTekrar dene\nAna sayfaya dön\norkestra\n\nAnkara’nın 9 pilot ilçesinde ev işi talebi oluşturma, teklif karşılaştırma ve iş takibi.\n\nHİZMET VE KAPSAM\nHizmet kategorileri\nDoğrulanmış Usta Dizini\nAnkara Usta Haritası\nNasıl Çalışır?\nTaleplerim\nİşlerim\nKullanıcı Girişi\nUSTALAR İÇİN\nOrkestraya Katıl (Usta Başvurusu)\nUsta Girişi\nBelge Doğrulama Süreci\nBölgesel İş Talepleri\nMüsaitlik Takvimi\nYARDIM VE BİLGİ\nYardım ve Çözüm Merkezi\nWhatsApp Saha Destek\nGizlilik ve KVKK Politikası\nKullanım Koşulları\nMesleki belge kontrolü tamamlanmadan rozet verilmez\nHizmet Bölgeleri:\nÇankaya\n·\nYenimahalle\n·\nKeçiören\n·\nMamak\n·\nAltındağ\n·\nEtimesgut\n·\nSincan\n·\nGölbaşı\n·\nPursaklar\n© 2026 Orkestra. Tüm hakları saklıdır.\nBaşkent Zanaat Ekosistemi\n·\nAhilik Güvencesi\n·\n9 Pilot İlçe\n💬\nSaha Destek & Yardım",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "scrollHeight": 1516,
+      "split": null,
+      "list": null,
+      "map": null,
+      "drawer": null,
+      "carousel": null,
+      "badge": null,
+      "support": [
+        {
+          "text": "Yardım ve Çözüm Merkezi",
+          "cls": "",
+          "rect": {
+            "x": 1044.796875,
+            "y": 1064.5,
+            "width": 162.125,
+            "height": 20.25
+          }
+        },
+        {
+          "text": "WhatsApp Saha Destek",
+          "cls": "",
+          "rect": {
+            "x": 1044.796875,
+            "y": 1095.5,
+            "width": 149.109375,
+            "height": 20.25
+          }
+        },
+        {
+          "text": "💬Saha Destek & Yardım",
+          "cls": "_floatingCapsuleBtn_10mfa_197 ",
+          "rect": {
+            "x": 1199.484375,
+            "y": 832,
+            "width": 220.515625,
+            "height": 44
+          }
+        }
+      ],
+      "buttons": 3,
+      "links": 23,
+      "images": [],
+      "focusables": 26
+    },
+    "keyboard": [
+      {
+        "tag": "A",
+        "text": "İçeriğe Atla",
+        "aria": null,
+        "cls": "skip-link"
+      },
+      {
+        "tag": "A",
+        "text": "orkestra",
+        "aria": "Orkestra ana sayfa",
+        "cls": "_brand_17qn5_58"
+      },
+      {
+        "tag": "A",
+        "text": "Keşfet",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Ustalar",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Giriş yap",
+        "aria": null,
+        "cls": "_authActionBtn_17qn5_47"
+      },
+      {
+        "tag": "A",
+        "text": "Hizmet ver",
+        "aria": null,
+        "cls": "_becomeTaskerBtn_17qn5_40"
+      },
+      {
+        "tag": "A",
+        "text": "Tekrar dene",
+        "aria": null,
+        "cls": "_ctaBtn_1umzl_78"
+      },
+      {
+        "tag": "A",
+        "text": "Ana sayfaya dön",
+        "aria": null,
+        "cls": "_secondaryBtn_1umzl_232"
+      },
+      {
+        "tag": "A",
+        "text": "Hizmet kategorileri",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Doğrulanmış Usta Dizini",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Ankara Usta Haritası",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Nasıl Çalışır?",
+        "aria": null,
+        "cls": ""
+      }
+    ]
+  }
+]

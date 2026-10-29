@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="tr">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orkestra | Mevcut ve önerilen tasarım</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6f3;color:#192923;font:16px/1.55 system-ui,sans-serif}main{max-width:1600px;padding:40px 28px;margin:auto}h1{font-size:clamp(28px,3.2vw,48px);line-height:1.12;letter-spacing:-.035em;font-weight:650;max-width:900px}h2{font-size:24px;font-weight:600}p{max-width:86ch;color:#4a5d53}a{color:#0e6f47;text-underline-offset:4px}.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:28px 0}.toolbar button{font:inherit;padding:11px 20px;background:transparent;border:1px solid #b7c3ba;border-radius:6px;cursor:pointer;color:inherit;min-height:44px}.toolbar button[aria-pressed=true]{background:#0e6f47;color:white;border-color:#0e6f47}:focus-visible{outline:3px solid #3276df;outline-offset:4px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:24px}.pair figure{margin:0;min-width:0}.pair figcaption{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.frame{aspect-ratio:1440/1000;overflow:auto;background:white;border:1px solid #d6ded8}.frame img{display:block;width:100%;height:auto}.mobile .pair{max-width:820px;margin:auto}.mobile .frame{aspect-ratio:390/844}.full{display:flex;gap:20px;flex-wrap:wrap;margin:22px 0}.note{font-size:14px}section{margin-top:48px}.decisions{display:grid;grid-template-columns:1fr 1fr;gap:0 36px;list-style:none;padding:0}.decisions li{padding:16px 0;border-top:1px solid #d1dbd4}.decisions b{display:block;margin-bottom:4px}.decisions span{font-size:14px;color:#4a5d53}.status{color:#456354;font-size:13px} @media(max-width:700px){main{padding:26px 16px}.pair{grid-template-columns:1fr}.decisions{grid-template-columns:1fr}.pair figure+figure{margin-top:20px}.frame{max-height:680px}.toolbar{gap:8px}}
+</style>
+<main>
+<span class="status">Görsel tasarım karşılaştırması · 27 Ekim 2026</span>
+<h1>Aynı içerik.<br>Daha sakin bir bütün.</h1>
+<p>Solda önceki denetimde yakalanan mevcut sayfa, sağda nihai 10 kararı birleştiren öneri. Her görüntü aynı cihaz genişliği için hazırlanmıştır. Çerçevelerin içinde kaydırarak sayfanın devamını karşılaştırabilirsiniz.</p>
+<p class="note">Bu bir tasarım incelemesidir; uygulamaya entegre edilmemiştir. Önerideki arama ve butonlar gerçek hizmet akışını çalıştırmaz. Kaynak metindeki garanti ve doğrulama ifadeleri bu çalışma ile doğrulanmış sayılmaz.</p>
+<div class="toolbar" aria-label="Karşılaştırma genişliği"><button id="desktop" aria-pressed="true">Masaüstü · 1440 px</button><button id="mobile" aria-pressed="false">Mobil · 390 px</button></div>
+<div id="comparison"><div class="pair">
+<figure><figcaption><b>Mevcut</b><a id="before-link" href="before-1440.png">Tam boy aç</a></figcaption><div class="frame"><img id="before" src="before-1440.png" alt="Mevcut Orkestra landing page"></div></figure>
+<figure><figcaption><b>Önerilen tasarım</b><a id="after-link" href="after-1440.png">Tam boy aç</a></figcaption><div class="frame"><img id="after" src="after-1440.png" alt="Önerilen Orkestra landing page"></div></figure>
+</div></div>
+<div class="full"><a href="proposal.html">Boyuta uyarlanan taslak</a><a href="REVIEW.md">Kararlar, sınırlar ve denetim</a><a href="../landing-aesthetic-audit-2026-10-27/REPORT.md">Araştırma raporu</a></div>
+<section><h2>Görünür farkı oluşturan 10 karar</h2><ul class="decisions">
+<li><b>Kesintisiz açık zemin</b><span>Gren ve üst üste yüzeyler yerine fotoğrafın doğal dokusu.</span></li>
+<li><b>Renklerin net görevleri</b><span>Yeşil ana eylem, mavi marka, koyu nötr metin.</span></li>
+<li><b>Tek tipografik düzen</b><span>Başlık, açıklama ve kontrol birbirine akraba; sicil estetiği baskın değil.</span></li>
+<li><b>Ortalanmış hero kompozisyonu</b><span>Aynı slogan, aynı fotoğraf, daha az görsel katman.</span></li>
+<li><b>Tutarlı fotoğraf sunumu</b><span>Aynı altı iş görselinde ortak kadraj disiplini; yeni fotoğraf üretilmedi.</span></li>
+<li><b>Çerçevesiz keşif</b><span>Fotoğraf ve yakın altyazı grupları, paspartu ve kart gölgesinin yerini alıyor.</span></li>
+<li><b>Sakin bölge dizini</b><span>İlçe bağlantıları kutu içinde kutu olmadan aynı zeminde.</span></li>
+<li><b>Bir kontrol ailesi</b><span>Düz dolgu, sade sınır ve metin bağlantılarıyla önem sırası.</span></li>
+<li><b>Tipografik kategoriler</b><span>Kutular yerine metin ve etkin seçimi gösteren alt çizgi.</span></li>
+<li><b>Mobil için ayrı kompozisyon</b><span>Yazıyı küçültmeden ve yeni öğe eklemeden keşfe daha erken yer.</span></li>
+</ul></section>
+</main>
+<script>
+for(const mode of ['desktop','mobile'])document.getElementById(mode).addEventListener('click',()=>{
+const width=mode==='mobile'?390:1440;document.getElementById('comparison').className=mode==='mobile'?'mobile':'';
+for(const kind of ['before','after']){const file=`${kind}-${width}.png`;document.getElementById(kind).src=file;document.getElementById(kind+'-link').href=file;}
+for(const key of ['desktop','mobile'])document.getElementById(key).setAttribute('aria-pressed',String(key===mode));
+});
+</script></html>

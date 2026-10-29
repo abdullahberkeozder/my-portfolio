@@ -1,0 +1,1069 @@
+<!doctype html>
+<!-- visual-only -->
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Orkestra — Ankara Doğrulanmış Usta ve Zanaatkâr Sicili</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #fbfcfa;
+      color: #172923;
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input, select {
+      font: inherit;
+      color: inherit;
+    }
+
+    :focus-visible {
+      outline: 3px solid #3276df;
+      outline-offset: 2px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-left: 32px;
+      padding-right: 32px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+    }
+
+    /* Header */
+    .site-header {
+      height: 72px;
+      background-color: #fbfcfa;
+      border-bottom: 1px solid #e7ebe8;
+      display: flex;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .site-header {
+        height: 64px;
+      }
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .brand-logo {
+      display: block;
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+
+    .brand-wordmark {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      color: #172923;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 15px;
+      font-weight: 500;
+      color: #172923;
+      padding: 8px 0;
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .btn-text {
+      background: none;
+      border: none;
+      padding: 8px 12px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #172923;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      min-width: 44px;
+      border-radius: 6px;
+    }
+
+    .btn-green-sm {
+      background-color: #0e6f47;
+      color: #ffffff;
+      border: none;
+      padding: 10px 18px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      width: 44px;
+      height: 44px;
+      padding: 10px;
+      background: none;
+      border: 1px solid #d5dbd7;
+      border-radius: 6px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links, .header-right {
+        display: none;
+      }
+      .mobile-menu-btn {
+        display: inline-flex;
+      }
+    }
+
+    /* Section vertical rhythms */
+    .section-gap {
+      margin-top: 56px;
+    }
+
+    @media (max-width: 768px) {
+      .section-gap {
+        margin-top: 36px;
+      }
+    }
+
+    /* Hero */
+    .hero-rail {
+      background: linear-gradient(rgba(251, 252, 250, 0.84), rgba(251, 252, 250, 0.88)), url('../../../public/images/hero-glass-materials-v4.jpg') center/cover no-repeat;
+      border-radius: 6px;
+      padding: 44px 32px;
+      min-height: 380px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+      .hero-rail {
+        padding: 24px 18px;
+        min-height: auto;
+      }
+    }
+
+    .hero-kicker {
+      font-size: 13px;
+      font-weight: 600;
+      color: #3b5047;
+      margin-bottom: 10px;
+    }
+
+    .hero-headline {
+      font-size: 54px;
+      line-height: 1.12;
+      font-weight: 700;
+      letter-spacing: -1px;
+      color: #172923;
+      margin-bottom: 22px;
+    }
+
+    @media (max-width: 768px) {
+      .hero-headline {
+        font-size: 34px;
+        line-height: 1.18;
+        letter-spacing: -0.5px;
+        margin-bottom: 16px;
+      }
+    }
+
+    .search-control-group {
+      max-width: 780px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .search-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #172923;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .search-input {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: 46px;
+      padding: 0 14px;
+      background-color: #ffffff;
+      border: 1px solid #c9d1cc;
+      border-radius: 6px;
+      font-size: 15px;
+      color: #172923;
+    }
+
+    .search-input::placeholder {
+      color: #6d7f76;
+    }
+
+    .district-select {
+      flex: 0 0 190px;
+      height: 46px;
+      padding: 0 12px;
+      background-color: #ffffff;
+      border: 1px solid #c9d1cc;
+      border-radius: 6px;
+      font-size: 15px;
+      color: #172923;
+      cursor: pointer;
+    }
+
+    .btn-hero-submit {
+      flex: 0 0 auto;
+      height: 46px;
+      padding: 0 22px;
+      background-color: #0e6f47;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 768px) {
+      .search-bar {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .search-input {
+        width: 100%;
+        height: 44px;
+      }
+      .search-sub-row {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+      }
+      .district-select {
+        flex: 1 1 50%;
+        height: 44px;
+      }
+      .btn-hero-submit {
+        flex: 1 1 50%;
+        height: 44px;
+        padding: 0 12px;
+      }
+    }
+
+    .hero-quick-examples {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 6px 14px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .quick-label {
+      font-weight: 600;
+      color: #172923;
+    }
+
+    .quick-link {
+      color: #0e6f47;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      padding: 4px 0;
+      display: inline-block;
+    }
+
+    /* Section header */
+    .section-header {
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.3px;
+      color: #172923;
+    }
+
+    .section-subtitle {
+      font-size: 15px;
+      color: #4f635a;
+      margin-top: 4px;
+    }
+
+    /* Category bar */
+    .category-scroll-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      border-bottom: 1px solid #e7ebe8;
+      margin-bottom: 24px;
+    }
+
+    .category-scroll-wrap::-webkit-scrollbar {
+      display: none;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      white-space: nowrap;
+      min-width: max-content;
+    }
+
+    .category-tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 12px 2px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #4f635a;
+      cursor: pointer;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .category-tab-btn.active {
+      color: #172923;
+      font-weight: 600;
+      border-bottom-color: #0e6f47;
+    }
+
+    /* Photo cards grid */
+    .discovery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      column-gap: 24px;
+      row-gap: 32px;
+    }
+
+    @media (max-width: 900px) {
+      .discovery-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .discovery-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .work-card {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-photo-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      border-radius: 4px;
+      background-color: #e5eae6;
+    }
+
+    .card-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 4px;
+    }
+
+    .bookmark-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 44px;
+      height: 44px;
+      background-color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #172923;
+      padding: 0;
+    }
+
+    .bookmark-icon {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+
+    .card-content {
+      padding-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .card-category {
+      font-size: 12px;
+      font-weight: 600;
+      color: #4f635a;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: #172923;
+    }
+
+    .card-meta {
+      font-size: 14px;
+      color: #4f635a;
+    }
+
+    .card-materials {
+      font-size: 13px;
+      line-height: 1.45;
+      color: #2e443a;
+      margin-top: 4px;
+    }
+
+    .discovery-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .btn-green-main {
+      background-color: #0e6f47;
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+    }
+
+    .btn-link-action {
+      background: none;
+      border: none;
+      color: #172923;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 8px;
+      min-height: 44px;
+    }
+
+    /* Regions */
+    .region-note {
+      font-size: 13px;
+      color: #4f635a;
+      margin-top: 6px;
+    }
+
+    .regions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: 36px;
+      row-gap: 0;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .regions-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .region-row {
+      border-top: 1px solid #e7ebe8;
+      padding: 20px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .region-row:last-child,
+    .region-row:nth-last-child(2) {
+      border-bottom: 1px solid #e7ebe8;
+    }
+
+    @media (max-width: 768px) {
+      .region-row:nth-last-child(2) {
+        border-bottom: none;
+      }
+    }
+
+    .region-code {
+      font-size: 12px;
+      font-weight: 600;
+      color: #4f635a;
+    }
+
+    .region-zone {
+      font-size: 18px;
+      font-weight: 600;
+      color: #172923;
+      line-height: 1.3;
+    }
+
+    .region-neighborhoods {
+      font-size: 14px;
+      color: #3b5047;
+      line-height: 1.45;
+    }
+
+    .region-craft {
+      font-size: 14px;
+      color: #172923;
+      line-height: 1.45;
+    }
+
+    .region-districts-bar {
+      background-color: #f1f4f1;
+      border-radius: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 4px 10px;
+      margin-top: 4px;
+    }
+
+    .district-pill-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0e6f47;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 8px;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* Protocol */
+    .protocol-rows {
+      display: flex;
+      flex-direction: column;
+      border-top: 1px solid #e7ebe8;
+      margin-top: 20px;
+    }
+
+    .protocol-item {
+      border-bottom: 1px solid #e7ebe8;
+      padding: 16px 0;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      column-gap: 24px;
+      align-items: baseline;
+    }
+
+    @media (max-width: 768px) {
+      .protocol-item {
+        grid-template-columns: 1fr;
+        row-gap: 6px;
+      }
+    }
+
+    .protocol-item-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #172923;
+    }
+
+    .protocol-item-desc {
+      font-size: 14px;
+      color: #3b5047;
+      line-height: 1.5;
+    }
+
+    .protocol-legal-note {
+      font-size: 13px;
+      color: #5d7067;
+      line-height: 1.6;
+      margin-top: 20px;
+      padding: 12px 14px;
+      background-color: #f4f6f4;
+      border-radius: 4px;
+    }
+
+    /* Service directory details */
+    .service-directory-details {
+      border-top: 1px solid #e7ebe8;
+      border-bottom: 1px solid #e7ebe8;
+      padding: 16px 0;
+    }
+
+    .service-directory-details summary {
+      font-size: 15px;
+      font-weight: 600;
+      color: #172923;
+      cursor: pointer;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      user-select: none;
+    }
+
+    .service-directory-body {
+      padding-top: 12px;
+      padding-bottom: 4px;
+      font-size: 14px;
+      color: #3b5047;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    .site-footer {
+      border-top: 1px solid #e7ebe8;
+      padding: 36px 0;
+      margin-top: 56px;
+      background-color: #fbfcfa;
+    }
+
+    @media (max-width: 768px) {
+      .site-footer {
+        padding: 28px 0;
+        margin-top: 36px;
+      }
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .footer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .footer-nav a {
+      font-size: 14px;
+      color: #4f635a;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .footer-disclaimer {
+      font-size: 13px;
+      color: #72847c;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="header-left">
+        <a href="#" class="brand" aria-label="Orkestra Ana Sayfa">
+          <svg class="brand-logo" viewBox="0 0 32 32" fill="#3276df" aria-hidden="true">
+            <circle cx="10" cy="10" r="7" />
+            <circle cx="22" cy="10" r="7" />
+            <circle cx="10" cy="22" r="7" />
+            <circle cx="22" cy="22" r="7" />
+          </svg>
+          <span class="brand-wordmark">Orkestra</span>
+        </a>
+        <nav aria-label="Ana Gezinti">
+          <ul class="nav-links">
+            <li><a href="#kesfet">Keşfet</a></li>
+            <li><a href="#ustalar">Ustalar</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="header-right">
+        <button type="button" class="btn-text">Giriş yap</button>
+        <button type="button" class="btn-green-sm">Hizmet ver</button>
+      </div>
+
+      <button type="button" class="mobile-menu-btn" aria-label="Menüyü aç">
+        <svg width="24" height="24" viewBox="0 0 24 24" stroke="#172923" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="container section-gap" aria-labelledby="hero-title">
+      <div class="hero-rail">
+        <p class="hero-kicker">Ankara Doğrulanmış Usta ve Zanaatkâr Sicili · 2026</p>
+        <h1 id="hero-title" class="hero-headline">Evin için bir fikir.<br>İşin için bir usta.</h1>
+
+        <div class="search-control-group">
+          <label for="service-search-input" class="search-label">Ne yaptırmak istiyorsun?</label>
+          <div class="search-bar">
+            <input type="text" id="service-search-input" class="search-input" placeholder="Örn. Musluğum su damlatıyor" aria-label="Hizmet arama">
+            <div class="search-sub-row">
+              <select class="district-select" aria-label="İlçe seçimi">
+                <option value="">Ankara (Tüm İlçeler)</option>
+                <option value="Cankaya">Çankaya</option>
+                <option value="Yenimahalle">Yenimahalle</option>
+                <option value="Etimesgut">Etimesgut</option>
+                <option value="Kecioren">Keçiören</option>
+                <option value="Mamak">Mamak</option>
+                <option value="Golbasi">Gölbaşı</option>
+                <option value="Altindag">Altındağ</option>
+                <option value="Sincan">Sincan</option>
+                <option value="Pursaklar">Pursaklar</option>
+              </select>
+              <button type="button" class="btn-hero-submit">Hizmet bul</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-quick-examples">
+          <span class="quick-label">Hızlı Teşhis:</span>
+          <a href="#" class="quick-link">Sızıntı ve Kartuş Değişimi</a>
+          <a href="#" class="quick-link">Ana Pano ve Sigorta Arızası</a>
+          <a href="#" class="quick-link">Menteşe ve Kapı Ayarı</a>
+          <a href="#" class="quick-link">Tek Oda Yüzey Boyası</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Discovery Section -->
+    <section id="kesfet" class="container section-gap" aria-labelledby="discovery-title">
+      <div class="section-header">
+        <h2 id="discovery-title" class="section-title">Evine fikir bul</h2>
+        <p class="section-subtitle">Örnek uygulamalar. Beğendiğin fikri incele, istersen benzerini yaptır.</p>
+      </div>
+
+      <div class="category-scroll-wrap" role="region" aria-label="Hizmet kategorileri sekmeleri">
+        <ul class="category-tabs">
+          <li><button type="button" class="category-tab-btn active">Tümü</button></li>
+          <li><button type="button" class="category-tab-btn">Montaj</button></li>
+          <li><button type="button" class="category-tab-btn">Tesisat</button></li>
+          <li><button type="button" class="category-tab-btn">Boya</button></li>
+          <li><button type="button" class="category-tab-btn">Elektrik</button></li>
+          <li><button type="button" class="category-tab-btn">Temizlik</button></li>
+          <li><button type="button" class="category-tab-btn">Kaynak</button></li>
+        </ul>
+      </div>
+
+      <div class="discovery-grid">
+        <!-- Card 1 -->
+        <article class="work-card">
+          <div class="card-photo-wrapper">
+            <img src="../../../public/images/discovery/duvar-rafi-montaji.jpg" alt="Duvar rafı montajı örneği" class="card-photo" loading="lazy">
+            <button type="button" class="bookmark-btn" aria-label="Duvar rafı montajı uygulamasını kaydet">
+              <svg class="bookmark-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="card-content">
+            <span class="card-category">Montaj</span>
+            <h3 class="card-title">Duvar rafı montajı</h3>
+            <p class="card-meta">Murat Usta · Çankaya</p>
+            <p class="card-materials">40mm Masif Meşe · Gizli Çelik Ankraj · Lazer Terazi: ±0.5mm</p>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="work-card">
+          <div class="card-photo-wrapper">
+            <img src="../../../public/images/discovery/mutfak-bataryasi-degisimi.jpg" alt="Mutfak bataryası değişimi örneği" class="card-photo" loading="lazy">
+            <button type="button" class="bookmark-btn" aria-label="Mutfak bataryası değişimi uygulamasını kaydet">
+              <svg class="bookmark-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="card-content">
+            <span class="card-category">Tesisat</span>
+            <h3 class="card-title">Mutfak bataryası değişimi</h3>
+            <p class="card-meta">Selim Usta · Yenimahalle</p>
+            <p class="card-materials">Döküm Pirinç Gövde · 304 Paslanmaz Fleks · TS EN 817 Sızdırmazlık</p>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="work-card">
+          <div class="card-photo-wrapper">
+            <img src="../../../public/images/discovery/salon-boyama.jpg" alt="Salon boyama örneği" class="card-photo" loading="lazy">
+            <button type="button" class="bookmark-btn" aria-label="Salon boyama uygulamasını kaydet">
+              <svg class="bookmark-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="card-content">
+            <span class="card-category">Boya</span>
+            <h3 class="card-title">Salon boyama</h3>
+            <p class="card-meta">Derya Usta · Etimesgut</p>
+            <p class="card-materials">Silikonlu Mat İç Cephe · Hassas Maskeleme · Kraft Zemin Koruması</p>
+          </div>
+        </article>
+
+        <!-- Card 4 -->
+        <article class="work-card">
+          <div class="card-photo-wrapper">
+            <img src="../../../public/images/discovery/kornis-montaji.jpg" alt="Korniş montajı örneği" class="card-photo" loading="lazy">
+            <button type="button" class="bookmark-btn" aria-label="Korniş montajı uygulamasını kaydet">
+              <svg class="bookmark-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="card-content">
+            <span class="card-category">Montaj</span>
+            <h3 class="card-title">Korniş montajı</h3>
+            <p class="card-meta">Emre Usta · Keçiören</p>
+            <p class="card-materials">Ekstrüzyon 3 Ray Alüminyum · Çelik Kanatlı Dübel · Lazer Aks Doğrulama</p>
+          </div>
+        </article>
+
+        <!-- Card 5 -->
+        <article class="work-card">
+          <div class="card-photo-wrapper">
+            <img src="../../../public/images/discovery/avize-montaji.jpg" alt="Avize montajı örneği" class="card-photo" loading="lazy">
+            <button type="button" class="bookmark-btn" aria-label="Avize montajı uygulamasını kaydet">
+              <svg class="bookmark-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="card-content">
+            <span class="card-category">Elektrik</span>
+            <h3 class="card-title">Avize montajı</h3>
+            <p class="card-meta">Cem Usta · Mamak</p>
+            <p class="card-materials">Topraklı Güvenlik Klemensi · Döküm Çelik Tavan Mapası · Dijital Faz/Yük Testi</p>
+          </div>
+        </article>
+
+        <!-- Card 6 -->
+        <article class="work-card">
+          <div class="card-photo-wrapper">
+            <img src="../../../public/images/discovery/mutfak-temizligi.jpg" alt="Mutfak temizliği örneği" class="card-photo" loading="lazy">
+            <button type="button" class="bookmark-btn" aria-label="Mutfak temizliği uygulamasını kaydet">
+              <svg class="bookmark-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="card-content">
+            <span class="card-category">Temizlik</span>
+            <h3 class="card-title">Mutfak temizliği</h3>
+            <p class="card-meta">Ece Hanım · Gölbaşı</p>
+            <p class="card-materials">Gıda Temas Onaylı Solüsyon · Yüksek Emişli Mikrofiber · Paslanmaz Çelik Buhar</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="discovery-actions">
+        <button type="button" class="btn-green-main">Tüm hizmetleri gör</button>
+        <button type="button" class="btn-link-action">Tüm ustaları haritada gör</button>
+      </div>
+    </section>
+
+    <!-- Regions Section -->
+    <section id="ustalar" class="container section-gap" aria-labelledby="regions-title">
+      <div class="section-header">
+        <h2 id="regions-title" class="section-title">Ankara Konut Dokusu ve Yerel Zanaatkârlar</h2>
+        <p class="section-subtitle">Ankara’nın farklı mimari dönemlerine, tavan yüksekliklerine ve tesisat altyapılarına göre uzmanlaşmış yerel usta kadrosu.</p>
+        <p class="region-note">9 pilot ilçe · 140+ doğrulanmış usta</p>
+      </div>
+
+      <div class="regions-grid">
+        <!-- Region 01 -->
+        <div class="region-row">
+          <span class="region-code">BÖLGE 01</span>
+          <h3 class="region-zone">Klasik Konut &amp; Restorasyon Hattı</h3>
+          <p class="region-neighborhoods">Tunalı · Ayrancı · Gaziosmanpaşa · Bahçelievler</p>
+          <p class="region-craft">Masif parke sistre, döküm tesisat yenileme, gizli korniş ve retro banyo tadilatı.</p>
+          <div class="region-districts-bar">
+            <a href="#" class="district-pill-link">Çankaya</a>
+          </div>
+        </div>
+
+        <!-- Region 02 -->
+        <div class="region-row">
+          <span class="region-code">BÖLGE 02</span>
+          <h3 class="region-zone">Müstakil Konut &amp; Çatı/Bahçe Hattı</h3>
+          <p class="region-neighborhoods">Çayyolu · Ümitköy · İncek · Bağlıca · Mogan</p>
+          <p class="region-craft">Çelik sundurma, bahçe kapısı/ferforje, çatı izolasyonu ve kış bahçesi montajı.</p>
+          <div class="region-districts-bar">
+            <a href="#" class="district-pill-link">Gölbaşı</a>
+            <a href="#" class="district-pill-link">Etimesgut</a>
+          </div>
+        </div>
+
+        <!-- Region 03 -->
+        <div class="region-row">
+          <span class="region-code">BÖLGE 03</span>
+          <h3 class="region-zone">Merkezi Yerleşim &amp; Tesisat Yenileme Hattı</h3>
+          <p class="region-neighborhoods">Batıkent · Keçiören Merkez · Mamak · Altındağ</p>
+          <p class="region-craft">Modüler mutfak montajı, kombi/petek tesisatı, ana elektrik panosu ve sıhhi tesisat.</p>
+          <div class="region-districts-bar">
+            <a href="#" class="district-pill-link">Yenimahalle</a>
+            <a href="#" class="district-pill-link">Keçiören</a>
+            <a href="#" class="district-pill-link">Mamak</a>
+            <a href="#" class="district-pill-link">Altındağ</a>
+          </div>
+        </div>
+
+        <!-- Region 04 -->
+        <div class="region-row">
+          <span class="region-code">BÖLGE 04</span>
+          <h3 class="region-zone">Gelişim Aksı &amp; Yeni Yapı Hattı</h3>
+          <p class="region-neighborhoods">Sincan Merkez · Eryaman · Saray · Pursaklar</p>
+          <p class="region-craft">Alçıpan asma tavan, spot/avize montajı, laminat parke ve kapı/kasa ayarı.</p>
+          <div class="region-districts-bar">
+            <a href="#" class="district-pill-link">Sincan</a>
+            <a href="#" class="district-pill-link">Pursaklar</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Protocol Section -->
+    <section class="container section-gap" aria-labelledby="protocol-title">
+      <div class="section-header">
+        <h2 id="protocol-title" class="section-title">Zanaat ve Nezaket Protokolü</h2>
+        <p class="section-subtitle">Orkestra kayıtlarındaki her usta, konutunuza adım attığı andan teslimata kadar bu yedi mesleki ilkeye uymakla yükümlüdür.</p>
+      </div>
+
+      <div class="protocol-rows">
+        <div class="protocol-item">
+          <h3 class="protocol-item-title">Zemin Koruma ve Galoş Disiplini</h3>
+          <p class="protocol-item-desc">Çalışma sahasında parke veya halı üzerine koruyucu kraft örtü serilmeden takım çantası açılmaz; konuta galoşsuz adım atılmaz.</p>
+        </div>
+
+        <div class="protocol-item">
+          <h3 class="protocol-item-title">Eski Parçaların Şeffaf İadesi</h3>
+          <p class="protocol-item-desc">Sökülen eski batarya, kartuş, arızalı vana veya kablo atılmaz; kutulanarak ev sahibine teslim edilir.</p>
+        </div>
+
+        <div class="protocol-item">
+          <h3 class="protocol-item-title">TS Belgeli Sarf Malzeme Şartı</h3>
+          <p class="protocol-item-desc">Conta, dübel, klemens, boru ve yapıştırıcıda merdiven altı ürün kullanılamaz; tüm sarf malzemeler TSE standartlıdır.</p>
+        </div>
+
+        <div class="protocol-item">
+          <h3 class="protocol-item-title">Apartman ve Gürültü Saatleri</h3>
+          <p class="protocol-item-desc">Bina yönetim planına, pazar günleri sessizlik kurallarına ve delme-kırma saatlerine harfiyen uyulur.</p>
+        </div>
+
+        <div class="protocol-item">
+          <h3 class="protocol-item-title">Sabit İşçilik Güvencesi</h3>
+          <p class="protocol-item-desc">İş başlangıcında mutabık kalınan kapsam dışına çıkılmaz; süreç içinde keyfi sürpriz ek maliyet yansıtılamaz.</p>
+        </div>
+
+        <div class="protocol-item">
+          <h3 class="protocol-item-title">Süpürülmüş ve Temiz Teslimat</h3>
+          <p class="protocol-item-desc">Montaj veya tamirat tamamlandığında talaş, harç kalıntısı, tel ve ambalaj atığı bırakılmaz; alan temizlenerek teslim edilir.</p>
+        </div>
+
+        <div class="protocol-item">
+          <h3 class="protocol-item-title">1 Yıl İşçilik Sicil Sorumluluğu</h3>
+          <p class="protocol-item-desc">Tamamlanan her uygulama Orkestra usta siciline kaydedilir; montaj kaynaklı sorunlar 1 yıl boyunca ustanın garantisindedir.</p>
+        </div>
+      </div>
+
+      <p class="protocol-legal-note">Bağlayıcı Hizmet İlkeleri · Ankara İl Geneli · 2026 Standartları · Bu protokol; işçilik kalitesini, şeffaf malzeme kullanımını ve konut mahremiyetini g

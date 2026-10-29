@@ -1,0 +1,548 @@
+[
+  {
+    "id": "H01",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\almanac.jpg",
+    "copy": "evidence/hallmark/almanac.jpg",
+    "sha256": "a78b5a78a662ebd6a54be31b581bfd7447d391cff549c503025f0f762f4bddb5",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H02",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\arcade.jpg",
+    "copy": "evidence/hallmark/arcade.jpg",
+    "sha256": "dad3bbcf4cc25bf8e97e03d034ceed2f2bf0f8a9ea308afe60b559f04bb40f04",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H03",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\atelier.jpg",
+    "copy": "evidence/hallmark/atelier.jpg",
+    "sha256": "1f7d16373c8ab9d949084599c87777060c24b298fec9fd382fe7cc0066d6ec03",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H04",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\bloom.jpg",
+    "copy": "evidence/hallmark/bloom.jpg",
+    "sha256": "6dcda211f142627c455ec800442038475341cfcbdae83c529753283427066081",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H05",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\blueprint.jpg",
+    "copy": "evidence/hallmark/blueprint.jpg",
+    "sha256": "dec761657594b854635572f498e6d7428068b132e314df782b07d31e7e06d777",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H06",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\broadside.jpg",
+    "copy": "evidence/hallmark/broadside.jpg",
+    "sha256": "86e56076fb37223a448c354ea1148890167e85036b3189c51296a176c97bc978",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H07",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\brutal.jpg",
+    "copy": "evidence/hallmark/brutal.jpg",
+    "sha256": "cafd8a53eb83fe09efb0250f2006fd517c3218959afc337024bfe775e4bc7bbf",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H08",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\carnival.jpg",
+    "copy": "evidence/hallmark/carnival.jpg",
+    "sha256": "9a0a139afb7f1ca0ac65d55157432c5ed91e23371b7b6116e3e6937b675712a5",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H09",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\cobalt.jpg",
+    "copy": "evidence/hallmark/cobalt.jpg",
+    "sha256": "695cf419c3cc734c8fa9e6d23e0692385990bcd55349bb689300431392d0e3cd",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H10",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\console.jpg",
+    "copy": "evidence/hallmark/console.jpg",
+    "sha256": "665f07532303613d55c3832ac7141c2b007cb3a34bb245882bef3ab74e6e1cf1",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H11",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\coral.jpg",
+    "copy": "evidence/hallmark/coral.jpg",
+    "sha256": "dbb7596586c0563122935ab602e627cc621fe6939013619b6a1c552d5f25a03e",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H12",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\darkroom.jpg",
+    "copy": "evidence/hallmark/darkroom.jpg",
+    "sha256": "d8a7136d01223a7b6d2193d30c0c2e549e2967da65fb69fd33eee55df9f149c1",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H13",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\dose.jpg",
+    "copy": "evidence/hallmark/dose.jpg",
+    "sha256": "7bdf523555d21e8c89b04ab77af15a816a3c7bf84055c7c780b77d891cd4c735",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H14",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\dusk.jpg",
+    "copy": "evidence/hallmark/dusk.jpg",
+    "sha256": "f38be2c20d3d2183dfdb127fc2a9df71e3f16e413b8fda56146567a05e5a9514",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H15",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\editorial.jpg",
+    "copy": "evidence/hallmark/editorial.jpg",
+    "sha256": "a5f3ecdbe561cfbe06374706beac154bc47a77b12ac964c742b412eec6a3e0df",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H16",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\formwork.jpg",
+    "copy": "evidence/hallmark/formwork.jpg",
+    "sha256": "dc52b44d0dd300d54d0fad5f18b032e7b29f0288da546fbfa4dd73baa0d4e255",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H17",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\furrow.jpg",
+    "copy": "evidence/hallmark/furrow.jpg",
+    "sha256": "2f6decb95504070eaf484c051da77a4ec0713d2b2cc55eabdc7d99ce740acc99",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H18",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\garden.jpg",
+    "copy": "evidence/hallmark/garden.jpg",
+    "sha256": "a0d649ed96f7462dbef00047685151a3ca3e8a72e9672f240b21a82d798a9740",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H19",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\grid.jpg",
+    "copy": "evidence/hallmark/grid.jpg",
+    "sha256": "511ed8d58f8abb1fe86d53166c3966c4046c1000ccc7075d6c312ba3efc67f70",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H20",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\halftone.jpg",
+    "copy": "evidence/hallmark/halftone.jpg",
+    "sha256": "a84cb1876366b5e1070ce1a70b22f263a7a963372587ff92076c0492c7f2d9db",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H21",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\hedgerow.jpg",
+    "copy": "evidence/hallmark/hedgerow.jpg",
+    "sha256": "ac564eb0f3c8553cd5a077b8f5da38a1bb1d2c7a78e4e8ebb8aafe91ee448f95",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H22",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\hum.jpg",
+    "copy": "evidence/hallmark/hum.jpg",
+    "sha256": "22c73e8bdb16fd96165cc4d003a82cf321e1d274f6c3c538015e0d3ae823802e",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H23",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\ink.jpg",
+    "copy": "evidence/hallmark/ink.jpg",
+    "sha256": "18802cca6d7428c50a0e9d3051f7aa321f0f4749e14dd941107b30266346c62e",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H24",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\kiln.jpg",
+    "copy": "evidence/hallmark/kiln.jpg",
+    "sha256": "2ef6da1860464f7d189d6e0e371b97b1e17b4ee107e1e68b7555aafc96685123",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H25",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\loom.jpg",
+    "copy": "evidence/hallmark/loom.jpg",
+    "sha256": "a71f16f59ec0c9710d5f6cd4f3eec0fbe3536e31b194b1e25dbb924618765f64",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H26",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\lumen.jpg",
+    "copy": "evidence/hallmark/lumen.jpg",
+    "sha256": "d7f66625e11d7d495c89748c6f43db49b5542040d1c091a109802a7098d1cc84",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H27",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\manifesto.jpg",
+    "copy": "evidence/hallmark/manifesto.jpg",
+    "sha256": "c900e70ac48d01d133acdcbda0310d9c0fd53a0474d7a1b1344291a70b3c89bd",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H28",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\midnight.jpg",
+    "copy": "evidence/hallmark/midnight.jpg",
+    "sha256": "6f49568b885ba74035faa5a2608c51a079cd7a2eebe7e1967fa0225958b0c82e",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H29",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\newsprint.jpg",
+    "copy": "evidence/hallmark/newsprint.jpg",
+    "sha256": "fdac566be09a8ea6891f79ccb70f1f2c47abe12a3fb476c3874031eece6e0fe6",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H30",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\overprint.jpg",
+    "copy": "evidence/hallmark/overprint.jpg",
+    "sha256": "415342811cfecc22d267d93afb07c12dfa12d8823a2e2c5852c9a587d9f462de",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H31",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\pasteup.jpg",
+    "copy": "evidence/hallmark/pasteup.jpg",
+    "sha256": "664423a43e4906e63ab9610b8c327af1baddb611a14109b453a7ed04505ba0c2",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H32",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\piste.jpg",
+    "copy": "evidence/hallmark/piste.jpg",
+    "sha256": "39c73cb56040dc5ab13b6bb7927d0dfdacfc7802ef1d22d9c1c13f39faf1500b",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H33",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\ribbon.jpg",
+    "copy": "evidence/hallmark/ribbon.jpg",
+    "sha256": "a5848452f358eb7e8f7fae3b1592fe04b9f1fb09c92551c372def878529512d0",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H34",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\rim.jpg",
+    "copy": "evidence/hallmark/rim.jpg",
+    "sha256": "bbc6f916316da6f6d03b01dfc798efd0c8f8b94d80155049f0a1a497a3560811",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H35",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\riso.jpg",
+    "copy": "evidence/hallmark/riso.jpg",
+    "sha256": "b02f0c68760cab70cf971cacc2669fe32472f1f3eb2998f8c7706c4fafb678ca",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H36",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\solstice.jpg",
+    "copy": "evidence/hallmark/solstice.jpg",
+    "sha256": "5d6bcf025a79c4b117ccc2ede5cc69f5334bfc65ed8107b1068a9689cfff7abf",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H37",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\specimen.jpg",
+    "copy": "evidence/hallmark/specimen.jpg",
+    "sha256": "9735716ddda7bba0f62d1d35743256ad1b718038fbd6924e341bceb3dfa62150",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H38",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\spore.jpg",
+    "copy": "evidence/hallmark/spore.jpg",
+    "sha256": "b2493347715fb49d6d30040ae3ea85885571709bd588f2222722a1af317a704a",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H39",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\sport.jpg",
+    "copy": "evidence/hallmark/sport.jpg",
+    "sha256": "51a51694055ef122de7e6be01f5d881fec696d86df5192557aefd90d12bb1b84",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H40",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\squeeze.jpg",
+    "copy": "evidence/hallmark/squeeze.jpg",
+    "sha256": "570529d5d842ca14a60d9689d3c4997eac31e463c5a9df3d386d39f36091224b",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H41",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\sticker.jpg",
+    "copy": "evidence/hallmark/sticker.jpg",
+    "sha256": "ccbf946b230eae35f8ba35b7ceb362bd082b0c6240e1ff3695a07f9e948d6320",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H42",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\studio.jpg",
+    "copy": "evidence/hallmark/studio.jpg",
+    "sha256": "d4b8670539d50ebc17c64ad5f13fbd01dbf6bf47cc3421baf688a496112d6daf",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H43",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\terminal.jpg",
+    "copy": "evidence/hallmark/terminal.jpg",
+    "sha256": "0843a7120876a7e4f89acbd122fe7f6d4dab72caad99746c5a574eb8f5a8552e",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H44",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\terrazzo.jpg",
+    "copy": "evidence/hallmark/terrazzo.jpg",
+    "sha256": "8f22ce7fac3fed6479bac56a0061477491c9055398b5bc7d7d856d66188f357d",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H45",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\ultraviolet.jpg",
+    "copy": "evidence/hallmark/ultraviolet.jpg",
+    "sha256": "66cb4ad24a61fb16f5cf0e97f4d81be67993e3d237d4af0b67e71e4f0e6961db",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H46",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\vellum.jpg",
+    "copy": "evidence/hallmark/vellum.jpg",
+    "sha256": "4b4116033ad5ea3a65e0ec720f43e0e9cd1c7494e4ae95c09610782240b9a48d",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H47",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\wayfind.jpg",
+    "copy": "evidence/hallmark/wayfind.jpg",
+    "sha256": "3fc6e32cd77b7455a10237ba7424048bd2fb94bdc955bdd5395da173d9b3b574",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "H48",
+    "source": "C:\\Users\\a-ber\\Documents\\Git\\my-portfolio\\ankara-usta-app\\.codex\\skills\\hallmark\\references\\themes\\werkstatt.jpg",
+    "copy": "evidence/hallmark/werkstatt.jpg",
+    "sha256": "5cd183720988973306ff568fa7f21a7c7cb345621dfa1d288a33d22f785aac20",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B01",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\linear_desktop_1792155782650.png",
+    "copy": "evidence/benchmarks/linear_desktop_1792155782650.png",
+    "sha256": "0e59807558d776bb8802ab770558909eda2b7740f5633ed80fab3802e5f48099",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B02",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\stripe_desktop_1792155791642.png",
+    "copy": "evidence/benchmarks/stripe_desktop_1792155791642.png",
+    "sha256": "dfc593c5930a2adc4320f28cf7bdb12530d1248219311c0712f707addfbb02dc",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B03",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\apple_desktop_1792155811620.png",
+    "copy": "evidence/benchmarks/apple_desktop_1792155811620.png",
+    "sha256": "5b58a5e60d32749638ada0bbd839608b1b2db1d47342d57470663f2025c43df6",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B04",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\vercel_desktop_1792155801552.png",
+    "copy": "evidence/benchmarks/vercel_desktop_1792155801552.png",
+    "sha256": "2dbdcfeda1f5b9dad88d15be563d465284b4808c033402765d115e15bb16a9cb",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B05",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\airbnb_desktop_1792155821050.png",
+    "copy": "evidence/benchmarks/airbnb_desktop_1792155821050.png",
+    "sha256": "855493ef9ae0a471b35e2f9539933114ef277cb14c718a2d22dcf97c871f0493",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B06",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\zara_desktop_1792155860576.png",
+    "copy": "evidence/benchmarks/zara_desktop_1792155860576.png",
+    "sha256": "e492456f5720bdbc3842ea4b060e0c9626c67dac3ecc4a61f7013ee6aa3240aa",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B07",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\massimodutti_desktop_1792155874509.png",
+    "copy": "evidence/benchmarks/massimodutti_desktop_1792155874509.png",
+    "sha256": "a918b1449c7348e4057541d704246accd59beff58bdeda34310831e21b5b13ac",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B08",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\cos_desktop_1792155920520.png",
+    "copy": "evidence/benchmarks/cos_desktop_1792155920520.png",
+    "sha256": "5d1063132c1406d28ab21b374213dcf980c77401d69ef3597da4db81628f9fcf",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B09",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\mango_desktop_1792155896539.png",
+    "copy": "evidence/benchmarks/mango_desktop_1792155896539.png",
+    "sha256": "9f1ed2df67e66363b8390215d9008f7c401c4e6e72b54fff87277c362ec65601",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B10",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\beymen_desktop_1792155953077.png",
+    "copy": "evidence/benchmarks/beymen_desktop_1792155953077.png",
+    "sha256": "73da34dfcc9b1c99f62a464956817655cac94bcf312cca6f11fe66ce306b8c0c",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B11",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\taskrabbit_home.png",
+    "copy": "evidence/benchmarks/taskrabbit_home.png",
+    "sha256": "8c15b714d2f7108b71d16d3d8951cb9e1f8bd07294b688f7aad99c7d1ef66765",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B12",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\armut_home.png",
+    "copy": "evidence/benchmarks/armut_home.png",
+    "sha256": "5f3061c71727005cfc51bc731dc605be27447d6927000d60dcd40f2a00417518",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B13",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\thumbtack_home.png",
+    "copy": "evidence/benchmarks/thumbtack_home.png",
+    "sha256": "40172cd49a4afa76a25124a5fb5d817eed933f88c99bac3d418cb6293911aa7a",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B14",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\mybuilder_home.png",
+    "copy": "evidence/benchmarks/mybuilder_home.png",
+    "sha256": "e386f550535d20f184bfac55e3c16c0ca4efb99c144a8bf65f67ba5414a92fbd",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "B15",
+    "source": "C:\\Users\\a-ber\\.gemini\\antigravity-ide\\brain\\fe044aa9-4c0d-4361-90f7-ea2f79f88966\\airtasker_home.png",
+    "copy": "evidence/benchmarks/airtasker_home.png",
+    "sha256": "ff092b61d94331602005f7efe820034b79b4a93caf98e079643ef923fc484011",
+    "matches_source": true,
+    "kind": "archived-original"
+  },
+  {
+    "id": "desktop-part-1",
+    "copy": "evidence/current/desktop-part-1.png",
+    "sha256": "bd0d0416204f8516a3f56cbe6eaa06052bcbab124f9f498a4ca0bd1dc03662d6",
+    "kind": "crop-of-live-1440",
+    "capture_date": "2026-10-27"
+  },
+  {
+    "id": "desktop-part-2",
+    "copy": "evidence/current/desktop-part-2.png",
+    "sha256": "f5ae104a773f320d8a325d2f4a96a1ec3155ffdb110da666d8e8bf8f6585d69b",
+    "kind": "crop-of-live-1440",
+    "capture_date": "2026-10-27"
+  },
+  {
+    "id": "desktop-part-3",
+    "copy": "evidence/current/desktop-part-3.png",
+    "sha256": "5f0dc9a2318905db4c531f72dd5b39dddd0957efd0f9e0714f8c5d9d774a405a",
+    "kind": "crop-of-live-1440",
+    "capture_date": "2026-10-27"
+  },
+  {
+    "id": "desktop-part-4",
+    "copy": "evidence/current/desktop-part-4.png",
+    "sha256": "a8db6c357505ce4c83cd908720ace2d1ed15f188c9602820654661489aa1a306",
+    "kind": "crop-of-live-1440",
+    "capture_date": "2026-10-27"
+  },
+  {
+    "id": "live-1440",
+    "copy": "evidence/current/live-1440.png",
+    "sha256": "be794a1056d74a6b1ec6726df09dabb7e98d1a1b31f18c0c030cb49a071ac51d",
+    "kind": "fresh-localhost-capture",
+    "capture_date": "2026-10-27"
+  },
+  {
+    "id": "live-390",
+    "copy": "evidence/current/live-390.png",
+    "sha256": "ac56ca62dba4f371fb5586bf4423f23345334e40cd299f07a07d65625f2a5706",
+    "kind": "fresh-localhost-capture",
+    "capture_date": "2026-10-27"
+  }
+]

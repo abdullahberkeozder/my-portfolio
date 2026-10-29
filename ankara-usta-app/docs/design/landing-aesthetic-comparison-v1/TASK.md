@@ -1,0 +1,23 @@
+# Gemini High: isolated visual design study
+
+User authorizes a desktop/mobile design comparison, NOT production code changes. You implement the standalone design artifact; Codex directs and reviews. Work in C:/Users/a-ber/Documents/Git/my-portfolio/ankara-usta-app.
+
+Write ONLY docs/design/landing-aesthetic-comparison-v1/. Do not edit app/, tests, package files, git, credentials. No commits, deploy, installs or external requests. Never read env/secrets. Preserve user changes. Read app/page.tsx (visible copy and DISCOVERY_WORKS/ANKARA_TYPOLOGIES), app/components/TaskrabbitBrandLogo.tsx and existing public/images assets as needed. Read ../landing-aesthetic-audit-2026-10-27/REPORT.md and ideas.json, images native if possible. Keep scope small.
+
+Create proposal.html, self-contained HTML/CSS (image URLs may be ../../../public/images/... relative from this folder). This is a VISUAL STUDY only, not functioning application. No external fonts/network dependencies. Use Segoe UI, system sans. Reuse current logo geometry, blue #3276df, same wordmark. No fake logos or initials. Existing photographs only. Current copy must be preserved for fair comparison: headline, input labels, examples, six work titles/artisans/districts/material text, region headings/descriptions/districts, seven protocol titles/descriptions, footer. Existing heavy microcopy may be de-emphasized but not silently deleted. Preserve original claims verbatim only as existing-copy comparison; review document must state unverified, not new guarantees. Static action controls can be buttons without product handlers; comparison shell must disclose visual-only.
+
+Design direction: contemporary airy everyday home-service discovery, not official guild or luxury perfume site. Integrate final ten from audit:
+1 clean continuous offwhite (#fbfcfa) canvas, no grain;
+2 green #0e6f47 primary actions, blue logo only, neutral ink #172923, no brass;
+3 coherent sans typography with hierarchy, no uppercase tracking/mono everywhere;
+4 CENTERED photo hero within page component, preserve slogan and search, photo quiet central crop (hero-glass-materials-v4.jpg), no giant overlay plaque; use subtle light scrim only if necessary for dark text, no blur-layer stack;
+5 same six existing photos, consistent crop/light (do not synthesize images);
+6 frameless photo-caption work cards, no white mat/shadows, restrained bookmark 44px target. No giant 2/3 lead tile; balanced photo-led 3-column six-work gallery desktop, one-column mobile. These are actual portfolio photos, not three generic feature cards;
+7 regional section on shared canvas, 2-column row index desktop, single-column mobile, quiet dividers instead of boxed clusters;
+8 consistent modest 6-8px controls, flat green primary, clear secondary/text hierarchy, visible focus;
+9 categories as unboxed text with green underline, 44px hit areas, mobile horizontal scrolling;
+10 mobile independently composed so first work photo begins in initial 844px screen without shrinking text/targets. Search input full row then district+green action on second row mobile. Keep full button label Hizmet bul. Quick examples in naturally wrapping plain text links (not 4 stacked cards). Hero h1 34px on390, 30px on320, desktop56px; slogan two lines desktop, allow sensible mobile lines. 1200px max rail, desktop32px outer gutter, mobile20px. Header72desktop64mobile. Hero approx400px desktop, compact mobile <=460 if contents permit. Discovery starts within firstscreen mobile. Avoid oversized spacing to fake premium.
+
+Lower protocol: remove navy 07 slab/mystical seal, use modest introductory text and readable list, same seven items; existing extra phrases can be plain muted paragraph. Footer same blue logo. Do NOT add new trust band, stats, badges, CTA or marketing copy. Do not collapse all substantive copy to achieve a short page. All six materials arrays must be retained; use short normal-case metadata, not uppercase data columns. No animations.
+
+Deliver proposal.html plus DESIGN-NOTES.md listing copy moved/omitted (ideally none), final10 mapping and unresolved critique. If Playwright available, use it to render screenshots at 1440x1000 and390x844 plus320 overflow check, save after-1440.png/after-390.png. You may run a LOCAL ONLY static server rooted at this project on port3188 to render /docs/design/landing-aesthetic-comparison-v1/proposal.html; do not use production dev server or change its files. Stop own server after screenshots. If capture unavailable, finish HTML and report exact blocker; don't spend time installing. No production test suite needed. Return concrete changed files and honest visual critique, not unverified success claims. Keep no unrelated work.

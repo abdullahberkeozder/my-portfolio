@@ -1,0 +1,948 @@
+[
+  {
+    "width": 320,
+    "status": 200,
+    "metrics": {
+      "bodyText": "İçeriğe Atla\norkestra\nMenü\nANKARA DOĞRULANMIŞ USTA DİZİNİ\nİhtiyacınıza uygun ustayı bulun\n\nÖnce hizmet ve ilçeyi seçin; doğrulanmış profilleri karşılaştırın.\n\nİhtiyacını anlat →\nSplit\nListe\nHarita\n0 Usta\nÖnerilen\nEn yüksek puan\nEn çok iş\nHizmet\nTüm hizmetler\nMobilya Kurulumu\nTV Duvar Montajı\nKorniş Montajı\nRaf veya Tablo Montajı\nAvize Montajı\nElektrik Arızası\nPriz ve Anahtar Değişimi\nSigorta ve Pano Kontrolü\nElektrik Hattı Kurulumu\nSu Kaçağı Tespiti\nMusluk Değişimi\nGider Açma\nKlozet ve Rezervuar Onarımı\nKüçük Tesisat Onarımı\nTek Oda Boya\nDuvar ve Alçı Onarımı\nFayans Onarımı\nSilikon Yenileme\nBahçe Kapısı Onarımı\nKorkuluk Onarımı\nMetal Kapı ve Menteşe Onarımı\nÖzel Demir İmalatı\nEv Temizliği\nDetaylı Ev Temizliği\nTadilat Sonrası Temizlik\nCam Temizliği\nİlçe\nTüm ilçeler\nAltındağ\nÇankaya\nEtimesgut\nGölbaşı\nKeçiören\nMamak\nPursaklar\nSincan\nYenimahalle\nHizmet\nTüm hizmetler\nMobilya Kurulumu\nTV Duvar Montajı\nKorniş Montajı\nRaf veya Tablo Montajı\nAvize Montajı\nElektrik Arızası\nPriz ve Anahtar Değişimi\nSigorta ve Pano Kontrolü\nElektrik Hattı Kurulumu\nSu Kaçağı Tespiti\nMusluk Değişimi\nGider Açma\nKlozet ve Rezervuar Onarımı\nKüçük Tesisat Onarımı\nTek Oda Boya\nDuvar ve Alçı Onarımı\nFayans Onarımı\nSilikon Yenileme\nBahçe Kapısı Onarımı\nKorkuluk Onarımı\nMetal Kapı ve Menteşe Onarımı\nÖzel Demir İmalatı\nEv Temizliği\nDetaylı Ev Temizliği\nTadilat Sonrası Temizlik\nCam Temizliği\nİlçe\nTüm ilçeler\nAltındağ\nÇankaya\nEtimesgut\nGölbaşı\nKeçiören\nMamak\nPursaklar\nSincan\nYenimahalle\nDaha fazla filtre\nBu bölgede ara\nBu bölgede henüz uygun usta yok\nHaritayı taşıyın veya “Bu bölgede ara” seçimini kapatın.\nTüm Ankara'yı göster\n+\n−\n⌖\n⟳\nAltındağ\n4\nYenimahalle\n2\n★ 4.9\n· Ayrancı\n★ 4.8\n· Eryaman\n★ 4.9\n· Şaşmaz\n★ 4.8\n· Etlik\n★ 4.9\n· İncek\n★ 4.8\n· Pursaklar\n5 km\n0 Usta\n☰ Listeyi aç\n⌄ Haritayı Gör\n\nBu harita alanında d",
+      "documentWidth": 320,
+      "viewportWidth": 320,
+      "scrollHeight": 2069,
+      "split": null,
+      "list": null,
+      "map": null,
+      "cards": [],
+      "badges": [
+        {
+          "text": "0 usta0 Usta",
+          "cls": "_splitSummaryBadge_b1ekh_158",
+          "x": 16,
+          "y": 302.875,
+          "width": 70.640625,
+          "height": 26
+        },
+        {
+          "text": "Altındağ",
+          "cls": "_clusterBadgeLabel_10bjh_2569",
+          "x": 152,
+          "y": 759.625,
+          "width": 43.125,
+          "height": 16.5
+        },
+        {
+          "text": "4",
+          "cls": "_clusterBadgeCount_10bjh_2573",
+          "x": 200.125,
+          "y": 759.375,
+          "width": 16.671875,
+          "height": 17
+        },
+        {
+          "text": "Yenimahalle",
+          "cls": "_clusterBadgeLabel_10bjh_2569",
+          "x": -49,
+          "y": 672.625,
+          "width": 62.390625,
+          "height": 16.5
+        },
+        {
+          "text": "2",
+          "cls": "_clusterBadgeCount_10bjh_2573",
+          "x": 18.390625,
+          "y": 672.375,
+          "width": 16.671875,
+          "height": 17
+        },
+        {
+          "text": "Mesleki belge kontrolü tamamlanmadan rozet verilmez",
+          "cls": "footer-badge-note",
+          "x": 24,
+          "y": 1766.6875,
+          "width": 272,
+          "height": 36
+        }
+      ],
+      "support": [
+        {
+          "text": "💬Saha Destek & Yardım",
+          "cls": "_supportPillWrapper_10mfa_6",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        {
+          "text": "💬Saha Destek & Yardım",
+          "cls": "_floatingCapsuleBtn_10mfa_197 ",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      ],
+      "buttons": 20,
+      "links": 23,
+      "images": [
+        {
+          "complete": false,
+          "naturalWidth": 0,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1210/775.png"
+        },
+        {
+          "complete": false,
+          "naturalWidth": 0,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1211/775.png"
+        },
+        {
+          "complete": false,
+          "naturalWidth": 0,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1210/774.png"
+        },
+        {
+          "complete": false,
+          "naturalWidth": 0,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1211/774.png"
+        },
+        {
+          "complete": false,
+          "naturalWidth": 0,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1210/776.png"
+        },
+        {
+          "complete": false,
+          "naturalWidth": 0,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1211/776.png"
+        }
+      ]
+    },
+    "keyboard": [
+      {
+        "tag": "A",
+        "text": "İçeriğe Atla",
+        "aria": null,
+        "cls": "skip-link"
+      },
+      {
+        "tag": "A",
+        "text": "orkestra",
+        "aria": "Orkestra ana sayfa",
+        "cls": "_brand_17qn5_58"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Menü",
+        "aria": null,
+        "cls": "_menu_17qn5_320"
+      },
+      {
+        "tag": "A",
+        "text": "İhtiyacını anlat →",
+        "aria": null,
+        "cls": "_ctaBtn_1umzl_78 _ctaBtnSplit_1umzl_95"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Bölünmüş EkranSplit",
+        "aria": null,
+        "cls": "_viewToggleBtn_b1ekh_50 _viewToggleBtnActive_b1ekh_82"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Liste GörünümüListe",
+        "aria": null,
+        "cls": "_viewToggleBtn_b1ekh_50 "
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Tam HaritaHarita",
+        "aria": null,
+        "cls": "_viewToggleBtn_b1ekh_50 "
+      },
+      {
+        "tag": "SELECT",
+        "text": "ÖnerilenEn yüksek puanEn çok iş",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm hizmetlerMobilya KurulumuTV Duvar MontajıKorniş MontajıRaf veya Tablo Montaj",
+        "aria": null,
+        "cls": "_srOnly_b1ekh_4"
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm ilçelerAltındağÇankayaEtimesgutGölbaşıKeçiörenMamakPursaklarSincanYenimahall",
+        "aria": null,
+        "cls": "_srOnly_b1ekh_4"
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm hizmetlerMobilya KurulumuTV Duvar MontajıKorniş MontajıRaf veya Tablo Montaj",
+        "aria": null,
+        "cls": "_filterSelect_b1ekh_253"
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm ilçelerAltındağÇankayaEtimesgutGölbaşıKeçiörenMamakPursaklarSincanYenimahall",
+        "aria": null,
+        "cls": "_filterSelect_b1ekh_253"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Daha fazla filtre",
+        "aria": "Filtrele, diğer seçenekleri aç",
+        "cls": "_advancedFilterButton_b1ekh_289 "
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "aria": null,
+        "cls": "_airbnbSearchAreaCheckbox_10bjh_1908"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Tüm Ankara'yı göster",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "BUTTON",
+        "text": "+",
+        "aria": "Yakınlaştır",
+        "cls": "_utilityBtn_10bjh_2310"
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "status": 200,
+    "metrics": {
+      "bodyText": "İçeriğe Atla\norkestra\nMenü\nANKARA DOĞRULANMIŞ USTA DİZİNİ\nİhtiyacınıza uygun ustayı bulun\n\nÖnce hizmet ve ilçeyi seçin; doğrulanmış profilleri karşılaştırın.\n\nİhtiyacını anlat →\nSplit\nListe\nHarita\n0 Usta\nÖnerilen\nEn yüksek puan\nEn çok iş\nHizmet\nTüm hizmetler\nMobilya Kurulumu\nTV Duvar Montajı\nKorniş Montajı\nRaf veya Tablo Montajı\nAvize Montajı\nElektrik Arızası\nPriz ve Anahtar Değişimi\nSigorta ve Pano Kontrolü\nElektrik Hattı Kurulumu\nSu Kaçağı Tespiti\nMusluk Değişimi\nGider Açma\nKlozet ve Rezervuar Onarımı\nKüçük Tesisat Onarımı\nTek Oda Boya\nDuvar ve Alçı Onarımı\nFayans Onarımı\nSilikon Yenileme\nBahçe Kapısı Onarımı\nKorkuluk Onarımı\nMetal Kapı ve Menteşe Onarımı\nÖzel Demir İmalatı\nEv Temizliği\nDetaylı Ev Temizliği\nTadilat Sonrası Temizlik\nCam Temizliği\nİlçe\nTüm ilçeler\nAltındağ\nÇankaya\nEtimesgut\nGölbaşı\nKeçiören\nMamak\nPursaklar\nSincan\nYenimahalle\nHizmet\nTüm hizmetler\nMobilya Kurulumu\nTV Duvar Montajı\nKorniş Montajı\nRaf veya Tablo Montajı\nAvize Montajı\nElektrik Arızası\nPriz ve Anahtar Değişimi\nSigorta ve Pano Kontrolü\nElektrik Hattı Kurulumu\nSu Kaçağı Tespiti\nMusluk Değişimi\nGider Açma\nKlozet ve Rezervuar Onarımı\nKüçük Tesisat Onarımı\nTek Oda Boya\nDuvar ve Alçı Onarımı\nFayans Onarımı\nSilikon Yenileme\nBahçe Kapısı Onarımı\nKorkuluk Onarımı\nMetal Kapı ve Menteşe Onarımı\nÖzel Demir İmalatı\nEv Temizliği\nDetaylı Ev Temizliği\nTadilat Sonrası Temizlik\nCam Temizliği\nİlçe\nTüm ilçeler\nAltındağ\nÇankaya\nEtimesgut\nGölbaşı\nKeçiören\nMamak\nPursaklar\nSincan\nYenimahalle\nDaha fazla filtre\nBu bölgede ara\nBu bölgede henüz uygun usta yok\nHaritayı taşıyın veya “Bu bölgede ara” seçimini kapatın.\nTüm Ankara'yı göster\n+\n−\n⌖\n⟳\nAltındağ\n4\nYenimahalle\n2\n★ 4.9\n· Ayrancı\n★ 4.8\n· Eryaman\n★ 4.9\n· Şaşmaz\n★ 4.8\n· Etlik\n★ 4.9\n· İncek\n★ 4.8\n· Pursaklar\n5 km\n0 Usta\n☰ Listeyi aç\n⌄ Haritayı Gör\n\nBu harita alanında d",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "scrollHeight": 2027,
+      "split": null,
+      "list": null,
+      "map": null,
+      "cards": [],
+      "badges": [
+        {
+          "text": "0 usta0 Usta",
+          "cls": "_splitSummaryBadge_b1ekh_158",
+          "x": 16,
+          "y": 253.6875,
+          "width": 70.640625,
+          "height": 26
+        },
+        {
+          "text": "Altındağ",
+          "cls": "_clusterBadgeLabel_10bjh_2569",
+          "x": 187,
+          "y": 671.4375,
+          "width": 43.125,
+          "height": 16.5
+        },
+        {
+          "text": "4",
+          "cls": "_clusterBadgeCount_10bjh_2573",
+          "x": 235.125,
+          "y": 671.1875,
+          "width": 16.671875,
+          "height": 17
+        },
+        {
+          "text": "Yenimahalle",
+          "cls": "_clusterBadgeLabel_10bjh_2569",
+          "x": -14,
+          "y": 584.4375,
+          "width": 62.390625,
+          "height": 16.5
+        },
+        {
+          "text": "2",
+          "cls": "_clusterBadgeCount_10bjh_2573",
+          "x": 53.390625,
+          "y": 584.1875,
+          "width": 16.671875,
+          "height": 17
+        },
+        {
+          "text": "Mesleki belge kontrolü tamamlanmadan rozet verilmez",
+          "cls": "footer-badge-note",
+          "x": 24,
+          "y": 1766.6875,
+          "width": 322.03125,
+          "height": 18
+        }
+      ],
+      "support": [
+        {
+          "text": "💬Saha Destek & Yardım",
+          "cls": "_supportPillWrapper_10mfa_6",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        {
+          "text": "💬Saha Destek & Yardım",
+          "cls": "_floatingCapsuleBtn_10mfa_197 ",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      ],
+      "buttons": 20,
+      "links": 23,
+      "images": [
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1210/775.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1211/775.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1210/774.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1211/774.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1210/776.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1211/776.png"
+        }
+      ]
+    },
+    "keyboard": [
+      {
+        "tag": "A",
+        "text": "İçeriğe Atla",
+        "aria": null,
+        "cls": "skip-link"
+      },
+      {
+        "tag": "A",
+        "text": "orkestra",
+        "aria": "Orkestra ana sayfa",
+        "cls": "_brand_17qn5_58"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Menü",
+        "aria": null,
+        "cls": "_menu_17qn5_320"
+      },
+      {
+        "tag": "A",
+        "text": "İhtiyacını anlat →",
+        "aria": null,
+        "cls": "_ctaBtn_1umzl_78 _ctaBtnSplit_1umzl_95"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Bölünmüş EkranSplit",
+        "aria": null,
+        "cls": "_viewToggleBtn_b1ekh_50 _viewToggleBtnActive_b1ekh_82"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Liste GörünümüListe",
+        "aria": null,
+        "cls": "_viewToggleBtn_b1ekh_50 "
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Tam HaritaHarita",
+        "aria": null,
+        "cls": "_viewToggleBtn_b1ekh_50 "
+      },
+      {
+        "tag": "SELECT",
+        "text": "ÖnerilenEn yüksek puanEn çok iş",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm hizmetlerMobilya KurulumuTV Duvar MontajıKorniş MontajıRaf veya Tablo Montaj",
+        "aria": null,
+        "cls": "_srOnly_b1ekh_4"
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm ilçelerAltındağÇankayaEtimesgutGölbaşıKeçiörenMamakPursaklarSincanYenimahall",
+        "aria": null,
+        "cls": "_srOnly_b1ekh_4"
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm hizmetlerMobilya KurulumuTV Duvar MontajıKorniş MontajıRaf veya Tablo Montaj",
+        "aria": null,
+        "cls": "_filterSelect_b1ekh_253"
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm ilçelerAltındağÇankayaEtimesgutGölbaşıKeçiörenMamakPursaklarSincanYenimahall",
+        "aria": null,
+        "cls": "_filterSelect_b1ekh_253"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Daha fazla filtre",
+        "aria": "Filtrele, diğer seçenekleri aç",
+        "cls": "_advancedFilterButton_b1ekh_289 "
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "aria": null,
+        "cls": "_airbnbSearchAreaCheckbox_10bjh_1908"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Tüm Ankara'yı göster",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "BUTTON",
+        "text": "+",
+        "aria": "Yakınlaştır",
+        "cls": "_utilityBtn_10bjh_2310"
+      }
+    ]
+  },
+  {
+    "width": 820,
+    "status": 200,
+    "metrics": {
+      "bodyText": "İçeriğe Atla\norkestra\nMenü\nANKARA DOĞRULANMIŞ USTA DİZİNİ\nİhtiyacınıza uygun ustayı bulun\n\nÖnce hizmet ve ilçeyi seçin; doğrulanmış profilleri karşılaştırın.\n\nİhtiyacını anlat →\nBölünmüş Ekran\nListe Görünümü\nTam Harita\n0 usta\nSırala\nÖnerilen\nEn yüksek puan\nEn çok iş\nHizmet\nTüm hizmetler\nMobilya Kurulumu\nTV Duvar Montajı\nKorniş Montajı\nRaf veya Tablo Montajı\nAvize Montajı\nElektrik Arızası\nPriz ve Anahtar Değişimi\nSigorta ve Pano Kontrolü\nElektrik Hattı Kurulumu\nSu Kaçağı Tespiti\nMusluk Değişimi\nGider Açma\nKlozet ve Rezervuar Onarımı\nKüçük Tesisat Onarımı\nTek Oda Boya\nDuvar ve Alçı Onarımı\nFayans Onarımı\nSilikon Yenileme\nBahçe Kapısı Onarımı\nKorkuluk Onarımı\nMetal Kapı ve Menteşe Onarımı\nÖzel Demir İmalatı\nEv Temizliği\nDetaylı Ev Temizliği\nTadilat Sonrası Temizlik\nCam Temizliği\nİlçe\nTüm ilçeler\nAltındağ\nÇankaya\nEtimesgut\nGölbaşı\nKeçiören\nMamak\nPursaklar\nSincan\nYenimahalle\nHizmet\nTüm hizmetler\nMobilya Kurulumu\nTV Duvar Montajı\nKorniş Montajı\nRaf veya Tablo Montajı\nAvize Montajı\nElektrik Arızası\nPriz ve Anahtar Değişimi\nSigorta ve Pano Kontrolü\nElektrik Hattı Kurulumu\nSu Kaçağı Tespiti\nMusluk Değişimi\nGider Açma\nKlozet ve Rezervuar Onarımı\nKüçük Tesisat Onarımı\nTek Oda Boya\nDuvar ve Alçı Onarımı\nFayans Onarımı\nSilikon Yenileme\nBahçe Kapısı Onarımı\nKorkuluk Onarımı\nMetal Kapı ve Menteşe Onarımı\nÖzel Demir İmalatı\nEv Temizliği\nDetaylı Ev Temizliği\nTadilat Sonrası Temizlik\nCam Temizliği\nİlçe\nTüm ilçeler\nAltındağ\nÇankaya\nEtimesgut\nGölbaşı\nKeçiören\nMamak\nPursaklar\nSincan\nYenimahalle\nDaha fazla filtre\nBu filtrede henüz eşleşen usta yok\n\nBu hizmet ve ilçe birleşiminde sonuç bulunamadı. Ankara’daki doğrulanmış ustaları genişletilmiş görünümde inceleyebilirsiniz.\n\nTüm ustaları göster\nBüyüt\nBu bölgede ara\nBu bölgede henüz uygun usta yok\nHaritayı taşıyın veya “Bu bölgede ara” seçimini",
+      "documentWidth": 820,
+      "viewportWidth": 820,
+      "scrollHeight": 1609,
+      "split": null,
+      "list": null,
+      "map": null,
+      "cards": [],
+      "badges": [
+        {
+          "text": "0 usta0 Usta",
+          "cls": "_splitSummaryBadge_b1ekh_158",
+          "x": 526.84375,
+          "y": 154.9375,
+          "width": 80.40625,
+          "height": 33.5
+        },
+        {
+          "text": "Altındağ",
+          "cls": "_clusterBadgeLabel_10bjh_2569",
+          "x": 586.984375,
+          "y": 593.4375,
+          "width": 43.125,
+          "height": 16.5
+        },
+        {
+          "text": "4",
+          "cls": "_clusterBadgeCount_10bjh_2573",
+          "x": 635.109375,
+          "y": 593.1875,
+          "width": 16.671875,
+          "height": 17
+        },
+        {
+          "text": "Yenimahalle",
+          "cls": "_clusterBadgeLabel_10bjh_2569",
+          "x": 385.984375,
+          "y": 506.4375,
+          "width": 62.390625,
+          "height": 16.5
+        },
+        {
+          "text": "2",
+          "cls": "_clusterBadgeCount_10bjh_2573",
+          "x": 453.375,
+          "y": 506.1875,
+          "width": 16.671875,
+          "height": 17
+        },
+        {
+          "text": "Mesleki belge kontrolü tamamlanmadan rozet verilmez",
+          "cls": "footer-badge-note",
+          "x": 428,
+          "y": 1454,
+          "width": 322.03125,
+          "height": 18
+        }
+      ],
+      "support": [
+        {
+          "text": "💬Saha Destek & Yardım",
+          "cls": "_supportPillWrapper_10mfa_6",
+          "x": 579.484375,
+          "y": 832,
+          "width": 220.515625,
+          "height": 44
+        },
+        {
+          "text": "💬Saha Destek & Yardım",
+          "cls": "_floatingCapsuleBtn_10mfa_197 ",
+          "x": 579.484375,
+          "y": 832,
+          "width": 220.515625,
+          "height": 44
+        }
+      ],
+      "buttons": 20,
+      "links": 23,
+      "images": [
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1210/775.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1211/775.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1210/776.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1211/776.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1210/774.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1211/774.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1210/777.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1211/777.png"
+        }
+      ]
+    },
+    "keyboard": [
+      {
+        "tag": "A",
+        "text": "İçeriğe Atla",
+        "aria": null,
+        "cls": "skip-link"
+      },
+      {
+        "tag": "A",
+        "text": "orkestra",
+        "aria": "Orkestra ana sayfa",
+        "cls": "_brand_17qn5_58"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Menü",
+        "aria": null,
+        "cls": "_menu_17qn5_320"
+      },
+      {
+        "tag": "A",
+        "text": "İhtiyacını anlat →",
+        "aria": null,
+        "cls": "_ctaBtn_1umzl_78 _ctaBtnSplit_1umzl_95"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Bölünmüş EkranSplit",
+        "aria": null,
+        "cls": "_viewToggleBtn_b1ekh_50 _viewToggleBtnActive_b1ekh_82"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Liste GörünümüListe",
+        "aria": null,
+        "cls": "_viewToggleBtn_b1ekh_50 "
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Tam HaritaHarita",
+        "aria": null,
+        "cls": "_viewToggleBtn_b1ekh_50 "
+      },
+      {
+        "tag": "SELECT",
+        "text": "ÖnerilenEn yüksek puanEn çok iş",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm hizmetlerMobilya KurulumuTV Duvar MontajıKorniş MontajıRaf veya Tablo Montaj",
+        "aria": null,
+        "cls": "_srOnly_b1ekh_4"
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm ilçelerAltındağÇankayaEtimesgutGölbaşıKeçiörenMamakPursaklarSincanYenimahall",
+        "aria": null,
+        "cls": "_srOnly_b1ekh_4"
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm hizmetlerMobilya KurulumuTV Duvar MontajıKorniş MontajıRaf veya Tablo Montaj",
+        "aria": null,
+        "cls": "_filterSelect_b1ekh_253"
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm ilçelerAltındağÇankayaEtimesgutGölbaşıKeçiörenMamakPursaklarSincanYenimahall",
+        "aria": null,
+        "cls": "_filterSelect_b1ekh_253"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Daha fazla filtre",
+        "aria": "Filtrele, diğer seçenekleri aç",
+        "cls": "_advancedFilterButton_b1ekh_289 "
+      },
+      {
+        "tag": "A",
+        "text": "Tüm ustaları göster",
+        "aria": null,
+        "cls": "_ctaBtn_1umzl_78"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Büyüt",
+        "aria": "Haritayı büyüt",
+        "cls": "_miniExpandBtn_b1ekh_717"
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "aria": null,
+        "cls": "_airbnbSearchAreaCheckbox_10bjh_1908"
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "status": 200,
+    "metrics": {
+      "bodyText": "İçeriğe Atla\norkestra\nKeşfet\nUstalar\nGiriş yap\nHizmet ver\nANKARA DOĞRULANMIŞ USTA DİZİNİ\nİhtiyacınıza uygun ustayı bulun\n\nÖnce hizmet ve ilçeyi seçin; doğrulanmış profilleri karşılaştırın.\n\nİhtiyacını anlat →\nBölünmüş Ekran\nListe Görünümü\nTam Harita\n0 usta\nSırala\nÖnerilen\nEn yüksek puan\nEn çok iş\nHizmet\nTüm hizmetler\nMobilya Kurulumu\nTV Duvar Montajı\nKorniş Montajı\nRaf veya Tablo Montajı\nAvize Montajı\nElektrik Arızası\nPriz ve Anahtar Değişimi\nSigorta ve Pano Kontrolü\nElektrik Hattı Kurulumu\nSu Kaçağı Tespiti\nMusluk Değişimi\nGider Açma\nKlozet ve Rezervuar Onarımı\nKüçük Tesisat Onarımı\nTek Oda Boya\nDuvar ve Alçı Onarımı\nFayans Onarımı\nSilikon Yenileme\nBahçe Kapısı Onarımı\nKorkuluk Onarımı\nMetal Kapı ve Menteşe Onarımı\nÖzel Demir İmalatı\nEv Temizliği\nDetaylı Ev Temizliği\nTadilat Sonrası Temizlik\nCam Temizliği\nİlçe\nTüm ilçeler\nAltındağ\nÇankaya\nEtimesgut\nGölbaşı\nKeçiören\nMamak\nPursaklar\nSincan\nYenimahalle\nHizmet\nTüm hizmetler\nMobilya Kurulumu\nTV Duvar Montajı\nKorniş Montajı\nRaf veya Tablo Montajı\nAvize Montajı\nElektrik Arızası\nPriz ve Anahtar Değişimi\nSigorta ve Pano Kontrolü\nElektrik Hattı Kurulumu\nSu Kaçağı Tespiti\nMusluk Değişimi\nGider Açma\nKlozet ve Rezervuar Onarımı\nKüçük Tesisat Onarımı\nTek Oda Boya\nDuvar ve Alçı Onarımı\nFayans Onarımı\nSilikon Yenileme\nBahçe Kapısı Onarımı\nKorkuluk Onarımı\nMetal Kapı ve Menteşe Onarımı\nÖzel Demir İmalatı\nEv Temizliği\nDetaylı Ev Temizliği\nTadilat Sonrası Temizlik\nCam Temizliği\nİlçe\nTüm ilçeler\nAltındağ\nÇankaya\nEtimesgut\nGölbaşı\nKeçiören\nMamak\nPursaklar\nSincan\nYenimahalle\nDaha fazla filtre\nBu filtrede henüz eşleşen usta yok\n\nBu hizmet ve ilçe birleşiminde sonuç bulunamadı. Ankara’daki doğrulanmış ustaları genişletilmiş görünümde inceleyebilirsiniz.\n\nTüm ustaları göster\nBüyüt\nBu bölgede ara\nBu bölgede henüz uygun usta yok\nHaritayı taşıyın",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "scrollHeight": 1516,
+      "split": null,
+      "list": null,
+      "map": null,
+      "cards": [],
+      "badges": [
+        {
+          "text": "0 usta0 Usta",
+          "cls": "_splitSummaryBadge_b1ekh_158",
+          "x": 1146.84375,
+          "y": 160.9375,
+          "width": 80.40625,
+          "height": 33.5
+        },
+        {
+          "text": "Altındağ",
+          "cls": "_clusterBadgeLabel_10bjh_2569",
+          "x": 1000,
+          "y": 599.4375,
+          "width": 43.125,
+          "height": 16.5
+        },
+        {
+          "text": "4",
+          "cls": "_clusterBadgeCount_10bjh_2573",
+          "x": 1048.125,
+          "y": 599.1875,
+          "width": 16.671875,
+          "height": 17
+        },
+        {
+          "text": "Yenimahalle",
+          "cls": "_clusterBadgeLabel_10bjh_2569",
+          "x": 799,
+          "y": 512.4375,
+          "width": 62.390625,
+          "height": 16.5
+        },
+        {
+          "text": "2",
+          "cls": "_clusterBadgeCount_10bjh_2573",
+          "x": 866.390625,
+          "y": 512.1875,
+          "width": 16.671875,
+          "height": 17
+        },
+        {
+          "text": "Mesleki belge kontrolü tamamlanmadan rozet verilmez",
+          "cls": "footer-badge-note",
+          "x": 1044.796875,
+          "y": 1192.5,
+          "width": 221.203125,
+          "height": 36
+        }
+      ],
+      "support": [
+        {
+          "text": "💬Saha Destek & Yardım",
+          "cls": "_supportPillWrapper_10mfa_6",
+          "x": 1199.484375,
+          "y": 832,
+          "width": 220.515625,
+          "height": 44
+        },
+        {
+          "text": "💬Saha Destek & Yardım",
+          "cls": "_floatingCapsuleBtn_10mfa_197 ",
+          "x": 1199.484375,
+          "y": 832,
+          "width": 220.515625,
+          "height": 44
+        }
+      ],
+      "buttons": 20,
+      "links": 23,
+      "images": [
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1210/775.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1211/775.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1210/776.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1211/776.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1210/774.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1211/774.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1209/775.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1212/775.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1209/776.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1212/776.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1210/777.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1211/777.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1209/774.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1212/774.png"
+        },
+        {
+          "complete": true,
+          "naturalWidth": 256,
+          "alt": "",
+          "src": "https://tile.openstreetmap.org/11/1209/777.png"
+        }
+      ]
+    },
+    "keyboard": [
+      {
+        "tag": "A",
+        "text": "İçeriğe Atla",
+        "aria": null,
+        "cls": "skip-link"
+      },
+      {
+        "tag": "A",
+        "text": "orkestra",
+        "aria": "Orkestra ana sayfa",
+        "cls": "_brand_17qn5_58"
+      },
+      {
+        "tag": "A",
+        "text": "Keşfet",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "A",
+        "text": "Ustalar",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Giriş yap",
+        "aria": null,
+        "cls": "_authActionBtn_17qn5_47"
+      },
+      {
+        "tag": "A",
+        "text": "Hizmet ver",
+        "aria": null,
+        "cls": "_becomeTaskerBtn_17qn5_40"
+      },
+      {
+        "tag": "A",
+        "text": "İhtiyacını anlat →",
+        "aria": null,
+        "cls": "_ctaBtn_1umzl_78 _ctaBtnSplit_1umzl_95"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Bölünmüş EkranSplit",
+        "aria": null,
+        "cls": "_viewToggleBtn_b1ekh_50 _viewToggleBtnActive_b1ekh_82"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Liste GörünümüListe",
+        "aria": null,
+        "cls": "_viewToggleBtn_b1ekh_50 "
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Tam HaritaHarita",
+        "aria": null,
+        "cls": "_viewToggleBtn_b1ekh_50 "
+      },
+      {
+        "tag": "SELECT",
+        "text": "ÖnerilenEn yüksek puanEn çok iş",
+        "aria": null,
+        "cls": ""
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm hizmetlerMobilya KurulumuTV Duvar MontajıKorniş MontajıRaf veya Tablo Montaj",
+        "aria": null,
+        "cls": "_srOnly_b1ekh_4"
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm ilçelerAltındağÇankayaEtimesgutGölbaşıKeçiörenMamakPursaklarSincanYenimahall",
+        "aria": null,
+        "cls": "_srOnly_b1ekh_4"
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm hizmetlerMobilya KurulumuTV Duvar MontajıKorniş MontajıRaf veya Tablo Montaj",
+        "aria": null,
+        "cls": "_filterSelect_b1ekh_253"
+      },
+      {
+        "tag": "SELECT",
+        "text": "Tüm ilçelerAltındağÇankayaEtimesgutGölbaşıKeçiörenMamakPursaklarSincanYenimahall",
+        "aria": null,
+        "cls": "_filterSelect_b1ekh_253"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Daha fazla filtre",
+        "aria": "Filtrele, diğer seçenekleri aç",
+        "cls": "_advancedFilterButton_b1ekh_289 "
+      }
+    ]
+  }
+]

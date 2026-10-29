@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orkestra - Konsept Tasarım İncelemesi</title>
+<style>
+:root{--green:#0e6f47;--navy:#17233b;--paper:#fafbf9;--sub:#596780;--line:#e2e8f0;--max-w:1240px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--paper);color:var(--navy);line-height:1.45}
+:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+a,button{min-height:44px;min-width:44px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:inherit;text-decoration:none;font:inherit}
+.tb{background:var(--navy);color:#fff;padding:.35rem 1rem;display:flex;align-items:center;gap:.75rem;font-size:13px;flex-wrap:wrap}
+.tb button{background:#233555;color:#fff;border:1px solid #3b4e73;padding:0 .9rem;font-weight:600}
+.tb button.active{background:var(--green);border-color:var(--green)}
+.tb a{color:#86efac;text-decoration:underline;margin-left:auto}
+header{max-width:var(--max-w);margin:0 auto;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:22px;font-weight:700;letter-spacing:-.03em;display:flex;align-items:center;gap:.5rem}
+nav{display:flex;gap:1.25rem}
+.hero{position:relative;background-position:center;background-size:cover;background-repeat:no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 1rem}
+.view-a .hero{min-height:400px;background-image:linear-gradient(to bottom,rgba(250,251,249,.82) 0%,rgba(250,251,249,.96) 65%,var(--paper) 100%),url('../../../public/images/hero-glass-materials-v3.png')}
+.view-b .hero{min-height:350px;background-image:linear-gradient(rgba(23,35,59,.42),rgba(23,35,59,.5)),url('../../../public/images/hero-glass-materials-v3.png');color:#fff}
+.hero h1{font-weight:700;letter-spacing:-.02em;max-width:760px}
+.view-a .hero h1{font-size:52px;color:var(--navy)}
+.view-b .hero h1{font-size:40px;color:#fff}
+.hero form{margin-top:1.25rem;width:100%;max-width:560px;display:flex;flex-direction:column;gap:.45rem}
+.view-a .hero label{font-size:14px;font-weight:600;color:var(--navy);text-align:left}
+.view-b .hero label{font-size:14px;font-weight:600;color:#fff;text-align:left}
+.search-bar{display:flex;background:#fff;border:1px solid #cbd5e1;width:100%}
+.search-bar input{flex:1;border:0;padding:.6rem .85rem;min-height:44px;font:inherit;color:var(--navy)}
+.search-bar button{background:var(--green);color:#fff;border:0;padding:0 1.25rem;font-weight:600}
+.hero small{font-size:13px;color:var(--sub)}
+.view-b .hero small{color:#cbd5e1}
+main{max-width:var(--max-w);margin:2.5rem auto;padding:0 1rem}
+.gallery-bar{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--line)}
+.gallery-bar h2{font-size:24px;font-weight:700}
+.gallery-bar small{display:block;font-size:13px;color:var(--sub);font-weight:400;margin-top:.2rem}
+.gallery-bar select{min-height:44px;padding:0 .75rem;background:#fff;border:1px solid #cbd5e1;font:inherit;color:var(--navy)}
+.works-grid{display:grid;gap:2rem 1.5rem}
+.view-a .works-grid{grid-template-columns:repeat(2,1fr)}
+.view-a .work-btn{aspect-ratio:3/2}
+.work-card{display:flex;flex-direction:column;gap:.6rem}
+.work-btn{width:100%;padding:0;border:0;background:#e2e8f0;display:block;text-align:left}
+.work-img{width:100%;height:100%;object-fit:cover;display:block}
+.work-meta h3{font-size:16px;font-weight:600}
+.work-meta p{font-size:13px;color:var(--sub);margin-top:2px}
+@media(min-width:768px){
+  .view-b .works-grid{grid-template-columns:repeat(3,1fr);grid-template-rows:260px 260px 260px}
+  .view-b .work-card:nth-child(1){grid-column:1/3;grid-row:1/3}
+  .view-b .work-card:nth-child(2){grid-column:3/4;grid-row:1/2}
+  .view-b .work-card:nth-child(3){grid-column:3/4;grid-row:2/3}
+  .view-b .work-card:nth-child(4){grid-column:1/2;grid-row:3/4}
+  .view-b .work-card:nth-child(5){grid-column:2/3;grid-row:3/4}
+  .view-b .work-card:nth-child(6){grid-column:3/4;grid-row:3/4}
+  .view-b .work-btn{height:calc(100% - 44px)}
+}
+@media(max-width:767px){
+  .view-a .hero h1,.view-b .hero h1{font-size:32px}
+  .view-a .hero{min-height:320px}
+  .view-b .hero{min-height:310px}
+  .view-a .works-grid,.view-b .works-grid{grid-template-columns:1fr;grid-template-rows:none}
+  .work-btn{aspect-ratio:3/2}
+}
+footer{border-top:1px solid var(--line);padding:2.5rem 1rem;max-width:var(--max-w);margin:3rem auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;font-size:14px;color:var(--sub)}
+footer h4{color:var(--navy);font-size:15px;margin-bottom:.5rem}
+footer select{width:100%;min-height:44px;padding:0 .5rem;border:1px solid #cbd5e1;background:#fff;font:inherit}
+footer ul{list-style:none}
+footer li+li{margin-top:.4rem}
+dialog{margin:auto;padding:1.5rem;border:1px solid #cbd5e1;max-width:440px;width:90%;background:#fff;color:var(--navy)}
+dialog::backdrop{background:rgba(23,35,59,.45)}
+.dlg-actions{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.5rem}
+.bookmark-btn{background:#f1f5f9;border:1px solid #cbd5e1;padding:0 1rem;font-size:14px}
+.bookmark-btn.saved{background:#dcfce7;border-color:var(--green);color:var(--green)}
+</style>
+<style>
+html, body { overflow-x: clip; } header { position: static !important; flex-wrap: wrap; } header nav { flex-wrap: wrap; } .toolbar, .gallery-bar, .tb { position: static !important; } .hero form, .search-bar { max-width: 720px !important; width: 100%; margin: 0 auto; background: transparent !important; box-shadow: none !important; border: none !important; } .hero form input, .search-bar input { min-width: 0 !important; min-height: 52px; border-radius: 8px; border: 1px solid #c7d2fe; padding: 0 16px; font-size: 16px; } .hero form button, .search-bar button { min-height: 52px; border-radius: 8px; background-color: #107c41 !important; color: #ffffff !important; border: none; font-weight: 600; padding: 0 20px; } .view-a .hero, .view-a .hero::before { background: linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.65) 55%, #f8fafc 100%) !important; } .view-b .hero { background-color: #f1f5f9 !important; color: #0b1a30 !important; filter: none !important; } .view-b .hero h1, .view-b .hero p, .view-b .hero .work-meta { color: #0b1a30 !important; background: transparent !important; text-shadow: none !important; } .works-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(0, 1fr)); gap: 1.5rem; } @media (min-width: 640px) { .works-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } } @media (min-width: 1024px) { .works-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } } .works-grid.is-filtered .work-card { grid-column: span 1 !important; grid-row: span 1 !important; } .work-card .work-meta { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 12px 14px; position: relative; } .work-card .work-meta-content { flex: 1 1 0%; min-width: 0; } .work-card .work-meta h3 { font-size: 18px !important; line-height: 1.35; margin: 0 0 4px 0; font-weight: 700; } .work-card .work-meta p, .work-card .work-meta .artisan-meta { font-size: 14px !important; line-height: 1.4; color: #475569; margin: 0; } .card-bm-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; cursor: pointer; color: #64748b; flex-shrink: 0; } .card-bm-btn[aria-pressed='true'], #modal-bm[aria-pressed='true'] { background: #eff6ff !important; color: #2f76d6 !important; border-color: #2f76d6 !important; } .card-bm-btn svg, #modal-bm svg { width: 20px; height: 20px; fill: currentColor; pointer-events: none; } #work-modal.is-search #modal-bm { display: none !important; } .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; text-decoration: none; color: inherit; } .brand svg { width: 32px; height: 32px; flex-shrink: 0; }
+/* Codex review corrections: preserve composition, image and existing brand tokens. */
+.hero{max-width:1440px;margin:auto}
+.view-a .hero{background:linear-gradient(180deg,rgba(250,251,249,.45),rgba(250,251,249,.65) 55%,var(--paper)),url('../../../public/images/hero-glass-materials-v3.png') center/cover!important}
+.view-b .hero{background:linear-gradient(180deg,rgba(250,251,249,.55),rgba(250,251,249,.7)),url('../../../public/images/hero-glass-materials-v3.png') center/cover!important}
+.view-b .hero label,.view-b .hero small{color:var(--navy)}
+.hero h1{line-height:1.12;text-wrap:balance;margin-bottom:24px}
+.hero form{margin-top:0!important}
+.search-bar{gap:8px}.search-bar input{border-color:#a5b3ae!important;background:#fafbf9}
+.search-bar button{background:var(--green)!important;white-space:nowrap}
+.hero small{margin-top:16px;max-width:560px}
+.gallery-bar{border:0;padding-bottom:0;margin-bottom:24px}
+.view-a .works-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:32px}
+.work-card{min-width:0}.work-card .work-meta{padding:2px 0 0;min-height:70px}
+.work-meta-content>p:not(.artisan-meta){display:none}
+.card-bm-btn{border:0;background:transparent;color:var(--navy)}
+.card-bm-btn svg{fill:none;stroke:currentColor;stroke-width:1.5}
+.card-bm-btn[aria-pressed=true]{background:#e6f0e9!important;color:var(--green)!important}
+.card-bm-btn[aria-pressed=true] svg{fill:currentColor}
+.view-b .works-grid{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:280px 280px 340px;gap:32px}
+.view-b .work-btn{height:auto;flex:1;min-height:0}.view-b .work-img{height:100%}
+.view-b .works-grid.is-filtered{grid-template-rows:none;grid-auto-rows:auto}
+.view-b .works-grid.is-filtered .work-card{grid-area:auto!important}.view-b .works-grid.is-filtered .work-btn{aspect-ratio:3/2;flex:none}
+footer{border:0;margin-top:72px;padding-top:0;padding-bottom:48px}
+header{gap:16px}nav{font-size:14px}
+select,dialog,.bookmark-btn{border-radius:8px}
+@media(max-width:767px){
+ header{padding:20px 16px}header nav{gap:12px;width:100%;justify-content:space-between}
+ .view-a .hero,.view-b .hero{min-height:340px;padding:32px 20px}
+ .view-a .hero h1,.view-b .hero h1{font-size:34px}
+ .hero small{font-size:12px}
+ .view-a .works-grid,.view-b .works-grid{grid-template-columns:minmax(0,1fr);grid-template-rows:none;gap:28px}
+ .view-b .work-btn{aspect-ratio:3/2;flex:none}.view-b .work-card{grid-area:auto!important}
+ .search-bar button{padding:0 12px}.search-bar input{padding:0 10px!important}
+ .gallery-bar h2{font-size:26px}main{margin-top:32px}.tb a{margin-left:0}
+}
+</style>
+</head>
+<body class="view-a">
+<aside class="tb" aria-label="Prototip Seçenekleri">
+  <strong>Prototip Önizleme:</strong>
+  <button type="button" class="active" id="btn-a" onclick="switchView('view-a')">A Açık akış</button>
+  <button type="button" id="btn-b" onclick="switchView('view-b')">B Editoryal vitrin</button>
+  <a href="../landing-hallmark-v2/after-1440.png" target="_blank" rel="noopener">Mevcut tasarım referansı</a>
+</aside>
+<header>
+  <div class="brand">
+    <span>orkestra</span>
+    <svg width="28" height="12" viewBox="0 0 28 12" aria-hidden="true"><circle cx="4" cy="6" r="3" fill="#2563eb"/><circle cx="11" cy="6" r="3" fill="#3b82f6"/><circle cx="18" cy="6" r="3" fill="#60a5fa"/><circle cx="25" cy="6" r="3" fill="#93c5fd"/></svg>
+  </div>
+  <nav aria-label="Ana Dizin">
+    <a href="#kesfet">İşleri Gör</a>
+    <a href="#hizmetler">Hizmet Alanları</a>
+    <a href="#bolgeler">Bölgeler</a>
+  </nav>
+</header>
+<section class="hero" aria-labelledby="hero-title">
+  <h1 id="hero-title">Evin için bir fikir. İşin için bir usta.</h1>
+  <form onsubmit="event.preventDefault();alert('Prototip: Hizmet arama işlevi tasarım inceleme modundadır.');">
+    <label for="search-input">Ne yaptırmak istiyorsun?</label>
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Örn. banyo tadilatı, korniş, parke ustası..." required>
+      <button type="submit">Hizmet bul</button>
+    </div>
+  </form>
+  <small>Örnek arananlar: Salon boyama, mutfak bataryası montajı, elektrik priz değişimi</small>
+</section>
+<main>
+  <section id="kesfet">
+    <div class="gallery-bar">
+      <div>
+        <h2>Evine fikir bul</h2>
+        <small>Örnek uygulamalar. Fotoğraflar ve usta bilgileri temsilidir.</small>
+      </div>
+      <label class="sr-only" for="category-filter" style="display:none">Kategori Seç</label>
+      <select id="category-filter" aria-label="Kategori Seç" onchange="alert('Prototip filtre: '+this.value)">
+        <option value="all">Tüm Kategoriler</option>
+        <option value="montaj">Mobilya & Montaj</option>
+        <option value="tesisat">Sıhhi Tesisat</option>
+        <option value="boya">Boya & Badana</option>
+        <option value="elektrik">Elektrik</option>
+        <option value="temizlik">Temizlik</option>
+      </select>
+    </div>
+    <div class="works-grid">
+      <article class="work-card">
+        <button type="button" class="work-btn" onclick="openWorkModal('Duvar Rafı Montajı','Montaj, Çankaya')">
+          <img class="work-img" src="../../../public/images/discovery/duvar-rafi-montaji.jpg" alt="Duvar rafı montajı uygulaması" loading="lazy">
+        </button>
+        <div class="work-meta"><h3>Duvar Rafı Montajı</h3><p>Montaj, Çankaya</p></div>
+      </article>
+      <article class="work-card">
+        <button type="button" class="work-btn" onclick="openWorkModal('Mutfak Bataryası Değişimi','Sıhhi Tesisat, Keçiören')">
+          <img class="work-img" src="../../../public/images/discovery/mutfak-bataryasi-degisimi.jpg" alt="Mutfak bataryası değişimi uygulaması" loading="lazy">
+        </button>
+        <div class="work-meta"><h3>Mutfak Bataryası Değişimi</h3><p>Sıhhi Tesisat, Keçiören</p></div>
+      </article>
+      <article class="work-card">
+        <button type="button" class="work-btn" onclick="openWorkModal('Salon Boyama','Boya & Badana, Yenimahalle')">
+          <img class="work-img" src="../../../public/images/discovery/salon-boyama.jpg" alt="Salon boyama uygulaması" loading="lazy">
+        </button>
+        <div class="work-meta"><h3>Salon Boyama</h3><p>Boya & Badana, Yenimahalle</p></div>
+      </article>
+      <article class="work-card">
+        <button type="button" class="work-btn" onclick="openWorkModal('Korniş Montajı','Montaj, Etimesgut')">
+          <img class="work-img" src="../../../public/images/discovery/kornis-montaji.jpg" alt="Korniş montajı uygulaması" loading="lazy">
+        </button>
+        <div class="work-meta"><h3>Korniş Montajı</h3><p>Montaj, Etimesgut</p></div>
+      </article>
+      <article class="work-card">
+        <button type="button" class="work-btn" onclick="openWorkModal('Avize Montajı','Elektrik, Mamak')">
+          <img class="work-img" src="../../../public/images/discovery/avize-montaji.jpg" alt="Avize montajı uygulaması" loading="lazy">
+        </button>
+        <div class="work-meta"><h3>Avize Montajı</h3><p>Elektrik, Mamak</p></div>
+      </article>
+      <article class="work-card">
+        <button type="button" class="work-btn" onclick="openWorkModal('Mutfak Temizliği','Temizlik, Gölbaşı')">
+          <img class="work-img" src="../../../public/images/discovery/mutfak-temizligi.jpg" alt="Mutfak detaylı temizlik uygulaması" loading="lazy">
+        </button>
+        <div class="work-meta"><h3>Mutfak Temizliği</h3><p>Temizlik, Gölbaşı</p></div>
+      </article>
+    </div>
+  </section>
+</main>
+<footer>
+  <div id="hizmetler">
+    <h4>Hizmet Başlıkları</h4>
+    <ul><li>Mobilya ve Raf Kurulumu</li><li>Boya, Badana ve Alçı</li><li>Musluk ve Batarya Onarımı</li><li>Avize ve Elektrik Tesisatı</li><li>Detaylı Ev Temizliği</li></ul>
+  </div>
+  <div id="bolgeler">
+    <h4>Hizmet bölgesi</h4><p style="margin-bottom:12px">Tasarım örneği. Gerçek usta araması yapılmaz.</p>
+    <select onchange="alert('Bölge: '+this.value)">
+      <option>Çankaya</option><option>Keçiören</option><option>Yenimahalle</option><option>Etimesgut</option><option>Mamak</option><option>Gölbaşı</option>
+    </select>
+  </div>
+  <div>
+    <h4>Bilgilendirme</h4>
+    <p>Görseller ilham amaçlı örnek proje kayıtlarıdır. Orkestra bağımsız ustalarla ev sahiplerini buluşturur.</p>
+  </div>
+</footer>
+<dialog id="work-modal" aria-labelledby="modal-title">
+  <h3 id="modal-title" style="font-size:18px;margin-bottom:.35rem">İş Detayı</h3>
+  <p id="modal-meta" style="font-size:13px;color:var(--sub);margin-bottom:.85rem">Kategori, İlçe</p>
+  <p style="font-size:14px;color:#334155;border-top:1px solid var(--line);padding-top:.85rem">Tasarım önizlemesi: Seçilen işin uygulama adımları ve iş kapsamı burada sunulur.</p>
+  <div class="dlg-actions">
+    <button type="button" class="bookmark-btn" id="modal-bm" onclick="toggleBookmark(this)">Listeme Ekle</button>
+    <button type="button" onclick="document.getElementById('work-modal').close()" style="background:var(--navy);color:#fff;border:0;padding:0 1.25rem">Kapat</button>
+  </div>
+</dialog>
+<script>
+function switchView(viewClass){
+  document.body.className = viewClass;
+  document.getElementById('btn-a').classList.toggle('active', viewClass === 'view-a');
+  document.getElementById('btn-b').classList.toggle('active', viewClass === 'view-b');
+}
+function openWorkModal(title, meta){
+  const modal = document.getElementById('work-modal');
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-meta').textContent = meta;
+  const bm = document.getElementById('modal-bm');
+  bm.classList.remove('saved');
+  bm.textContent = 'Listeme Ekle';
+  modal.showModal();
+}
+function toggleBookmark(btn){
+  const saved = btn.classList.toggle('saved');
+  btn.textContent = saved ? 'Kaydedildi ✓' : 'Listeme Ekle';
+}
+</script>
+<script>
+(() => { const BM_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>'; const LOGO_SVG = '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="#2f76d6"/><circle cx="22" cy="10" r="7" fill="#2f76d6"/><circle cx="10" cy="22" r="7" fill="#2f76d6"/><circle cx="22" cy="22" r="7" fill="#2f76d6"/></svg>'; const brand = document.querySelector('.brand'); if (brand) { const brandText = brand.textContent.trim() || 'Orkestra'; brand.innerHTML = LOGO_SVG + '<span>' + brandText + '</span>'; } const artisans = ['Murat Usta • Çankaya (temsili)', 'Selim Usta • Yenimahalle (temsili)', 'Derya Usta • Etimesgut (temsili)', 'Emre Usta • Keçiören (temsili)', 'Cem Usta • Mamak (temsili)', 'Ece Usta • Gölbaşı (temsili)']; const categories = ['montaj', 'tesisat', 'boya', 'montaj', 'elektrik', 'temizlik']; const bookmarks = new Set(); let activeModalCardKey = null; let lastFocusedTrigger = null; const cards = document.querySelectorAll('article.work-card'); cards.forEach((card, i) => { const meta = card.querySelector('.work-meta'); if (!meta) return; const h3 = meta.querySelector('h3'); const key = h3 ? h3.textContent.trim() : 'İş ' + (i + 1); const contentWrapper = document.createElement('div'); contentWrapper.className = 'work-meta-content'; while (meta.firstChild) contentWrapper.appendChild(meta.firstChild); meta.appendChild(contentWrapper); if (artisans[i]) { const artEl = document.createElement('p'); artEl.className = 'artisan-meta'; artEl.textContent = artisans[i]; contentWrapper.appendChild(artEl); } const bmBtn = document.createElement('button'); bmBtn.type = 'button'; bmBtn.className = 'card-bm-btn'; bmBtn.setAttribute('aria-pressed', 'false'); bmBtn.setAttribute('aria-label', key + ' favorilere ekle'); bmBtn.innerHTML = BM_SVG; bmBtn.addEventListener('click', (e) => { e.stopPropagation(); bookmarks.has(key) ? bookmarks.delete(key) : bookmarks.add(key); syncBookmarks(); }); meta.appendChild(bmBtn); }); function syncBookmarks() { cards.forEach((card) => { const h3 = card.querySelector('.work-meta h3'); const btn = card.querySelector('.card-bm-btn'); if (!h3 || !btn) return; const key = h3.textContent.trim(); const pressed = bookmarks.has(key); btn.setAttribute('aria-pressed', pressed ? 'true' : 'false'); btn.setAttribute('aria-label', pressed ? key + ' favorilerden çıkar' : key + ' favorilere ekle'); }); const modalBm = document.getElementById('modal-bm'); if (modalBm && activeModalCardKey) { const pressed = bookmarks.has(activeModalCardKey); modalBm.textContent = pressed ? 'Kaydedildi' : 'Listeme ekle'; modalBm.setAttribute('aria-pressed', pressed ? 'true' : 'false'); modalBm.setAttribute('aria-label', pressed ? activeModalCardKey + ' favorilerden çıkar' : activeModalCardKey + ' favorilere ekle'); } } const origOpenModal = window.openWorkModal; window.openWorkModal = function(title, meta) { lastFocusedTrigger = document.activeElement; activeModalCardKey = title; const modal = document.getElementById('work-modal'); if (modal) modal.classList.remove('is-search'); if (origOpenModal) origOpenModal(title, meta); syncBookmarks(); if (modal && typeof modal.focus === 'function') modal.focus(); }; window.toggleBookmark = function() { if (!activeModalCardKey) return; bookmarks.has(activeModalCardKey) ? bookmarks.delete(activeModalCardKey) : bookmarks.add(activeModalCardKey); syncBookmarks(); }; const modal = document.getElementById('work-modal'); if (modal) { modal.addEventListener('close', () => { if (lastFocusedTrigger && typeof lastFocusedTrigger.focus === 'function') lastFocusedTrigger.focus(); }); } const filterSelect = document.getElementById('category-filter'); if (filterSelect) { filterSelect.onchange = null; filterSelect.removeAttribute('onchange'); filterSelect.addEventListener('change', (e) => { const selected = e.target.value; const grid = document.querySelector('.works-grid'); cards.forEach((card, idx) => { const match = selected === 'all' || categories[idx] === selected; card.style.display = match ? '' : 'none'; }); if (grid) grid.classList.toggle('is-filtered', selected !== 'all'); }); } const searchForm = document.querySelector('.hero form') || document.querySelector('form'); if (searchForm) { searchForm.onsubmit = null; searchForm.removeAttribute('onsubmit'); searchForm.addEventListener('submit', (e) => { e.preventDefault(); const input = searchForm.querySelector('input'); const query = input ? input.value.trim() : ''; lastFocusedTrigger = searchForm.querySelector('button') || input; activeModalCardKey = null; const titleEl = document.getElementById('modal-title'); const metaEl = document.getElementById('modal-meta'); if (titleEl) titleEl.textContent = query ? 'Arama Sonuçları: ' + query : 'Tüm Usta Listesi'; if (metaEl) metaEl.textContent = 'Tasarım prototipi arama görünümüdür. Harici sunucuya istek atılmaz.'; if (modal) { modal.classList.add('is-search'); if (typeof modal.showModal === 'function') modal.showModal(); else modal.setAttribute('open', ''); modal.focus(); } }); } const btnA = document.getElementById('btn-a'); const btnB = document.getElementById('btn-b'); function updateABState() { const isB = document.body.classList.contains('view-b'); if (btnA) btnA.setAttribute('aria-pressed', isB ? 'false' : 'true'); if (btnB) btnB.setAttribute('aria-pressed', isB ? 'true' : 'false'); } if (btnA) btnA.addEventListener('click', () => setTimeout(updateABState, 0)); if (btnB) btnB.addEventListener('click', () => setTimeout(updateABState, 0)); updateABState(); const districtSelect = document.querySelector('footer select'); if (districtSelect && !districtSelect.getAttribute('aria-label')) { districtSelect.setAttribute('aria-label', 'Hizmet Bölgesi'); } })();
+const district = document.querySelector('footer select');
+district.removeAttribute('onchange');
+const districtNote = document.createElement('p');districtNote.setAttribute('role','status');district.after(districtNote);
+district.addEventListener('change',()=>{districtNote.textContent = district.value + ' seçildi. Bu prototip gerçek usta araması yapmaz.';});
+if(new URLSearchParams(location.search).get('view')==='b'){switchView('view-b');document.getElementById('btn-a').setAttribute('aria-pressed','false');document.getElementById('btn-b').setAttribute('aria-pressed','true');}
+</script>
+</body>
+</html>

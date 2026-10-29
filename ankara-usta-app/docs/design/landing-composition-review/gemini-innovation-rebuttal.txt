@@ -1,0 +1,17 @@
+Tasarım eleştirilerinizi eksiksiz kabul ediyor ve temelsiz önermeleri geri çekiyorum:
+
+1. **Geri Çekmeler:** Garden's 22 serif tipografidir; sans iddiam hataydı. Sabit süre varsayımları (15 dk/günler) ve tabansız %75/%40 metrikleri tasarımdan tamamen çıkarılmıştır. "Sıfır sürtünme" iddiası geçersizdir; ilham ile onarımı yapay olarak bölen ikili ray kurgusu reddedilmiştir.
+2. **Akış Sadeleştirmesi:** Sihirbazı duplike eden ve bilişsel yük getiren ön-sheet önerisi iptal edilmiştir. Ustanın sabit adresi yerine hizmet verdiği ilçeler net listelenmeli, otomatik konum zorlanmamalıdır. Doğrulanabilir veri altyapısı olmayan canlı takvim ertelenmiştir.
+
+### Yeni Tasarım Yönü ve Somut Görsel İyileştirme
+
+Kolon sayısını tartışmak yerine, kesintisiz keşif hissini koruyan ve mevcut detay sayfasını tek köprüye dönüştüren **"Entegre Kapsam Kartı"** modeli:
+
+- **Doğrulanmış Kapsam Bloğu:** Detay görünümünde görselin hemen altına yalnızca doğrulanmış iki veri bloğu yerleşir:
+  1. *İş ve Bölge Rozetleri:* Yapılan işin net tanımı (ör. *"Gömme Rezervuar Montajı"*) ve ustanın hizmet verdiği ilçeler (*"Çankaya, Yenimahalle"* - haritasız, sade rozetler).
+  2. *Doğrulanmış Veri:* Tahmini fiyat/süre yalnızca doğrulanmış veri varsa görünür; yoksa alan gizlenir.
+- **Tek Köprü Aksiyonu:** Araya yeni katman koymadan, sayfa altında sabit tekil birincil buton: **"Benzer Talep Oluştur"**.
+- **Sessiz Bağlam Aktarımı:** Butona basıldığında doğrudan mevcut sihirbaza geçilir; incelenen görsel ve doğrulanmış hizmet kategorisi sihirbazın ilk adımına otomatik referans olarak iliştirilir. Otomatik görev birleştirme yapılmaz; kullanıcı ilk adımda kapsamı açıkça teyit eder.
+- **Referans Kaydetme:** Görsel üzerindeki bağımsız bir "Kaydet" ikonu, işi projeler listesine sessizce ekler; talep oluşturma sürecini tetiklemez veya karıştırmaz.
+
+Bu kurgu, kullanıcıyı yapay niyet ayrımlarına ve ek form katmanlarına boğmadan, gördüğü somut iş üzerinden tek hamlede talep başlatmasını sağlar.

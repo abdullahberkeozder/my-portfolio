@@ -1,0 +1,31 @@
+﻿ID,Fikir,Kaynaklar,Sanat yönetimi,Tipografi,Fotoğraf,Kompozisyon,Marka,Kontroller,Hiyerarşi,Mobil,Erişilebilirlik,İtidal,Karar,Gerekçe/koşul
+I01,"Temiz, kesintisiz ana zemin",H23 B05 B08,D,N,D,D,D,N,D,D,D,D,Final 10,"Düzlük riski fotoğraf ve boşlukla çözülmeli, yeni efektle değil."
+I02,Renklerin görevlerini sabitle,H18 B11 B12,D,N,N,D,D,D,D,D,D,D,Final 10,Logo rengini değiştirme; yeşilin her yere yayılması da çözüm değil.
+I03,Tipografiyi rollere göre yeniden kur,H23 H37 B05,D,D,N,D,D,D,D,D,D,D,Final 10,Serif tamamen yasak değil; Türkçe harfler ve mobil satır kırılması karşılaştırılmalı.
+I04,Hero için tek fotoğraf–başlık kompozisyonu,H25 B13 B07,D,N,D,D,D,D,D,K,K,D,Final 10,Arama sınırı ve yazı kontrastı kaybolmamalı; fotoğraf kadrajı mobilde ayrı seçilmeli.
+I05,Tek fotoğraf sanat yönetimi,H15 H25 H48 B08,D,N,D,D,D,N,D,D,K,D,Final 10,Yeni üretim bu adımda yok. Gerçek iş/temsili görsel ayrımı korunmalı; kaynak hakkı kontrol edilmeli.
+I06,Fotoğraf ve açıklamayı dış kutudan kurtar,B05 H15 B08,D,D,D,D,N,D,D,D,K,D,Final 10,Kart tıklanabilirliği ve kaydetme hedefi görünür kalmalı; kaynakların kendisi tümüyle çerçevesiz değil.
+I07,Bölge alanını sakin bir dizine dönüştür,H23 H01 H44,D,D,N,D,D,D,D,K,K,D,Final 10,Mobilde yatay tablo kullanılmamalı; bağlantı hedefleri küçültülmemeli.
+I08,"Tek, ölçülü kontrol geometrisi",H23 B11 B05,D,D,N,D,D,D,D,K,K,D,Final 10,Köşe biçimi tek başına premium yaratmaz; odak halkası ve dokunma alanı korunmalı.
+I09,Kategori seçiminde tipografik sekmeler,H15 B05,D,D,N,D,D,D,D,K,K,D,Final 10,Sadece renk ile seçim gösterilmemeli; görsel sekme olması otomatik ARIA tab gerektirmez.
+I10,Mobil hero için bağımsız kompozisyon,B05 H23,D,N,D,D,D,D,D,K,K,D,Final 10,Yazıyı ve hedefleri küçültmek çözüm değil; küçük/yatay ekranlarda ayrıca doğrulanmalı.
+I11,Tüm sayfayı kenarlıksız yapmak,B08 H23,K,N,N,K,D,K,K,K,R,K,Ertelendi/birleştirildi/elendi,Seçim/arama grupları belirsizleşebilir. Finalde seçici çerçeve azaltma tercih edildi.
+I12,Tüm köşeleri gerçek squircle yapmak,B03 H03,K,N,N,K,N,K,N,K,K,K,Ertelendi/birleştirildi/elendi,Etkisi fotoğraf ve tipografiden küçük; screenshot gerçek eğri matematiğini kanıtlamaz.
+I13,Protokoldeki koyu sayısal bloğu hafifletmek,H15 H23,D,D,N,D,D,N,D,D,K,D,Ertelendi/birleştirildi/elendi,İçerik iddiaları ayrıca doğrulanmalı. Final 01/03/07 ilkeleriyle ikinci dilime alındı.
+I14,Harf avatarlarını sade imza satırına çevirmek,B05 H15,D,D,N,D,D,N,D,D,K,D,Ertelendi/birleştirildi/elendi,Gerçek insan bağını zayıflatabilir; varsa gerçek profil fotoğrafı öncelikli. Final 06 alt çalışması.
+I15,Tek büyük fotoğraf yerine eş ölçekli keşif dizisi,B05 B08,D,N,D,D,N,N,D,D,K,D,Ertelendi/birleştirildi/elendi,Salt kolon sayısı değişikliği yetmez; final 05/06 sonrasında denenebilir.
+I16,Bir süreç/sonuç fotoğraf çifti,H15 H25 B08,D,N,D,D,N,N,K,K,K,D,Ertelendi/birleştirildi/elendi,Aynı işe ait iki doğrulanmış fotoğraf yoksa sahte önce/sonra üretilmemeli.
+I17,Malzeme makrosuyla zanaat vurgusu,H44 H24,D,N,D,D,D,N,K,K,K,D,Ertelendi/birleştirildi/elendi,Hizmetin ne olduğu kaybolabilir; hero için otomatik doğru değil.
+I18,Büyük harfli teknik etiketleri sakinleştirmek,H23 H01,D,D,N,D,D,N,D,D,K,D,Ertelendi/birleştirildi/elendi,Teknik bilgiye ihtiyaç duyan kullanıcı için okunurluk korunmalı; final 03/06 içinde.
+I19,Bölüm başlarında tek çizgi ağırlığı,H15 H44 B02,D,D,N,D,D,N,D,D,K,D,Ertelendi/birleştirildi/elendi,Her başlığa çizgi de şablonlaşır; final 01/07 kapsamında.
+I20,Ortak hizalama rayları,H19 H42,D,D,N,D,D,N,D,D,D,D,Ertelendi/birleştirildi/elendi,"Temel kalite koşulu; bağımsız yeni estetik yön değil, finalin tamamına uygulanır."
+I21,Başlıklar arasında kontrollü ölçek farkı,H23 H37,D,D,N,D,D,N,D,D,K,D,Ertelendi/birleştirildi/elendi,Aşırı büyük display mobil taşmaya yol açar; final 03 altında.
+I22,Header ve footer marka tutarlılığı,B07 B08,D,N,N,D,D,N,D,D,D,D,Ertelendi/birleştirildi/elendi,Yeni logo tasarımı gerekmiyor; final 02 altında.
+I23,Tam ekran moda benzeri hero,B06 B09,D,N,D,K,K,N,K,R,K,K,Ertelendi/birleştirildi/elendi,Keşif gecikir ve arama ağırlaşır; mevcut kapsayıcı ve ortalama korunmalı.
+I24,Koyu tema ile dramatik dönüşüm,H12 H24 B01,K,N,K,K,R,K,K,K,K,R,Ertelendi/birleştirildi/elendi,Yeşil ev hizmeti kimliği ve gündelik kullanım yerine atölye sergisine kayar; elendi.
+I25,Bej–pirinç lüks paleti,H03 H36,K,N,N,K,R,K,K,K,K,R,Ertelendi/birleştirildi/elendi,Mevcut kimlik kaymasının nedeni; elendi.
+I26,Serif ağırlıklı editoryal marka,H29 H37,K,K,N,K,K,K,K,K,K,K,Ertelendi/birleştirildi/elendi,Mevcut serif kullanımını çoğaltmak gözlenen sorunu çözmüyor; rol bazlı 03 seçildi.
+I27,Butonlarda 3D cam/kabartma,H04 H13,K,N,N,K,R,K,K,K,K,R,Ertelendi/birleştirildi/elendi,Katman kalabalığını artırır; kullanıcının önceki cam fikri bütün kontrollere yayılmamalı.
+I28,"Seyrek, içeriğe bağlı hareket",H33 H14,K,N,N,K,N,K,K,K,K,K,Ertelendi/birleştirildi/elendi,Statik arşiv hareketi kanıtlamıyor; temel görünüm çözülmeden öncelik değil.
+I29,Sicil/katalog seri numaralarını kaldırmak,H23 B05,D,D,N,D,D,N,D,D,K,D,Ertelendi/birleştirildi/elendi,Operasyonel olarak gerekli kayıt bilgisi varsa korunmalı; final 03/07 kapsamında.
+I30,Keşifte kaydetme işaretini fotoğrafa daha hafif bağlamak,B05 B08,D,N,D,D,N,D,D,K,K,D,Ertelendi/birleştirildi/elendi,İkonu kontrastsız bırakmamak ve hedefi küçültmemek şart; final 06/08 altında.
