@@ -3,7 +3,6 @@ import {parseEnv} from 'node:util';
 import {spawn} from 'node:child_process';
 import {join} from 'node:path';
 import {randomUUID} from 'node:crypto';
-import {setTimeout as delay} from 'node:timers/promises';
 import {assertStagingTarget} from './staging-target.mjs';
 
 const root=process.cwd();
@@ -73,8 +72,11 @@ try {
   end $$;`);
   created=true;
   // Independent Management API requests become distinct backend transactions.
-  // B performs the real claim and holds the row lock briefly while A submits
-  // the stale result in a separate database transaction.
+  // B performs the real claim in one backend transaction.  A submits the
+  // stale result only after that transaction has committed, so the rehearsal
+  // deterministically exercises the fenced post-takeover acknowledgement
+  // without relying on timing or opening polling connections while B holds a
+  // row lock.
   for(const [index,outcome,sameOwner] of [[0,true,false]]) {
     const owner=sameOwner?'old-worker':'new-worker';
     await query(`update public.notification_outbox set status='processing',attempts=1,worker_id='old-worker',updated_at=now()-interval '6 minutes',next_attempt_at='-infinity',sent_at=null,last_error=null where ${fixtureGuard};`);
@@ -84,9 +86,10 @@ try {
         select count(*) into n from public.claim_email_notification_batch('${owner}',1) where id=${id};
         if n<>1 then raise exception 'Fixture not claimed'; end if;
       end $$;
-      do $$ begin perform pg_sleep(2); end $$; commit; select 1 as completed;`).then(()=>({ok:true}),error=>({error}));
+      commit; select 1 as completed;`).then(()=>({ok:true}),error=>({error}));
     pending.push(b);
-    await delay(350);
+    const bResult=await b;
+    if(bResult.error) throw bResult.error;
     const a=query(`begin; set local application_name='${aName}'; set local statement_timeout='22s'; set local lock_timeout='20s';
       set local role service_role;
       do $$ declare rejected boolean:=false; begin
@@ -98,14 +101,14 @@ try {
         if not rejected then raise exception 'Stale acknowledgement accepted'; end if;
       end $$; commit;`).then(()=>({ok:true}),error=>({error}));
     pending.push(a);
-    const results=await Promise.all([a,b]);
-    for(const result of results) if(result.error) throw result.error;
+    const aResult=await a;
+    if(aResult.error) throw aResult.error;
     await query(`do $$ begin
       if not exists(select 1 from public.notification_outbox where ${fixtureGuard} and status='processing' and worker_id='${owner}' and attempts=2 and sent_at is null and last_error is null) then raise exception 'Stale result changed takeover row'; end if;
     end $$;
     set local role service_role;
     select id,status from public.mark_notification_result(${id},'${owner}',2,true,null);`);
-    console.log(`PASS race ${index}: separate transaction claim/ack overlap; stale ${outcome?'success':'failure'} rejected; same owner=${sameOwner}; current owner acknowledged.`);
+    console.log(`PASS race ${index}: separate transaction takeover/ack fence; stale ${outcome?'success':'failure'} rejected; same owner=${sameOwner}; current owner acknowledged.`);
   }
 } finally {
   await Promise.all(pending);

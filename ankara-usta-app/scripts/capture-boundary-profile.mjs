@@ -1,6 +1,5 @@
 import { chromium } from '@playwright/test';
 import path from 'node:path';
-import fs from 'node:fs';
 
 const ARTIFACTS_DIR = 'C:/Users/a-ber/.gemini/antigravity-ide/brain/26d88a0e-8ad6-454c-967d-2c5de61d57cf';
 

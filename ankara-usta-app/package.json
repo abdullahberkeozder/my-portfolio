@@ -8,6 +8,7 @@
   "scripts": {
     "styles:check": "node scripts/verify-style-entrypoints.mjs",
     "repository:check": "node scripts/verify-repository-hygiene.mjs",
+    "routes:check": "node scripts/run-project-tool.mjs vitest run tests/unit/routeManifestFilesystem.test.ts tests/unit/apiRouteManifestFilesystem.test.ts",
     "dotnet:check": "dotnet build services/AnkaraUsta.NotificationWorker/AnkaraUsta.NotificationWorker.csproj --configuration Release && dotnet run --project services/AnkaraUsta.NotificationWorker.Tests/AnkaraUsta.NotificationWorker.Tests.csproj --configuration Release",
     "ui-debt:check": "node scripts/audit-ui-debt.mjs",
     "predev": "npm run styles:check",
@@ -32,7 +33,14 @@
     "test:remote:p1:dispute": "node scripts/run-p1-admin-dispute-browser.mjs",
     "test:remote:account-recovery": "node scripts/run-account-recovery-browser.mjs",
     "test:remote:u4": "node scripts/run-u4-browser.mjs",
-    "quality": "npm run repository:check && npm run styles:check && npm run ui-debt:check && npm run lint && npm run type-check && npm run test:coverage && npm run build && npm run dotnet:check"
+    "test:remote:u5": "node scripts/run-u5-browser.mjs",
+    "test:remote:u5:state-visual": "node scripts/run-u5-state-visual-browser.mjs",
+    "test:remote:workspace-visual": "node scripts/run-workspace-visual-browser.mjs",
+    "test:remote:operations-visual": "node scripts/run-operations-visual-browser.mjs",
+    "test:remote:discovery": "node scripts/verify-staging-discovery.mjs",
+    "test:remote:gamification:dry-run": "node scripts/gamification-quality-fixture.mjs",
+    "test:remote:gamification:transaction": "node scripts/run-gamification-transaction-remote.mjs",
+    "quality": "npm run repository:check && npm run styles:check && npm run routes:check && npm run ui-debt:check && npm run lint && npm run type-check && npm run test:coverage && npm run build && npm run dotnet:check"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.5",
