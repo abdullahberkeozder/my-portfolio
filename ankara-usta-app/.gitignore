@@ -46,3 +46,9 @@ next-env.d.ts
 /.tools/
 /.npm-cache/
 .vscode/
+
+# Local agent/tooling state; source reports remain tracked separately
+/.codex/
+/.orchestration/*
+!/.orchestration/README.md
+/docs/research/hallmark-ref/
