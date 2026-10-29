@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { services } from '../data/serviceTaxonomy';
 import { createSupabaseServerClient } from '../lib/supabase/server';
 import Pagination from '../components/Pagination';
+import styles from '../components/decisionWorkspace.module.css';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,32 +36,26 @@ export default async function JobsPage({searchParams}:{searchParams:Promise<{pag
   const jobs = (data ?? []) as unknown as JobRow[];
 
   return (
-    <main className="account-shell requests-page">
+    <main className={`account-shell ${styles.workspace}`}>
 
       <div className="page-body">
-        <div className="requests-header">
-          <Link className="account-back" href="/">← Ana Sayfa</Link>
-          <div>
-            <span>İŞ YÖNETİMİ</span>
-            <h1>İşlerim</h1>
-          </div>
-        </div>
+        <header className={styles.intro}><div><h1>İşlerim</h1><p>Kabul edilen tekliflerin kapsamını, mesajlarını ve tamamlanma durumunu takip edin.</p></div></header>
 
         {error ? (
           <section className="account-card" role="alert"><h2>İşler yüklenemedi</h2><p>Bağlantınızı kontrol edip tekrar deneyin.</p><RetryButton /></section>
         ) : jobs.length ? (
           <>
-          <div className="request-list">
+          <div className={styles.list}>
             {jobs.map(job => {
               const service = services.find(item => item.id === job.service_requests?.service_id);
               return (
-                <article key={job.id}>
+                <article className={styles.item} key={job.id}>
                   <div>
-                    <span>{jobStatusLabel(job.status)}</span>
+                    <span className={styles.itemMeta}>{jobStatusLabel(job.status)}</span>
                     <h2>{service?.name ?? job.service_requests?.service_id}</h2>
                     <p>{job.customer_id === user.id ? job.tradesperson_profiles?.display_name ?? 'Seçilen usta' : 'Müşteri işi'}</p>
                   </div>
-                  <Link className="dialog-primary" href={`/islerim/${job.id}`}>İşi incele</Link>
+                  <Link className={styles.itemLink} href={`/islerim/${job.id}`}>İş detayına git <span aria-hidden="true">→</span></Link>
                 </article>
               );
             })}
@@ -68,10 +63,10 @@ export default async function JobsPage({searchParams}:{searchParams:Promise<{pag
           <Pagination page={page} total={count??0} pageSize={pageSize} path="/islerim" />
           </>
         ) : (
-          <section className="account-card empty-requests">
+          <section className={styles.empty}>
             <h2>Henüz işiniz yok</h2>
             <p>Bir teklifi kabul ettiğinizde işin kapsamını ve mesajlarını burada takip edebilirsiniz.</p>
-            <Link className="dialog-primary" href="/taleplerim">Taleplerime git</Link>
+            <Link className={styles.itemLink} href="/taleplerim">Taleplerime git <span aria-hidden="true">→</span></Link>
           </section>
         )}
       </div>

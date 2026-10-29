@@ -76,7 +76,12 @@ export function useModalDialog<T extends HTMLElement>(active: boolean, onClose: 
       } else if (event.shiftKey && activeElement === first) {
         event.preventDefault();
         last.focus();
-      } else if (!event.shiftKey && activeElement === last) {
+      } else if (!event.shiftKey && (activeElement === last ||
+        (activeElement instanceof HTMLInputElement && last instanceof HTMLInputElement &&
+          activeElement.type === 'radio' && last.type === 'radio' &&
+          activeElement.name === last.name))) {
+        // A radio group is one native Tab stop, even though every option matches
+        // the focusable selector. Wrap from any focused option in the last group.
         event.preventDefault();
         first.focus();
       }

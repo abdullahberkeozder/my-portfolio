@@ -3,6 +3,7 @@
 import {useState} from 'react';
 import {ankaraDistrictsGeo} from '../../data/ankaraMapGeo';
 import {getPilotCoverage} from '../../data/pilotCoverage';
+import {serializeDiscoveryFilters} from '../../lib/discoveryContract';
 import styles from '../requestWizard.module.css';
 
 /** District context only. Seed shop pins and illustrative district counts are never used. */
@@ -15,7 +16,8 @@ export default function WizardRegionPreview({district, serviceId, targetProfessi
   const coverage = getPilotCoverage(district, serviceId);
   const [lat, lon] = area.latLngCenter;
   const bbox = `${lon - .07},${lat - .045},${lon + .07},${lat + .045}`;
-  const directory = `/ustalar?${new URLSearchParams({service: serviceId, district})}`;
+  const directoryQuery = serializeDiscoveryFilters({service: serviceId, district});
+  const directory = `/ustalar${directoryQuery ? `?${directoryQuery}&view=split&sort=recommended` : '?view=split&sort=recommended'}`;
   return <aside className={styles.region} aria-label="Seçilen hizmet bölgesi">
     <h3>Bölge önizlemesi</h3>
     <p>{district}, Ankara</p>

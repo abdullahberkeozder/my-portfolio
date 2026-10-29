@@ -3,6 +3,7 @@ import {useRef,useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {revisionFieldLabels,quoteRevisionRequestSchema} from '../domain/quoteRevision';
 import styles from './quoteRevision.module.css';
+import {trackFunnel} from '../lib/analytics';
 export default function QuoteRevisionRequestForm({quoteId,currentUserId}:{quoteId:string;currentUserId:string}){
   const router=useRouter();const lock=useRef(false);
   const [fields,setFields]=useState<string[]>([]);const [reason,setReason]=useState('');
@@ -16,7 +17,9 @@ export default function QuoteRevisionRequestForm({quoteId,currentUserId}:{quoteI
       const response=await fetch(`/api/quotes/${quoteId}/revision`,{method:'POST',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(15000),body:JSON.stringify({action:'request',expectedUserId:currentUserId,...outgoing})});
       const body=await response.json() as {error?:string;revision?:{id:string}};
       if(!response.ok||!body.revision)throw new Error(body.error??'İstek kaydedilemedi.');
-      setSent(true);router.refresh();
+      setSent(true);
+      trackFunnel('quote_revision_requested',{fieldCount:outgoing.fields.length});
+      router.refresh();
     }catch(problem){setError(problem instanceof Error?problem.message:'Bağlantı kurulamadı.');}
     finally{lock.current=false;setBusy(false);}
   }

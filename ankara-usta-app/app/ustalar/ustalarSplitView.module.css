@@ -125,6 +125,36 @@
   flex-wrap: wrap;
 }
 
+/* Support remains available without competing with the discovery CTA. */
+.supportLinkTop {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 8px;
+  color: #64748b;
+  background: transparent;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 140ms ease, background-color 140ms ease;
+}
+
+.supportLinkTop:hover,
+.supportLinkTop:focus-visible {
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.supportLinkTop:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, .22);
+  outline-offset: 2px;
+}
+
 .splitSummaryBadge {
   display: inline-flex;
   align-items: center;
@@ -188,6 +218,16 @@
   font-weight: 600;
   color: #92400e;
   margin-bottom: 10px;
+}
+
+.dbErrorLabel {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 /* ==========================================================================
@@ -558,20 +598,23 @@
   }
 
   .filterSelectGroup {
-    flex: 1 1 140px;
+    flex: 1 1 120px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
     min-width: 0;
     padding: 0 4px;
     border-left: 0;
   }
 
   .filterSelectLabel {
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .filterSelect {
     min-width: 0;
     width: 100%;
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .chipGroupLabel {
@@ -621,7 +664,7 @@
 }
 
 .splitListPane {
-  flex: 1 1 52%;
+  flex: 0 1 560px;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -629,7 +672,7 @@
   padding-bottom: 20px;
   scroll-behavior: smooth;
   min-width: 0;
-  transition: opacity 160ms ease, flex-basis 240ms ease;
+  transition: opacity 160ms ease;
 }
 
 /* Sleek Airbnb Custom Scrollbar */
@@ -660,7 +703,7 @@
   box-shadow: 0 8px 30px rgba(11, 19, 43, 0.08);
   border: 1.5px solid var(--border-default, #e2e8f0);
   position: relative;
-  transition: opacity 180ms ease, flex-basis 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 180ms ease;
 }
 
 .splitMapPaneExpanded {
@@ -744,6 +787,11 @@
   font-weight: 600;
 }
 
+.mapRegionHint {
+  color: #1d4ed8;
+  font-weight: 750;
+}
+
 .miniExpandSvg {
   display: inline-block;
   vertical-align: middle;
@@ -769,7 +817,7 @@
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.25);
-  transition: all 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 160ms ease, box-shadow 160ms ease;
 }
 
 .floatingShowListBtn:focus-visible {
@@ -818,7 +866,7 @@
 .gridSplit {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
 }
 
 @media (max-width: 1024px) {
@@ -831,54 +879,16 @@
 .gridFull {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+}
+
+@media (max-width: 360px) {
+  .filterSelectGroup { flex-basis: 100%; }
 }
 
 /* Card Interactive Styles (Faz 5: Virtual Windowing & 60 FPS Performance) */
-.cardInteractive {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 240px;
-  contain: layout style;
-  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
-  cursor: pointer;
-}
-
-.cardInteractive:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(11, 19, 43, 0.09);
-  border-color: #cbd5e1;
-}
-
-.cardInteractive:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
-  border-color: #0f172a !important;
-  box-shadow: 0 0 0 2px #2563eb, 0 10px 28px rgba(15, 23, 42, 0.16) !important;
-  transform: translateY(-2px);
-}
-
-.cardHighlighted {
-  border-color: #2563eb !important;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.22), 0 12px 32px rgba(37, 99, 235, 0.14) !important;
-  transform: translateY(-3px);
-}
 
 /* Craftsman Avatar with Category Color Gradients */
-.craftsmanAvatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 14px;
-  color: #ffffff;
-  display: grid;
-  place-items: center;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  flex-shrink: 0;
-  border: 2px solid #ffffff;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.14);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-}
 
 .avatarPlumbing {
   background: linear-gradient(135deg, #0284c7 0%, #1d4ed8 100%);
@@ -893,7 +903,7 @@
 }
 
 .avatarPaint {
-  background: linear-gradient(135deg, #8b5cf6 0%, #db2777 100%);
+  background: var(--brand-cobalt);
 }
 
 .avatarRepair {
@@ -902,12 +912,6 @@
 
 .avatarDefault {
   background: linear-gradient(135deg, #1e40af 0%, #0f172a 100%);
-}
-
-.avatarWrapper {
-  position: relative;
-  display: inline-flex;
-  flex-shrink: 0;
 }
 
 .cardPinBadge {
@@ -926,13 +930,7 @@
   border: 1.5px solid #ffffff;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
   letter-spacing: -0.01em;
-  transition: all 140ms ease;
-}
-
-.cardHighlighted .cardPinBadge {
-  background: #2563eb;
-  transform: scale(1.08);
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
 }
 
 /* Card Pin Index (backward compatibility) */
@@ -941,72 +939,24 @@
 }
 
 /* Split-mode compact card */
-.cardSplitCompact {
-  position: relative;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 195px;
-  contain: layout style;
-  padding: 16px;
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  border-radius: 16px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.02);
-  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 160ms ease, border-color 160ms ease;
-}
 
 /* Full Width Card for List-Only Mode */
-.cardFullWidth {
-  position: relative;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 210px;
-  contain: layout style;
-  padding: 18px 20px;
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-  border-radius: 16px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.02);
-  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 160ms ease, border-color 160ms ease;
-}
-
-.cardMainContent {
-  flex: 1 1 0;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
 
 /* Card Top Header: Name on left, clean rating on right */
-.cardTopHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 5px;
-}
 
-.cardIdentityGroup {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-}
-
-.cardCraftsmanName {
-  font-size: 15.5px;
-  font-weight: 700;
-  color: #0f172a;
-  line-height: 1.25;
-  margin: 0;
-  letter-spacing: -0.015em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.mobileVerifiedMark {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--brand-cobalt);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 0 0 2px #fff;
 }
 
 .cardVerifiedMiniCheck {
@@ -1024,64 +974,14 @@
   flex-shrink: 0;
 }
 
-.cardRatingGroup {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 4px 8px;
-  background: #fffdf4;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 11.5px;
-  flex-shrink: 0;
-}
-
-.cardRatingStar {
-  color: #f59e0b;
-  font-size: 11px;
-}
-
-.cardRatingScore {
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.cardRatingCount {
+.mobileRatingNew {
   color: #64748b;
-  font-weight: 500;
-  font-size: 10.5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 /* Subtitle Row */
-.cardSubtitleRow {
-  font-size: 12px;
-  font-weight: 500;
-  color: #64748b;
-  line-height: 1.35;
-  margin: 0 0 7px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  flex-wrap: wrap;
-}
-
-.cardWorkshopSub {
-  color: #475569;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 220px;
-}
-
-.cardSubtitleDot {
-  color: #cbd5e1;
-}
-
-.cardDistrictSub {
-  color: #64748b;
-  white-space: nowrap;
-}
 
 .cardCategorySub {
   color: #475569;
@@ -1110,7 +1010,7 @@
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 120ms ease;
+  transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
 }
 
 .competencyLogoBtn:hover {
@@ -1155,7 +1055,7 @@
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 120ms ease;
+  transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
 }
 
 .trustShieldBtn:hover {
@@ -1228,18 +1128,6 @@
   flex-direction: column;
   gap: 2px;
   padding: 0 8px;
-}
-
-.cardInteractive:hover .cardHoverDisclosure,
-.cardInteractive:focus-within .cardHoverDisclosure,
-.cardHighlighted .cardHoverDisclosure {
-  max-height: 60px;
-  opacity: 1;
-  margin-top: 12px;
-  margin-bottom: 6px;
-  padding: 6px 8px;
-  border-color: #e2e8f0;
-  transform: translateY(0);
 }
 
 .disclosureCredentialItem {
@@ -1342,22 +1230,6 @@
   overflow: hidden;
 }
 
-.cardActionRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.cardSignalRow {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.cardSignal,
 .cardSignalMuted {
   display: inline-flex;
   align-items: center;
@@ -1367,12 +1239,6 @@
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
-}
-
-.cardSignal {
-  color: #0f3e4a;
-  background: #eef9f7;
-  border: 1px solid #cbe8e2;
 }
 
 .cardSignalMuted {
@@ -1388,13 +1254,7 @@
   white-space: normal !important;
 }
 
-.cardActionRow > * {
-  min-width: 0;
-  white-space: nowrap;
-}
-
 /* Primary Conversion CTA: Teklif İste (Plerdy WML-011) */
-.cardCtaPrimary,
 .cardPrimaryActionBtn {
   display: inline-flex;
   align-items: center;
@@ -1402,31 +1262,23 @@
   gap: 6px;
   height: 34px;
   padding: 0 10px;
-  background: #0f172a;
+  background: var(--action-primary);
   color: #ffffff !important;
-  border-radius: 8px;
-  font-size: 11px;
-  font-weight: 700;
+  border-radius: var(--radius-control);
+  font-size: 12px;
+  font-weight: 650;
   text-decoration: none;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.14);
-  transition: all 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  border: 1.5px solid #0f172a;
+  box-shadow: 0 2px 8px rgb(18 70 181 / 20%);
+  transition: background-color var(--motion-standard), border-color var(--motion-standard), color var(--motion-standard), transform var(--motion-standard), box-shadow var(--motion-standard);
+  border: 1.5px solid var(--action-primary);
   cursor: pointer;
 }
 
-.cardActionRow .cardCtaPrimary {
-  min-height: 44px;
-  padding-inline: 16px;
-  flex: 0 0 auto;
-  min-width: 136px;
-}
-
-.cardCtaPrimary:hover,
 .cardPrimaryActionBtn:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: var(--brand-cobalt-hover);
+  border-color: var(--brand-cobalt-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(29, 78, 216, 0.3);
+  box-shadow: 0 4px 14px rgb(18 70 181 / 30%);
 }
 
 /* Secondary Action: Profili İncele */
@@ -1444,7 +1296,7 @@
   font-size: 11px;
   font-weight: 700;
   text-decoration: none;
-  transition: all 160ms ease;
+  transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease, color 160ms ease;
   cursor: pointer;
 }
 
@@ -1471,7 +1323,7 @@
   font-size: 12px;
   font-weight: 700;
   text-decoration: none;
-  transition: all 160ms ease;
+  transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -1615,14 +1467,6 @@
   /* Keep the mobile card focused on its single action. The desktop helper
      copy has no room beside a 320px card and otherwise gets clipped at the
      edge; profile details remain available after the CTA. */
-  .cardActionRow {
-    align-items: stretch;
-  }
-
-  .cardActionRow .cardCtaPrimary,
-  .cardActionRow .cardPrimaryActionBtn {
-    width: 100%;
-  }
 
   .cardActionHint {
     display: none !important;
@@ -1670,7 +1514,9 @@
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
-    z-index: 1000 !important;
+    /* The map's empty-state banner uses z-index:1001. Keep the drawer above
+       every map overlay so its controls remain reachable at 320px. */
+    z-index: 1100 !important;
     max-width: 540px !important;
     margin: 0 auto !important;
     background: rgba(255, 255, 255, 0.96) !important;
@@ -1679,9 +1525,9 @@
     border: 1px solid rgba(226, 232, 240, 0.9) !important;
     border-bottom: none !important;
     border-radius: 20px 20px 0 0 !important;
-    padding: 6px 12px 10px !important;
+    padding: 6px 12px calc(10px + env(safe-area-inset-bottom)) !important;
     box-shadow: 0 -8px 30px rgba(15, 23, 42, 0.12), 0 -2px 6px rgba(15, 23, 42, 0.04) !important;
-    transition: max-height 280ms cubic-bezier(0.16, 1, 0.3, 1), padding 200ms ease, background 200ms ease !important;
+    transition: max-height 280ms cubic-bezier(0.16, 1, 0.3, 1), padding 200ms ease, background-color 200ms ease !important;
   }
 
   .unifiedBottomSheetCollapsed {
@@ -1762,7 +1608,7 @@
     min-height: 44px;
     padding: 4px 10px;
     cursor: pointer;
-    transition: all 120ms ease;
+    transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease;
   }
 
   .mobileSnapModeBtn:hover {
@@ -1784,7 +1630,7 @@
     min-height: 44px;
     padding: 4px 12px;
     cursor: pointer;
-    transition: all 120ms ease;
+    transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease;
   }
 
   .mobileDrawerCollapseBtn:focus-visible {
@@ -1987,9 +1833,19 @@
     font-weight: 700;
     color: #0f172a;
     margin: 0;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.2;
+    min-height: 1.2em;
+  }
+
+  .mobileVerifiedMark {
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
   }
 
   .mobileWorkshopSub {
@@ -2112,7 +1968,7 @@
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     text-decoration: none;
-    transition: all 140ms ease;
+    transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
     flex-shrink: 0;
     position: relative;
   }
@@ -2137,7 +1993,7 @@
     border: 1px solid #a7f3d0;
     border-radius: 6px;
     text-decoration: none;
-    transition: all 140ms ease;
+    transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
     flex-shrink: 0;
   }
 
@@ -2245,6 +2101,12 @@
   }
 }
 
+/* Calm the card palette: category is content, not a rainbow status code. */
+.mobileMonogram {
+  background: var(--text-primary, #0f172a) !important;
+  border-color: var(--surface-raised, #ffffff);
+}
+
 @keyframes mobileDrawerSlideUp {
   from {
     opacity: 0;
@@ -2323,7 +2185,7 @@
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
 }
 
 .virtualLoadAllBtn:hover {
@@ -2352,7 +2214,7 @@
   cursor: pointer;
   white-space: nowrap;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
 }
 
 .mobileLoadMorePill:hover {
@@ -2420,8 +2282,8 @@
   position: absolute;
   top: 18px;
   right: 18px;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1px solid #e2e8f0;
   background: #f8fafc;
@@ -2431,7 +2293,7 @@
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
 }
 
 .quoteModalCloseBtn:hover {
@@ -2494,6 +2356,12 @@
   margin-top: 6px;
 }
 
+.quoteModalMetaLocation {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .quoteModalPrice {
   color: #0f172a;
   font-weight: 800;
@@ -2524,7 +2392,7 @@
   padding: 0 14px;
   font-size: 13.5px;
   color: #0f172a;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
   font-family: inherit;
   box-sizing: border-box;
 }
@@ -2550,8 +2418,14 @@
 .quoteTrustItem {
   display: flex;
   align-items: flex-start;
-  gap: 6px;
+  gap: 7px;
   line-height: 1.4;
+}
+
+.quoteTrustItem > svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: var(--action-primary, #0e6f47);
 }
 
 .quoteModalSubmitBtn {
@@ -2563,7 +2437,7 @@
   font-weight: 800;
   border: none;
   cursor: pointer;
-  transition: all 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: color 160ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 160ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 160ms cubic-bezier(0.34, 1.56, 0.64, 1), transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
 }
 
@@ -2616,7 +2490,7 @@
   font-weight: 700;
   border: none;
   cursor: pointer;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
 }
 
 .quoteSuccessCloseBtn:hover {
@@ -2641,7 +2515,7 @@
   background: #f8fafc;
   color: #475569;
   cursor: pointer;
-  transition: all 120ms ease;
+  transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
   text-align: center;
   font-family: inherit;
 }
@@ -2706,7 +2580,7 @@
   font-size: 13.5px;
   font-weight: 700;
   text-decoration: none;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
   box-shadow: 0 4px 12px rgba(22, 163, 74, 0.28);
 }
 
@@ -2744,7 +2618,7 @@
   font-size: 13.5px;
   color: #0f172a;
   outline: none;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
   font-family: inherit;
   box-sizing: border-box;
@@ -2778,7 +2652,7 @@
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: all 120ms ease;
+  transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
 }
 
 .filterSearchClearBtn:hover {
@@ -2893,10 +2767,14 @@
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
-  transition: all 140ms ease;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
   box-shadow: 0 1px 3px rgba(225, 29, 72, 0.1);
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+.emergencyDispatchPillTop {
+  min-height: 38px;
 }
 
 .emergencyDispatchPill:hover {
@@ -2967,7 +2845,7 @@
   border-radius: 12px;
   text-decoration: none;
   box-shadow: 0 4px 14px rgba(5, 150, 105, 0.25);
-  transition: all 160ms ease;
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
   cursor: pointer;
   border: none;
   text-align: left;
@@ -2989,7 +2867,7 @@
   border-radius: 12px;
   text-decoration: none;
   box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
-  transition: all 160ms ease;
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
   cursor: pointer;
   border: none;
   text-align: left;
@@ -3045,17 +2923,6 @@
   -webkit-backdrop-filter: blur(10px);
 }
 
-.cardSplitCompact,
-.cardFullWidth {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-  border-color: #dce5ef;
-}
-
-.cardInteractive:hover {
-  border-color: #b9c9dd;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.11);
-}
-
 .splitMapPane {
   border-color: #d8e0ea;
   box-shadow: 0 12px 34px rgba(15, 23, 42, 0.1);
@@ -3065,9 +2932,6 @@
   .splitLayout,
   .splitListPane,
   .splitMapPane,
-  .cardInteractive,
-  .cardSplitCompact,
-  .cardFullWidth,
   .viewToggleBtn,
   .spatialResetFilterBtn,
   .miniExpandBtn,
@@ -3083,5 +2947,60 @@
   .emergencyIconPulse,
   .mobileDrawerSlideUp {
     animation: none !important;
+  }
+}
+
+/* P4 — mobile discovery stays usable at the narrowest supported viewport. */
+@media (max-width: 390px) {
+  .viewModeToggle {
+    gap: 2px;
+  }
+
+  .viewToggleBtn {
+    min-width: 0;
+    padding-inline: 4px;
+    font-size: 0.6875rem;
+    letter-spacing: -0.01em;
+  }
+
+  .toggleIcon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .splitSummaryRow {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+
+  .sortInlineControl {
+    margin-left: auto;
+  }
+
+  .sortInlineControl select {
+    max-width: 118px;
+  }
+
+  .spatialResetFilterBtn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .unifiedBottomSheetFull {
+    height: min(80vh, calc(100dvh - 96px)) !important;
+    max-height: min(80vh, calc(100dvh - 96px)) !important;
+  }
+
+  .mobileCarouselTrackFull {
+    max-height: calc(min(80vh, 100dvh - 96px) - 65px) !important;
+  }
+
+  .mobileCarouselCard {
+    flex-basis: min(280px, calc(100vw - 40px));
+    width: min(280px, calc(100vw - 40px));
+    max-width: min(280px, calc(100vw - 40px));
+    min-width: min(280px, calc(100vw - 40px));
   }
 }

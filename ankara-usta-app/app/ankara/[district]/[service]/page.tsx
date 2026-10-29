@@ -6,6 +6,7 @@ import { getAllDistrictSlugs, getDistrictFromSlug } from '../../../data/district
 import { FLAT_RATE_PACKAGES } from '../../../data/flatRatePackages';
 import { getCalibratedServiceScope, getServiceSafetyGuidance } from '../../../data/serviceGuidance';
 import { services } from '../../../data/serviceTaxonomy';
+import { discoveryHref } from '../../../lib/discoveryContract';
 import styles from './localLanding.module.css';
 
 type Props = {
@@ -77,6 +78,12 @@ export default async function LocalServiceLandingPage({ params }: Props) {
   const matchingFlatRate = FLAT_RATE_PACKAGES.find(p => p.serviceId === service.id);
 
   const startWizardUrl = `/?service=${encodeURIComponent(service.id)}&district=${encodeURIComponent(districtName)}&resume=1`;
+  const directoryUrl = discoveryHref({
+    service: service.id,
+    district: districtName,
+    view: 'split',
+    sort: 'recommended',
+  });
 
   // Schema.org Structured Data
   const jsonLd = {
@@ -195,7 +202,7 @@ export default async function LocalServiceLandingPage({ params }: Props) {
             <Link href={startWizardUrl} className={styles.primaryCta}>
               ⚡ {districtName}&apos;de Hemen Fiyat Al
             </Link>
-            <Link href="/ustalar" className={styles.secondaryCta}>
+            <Link href={directoryUrl} className={styles.secondaryCta}>
               Doğrulanmış Ustaları Gör →
             </Link>
           </div>

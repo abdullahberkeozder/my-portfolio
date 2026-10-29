@@ -3,11 +3,15 @@
 import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { ANKARA_PILOT_SUPPORT, buildWhatsAppSupportUrl } from '../lib/pilotSupport';
+import { trackFunnel } from '../lib/analytics';
+import resultStyles from './professionalResult.module.css';
+import { discoveryHref, serializeDiscoveryFilters, updateDiscoveryParams } from '../lib/discoveryContract';
+import type { DirectoryAvailability } from '../lib/directoryAvailability';
 import AnkaraInteractiveMap from '../components/map/AnkaraInteractiveMap';
 import { generateUstaMapMarkers, type TradespersonMetrics } from './ustaCoordinates';
 import styles from './ustalarSplitView.module.css';
 import dirStyles from './directory.module.css';
+import { IconClose, IconLocation, IconShield } from '../components/WizardSummaryIcons';
 
 export interface UstalarSplitViewProps {
   profiles: {
@@ -33,8 +37,11 @@ export interface UstalarSplitViewProps {
   initialView?: 'split' | 'list' | 'map';
   initialSortMode?: 'recommended' | 'rating' | 'jobs';
   hasDbError?: boolean;
+  /** Server-evidenced supply state for the current service/district filters. */
+  availability?: DirectoryAvailability;
   /** Optional detail route prefix for non-production directory concepts. */
   profileHrefBase?: string;
+  verificationConfirmed?: boolean;
 }
 
 export const VIRTUAL_BATCH_SIZE = 24;
@@ -54,10 +61,35 @@ const DISTRICT_SLA_MAP: Record<string, string> = {
 };
 
 export function getDistrictSlaText(districtName?: string): string {
-  if (!districtName) return '⚡ ~15–25 dk Sevk';
+  if (!districtName) return '~15–25 dk Sevk';
   const norm = districtName.toLowerCase().trim();
   const sla = DISTRICT_SLA_MAP[norm] || '~18–28 dk';
-  return `⚡ ${sla} Sevk`;
+  return `${sla} Sevk`;
+}
+
+export function getServiceAreaSummary(
+  districts: string[],
+  neighborhoods: string[],
+  fallbackDistrict?: string | null
+): string {
+  const cleanDistricts = districts.filter(Boolean);
+  const cleanNeighborhoods = neighborhoods.filter(Boolean);
+  const primaryDistrict = cleanDistricts[0] || (fallbackDistrict && fallbackDistrict.toLowerCase() !== 'ankara' ? fallbackDistrict : '');
+
+  if (cleanNeighborhoods.length > 0) {
+    const districtLabel = primaryDistrict || 'Ankara';
+    return `${districtLabel} · ${cleanNeighborhoods.length} mahalle`;
+  }
+
+  if (cleanDistricts.length > 1) {
+    return `${primaryDistrict} ve ${cleanDistricts.length - 1} ilçe`;
+  }
+
+  if (primaryDistrict && primaryDistrict.toLowerCase() !== 'ankara') {
+    return `${primaryDistrict} geneli`;
+  }
+
+  return 'Ankara geneli';
 }
 
 export function formatTurkishPhone(raw: string): string {
@@ -117,13 +149,13 @@ export function parseCraftsmanName(rawName: string) {
 
 export function getServiceIcon(categoryName: string): string {
   const c = (categoryName || '').toLowerCase();
-  if (c.includes('tesisat') || c.includes('musluk')) return '🔧';
-  if (c.includes('elektrik')) return '⚡';
-  if (c.includes('ahşap') || c.includes('mobilya') || c.includes('marangoz')) return '🪚';
-  if (c.includes('boya') || c.includes('badana')) return '🎨';
-  if (c.includes('mekanik') || c.includes('metal') || c.includes('kaynak') || c.includes('montaj')) return '🛠️';
-  if (c.includes('temizlik')) return '🧹';
-  return '⭐';
+  if (c.includes('tesisat') || c.includes('musluk')) return 'tesisat';
+  if (c.includes('elektrik')) return 'elektrik';
+  if (c.includes('ahşap') || c.includes('mobilya') || c.includes('marangoz')) return 'ahşap';
+  if (c.includes('boya') || c.includes('badana')) return 'boya';
+  if (c.includes('mekanik') || c.includes('metal') || c.includes('kaynak') || c.includes('montaj')) return 'montaj';
+  if (c.includes('temizlik')) return 'temizlik';
+  return 'hizmet';
 }
 
 export function getServiceAvatarClass(categoryName: string, cssStyles: Record<string, string>): string {
@@ -134,6 +166,31 @@ export function getServiceAvatarClass(categoryName: string, cssStyles: Record<st
   if (c.includes('boya') || c.includes('badana')) return cssStyles.avatarPaint || '';
   if (c.includes('mekanik') || c.includes('metal') || c.includes('kaynak') || c.includes('montaj')) return cssStyles.avatarRepair || '';
   return cssStyles.avatarDefault || '';
+}
+
+function getAvailabilityCopy(availability?: DirectoryAvailability) {
+  switch (availability) {
+    case 'limited':
+      return {
+        title: 'Bu filtrede henüz eşleşen usta yok',
+        description: 'Bu hizmet ve ilçe birleşiminde sonuç bulunamadı. Ankara’daki doğrulanmış ustaları genişletilmiş görünümde inceleyebilirsiniz.',
+      };
+    case 'waitlist':
+      return {
+        title: 'Bu alanda henüz doğrulanmış usta yok',
+        description: 'Şu anda bu kapsamda yayınlanmış bir profil bulunmuyor. İhtiyacınızı anlatarak talep akışından başlayabilirsiniz.',
+      };
+    case 'unavailable':
+      return {
+        title: 'Bu bölge pilot kapsamımızda değil',
+        description: 'Orkestra’nın mevcut hizmet alanı Ankara’daki pilot ilçelerle sınırlı.',
+      };
+    default:
+      return {
+        title: 'Bu kriterlere uygun doğrulanmış usta bulunamadı',
+        description: 'Filtre tercihlerinizi genişletmeyi deneyebilir veya tüm ustaları görmek için filtreleri temizleyebilirsiniz.',
+      };
+  }
 }
 
 function useSafeRouter() {
@@ -170,7 +227,9 @@ export default function UstalarSplitView({
   initialView = 'split',
   initialSortMode = 'recommended',
   hasDbError = false,
+  availability,
   profileHrefBase = '/ustalar',
+  verificationConfirmed = false,
 }: UstalarSplitViewProps) {
   const router = useSafeRouter();
   const pathname = useSafePathname();
@@ -192,12 +251,83 @@ export default function UstalarSplitView({
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const [sortMode, setSortMode] = useState<'recommended' | 'rating' | 'jobs'>(initialSortMode);
   const [trustModalOpen, setTrustModalOpen] = useState(false);
+  const [openServiceAreaKey, setOpenServiceAreaKey] = useState<string | null>(null);
+  const [previousServiceAreaContext, setPreviousServiceAreaContext] = useState({
+    selectedService, selectedDistrict, searchQuery, visibleUstaIds,
+  });
+  if (
+    previousServiceAreaContext.selectedService !== selectedService ||
+    previousServiceAreaContext.selectedDistrict !== selectedDistrict ||
+    previousServiceAreaContext.searchQuery !== searchQuery ||
+    previousServiceAreaContext.visibleUstaIds !== visibleUstaIds
+  ) {
+    setPreviousServiceAreaContext({ selectedService, selectedDistrict, searchQuery, visibleUstaIds });
+    if (openServiceAreaKey !== null) setOpenServiceAreaKey(null);
+  }
+  const triggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
+  const closeServiceAreaPanel = useCallback((cardKey?: string, returnFocus = true) => {
+    const targetKey = cardKey || openServiceAreaKey;
+    setOpenServiceAreaKey(null);
+    if (returnFocus && targetKey) {
+      setTimeout(() => {
+        triggerRefs.current[targetKey]?.focus();
+      }, 0);
+    }
+  }, [openServiceAreaKey]);
+
+  const toggleServiceAreaPanel = useCallback((cardKey: string) => {
+    setOpenServiceAreaKey((prev) => (prev === cardKey ? null : cardKey));
+  }, []);
+
+  useEffect(() => {
+    if (!openServiceAreaKey) return;
+
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        closeServiceAreaPanel(openServiceAreaKey, true);
+      }
+    };
+
+    const handlePointerDown = (e: MouseEvent | PointerEvent) => {
+      const target = e.target as Node | null;
+      if (!target) return;
+      const panelEl = panelRef.current;
+      const triggerEl = triggerRefs.current[openServiceAreaKey];
+      if (panelEl && !panelEl.contains(target) && triggerEl && !triggerEl.contains(target)) {
+        closeServiceAreaPanel(openServiceAreaKey, false);
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown);
+      document.removeEventListener('pointerdown', handlePointerDown);
+    };
+  }, [openServiceAreaKey, closeServiceAreaPanel]);
+
   const cardRefs = useRef<Record<string, HTMLElement | null>>({});
   const mobileCardRefs = useRef<Record<string, HTMLElement | null>>({});
   const mobileCarouselRef = useRef<HTMLDivElement | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const prevVisibleRef = useRef<string[] | null>(null);
+  const availabilityEventKeyRef = useRef<string | null>(null);
   const activeFilterCount = Number(Boolean(selectedService)) + Number(Boolean(selectedDistrict)) + Number(Boolean(searchQuery));
+  const clearDiscoveryHref = discoveryHref({ view: 'split', sort: 'recommended' });
+
+  useEffect(() => {
+    if (!availability) return;
+    const eventKey = `${availability}:${hasFilters ? 'filtered' : 'all'}`;
+    if (availabilityEventKeyRef.current === eventKey) return;
+    availabilityEventKeyRef.current = eventKey;
+    trackFunnel('directory_availability_viewed', {
+      availability,
+      hasFilters,
+    });
+  }, [availability, hasFilters]);
 
   // Quick Quote Modal state (Plerdy WML-011 / WML-017 / WML-018 / WML-022 / WML-023)
   interface QuoteModalState {
@@ -221,23 +351,10 @@ export default function UstalarSplitView({
     problem: '',
     phone: '',
     addressDetail: '',
-    urgency: '⚡ Hemen (Acil Sevk)',
+    urgency: 'Hemen (Acil Sevk)',
   });
 
   // Emergency Dispatch & Direct Calling Modal state (Plerdy WML-002 / WML-004 / WML-045)
-  const [emergencyModalOpen, setEmergencyModalOpen] = useState(false);
-  const [emergencyContext, setEmergencyContext] = useState<{
-    craftsman?: string;
-    district?: string;
-    service?: string;
-  } | null>(null);
-
-  const handleOpenEmergencyCall = (craftsman?: string, district?: string, service?: string) => {
-    setEmergencyContext({ craftsman, district, service });
-    setEmergencyModalOpen(true);
-    setLiveAnnouncement('Acil Usta ve Nöbetçi Sevk Hattı penceresi açıldı.');
-  };
-
   const handleQuoteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmittingQuote(true);
@@ -302,20 +419,17 @@ export default function UstalarSplitView({
       [key]: value,
     };
     filterSelectionRef.current = nextSelection;
-    params.delete('page');
-    // Keep the selected view in the URL even for the default split view. This
-    // makes filter changes, refresh, and browser history preserve one state.
-    params.set('view', displayedViewMode);
-    if (key === 'service') {
-      if (value) params.set('service', value);
-      else params.delete('service');
-    } else {
-      if (value) params.set('district', value);
-      else params.delete('district');
-    }
-    const qs = params.toString();
-    router.push(`${pathname}${qs ? `?${qs}` : ''}`);
-  }, [router, pathname, displayedViewMode]);
+    trackFunnel('filter_applied', {
+      filterKey: key,
+      hasValue: Boolean(value),
+    });
+    const next = updateDiscoveryParams(
+      params,
+      { [key]: value || undefined, view: displayedViewMode },
+      { serviceIds: servicesList.map((service) => service.id), districts: districtsList }
+    );
+    router.replace(discoveryHref(next, pathname));
+  }, [router, pathname, displayedViewMode, servicesList, districtsList]);
 
   // Keep browser history and the mounted client view in sync. Next's router
   // updates the query string without changing pathname, so the reactive
@@ -330,7 +444,7 @@ export default function UstalarSplitView({
       setViewMode((current) => (current === nextView ? current : nextView));
     };
 
-    syncViewFromUrl(searchParams.get('view'));
+    syncViewFromUrl(searchParams?.get('view') ?? null);
     const handlePopState = () => syncViewFromUrl(new URLSearchParams(window.location.search).get('view'));
     const handlePageShow = () => syncViewFromUrl(new URLSearchParams(window.location.search).get('view'));
     const handleVisibilityChange = () => {
@@ -368,19 +482,23 @@ export default function UstalarSplitView({
       if (isDrawerCollapsed || drawerSnap === 'peek') {
         setIsDrawerCollapsed(false);
         setDrawerSnap('half');
+        trackFunnel('mobile_drawer_changed', { snap: 'half' });
         setLiveAnnouncement('Usta çekmecesi açıldı. Usta kartları görüntülenebilir.');
       } else if (drawerSnap === 'half') {
         setDrawerSnap('full');
+        trackFunnel('mobile_drawer_changed', { snap: 'full' });
         setLiveAnnouncement('Usta çekmecesi tam ekran listeye genişletildi.');
       }
     } else if (deltaY > 35) {
       // Swiped DOWN
       if (drawerSnap === 'full') {
         setDrawerSnap('half');
+        trackFunnel('mobile_drawer_changed', { snap: 'half' });
         setLiveAnnouncement('Usta çekmecesi yarı boyuta getirildi.');
       } else if (drawerSnap === 'half') {
         setIsDrawerCollapsed(true);
         setDrawerSnap('peek');
+        trackFunnel('mobile_drawer_changed', { snap: 'peek' });
         setLiveAnnouncement('Usta çekmecesi daraltıldı. Harita tam ekranda görüntülenebilir.');
       }
     }
@@ -390,10 +508,12 @@ export default function UstalarSplitView({
     if (isDrawerCollapsed) {
       setIsDrawerCollapsed(false);
       setDrawerSnap('half');
+      trackFunnel('mobile_drawer_changed', { snap: 'half' });
       setLiveAnnouncement('Usta çekmecesi açıldı.');
     } else {
       setIsDrawerCollapsed(true);
       setDrawerSnap('peek');
+      trackFunnel('mobile_drawer_changed', { snap: 'peek' });
       setLiveAnnouncement('Usta çekmecesi daraltıldı.');
     }
   }
@@ -412,8 +532,13 @@ export default function UstalarSplitView({
 
   // Generate deterministic markers on the Ankara map
   const mapMarkers = useMemo(() => {
-    return generateUstaMapMarkers(profiles, areaMap, serviceMap, neighborhoodMap, metricsMap);
-  }, [profiles, areaMap, serviceMap, neighborhoodMap, metricsMap]);
+    const profileQuery = serializeDiscoveryFilters({ service: selectedService, district: selectedDistrict });
+    return generateUstaMapMarkers(profiles, areaMap, serviceMap, neighborhoodMap, metricsMap)
+      .map((marker) => ({
+        ...marker,
+        profileHref: `${profileHrefBase}/${marker.id}${profileQuery ? `?${profileQuery}` : ''}`,
+      }));
+  }, [profiles, areaMap, serviceMap, neighborhoodMap, metricsMap, selectedService, selectedDistrict, profileHrefBase]);
 
   // Spatial Bounding-Box Filter & Real-Time Search Query (Plerdy WML-019 & WML-020)
   const displayedProfiles = useMemo(() => {
@@ -484,13 +609,18 @@ export default function UstalarSplitView({
 
   function handleViewModeChange(mode: 'split' | 'list' | 'map') {
     setViewMode(mode);
+    trackFunnel('directory_view_changed', { view: mode });
     const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-    params.set('view', mode);
-    const qs = params.toString();
-    const nextUrl = `${pathname}${qs ? `?${qs}` : ''}`;
+    const nextUrl = discoveryHref(
+      updateDiscoveryParams(params, { view: mode }, {
+        serviceIds: servicesList.map((service) => service.id),
+        districts: districtsList,
+      }),
+      pathname
+    );
     // View changes only alter the mounted client surface. Native history keeps
     // back/forward deterministic even when the RSC server payload is cached.
-    window.history.pushState({}, '', nextUrl);
+    window.history.replaceState({}, '', nextUrl);
     window.dispatchEvent(new PopStateEvent('popstate'));
     const labels: Record<string, string> = {
       split: 'Bölünmüş ekran (split-view) görünümü aktif.',
@@ -502,23 +632,29 @@ export default function UstalarSplitView({
 
   function handleSortModeChange(mode: 'recommended' | 'rating' | 'jobs') {
     setSortMode(mode);
+    trackFunnel('directory_sort_changed', { sort: mode });
     const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-    params.set('sort', mode);
-    // Sorting is orthogonal to the selected surface. Preserve the current
-    // list/map/split view instead of writing an invalid `view=rating` value.
-    params.set('view', displayedViewMode);
-    const qs = params.toString();
-    router.replace(`${pathname}${qs ? `?${qs}` : ''}`);
+    const next = updateDiscoveryParams(
+      params,
+      { sort: mode, view: displayedViewMode },
+      { serviceIds: servicesList.map((service) => service.id), districts: districtsList }
+    );
+    router.replace(discoveryHref(next, pathname));
   }
 
   function handleResetSpatialFilter() {
     setVisibleUstaIds(null);
     setSpatialResetTrigger((prev) => prev + 1);
+    trackFunnel('map_region_filter_changed', { active: false, resultCount: profiles.length });
     setLiveAnnouncement('Bölge filtresi kaldırıldı. Tüm Ankara ustaları listeleniyor.');
   }
 
   function handleVisibleTradespeopleChange(visibleIds: string[] | null) {
     setVisibleUstaIds(visibleIds);
+    trackFunnel('map_region_filter_changed', {
+      active: visibleIds !== null,
+      resultCount: visibleIds?.length ?? profiles.length,
+    });
     if (visibleIds === null) {
       setLiveAnnouncement('Harita filtresi kapatıldı. Tüm Ankara ustaları listeleniyor.');
     } else if (visibleIds.length === 0) {
@@ -529,6 +665,7 @@ export default function UstalarSplitView({
   }
 
   function handleSelectMarker(ustaId: string) {
+    trackFunnel('map_pin_selected', { professionalId: ustaId });
     setActiveUstaId(ustaId);
     setHoveredPinId(ustaId);
     setPanToUstaId(ustaId);
@@ -674,7 +811,184 @@ export default function UstalarSplitView({
     }
   }
 
-  const renderUstaCard = (profile: UstalarSplitViewProps['profiles'][number], idx: number, isCompact: boolean) => {
+  const renderResultContent = ({
+    initials,
+    craftsman,
+    primaryService,
+    workshop,
+    primaryDistrict,
+    areaCount,
+    averageRating,
+    reviewCount,
+    profileHref,
+    professionalId,
+    surface,
+    areas,
+    neighborhoods,
+  }: {
+    initials: string;
+    craftsman: string;
+    primaryService: string;
+    workshop: string;
+    primaryDistrict: string;
+    areaCount: number;
+    averageRating: number;
+    reviewCount: number;
+    profileHref: string;
+    professionalId: string;
+    surface: 'desktop' | 'mobile';
+    areas: string[];
+    neighborhoods: string[];
+  }) => {
+    const cardKey = `${surface}-${professionalId}`;
+    const isPanelOpen = openServiceAreaKey === cardKey;
+    const serviceAreaSummary = getServiceAreaSummary(areas, neighborhoods, primaryDistrict);
+
+    return (
+      <>
+        <div className={resultStyles.avatar} aria-hidden="true">{initials}</div>
+        <div className={resultStyles.body}>
+          <div className={resultStyles.identity}>
+            <h3 className={resultStyles.name}>{craftsman}</h3>
+            {verificationConfirmed && <span className={resultStyles.verified} title="Doğrulanmış profil" aria-label="Doğrulanmış profil">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12 3 3 6-6" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </span>}
+          </div>
+          <p className={resultStyles.service}>{primaryService}</p>
+          {workshop && workshop !== primaryService && <p className={resultStyles.workshop}>{workshop}</p>}
+          <p className={resultStyles.region}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2"/></svg>
+            {primaryDistrict}{areaCount > 1 ? ` ve ${areaCount - 1} ilçe` : ''}
+          </p>
+
+          <div className={resultStyles.serviceAreaContainer}>
+            <button
+              type="button"
+              ref={(el) => {
+                triggerRefs.current[cardKey] = el;
+              }}
+              className={`${resultStyles.serviceAreaTrigger} ${isPanelOpen ? resultStyles.serviceAreaTriggerActive : ''}`}
+              aria-expanded={isPanelOpen}
+              aria-controls={`service-area-panel-${cardKey}`}
+              aria-label={`Hizmet bölgesi: ${serviceAreaSummary}`}
+              title={`Hizmet bölgesi: ${serviceAreaSummary}. Ayrıntıları aç`}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleServiceAreaPanel(cardKey);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  toggleServiceAreaPanel(cardKey);
+                } else if (e.key === 'Escape' && isPanelOpen) {
+                  e.stopPropagation();
+                  closeServiceAreaPanel(cardKey, true);
+                }
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <span className={resultStyles.serviceAreaBadgeLabel}>Hizmet bölgesi</span>
+              <span className={resultStyles.serviceAreaDot} aria-hidden="true">·</span>
+              <span className={resultStyles.serviceAreaSummary}>{serviceAreaSummary}</span>
+            </button>
+
+            {isPanelOpen && (
+              <div
+                id={`service-area-panel-${cardKey}`}
+                ref={panelRef}
+                className={resultStyles.serviceAreaPanel}
+                role="region"
+                aria-label={`${craftsman} hizmet bölgesi ayrıntıları`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className={resultStyles.panelHeader}>
+                  <div className={resultStyles.panelTitle}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    <span>Hizmet bölgesi ayrıntıları</span>
+                  </div>
+                  <button
+                    type="button"
+                    className={resultStyles.panelCloseBtn}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      closeServiceAreaPanel(cardKey, true);
+                    }}
+                    aria-label="Hizmet bölgesi panelini kapat"
+                    title="Kapat"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className={resultStyles.panelSection}>
+                  <span className={resultStyles.panelSectionTitle}>Hizmet Verilen İlçeler:</span>
+                  <div className={resultStyles.tagList}>
+                    {(areas.length > 0 ? areas : [primaryDistrict || 'Ankara']).map((d) => (
+                      <span key={d} className={resultStyles.districtTag}>{d}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {neighborhoods.length > 0 ? (
+                  <div className={resultStyles.panelSection}>
+                    <span className={resultStyles.panelSectionTitle}>
+                      Hizmet Verilen Mahalleler ({neighborhoods.length}):
+                    </span>
+                    <div className={resultStyles.tagList}>
+                      {neighborhoods.map((n) => (
+                        <span key={n} className={resultStyles.neighborhoodTag}>{n}</span>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className={resultStyles.panelSection}>
+                    <span className={resultStyles.panelEmptyNeighborhoods}>
+                      {areas.length > 0
+                        ? `${areas.join(', ')} genelinde sevk kabul edilmektedir.`
+                        : 'Ankara genelinde sevk kabul edilmektedir.'}
+                    </span>
+                  </div>
+                )}
+
+                <p className={resultStyles.panelDisclaimer}>
+                  Açık adres gösterilmez. Ustanın sevk kabul ettiği çalışma bölgeleridir.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className={resultStyles.footer}>
+            <div className={resultStyles.rating} aria-label={averageRating > 0 ? `${averageRating.toFixed(1)} puan, ${reviewCount} yorum` : 'Henüz değerlendirme yok'}>
+              {averageRating > 0 ? <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.9-6.2-3.3-6.2 3.3L7 14.2 2 9.3l6.9-1Z"/></svg>
+                <strong>{averageRating.toFixed(1)}</strong>
+                <span className={resultStyles.count}>({reviewCount} yorum)</span>
+              </> : <span className={resultStyles.newProfile}>Henüz yorum yok</span>}
+            </div>
+            <Link
+              href={profileHref}
+              className={resultStyles.profileLink}
+              aria-label={`${craftsman} — Profili aç`}
+              title={`${craftsman} profilini ve hizmet seçeneklerini aç`}
+              onClick={() => trackFunnel('profile_opened', { professionalId: professionalId })}
+            >
+              <span>Profili aç</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg>
+            </Link>
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  const renderUstaCard = (profile: UstalarSplitViewProps['profiles'][number], idx: number) => {
     const profileServices = serviceMap[profile.user_id] ?? [];
     const primaryService = profileServices[0] || 'Genel Zanaat';
     const initials = profile.display_name
@@ -684,21 +998,21 @@ export default function UstalarSplitView({
       .join('')
       .toUpperCase();
     const userMetrics = metricsMap?.[profile.user_id];
-    const completedJobs = userMetrics?.totalCompletedJobs ?? 0;
+    const reviewCount = userMetrics?.totalReviews ?? 0;
     const averageRating = userMetrics?.averageRating ?? 0;
     const isCardActive = activeUstaId === profile.user_id;
     const isHovered = hoveredPinId === profile.user_id;
     const areaNames = [...new Set(areaMap[profile.user_id] ?? [])];
+    const neighborhoodNames = [...new Set(neighborhoodMap?.[profile.user_id] ?? [])].filter(Boolean);
     const { craftsman, workshop } = parseCraftsmanName(profile.display_name);
-    const primaryDistrict = areaNames[0] || 'Çankaya';
-    const profileHref = `${profileHrefBase}/${profile.user_id}?${new URLSearchParams({
-      ...(selectedService ? { service: selectedService } : {}),
-      ...(selectedDistrict ? { district: selectedDistrict } : {}),
-    })}`;
+    const primaryDistrict = areaNames[0] || profile.city || 'Ankara';
+    const profileQuery = serializeDiscoveryFilters({ service: selectedService, district: selectedDistrict });
+    const profileHref = `${profileHrefBase}/${profile.user_id}${profileQuery ? `?${profileQuery}` : ''}`;
 
     return (
       <article
         key={profile.user_id}
+        data-professional-result="true"
         ref={(el) => {
           cardRefs.current[profile.user_id] = el;
         }}
@@ -706,10 +1020,8 @@ export default function UstalarSplitView({
         role="article"
         aria-setsize={displayedProfiles.length}
         aria-posinset={idx + 1}
-        aria-label={`${craftsman}, ${primaryService}, ${primaryDistrict}. Orkestra doğrulaması tamamlandı. Enter ile profili aç, ok tuşlarıyla ustalar arasında gezin.`}
-        className={`usta-card ${styles.cardInteractive} ${
-          isCardActive || isHovered ? styles.cardHighlighted : ''
-        } ${isCompact ? styles.cardSplitCompact : styles.cardFullWidth}`}
+        aria-label={`${craftsman}, ${primaryService}, ${primaryDistrict}.${verificationConfirmed ? ' Doğrulanmış profil.' : ''} Enter ile profili aç, ok tuşlarıyla ustalar arasında gezin.`}
+        className={`usta-card ${resultStyles.result} ${isCardActive || isHovered ? resultStyles.selected : ''}`}
         onClick={(e) => {
           if ((e.target as HTMLElement).closest('a, button')) return;
           handleSelectMarker(profile.user_id);
@@ -728,67 +1040,27 @@ export default function UstalarSplitView({
         }}
         onKeyDown={(e) => handleCardKeyDown(e, profile.user_id, idx)}
       >
-        <div className={styles.avatarWrapper}>
-          <div
-            className={`${styles.craftsmanAvatar} ${getServiceAvatarClass(primaryService, styles)}`}
-            aria-hidden="true"
-          >
-            {initials}
-          </div>
-          <span className={styles.cardPinBadge} aria-label={`Harita pin ${idx + 1}`}>
-            #{idx + 1}
-          </span>
-        </div>
-
-        <div className={styles.cardMainContent}>
-          {/* Header Row: Craftsman Name + Verified Check + Clean Subtle Rating */}
-          <div className={styles.cardTopHeader}>
-            <div className={styles.cardIdentityGroup}>
-              <h3 className={styles.cardCraftsmanName}>{craftsman}</h3>
-              <span className={styles.cardVerifiedMiniCheck} title="Orkestra Doğrulanmış Usta" aria-hidden="true">✓</span>
-            </div>
-
-            <div
-              className={styles.cardRatingGroup}
-              title={`Puan: ${averageRating > 0 ? averageRating.toFixed(1) : '5.0'} (${completedJobs > 0 ? `${completedJobs} iş` : 'Referanslı'})`}
-            >
-              <span className={styles.cardRatingStar} aria-hidden="true">★</span>
-              <span className={styles.cardRatingScore}>{averageRating > 0 ? averageRating.toFixed(1) : '5.0'}</span>
-              <span className={styles.cardRatingCount}>{completedJobs > 0 ? `(${completedJobs} iş)` : '(Yeni profil)'}</span>
-            </div>
-          </div>
-
-          {/* One compact context line keeps the card scannable without repeating the CTA. */}
-          <p className={styles.cardSubtitleRow}>
-            <span className={styles.cardWorkshopSub}>{workshop || primaryService}</span>
-            <span className={styles.cardSubtitleDot} aria-hidden="true">·</span>
-            <span className={styles.cardDistrictSub}>{primaryDistrict}</span>
-          </p>
-
-          <div className={styles.cardSignalRow} aria-label="Öne çıkan bilgiler">
-            <span className={styles.cardSignal}>{primaryService}</span>
-            <span className={styles.cardSignalMuted}>{completedJobs > 0 ? `${completedJobs} iş` : 'Yeni profil'}</span>
-          </div>
-
-          {/* One clear route to the profile keeps the list scannable; details and request creation live there. */}
-          <div className={styles.cardActionRow}>
-            <Link
-              href={profileHref}
-              className={styles.cardCtaPrimary}
-              aria-label={`${craftsman} — Profili aç ve talep oluştur`}
-              title={`${craftsman} profilini ve hizmet seçeneklerini aç`}
-              tabIndex={-1}
-            >
-              <span>Profili aç →</span>
-            </Link>
-          </div>
-        </div>
+        {renderResultContent({
+          initials,
+          craftsman,
+          primaryService,
+          workshop,
+          primaryDistrict,
+          areaCount: areaNames.length,
+          averageRating,
+          reviewCount,
+          profileHref,
+          professionalId: profile.user_id,
+          surface: 'desktop',
+          areas: areaNames,
+          neighborhoods: neighborhoodNames,
+        })}
       </article>
     );
   };
 
   return (
-    <div className={styles.splitPageWrapper}>
+    <div className={styles.splitPageWrapper} data-directory-availability={availability ?? 'unknown'}>
       {/* Screen Reader Live Region Announcement (WCAG 2.1 AA) */}
       <div
         className={styles.srOnly}
@@ -847,8 +1119,8 @@ export default function UstalarSplitView({
         <div className={styles.splitSummaryRow}>
           <span className={styles.splitSummaryBadge}>
             <span className={styles.statusLiveDot} aria-hidden="true" />
-            <span className={styles.summaryTextFull}>
-              {displayedProfiles.length} / {count} Doğrulanmış Usta {visibleUstaIds !== null ? '(Görünür Bölge)' : 'Haritada Aktif'}
+            <span className={styles.summaryTextFull} data-testid="usta-result-summary">
+              {displayedProfiles.length} usta{visibleUstaIds !== null ? ' · Harita alanında' : ''}
             </span>
             <span className={styles.summaryTextShort}>
               {displayedProfiles.length} Usta
@@ -884,8 +1156,8 @@ export default function UstalarSplitView({
       {/* DB Connection Warning Banner */}
       {hasDbError && (
         <div className={styles.dbErrorBanner} role="alert">
-          <span>⚠️</span>
-          <span>Usta veritabanına ulaşılamadı — Doğrulanmış temsilci usta ağı ile kesintisiz çalışılıyor.</span>
+          <span className={styles.dbErrorLabel}>Uyarı</span>
+          <span>Usta veritabanına ulaşılamadı. Doğrulanmış temsilci usta ağı ile kesintisiz çalışılıyor.</span>
         </div>
       )}
 
@@ -952,11 +1224,11 @@ export default function UstalarSplitView({
           className={`${styles.advancedFilterButton} ${isFilterDrawerOpen ? styles.advancedFilterButtonActive : ''}`}
           aria-expanded={isFilterDrawerOpen}
           aria-controls="usta-advanced-filters"
+          aria-label="Filtrele, diğer seçenekleri aç"
           title="Diğer filtreleri aç"
           onClick={() => setIsFilterDrawerOpen((open) => !open)}
         >
-          <span aria-hidden="true">☷</span>
-          <span>Filtrele</span>
+          <span>Daha fazla filtre</span>
           {activeFilterCount > 0 ? <span className={styles.advancedFilterCount}>{activeFilterCount}</span> : null}
         </button>
 
@@ -968,7 +1240,7 @@ export default function UstalarSplitView({
             onClick={() => {
               setSearchQuery('');
               if (hasFilters) {
-                router.push(pathname);
+                router.replace(clearDiscoveryHref);
               }
             }}
             aria-label="Tüm filtreleri ve aramayı temizle"
@@ -979,7 +1251,7 @@ export default function UstalarSplitView({
       </div>
 
       {(selectedService || selectedDistrict || searchQuery) && <div className={styles.appliedFilterRow} aria-label="Uygulanan filtreler">
-        <span className={styles.appliedFilterLabel}>Seçimler</span>
+        <span className={styles.appliedFilterLabel}>Uygulanan filtreler</span>
         {selectedService && (
           <button type="button" className={styles.appliedFilterChip} onClick={() => navigateWithFilter('service', '')}>
             Hizmet: {servicesList.find((service) => service.id === selectedService)?.name ?? selectedService}
@@ -1021,21 +1293,6 @@ export default function UstalarSplitView({
               </button>
             )}
           </div>
-          <a
-            href={`tel:${ANKARA_PILOT_SUPPORT.phoneTel}`}
-            className={styles.emergencyDispatchPill}
-            onClick={(e) => {
-              if (typeof window !== 'undefined' && window.innerWidth >= 768) {
-                e.preventDefault();
-                handleOpenEmergencyCall(undefined, selectedDistrict, selectedService);
-              }
-            }}
-            aria-label={`Ankara acil usta sevk hattını ara: ${ANKARA_PILOT_SUPPORT.phoneDisplay}`}
-          >
-            <span className={styles.emergencyIconPulse} aria-hidden="true">📞</span>
-            <span className={styles.emergencyPillLabelFull}>Acil destek: {ANKARA_PILOT_SUPPORT.phoneDisplay}</span>
-            <span className={styles.emergencyPillLabelShort}>Acil Ara</span>
-          </a>
         </div>
       )}
 
@@ -1054,11 +1311,14 @@ export default function UstalarSplitView({
             />
           </div>
           <div style={{ marginTop: '28px' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '16px' }}>
-              📍 Haritadaki Doğrulanmış Ustalar ({displayedProfiles.length} / {count})
-            </h2>
-            <div className={styles.gridFull} role="list" aria-label="Doğrulanmış ustalar">
-              {virtualizedProfiles.map((profile, idx) => renderUstaCard(profile, idx, false))}
+            <div className={dirStyles.directoryListHeading}>
+              <h2>Ustalar</h2>
+              <span aria-label={`${displayedProfiles.length} usta gösteriliyor`}>
+                {displayedProfiles.length} / {count} gösteriliyor
+              </span>
+            </div>
+            <div className={styles.gridFull} role="group" aria-label="Ustalar">
+              {virtualizedProfiles.map((profile, idx) => renderUstaCard(profile, idx))}
             </div>
             {displayedProfiles.length > virtualLimit && (
               <div ref={sentinelRef} className={styles.virtualSentinel}>
@@ -1096,28 +1356,33 @@ export default function UstalarSplitView({
           <div
             className={`${displayedViewMode === 'split' ? styles.splitListPane : ''} ${isMapExpanded ? styles.splitListPaneHidden : ''}`}
             role="region"
-            aria-label="Doğrulanmış Usta Listesi"
+            aria-label="Usta Listesi"
           >
             {displayedProfiles.length === 0 ? (
-              <div className={dirStyles.emptyState}>
-                <span className={dirStyles.emptyIcon} role="img" aria-label="Harita">
-                  🗺️
+              <div
+                className={dirStyles.emptyState}
+                data-testid="directory-empty-state"
+                data-directory-availability={availability ?? 'unknown'}
+              >
+                <span className={dirStyles.emptyIcon} aria-hidden="true">
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 5.5 9 3l6 3 5-2.5v15L15 21l-6-3-5 2.5v-15Z" />
+                    <path d="M9 3v15M15 6v15" />
+                  </svg>
                 </span>
                 <h2 className={dirStyles.emptyTitle}>
                   {searchQuery
                     ? `"${searchQuery}" ile eşleşen usta bulunamadı`
                     : visibleUstaIds !== null
-                    ? 'Bu harita alanında doğrulanmış usta bulunamadı'
-                    : 'Bu kriterlere uygun doğrulanmış usta bulunamadı'}
+                    ? 'Bu bölgede doğrulanmış usta bulunamadı.'
+                    : getAvailabilityCopy(availability).title}
                 </h2>
                 <p className={dirStyles.emptyDesc}>
                   {searchQuery
                     ? `Aramanızla eşleşen doğrulanmış usta kaydı bulunamadı. Farklı bir terim arayabilir veya aramayı temizleyebilirsiniz.`
                     : visibleUstaIds !== null
                     ? 'Mevcut harita görünümünüzde usta bulunmuyor. Haritayı uzaklaştırabilir, başka bir bölgeye kaydırabilir veya tüm Ankara ustalarını listeleyebilirsiniz.'
-                    : hasFilters
-                    ? 'Filtre tercihlerinizi genişletmeyi deneyebilir veya tüm ustaları görmek için filtreleri temizleyebilirsiniz.'
-                    : 'Henüz listelenen usta bulunmuyor.'}
+                    : getAvailabilityCopy(availability).description}
                 </p>
                 <div className={dirStyles.emptyActions}>
                   {searchQuery ? (
@@ -1134,11 +1399,30 @@ export default function UstalarSplitView({
                       className={dirStyles.ctaBtn}
                       onClick={handleResetSpatialFilter}
                     >
-                      🗺️ Tüm Ankara&apos;yı Göster ({count} Usta)
+                      Tüm Ankara&apos;yı Göster ({count} Usta)
                     </button>
+                  ) : availability === 'limited' ? (
+                    <Link href={clearDiscoveryHref} className={dirStyles.ctaBtn}>
+                      Tüm ustaları göster
+                    </Link>
+                  ) : availability === 'waitlist' ? (
+                    <>
+                      <Link href="/#services" className={dirStyles.ctaBtn}>
+                        İhtiyacını anlat
+                      </Link>
+                      {hasFilters ? (
+                        <Link href={clearDiscoveryHref} className={dirStyles.secondaryBtn}>
+                          Tüm ustaları gör
+                        </Link>
+                      ) : null}
+                    </>
+                  ) : availability === 'unavailable' ? (
+                    <Link href="/#services" className={dirStyles.ctaBtn}>
+                      Pilot kapsamını incele
+                    </Link>
                   ) : hasFilters ? (
-                    <Link href="/ustalar" className={dirStyles.ctaBtn}>
-                      Filtreleri Temizle
+                    <Link href={clearDiscoveryHref} className={dirStyles.ctaBtn}>
+                      Filtreleri temizle
                     </Link>
                   ) : null}
                 </div>
@@ -1147,10 +1431,10 @@ export default function UstalarSplitView({
               <>
                 <div
                   className={displayedViewMode === 'split' ? styles.gridSplit : styles.gridFull}
-                  role="list"
-                  aria-label="Doğrulanmış ustalar"
+                  role="group"
+                  aria-label="Ustalar"
                 >
-                  {virtualizedProfiles.map((profile, idx) => renderUstaCard(profile, idx, displayedViewMode === 'split'))}
+                  {virtualizedProfiles.map((profile, idx) => renderUstaCard(profile, idx))}
                 </div>
 
                 {displayedProfiles.length > virtualLimit && (
@@ -1245,11 +1529,20 @@ export default function UstalarSplitView({
                 <span>{isMapExpanded ? 'Daralt' : 'Büyüt'}</span>
               </button>
 
-              {activeProfile && (
-                <div className={styles.mapSelectionNotice} aria-hidden="true">
+              {(activeProfile || visibleUstaIds !== null) && (
+                <div className={styles.mapSelectionNotice} role="note" aria-live="polite" aria-atomic="true" aria-label="Harita ve liste durumu">
                   <span className={styles.mapSelectionDot} aria-hidden="true" />
-                  <span><strong>{parseCraftsmanName(activeProfile.display_name).craftsman}</strong> seçildi</span>
-                  <span className={styles.mapSelectionHint}>Listeyle eşleşti</span>
+                  {activeProfile ? (
+                    <>
+                      <span><strong>{parseCraftsmanName(activeProfile.display_name).craftsman}</strong> seçildi</span>
+                      <span className={styles.mapSelectionHint}>Listeyle eşleşti</span>
+                    </>
+                  ) : null}
+                  {visibleUstaIds !== null ? (
+                    <span className={styles.mapRegionHint}>
+                      {displayedProfiles.length} usta bu bölgede
+                    </span>
+                  ) : null}
                 </div>
               )}
 
@@ -1261,7 +1554,6 @@ export default function UstalarSplitView({
                   onClick={() => setIsMapExpanded(false)}
                   title="Listeyi ve bölünmüş görünümü geri yükle"
                 >
-                  <span aria-hidden="true">📋</span>
                   <span>Listeyi Göster ({count} Usta)</span>
                 </button>
               )}
@@ -1295,6 +1587,8 @@ export default function UstalarSplitView({
                   role="button"
                   tabIndex={0}
                   aria-label="Usta kartları çekmece tutamacı"
+                  aria-expanded={!isDrawerCollapsed}
+                  aria-controls="mobile-usta-carousel"
                   onClick={toggleDrawerCollapse}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -1310,7 +1604,7 @@ export default function UstalarSplitView({
                     <span className={styles.mobileDrawerCount}>
                       <span className={styles.statusLiveDot} aria-hidden="true" />
                       <span className={styles.mobileCountTextFull}>
-                        {displayedProfiles.length} Doğrulanmış Usta {visibleUstaIds !== null ? '(Görünür Bölge)' : ''}
+                        {displayedProfiles.length} usta {visibleUstaIds !== null ? '· Harita alanında' : ''}
                       </span>
                       <span className={styles.mobileCountTextShort}>
                         {displayedProfiles.length} Usta
@@ -1325,9 +1619,11 @@ export default function UstalarSplitView({
                             e.stopPropagation();
                             setDrawerSnap((prev) => (prev === 'full' ? 'half' : 'full'));
                           }}
+                          aria-label={drawerSnap === 'full' ? 'Kartları yatay görünümde aç' : 'Tüm usta listesini aç'}
+                          aria-expanded={drawerSnap === 'full'}
                           title={drawerSnap === 'full' ? 'Karusel moduna dön' : 'Tüm listeyi dikey aç'}
                         >
-                          <span>{drawerSnap === 'full' ? '⌃ Karusel' : '☰ Tüm Liste'}</span>
+                          <span>{drawerSnap === 'full' ? '⌃ Kartlar' : '☰ Listeyi aç'}</span>
                         </button>
                       )}
                       <button
@@ -1349,6 +1645,7 @@ export default function UstalarSplitView({
                 {!isDrawerCollapsed && (
                   <div
                     ref={mobileCarouselRef}
+                    id="mobile-usta-carousel"
                     className={`${styles.mobileCarouselTrack} ${
                       drawerSnap === 'full' ? styles.mobileCarouselTrackFull : ''
                     }`}
@@ -1358,7 +1655,7 @@ export default function UstalarSplitView({
                   >
                     {displayedProfiles.length === 0 ? (
                       <div className={styles.mobileEmptyState}>
-                        <p>Bu harita alanında doğrulanmış usta bulunamadı.</p>
+                        <p>Bu bölgede doğrulanmış usta bulunamadı.</p>
                         <button
                           type="button"
                           className={styles.mobileResetBtn}
@@ -1378,18 +1675,16 @@ export default function UstalarSplitView({
                             .join('')
                             .toUpperCase();
                           const userMetrics = metricsMap?.[profile.user_id];
-                          const completedJobs = userMetrics?.totalCompletedJobs ?? 0;
                           const averageRating = userMetrics?.averageRating ?? 0;
                           const isCardActive =
                             activeUstaId === profile.user_id || hoveredPinId === profile.user_id;
                           const { craftsman, workshop } = parseCraftsmanName(profile.display_name);
                           const primaryService = profileServices[0] || 'Genel Zanaat';
                           const areaNames = [...new Set(areaMap[profile.user_id] ?? [])];
-                          const primaryDistrict = areaNames[0] || 'Çankaya';
-                          const profileHref = `${profileHrefBase}/${profile.user_id}?${new URLSearchParams({
-                            ...(selectedService ? { service: selectedService } : {}),
-                            ...(selectedDistrict ? { district: selectedDistrict } : {}),
-                          })}`;
+                          const neighborhoodNames = [...new Set(neighborhoodMap?.[profile.user_id] ?? [])].filter(Boolean);
+                          const primaryDistrict = areaNames[0] || profile.city || 'Ankara';
+                          const profileQuery = serializeDiscoveryFilters({ service: selectedService, district: selectedDistrict });
+                          const profileHref = `${profileHrefBase}/${profile.user_id}${profileQuery ? `?${profileQuery}` : ''}`;
 
                           return (
                             <div
@@ -1400,56 +1695,30 @@ export default function UstalarSplitView({
                               tabIndex={0}
                               role="listitem"
                               aria-current={isCardActive ? 'true' : undefined}
-                              aria-label={`${craftsman}, ${primaryService}, ${primaryDistrict}. Enter ile profili aç, ok tuşlarıyla ustalar arasında gezin.`}
-                              className={`${styles.mobileCarouselCard} ${
-                                isCardActive ? styles.mobileCarouselCardActive : ''
-                              }`}
-                              onClick={() => handleSelectMobileCard(profile.user_id)}
+                              aria-label={`${craftsman}, ${primaryService}, ${primaryDistrict}.${verificationConfirmed ? ' Doğrulanmış profil.' : ''} Enter ile profili aç, ok tuşlarıyla ustalar arasında gezin.`}
+                              className={`${resultStyles.result} ${resultStyles.carousel} ${drawerSnap === 'full' ? resultStyles.carouselFull : ''} ${isCardActive ? `${resultStyles.selected} ${styles.mobileCarouselCardActive}` : ''}`}
+                              onClick={(e) => {
+                                if ((e.target as HTMLElement).closest('a, button')) return;
+                                handleSelectMobileCard(profile.user_id);
+                              }}
                               onFocus={() => handleSelectMobileCard(profile.user_id)}
                               onKeyDown={(e) => handleMobileCardKeyDown(e, profile.user_id, idx)}
                             >
-                              <div className={styles.mobileCardTopRow}>
-                                <div
-                                  className={`${styles.mobileMonogram} ${getServiceAvatarClass(primaryService, styles)}`}
-                                  aria-hidden="true"
-                                >
-                                  {initials}
-                                </div>
-                                <div className={styles.mobileCardMeta}>
-                                  <div className={styles.mobileCardHeader}>
-                                    <div className={styles.mobileNameGroup}>
-                                      <h3 className={styles.mobileCardName}>{craftsman}</h3>
-                                      <span className={styles.mobileVerifiedCheck} title="Orkestra Doğrulanmış Usta">✓</span>
-                                    </div>
-                                    <span className={styles.mobileRatingBadge}>
-                                      ★ {averageRating > 0 ? averageRating.toFixed(1) : '5.0'}
-                                    </span>
-                                  </div>
-                                  <p className={styles.mobileWorkshopSub}>
-                                    {workshop || 'Bağımsız usta'}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <div className={styles.mobileBadgeRow} aria-label="Öne çıkan bilgiler">
-                                <span className={styles.mobileSignal}>{primaryService}</span>
-                                <span className={styles.mobileSignal}>{primaryDistrict}</span>
-                                <span className={styles.mobileSignalMuted}>{completedJobs > 0 ? `${completedJobs} iş` : 'Yeni profil'}</span>
-                              </div>
-
-                              <div className={styles.mobileCardFooter}>
-                                <span className={styles.mobilePinNumber}>#{idx + 1} Pin</span>
-                                <div className={styles.mobileBtnGroup}>
-                                  <Link
-                                    href={profileHref}
-                                    className={styles.mobileCtaPrimary}
-                                    aria-label={`${craftsman} — Profili aç ve talep oluştur`}
-                                    tabIndex={-1}
-                                  >
-                                    Profili incele →
-                                  </Link>
-                                </div>
-                              </div>
+                              {renderResultContent({
+                                initials,
+                                craftsman,
+                                primaryService,
+                                workshop,
+                                primaryDistrict,
+                                areaCount: areaNames.length,
+                                averageRating,
+                                reviewCount: userMetrics?.totalReviews ?? 0,
+                                profileHref,
+                                professionalId: profile.user_id,
+                                surface: 'mobile',
+                                areas: areaNames,
+                                neighborhoods: neighborhoodNames,
+                              })}
                             </div>
                           );
                         })}
@@ -1481,7 +1750,6 @@ export default function UstalarSplitView({
                   onClick={toggleDrawerCollapse}
                   aria-label={isDrawerCollapsed ? 'Mobil usta listesini göster' : 'Mobil haritayı tam tuval gör'}
                 >
-                  <span aria-hidden="true">📋</span>
                   <span>Ustaları Göster ({displayedProfiles.length})</span>
                 </button>
               </div>
@@ -1490,7 +1758,7 @@ export default function UstalarSplitView({
         </div>
       )}
 
-      {/* Floating Mobile Toggle — visible only in list mode */}
+      {/* Floating Mobile Toggle, visible only in list mode */}
       {displayedViewMode === 'list' && (
         <div className={styles.floatingMobileBar}>
           <button
@@ -1523,28 +1791,31 @@ export default function UstalarSplitView({
               onClick={() => setQuoteModal(null)}
               aria-label="Modalı kapat"
             >
-              ✕
+              <IconClose size={18} />
             </button>
 
             {!quoteSubmitted ? (
               <>
                 <div className={styles.quoteModalHeader}>
                   <div className={styles.quoteModalBadgeRow}>
-                    <span className={styles.quoteModalBadge}>⚡ Hızlı Teklif & Keşif</span>
+                    <span className={styles.quoteModalBadge}>Hızlı Teklif & Keşif</span>
                     <span className={styles.quoteModalSlaBadge}>{quoteModal.sla}</span>
                   </div>
                   <h2 id="quote-dialog-title" className={styles.quoteModalTitle}>
-                    {quoteModal.craftsman} — Ücretsiz Fiyat Teklifi Al
+                    {quoteModal.craftsman}: Ücretsiz Fiyat Teklifi Al
                   </h2>
                   {quoteModal.workshop && (
                     <p className={styles.quoteModalWorkshop}>{quoteModal.workshop}</p>
                   )}
                   <div className={styles.quoteModalMetaRow}>
-                    <span>🔧 {quoteModal.service}</span>
+                    <span>{quoteModal.service}</span>
                     <span>·</span>
-                    <span>📍 {quoteModal.district}</span>
+                    <span className={styles.quoteModalMetaLocation}>
+                      <IconLocation size={14} />
+                      {quoteModal.district}
+                    </span>
                     <span>·</span>
-                    <span className={styles.quoteModalPrice}>🏷️ {quoteModal.price} Taban</span>
+                    <span className={styles.quoteModalPrice}>{quoteModal.price} Taban</span>
                   </div>
                 </div>
 
@@ -1573,7 +1844,7 @@ export default function UstalarSplitView({
                       İş Ne Zaman Başlasın? (Tercih)
                     </label>
                     <div className={styles.quoteUrgencyGroup} role="radiogroup" aria-label="Hizmet Aciliyeti">
-                      {['⚡ Hemen (Acil Sevk)', '📅 Bugün İçinde', '🗓️ Hafta Sonu'].map((opt) => (
+                      {['Hemen (Acil Sevk)', 'Bugün İçinde', 'Hafta Sonu'].map((opt) => (
                         <button
                           key={opt}
                           type="button"
@@ -1623,11 +1894,11 @@ export default function UstalarSplitView({
                   {/* Plerdy WML-015 Trust Proof and Guarantees */}
                   <div className={styles.quoteModalTrustStrip}>
                     <div className={styles.quoteTrustItem}>
-                      <span>🛡️</span>
+                      <IconShield size={15} />
                       <span><strong>Sabit Fiyat Garantisi:</strong> İş onaylanmadan ekstra ücret talep edilmez.</span>
                     </div>
                     <div className={styles.quoteTrustItem}>
-                      <span>🔒</span>
+                      <IconShield size={15} />
                       <span><strong>KVKK 6698 Korumalı:</strong> İletişim bilginiz yalnızca seçilen ustayla paylaşılır.</span>
                     </div>
                   </div>
@@ -1663,7 +1934,7 @@ export default function UstalarSplitView({
                     rel="noopener noreferrer"
                     className={styles.quoteWhatsAppDirectBtn}
                   >
-                    <span>💬 WhatsApp ile Öncelikli İlet</span>
+                    <span>WhatsApp ile Öncelikli İlet</span>
                   </a>
                   <button
                     type="button"
@@ -1679,7 +1950,7 @@ export default function UstalarSplitView({
         </div>
       )}
 
-      {/* Platform Trust & Workmanship Guarantee Modal (Plerdy WML-028 / WML-030) */}
+      {/* Public evidence contract: explain what the directory can actually show. */}
       {trustModalOpen && (
         <div
           className={styles.quoteModalOverlay}
@@ -1702,52 +1973,52 @@ export default function UstalarSplitView({
             </button>
 
             <div className={styles.trustModalHeader}>
-              <div className={styles.trustModalIconWrap}>🛡️</div>
+              <div className={styles.trustModalIconWrap} aria-hidden="true">✓</div>
               <h2 id="trust-dialog-title" className={styles.quoteSuccessTitle}>
-                Ankara Usta Platform Güvencesi
+                Profil kanıtları
               </h2>
               <p className={styles.trustModalSubtitle}>
-                Tüm ustalarımız denetlenmiş ve hizmetler 4 katmanlı güvence altına alınmıştır.
+                Her bilgi, yalnızca ilgili kaydı bulunduğunda gösterilir. Fiyat, garanti veya teslim süresi bu ekranda varsayılmaz.
               </p>
             </div>
 
             <div className={styles.trustModalPillars}>
               <div className={styles.trustPillarCard}>
-                <div className={styles.trustPillarIcon}>🛡️</div>
+                <div className={styles.trustPillarIcon} aria-hidden="true">01</div>
                 <div className={styles.trustPillarContent}>
-                  <h3 className={styles.trustPillarTitle}>Sabit Fiyat Garantisi</h3>
+                  <h3 className={styles.trustPillarTitle}>Mesleki belge kontrolü</h3>
                   <p className={styles.trustPillarDesc}>
-                    Usta keşif sonrasında işe başlamadan önce net fiyat verir. Sizin onayınız olmadan asla ek maliyet talep edilemez.
+                    Profil dizinde görünüyorsa güncel mesleki belge kontrolü tamamlanmıştır.
                   </p>
                 </div>
               </div>
 
               <div className={styles.trustPillarCard}>
-                <div className={styles.trustPillarIcon}>📜</div>
+                <div className={styles.trustPillarIcon} aria-hidden="true">02</div>
                 <div className={styles.trustPillarContent}>
-                  <h3 className={styles.trustPillarTitle}>MYK & Esnaf Belge Doğrulaması</h3>
+                  <h3 className={styles.trustPillarTitle}>Onaylı değerlendirmeler</h3>
                   <p className={styles.trustPillarDesc}>
-                    Ustalarımızın Mesleki Yeterlilik Kurumu (MYK) seviye belgeleri, vergi levhası ve adli sicil kayıtları ön kontrolden geçirilir.
+                    Puan ve yorum yalnızca moderasyondan geçmiş değerlendirme kaydı varsa görünür.
                   </p>
                 </div>
               </div>
 
               <div className={styles.trustPillarCard}>
-                <div className={styles.trustPillarIcon}>🔒</div>
+                <div className={styles.trustPillarIcon} aria-hidden="true">03</div>
                 <div className={styles.trustPillarContent}>
-                  <h3 className={styles.trustPillarTitle}>Güvenli Ödeme & İşçilik Sertifikası</h3>
+                  <h3 className={styles.trustPillarTitle}>Hizmet bölgeleri</h3>
                   <p className={styles.trustPillarDesc}>
-                    İş tamamlanıp siz memnun kalana kadar ödemeniz korunur. Yapılan işe dijital işçilik sertifikası tanımlanır.
+                    İlçe ve mahalle bilgisi, ustanın profilinde tanımlı alanlardan gelir; açık adres gösterilmez.
                   </p>
                 </div>
               </div>
 
               <div className={styles.trustPillarCard}>
-                <div className={styles.trustPillarIcon}>⚡</div>
+                <div className={styles.trustPillarIcon} aria-hidden="true">04</div>
                 <div className={styles.trustPillarContent}>
-                  <h3 className={styles.trustPillarTitle}>Dinamik İlçe Sevk SLA&apos;sı</h3>
+                  <h3 className={styles.trustPillarTitle}>Teklif öncesi kapsam</h3>
                   <p className={styles.trustPillarDesc}>
-                    Ankara&apos;nın 12 merkez ilçesinde atölye konumuna göre 12–25 dk ortalama acil sevk süresi taahhüt edilir.
+                    Hizmet, konum ve iş kapsamı talep içinde netleşir; net fiyat yalnızca ustanın teklifinde oluşur.
                   </p>
                 </div>
               </div>
@@ -1766,120 +2037,6 @@ export default function UstalarSplitView({
         </div>
       )}
 
-      {/* Emergency Dispatch & Direct Call Modal (Plerdy WML-002 / WML-004 / WML-045) */}
-      {emergencyModalOpen && (
-        <div
-          className={styles.quoteModalOverlay}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="emergency-dialog-title"
-          onClick={() => setEmergencyModalOpen(false)}
-        >
-          <div
-            className={styles.quoteModalDialog}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              className={styles.quoteModalCloseBtn}
-              onClick={() => setEmergencyModalOpen(false)}
-              aria-label="Modalı kapat"
-            >
-              ✕
-            </button>
-
-            <div className={styles.trustModalHeader}>
-              <div className={styles.emergencyModalIconWrap}>
-                <span aria-hidden="true">🚨</span>
-              </div>
-              <h2 id="emergency-dialog-title" className={styles.quoteSuccessTitle}>
-                Ankara Nöbetçi Usta & Acil Sevk Hattı
-              </h2>
-              <p className={styles.trustModalSubtitle}>
-                {emergencyContext?.craftsman
-                  ? `${emergencyContext.craftsman} veya 12 merkez ilçemizdeki en yakın nöbetçi saha ekibimiz için doğrudan koordinasyon merkezimizi arayabilirsiniz.`
-                  : 'Su baskını, elektrik arızası, kapıda kalma ve acil durumlar için Ankara genelinde nöbetçi usta sevk hattı.'}
-              </p>
-            </div>
-
-            {/* Direct Call & WhatsApp Action Buttons */}
-            <div className={styles.emergencyModalActions}>
-              <a
-                href={`tel:${ANKARA_PILOT_SUPPORT.phoneTel}`}
-                className={styles.emergencyModalBigCallBtn}
-                title="Doğrudan Ara"
-              >
-                <span className={styles.emergencyBtnIcon} aria-hidden="true">📞</span>
-                <div className={styles.emergencyBtnTextCol}>
-                  <span className={styles.emergencyBtnMainTitle}>Hemen Ara: {ANKARA_PILOT_SUPPORT.phoneDisplay}</span>
-                  <span className={styles.emergencyBtnSubTitle}>Ortalama bağlanma süresi: ~15 saniye · 7/24 Sevk</span>
-                </div>
-              </a>
-
-              <a
-                href={buildWhatsAppSupportUrl({
-                  category: 'job_sos',
-                  district: emergencyContext?.district,
-                  customNote: emergencyContext?.craftsman
-                    ? `${emergencyContext.craftsman} (${emergencyContext.district || 'Ankara'}) için acil usta sevk talebi.`
-                    : 'Acil nöbetçi usta sevk talebi.',
-                })}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.emergencyModalWhatsAppBtn}
-              >
-                <span className={styles.emergencyBtnIcon} aria-hidden="true">💬</span>
-                <div className={styles.emergencyBtnTextCol}>
-                  <span className={styles.emergencyBtnMainTitle}>WhatsApp ile Konum ve Arıza Gönder</span>
-                  <span className={styles.emergencyBtnSubTitle}>Fotoğraf & video ile anında ön keşif desteği</span>
-                </div>
-              </a>
-            </div>
-
-            <div className={styles.trustModalPillars}>
-              <div className={styles.trustPillarCard}>
-                <div className={styles.trustPillarIcon}>⏱️</div>
-                <div className={styles.trustPillarContent}>
-                  <h3 className={styles.trustPillarTitle}>12–25 Dakika Acil Sevk</h3>
-                  <p className={styles.trustPillarDesc}>
-                    Siteler, Ostim ve Rüzgarlı zanaat merkezlerimizden ve ilçenizdeki nöbetçi ustalardan en yakını yönlendirilir.
-                  </p>
-                </div>
-              </div>
-
-              <div className={styles.trustPillarCard}>
-                <div className={styles.trustPillarIcon}>🛡️</div>
-                <div className={styles.trustPillarContent}>
-                  <h3 className={styles.trustPillarTitle}>Sabit Fiyat & KVKK Maskeli Arama</h3>
-                  <p className={styles.trustPillarDesc}>
-                    Numaranız izinsiz paylaşılmaz. İşçilik ve tahmini maliyet telefonda ve keşifte netleştirilir, sürpriz ücret çıkmaz.
-                  </p>
-                </div>
-              </div>
-
-              <div className={styles.trustPillarCard}>
-                <div className={styles.trustPillarIcon}>🕒</div>
-                <div className={styles.trustPillarContent}>
-                  <h3 className={styles.trustPillarTitle}>Çalışma Saatleri & Nöbetçi Kadro</h3>
-                  <p className={styles.trustPillarDesc}>
-                    Hafta içi: {ANKARA_PILOT_SUPPORT.operatingHours.weekdays} · Cumartesi: {ANKARA_PILOT_SUPPORT.operatingHours.saturday} · Pazar: {ANKARA_PILOT_SUPPORT.operatingHours.sunday}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.trustModalActions}>
-              <button
-                type="button"
-                className={styles.quoteSuccessCloseBtn}
-                onClick={() => setEmergencyModalOpen(false)}
-              >
-                Anladım, Haritaya Dön
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

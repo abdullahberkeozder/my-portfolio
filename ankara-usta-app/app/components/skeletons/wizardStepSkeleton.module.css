@@ -1,0 +1,12 @@
+.shell { display:grid; gap:14px; padding:24px 0; }
+.shell > * { position:relative; overflow:hidden; background:#edf2f0; border-radius:10px; }
+.shell > *::after { content:''; position:absolute; inset:0; background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.62) 50%,transparent 70%); transform:translateX(-100%); animation:wizardWave 1.45s ease-in-out infinite; }
+.kicker { width:110px; height:12px; }
+.title { width:min(72%,420px); height:34px; }
+.copy { width:min(90%,540px); height:16px; }
+.options { display:grid; gap:10px; background:transparent !important; overflow:visible !important; }
+.options::after { display:none; }
+.option { height:58px; border:1px solid #dfe8e3; background:#f5f8f6 !important; }
+.action { width:150px; height:44px; margin-top:8px; background:#d8e9df !important; }
+@keyframes wizardWave { to { transform:translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .shell > *::after { display:none; animation:none; } }

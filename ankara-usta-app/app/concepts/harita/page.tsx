@@ -2,15 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import UstalarSplitView from '../../ustalar/UstalarSplitView';
 import { ankaraRepresentativeShops } from '../../data/ankaraMapGeo';
-import { ANKARA_PILOT_SUPPORT } from '../../lib/pilotSupport';
 import OrchestraLogo from '../../components/OrchestraLogo';
 import OrkestraWordmark from '../../components/OrkestraWordmark';
-import styles from '../../harita/harita.module.css';
+import styles from './discoveryShell.module.css';
 
 export const metadata: Metadata = {
-  title: 'Ankara Doğrulanmış Usta ve Atölye Haritası | Orkestra',
+  title: 'Ankara’da usta keşfi — Tasarım çalışması | Orkestra',
   description:
-    '12 merkez ilçede MYK belgeli doğrulanmış ustaları ve atölyeleri haritada bulun, sabit fiyat ve acil sevk güvencesiyle doğrudan teklif alın.',
+    'Hizmet ve bölgeye göre liste ve harita üzerinden usta keşfi için tasarım çalışması.',
   robots: { index: false, follow: false },
 };
 
@@ -36,7 +35,7 @@ export default async function MapConceptPage({
   const demoServiceMap: Record<string, string[]> = {};
   const demoAreaMap: Record<string, string[]> = {};
   const demoNeighborhoodMap: Record<string, string[]> = {};
-  const demoMetricsMap: Record<string, { totalCompletedJobs: number; averageRating: number }> = {};
+  const demoMetricsMap: Record<string, { totalCompletedJobs: number; averageRating: number; totalReviews: number }> = {};
 
   ankaraRepresentativeShops.forEach((s) => {
     demoServiceMap[s.id] = [s.category];
@@ -45,6 +44,7 @@ export default async function MapConceptPage({
     demoMetricsMap[s.id] = {
       totalCompletedJobs: s.reviewCount,
       averageRating: s.rating,
+      totalReviews: s.reviewCount,
     };
   });
 
@@ -62,52 +62,30 @@ export default async function MapConceptPage({
   const initialSortMode = params.sort === 'rating' || params.sort === 'jobs' ? params.sort : 'recommended';
 
   return (
-    <main className={`account-shell ${styles.shellSplit}`}>
-      <div className={`${styles.container} ${styles.containerSplit}`}>
-        <header className={`${styles.header} ${styles.headerSplit}`}>
-          <div className={styles.headerBrandGroup}>
-            <Link className={styles.brandLockup} href="/" aria-label="Orkestra ana sayfa">
+    <main className={styles.shell}>
+        <header className={styles.navigation}>
+            <Link className={styles.brand} href="/" aria-label="Orkestra ana sayfa">
               <OrchestraLogo size={24} variant="primary" />
               <OrkestraWordmark />
             </Link>
-            <div className={styles.kickerRow}>
-              <span className={styles.livePulseDot} aria-hidden="true" />
-              <span className={styles.kicker}>ANKARA USTA AĞI</span>
-              <span className={styles.kickerBadge}>12 merkez ilçe</span>
+            <nav aria-label="Keşif bağlantıları">
+              <Link href="/yardim">Yardım</Link>
+              <Link href="/#services">İhtiyacını anlat</Link>
+            </nav>
+        </header>
+        <div className={styles.intro}>
+          <div className={styles.introHeader}>
+            <div>
+              <span className={styles.kicker}>ANKARA HARİTA VE KEŞİF ÇALIŞMASI</span>
+              <h1>Ankara’da işinize uygun ustayı bulun</h1>
+              <p>Hizmet ve bölge seçin. Temsili atölyeleri liste ve harita üzerinde inceleyin.</p>
             </div>
-            <h1 className={`${styles.title} ${styles.titleCompact}`}>
-              Ankara&apos;da doğru ustayı keşfedin
-            </h1>
-            <p className={styles.splitSubDesc}>
-              Hizmeti ve ilçeyi seçin, doğrulanmış profilleri karşılaştırın.
-            </p>
-          </div>
-
-          <div className={styles.headerActionsGroup}>
-            <span className={styles.trustHeaderPill} title="Tüm ustalar ve talepler KVKK 6698 kapsamında güvendedir">
-              <span aria-hidden="true">🛡️</span>
-              <span>KVKK koruması</span>
-            </span>
-            <a
-              href={`tel:${ANKARA_PILOT_SUPPORT.phoneTel}`}
-              className={styles.headerPhonePill}
-              title={`7/24 Ankara Acil Usta & Nöbetçi Sevk Hattı: ${ANKARA_PILOT_SUPPORT.phoneDisplay}`}
-              aria-label={`7/24 acil usta sevk hattını ara: ${ANKARA_PILOT_SUPPORT.phoneDisplay}`}
-            >
-              <span aria-hidden="true">📞</span>
-              <span>Acil destek</span>
-            </a>
-            <Link
-              href="/#services"
-              className={styles.headerCtaBtn}
-              title="Ücretsiz Hizmet Talebi Oluştur"
-            >
-              <span>Talep oluştur</span>
-              <span aria-hidden="true">→</span>
+            <Link className={styles.liveBridgeBtn} href="/ustalar?view=split&sort=recommended">
+              Canlı Usta Dizini →
             </Link>
           </div>
-        </header>
-
+        </div>
+      <div className={styles.content}>
         <UstalarSplitView
           profiles={demoProfiles}
           serviceMap={demoServiceMap}

@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import {prejobChatEnabled} from '../lib/prejobChat';
 import {createSupabaseServerClient} from '../lib/supabase/server';
+import styles from './requestConversationLinks.module.css';
 
 export default async function RequestConversationLinks({requestId,professionalId}:{requestId:string;professionalId?:string}){
   if(!prejobChatEnabled())return null;
-  if(professionalId)return <section className="account-card"><h2>Müşteriyle kapsamı netleştirin</h2><Link href={`/gorusmeler/${requestId}/${professionalId}`}>Özel görüşmeyi aç →</Link></section>;
+  if(professionalId)return <section className={styles.panel}><h2>Müşteriyle kapsamı netleştirin</h2><p>Teklif vermeden önce kapsamla ilgili sorularınızı özel görüşmede sorun.</p><Link href={`/gorusmeler/${requestId}/${professionalId}`}>Görüşmeye git <span aria-hidden="true">→</span></Link></section>;
   const supabase=await createSupabaseServerClient();
   const {data:{user}}=await supabase.auth.getUser();
   if(!user)return null;
@@ -23,5 +24,5 @@ export default async function RequestConversationLinks({requestId,professionalId
     else for(const match of (matches??[]) as unknown as (Named&{tradesperson_id:string})[])people.set(match.tradesperson_id,match.tradesperson_profiles?.display_name??'Usta');
   }
   if(!people.size)return null;
-  return <section className="account-card"><h2>İş öncesi özel görüşmeler</h2><p>Her ustayla ayrı görüşürsünüz. Ustalar diğer görüşmelerinizi göremez.</p><ul>{[...people].map(([id,name])=><li key={id}><Link href={`/gorusmeler/${requestId}/${id}`}>{name} ile görüş →</Link></li>)}</ul></section>;
+  return <section className={styles.panel}><h2>Ustalarla görüşün</h2><p>Her ustayla ayrı görüşürsünüz. Ustalar diğer görüşmelerinizi göremez.</p><ul>{[...people].map(([id,name])=><li key={id}><Link href={`/gorusmeler/${requestId}/${id}`}>{name} ile görüş <span aria-hidden="true">→</span></Link></li>)}</ul></section>;
 }

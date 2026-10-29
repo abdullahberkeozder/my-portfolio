@@ -4,5 +4,5 @@ import { redirect } from 'next/navigation';
 // Redirect to /ustalar with map view mode so the proper header/footer is shown
 // and the page is crawlable by search engines.
 export default function HaritaPage() {
-  redirect('/ustalar?view=map');
+  redirect('/ustalar?view=map&sort=recommended');
 }

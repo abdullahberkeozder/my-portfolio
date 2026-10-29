@@ -1,0 +1,64 @@
+.result {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--border-subtle, #dbe3e0);
+  border-radius: 18px;
+  background: var(--surface-card, #fff);
+  color: var(--text-primary, #10243d);
+  box-shadow: 0 8px 24px rgba(16, 36, 61, 0.06);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.result:focus-visible,
+.result:hover,
+.selected {
+  border-color: var(--action-primary, #0e7956);
+  box-shadow: 0 12px 28px rgba(14, 121, 86, 0.14);
+  outline: none;
+}
+
+.body { display: flex; flex-direction: column; gap: 12px; padding: 18px; }
+.identity { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.avatar { display: grid; place-items: center; width: 48px; height: 48px; flex: 0 0 48px; border-radius: 50%; background: #e8f3ee; color: #0e7956; font-weight: 800; }
+.workshop, .service, .region { color: var(--text-secondary, #5a6b7d); font-size: 0.82rem; }
+.name { margin: 0; color: var(--text-primary, #10243d); font-size: 1.02rem; line-height: 1.25; font-weight: 750; }
+.service { margin: 0; font-weight: 650; }
+.region { margin: 0; }
+.verified { display: inline-flex; align-items: center; gap: 4px; color: #0e7956; font-size: 0.76rem; font-weight: 700; }
+.tagList { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.districtTag, .neighborhoodTag { display: inline-flex; align-items: center; min-height: 24px; padding: 0 8px; border-radius: 999px; background: #f1f6f4; color: #315849; font-size: 0.72rem; font-weight: 650; }
+.neighborhoodTag { background: #f7f8f6; color: #5a6b7d; }
+.serviceAreaContainer { position: relative; }
+.serviceAreaSummary { display: flex; align-items: center; gap: 6px; color: #315849; font-size: 0.78rem; font-weight: 700; }
+.serviceAreaDot { width: 7px; height: 7px; border-radius: 50%; background: #0e7956; }
+.serviceAreaTrigger { border: 0; background: transparent; color: #0e7956; font: inherit; cursor: pointer; }
+.serviceAreaTriggerActive { text-decoration: underline; text-underline-offset: 3px; }
+.serviceAreaPanel { margin-top: 8px; padding: 10px; border: 1px solid #dbe3e0; border-radius: 10px; background: #fbfdfc; }
+.serviceAreaBadgeLabel { color: #0e7956; font-size: 0.74rem; font-weight: 750; }
+.panelHeader { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.panelTitle, .panelSectionTitle { margin: 0; color: #10243d; font-weight: 750; }
+.panelTitle { font-size: 0.94rem; }
+.panelSection { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.panelSectionTitle { font-size: 0.76rem; }
+.panelCloseBtn { display: inline-grid; place-items: center; min-width: 36px; min-height: 36px; border: 1px solid #ccd9d4; border-radius: 9px; background: #fff; color: #10243d; cursor: pointer; }
+.panelDisclaimer, .panelEmptyNeighborhoods { margin: 10px 0 0; color: #667786; font-size: 0.74rem; line-height: 1.4; }
+.footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; border-top: 1px solid #edf1ef; }
+.rating { display: inline-flex; align-items: center; gap: 5px; color: #8a5a00; font-size: 0.8rem; }
+.count, .newProfile { color: #687887; }
+.profileLink { display: inline-flex; align-items: center; gap: 5px; color: #0e7956; font-size: 0.82rem; font-weight: 750; text-decoration: none; }
+.profileLink:hover, .profileLink:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+.carousel { min-width: min(88vw, 360px); }
+.carouselFull { min-width: 0; }
+.panelEmptyNeighborhoods { padding: 8px; border-radius: 8px; background: #f7f8f6; }
+
+@media (max-width: 767px) {
+  .body { padding: 15px; }
+  .footer { align-items: flex-start; flex-direction: column; }
+  .profileLink { min-height: 44px; }
+  .panelCloseBtn { min-width: 44px; min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result { transition: none; }
+}

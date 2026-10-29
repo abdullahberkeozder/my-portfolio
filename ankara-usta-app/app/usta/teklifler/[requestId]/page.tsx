@@ -14,6 +14,7 @@ import {directedRequestsEnabled} from '../../../lib/directedRequests';
 import RequestScopeSummary from '../../../components/RequestScopeSummary';
 import type {DeliveryModel} from '../../../domain/models';
 import KvkkMaskedLocationMapClient from '../../../components/map/KvkkMaskedLocationMapClient';
+import styles from '../../../components/decisionWorkspace.module.css';
 
 export const dynamic='force-dynamic';
 
@@ -45,30 +46,19 @@ export default async function TradespersonQuotePage({params}:{params:Promise<{re
   const questions=getWizardDefinition(request.service_id).questions;
   const active=['submitted','matching','quotes_received'].includes(request.status);
   const revisionHref=quoteRevisionsEnabled()&&latestQuote?`/teklifler/${latestQuote.id}`:undefined;
-  return <main className="account-shell quote-workspace">
+  return <main className={`account-shell quote-workspace ${styles.workspace}`}>
     <RealtimeRefresh channelName={`tradesperson-quote-${requestId}`} subscriptions={[{table:'service_requests',filter:`id=eq.${requestId}`},{table:'request_matches',filter:`request_id=eq.${requestId}`},{table:'quotes',filter:`request_id=eq.${requestId}`},...(direct?[{table:'request_invitations',filter:`request_id=eq.${requestId}`}]:[]),...(latestQuote?[{table:'quote_revision_requests',filter:`quote_id=eq.${latestQuote.id}`}]:[])]} label="Talep ve teklif"/>
     <Link className="account-back" href="/usta/talepler">← İş fırsatları</Link>
-    <section className="match-context">
-      <span>{direct?'SİZE ÖZEL TALEP':`EŞLEŞME PUANI ${match?.score}`}</span>
+    <header className={styles.proLead}>
       <h1>{service?.name??request.service_id}</h1>
-      <p>{request.neighborhood}, {request.district} · {requestTimingLabel(request.preferred_timing??'')}</p>
-      {match&&<ul>{(match.reasons as string[]).map(reason=><li key={reason}>{reason}</li>)}</ul>}
-    </section>
-    <KvkkMaskedLocationMapClient
-      district={request.district}
-      neighborhood={request.neighborhood}
-      serviceCategory={service?.categoryId}
-      serviceName={service?.name ?? request.service_id}
-      height={250}
-    />
+      <p>{direct?'Size özel talep · ':''}{request.neighborhood}, {request.district} · {requestTimingLabel(request.preferred_timing??'')}</p>
+    </header>
     <RequestScopeSummary serviceName={service?.name??request.service_id} deliveryModel={(service?.deliveryModel??request.delivery_model) as DeliveryModel} questions={questions} answers={request.answers??{}} district={request.district} neighborhood={request.neighborhood} timing={request.preferred_timing??''}/>
     {!active&&<p className="account-message">Bu talep yeni teklif veya ret yanıtı kabul etmiyor.</p>}
-    <RequestConversationLinks requestId={requestId} professionalId={user.id}/>
 
     {revisionFeedback && latestQuote && (
       <section className="revision-request-alert" role="alert" aria-label="Müşteri revizyon talebi">
         <div className="revision-request-alert-header">
-          <span className="revision-request-alert-icon">⚠️</span>
           <strong className="revision-request-alert-title">Müşteri Teklif Revizyonu İstedi (Sürüm {latestQuote.version})</strong>
         </div>
         <p className="revision-request-alert-desc">
@@ -92,8 +82,15 @@ export default async function TradespersonQuotePage({params}:{params:Promise<{re
       </section>
     )}
 
-    {revisionHref&&!revisionFeedback&&<section className="account-card"><h2>Teklifiniz ve revizyonlar</h2><Link href={revisionHref}>Müşterinin isteğini ve sürüm geçmişini incele →</Link></section>}
-    {direct&&invitation?<RequestInvitationPanel key={invitation.status} invitation={invitation} serviceId={request.service_id} role="professional" canRespond={active} quoteVersion={!revisionHref&&match?latestQuote?.version??0:undefined}/>:active&&!revisionHref&&<QuoteForm requestId={requestId} currentVersion={latestQuote?.version??0}/>}
+    <div className={styles.actionArea}>
+      {revisionHref&&!revisionFeedback&&<section className="account-card"><h2>Teklifiniz ve revizyonlar</h2><Link href={revisionHref}>Müşterinin isteğini ve sürüm geçmişini incele →</Link></section>}
+      {direct&&invitation?<RequestInvitationPanel key={invitation.status} invitation={invitation} serviceId={request.service_id} role="professional" canRespond={active} quoteVersion={!revisionHref&&match?latestQuote?.version??0:undefined}/>:active&&!revisionHref&&<QuoteForm requestId={requestId} currentVersion={latestQuote?.version??0}/>}
+    </div>
+    <RequestConversationLinks requestId={requestId} professionalId={user.id}/>
     {direct&&!match&&active&&<p className="account-message">Teklif için hizmet, bölge, belge ve müsaitlik koşullarının eşleşmesi gerekir. <Link href="/usta/musaitlik">Müsaitliğinizi kontrol edin</Link>; müşteri uygunluk kontrolünü yenileyebilir. Daveti reddetmek için eşleşme gerekmez.</p>}
+    <details className={styles.details}><summary>Konum ve eşleşme ayrıntıları</summary><div className={styles.detailsBody}>
+      {match&&<ul className={styles.reasonList}>{(match.reasons as string[]).map(reason=><li key={reason}>{reason}</li>)}</ul>}
+      <KvkkMaskedLocationMapClient district={request.district} neighborhood={request.neighborhood} serviceCategory={service?.categoryId} serviceName={service?.name ?? request.service_id} height={250}/>
+    </div></details>
   </main>;
 }

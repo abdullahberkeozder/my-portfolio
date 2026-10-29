@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import styles from './concepts.module.css';
+import OrchestraLogo from '../components/OrchestraLogo';
+import OrkestraWordmark from '../components/OrkestraWordmark';
 
 type Concept={id:string;no:string;name:string;subtitle:string;thesis:string;ux:string;motion:string;signature:string;risk:string};
 
@@ -32,7 +34,7 @@ function Shape({id,large=false}:{id:string;large?:boolean}){return <div classNam
 export default function ConceptsPage(){
   const [active,setActive]=useState(concepts[0]);
   return <main className={styles.page}>
-    <header className={styles.header}><Link href="/" className={styles.brand}><span>∞</span> Orkestra</Link><nav><a href="/inspiration">18 ilham örneği</a><a href="/motif-lab">Örgü laboratuvarı</a><b>Centro Prodotto / 05</b></nav></header>
+    <header className={styles.header}><Link href="/" className={styles.brand} aria-label="Orkestra ana sayfa"><OrchestraLogo size={28} variant="primary" /><OrkestraWordmark /></Link><nav><a href="/inspiration">18 ilham örneği</a><a href="/motif-lab">Örgü laboratuvarı</a><b>Centro Prodotto / 05</b></nav></header>
     <section className={styles.intro}><div><span>UZMAN UX/UI DEĞERLENDİRMESİ</span><h1>Önce neye<br/><em>bakmalıyız?</em></h1></div><p>İyi görünen şekil yeterli değil. Seçilecek ürün kimliği, müşterinin işini kolaylaştırmalı; markayı hatırlatmalı ve ana ürün akışının her aşamasına taşınabilmelidir.</p></section>
     <section className={styles.gates}>{gates.map(([no,title,text])=><article key={no}><span>{no}</span><div><b>{title}</b><p>{text}</p></div></article>)}</section>
     <section className={styles.manifesto}><span>ITALIAN INDUSTRIAL DESIGN LENS</span><div><b>Form + işlev</b><b>Pozitif + negatif hacim</b><b>Gerilim + sakin yüzey</b><b>İmza + tutarlılık</b></div><p>Otomobil biçimi veya Ferrari görsel kimliği kopyalanmadı. Referans, keyfî dekor yerine araştırma ve işlevden doğan heykelsi form yaklaşımıdır.</p></section>

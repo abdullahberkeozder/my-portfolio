@@ -1,18 +1,25 @@
+/* ============================================================
+   digitalWorkmanshipCertificate.module.css — 3D Dijital Fiş & İşçilik Belgesi
+   Haute-Craft Parşömen Mimarisi (Orman Yeşili, Pirinç Vurgusu, Örs Antrasiti)
+   ============================================================ */
+
 .certificateWrapper {
-  padding: 24px;
-  border: 1px solid #b8d2c8;
-  border-left: 6px solid var(--action-primary, #00897b);
-  border-radius: var(--radius-card, 12px);
-  background: #f8faf8;
-  color: var(--text-primary, #1e293b);
+  padding: 28px;
+  border: 1.5px solid var(--border-default, #DCE2DF);
+  border-top: 5px solid var(--brand-brass, #9A6B2F);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAF8F5 100%);
+  color: var(--text-primary, #17233B);
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  transition: box-shadow 0.2s ease;
+  gap: 20px;
+  box-shadow: 0 4px 20px rgba(23, 35, 59, 0.05);
+  transition: box-shadow 0.22s ease, transform 0.22s ease;
+  position: relative;
 }
 
 .certificateWrapper:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 12px 32px rgba(23, 35, 59, 0.08);
 }
 
 .headerRow {
@@ -20,8 +27,8 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 14px;
+  border-bottom: 1.5px solid var(--border-default, #DCE2DF);
+  padding-bottom: 18px;
 }
 
 .titleBlock {
@@ -31,25 +38,26 @@
 }
 
 .subJurisdiction {
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 800;
-  letter-spacing: 0.12em;
-  color: var(--action-info, #0284c7);
+  letter-spacing: 0.1em;
+  color: var(--brand-brass, #9A6B2F);
   text-transform: uppercase;
 }
 
 .docTitle {
   margin: 0;
-  font-size: 18px;
+  font-size: 1.15rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary, #17233B);
   line-height: 1.3;
+  letter-spacing: -0.02em;
 }
 
 .docSubtitle {
   margin: 0;
-  font-size: 12px;
-  color: #64748b;
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #526368);
 }
 
 .certBadgeBlock {
@@ -62,180 +70,182 @@
 .certNumber {
   display: inline-block;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 800;
-  background: #0f172a;
-  color: #ffffff;
-  padding: 5px 10px;
-  border-radius: 6px;
+  background: var(--text-primary, #17233B);
+  color: #FAF8F5;
+  padding: 6px 12px;
+  border-radius: 8px;
   letter-spacing: 0.06em;
+  box-shadow: 0 2px 6px rgba(23, 35, 59, 0.1);
 }
 
 .statusPillActive {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 8px;
+  font-size: 0.75rem;
+  font-weight: 750;
+  padding: 4px 10px;
   border-radius: 999px;
-  background: #ecfdf5;
-  color: #065f46;
-  border: 1px solid #a7f3d0;
+  background: var(--surface-brand-soft, #F0F7F4);
+  color: var(--action-primary, #0E6F47);
+  border: 1px solid #D2E7DD;
 }
 
 .statusPillExpired {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 8px;
+  font-size: 0.75rem;
+  font-weight: 750;
+  padding: 4px 10px;
   border-radius: 999px;
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
+  background: #FEF2F2;
+  color: #B91C1C;
+  border: 1px solid #FCA5A5;
 }
 
 .statusPillUnspecified {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: 999px;
-  background: #f1f5f9;
+  background: #F1F5F9;
   color: #475569;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #CBD5E1;
 }
 
 .metaGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  padding: 12px 14px;
+  gap: 14px;
+  padding: 14px 18px;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border: 1.5px solid var(--border-default, #DCE2DF);
+  border-radius: 12px;
 }
 
 .metaItem {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .metaLabel {
-  font-size: 11px;
-  color: #64748b;
-  font-weight: 600;
+  font-size: 0.6875rem;
+  color: var(--text-secondary, #526368);
+  font-weight: 750;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 .metaValue {
-  font-size: 13px;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 0.875rem;
+  font-weight: 750;
+  color: var(--text-primary, #17233B);
 }
 
 .financialSummary {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
-  background: #edf7f2;
-  border: 1px solid #c2e5d5;
-  border-radius: 8px;
-  font-size: 13px;
+  padding: 14px 18px;
+  background: var(--surface-brand-soft, #F0F7F4);
+  border: 1.5px solid #D2E7DD;
+  border-radius: 12px;
+  font-size: 0.875rem;
 }
 
 .financialLabel {
-  color: #065f46;
-  font-weight: 700;
+  color: var(--action-primary, #0E6F47);
+  font-weight: 750;
 }
 
 .financialValues {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   align-items: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .financialTotal {
   font-weight: 800;
-  color: #047857;
-  font-size: 15px;
+  color: var(--action-primary, #0E6F47);
+  font-size: 1rem;
 }
 
 .trustBanners {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 10px;
 }
 
 .trustBannerItem {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 10px;
+  padding: 10px 14px;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 11px;
-  color: #334155;
-  font-weight: 600;
+  border: 1.5px solid var(--border-default, #DCE2DF);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  color: var(--text-primary, #17233B);
+  font-weight: 650;
 }
 
 .trustBannerIcon {
-  color: #059669;
-  font-size: 13px;
+  color: var(--action-primary, #0E6F47);
+  font-size: 0.875rem;
   flex-shrink: 0;
 }
 
 .protocolDetails {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 16px;
+  gap: 16px;
+  padding: 20px;
   background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  border: 1.5px solid var(--border-default, #DCE2DF);
+  border-radius: 12px;
 }
 
 .sectionHeader {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #0f172a;
+  letter-spacing: 0.08em;
+  color: var(--text-primary, #17233B);
   margin-bottom: 6px;
 }
 
 .scopeList {
   margin: 0;
   padding-left: 20px;
-  font-size: 12px;
-  color: #334155;
+  font-size: 0.8125rem;
+  color: var(--text-primary, #17233B);
   line-height: 1.6;
 }
 
 .excludedList {
   margin: 0;
   padding-left: 20px;
-  font-size: 12px;
-  color: #64748b;
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #526368);
   line-height: 1.6;
 }
 
 .legalStatement {
-  font-size: 11px;
-  color: #475569;
-  line-height: 1.5;
-  padding: 10px;
-  background: #f8fafc;
-  border-left: 3px solid #64748b;
-  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #526368);
+  line-height: 1.55;
+  padding: 12px 14px;
+  background: #F8FAFC;
+  border-left: 3px solid var(--action-primary, #0E6F47);
+  border-radius: 6px;
   margin: 0;
 }
 
@@ -243,31 +253,32 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-  padding-top: 10px;
-  border-top: 1px dashed #cbd5e1;
+  padding-top: 14px;
+  border-top: 1.5px dashed var(--border-default, #DCE2DF);
 }
 
 .signatureBox {
-  padding: 12px;
-  border: 1px dashed #94a3b8;
-  border-radius: 6px;
-  background: #fafafa;
+  padding: 14px;
+  border: 1.5px dashed var(--border-default, #DCE2DF);
+  border-radius: 10px;
+  background: var(--surface-page, #FAF8F5);
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
 .signatureRole {
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary, #17233B);
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .signatureTimestamp {
-  font-size: 11px;
-  color: #059669;
-  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--action-primary, #0E6F47);
+  font-weight: 700;
 }
 
 .verificationFooter {
@@ -275,34 +286,36 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding-top: 12px;
-  border-top: 1px solid #e2e8f0;
+  padding-top: 14px;
+  border-top: 1.5px solid var(--border-default, #DCE2DF);
 }
 
 .verificationInfo {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .verificationCode {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  font-weight: 700;
-  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 750;
+  color: var(--text-secondary, #526368);
 }
 
 .verificationUrl {
-  font-size: 11px;
-  color: #0284c7;
+  font-size: 0.75rem;
+  color: var(--action-primary, #0E6F47);
+  font-weight: 600;
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .qrPlaceholder {
   width: 52px;
   height: 52px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border: 1.5px solid var(--border-default, #DCE2DF);
+  border-radius: 8px;
   padding: 4px;
   background: #ffffff;
   display: grid;
@@ -313,37 +326,40 @@
 .certificateActions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
+  padding-top: 6px;
 }
 
 .printButton {
-  padding: 9px 16px;
-  border: 1px solid var(--action-primary, #00897b);
-  border-radius: var(--radius-control, 8px);
-  background: var(--action-primary, #00897b);
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--action-primary, #0E6F47);
   color: #ffffff;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 0.8125rem;
+  font-weight: 750;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(14, 111, 71, 0.2);
 }
 
 .printButton:hover {
-  background: #00796b;
+  background: var(--action-primary-hover, #0A5235);
+  transform: translateY(-1px);
 }
 
 .detailsToggleButton {
-  padding: 9px 14px;
-  border: 1px solid #cbd5e1;
-  border-radius: var(--radius-control, 8px);
+  padding: 10px 18px;
+  border: 1.5px solid var(--border-default, #DCE2DF);
+  border-radius: 9999px;
   background: #ffffff;
-  color: #334155;
-  font-size: 13px;
-  font-weight: 600;
+  color: var(--text-primary, #17233B);
+  font-size: 0.8125rem;
+  font-weight: 650;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -352,46 +368,49 @@
 }
 
 .detailsToggleButton:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--surface-brand-soft, #F0F7F4);
+  border-color: var(--action-primary, #0E6F47);
+  color: var(--action-primary, #0E6F47);
 }
 
 .copyCodeButton {
-  padding: 9px 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: var(--radius-control, 8px);
+  padding: 10px 16px;
+  border: 1.5px solid var(--border-default, #DCE2DF);
+  border-radius: 9999px;
   background: #ffffff;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 600;
+  color: var(--text-secondary, #526368);
+  font-size: 0.75rem;
+  font-weight: 650;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  transition: all 0.15s ease;
 }
 
 .copyCodeButton:hover {
-  background: #f8fafc;
-  color: #334155;
+  background: #F8FAFC;
+  color: var(--text-primary, #17233B);
 }
 
 .supportLink {
   margin-left: auto;
-  font-size: 12px;
-  font-weight: 700;
-  color: #065f46;
+  font-size: 0.75rem;
+  font-weight: 750;
+  color: var(--action-primary, #0E6F47);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-  border-radius: var(--radius-control, 8px);
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  background: var(--surface-brand-soft, #F0F7F4);
+  border: 1px solid #D2E7DD;
+  transition: background 0.15s ease;
 }
 
 .supportLink:hover {
-  background: #d1fae5;
+  background: #DDF0E6;
 }
 
 @media (max-width: 768px) {
@@ -425,7 +444,7 @@
 
 @media print {
   .certificateWrapper {
-    border: 2px solid #0f172a;
+    border: 2px solid #17233B;
     background: #ffffff;
     box-shadow: none;
     padding: 28px;
@@ -436,14 +455,14 @@
   }
   .protocolDetails {
     display: flex;
-    border: 1px solid #0f172a;
+    border: 1px solid #17233B;
   }
   .metaGrid, .financialSummary, .trustBannerItem, .signatureBox {
     background: #ffffff;
-    border-color: #0f172a;
+    border-color: #17233B;
   }
   .certNumber {
-    background: #0f172a;
+    background: #17233B;
     color: #ffffff;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;

@@ -38,7 +38,7 @@ export default function AccountProfileForm({userId,initialName}:{userId:string;i
       <label htmlFor="profile-name">Görünen ad</label>
       <input id="profile-name" value={name} autoComplete="name" minLength={2} maxLength={120} required disabled={busy||account.status!=='ready'} onChange={event=>{setName(event.target.value);setMessage('');}} aria-describedby="profile-help"/>
       <p id="profile-help">2–120 karakter. {dirty?'Kaydedilmemiş değişiklikleriniz var.':''}</p>
-      <div className={styles.actions}><button type="submit" disabled={busy||!dirty||account.status!=='ready'}>{busy?'Kaydediliyor…':'Değişiklikleri kaydet'}</button><button type="button" disabled={busy||!dirty} onClick={()=>{setName(saved);setMessage('');}}>Vazgeç</button></div>
+      {dirty&&<div className={styles.actions}><button type="submit" disabled={busy||account.status!=='ready'}>{busy?'Kaydediliyor…':'Değişiklikleri kaydet'}</button><button type="button" disabled={busy} onClick={()=>{setName(saved);setMessage('');}}>Vazgeç</button></div>}
       {account.status==='error'&&<p role="alert">Oturum kontrol edilemedi. Sayfayı yenileyin; değişiklik henüz kaydedilmedi.</p>}
       {message&&<p role={error?'alert':'status'}>{message}</p>}
     </form>

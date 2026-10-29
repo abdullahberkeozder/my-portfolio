@@ -13,15 +13,22 @@ import RealtimeRefresh from '../components/RealtimeRefresh';
 import RequestStatusBadge from '../components/RequestStatusBadge';
 import { resolveCustomerRequestAction } from '../lib/requestStatusResolver';
 import WorkspacePartialNotice from '../components/WorkspacePartialNotice';
+import styles from '../components/workspaceList.module.css';
+import { U5VisualFixture, type U5VisualFixtureKind } from '../components/U5VisualFixture';
+
+function actionClass(variant: 'primary' | 'secondary' | 'neutral') {
+  return variant === 'primary' ? styles.actionPrimary : variant === 'secondary' ? styles.actionSecondary : styles.actionNeutral;
+}
 
 export const dynamic = 'force-dynamic';
 
 export default async function MyRequestsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; fixture?: string; view?: string }>;
 }) {
-  const rawPage = Number.parseInt((await searchParams).page ?? '1', 10);
+  const params = await searchParams;
+  const rawPage = Number.parseInt(params.page ?? '1', 10);
   const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
   const pageSize = 12;
   const supabase = await createSupabaseServerClient();
@@ -31,9 +38,9 @@ export default async function MyRequestsPage({
   } = await supabase.auth.getUser();
   if (authError && authError.name !== 'AuthSessionMissingError') {
     return (
-      <main className="account-shell requests-page">
-        <div className="page-body">
-          <div className="empty-state" role="alert">
+      <main className={styles.page}>
+        <div className={styles.container}>
+          <div className={styles.state} role="alert">
             <h1>Oturum bilgisi doğrulanamadı</h1>
             <p>Hesabınızı ve taleplerinizi güvenle gösterebilmek için bağlantıyı yeniden deneyin.</p>
             <RetryButton />
@@ -43,6 +50,13 @@ export default async function MyRequestsPage({
     );
   }
   if (!user) redirect('/giris?next=/taleplerim');
+
+  const visualFixture = process.env.ORKESTRA_U5_VISUAL_FIXTURES === 'true'
+    ? params.fixture
+    : undefined;
+  if (visualFixture && ['empty', 'partial-error', 'expired', 'direct-link'].includes(visualFixture)) {
+    return <U5VisualFixture audience="customer" kind={visualFixture as U5VisualFixtureKind} view={params.view === 'direct' ? 'direct' : 'open'} />;
+  }
 
   const {
     data: requests,
@@ -111,7 +125,7 @@ export default async function MyRequestsPage({
   }
 
   return (
-    <main className="account-shell requests-page">
+    <main className={styles.page}>
       {directedRequestsEnabled() && (
         <RealtimeRefresh
           channelName={`my-invitations-${user.id}`}
@@ -119,35 +133,33 @@ export default async function MyRequestsPage({
           label="Talep yanıtları"
         />
       )}
-      <div className="page-body">
-        {/* Workspace header */}
-        <div className="workspace-header">
+      <div className={styles.container}>
+        <header className={styles.header}>
           <div>
-            <span className="workspace-eyebrow">MÜŞTERİ ÇALIŞMA ALANI</span>
-            <h1 className="workspace-title">Taleplerim</h1>
+            <h1>Taleplerim</h1>
+            <p>Taleplerinizin durumunu ve sonraki adımı buradan takip edin.</p>
           </div>
-          <div className="workspace-actions">
+          <div className={styles.headerActions}>
             {prejobChatEnabled() && (
               <Link
                 href="/gorusmeler"
-                className="cta-action-neutral"
+                className={styles.headerLink}
               >
-                Görüşmelerim →
+                Görüşmelerim
               </Link>
             )}
             <Link
-              className="cta-action-primary"
+              className={`${styles.headerPrimary} ${styles.customerNew}`}
               href="/#services"
             >
-              + Yeni Talep
+              Yeni talep
             </Link>
           </div>
-        </div>
+        </header>
 
         {/* Error state */}
         {error ? (
-          <div className="empty-state" role="alert">
-            <span className="empty-state-icon" role="img" aria-label="Hata">⚠️</span>
+          <div className={styles.state} role="alert">
             <h2>Talepler yüklenemedi</h2>
             <p>Bir bağlantı sorunu oluştu. Sayfayı yenileyerek tekrar deneyin.</p>
             <RetryButton />
@@ -157,7 +169,7 @@ export default async function MyRequestsPage({
             {(quotesSummaryFailed || jobsSummaryFailed || invitations?.error) && (
               <WorkspacePartialNotice message="Talepleriniz gösteriliyor, ancak teklif sayıları, davet yanıtları veya iş bağlantıları güncel olmayabilir. İşlem yapmadan önce yeniden deneyin." />
             )}
-            <div className="request-list" style={{ display: 'grid', gap: '14px' }}>
+            <div className={styles.list}>
               {requests.map((request) => {
                 const service = services.find((item) => item.id === request.service_id);
                 const isDraft = request.status === 'draft';
@@ -191,33 +203,29 @@ export default async function MyRequestsPage({
                 return (
                   <article
                     key={request.id}
-                    className={`workspace-card ${isDraft ? 'workspace-card-draft' : ''}`}
+                    className={styles.item}
                     data-testid={`request-card-${request.id}`}
                   >
-                    <div>
-                      {/* Header with status badge & service */}
-                      <div className="workspace-card-header">
+                    <div className={styles.itemMain}>
+                      <div className={styles.itemTop}>
                         <RequestStatusBadge status={request.status} quoteCount={quoteCount} />
                         {request.routing_mode === 'direct' && (
-                          <span className="match-score-badge" style={{ background: '#f5f0fc', color: '#5d25b0' }}>
-                            Ustaya özel talep
-                          </span>
+                          <span className={styles.itemKind}>Ustaya özel</span>
                         )}
                       </div>
 
-                      <h2 className="workspace-card-title">
+                      <h2>
                         {service?.name ?? request.service_id}
                       </h2>
 
-                      <div className="workspace-card-meta">
+                      <div className={styles.meta}>
                         {request.neighborhood && request.district ? (
-                          <span>📍 {request.neighborhood}, {request.district}</span>
+                          <span>{request.neighborhood}, {request.district}</span>
                         ) : (
-                          <span style={{ color: 'var(--status-warning)' }}>📍 Konum henüz eklenmedi</span>
+                          <span className={styles.metaWarning}>Konum henüz eklenmedi</span>
                         )}
                         {request.preferred_timing && (
                           <>
-                            <span className="workspace-card-meta-dot" />
                             <span>Zaman tercihi eklendi</span>
                           </>
                         )}
@@ -236,15 +244,14 @@ export default async function MyRequestsPage({
                           />
                         ))}
                       {request.routing_mode === 'direct' && invitations?.error && (
-                        <p role="alert" style={{ color: 'var(--status-danger)', fontSize: '13px', marginTop: '6px' }}>
+                        <p role="alert" className={styles.supporting}>
                           Yanıt durumu yüklenemedi.
                         </p>
                       )}
                     </div>
 
-                    {/* Actions column */}
-                    <div className="workspace-card-actions-col">
-                      <time className="workspace-card-time">
+                    <div className={styles.itemActions}>
+                      <time dateTime={request.updated_at}>
                         {new Intl.DateTimeFormat('tr-TR', {
                           dateStyle: 'medium',
                           timeStyle: 'short',
@@ -261,11 +268,11 @@ export default async function MyRequestsPage({
                           }
                         />
                       ) : (
-                        <div className="workspace-card-fallback-actions">
+                        <div className={styles.actionGroup}>
                           {actionRes.primaryAction && (
                             <Link
                               href={actionRes.primaryAction.href}
-                              className={`cta-action-${actionRes.primaryAction.variant}`}
+                              className={actionClass(actionRes.primaryAction.variant)}
                             >
                               {actionRes.primaryAction.label}
                             </Link>
@@ -273,7 +280,7 @@ export default async function MyRequestsPage({
                           {actionRes.secondaryAction && (
                             <Link
                               href={actionRes.secondaryAction.href}
-                              className={`cta-action-${actionRes.secondaryAction.variant}`}
+                              className={actionClass(actionRes.secondaryAction.variant)}
                             >
                               {actionRes.secondaryAction.label}
                             </Link>
@@ -289,15 +296,14 @@ export default async function MyRequestsPage({
             <Pagination page={page} total={count ?? 0} pageSize={pageSize} path="/taleplerim" />
           </>
         ) : (
-          /* Empty state */
-          <section className="account-card empty-requests" style={{ textAlign: 'center' }}>
+          <section className={styles.state}>
             <h2>Henüz talebiniz yok</h2>
-            <p style={{ color: 'var(--text-secondary)', margin: '12px 0 24px' }}>
+            <p>
               Ev işleriniz için profesyonel yardım almaya hazır mısınız? Hizmeti seçin,
               kapsamı belirleyin, teklifleri karşılaştırın.
             </p>
             <Link
-              className="cta-action-primary"
+              className={styles.headerPrimary}
               href="/#services"
             >
               İlk Talebimi Oluştur

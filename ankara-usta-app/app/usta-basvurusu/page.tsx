@@ -44,7 +44,7 @@ const districtClusters: Record<string, typeof ankaraDistricts[number][]> = {
 };
 
 export default function TradespersonApplicationPage() {
-  return <AccountDraftBoundary kind="application" ttl={2*60*60*1000} requireAuth={true}>{scope=><ScopedApplication scope={scope}/>}</AccountDraftBoundary>;
+  return <AccountDraftBoundary kind="application" ttl={2*60*60*1000} requireAuth={false}>{scope=><ScopedApplication scope={scope}/>}</AccountDraftBoundary>;
 }
 
 function ScopedApplication({scope}:{scope:DraftScope}) {

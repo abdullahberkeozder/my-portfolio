@@ -11,6 +11,12 @@ import RealtimeRefresh from '../../components/RealtimeRefresh';
 import RetryButton from '../../components/RetryButton';
 import WorkspacePartialNotice from '../../components/WorkspacePartialNotice';
 import { resolveTradespersonOpportunityAction } from '../../lib/requestStatusResolver';
+import styles from '../../components/workspaceList.module.css';
+import { U5VisualFixture, type U5VisualFixtureKind } from '../../components/U5VisualFixture';
+
+function actionClass(variant: 'primary' | 'secondary' | 'neutral') {
+  return variant === 'primary' ? styles.actionPrimary : variant === 'secondary' ? styles.actionSecondary : styles.actionNeutral;
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -43,9 +49,9 @@ type MyQuoteSummary = {
 
 function WorkspaceFailure({ title, message }: { title: string; message: string }) {
   return (
-    <main className="account-shell requests-page">
-      <div className="page-body">
-        <div className="empty-state" role="alert">
+    <main className={styles.page}>
+      <div className={styles.container}>
+        <div className={styles.state} role="alert">
           <h1>{title}</h1>
           <p>{message}</p>
           <RetryButton />
@@ -58,7 +64,7 @@ function WorkspaceFailure({ title, message }: { title: string; message: string }
 export default async function TradespersonRequestsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; page?: string }>;
+  searchParams: Promise<{ view?: string; page?: string; fixture?: string }>;
 }) {
   const params = await searchParams;
   const enabled = directedRequestsEnabled();
@@ -86,16 +92,23 @@ export default async function TradespersonRequestsPage({
   }
   if (!tradespersonRole) {
     return (
-      <main className="account-shell requests-page">
-        <div className="page-body">
-          <section className="empty-state" role="alert">
+      <main className={styles.page}>
+        <div className={styles.container}>
+          <section className={styles.state} role="alert">
             <h1>Usta alanına erişiminiz yok</h1>
             <p>Bu alan yalnız usta rolü etkinleştirilmiş hesaplar tarafından kullanılabilir.</p>
-            <Link className="cta-action-primary" href="/taleplerim">Müşteri alanına dön</Link>
+            <Link className={styles.headerPrimary} href="/taleplerim">Müşteri alanına dön</Link>
           </section>
         </div>
       </main>
     );
+  }
+
+  const visualFixture = process.env.ORKESTRA_U5_VISUAL_FIXTURES === 'true'
+    ? params.fixture
+    : undefined;
+  if (visualFixture && ['empty', 'partial-error', 'expired', 'direct-link'].includes(visualFixture)) {
+    return <U5VisualFixture audience="tradesperson" kind={visualFixture as U5VisualFixtureKind} view={view} />;
   }
 
   let rows: Opportunity[] = [];
@@ -177,25 +190,24 @@ export default async function TradespersonRequestsPage({
   }
 
   return (
-    <main className="account-shell requests-page">
-      <div className="public-profile-container" style={{ margin: '0 auto', padding: 0 }}>
-        {/* Workspace Header */}
-        <div className="workspace-header">
+    <main className={styles.page}>
+      <div className={styles.container}>
+        <header className={styles.header}>
           <div>
-            <span className="workspace-eyebrow">USTA ÇALIŞMA ALANI</span>
-            <h1 className="workspace-title">İş fırsatları</h1>
+            <h1>İş fırsatları</h1>
+            <p>Size özel ve uygun açık talepleri inceleyin, sonraki adıma karar verin.</p>
           </div>
-          <div className="workspace-actions">
+          <div className={styles.headerActions}>
             {prejobChatEnabled() && (
-              <Link className="cta-action-neutral" href="/gorusmeler">
-                Özel görüşmelerim →
+              <Link className={styles.headerLink} href="/gorusmeler">
+                Görüşmelerim
               </Link>
             )}
-            <Link className="cta-action-secondary" href="/usta/musaitlik">
-              Müsaitliğimi güncelle →
+            <Link className={styles.headerLink} href="/usta/musaitlik">
+              Müsaitliğimi güncelle
             </Link>
           </div>
-        </div>
+        </header>
 
         {/* Realtime Subscription */}
         {enabled && (
@@ -210,11 +222,10 @@ export default async function TradespersonRequestsPage({
         )}
 
         {/* Navigation Tabs */}
-        <nav className="tradesperson-nav-tabs" aria-label="Talep türü">
+        <nav className={styles.tabs} aria-label="Talep türü">
           {enabled && (
             <Link
               href="/usta/talepler?view=direct"
-              className="tradesperson-nav-tab"
               aria-current={view === 'direct' ? 'page' : undefined}
             >
               Bana özel talepler
@@ -222,7 +233,6 @@ export default async function TradespersonRequestsPage({
           )}
           <Link
             href="/usta/talepler?view=open"
-            className="tradesperson-nav-tab"
             aria-current={view === 'open' ? 'page' : undefined}
           >
             Uygun açık talepler
@@ -231,15 +241,17 @@ export default async function TradespersonRequestsPage({
 
         {/* Error State */}
         {failed ? (
-          <p className="account-message" role="alert" style={{ background: '#fdf0ed', color: 'var(--status-danger)', border: '1px solid #f9ccc3' }}>
-            Talepler yüklenemedi. Lütfen sayfayı yenileyin.
-          </p>
+          <div className={styles.state} role="alert">
+            <h2>Talepler yüklenemedi</h2>
+            <p>Bağlantıyı yeniden deneyin. Bu sırada hiçbir fırsat kaybolmaz.</p>
+            <RetryButton />
+          </div>
         ) : rows.length ? (
           <>
           {(quotesSummaryFailed || jobsSummaryFailed) && (
             <WorkspacePartialNotice message="Fırsatlarınız gösteriliyor, ancak teklif veya iş bağlantıları güncel olmayabilir. İşlem yapmadan önce yeniden deneyin." />
           )}
-          <div className="request-list" style={{ display: 'grid', gap: '14px' }}>
+          <div className={styles.list}>
             {rows.map((row) => {
               const request = row.service_requests;
               if (!request) return null;
@@ -263,58 +275,45 @@ export default async function TradespersonRequestsPage({
               });
 
               return (
-                <article key={row.request_id} className="workspace-card" data-testid={`opportunity-card-${row.request_id}`}>
-                  <div>
-                    {/* Header Row: Score / Invitation & Status */}
-                    <div className="workspace-card-header">
+                <article key={row.request_id} className={styles.item} data-testid={`opportunity-card-${row.request_id}`}>
+                  <div className={styles.itemMain}>
+                    <div className={styles.itemTop}>
                       {invitation ? (
-                        <span className="match-score-badge" style={{ background: '#f5f0fc', color: '#5d25b0' }}>
-                          🎯 Size Özel Davet
-                        </span>
-                      ) : typeof row.score === 'number' ? (
-                        <span className="match-score-badge">
-                          🎯 %{row.score} Uygunluk
-                        </span>
+                        <span className={styles.itemKind}>Size özel</span>
                       ) : null}
 
                       {myQuote?.status === 'accepted' ? (
                           <span className="req-status-badge req-status-success">
-                            ✓ Teklifiniz Kabul Edildi
+                            Teklifiniz kabul edildi
                           </span>
                       ) : opportunityClosed ? (
                           <span className="req-status-badge req-status-neutral">
-                            {directState === 'expired' || request.status === 'expired' ? 'Yanıt Süresi Doldu' : 'Fırsat Kapandı'}
+                            {directState === 'expired' || request.status === 'expired' ? 'Yanıt süresi doldu' : 'Fırsat kapandı'}
                           </span>
                       ) : myQuote ? (
                           <span className="req-status-badge req-status-info">
-                            Teklifiniz İletildi (v{myQuote.version} · {Math.round((myQuote.labor_amount_kurus + myQuote.material_amount_kurus) / 100).toLocaleString('tr-TR')} ₺)
+                            Teklifiniz iletildi
                           </span>
                       ) : (
                         <span className="req-status-badge req-status-warning">
-                          Yeni Fırsat
+                          Yeni fırsat
                         </span>
                       )}
                     </div>
 
-                    {/* Title */}
-                    <h2 className="workspace-card-title">
+                    <h2>
                       {service?.name ?? request.service_id}
                     </h2>
+                    {myQuote && <p className={styles.supporting}>Teklif v{myQuote.version} · {Math.round((myQuote.labor_amount_kurus + myQuote.material_amount_kurus) / 100).toLocaleString('tr-TR')} ₺</p>}
 
-                    {/* Masked Address & Timing */}
-                    <div className="workspace-card-meta">
-                      <span>📍 {request.neighborhood}, {request.district}</span>
-                      <span className="workspace-card-meta-dot" />
+                    <div className={styles.meta}>
+                      <span>{[request.neighborhood, request.district].filter(Boolean).join(', ') || 'Konum paylaşılmadı'}</span>
                       <span>{requestTimingLabel(request.preferred_timing)}</span>
-                      <span className="workspace-card-meta-dot" />
-                      <span className="workspace-card-kvkk-badge" title="Açık adres teklif kabulünde açılır">
-                        🛡️ KVKK Korumalı (~300m)
-                      </span>
                     </div>
 
                     {/* Invitation Panel or Match Reasons */}
                     {invitation ? (
-                      <div style={{ marginTop: '12px' }}>
+                      <div className={styles.invitation}>
                         <RequestInvitationPanel
                           key={invitation.status}
                           invitation={invitation}
@@ -324,20 +323,18 @@ export default async function TradespersonRequestsPage({
                         />
                       </div>
                     ) : row.reasons?.length ? (
-                      <ul className="match-reasons" style={{ marginTop: '10px' }}>
-                        {row.reasons.map((reason) => (
-                          <li key={reason}>{reason}</li>
-                        ))}
-                      </ul>
+                      <details className={styles.reasons}>
+                        <summary>Neden uygun?</summary>
+                        <ul>{row.reasons.map((reason) => <li key={reason}>{reason}</li>)}</ul>
+                      </details>
                     ) : null}
                   </div>
 
-                  {/* Actions Column */}
-                  <div className="workspace-card-actions-col">
-                    <div className="workspace-card-fallback-actions">
+                  <div className={styles.itemActions}>
+                    <div className={styles.actionGroup}>
                       {actionRes.primaryAction && (
                         <Link
-                          className={`cta-action-${actionRes.primaryAction.variant}`}
+                          className={actionClass(actionRes.primaryAction.variant)}
                           href={actionRes.primaryAction.href}
                         >
                           {actionRes.primaryAction.label}
@@ -345,7 +342,7 @@ export default async function TradespersonRequestsPage({
                       )}
                       {actionRes.secondaryAction && (
                         <Link
-                          className={`cta-action-${actionRes.secondaryAction.variant}`}
+                          className={actionClass(actionRes.secondaryAction.variant)}
                           href={actionRes.secondaryAction.href}
                         >
                           {actionRes.secondaryAction.label}
@@ -360,15 +357,15 @@ export default async function TradespersonRequestsPage({
           </div>
           </>
         ) : (
-          <section className="account-card empty-requests" style={{ textAlign: 'center' }}>
+          <section className={styles.state}>
             <h2>{view === 'direct' ? 'Henüz size özel talep yok' : 'Uygun açık talep bulunamadı'}</h2>
-            <p style={{ color: 'var(--text-secondary)', margin: '12px 0 20px' }}>
+            <p>
               {view === 'direct'
                 ? 'Müşterilerin doğrudan profilinizi seçerek gönderdiği talepler burada listelenir.'
                 : 'Hizmet, bölge, doğrulama ve müsaitlik koşullarınıza uygun açık havuz talepleri burada listelenir.'}
             </p>
-            <Link href="/usta/musaitlik" className="cta-action-neutral">
-              Müsaitlik ve Bölgeleri İncele →
+            <Link href="/usta/musaitlik" className={styles.headerLink}>
+              Müsaitlik ve bölgeleri incele
             </Link>
           </section>
         )}

@@ -5,66 +5,14 @@
  * belirlemek, aynı hedefe giden çift CTA'ları engellemek ve erişilebilir (a11y) standartlara tam uymak.
  */
 
-export type RequestStatus =
-  | 'draft'
-  | 'submitted'
-  | 'matching'
-  | 'quotes_received'
-  | 'provider_selected'
-  | 'completed'
-  | 'cancelled'
-  | 'expired';
+import type { RequestStatus as DomainRequestStatus } from '../domain/models';
+import { requestStatusDictionary } from '../domain/statusDictionary';
 
 export type StatusTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger' | 'accent';
-
-export interface StatusMeta {
-  label: string;
-  tone: StatusTone;
-  description: string;
-}
-
-export const REQUEST_STATUS_DICTIONARY: Record<string, StatusMeta> = {
-  draft: {
-    label: 'Taslak',
-    tone: 'warning',
-    description: 'Talep henüz tamamlanıp ustalara iletilmedi.',
-  },
-  submitted: {
-    label: 'Gönderildi',
-    tone: 'info',
-    description: 'Talep sisteme kaydedildi, usta eşleşmesi başlatılıyor.',
-  },
-  matching: {
-    label: 'Ustalar Aranıyor',
-    tone: 'info',
-    description: 'Bölgenizdeki uygun ustalara talep yönlendiriliyor.',
-  },
-  quotes_received: {
-    label: 'Teklifler Geldi',
-    tone: 'success',
-    description: 'Ustalar teklif iletti, karşılaştırma yapabilirsiniz.',
-  },
-  provider_selected: {
-    label: 'Usta Seçildi',
-    tone: 'accent',
-    description: 'Bir teklif kabul edildi ve iş odası açıldı.',
-  },
-  completed: {
-    label: 'Tamamlandı',
-    tone: 'success',
-    description: 'Hizmet başarıyla tamamlandı.',
-  },
-  cancelled: {
-    label: 'İptal Edildi',
-    tone: 'neutral',
-    description: 'Talep kullanıcı veya sistem tarafından iptal edildi.',
-  },
-  expired: {
-    label: 'Süresi Doldu',
-    tone: 'danger',
-    description: 'Talep geçerlilik süresi içinde işlem görmedi.',
-  },
-};
+export type StatusMeta = (typeof requestStatusDictionary)[keyof typeof requestStatusDictionary];
+export const REQUEST_STATUS_DICTIONARY: Record<string, StatusMeta> = requestStatusDictionary;
+export type RequestStatus = DomainRequestStatus | 'completed';
+export type ResolverRequestStatus = RequestStatus;
 
 export interface ActionLink {
   label: string;
@@ -81,7 +29,7 @@ export interface CustomerActionResolution {
 
 export interface CustomerRequestActionContext {
   requestId: string;
-  status: string;
+  status: ResolverRequestStatus | string;
   quoteCount?: number;
   jobId?: string | null;
   isDraft?: boolean;

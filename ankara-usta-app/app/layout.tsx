@@ -1,6 +1,11 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Outfit } from 'next/font/google';
+import { Geist, Geist_Mono, Outfit, Newsreader, JetBrains_Mono } from 'next/font/google';
 import './application.css';
+// Keep the landing module in the root server CSS graph. The landing page is a
+// client component (it owns search/wizard state); importing the module only
+// from that client boundary can otherwise leave a short unstyled first paint
+// during a hard refresh in dev and in Vite-based production previews.
+import homeStyles from './home.module.css';
 import AppFooter from './components/AppFooter';
 import ConsentBanner from './components/ConsentBanner';
 import ProductFrame from './components/ProductFrame';
@@ -21,6 +26,19 @@ const outfit = Outfit({
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+});
+
+const newsreader = Newsreader({
+  variable: '--font-newsreader',
+  subsets: ['latin', 'latin-ext'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: '--font-jetbrains-mono',
+  subsets: ['latin', 'latin-ext'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -52,8 +70,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} ${newsreader.variable} ${jetbrainsMono.variable} antialiased`}>
         <a href="#main-content" className="skip-link">İçeriğe Atla</a>
+        <span className={homeStyles.home} aria-hidden="true" hidden />
         <ProductFrame conversations={prejobChatEnabled()}>
           {children}
         </ProductFrame>

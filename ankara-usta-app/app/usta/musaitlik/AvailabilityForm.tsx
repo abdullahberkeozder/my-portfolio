@@ -1,177 +1,153 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import styles from './availability.module.css';
 
-const today = new Date().toISOString().slice(0, 10);
+export type SavedAvailability = {
+  available_from: string;
+  available_to: string;
+  accepts_urgent: boolean;
+  active: boolean;
+  updated_at?: string;
+};
 
-function getFutureDate(daysAhead: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() + daysAhead);
-  return d.toISOString().slice(0, 10);
+function addDays(date: string, count: number) {
+  const result = new Date(`${date}T12:00:00Z`);
+  result.setUTCDate(result.getUTCDate() + count);
+  return result.toISOString().slice(0, 10);
 }
 
-export default function AvailabilityForm() {
-  const [availableFrom, setAvailableFrom] = useState(today);
-  const [availableTo, setAvailableTo] = useState(() => getFutureDate(7));
-  const [acceptsUrgent, setAcceptsUrgent] = useState(false);
-  const [active, setActive] = useState(true);
+function isAvailability(value: unknown): value is SavedAvailability {
+  if (!value || typeof value !== 'object') return false;
+  const item = value as Partial<SavedAvailability>;
+  return typeof item.available_from === 'string' && typeof item.available_to === 'string' &&
+    typeof item.accepts_urgent === 'boolean' && typeof item.active === 'boolean';
+}
+
+export default function AvailabilityForm({
+  today,
+  initialAvailability,
+}: {
+  today: string;
+  initialAvailability: SavedAvailability | null;
+}) {
+  const [saved, setSaved] = useState(initialAvailability);
+  const [availableFrom, setAvailableFrom] = useState(initialAvailability?.available_from ?? today);
+  const [availableTo, setAvailableTo] = useState(initialAvailability?.available_to ?? addDays(today, 6));
+  const [acceptsUrgent, setAcceptsUrgent] = useState(initialAvailability?.accepts_urgent ?? false);
+  const [active, setActive] = useState(initialAvailability?.active ?? true);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ text: string; isError: boolean } | null>(null);
-  const [selectedSlots, setSelectedSlots] = useState<string[]>(['morning', 'afternoon']);
+  const changed = !saved || availableFrom !== saved.available_from || availableTo !== saved.available_to ||
+    acceptsUrgent !== saved.accepts_urgent || active !== saved.active;
+  const expired = Boolean(saved && saved.available_to < today && !changed);
 
   function applyPreset(days: number) {
     setAvailableFrom(today);
-    setAvailableTo(getFutureDate(days));
+    setAvailableTo(addDays(today, days - 1));
+    setMessage(null);
   }
 
-  function toggleSlot(slotId: string) {
-    setSelectedSlots(prev =>
-      prev.includes(slotId) ? prev.filter(s => s !== slotId) : [...prev, slotId]
-    );
-  }
-
-  async function submit(event: React.FormEvent) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (busy || !changed) return;
+    if (availableFrom > availableTo) {
+      setMessage({ text: 'Bitiş tarihi başlangıç tarihinden önce olamaz.', isError: true });
+      return;
+    }
     setBusy(true);
     setMessage(null);
-
     try {
       const response = await fetch('/api/tradespeople/availability', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ availableFrom, availableTo, acceptsUrgent, active }),
       });
-      const body = (await response.json()) as { error?: string };
-      setBusy(false);
-      if (response.ok) {
-        setMessage({ text: 'Müsaitlik takviminiz ve tercihleriniz başarıyla kaydedildi.', isError: false });
+      const body: unknown = await response.json().catch(() => null);
+      const result = body && typeof body === 'object' ? body as { availability?: unknown; error?: unknown } : null;
+      if (!response.ok) {
+        setMessage({ text: typeof result?.error === 'string' ? result.error : 'Müsaitlik kaydedilemedi. Yeniden deneyin.', isError: true });
+      } else if (isAvailability(result?.availability)) {
+        const record = result.availability;
+        setSaved(record);
+        setAvailableFrom(record.available_from);
+        setAvailableTo(record.available_to);
+        setAcceptsUrgent(record.accepts_urgent);
+        setActive(record.active);
+        setMessage({ text: 'Müsaitlik tercihleriniz kaydedildi.', isError: false });
       } else {
-        setMessage({ text: body.error ?? 'Müsaitlik kaydedilemedi. Lütfen tekrar deneyin.', isError: true });
+        setMessage({ text: 'Kaydetme sonucu doğrulanamadı. Sayfayı yenileyerek kayıtlı bilgileri kontrol edin.', isError: true });
       }
     } catch {
+      setMessage({ text: 'Bağlantı kesildi. Kaydedilip kaydedilmediğini görmek için sayfayı yenileyin.', isError: true });
+    } finally {
       setBusy(false);
-      setMessage({ text: 'Bağlantı hatası oluştu. Lütfen tekrar deneyin.', isError: true });
     }
   }
 
   return (
-    <main className={`account-shell ${styles.container}`}>
-      <Link className="account-back" href="/usta/talepler">
-        ← Usta Çalışma Alanına Dön
-      </Link>
+    <main className={styles.page}>
+      <div className={styles.container}>
+        <Link className={styles.back} href="/usta/talepler">İş fırsatlarına dön</Link>
+        <header className={styles.header}>
+          <h1>İş alma durumunuz</h1>
+          <p>Tarih aralığınızı ve acil iş tercihinizi yönetin. Bu bilgiler uygun açık taleplerle eşleştirmede kullanılır.</p>
+        </header>
 
-      <form className={styles.card} onSubmit={submit}>
-        <span className={styles.eyebrow}>USTA ÇALIŞMA TAKVİMİ</span>
-        <h1 className={styles.title}>İş Alabileceğiniz Zamanları Belirleyin</h1>
-        <p className={styles.desc}>
-          Ankara eşleştirme motoru; yalnızca hizmetiniz, onaylı ilçeleriniz ve belirlediğiniz bu tarih aralığı
-          birlikte örtüştüğünde yeni iş taleplerini size yönlendirir.
-        </p>
+        <form onSubmit={submit} className={styles.form}>
+          <fieldset disabled={busy} className={styles.fields}>
+            <section className={styles.section} aria-labelledby="availability-dates-title">
+              <div className={styles.sectionIntro}>
+                <h2 id="availability-dates-title">Ne zaman iş alabilirsiniz?</h2>
+                <p>Tarih aralığı dışında yeni açık taleplerle eşleşmezsiniz.</p>
+              </div>
+              <div className={styles.presetRow} aria-label="Hızlı tarih seçimi">
+                {[
+                  { days: 2, label: 'Bugün ve yarın' },
+                  { days: 7, label: '7 gün' },
+                  { days: 14, label: '14 gün' },
+                  { days: 30, label: '30 gün' },
+                ].map(({ days, label }) => (
+                  <button key={days} type="button" className={styles.preset} aria-pressed={availableFrom === today && availableTo === addDays(today, days - 1)} onClick={() => applyPreset(days)}>{label}</button>
+                ))}
+              </div>
+              <div className={styles.dateGrid}>
+                <label className={styles.field}>Başlangıç tarihi
+                  <input required type="date" value={availableFrom} min={availableFrom < today ? availableFrom : today} onChange={event => { setAvailableFrom(event.target.value); setMessage(null); }} />
+                </label>
+                <label className={styles.field}>Bitiş tarihi
+                  <input required type="date" value={availableTo} min={availableFrom} onChange={event => { setAvailableTo(event.target.value); setMessage(null); }} />
+                </label>
+              </div>
+              {expired && <p className={styles.expired}>Kayıtlı tarih aralığınız sona erdi. Yeniden iş almak için tarihleri güncelleyin.</p>}
+            </section>
 
-        {/* Hızlı Seçim Butonları */}
-        <div className={styles.presetGroup}>
-          <span className={styles.presetLabel}>Hızlı Tarih Seçimi</span>
-          <div className={styles.presetRow}>
-            <button type="button" className={styles.presetBtn} onClick={() => applyPreset(1)}>Bugün &amp; Yarın</button>
-            <button type="button" className={styles.presetBtn} onClick={() => applyPreset(7)}>Bu Hafta (7 Gün)</button>
-            <button type="button" className={styles.presetBtn} onClick={() => applyPreset(14)}>Gelecek 14 Gün</button>
-            <button type="button" className={styles.presetBtn} onClick={() => applyPreset(30)}>Bu Ay (30 Gün)</button>
-          </div>
-        </div>
+            <section className={styles.section} aria-labelledby="availability-options-title">
+              <div className={styles.sectionIntro}>
+                <h2 id="availability-options-title">İş tercihleri</h2>
+                <p>Değişiklikler yalnız kaydettiğinizde geçerli olur.</p>
+              </div>
+              <label className={styles.option}>
+                <input type="checkbox" checked={active} onChange={event => { setActive(event.target.checked); setMessage(null); }} />
+                <span><strong>Açık talepler için aktifim</strong><small>Kapattığınızda yeni açık talep eşleştirmelerinde görünmezsiniz.</small></span>
+              </label>
+              <label className={styles.option}>
+                <input type="checkbox" checked={acceptsUrgent} onChange={event => { setAcceptsUrgent(event.target.checked); setMessage(null); }} />
+                <span><strong>Acil talepleri de değerlendirebilirim</strong><small>Bu tercih, acil açık taleplerin eşleştirmesinde kullanılır.</small></span>
+              </label>
+            </section>
+          </fieldset>
 
-        {/* Tarih Aralığı */}
-        <div className={styles.dateGrid}>
-          <div className={styles.fieldGroup}>
-            <label htmlFor="avail-from" className={styles.fieldLabel}>Başlangıç Tarihi</label>
-            <input id="avail-from" required type="date" className={styles.dateInput}
-              value={availableFrom} min={today} onChange={event => setAvailableFrom(event.target.value)} />
-          </div>
-          <div className={styles.fieldGroup}>
-            <label htmlFor="avail-to" className={styles.fieldLabel}>Bitiş Tarihi</label>
-            <input id="avail-to" required type="date" className={styles.dateInput}
-              value={availableTo} min={availableFrom} onChange={event => setAvailableTo(event.target.value)} />
-          </div>
-        </div>
-
-        {/* Çalışma Saat Dilimleri */}
-        <div className={styles.slotSection}>
-          <div className={styles.slotTitle}>
-            <span>⏰</span>
-            <span>Tercih Ettiğiniz Günlük Çalışma Dilimleri</span>
-          </div>
-          <div className={styles.slotChips}>
-            <button type="button"
-              className={`${styles.slotChip} ${selectedSlots.includes('morning') ? styles.slotChipActive : ''}`}
-              onClick={() => toggleSlot('morning')} aria-pressed={selectedSlots.includes('morning')}>
-              <span className={styles.slotIcon} aria-hidden="true">🌅</span>
-              <span>Sabah Slotu</span>
-              <span className={styles.slotHours}>08:30 – 12:30</span>
-            </button>
-            <button type="button"
-              className={`${styles.slotChip} ${selectedSlots.includes('afternoon') ? styles.slotChipActive : ''}`}
-              onClick={() => toggleSlot('afternoon')} aria-pressed={selectedSlots.includes('afternoon')}>
-              <span className={styles.slotIcon} aria-hidden="true">☀️</span>
-              <span>Öğle Slotu</span>
-              <span className={styles.slotHours}>13:00 – 17:30</span>
-            </button>
-            <button type="button"
-              className={`${styles.slotChip} ${selectedSlots.includes('evening') ? styles.slotChipActive : ''}`}
-              onClick={() => toggleSlot('evening')} aria-pressed={selectedSlots.includes('evening')}>
-              <span className={styles.slotIcon} aria-hidden="true">🌙</span>
-              <span>Akşam / Nöbetçi</span>
-              <span className={styles.slotHours}>18:00 – 21:00</span>
+          <div className={styles.saveArea}>
+            <p className={styles.saveHint}>{changed ? 'Kaydedilmemiş değişiklikler var.' : 'Kayıtlı tercihleriniz gösteriliyor.'}</p>
+            <button className={styles.submit} disabled={busy || !changed} type="submit" aria-busy={busy}>
+              {busy ? 'Kaydediliyor…' : 'Müsaitliği kaydet'}
             </button>
           </div>
-        </div>
-
-        {/* Tercih Switchleri */}
-        <div className={styles.toggleList}>
-          <label className={styles.toggleItem}>
-            <input type="checkbox" className={styles.checkboxInput}
-              checked={acceptsUrgent} onChange={event => setAcceptsUrgent(event.target.checked)} />
-            <div className={styles.toggleMeta}>
-              <span className={styles.toggleTitle}>🚨 Acil / Aynı Gün Taleplerini Kabul Ediyorum</span>
-              <span className={styles.toggleDesc}>
-                Su patlağı, elektrik kesintisi gibi acil işlerde bölgenizdeki müşterilere öncelikli eşleşirsiniz.
-              </span>
-            </div>
-          </label>
-          <label className={styles.toggleItem}>
-            <input type="checkbox" className={styles.checkboxInput}
-              checked={active} onChange={event => setActive(event.target.checked)} />
-            <div className={styles.toggleMeta}>
-              <span className={styles.toggleTitle}>🟢 Eşleştirmelerde Aktif Görün</span>
-              <span className={styles.toggleDesc}>
-                İş alımını geçici olarak durdurmak istediğinizde bu seçeneği kapatabilirsiniz.
-              </span>
-            </div>
-          </label>
-        </div>
-
-        {/* Bilgilendirme Kutusu */}
-        <div className={styles.infoBanner}>
-          <span aria-hidden="true">💡</span>
-          <div>
-            <strong>Kör Teklif Güvenliği:</strong> Müsait olduğunuz günlerde gelen talepleri inceleyip teklif
-            verebilirsiniz. Verdiğiniz teklifleri diğer ustalar göremez; müşteriyle tam adres bilgisi yalnızca
-            teklif kabul edildiğinde paylaşılır.
-          </div>
-        </div>
-
-        {message && (
-          <div className={`${styles.messageStatus} ${message.isError ? styles.messageError : ''}`} role="status">
-            {message.text}
-          </div>
-        )}
-
-        <div className={styles.actions}>
-          <button className={styles.submitBtn} disabled={busy} type="submit">
-            {busy ? 'Kaydediliyor…' : 'Müsaitlik Takvimini Kaydet →'}
-          </button>
-        </div>
-      </form>
+          {message && <p className={message.isError ? styles.error : styles.success} role={message.isError ? 'alert' : 'status'}>{message.text}</p>}
+        </form>
+      </div>
     </main>
   );
 }

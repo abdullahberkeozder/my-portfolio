@@ -1,95 +1,147 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState, useRef, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { serviceCategories, services, servicesByCategory } from './data/serviceTaxonomy';
+import Image from 'next/image';
+import { services, serviceCategories, servicesByCategory } from './data/serviceTaxonomy';
 import { getServiceSafetyGuidance, getCalibratedServiceScope } from './data/serviceGuidance';
-import { isCorePilotService } from './data/pilotCoverage';
 import { ClassificationResult, classifyService } from './lib/classifyService';
 import RequestWizard from './components/RequestWizard';
-import OrchestraLogo from './components/OrchestraLogo';
+import ProgressiveImage from './components/ProgressiveImage';
+import DiscoveryWorkDetail from './components/DiscoveryWorkDetail';
+import { useSavedDiscovery } from './hooks/useSavedDiscovery';
 import { useModalDialog } from './hooks/useModalDialog';
 import Button from './components/Button';
-import FlatRateServices from './components/FlatRateServices';
-import { Avatar, RatingStars } from './components/ui';
 import matchStyles from './components/serviceMatch.module.css';
 import styles from './home.module.css';
 import { trackFunnel } from './lib/analytics';
+import { discoveryHref } from './lib/discoveryContract';
+import { ankaraDistricts } from './data/ankaraLocations';
 
-type FeaturedProfessional = {
-  userId: string;
-  displayName: string;
-  bio: string | null;
-  city: string | null;
-};
+interface DiscoveryWork {
+  id: string;
+  serviceId: string;
+  category: 'montaj' | 'tesisat' | 'boya' | 'elektrik' | 'temizlik' | 'kaynak';
+  categoryLabel: string;
+  title: string;
+  image: string;
+  artisanName: string;
+  artisanDistrict: string;
+  materials: string[];
+}
 
-const REVIEWS = [
-  { id: 'r1', name: 'Seda K.',  service: 'Musluk Değişimi', text: 'Çok hızlı geldi, temiz çalıştı. Tavsiyelere uydu, hiç sorun çıkarmadı.' },
-  { id: 'r2', name: 'Murat T.', service: 'TV Duvar Montajı', text: 'Duvar beton ama hiç sorun çıkarmadan halletti. Kesinlikle tavsiye ederim.' },
-  { id: 'r3', name: 'Ayşe B.',  service: 'Tek Oda Boya',    text: 'Fiyat makul, iş kalitesi çok iyiydi. Tekrar çalışırım kesinlikle.' },
-  { id: 'r4', name: 'Can D.',   service: 'Elektrik Arızası', text: 'Akşam saatlerinde bile geldi. Hızlı ve profesyonel bir hizmet aldım.' },
+const DISCOVERY_WORKS: DiscoveryWork[] = [
+  {
+    id: 'work-1',
+    serviceId: 'raf-tablo-montaji',
+    category: 'montaj',
+    categoryLabel: 'Montaj',
+    title: 'Duvar rafı montajı',
+    image: '/images/discovery/duvar-rafi-montaji.jpg',
+    artisanName: 'Murat Usta',
+    artisanDistrict: 'Çankaya',
+    materials: ['40mm Masif Meşe', 'Gizli Çelik Ankraj', 'Lazer Terazi: ±0.5mm'],
+  },
+  {
+    id: 'work-2',
+    serviceId: 'musluk-degisimi',
+    category: 'tesisat',
+    categoryLabel: 'Tesisat',
+    title: 'Mutfak bataryası değişimi',
+    image: '/images/discovery/mutfak-bataryasi-degisimi.jpg',
+    artisanName: 'Selim Usta',
+    artisanDistrict: 'Yenimahalle',
+    materials: ['Döküm Pirinç Gövde', '304 Paslanmaz Fleks', 'TS EN 817 Sızdırmazlık'],
+  },
+  {
+    id: 'work-3',
+    serviceId: 'tek-oda-boya',
+    category: 'boya',
+    categoryLabel: 'Boya',
+    title: 'Salon boyama',
+    image: '/images/discovery/salon-boyama.jpg',
+    artisanName: 'Derya Usta',
+    artisanDistrict: 'Etimesgut',
+    materials: ['Silikonlu Mat İç Cephe', 'Hassas Maskeleme', 'Kraft Zemin Koruması'],
+  },
+  {
+    id: 'work-4',
+    serviceId: 'kornis-perde-montaji',
+    category: 'montaj',
+    categoryLabel: 'Montaj',
+    title: 'Korniş montajı',
+    image: '/images/discovery/kornis-montaji.jpg',
+    artisanName: 'Emre Usta',
+    artisanDistrict: 'Keçiören',
+    materials: ['Ekstrüzyon 3 Ray Alüminyum', 'Çelik Kanatlı Dübel', 'Lazer Aks Doğrulama'],
+  },
+  {
+    id: 'work-5',
+    serviceId: 'avize-montaji',
+    category: 'elektrik',
+    categoryLabel: 'Elektrik',
+    title: 'Avize montajı',
+    image: '/images/discovery/avize-montaji.jpg',
+    artisanName: 'Cem Usta',
+    artisanDistrict: 'Mamak',
+    materials: ['Topraklı Güvenlik Klemensi', 'Döküm Çelik Tavan Mapası', 'Dijital Faz/Yük Testi'],
+  },
+  {
+    id: 'work-6',
+    serviceId: 'ev-temizligi',
+    category: 'temizlik',
+    categoryLabel: 'Temizlik',
+    title: 'Mutfak temizliği',
+    image: '/images/discovery/mutfak-temizligi.jpg',
+    artisanName: 'Ece Hanım',
+    artisanDistrict: 'Gölbaşı',
+    materials: ['Gıda Temas Onaylı Solüsyon', 'Yüksek Emişli Mikrofiber', 'Paslanmaz Çelik Buhar'],
+  },
+];
+
+const CATEGORY_TABS = [
+  { id: 'tumu', label: 'Tümü' },
+  { id: 'montaj', label: 'Montaj' },
+  { id: 'tesisat', label: 'Tesisat' },
+  { id: 'boya', label: 'Boya' },
+  { id: 'elektrik', label: 'Elektrik' },
+  { id: 'temizlik', label: 'Temizlik' },
+  { id: 'kaynak', label: 'Kaynak' },
 ] as const;
 
-/* Ankara skyline SVG motifi */
-function AnkaraSkyline() {
-  return (
-    <svg
-      className={styles.skylineSvg}
-      viewBox="0 0 1200 140"
-      preserveAspectRatio="none"
-      fill="none"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <rect x="0"   y="110" width="80"  height="30" fill="rgba(255,255,255,.04)" rx="3"/>
-      <rect x="90"  y="90"  width="60"  height="50" fill="rgba(255,255,255,.04)" rx="3"/>
-      <rect x="160" y="70"  width="100" height="70" fill="rgba(255,255,255,.04)" rx="3"/>
-      {/* Atakule */}
-      <rect x="270" y="10"  width="22"  height="130" fill="rgba(255,255,255,.06)" rx="3"/>
-      <polygon points="274,10 288,10 281,0" fill="rgba(255,255,255,.06)"/>
-      <rect x="260" y="110" width="42" height="30" fill="rgba(255,255,255,.05)" rx="2"/>
-      {/* Orta bloklar */}
-      <rect x="305" y="55"  width="90"  height="85" fill="rgba(255,255,255,.04)" rx="3"/>
-      <rect x="405" y="40"  width="130" height="100" fill="rgba(255,255,255,.04)" rx="3"/>
-      <rect x="545" y="75"  width="70"  height="65" fill="rgba(255,255,255,.04)" rx="3"/>
-      <rect x="625" y="85"  width="180" height="55" fill="rgba(255,255,255,.03)" rx="3"/>
-      <rect x="815" y="50"  width="95"  height="90" fill="rgba(255,255,255,.04)" rx="3"/>
-      <rect x="920" y="90"  width="80"  height="50" fill="rgba(255,255,255,.04)" rx="3"/>
-      <rect x="1010" y="70" width="100" height="70" fill="rgba(255,255,255,.04)" rx="3"/>
-      <rect x="1120" y="95" width="80"  height="45" fill="rgba(255,255,255,.03)" rx="3"/>
-      {/* Ground */}
-      <rect x="0" y="135" width="1200" height="5" fill="rgba(255,255,255,.08)"/>
-    </svg>
-  );
-}
+const CATEGORY_PRIMARY_SERVICES: Record<string, string> = {
+  montaj: 'mobilya-kurulumu',
+  tesisat: 'musluk-degisimi',
+  boya: 'tek-oda-boya',
+  elektrik: 'elektrik-arizasi',
+  temizlik: 'ev-temizligi',
+  kaynak: 'bahce-kapisi',
+};
+
+const WORK_IDS = DISCOVERY_WORKS.map(work => work.id);
 
 export default function Home() {
   const router = useRouter();
   const [query, setQuery] = useState('');
+  const [searching, setSearching] = useState(false);
   const [dialog, setDialog] = useState(false);
   const [classification, setClassification] = useState<ClassificationResult | null>(null);
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
-  const [featuredPros, setFeaturedPros] = useState<FeaturedProfessional[]>([]);
+  const [selectedDistrict, setSelectedDistrict] = useState<string>('');
 
-  useEffect(() => {
-    let active = true;
-    void fetch('/api/tradespeople/featured')
-      .then(async res => {
-        if (!res.ok) throw new Error('Usta verisi alınamadı');
-        return res.json() as Promise<{ professionals: FeaturedProfessional[] }>;
-      })
-      .then(data => {
-        if (active && data?.professionals) {
-          setFeaturedPros(data.professionals);
-        }
-      })
-      .catch(() => {});
-    return () => { active = false; };
-  }, []);
   const [wizardServiceId, setWizardServiceId] = useState<string | null>(null);
   const [remoteDraft, setRemoteDraft] = useState<Parameters<typeof RequestWizard>[0]['remoteDraft']>();
   const classificationDialogRef = useModalDialog<HTMLElement>(dialog, () => setDialog(false));
+
+  /* V8.1 Sosyal Keşif Durumları */
+  const [activeCategoryTab, setActiveCategoryTab] = useState<string>('tumu');
+  const [isCategoryPending, startCategoryTransition] = useTransition();
+  const { savedIds, ready: savesReady, notice: saveNotice, toggle: toggleSaved } = useSavedDiscovery(WORK_IDS);
+  const [savedOnly, setSavedOnly] = useState(false);
+  const [activeWork, setActiveWork] = useState<DiscoveryWork | null>(null);
+  const [wizardReferenceWork, setWizardReferenceWork] = useState<DiscoveryWork | null>(null);
+  const lastDiscoveryTriggerRef = useRef<HTMLElement | null>(null);
+  const tabsScrollRef = useRef<HTMLDivElement>(null);
 
   const selectedClassificationService = services.find(item => item.id === selectedServiceId);
   const selectedSafetyGuidance = selectedClassificationService
@@ -98,7 +150,7 @@ export default function Home() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const draftId  = params.get('draftId');
+    const draftId = params.get('draftId');
     const serviceId = params.get('service');
     if (params.get('resume') === '1' && serviceId && services.some(service => service.id === serviceId)) {
       queueMicrotask(() => { setRemoteDraft(undefined); setWizardServiceId(serviceId); });
@@ -109,19 +161,44 @@ export default function Home() {
     void fetch(`/api/requests/${encodeURIComponent(draftId)}`)
       .then(async response => {
         if (!response.ok) throw new Error('Taslak yüklenemedi.');
-        return response.json() as Promise<{request: {id:string;service_id:string;target_professional_id?:string|null;routing_mode?:string;answers:Record<string,string>;district:string|null;neighborhood:string|null;preferred_timing:string|null;idempotency_key:string}}>;
+        return response.json() as Promise<{
+          request: {
+            id: string;
+            service_id: string;
+            target_professional_id?: string | null;
+            routing_mode?: string;
+            answers: Record<string, string>;
+            district: string | null;
+            neighborhood: string | null;
+            preferred_timing: string | null;
+            idempotency_key: string;
+          };
+        }>;
       })
-      .then(({request}) => {
+      .then(({ request }) => {
         if (!active) return;
         if (request.target_professional_id) {
-          router.replace(`/ustalar/${encodeURIComponent(request.target_professional_id)}/talep?service=${encodeURIComponent(request.service_id)}&draftId=${encodeURIComponent(request.id)}`);
+          router.replace(
+            `/ustalar/${encodeURIComponent(request.target_professional_id)}/talep?service=${encodeURIComponent(
+              request.service_id
+            )}&draftId=${encodeURIComponent(request.id)}`
+          );
           return;
         }
-        if(request.routing_mode && request.routing_mode!=='open')return;
-        if(request.service_id!==serviceId)return;
+        if (request.routing_mode && request.routing_mode !== 'open') return;
+        if (request.service_id !== serviceId) return;
         const definition = services.find(item => item.id === serviceId);
         if (!definition) return;
-        setRemoteDraft({answers:request.answers??{},district:request.district??'',neighborhood:request.neighborhood??'',timing:request.preferred_timing??'Bu hafta',step:0,idempotencyKey:request.idempotency_key,requestId:request.id,updatedAt:Date.now()});
+        setRemoteDraft({
+          answers: request.answers ?? {},
+          district: request.district ?? '',
+          neighborhood: request.neighborhood ?? '',
+          timing: request.preferred_timing ?? 'Bu hafta',
+          step: 0,
+          idempotencyKey: request.idempotency_key,
+          requestId: request.id,
+          updatedAt: Date.now(),
+        });
         setWizardServiceId(serviceId);
       })
       .catch(() => { if (active) setRemoteDraft(undefined); });
@@ -131,11 +208,16 @@ export default function Home() {
   function submitSearch(event: FormEvent) {
     event.preventDefault();
     if (!query.trim()) return;
-    const result = classifyService(query);
-    trackFunnel('service_search', { candidateCount: result.candidates.length });
-    setClassification(result);
-    setSelectedServiceId(result.candidates[0]?.service.id ?? null);
-    setDialog(true);
+    setSearching(true);
+    try {
+      const result = classifyService(query);
+      trackFunnel('service_search', { candidateCount: result.candidates.length });
+      setClassification(result);
+      setSelectedServiceId(result.candidates[0]?.service.id ?? null);
+      setDialog(true);
+    } finally {
+      setSearching(false);
+    }
   }
 
   function startClassification(rawQuery: string) {
@@ -147,6 +229,32 @@ export default function Home() {
     setDialog(true);
   }
 
+  function handleDirectService(serviceId: string, fallbackQuery?: string) {
+    const targetService = services.find(s => s.id === serviceId);
+    if (targetService) {
+      trackFunnel('wizard_started', { serviceId, source: 'home_directory' });
+      setRemoteDraft(undefined);
+      setWizardServiceId(serviceId);
+    } else if (fallbackQuery) {
+      startClassification(fallbackQuery);
+    }
+  }
+
+  function openDirectory() {
+    const el = document.getElementById('services');
+    const details = el?.querySelector('details');
+    if (details) details.open = true;
+    const reducedMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el?.scrollIntoView({ behavior: reducedMotion ? 'instant' : 'smooth', block: 'start' });
+    el?.focus({ preventScroll: true });
+  }
+
+  function scrollTabsRight() {
+    if (tabsScrollRef.current) {
+      tabsScrollRef.current.scrollBy({ left: 160, behavior: 'instant' });
+    }
+  }
+
   function continueToWizard() {
     if (!selectedServiceId) return;
     setDialog(false);
@@ -154,241 +262,402 @@ export default function Home() {
     setWizardServiceId(selectedServiceId);
   }
 
+  const filteredWorks = DISCOVERY_WORKS.filter(work =>
+    (activeCategoryTab === 'tumu' || work.category === activeCategoryTab) &&
+    (!savedOnly || savedIds.includes(work.id)));
+
   return (
-    <main className={styles.home}>
+    <main className={`${styles.home} landing-shell`}>
 
-      {/* ── HERO ──────────────────────────────────── */}
-      <section className={styles.hero} aria-labelledby="hero-title">
-        <div className={styles.heroCanvas} aria-hidden="true">
-          <div className={styles.gridDots} />
-          <AnkaraSkyline />
-        </div>
+      <div className={`${styles.container} landing-container`}>
 
-        <div className={styles.heroInner}>
-          <div className={styles.emblem}>
-            <OrchestraLogo size={52} variant="primary" />
+        {/* ── 1. HERO ALANI (SAF MİMARÎ: MERKEZİ BAŞLIK, ARAMA & 4K ATELİER SAHNESİ) ── */}
+        <section className={`${styles.hero} landing-hero`} aria-labelledby="hero-title">
+          <div className={styles.heroBackgroundWrap} aria-hidden="true">
+            <Image
+              src="/images/hero-glass-materials-v4.jpg"
+              alt=""
+              fill
+              priority
+              unoptimized
+              className={styles.heroBackgroundImage}
+              sizes="(max-width: 1240px) 100vw, 1240px"
+            />
+            <div className={styles.heroBackdropOverlay} />
           </div>
 
-          <h1 id="hero-title" className={styles.title}>
-            İşini anlat.<br />
-            <span className={styles.titleAccent}>Doğru ustayla</span> buluş.
-          </h1>
+          <div className={`${styles.heroContent} landing-hero-content`}>
+            <h1 id="hero-title" className={`${styles.heroTitle} landing-hero-title`}>
+              Evin için bir fikir.<br />İşin için bir usta.
+            </h1>
 
-          <p className={styles.intro}>
-            Evde yapılacak bir iş mi var? Ankara&apos;da hizmetini bul,
-            kapsamı belirle, teklifleri karşılaştır.
-          </p>
+            <form className={`${styles.heroSearch} landing-search`} role="search" onSubmit={submitSearch}>
+              <label htmlFor="service-search-input" className={styles.searchLabel}>
+                Ne yaptırmak istiyorsun?
+              </label>
 
-          <form className={styles.search} role="search" onSubmit={submitSearch}>
-            <label htmlFor="service-search-input" className={styles.searchLabel}>
-              İhtiyacınızı yazın
-            </label>
-            <div className={styles.searchGlass}>
-              <input
-                id="service-search-input"
-                className={styles.searchInput}
-                value={query}
-                onChange={event => setQuery(event.target.value)}
-                placeholder="Örn. mutfak musluğum su kaçırıyor"
-                required
-                maxLength={500}
-                autoComplete="off"
-              />
-              <button type="submit" className={styles.searchBtn} aria-label="Hizmet bul">
-                Hizmet bul →
-              </button>
+              <div className={`${styles.searchRow} landing-search-row`}>
+                <div className={`${styles.searchInputWrap} landing-search-input-wrap`}>
+                  <svg
+                    className={styles.searchIcon}
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  <input
+                    id="service-search-input"
+                    className={`${styles.searchInput} landing-search-input`}
+                    value={query}
+                    onChange={event => setQuery(event.target.value)}
+                    placeholder="Örn. banyo tadilatı, korniş, parke ustası..."
+                    aria-label="İhtiyacınızı yazın"
+                    required
+                    maxLength={500}
+                    autoComplete="off"
+                  />
+                </div>
+
+                <div className={styles.searchDivider} aria-hidden="true" />
+
+                <div className={styles.searchDistrictWrap}>
+                  <svg
+                    className={styles.districtIcon}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  <select
+                    id="service-district-select"
+                    className={styles.searchDistrictSelect}
+                    value={selectedDistrict}
+                    onChange={event => setSelectedDistrict(event.target.value)}
+                    aria-label="Ankara İlçesi Seçin"
+                  >
+                    <option value="">Tüm Ankara</option>
+                    {ankaraDistricts.map(district => (
+                      <option key={district} value={district}>
+                        {district}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <button
+                  type="submit"
+                  className={`${styles.searchBtn} landing-search-button`}
+                  aria-label={searching ? 'Aranıyor…' : 'Hizmet bul'}
+                  disabled={searching}
+                >
+                  <svg
+                    className={styles.btnSearchIcon}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  <span className={styles.searchBtnTextDesktop}>{searching ? 'Aranıyor…' : 'Hizmet bul'}</span>
+                  <span className={styles.searchBtnTextMobile}>{searching ? '…' : 'Bul'}</span>
+                </button>
+              </div>
+
+              {/* Restrained example line matching View B editorial entrance */}
+              <div className={styles.searchExamples} aria-label="Hızlı arama etiketleri">
+                <span className={styles.searchExamplesLabel}>Örnek arananlar:</span>
+                {[
+                  { label: 'Musluk Değişimi', query: 'Musluk Değişimi' },
+                  { label: 'Salon Boyama', query: 'Tek Oda Boya' },
+                  { label: 'Korniş Montajı', query: 'Korniş Montajı' },
+                  { label: 'Avize Montajı', query: 'Avize Montajı' },
+                ].map((chip, idx, arr) => (
+                  <span key={chip.label} className={styles.exampleItem}>
+                    <button
+                      type="button"
+                      className={styles.exampleBtn}
+                      onClick={() => startClassification(chip.query)}
+                    >
+                      {chip.label}
+                    </button>
+                    {idx < arr.length - 1 && <span className={styles.exampleSep} aria-hidden="true">,</span>}
+                  </span>
+                ))}
+              </div>
+            </form>
+
+          </div>
+        </section>
+
+        {/* ── 2. İŞLERİ KEŞFET (SAF SOSYAL ZANAAT VE PORTFOLYO AKIŞI) ── */}
+        <section className={`${styles.discoverySection} landing-discovery`} id="kesfet" aria-labelledby="discovery-title" aria-busy={isCategoryPending}>
+          {saveNotice && <p role="status">{saveNotice}</p>}
+          <div className={styles.discoveryHeader}>
+            <h2 id="discovery-title" className={styles.discoveryTitle}>
+              Evine fikir bul
+            </h2>
+            <p className={styles.discoverySubtitle}>
+              Örnek uygulamalar. Fotoğraflar ve usta bilgileri temsilidir.
+            </p>
+          </div>
+
+          {/* Kategori Filtreleme Sekmeleri */}
+          <div className={`${styles.categoryTabsOuter} landing-category-tabs-outer`}>
+            <div
+              ref={tabsScrollRef}
+              className={`${styles.categoryTabs} landing-category-tabs`}
+              role="group"
+              aria-label="İş Kategorileri"
+            >
+              {savedIds.length > 0 && (
+                <button
+                  type="button"
+                  aria-pressed={savedOnly}
+                  className={`${styles.categoryTab} ${styles.categoryTabSaved} ${savedOnly ? styles.categoryTabActive : ''}`}
+                  onClick={() =>
+                    startCategoryTransition(() => {
+                      setSavedOnly(prev => !prev);
+                      if (!savedOnly) setActiveCategoryTab('tumu');
+                    })
+                  }
+                >
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    stroke="none"
+                    aria-hidden="true"
+                    style={{ marginRight: '6px', display: 'inline-block', verticalAlign: '-1px' }}
+                  >
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                  </svg>
+                  <span>Kaydettiklerim ({savedIds.length})</span>
+                </button>
+              )}
+
+              {CATEGORY_TABS.map(tab => {
+                const isActive = !savedOnly && tab.id === activeCategoryTab;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    aria-pressed={isActive}
+                    className={`${styles.categoryTab} ${isActive ? styles.categoryTabActive : ''}`}
+                    onClick={() =>
+                      startCategoryTransition(() => {
+                        setSavedOnly(false);
+                        setActiveCategoryTab(tab.id);
+                      })
+                    }
+                  >
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
             </div>
-          </form>
 
-          <div className={styles.suggestions} aria-label="Hızlı arama etiketleri">
-            {['Musluk Değişimi', 'Tek Oda Boya', 'Avize Montajı', 'Elektrik Arızası', 'Ev Temizliği'].map(hint => (
+            <button
+              type="button"
+              className={styles.tabsScrollArrow}
+              onClick={scrollTabsRight}
+              aria-label="Diğer kategorileri göster"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          </div>
+
+          {/* 6'lı İş Kartları Izgarası (View B: Editoryal Vitrin Bento Izgarası) */}
+          <div
+            key={activeCategoryTab}
+            className={`${styles.cardsGrid} ${activeCategoryTab === 'tumu' && !savedOnly ? styles.cardsGridBento : styles.cardsGridFiltered} landing-cards-grid`}
+          >
+            {filteredWorks.map((work, index) => {
+              const isSaved = savedIds.includes(work.id);
+              const isLead = activeCategoryTab === 'tumu' && !savedOnly && index === 0;
+
+              return (
+                <article
+                  key={work.id}
+                  className={`${styles.card} ${isLead ? styles.cardLead : ''} landing-card`}
+                >
+                  <button
+                    type="button"
+                    className={`${styles.cardPrimary} landing-card-image-wrap`}
+                    onClick={(event) => {
+                      lastDiscoveryTriggerRef.current = event.currentTarget;
+                      setActiveWork(work);
+                    }}
+                    aria-label={`${work.title} detayını incele`}
+                  >
+                    <div className={`${styles.cardImageWrap} ${isLead ? styles.cardLeadImageWrap : ''}`}>
+                      <ProgressiveImage
+                        src={work.image}
+                        alt={work.title}
+                        width={isLead ? 800 : 540}
+                        height={isLead ? 600 : 400}
+                        unoptimized
+                        className={`${styles.cardImg} landing-card-image`}
+                      />
+                    </div>
+                  </button>
+
+                  <div className={styles.cardMeta}>
+                    <div className={styles.cardMetaContent}>
+                      <h3 className={`${styles.cardTitle} ${isLead ? styles.cardLeadTitle : ''}`}>
+                        {work.title}
+                      </h3>
+                      <p className={styles.artisanMeta}>
+                        {work.artisanName} · {work.artisanDistrict} (temsili)
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      className={`${styles.bookmarkBtn} ${isSaved ? styles.bookmarkBtnSaved : ''}`}
+                      onClick={() => toggleSaved(work.id)}
+                      disabled={!savesReady}
+                      aria-pressed={isSaved}
+                      aria-label={isSaved ? `${work.title} favorilerden çıkar` : `${work.title} favorilere ekle`}
+                      title={isSaved ? 'Kaydedildi' : 'Listeme ekle'}
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill={isSaved ? 'currentColor' : 'none'}
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                      </svg>
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+
+          {filteredWorks.length === 0 && (
+            <div className={styles.emptyCategoryNotice}>
+              <p>{savedOnly ? 'Burada henüz kaydettiğin bir fikir yok.' : 'Bu kategoride henüz örnek uygulama yok. Hizmetleri inceleyebilirsin.'}</p>
               <button
-                key={hint}
                 type="button"
-                onClick={() => startClassification(hint)}
+                className={styles.emptyResetBtn}
+                onClick={() => startCategoryTransition(() => { setActiveCategoryTab('tumu'); setSavedOnly(false); })}
               >
-                {hint}
+                Tüm fikirleri göster
               </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── GÜVEN BANDI ───────────────────────────── */}
-      <div className={styles.trustBand} aria-label="Platform güven göstergeleri">
-        <div className={styles.trustInner}>
-          {([
-            ['5',     'Öncelikli Pilot İlçe'],
-            ['26',    'Standart Kapsamlı Hizmet'],
-            ['%100',  'Belge Doğrulamalı Usta'],
-            ['3',     'Net Teklif Karşılaştırma'],
-          ] as const).map(([num, label]) => (
-            <div key={label} className={styles.trustStat}>
-              <span className={styles.trustNum}>{num}</span>
-              <span className={styles.trustLabel}>{label}</span>
             </div>
-          ))}
+          )}
+
+          {/* Daha Fazla İş / Harita Köprüsü */}
+          <div className={styles.moreWorksWrap}>
+            <button
+              type="button"
+              className={styles.moreWorksBtn}
+              onClick={openDirectory}
+            >
+              Tüm hizmetleri gör
+            </button>
+            <a
+              className={styles.mapBridge}
+              href={activeCategoryTab !== 'tumu' && CATEGORY_PRIMARY_SERVICES[activeCategoryTab]
+                ? discoveryHref({ service: CATEGORY_PRIMARY_SERVICES[activeCategoryTab], view: 'split', sort: 'recommended' })
+                : discoveryHref({ view: 'split', sort: 'recommended' })}
+              onClick={() => trackFunnel('discovery_map_opened')}
+            >
+              {activeCategoryTab === 'tumu'
+                ? 'Tüm ustaları haritada gör'
+                : `${CATEGORY_TABS.find(t => t.id === activeCategoryTab)?.label ?? ''} ustalarını haritada gör`}
+            </a>
+          </div>
+
+        </section>
+
+        {/* ── 3. HİZMET DİZİNİ (TEST VE ERİŞİLEBİLİRLİK SÖZLEŞMESİ) ─── */}
+        <section className={styles.servicesDirectory} id="services" tabIndex={-1} aria-labelledby="directory-title">
+          <h2 id="directory-title" className="sr-only">Hizmet Seçimi</h2>
+          <details className={styles.directoryDetails} name="service-category">
+            <summary className={styles.directorySummary}>
+              <span>Tüm hizmet kategorileri ve kapsamları ({serviceCategories.length} kategori)</span>
+              <svg className={styles.disclosureChevron} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+            </summary>
+            <div className={styles.directoryGrid}>
+              {serviceCategories.map(cat => {
+                const catServices = servicesByCategory(cat.id);
+                return (
+                  <div key={cat.id} className={styles.directoryCatBlock}>
+                    <h3 className={styles.directoryCatTitle}>{cat.name}</h3>
+                    <ul className={styles.directoryList}>
+                      {catServices.map(service => (
+                        <li key={service.id}>
+                          <button
+                            type="button"
+                            className={styles.directoryServiceBtn}
+                            onClick={() => handleDirectService(service.id, service.aliases?.[0])}
+                          >
+                            <span>{service.name}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          </details>
+        </section>
+
+        {/* Tasarım Taslağı İmzası */}
+        <div className={styles.draftFooterNotice}>
+          <span>Görseller örnek uygulamalardır.</span>
         </div>
+
       </div>
 
-      {/* ── HİZMET KATALOĞU ───────────────────────── */}
-      <section className={styles.catalog} id="services" tabIndex={-1} aria-labelledby="catalog-title">
-        <div className={styles.sectionInner}>
-          <div className={styles.sectionHeading}>
-            <h2 id="catalog-title">Hizmetleri keşfedin</h2>
-            <p>Bir kategori açın, ihtiyacınıza uygun hizmeti seçin.</p>
-          </div>
+      {activeWork && <DiscoveryWorkDetail work={activeWork}
+        serviceName={services.find(service => service.id === activeWork.serviceId)?.name ?? activeWork.title}
+        returnFocusRef={lastDiscoveryTriggerRef}
+        onClose={() => setActiveWork(null)}
+        onRequest={(selectedWork) => {
+          const chosen = (selectedWork ?? activeWork) as DiscoveryWork | null;
+          setActiveWork(null);
+          if (chosen) {
+            setWizardReferenceWork(chosen);
+            handleDirectService(chosen.serviceId, chosen.title);
+          }
+        }} />}
 
-          <div className={styles.categories}>
-            {serviceCategories.map(category => (
-              <details key={category.id} className={styles.category} name="service-category">
-                <summary>
-                  <span className={styles.categoryIcon} aria-hidden="true">{category.icon}</span>
-                  <span className={styles.categoryMeta}>
-                    <span className={styles.categoryName}>{category.name}</span>
-                    <span className={styles.categoryDesc}>{category.description[0]}</span>
-                  </span>
-                  <span className={styles.categoryCount}>{servicesByCategory(category.id).length}</span>
-                  <span className={styles.categoryChevron} aria-hidden="true">›</span>
-                </summary>
-                <ul className={styles.serviceList}>
-                  {servicesByCategory(category.id).map(service => (
-                    <li key={service.id}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          trackFunnel('wizard_started', { serviceId: service.id });
-                          setRemoteDraft(undefined);
-                          setWizardServiceId(service.id);
-                        }}
-                      >
-                        {service.name}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── SABİT PAKET HİZMETLER (TASKRABBIT MODELİ) ── */}
-      <section className={styles.flatRateSection}>
-        <div className={styles.sectionInner}>
-          <FlatRateServices
-            onSelectService={serviceId => {
-              trackFunnel('wizard_started', { serviceId, source: 'flat_rate_package' });
-              setRemoteDraft(undefined);
-              setWizardServiceId(serviceId);
-            }}
-          />
-        </div>
-      </section>
-
-      {/* ── NASIL ÇALIŞIR ─────────────────────────── */}
-      <section className={styles.process} aria-labelledby="process-title">
-        <div className={styles.sectionInner}>
-          <div className={styles.sectionHeading}>
-            <h2 id="process-title">Talebinizden işin tamamlanmasına</h2>
-            <p>Ustayı siz seçin, anlaştığınız kapsamı birlikte takip edin.</p>
-          </div>
-          <ol className={styles.steps}>
-            {([
-              ['📋', 'İhtiyacı ve kapsamı belirleyin', 'Hizmeti seçin; konum, zaman ve işin ayrıntılarını ekleyin. Göndermeden önce özetinizi kontrol edin.'],
-              ['⚖️', 'En fazla 3 teklifi kıyaslayın',   'İşçilik, malzeme, süre ve garanti şartlarını yan yana inceleyin. Karar vermeden önce ustayla konuşun.'],
-              ['✅', 'İş günlüğüyle takip edin',        'Kabul ettiğiniz teklif sözleşmeye dönüşsün. Öncesi/sonrası kanıtlar ve dijital işçilik belgesiyle iş tamamlansın.'],
-            ] as const).map(([, title, desc], index) => (
-              <li key={title} className={styles.step}>
-                <div className={styles.stepOrb} aria-hidden="true">
-                  {index + 1}
-                </div>
-                <h3>{title}</h3>
-                <p>{desc}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      {/* ── ÖNCÜ USTALAR ──────────────────────────── */}
-      <section className={styles.proSection} aria-labelledby="pros-title">
-        <div className={styles.sectionInner}>
-          <div className={styles.sectionHeadingRow}>
-            <div className={styles.sectionHeading}>
-              <h2 id="pros-title">Öne Çıkan Ustalar</h2>
-              <p>Ankara pilotunda başvurusu onaylı ve mesleki belgesi teyitli ustalar.</p>
-            </div>
-            <Link href="/ustalar" className={styles.seeAllProsBtn}>
-              Tüm Doğrulanmış Ustalar →
-            </Link>
-          </div>
-          <div className={styles.proScroll} role="list">
-            {featuredPros.length > 0 ? (
-              featuredPros.map(pro => (
-                <Link
-                  key={pro.userId}
-                  href={`/ustalar/${encodeURIComponent(pro.userId)}`}
-                  className={styles.proCard}
-                  role="listitem"
-                >
-                  <div className={styles.proAvatarWrap}>
-                    <Avatar name={pro.displayName} size="lg" verified={true} />
-                  </div>
-                  <span className={styles.proName}>{pro.displayName}</span>
-                  {pro.bio && <span className={styles.proBioSnippet}>{pro.bio}</span>}
-                  <span className={styles.proDistrict}>{pro.city || 'Ankara'}</span>
-                  <span className={styles.proBadgeVerified}>🛡️ Doğrulanmış Usta</span>
-                </Link>
-              ))
-            ) : (
-              <div className={styles.proPilotNotice}>
-                <div className={styles.pilotBadge}>🚀 Ankara Pilot Aşaması</div>
-                <h3 className={styles.pilotTitle}>Doğrulama Süreci Devam Ediyor</h3>
-                <p className={styles.pilotText}>
-                  Orkestra&apos;da hiçbir zaman sahte veya simüle usta profili listelenmez (<strong>TRUST-01</strong>).
-                  Mesleki yeterlilik ve kimlik belgeleri incelenen ilk ustalarımız onaylandıkça burada yer alacaktır.
-                </p>
-                <div className={styles.pilotActions}>
-                  <Link href="/usta-basvurusu" className={styles.pilotJoinBtn}>
-                    Usta Olarak Başvur →
-                  </Link>
-                  <Link href="/ustalar" className={styles.pilotExploreBtn}>
-                    Usta Dizinini İncele
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ── MÜŞTERİ YORUMLARI ─────────────────────── */}
-      <section className={styles.reviewSection} aria-labelledby="reviews-title">
-        <div className={styles.sectionInner}>
-          <div className={styles.sectionHeading}>
-            <h2 id="reviews-title">Müşteri Yorumları</h2>
-            <p>Gerçek kullanıcı deneyimlerinden seçmeler.</p>
-          </div>
-          <div className={styles.reviews}>
-            {REVIEWS.map(review => (
-              <blockquote key={review.id} className={styles.reviewCard}>
-                <RatingStars rating={5} size="sm" aria-label="5 üzerinden 5 yıldız" className={styles.reviewStars} />
-                <p className={styles.reviewText}>{review.text}</p>
-                <footer className={styles.reviewFooter}>
-                  <Avatar name={review.name} size="sm" />
-                  <div className={styles.reviewMeta}>
-                    <span className={styles.reviewName}>{review.name}</span>
-                    <span className={styles.reviewService}>{review.service}</span>
-                  </div>
-                </footer>
-              </blockquote>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── HİZMET SINIFLANDIRMA DİYALOĞU ────────── */}
+      {/* ── HİZMET SINIFLANDIRMA / ARAMA DİYALOĞU (TEST KONTROLÜ) ─── */}
       {dialog && classification && (
         <div className={matchStyles.backdrop} role="presentation" onClick={() => setDialog(false)}>
           <section
@@ -401,40 +670,13 @@ export default function Home() {
             onClick={event => event.stopPropagation()}
           >
             <button data-dialog-initial-focus className={matchStyles.close} onClick={() => setDialog(false)} aria-label="Kapat">×</button>
-            <span className={matchStyles.eyebrow}>HİZMET EŞLEŞTİRME</span>
-            <h2 id="dialog-title">İhtiyacınızı Doğru Anladık mı?</h2>
-            <p className={matchStyles.query}>&ldquo;{classification.query}&rdquo;</p>
+            <h2 id="dialog-title">{selectedClassificationService?.name ?? 'Hizmet bulamadık'}</h2>
+            <p className={matchStyles.query}>&ldquo;{classification.query}&rdquo; için önerimiz</p>
             {classification.candidates.length > 0 ? (
               <>
-                <div className={matchStyles.hero}>
-                  <div className={matchStyles.meta}>
-                    <span className={matchStyles.confidence}>
-                      {selectedServiceId !== classification.candidates[0]?.service.id
-                        ? 'Alternatif hizmet'
-                        : classification.confidence === 'high'
-                          ? '✓ Güçlü Eşleşme'
-                          : classification.confidence === 'medium'
-                            ? '● Muhtemel Eşleşme'
-                            : '○ Birlikte Netleştirelim'}
-                    </span>
-                    <span className={matchStyles.category}>
-                      {serviceCategories.find(c => c.id === selectedClassificationService?.categoryId)?.name}
-                    </span>
-                  </div>
-                  <h3 className={matchStyles.serviceTitle}>
-                    {selectedClassificationService?.name}
-                    {selectedClassificationService && isCorePilotService(selectedClassificationService.id) && (
-                      <span className="service-pilot-badge">Öncelikli Pilot</span>
-                    )}
-                  </h3>
-                  <p className={matchStyles.rationale}>
-                    {classification.candidates.find(candidate => candidate.service.id === selectedServiceId)?.explanation}
-                  </p>
-                </div>
-
                 <div className={matchStyles.actions}>
                   <Button variant="primary" type="button" disabled={!selectedServiceId} onClick={continueToWizard}>
-                    Bu Hizmetle Devam Et →
+                    Devam et
                   </Button>
                 </div>
 
@@ -443,7 +685,7 @@ export default function Home() {
                   return (
                     <details className={matchStyles.details}>
                       <summary className={matchStyles.summary}>
-                        <span>Kapsam hakkında</span>
+                        <span>Neler dahil?</span>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                           <polyline points="6 9 12 15 18 9" />
                         </svg>
@@ -470,7 +712,7 @@ export default function Home() {
 
                 {classification.candidates.length > 1 && (
                   <div className={matchStyles.alternatives}>
-                    <span className={matchStyles.alternativesLabel}>Diğer Olası Hizmetler:</span>
+                    <span className={matchStyles.alternativesLabel}>Başka bir hizmet seçin</span>
                     <div className={matchStyles.chips}>
                       {classification.candidates
                         .filter(candidate => candidate.service.id !== selectedServiceId)
@@ -488,27 +730,55 @@ export default function Home() {
                     </div>
                   </div>
                 )}
+
+                <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid var(--border-default, #DCE2DF)' }}>
+                  <a
+                    href="#services"
+                    style={{ fontSize: '0.9rem', color: '#0E6F47', fontWeight: 600, textDecoration: 'underline' }}
+                    onClick={() => setDialog(false)}
+                  >
+                    Kategorilerden hizmet seç
+                  </a>
+                </div>
               </>
             ) : (
               <div className={matchStyles.empty}>
                 <p>Bu açıklamaya uygun bir hizmet bulamadık. Açıklamanızı değiştirebilir veya kategorilerden hizmet seçebilirsiniz.</p>
-                <Button type="button" onClick={() => setDialog(false)}>Aramayı düzenle</Button>
-                <a className={styles.browseLink} href="#services" onClick={() => setDialog(false)}>Kategorilerden hizmet seç</a>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '16px', flexWrap: 'wrap' }}>
+                  <Button type="button" onClick={() => setDialog(false)}>Aramayı düzenle</Button>
+                  <a
+                    href="#services"
+                    style={{ fontSize: '0.95rem', color: '#0E6F47', fontWeight: 600, textDecoration: 'underline' }}
+                    onClick={() => setDialog(false)}
+                  >
+                    Kategorilerden hizmet seç
+                  </a>
+                </div>
               </div>
             )}
           </section>
         </div>
       )}
 
-      {/* ── TALEP SİHİRBAZI ───────────────────────── */}
+      {/* ── TALEP SİHİRBAZI (WIZARD MODALI) ───────────────────────── */}
       {wizardServiceId && (() => {
-        const wizardService = services.find(s => s.id === wizardServiceId);
-        if (!wizardService) return null;
+        const activeService = services.find(s => s.id === wizardServiceId);
+        if (!activeService) return null;
         return (
           <RequestWizard
-            service={wizardService}
+            service={activeService}
+            onClose={() => {
+              setWizardServiceId(null);
+              setWizardReferenceWork(null);
+            }}
             remoteDraft={remoteDraft}
-            onClose={() => setWizardServiceId(null)}
+            referenceWork={wizardReferenceWork ? {
+              id: wizardReferenceWork.id,
+              title: wizardReferenceWork.title,
+              image: wizardReferenceWork.image,
+              artisanName: wizardReferenceWork.artisanName,
+              artisanDistrict: wizardReferenceWork.artisanDistrict,
+            } : undefined}
           />
         );
       })()}

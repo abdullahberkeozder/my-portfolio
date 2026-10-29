@@ -7,7 +7,7 @@ import QuoteAcceptDialog from './QuoteAcceptDialog';
 import { Avatar, Modal } from './ui';
 import QuoteRevisionRequestForm from './QuoteRevisionRequestForm';
 import { navigateToJob } from '../lib/jobNavigation';
-import { calculateTradespersonLevel } from '../domain/trust';
+import { trackFunnel } from '../lib/analytics';
 
 export type ComparableQuote = {
   id: string;
@@ -82,6 +82,10 @@ export default function QuoteComparison({ quotes: inputQuotes, currentUserId, ca
       setAccepted(true);
       setConfirmQuote(null);
       setMessage(`${quote.tradespersonName} ustanın teklifi kabul edildi.`);
+      trackFunnel('quote_accepted', {
+        quoteVersion: quote.version,
+        hasJob: Boolean(body.jobId),
+      });
       // This transaction boundary intentionally uses a document navigation.
       // A request Realtime refresh can otherwise overtake Vinext's soft RSC
       // navigation and leave the customer on the now-closed comparison page.
@@ -160,11 +164,6 @@ export default function QuoteComparison({ quotes: inputQuotes, currentUserId, ca
                           <Avatar name={quote.tradespersonName} size="sm" verified />
                           <div>
                             <h4 className="quote-th-name">{quote.tradespersonName}</h4>
-                            <span className="matrix-verified-label">Doğrulanmış Usta</span>
-                            <span className="matrix-tier-badge">
-                              {calculateTradespersonLevel(15, 4.9).badge}{' '}
-                              {calculateTradespersonLevel(15, 4.9).title}
-                            </span>
                           </div>
                         </div>
                         <div className="quote-th-total">{money(total)}</div>
@@ -176,16 +175,6 @@ export default function QuoteComparison({ quotes: inputQuotes, currentUserId, ca
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="matrix-label-td">Usta Doğrulaması</td>
-                {compared.map(quote => (
-                  <td key={professionalKey(quote)} className="matrix-val-td">
-                    <div className="proof-district-stat">
-                      Güncel belge ve doğrulama bilgilerini usta profilinden inceleyin
-                    </div>
-                  </td>
-                ))}
-              </tr>
               <tr>
                 <td className="matrix-label-td">Maliyet Dağılımı</td>
                 {compared.map(quote => {
@@ -280,7 +269,7 @@ export default function QuoteComparison({ quotes: inputQuotes, currentUserId, ca
                   <td className="matrix-label-td">Usta Notu</td>
                   {compared.map(quote => (
                     <td key={professionalKey(quote)} className="matrix-val-td note-cell">
-                      {quote.note || '—'}
+                      {quote.note || 'Not eklenmedi'}
                     </td>
                   ))}
                 </tr>
@@ -340,7 +329,7 @@ export default function QuoteComparison({ quotes: inputQuotes, currentUserId, ca
         <Modal
           open={Boolean(revisionQuote)}
           onClose={() => setRevisionQuote(null)}
-          title={`${revisionQuote.tradespersonName} — Teklif Revizyonu`}
+          title={`${revisionQuote.tradespersonName} - Teklif revizyonu`}
           size="md"
         >
           <div style={{ padding: '8px 0' }}>

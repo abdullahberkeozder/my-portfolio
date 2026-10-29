@@ -6,6 +6,7 @@ import AccountProfileForm from '../components/AccountProfileForm';
 import AccountCityForm from '../components/AccountCityForm';
 import {pilotCityState} from '../lib/pilotCity';
 import { createSupabaseServerClient } from '../lib/supabase/server';
+import styles from './accountPage.module.css';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,38 +40,44 @@ export default async function AccountPage({searchParams}: {searchParams?:Promise
     : { data: false, error: null };
 
   return (
-    <main className="account-shell account-settings-page">
-
-      <div className="account-settings-container">
-        <Link className="account-back" href={back.href}>← {back.label}</Link>
-        <header>
-          <span>HESAP VE GİZLİLİK</span>
+    <main className={styles.page}>
+      <div className={styles.container}>
+        <Link className={styles.back} href={back.href}>← {back.label}</Link>
+        <header className={styles.pageHeader}>
           <h1>Hesabınız</h1>
-          <p>Oturum, kimlik ve gizlilik tercihlerinizi tek yerde yönetin.</p>
+          <p>Kişisel bilgilerinizi ve hesap bölgenizi yönetin.</p>
         </header>
-        <nav className="account-settings-actions" aria-label="Hesap bölümleri"><a href="#profil">Kişisel bilgiler</a><a href="#bolge">Bölge</a><a href="#oturum">Oturum ve gizlilik</a></nav>
-        {loadError ? (
-          <section className="account-card account-state-error" role="alert">
-            <h2>Hesap bilgileri yüklenemedi</h2>
-            <p>Bağlantınızı kontrol edip sayfayı yeniden deneyin.</p>
-          </section>
-        ) : (
-          <section className="account-card account-details">
-            <dl>
-              <div><dt>Görünen ad</dt><dd>{profile?.display_name || 'Henüz belirlenmedi'}</dd></div>
-              <div><dt>E-posta</dt><dd>{user.email || 'E-posta bilgisi yok'}</dd></div>
-              <div><dt>Hesap rolleri</dt><dd>{roles?.map(item => accountRoleLabel(item.role)).join(', ') || 'Müşteri'}</dd></div>
-            </dl>
-          </section>
-        )}
+        <div className={styles.layout}>
+          <nav className={styles.navigation} aria-label="Hesap bölümleri">
+            {!loadError && <a href="#profil">Kişisel bilgiler</a>}
+            {!loadError && <a href="#bolge">Hesap bölgesi</a>}
+            {tpProfile && !loadError && <a href="#usta-durumu">Usta başvurusu</a>}
+            <a href="#oturum">Oturum ve gizlilik</a>
+          </nav>
+          <div className={styles.content}>
+            {loadError ? (
+              <section className={styles.error} role="alert">
+                <h2>Hesap bilgileri yüklenemedi</h2>
+                <p>Bağlantınızı kontrol edip sayfayı yeniden deneyin.</p>
+                <a href="/hesap">Hesabı yeniden yükle</a>
+              </section>
+            ) : (
+              <>
+                <section className={styles.identity} aria-label="Hesap kimliği">
+                  <dl>
+                    <div><dt>E-posta</dt><dd>{user.email || 'E-posta bilgisi yok'}</dd></div>
+                    <div><dt>Hesap rolleri</dt><dd>{roles?.map(item => accountRoleLabel(item.role)).join(', ') || 'Müşteri'}</dd></div>
+                  </dl>
+                </section>
+                <AccountProfileForm key={`profile-${user.id}`} userId={user.id} initialName={profile?.display_name??''}/>
+                <AccountCityForm key={`city-${user.id}`} userId={user.id} saved={pilotCityState(user.user_metadata)==='ankara'}/>
+              </>
+            )}
 
-        {tpProfile && (
-          <section className="artisan-status-card" aria-label="Usta başvuru ve doğrulama durumu">
-            <div className="artisan-status-header">
-              <div>
-                <span className="workspace-eyebrow">USTA BAŞVURUSU</span>
-                <h2 className="artisan-status-title">Doğrulama ve Başvuru Durumu</h2>
-              </div>
+        {tpProfile && !loadError && (
+          <section id="usta-durumu" className={styles.professional} aria-label="Usta başvuru ve doğrulama durumu">
+            <div className={styles.professionalHeader}>
+              <h2 id="professional-status-title">Usta başvurusu</h2>
               <span className={`req-status-badge ${
                 tpProfile.application_status === 'approved' ? 'req-status-success' :
                 tpProfile.application_status === 'needs_changes' || tpProfile.application_status === 'reassessment_required' ? 'req-status-warning' :
@@ -88,53 +95,53 @@ export default async function AccountPage({searchParams}: {searchParams?:Promise
             </div>
 
             {tpProfile.review_note && (
-              <div className="artisan-feedback-box">
-                <strong>Moderatör Notu:</strong> {tpProfile.review_note}
+              <div className={styles.feedback}>
+                <strong>İnceleme notu:</strong> {tpProfile.review_note}
               </div>
             )}
 
             {tpProfile.application_status === 'approved' && (
               <div>
-                <div className="artisan-badges-row">
-                  <span className="artisan-verified-pill">✓ Başvuru Onaylı</span>
-                  {verificationResult.data === true && (
-                    <span className="artisan-verified-pill artisan-badge-pro">
-                      ★ Mesleki Belge Güncel
-                    </span>
-                  )}
-                </div>
-                <p className="artisan-status-desc">
+                {verificationResult.data === true && <p className={styles.verification}>Mesleki belge güncel</p>}
+                <p className={styles.statusDescription}>
                   Profiliniz onaylanmıştır. Hizmet bölgeniz ve uzmanlık alanınızdaki açık fırsatlara teklif verebilirsiniz.
                 </p>
-                <div className="artisan-links-row">
-                  <Link className="artisan-action-link" href={`/ustalar/${user.id}`}>Kamuya Açık Profilinizi İnceleyin →</Link>
-                  <Link className="artisan-action-link" href="/usta/talepler">İş Fırsatlarını Gör →</Link>
+                <div className={styles.professionalLinks}>
+                  <Link href={`/ustalar/${user.id}`}>Profilimi görüntüle</Link>
+                  <Link href="/usta/talepler">İş fırsatlarını gör</Link>
                 </div>
               </div>
             )}
 
             {(tpProfile.application_status === 'needs_changes' || tpProfile.application_status === 'reassessment_required') && (
               <div>
-                <p className="artisan-status-desc">
+                <p className={styles.statusDescription}>
                   Moderatör tarafından talep edilen eksik veya güncellenmesi gereken belgeleri başvurunuza ekleyerek tekrar incelemeye gönderebilirsiniz.
                 </p>
-                <Link className="dialog-primary artisan-update-btn" href="/usta-basvurusu">
-                  Eksik Belgeleri Güncelle ve Gönder →
+                <Link className={styles.statusAction} href="/usta-basvurusu">
+                  Eksik belgeleri güncelle
                 </Link>
               </div>
             )}
 
             {(tpProfile.application_status === 'submitted' || tpProfile.application_status === 'under_review') && (
-              <p className="artisan-status-desc">
+              <p className={styles.statusDescription}>
                 Başvurunuz ve yüklediğiniz belgeler moderatör ekibi tarafından incelenmektedir. Sonuç e-posta ile bildirilecek ve bu panelde güncellenecektir.
               </p>
             )}
           </section>
         )}
 
-        {!loadError&&<AccountProfileForm key={`profile-${user.id}`} userId={user.id} initialName={profile?.display_name??''}/>}
-        <AccountCityForm key={`city-${user.id}`} userId={user.id} saved={pilotCityState(user.user_metadata)==='ankara'}/>
-        <section id="oturum" className="account-card"><h2>Oturum ve gizlilik</h2><p>Bu tarayıcıdaki oturumunuzu kapatabilirsiniz.</p><Link href="/gizlilik">Gizlilik metnini incele</Link><AccountSignOut/></section>
+        <section id="oturum" className={styles.session} aria-labelledby="session-title">
+          <h2 id="session-title">Oturum ve gizlilik</h2>
+          <p>Bu tarayıcıdaki oturumunuzu kapatabilirsiniz.</p>
+          <div className={styles.sessionActions}>
+            <Link href="/gizlilik">Gizlilik metnini incele</Link>
+            <AccountSignOut buttonClassName={styles.signOut}/>
+          </div>
+        </section>
+          </div>
+        </div>
       </div>
     </main>
   );

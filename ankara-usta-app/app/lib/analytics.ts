@@ -23,11 +23,22 @@ export const ALLOWED_EVENTS = new Set([
   // Discovery & wizard
   'service_search',
   'service_selected',
+  'catalog_category_opened',
+  'discovery_map_opened',
   'wizard_started',
   'wizard_completed',
   'wizard_abandoned',
   'draft_resumed',
   'quote_profile_opened',
+  'profile_opened',
+  'filter_applied',
+  'map_pin_selected',
+  'directory_view_changed',
+  'directory_sort_changed',
+  'directory_availability_viewed',
+  'map_region_filter_changed',
+  'mobile_drawer_changed',
+  'request_started',
 
   // Authentication return
   'auth_return_completed',
@@ -41,6 +52,7 @@ export const ALLOWED_EVENTS = new Set([
   // Quote lifecycle (client-observable)
   'quote_accepted',
   'quote_rejected',
+  'quote_revision_requested',
   'first_quote_received',
   'first_qualified_quote_received',
 
@@ -113,6 +125,15 @@ export function trackFunnel(
     window.dispatchEvent(
       new CustomEvent('orkestra:analytics', { detail: JSON.parse(payload) }),
     );
+
+    // Keep a small, consent-gated local buffer for the internal diagnostics
+    // panel. It is deliberately capped and contains only the already-sanitized
+    // payload; no identity or free-form user text is persisted here.
+    const localKey = 'orkestra_analytics_events';
+    const existing = JSON.parse(localStorage.getItem(localKey) ?? '[]') as unknown;
+    const events = Array.isArray(existing) ? existing : [];
+    events.push(JSON.parse(payload));
+    localStorage.setItem(localKey, JSON.stringify(events.slice(-500)));
 
     // Send to external endpoint when configured
     if (endpoint) {
