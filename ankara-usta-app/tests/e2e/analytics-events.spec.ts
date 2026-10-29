@@ -15,7 +15,7 @@ import { expect, test } from '@playwright/test';
 
 // The sensitive keys list must match the SENSITIVE_KEYS set in analytics.ts.
 // If you add a field to one, add it to the other.
-const SENSITIVE_KEYS = ['email', 'phone', 'address_line', 'body', 'password', 'token', 'full_name', 'name', 'display_name', 'tc_no'];
+const SENSITIVE_KEYS = ['email', 'phone', 'address_line', 'body', 'password', 'token', 'full_name', 'name', 'display_name', 'tc_no', 'details', 'notes', 'description', 'original_name', 'storage_path', 'answers'];
 
 // Helper: inject the event collector and set consent, then navigate.
 async function setupAnalyticsCapture(page: import('@playwright/test').Page) {
@@ -69,7 +69,7 @@ test('izin listesi dışı olay isimler hiçbir zaman dispatch edilmez', async (
   // confirm our listener works, but real module wouldn't emit it.
   // Trigger a real search interaction:
   await page.getByRole('textbox', { name: 'İhtiyacınızı yazın' }).fill('elektrik');
-  await page.getByRole('button', { name: 'Hizmet bul' }).click();
+  await page.getByRole('button', { name: 'Usta bul' }).click();
   await page.waitForTimeout(400);
 
   const events = await getEvents(page);
@@ -78,8 +78,8 @@ test('izin listesi dışı olay isimler hiçbir zaman dispatch edilmez', async (
   for (const event of realModuleEvents) {
     // All events from the real module must be in the allowed list
     const ALLOWED = [
-      'service_search', 'service_selected', 'wizard_started', 'wizard_completed',
-      'draft_resumed', 'quote_profile_opened', 'quote_accepted', 'quote_rejected',
+      'service_search', 'service_selected', 'discovery_map_opened', 'wizard_started', 'wizard_completed',
+      'draft_resumed', 'quote_profile_opened', 'profile_opened', 'filter_applied', 'map_pin_selected', 'directory_view_changed', 'directory_sort_changed', 'directory_availability_viewed', 'map_region_filter_changed', 'mobile_drawer_changed', 'request_started', 'quote_accepted', 'quote_rejected', 'quote_revision_requested',
       'first_qualified_quote_received', 'job_completed', 'job_cancelled', 'dispute_opened',
       'scope_change_proposed', 'scope_change_accepted', 'scope_change_rejected',
     ];
@@ -96,7 +96,7 @@ test('analitik olay properties içinde PII alanları bulunmaz', async ({ page })
 
   // Trigger several interactions that could plausibly have PII
   await page.getByRole('textbox', { name: 'İhtiyacınızı yazın' }).fill('musluk tamiri');
-  await page.getByRole('button', { name: 'Hizmet bul' }).click();
+  await page.getByRole('button', { name: 'Usta bul' }).click();
   await page.waitForTimeout(500);
 
   const events = await getEvents(page);
@@ -132,7 +132,7 @@ test('onay verilmediğinde analitik olayları dispatch edilmez', async ({ page }
 
   // Trigger an interaction
   await page.getByRole('textbox', { name: 'İhtiyacınızı yazın' }).fill('boya badana');
-  await page.getByRole('button', { name: 'Hizmet bul' }).click();
+  await page.getByRole('button', { name: 'Usta bul' }).click();
   await page.waitForTimeout(400);
 
   const events = await getEvents(page);

@@ -67,8 +67,20 @@ test('müşteri gerçek kurtarma bağlantısıyla parolasını değiştirir ve h
     await publicClient.auth.signOut({scope: 'local'});
   } finally {
     if (userId) {
-      const restored = await admin.auth.admin.updateUserById(userId, {password: originalPassword});
-      expect(restored.error).toBeNull();
+      // Keep cleanup inside the same recovery session. A second recovery link
+      // or Auth Admin password update is rejected by the staging project's
+      // modern-key policy after the first link is exchanged.
+      if (passwordChanged) {
+        await page.goto('http://localhost:4187/parola-yenile');
+        await page.waitForURL(/\/parola-yenile(?:[?#]|$)/, {timeout: 15_000});
+        await page.getByLabel('Yeni Parola', {exact: true}).fill(originalPassword);
+        await page.getByLabel('Yeni Parola (Tekrar)').fill(originalPassword);
+        const restoreResponse = page.waitForResponse(response =>
+          new URL(response.url()).pathname === '/auth/v1/user' && response.request().method() === 'PUT');
+        await page.getByRole('button', {name: 'Parolayı güncelle'}).click();
+        expect((await restoreResponse).ok()).toBe(true);
+        await expect(page.getByRole('status')).toContainText('Parolanız başarıyla güncellendi.');
+      }
       const restoredLogin = await publicClient.auth.signInWithPassword({email, password: originalPassword});
       expect(restoredLogin.error).toBeNull();
       await publicClient.auth.signOut({scope: 'local'});

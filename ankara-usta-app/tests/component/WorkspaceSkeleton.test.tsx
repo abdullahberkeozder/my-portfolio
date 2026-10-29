@@ -26,6 +26,11 @@ describe('WorkspaceSkeleton Component (A11y & Loading UX)', () => {
     expect(screen.getAllByTestId('workspace-card-skeleton')).toHaveLength(5);
   });
 
+  it('exposes the workspace role used by route-specific loading variants', () => {
+    render(<WorkspaceSkeleton role="tradesperson" title="İş Fırsatları" />);
+    expect(screen.getByRole('status')).toHaveAttribute('data-role', 'tradesperson');
+  });
+
   it('renders TaleplerimLoading boundary with customer title and count', () => {
     render(<TaleplerimLoading />);
     const status = screen.getByRole('status');
@@ -45,5 +50,14 @@ describe('WorkspaceSkeleton Component (A11y & Loading UX)', () => {
     const status = screen.getByRole('status');
     expect(status).toHaveAttribute('aria-label', 'İş odaları yükleniyor…');
     expect(screen.getAllByTestId('workspace-card-skeleton')).toHaveLength(2);
+  });
+
+  it('renders UstalarLoading split-view boundary with directory skeleton cards and map', async () => {
+    const UstalarLoading = (await import('../../app/ustalar/loading')).default;
+    render(<UstalarLoading />);
+    const status = screen.getByRole('status');
+    expect(status).toHaveAttribute('aria-label', 'Ankara zanaatkâr dizini ve haritası yükleniyor…');
+    expect(status).toHaveAttribute('aria-busy', 'true');
+    expect(screen.getAllByTestId('directory-card-skeleton')).toHaveLength(4);
   });
 });

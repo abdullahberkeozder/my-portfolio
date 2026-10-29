@@ -68,11 +68,17 @@ describe('DigitalWorkmanshipCertificate Component (FAZ 6.4)', () => {
 
     const toggleBtn = screen.getByRole('button', { name: /Saha Teslim Tutanağını Görüntüle/i });
     expect(toggleBtn).toHaveAttribute('aria-expanded', 'false');
+    expect(toggleBtn).toHaveAttribute('aria-controls', 'protocol-details-job-ankara-8888');
+    expect(screen.queryByRole('region', { name: 'Saha Teslim Tutanağı Detayları' })).not.toBeInTheDocument();
     expect(screen.queryByText('Kombi petek temizliği')).not.toBeInTheDocument();
 
     // Expand
     fireEvent.click(toggleBtn);
     expect(toggleBtn).toHaveAttribute('aria-expanded', 'true');
+    const detailsRegion = screen.getByRole('region', { name: 'Saha Teslim Tutanağı Detayları' });
+    expect(detailsRegion).toBeInTheDocument();
+    expect(detailsRegion).toHaveAttribute('id', 'protocol-details-job-ankara-8888');
+    expect(toggleBtn).toHaveAttribute('aria-controls', detailsRegion.id);
     expect(screen.getByText('Kombi petek temizliği')).toBeInTheDocument();
     expect(screen.getByText('Oda termostatı montajı')).toBeInTheDocument();
     expect(screen.getByText('Kazan dairesi ana vana değişimi')).toBeInTheDocument();
@@ -82,6 +88,7 @@ describe('DigitalWorkmanshipCertificate Component (FAZ 6.4)', () => {
     // Collapse
     fireEvent.click(toggleBtn);
     expect(toggleBtn).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('region', { name: 'Saha Teslim Tutanağı Detayları' })).not.toBeInTheDocument();
     expect(screen.queryByText('Kombi petek temizliği')).not.toBeInTheDocument();
   });
 

@@ -79,6 +79,33 @@ describe('consent-gated funnel analytics',()=>{
     window.removeEventListener('orkestra:analytics',listener);
   });
 
+  it('tracks discovery state events without leaking user content',()=>{
+    localStorage.setItem('ankara_analytics_consent','accepted');
+    const listener=vi.fn();window.addEventListener('orkestra:analytics',listener);
+    trackFunnel('directory_view_changed',{view:'split'});
+    trackFunnel('directory_sort_changed',{sort:'rating'});
+    trackFunnel('directory_availability_viewed',{availability:'waitlist',hasFilters:true});
+    trackFunnel('quote_revision_requested',{fieldCount:2});
+    trackFunnel('map_region_filter_changed',{active:true,resultCount:4});
+    trackFunnel('mobile_drawer_changed',{snap:'half'});
+
+    expect(listener).toHaveBeenCalledTimes(6);
+    expect(listener.mock.calls.map(([event])=>event.detail.eventName)).toEqual([
+      'directory_view_changed',
+      'directory_sort_changed',
+      'directory_availability_viewed',
+      'quote_revision_requested',
+      'map_region_filter_changed',
+      'mobile_drawer_changed',
+    ]);
+    for (const [event] of listener.mock.calls) {
+      expect(event.detail.properties).not.toHaveProperty('name');
+      expect(event.detail.properties).not.toHaveProperty('email');
+      expect(event.detail.properties).not.toHaveProperty('address');
+    }
+    window.removeEventListener('orkestra:analytics',listener);
+  });
+
   it('uses sendBeacon only when an endpoint is configured',()=>{
     localStorage.setItem('ankara_analytics_consent','accepted');
     vi.stubEnv('NEXT_PUBLIC_ANALYTICS_ENDPOINT','https://analytics.example.test/events');

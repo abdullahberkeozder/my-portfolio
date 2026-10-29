@@ -57,9 +57,9 @@ describe('MyRequestsPage (Customer Workspace)', () => {
   it('renders workspace title and action bar', async () => {
     render(await MyRequestsPage({ searchParams: Promise.resolve({}) }));
     expect(screen.getByRole('heading', { name: 'Taleplerim', level: 1 })).toBeInTheDocument();
-    expect(screen.getByText('MÜŞTERİ ÇALIŞMA ALANI')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '+ Yeni Talep' })).toHaveAttribute('href', '/#services');
-    expect(screen.getByRole('link', { name: 'Görüşmelerim →' })).toHaveAttribute('href', '/gorusmeler');
+    expect(screen.getByText('Taleplerinizin durumunu ve sonraki adımı buradan takip edin.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Yeni talep' })).toHaveAttribute('href', '/#services');
+    expect(screen.getByRole('link', { name: 'Görüşmelerim' })).toHaveAttribute('href', '/gorusmeler');
   });
 
   it('renders quotes_received request with prominent comparison CTA and badge', async () => {

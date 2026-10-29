@@ -11,16 +11,15 @@ vi.mock('../../app/components/RequestWizard',()=>({default:({service}:{service:{
 it('shows scope text, switches alternatives in both directions and starts the chosen wizard',async()=>{
   const user=userEvent.setup();render(<Home/>);
   await user.click(within(screen.getByLabelText('Hızlı arama etiketleri')).getByRole('button',{name:'Musluk Değişimi'}));
-  const dialog=screen.getByRole('dialog',{name:'İhtiyacınızı Doğru Anladık mı?'});
-  expect(within(dialog).getByRole('heading',{level:3})).toHaveTextContent('Musluk Değişimi');
-  await user.click(within(dialog).getByText('Kapsam hakkında'));
+  const dialog=screen.getByRole('dialog',{name:'Musluk Değişimi'});
+  expect(within(dialog).getByRole('heading',{level:2})).toHaveTextContent('Musluk Değişimi');
+  await user.click(within(dialog).getByText('Neler dahil?'));
   expect(within(dialog).getAllByRole('listitem')).toHaveLength(6);
   for(const row of within(dialog).getAllByRole('listitem'))expect(row.textContent?.trim().length).toBeGreaterThan(5);
   const alternative=within(dialog).getByRole('button',{name:'Priz ve Anahtar Değişimi'});await user.click(alternative);
-  expect(within(dialog).getByRole('heading',{level:3})).toHaveTextContent('Priz ve Anahtar Değişimi');
-  expect(within(dialog).getByText('Alternatif hizmet')).toBeInTheDocument();
+  expect(within(dialog).getByRole('heading',{level:2})).toHaveTextContent('Priz ve Anahtar Değişimi');
   await user.click(within(dialog).getByRole('button',{name:'Musluk Değişimi'}));
-  await user.click(within(dialog).getByRole('button',{name:'Bu Hizmetle Devam Et →'}));
+  await user.click(within(dialog).getByRole('button',{name:'Devam et'}));
   expect(screen.getByRole('dialog',{name:'Talep sihirbazı'})).toHaveTextContent('Musluk Değişimi');
 });
 it('closes the match dialog with Escape and restores the search trigger',async()=>{
@@ -32,7 +31,7 @@ it('keeps an unmatched search recoverable without selecting a service on the cus
   const search=screen.getByRole('textbox',{name:'İhtiyacınızı yazın'});
   await user.type(search,'zzzzzzzz');
   await user.click(screen.getByRole('button',{name:'Hizmet bul'}));
-  const dialog=screen.getByRole('dialog',{name:'İhtiyacınızı Doğru Anladık mı?'});
+  const dialog=screen.getByRole('dialog',{name:'Hizmet bulamadık'});
   expect(within(dialog).getByRole('link',{name:'Kategorilerden hizmet seç'})).toHaveAttribute('href','#services');
   await user.click(within(dialog).getByRole('button',{name:'Aramayı düzenle'}));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -41,6 +40,6 @@ it('keeps an unmatched search recoverable without selecting a service on the cus
 it.each(['loading','error','not-found'])('uses the current brand in %s state',state=>{
   const view=render(state==='loading'?<Loading/>:state==='error'?<ErrorPage error={new Error('test')} reset={vi.fn()}/>:<NotFound/>);
   expect(screen.getByRole('img',{name:'Orkestra'})).toBeInTheDocument();
-  expect(view.container.querySelector('.orchestra-modules')?.querySelectorAll('circle')).toHaveLength(5);
+  expect(view.container.querySelector('.orchestra-modules')?.querySelectorAll('.birlik-lobe')).toHaveLength(4);
   expect(view.container.querySelector('.neighborhood-bond')).not.toBeInTheDocument();
 });

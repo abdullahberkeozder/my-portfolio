@@ -95,7 +95,7 @@ test.describe('gerçek çoklu oturum Realtime akışları',()=>{
 test('analitik olayları properties alanında PII taşımaz',async({page})=>{
   const piiKeys=['email','phone','address_line','body','password','token'];
   await page.addInitScript(()=>{window.addEventListener('orkestra:analytics',event=>{const state=window as unknown as {__analyticsEvents?:unknown[]};state.__analyticsEvents??=[];state.__analyticsEvents.push((event as CustomEvent).detail);});});
-  await page.goto('/');await page.evaluate(()=>localStorage.setItem('ankara_analytics_consent','accepted'));await page.getByRole('textbox',{name:'İhtiyacınızı yazın'}).fill('elektrik arızası');await page.getByRole('button',{name:'Hizmet bul'}).click();
+  await page.goto('/');await page.evaluate(()=>localStorage.setItem('ankara_analytics_consent','accepted'));await page.getByRole('textbox',{name:'İhtiyacınızı yazın'}).fill('elektrik arızası');await page.getByRole('button',{name:'Usta bul'}).click();
   const events=await page.evaluate(()=>(window as unknown as {__analyticsEvents?:Array<{eventName:string;properties:Record<string,unknown>}>}).__analyticsEvents??[]);
   for(const event of events)for(const piiKey of piiKeys)expect(Object.keys(event.properties??{}),`Olay ${event.eventName} PII alanı ${piiKey} taşımamalı`).not.toContain(piiKey);
 });

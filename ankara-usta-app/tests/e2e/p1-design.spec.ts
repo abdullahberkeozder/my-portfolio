@@ -45,7 +45,7 @@ test('canonical services anchor works with mouse and Enter',async({page})=>{
 test('visible search actions have nonzero count and 44px targets',async({page})=>{
   const chips=page.getByLabel('Hızlı arama etiketleri').getByRole('button');
   await expect(chips).toHaveCount(3);
-  for(const button of [...await chips.all(),page.getByRole('button',{name:'Hizmet bul',exact:true})]){
+  for(const button of [...await chips.all(),page.getByRole('button',{name:'Usta bul',exact:true})]){
     await expect(button).toBeVisible();const box=await button.boundingBox();
     expect(box!.width).toBeGreaterThanOrEqual(44);expect(box!.height).toBeGreaterThanOrEqual(44);
   }

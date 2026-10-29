@@ -89,7 +89,7 @@ describe('AccountPage - Artisan Status Card (P4)', () => {
     expect(screen.getByText('Düzeltme Bekleniyor')).toBeInTheDocument();
     expect(screen.getByText(/Mesleki yeterlilik belgenizin geçerlilik tarihi okunamıyor/)).toBeInTheDocument();
 
-    const updateLink = screen.getByRole('link', { name: 'Eksik Belgeleri Güncelle ve Gönder →' });
+    const updateLink = screen.getByRole('link', { name: 'Eksik belgeleri güncelle' });
     expect(updateLink).toHaveAttribute('href', '/usta-basvurusu');
   });
 
@@ -105,13 +105,12 @@ describe('AccountPage - Artisan Status Card (P4)', () => {
     render(await AccountPage());
 
     expect(screen.getByText('✓ Başvuru Onaylandı')).toBeInTheDocument();
-    expect(screen.getByText('✓ Başvuru Onaylı')).toBeInTheDocument();
-    expect(screen.getByText('★ Mesleki Belge Güncel')).toBeInTheDocument();
+    expect(screen.getByText('Mesleki belge güncel')).toBeInTheDocument();
 
-    const profileLink = screen.getByRole('link', { name: 'Kamuya Açık Profilinizi İnceleyin →' });
+    const profileLink = screen.getByRole('link', { name: 'Profilimi görüntüle' });
     expect(profileLink).toHaveAttribute('href', '/ustalar/pro-123');
 
-    const jobsLink = screen.getByRole('link', { name: 'İş Fırsatlarını Gör →' });
+    const jobsLink = screen.getByRole('link', { name: 'İş fırsatlarını gör' });
     expect(jobsLink).toHaveAttribute('href', '/usta/talepler');
   });
 
@@ -127,8 +126,7 @@ describe('AccountPage - Artisan Status Card (P4)', () => {
     render(await AccountPage());
 
     expect(screen.getByText('✓ Başvuru Onaylandı')).toBeInTheDocument();
-    expect(screen.getByText('✓ Başvuru Onaylı')).toBeInTheDocument();
-    expect(screen.queryByText('★ Mesleki Belge Güncel')).not.toBeInTheDocument();
+    expect(screen.queryByText('Mesleki belge güncel')).not.toBeInTheDocument();
   });
 
   it('renders under_review status with review notice', async () => {
@@ -151,5 +149,20 @@ describe('AccountPage - Artisan Status Card (P4)', () => {
     render(await AccountPage());
 
     expect(screen.queryByRole('region', { name: 'Usta başvuru ve doğrulama durumu' })).not.toBeInTheDocument();
+  });
+
+  it('keeps the editable name in one place and hides editing if account data fails', async () => {
+    mockState.tradespersonProfile = null;
+    render(await AccountPage());
+    expect(screen.getByText('usta@example.com')).toBeInTheDocument();
+    expect(screen.queryByText('Ahmet Usta')).not.toBeInTheDocument();
+    expect(screen.getByTestId('profile-form')).toBeInTheDocument();
+    cleanup();
+    mockState.error = {message: 'unavailable'};
+    render(await AccountPage());
+    expect(screen.getByRole('alert')).toHaveTextContent('Hesap bilgileri yüklenemedi');
+    expect(screen.queryByTestId('profile-form')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('city-form')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', {name: 'Kişisel bilgiler'})).not.toBeInTheDocument();
   });
 });

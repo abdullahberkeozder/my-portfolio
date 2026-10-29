@@ -1,14 +1,14 @@
 import {expect,test} from '@playwright/test';
 
 for(const service of ['Musluk Değişimi','Tek Oda Boya','Avize Montajı']) {
-  for(const width of [320,390,1280]) {
+  for(const width of [320,390,820,1440]) {
     test(`${service}: first opening and draft resume stay in view at ${width}px`,async({page})=>{
       await page.setViewportSize({width,height:844});
       await page.goto('/');
       await page.getByRole('button',{name:'Reddet',exact:true}).click();
       const open=async()=>{
         await page.getByRole('button',{name:service,exact:true}).click();
-        await page.getByRole('button',{name:'Bu Hizmetle Devam Et →',exact:true}).click();
+        await page.getByRole('button',{name:'Devam et',exact:true}).click();
       };
       await open();
       const wizard=page.getByRole('dialog',{name:service,exact:true});

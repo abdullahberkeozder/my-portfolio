@@ -1,4 +1,4 @@
-import {render,screen,cleanup} from '@testing-library/react';
+import {render,screen,cleanup,fireEvent} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {beforeEach,afterEach,it,expect,vi} from 'vitest';
 import AuthForm from '../../app/components/AuthForm';
@@ -63,4 +63,13 @@ it('does not query accounts or send emails when typing; edits clear stale feedba
   await userEvent.clear(screen.getByLabelText('E-posta Adresi'));
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
   expect(screen.getByRole('button',{name:'Hesap Oluştur ve Devam Et →'})).toBeEnabled();
+});
+it('connects the empty email error to the field and restores focus',()=>{
+  render(<AuthForm/>);
+  fireEvent.submit(screen.getByRole('button',{name:'Giriş Yap →'}).closest('form')!);
+  const email=screen.getByLabelText('E-posta Adresi');
+  expect(email).toHaveAttribute('aria-invalid','true');
+  expect(email).toHaveAttribute('aria-describedby','auth-email-error');
+  expect(screen.getByRole('alert')).toHaveTextContent('E-posta adresi gereklidir');
+  expect(email).toHaveFocus();
 });

@@ -9,8 +9,8 @@ describe('FlatRateServices component', () => {
     const handleSelect = vi.fn();
     render(<FlatRateServices onSelectService={handleSelect} />);
 
-    expect(screen.getByText(/TASKRABBIT MODELİ · ŞEFFAF FİYAT GÜVENCESİ/i)).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 2, name: /Sabit Paket Hizmetler/i })).toBeInTheDocument();
+    expect(screen.getByText(/SABİT FİYAT · KAPSAMI BELLİ/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: /Sabit fiyatlı hizmetler/i })).toBeInTheDocument();
 
     for (const pkg of FLAT_RATE_PACKAGES) {
       expect(screen.getByText(pkg.title)).toBeInTheDocument();
@@ -25,7 +25,7 @@ describe('FlatRateServices component', () => {
     render(<FlatRateServices onSelectService={handleSelect} />);
 
     const bookFaucetBtn = screen.getByRole('button', {
-      name: /Standart Musluk \/ Batarya Değişimi için hemen rezervasyon oluştur/i,
+      name: /Standart Musluk \/ Batarya Değişimi paketini seç/i,
     });
     await user.click(bookFaucetBtn);
 

@@ -1,6 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import UstalarSplitView from '../../app/ustalar/UstalarSplitView';
+import UstalarSplitView, { getServiceAreaSummary } from '../../app/ustalar/UstalarSplitView';
+import resultStyles from '../../app/ustalar/professionalResult.module.css';
 
 // Mock Leaflet and AnkaraInteractiveMap to avoid canvas/DOM issues in jsdom
 vi.mock('../../app/components/map/AnkaraInteractiveMap', () => ({
@@ -91,7 +92,20 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
 
     expect(screen.getAllByText(/Hasan Usta/i).length).toBe(2);
     expect(screen.getAllByText(/Mehmet Usta/i).length).toBe(2);
-    expect(screen.getByText(/2 \/ 2 Doğrulanmış Usta Haritada Aktif/i)).toBeInTheDocument();
+    expect(screen.getByTestId('usta-result-summary')).toHaveTextContent('2 usta');
+  });
+
+  it('does not imply verification without a verified source contract', () => {
+    const { rerender } = render(<UstalarSplitView {...defaultProps} />);
+    expect(screen.queryByLabelText('Doğrulanmış profil')).not.toBeInTheDocument();
+    rerender(<UstalarSplitView {...defaultProps} verificationConfirmed />);
+    expect(screen.getAllByLabelText('Doğrulanmış profil')).toHaveLength(4);
+  });
+
+  it('uses the same review count and profile action in desktop and mobile results', () => {
+    render(<UstalarSplitView {...defaultProps} metricsMap={{ u1: { averageRating: 4.9, totalReviews: 94, totalCompletedJobs: 94 } }} />);
+    expect(screen.getAllByText('(94 yorum)')).toHaveLength(2);
+    expect(screen.getAllByRole('link', { name: 'Hasan Usta — Profili aç' })).toHaveLength(2);
   });
 
   it('filters cards to visible bounding-box when onVisibleTradespeopleChange is invoked', () => {
@@ -103,7 +117,7 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
     // Now only u1 should be visible (both in desktop list and mobile carousel)
     expect(screen.getAllByText(/Hasan Usta/i).length).toBe(2);
     expect(screen.queryByText(/Mehmet Usta/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/1 \/ 2 Doğrulanmış Usta \(Görünür Bölge\)/i)).toBeInTheDocument();
+    expect(screen.getByTestId('usta-result-summary')).toHaveTextContent('1 usta · Harita alanında');
 
     // Reset button should appear
     expect(screen.getByRole('button', { name: /Tüm Ankara'yı Göster/i })).toBeInTheDocument();
@@ -123,7 +137,7 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
     // Both ustas should be visible again
     expect(screen.getAllByText(/Hasan Usta/i).length).toBe(2);
     expect(screen.getAllByText(/Mehmet Usta/i).length).toBe(2);
-    expect(screen.getByText(/2 \/ 2 Doğrulanmış Usta Haritada Aktif/i)).toBeInTheDocument();
+    expect(screen.getByTestId('usta-result-summary')).toHaveTextContent('2 usta');
     expect(screen.getByTestId('reset-trigger-val')).toHaveTextContent('1');
   });
 
@@ -133,7 +147,7 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
     // Simulate empty bounding box
     fireEvent.click(screen.getByTestId('simulate-empty-spatial-filter'));
 
-    expect(screen.getAllByText(/Bu harita alanında doğrulanmış usta bulunamadı/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Bu bölgede doğrulanmış usta bulunamadı/i).length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: /Tüm Ankara'yı Göster \(2 Usta\)/i })).toBeInTheDocument();
 
     // Clicking reset in empty state restores the list
@@ -195,16 +209,16 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
     expect(track.className).not.toContain('mobileCarouselTrackFull');
 
     // Click snap toggle to expand to full list
-    const snapBtn = screen.getByRole('button', { name: /Tüm Liste/i });
+    const snapBtn = screen.getByRole('button', { name: /Tüm usta listesini aç/i });
     expect(snapBtn).toBeInTheDocument();
     fireEvent.click(snapBtn);
 
     // Track should now have mobileCarouselTrackFull class
     expect(track.className).toContain('mobileCarouselTrackFull');
-    expect(screen.getByRole('button', { name: /Karusel/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Kartları yatay görünümde aç/i })).toBeInTheDocument();
 
     // Clicking snap toggle again returns to half carousel mode
-    fireEvent.click(screen.getByRole('button', { name: /Karusel/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Kartları yatay görünümde aç/i }));
     expect(track.className).not.toContain('mobileCarouselTrackFull');
   });
 
@@ -251,24 +265,24 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
 
     // Focusing first card activates highlight and announces to live region
     fireEvent.focus(firstCard);
-    expect(firstCard.className).toContain('cardHighlighted');
+    expect(firstCard).toHaveClass(resultStyles.selected);
     const liveRegion = screen.getByRole('status');
     expect(liveRegion).toHaveTextContent(/Hasan Usta.*seçildi/i);
 
     // ArrowDown navigates to second card
     fireEvent.keyDown(firstCard, { key: 'ArrowDown' });
     fireEvent.focus(secondCard);
-    expect(secondCard.className).toContain('cardHighlighted');
+    expect(secondCard).toHaveClass(resultStyles.selected);
     expect(liveRegion).toHaveTextContent(/Mehmet Usta.*seçildi/i);
 
     // ArrowUp navigates back to first card
     fireEvent.keyDown(secondCard, { key: 'ArrowUp' });
     fireEvent.focus(firstCard);
-    expect(firstCard.className).toContain('cardHighlighted');
+    expect(firstCard).toHaveClass(resultStyles.selected);
 
     // Escape clears highlight
     fireEvent.keyDown(firstCard, { key: 'Escape' });
-    expect(firstCard.className).not.toContain('cardHighlighted');
+    expect(firstCard).not.toHaveClass(resultStyles.selected);
   });
 
   it('supports Home and End keys for rapid keyboard spatial navigation across usta cards', () => {
@@ -291,7 +305,7 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
     render(<UstalarSplitView {...defaultProps} />);
 
     // Screen reader landmarks
-    expect(screen.getByRole('region', { name: /Doğrulanmış Usta Listesi/i })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: /Usta Listesi/i })).toBeInTheDocument();
     expect(screen.getByRole('region', { name: /Ankara Usta Arama Haritası/i })).toBeInTheDocument();
 
     const expandBtn = screen.getByRole('button', { name: /^Haritayı büyüt$/i });
@@ -328,8 +342,9 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
     const articles = screen.getAllByRole('article');
     expect(articles.length).toBe(24);
 
-    // 60 FPS Sanal Liste performance badge should be visible
-    expect(screen.getByText(/60 FPS Sanal Liste \(24 \/ 50\)/i)).toBeInTheDocument();
+    // The result summary is user-facing; implementation-specific FPS language
+    // is intentionally not exposed in the discovery UI.
+    expect(screen.getByTestId('usta-result-summary')).toHaveTextContent('50 usta');
 
     // Check WCAG virtualized list attributes
     expect(articles[0]).toHaveAttribute('aria-setsize', '50');
@@ -387,6 +402,7 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
     fireEvent.click(hasanCard);
     expect(screen.getByTestId('mock-active-marker-id')).toHaveTextContent('u1');
     expect(screen.getByText(/Hasan Usta.*seçildi.*Harita ve liste senkronize edildi/i)).toBeInTheDocument();
+    expect(screen.getByText('Listeyle eşleşti')).toBeInTheDocument();
 
     // 2. Hover map marker u2: should update hovered marker state and active id
     fireEvent.click(screen.getByTestId('simulate-hover-marker-u2'));
@@ -413,9 +429,9 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
   it('uses one profile-first CTA for each card', () => {
     render(<UstalarSplitView {...defaultProps} />);
 
-    const profileLinks = screen.getAllByRole('link', { name: /Profili aç ve talep oluştur/i });
+    const profileLinks = screen.getAllByRole('link', { name: /Profili aç/i });
     expect(profileLinks).toHaveLength(4);
-    expect(profileLinks[0]).toHaveAttribute('href', '/ustalar/u1?');
+    expect(profileLinks[0]).toHaveAttribute('href', '/ustalar/u1');
     expect(screen.queryByRole('link', { name: /Teklif İste/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /acil usta sevk hattını ara/i })).not.toBeInTheDocument();
   });
@@ -426,7 +442,7 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
     const firstCard = screen.getAllByRole('article')[0];
     firstCard.focus();
     fireEvent.keyDown(firstCard, { key: 'Enter' });
-    expect(screen.getAllByRole('link', { name: /Profili aç ve talep oluştur/i })[0]).toHaveAttribute('href', '/ustalar/u1?');
+    expect(screen.getAllByRole('link', { name: /Profili aç/i })[0]).toHaveAttribute('href', '/ustalar/u1');
   });
 
   it('filters usta cards in real-time via search input and allows clearing query', () => {
@@ -465,22 +481,291 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
     expect(screen.queryByText(/Platform Teyitli Şeffaf Tarife/i)).not.toBeInTheDocument();
   });
 
-  it('renders emergency click-to-call links on mobile cards and header with tel: protocol', () => {
+  it('keeps emergency actions out of the discovery surface', () => {
     render(<UstalarSplitView {...defaultProps} />);
 
-    // Header emergency dispatch pill
-    const headerEmergencyLink = screen.getByRole('link', { name: /Ankara acil usta sevk hattını ara/i });
-    expect(headerEmergencyLink).toBeInTheDocument();
-    expect(headerEmergencyLink).toHaveAttribute('href', 'tel:+903128000606');
-
-    // Card-level emergency links are intentionally removed; emergency access remains in the header.
+    expect(screen.queryByRole('link', { name: /Ankara acil usta sevk hattını ara/i })).not.toBeInTheDocument();
     const mobileCallLinks = screen.queryAllByRole('link', { name: /için acil usta sevk hattını ara/i });
     expect(mobileCallLinks).toHaveLength(0);
   });
 
   it('does not add a second emergency action to each card', () => {
     render(<UstalarSplitView {...defaultProps} />);
-    expect(screen.getAllByRole('link', { name: /Profili aç ve talep oluştur/i })).toHaveLength(4);
+    expect(screen.getAllByRole('link', { name: /Profili aç/i })).toHaveLength(4);
     expect(screen.getAllByRole('article')).toHaveLength(2);
+  });
+
+  it('calculates factual service area summaries correctly for single district, neighborhoods, and whole city without 0 mahalle', () => {
+    // 1. District with multiple neighborhoods
+    expect(getServiceAreaSummary(['Çankaya'], ['Ayrancı', 'Kızılay'])).toBe('Çankaya · 2 mahalle');
+    // 2. District with single neighborhood
+    expect(getServiceAreaSummary(['Çankaya'], ['Ayrancı'])).toBe('Çankaya · 1 mahalle');
+    // 3. District with no neighborhoods (must NOT produce "0 mahalle")
+    expect(getServiceAreaSummary(['Çankaya'], [])).toBe('Çankaya geneli');
+    expect(getServiceAreaSummary(['Çankaya'], [''])).toBe('Çankaya geneli');
+    // 4. Multiple districts with no neighborhoods
+    expect(getServiceAreaSummary(['Çankaya', 'Mamak'], [])).toBe('Çankaya ve 1 ilçe');
+    // 5. Citywide / empty districts
+    expect(getServiceAreaSummary([], [], 'Ankara')).toBe('Ankara geneli');
+    expect(getServiceAreaSummary(['Ankara'], [])).toBe('Ankara geneli');
+    expect(getServiceAreaSummary([], [])).toBe('Ankara geneli');
+  });
+
+  it('renders neutral-green Hizmet bölgesi disclosure affordances on both desktop and mobile usta cards', () => {
+    render(
+      <UstalarSplitView
+        {...defaultProps}
+        neighborhoodMap={{ u1: ['Siteler', 'Önder'] }}
+      />
+    );
+
+    // Hizmet bölgesi buttons exist for each usta (both desktop list and mobile carousel = 4 total)
+    const triggerButtons = screen.getAllByRole('button', { name: /Hizmet bölgesi/i });
+    expect(triggerButtons).toHaveLength(4);
+
+    // u1 has 2 neighborhoods -> 'Altındağ · 2 mahalle'
+    expect(screen.getAllByText('Altındağ · 2 mahalle').length).toBe(2);
+    // u2 has 0 neighborhoods -> 'Yenimahalle geneli' (never '0 mahalle')
+    expect(screen.getAllByText('Yenimahalle geneli').length).toBe(2);
+    expect(screen.queryByText(/0 mahalle/i)).not.toBeInTheDocument();
+
+    // Initially aria-expanded is false
+    expect(triggerButtons[0]).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('opens compact accessible detail panel with served districts/neighborhoods and exact privacy notice on click', () => {
+    render(
+      <UstalarSplitView
+        {...defaultProps}
+        neighborhoodMap={{ u1: ['Siteler', 'Önder'] }}
+      />
+    );
+
+    const triggerButtons = screen.getAllByRole('button', { name: /Hizmet bölgesi.*Altındağ/i });
+    const firstTrigger = triggerButtons[0];
+
+    // Click trigger to open panel
+    fireEvent.click(firstTrigger);
+    expect(firstTrigger).toHaveAttribute('aria-expanded', 'true');
+
+    // Panel is opened with accessible region role
+    const panel = screen.getByRole('region', { name: /Hasan Usta hizmet bölgesi ayrıntıları/i });
+    expect(panel).toBeInTheDocument();
+
+    // Verifies district and neighborhoods are listed inside panel
+    expect(within(panel).getByText('Altındağ')).toBeInTheDocument();
+    expect(within(panel).getByText('Siteler')).toBeInTheDocument();
+    expect(within(panel).getByText('Önder')).toBeInTheDocument();
+
+    // Verifies the exact required privacy disclaimer
+    expect(
+      screen.getByText('Açık adres gösterilmez. Ustanın sevk kabul ettiği çalışma bölgeleridir.')
+    ).toBeInTheDocument();
+
+    // Clicking trigger again toggles it closed
+    fireEvent.click(firstTrigger);
+    expect(firstTrigger).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByText('Açık adres gösterilmez. Ustanın sevk kabul ettiği çalışma bölgeleridir.')).not.toBeInTheDocument();
+  });
+
+  it('supports keyboard Enter and Space on trigger button to toggle panel', () => {
+    render(
+      <UstalarSplitView
+        {...defaultProps}
+        neighborhoodMap={{ u1: ['Siteler', 'Önder'] }}
+      />
+    );
+
+    const triggerBtn = screen.getAllByRole('button', { name: /Hizmet bölgesi.*Altındağ/i })[0];
+    expect(triggerBtn).toHaveAttribute('aria-expanded', 'false');
+
+    // Press Enter to open
+    fireEvent.keyDown(triggerBtn, { key: 'Enter' });
+    expect(triggerBtn).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByText('Açık adres gösterilmez. Ustanın sevk kabul ettiği çalışma bölgeleridir.')).toBeInTheDocument();
+
+    // Press Space to close
+    fireEvent.keyDown(triggerBtn, { key: ' ' });
+    expect(triggerBtn).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByText('Açık adres gösterilmez. Ustanın sevk kabul ettiği çalışma bölgeleridir.')).not.toBeInTheDocument();
+  });
+
+  it('prevents inner Hizmet bölgesi button and panel clicks from triggering card selection or map pin synchronization', () => {
+    render(
+      <UstalarSplitView
+        {...defaultProps}
+        neighborhoodMap={{ u1: ['Siteler', 'Önder'] }}
+      />
+    );
+
+    // Active marker before clicking is none
+    expect(screen.getByTestId('mock-active-marker-id')).toHaveTextContent('none');
+
+    // Click inner trigger button
+    const triggerBtn = screen.getAllByRole('button', { name: /Hizmet bölgesi.*Altındağ/i })[0];
+    fireEvent.click(triggerBtn);
+
+    // Active marker should STILL be none! Inner button must not select card or synchronize map
+    expect(screen.getByTestId('mock-active-marker-id')).toHaveTextContent('none');
+
+    // Click inside the open panel
+    const panel = screen.getByRole('region', { name: /Hasan Usta hizmet bölgesi ayrıntıları/i });
+    fireEvent.click(panel);
+
+    // Active marker remains none
+    expect(screen.getByTestId('mock-active-marker-id')).toHaveTextContent('none');
+  });
+
+  it('dismisses panel with explicit close button (✕) and returns focus to trigger', async () => {
+    render(
+      <UstalarSplitView
+        {...defaultProps}
+        neighborhoodMap={{ u1: ['Siteler', 'Önder'] }}
+      />
+    );
+
+    const triggerBtn = screen.getAllByRole('button', { name: /Hizmet bölgesi.*Altındağ/i })[0];
+    fireEvent.click(triggerBtn);
+
+    const closeBtn = screen.getByRole('button', { name: /Hizmet bölgesi panelini kapat/i });
+    expect(closeBtn).toBeInTheDocument();
+
+    fireEvent.click(closeBtn);
+
+    // Panel is removed
+    expect(screen.queryByText('Açık adres gösterilmez. Ustanın sevk kabul ettiği çalışma bölgeleridir.')).not.toBeInTheDocument();
+
+    // Focus returns to the trigger
+    await vi.waitFor(() => {
+      expect(document.activeElement).toBe(triggerBtn);
+    });
+  });
+
+  it('dismisses panel with Escape key and returns focus to trigger', async () => {
+    render(
+      <UstalarSplitView
+        {...defaultProps}
+        neighborhoodMap={{ u1: ['Siteler', 'Önder'] }}
+      />
+    );
+
+    const triggerBtn = screen.getAllByRole('button', { name: /Hizmet bölgesi.*Altındağ/i })[0];
+    fireEvent.click(triggerBtn);
+
+    expect(screen.getByText('Açık adres gösterilmez. Ustanın sevk kabul ettiği çalışma bölgeleridir.')).toBeInTheDocument();
+
+    // Press Escape
+    fireEvent.keyDown(window, { key: 'Escape' });
+
+    // Panel is closed
+    expect(screen.queryByText('Açık adres gösterilmez. Ustanın sevk kabul ettiği çalışma bölgeleridir.')).not.toBeInTheDocument();
+
+    // Focus returns to the trigger
+    await vi.waitFor(() => {
+      expect(document.activeElement).toBe(triggerBtn);
+    });
+  });
+
+  it('dismisses panel on outside-click', () => {
+    render(
+      <UstalarSplitView
+        {...defaultProps}
+        neighborhoodMap={{ u1: ['Siteler', 'Önder'] }}
+      />
+    );
+
+    const triggerBtn = screen.getAllByRole('button', { name: /Hizmet bölgesi.*Altındağ/i })[0];
+    fireEvent.click(triggerBtn);
+
+    expect(screen.getByText('Açık adres gösterilmez. Ustanın sevk kabul ettiği çalışma bölgeleridir.')).toBeInTheDocument();
+
+    // Click outside
+    fireEvent.pointerDown(document.body);
+
+    // Panel is dismissed
+    expect(screen.queryByText('Açık adres gösterilmez. Ustanın sevk kabul ettiği çalışma bölgeleridir.')).not.toBeInTheDocument();
+  });
+
+  it('maintains at most one Hizmet bölgesi detail panel open across desktop and mobile', () => {
+    render(
+      <UstalarSplitView
+        {...defaultProps}
+        neighborhoodMap={{ u1: ['Siteler'], u2: ['Batıkent'] }}
+      />
+    );
+
+    const u1Trigger = screen.getAllByRole('button', { name: /Hizmet bölgesi.*Altındağ/i })[0];
+    const u2Trigger = screen.getAllByRole('button', { name: /Hizmet bölgesi.*Yenimahalle/i })[0];
+
+    // Open u1 panel
+    fireEvent.click(u1Trigger);
+    expect(screen.getByRole('region', { name: /Hasan Usta hizmet bölgesi ayrıntıları/i })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: /Mehmet Usta hizmet bölgesi ayrıntıları/i })).not.toBeInTheDocument();
+
+    // Open u2 panel
+    fireEvent.click(u2Trigger);
+    expect(screen.queryByRole('region', { name: /Hasan Usta hizmet bölgesi ayrıntıları/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('region', { name: /Mehmet Usta hizmet bölgesi ayrıntıları/i })).toBeInTheDocument();
+
+    // In the entire DOM, exactly 1 panel exists
+    expect(screen.getAllByText('Açık adres gösterilmez. Ustanın sevk kabul ettiği çalışma bölgeleridir.')).toHaveLength(1);
+  });
+
+  it('handles long neighborhood data gracefully and does not introduce competitive claims', () => {
+    const longNeighborhoodList = Array.from({ length: 25 }, (_, i) => `Mahalle ${i + 1}`);
+
+    render(
+      <UstalarSplitView
+        {...defaultProps}
+        neighborhoodMap={{ u1: longNeighborhoodList }}
+      />
+    );
+
+    // Summary button is compact: 'Altındağ · 25 mahalle'
+    expect(screen.getAllByText('Altındağ · 25 mahalle').length).toBe(2);
+
+    // Open panel
+    const trigger = screen.getAllByRole('button', { name: /Hizmet bölgesi.*Altındağ/i })[0];
+    fireEvent.click(trigger);
+
+    // Lists all 25 neighborhoods
+    expect(screen.getByText('Mahalle 1')).toBeInTheDocument();
+    expect(screen.getByText('Mahalle 25')).toBeInTheDocument();
+
+    // Verifies NO competitive claims exist anywhere in discovery
+    expect(screen.queryByText(/Mahallenin ustası/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/İlçenin ustası/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Bu ayın öne çıkanı/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/En güvenilir usta/i)).not.toBeInTheDocument();
+  });
+
+  it('satisfies touch target, restrained elevation, and em-dash constraints on service area disclosure', () => {
+    render(
+      <UstalarSplitView
+        {...defaultProps}
+        neighborhoodMap={{ u1: ['Siteler', 'Önder'] }}
+      />
+    );
+
+    const trigger = screen.getAllByRole('button', { name: /Hizmet bölgesi.*Altındağ/i })[0];
+    expect(trigger).toBeInTheDocument();
+
+    // Verify no em-dash in trigger title or text
+    const triggerTitle = trigger.getAttribute('title') || '';
+    expect(triggerTitle).not.toContain('—');
+
+    // Open panel
+    fireEvent.click(trigger);
+
+    const panel = screen.getByRole('region', { name: /Hasan Usta hizmet bölgesi ayrıntıları/i });
+    expect(panel).toBeInTheDocument();
+
+    // Close button exists with accessible label
+    const closeBtn = screen.getByRole('button', { name: /Hizmet bölgesi panelini kapat/i });
+    expect(closeBtn).toBeInTheDocument();
+
+    // Verify all text content inside panel has no em-dashes
+    const panelText = panel.textContent || '';
+    expect(panelText).not.toContain('—');
   });
 });

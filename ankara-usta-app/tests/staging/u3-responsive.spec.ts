@@ -21,7 +21,7 @@ for (const width of [320, 390, 820, 1440]) {
 
     const firstCard = page.locator('article.usta-card').first();
     await expect(firstCard).toBeVisible();
-    const cardCta = firstCard.getByRole('link', { name: /Profili aç ve talep oluştur/ });
+    const cardCta = firstCard.getByRole('link', { name: /Profili aç/ });
     await expect(cardCta).toBeVisible();
     await expect(firstCard.getByRole('link')).toHaveCount(1);
 
@@ -36,6 +36,20 @@ for (const width of [320, 390, 820, 1440]) {
     await page.goto('/concepts/harita?view=split');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await expect(page.getByRole('button', { name: /liste/i }).first()).toBeVisible();
+
+    if (width >= 820) {
+      const areaSearch = page.getByRole('checkbox', { name: /Bu bölgede ara/i });
+      await expect(areaSearch).toBeVisible();
+      await areaSearch.check();
+      await expect(page.getByText(/Bu bölgede ara \(/i)).toBeVisible();
+      await areaSearch.uncheck();
+    }
+
+    if (width >= 820) {
+      const syncCard = page.locator('article.usta-card').first();
+      await syncCard.locator('h3').click();
+      await expect(page.getByText('Listeyle eşleşti')).toBeVisible();
+    }
 
     // Sorting must not overwrite the shareable surface state with the sort
     // value (for example `view=rating`).
