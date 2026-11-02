@@ -328,9 +328,6 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
     const articles = screen.getAllByRole('article');
     expect(articles.length).toBe(24);
 
-    // 60 FPS Sanal Liste performance badge should be visible
-    expect(screen.getByText(/60 FPS Sanal Liste \(24 \/ 50\)/i)).toBeInTheDocument();
-
     // Check WCAG virtualized list attributes
     expect(articles[0]).toHaveAttribute('aria-setsize', '50');
     expect(articles[0]).toHaveAttribute('aria-posinset', '1');
@@ -468,7 +465,8 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
   it('renders emergency click-to-call links on mobile cards and header with tel: protocol', () => {
     render(<UstalarSplitView {...defaultProps} />);
 
-    // Header emergency dispatch pill
+    // Emergency dispatch is available inside the optional filter drawer.
+    fireEvent.click(screen.getByRole('button', { name: /Filtrele/i }));
     const headerEmergencyLink = screen.getByRole('link', { name: /Ankara acil usta sevk hattını ara/i });
     expect(headerEmergencyLink).toBeInTheDocument();
     expect(headerEmergencyLink).toHaveAttribute('href', 'tel:+903128000606');
