@@ -330,7 +330,7 @@ export default function UstalarSplitView({
       setViewMode((current) => (current === nextView ? current : nextView));
     };
 
-    syncViewFromUrl(searchParams.get('view'));
+    syncViewFromUrl(searchParams?.get('view') ?? null);
     const handlePopState = () => syncViewFromUrl(new URLSearchParams(window.location.search).get('view'));
     const handlePageShow = () => syncViewFromUrl(new URLSearchParams(window.location.search).get('view'));
     const handleVisibilityChange = () => {

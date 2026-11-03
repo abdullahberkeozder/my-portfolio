@@ -21,11 +21,15 @@ beforeEach(() => {state.profiles=[]; state.error=null;});
 test('preserves filters in profile links and distinguishes approval from document evidence', async () => {
   state.profiles=[{user_id:'test-professional',display_name:'Uzun İsimli Test Ustası',bio:null,city:'Ankara',total_count:1}];
   render(await Directory({searchParams:Promise.resolve({service:'musluk-degisimi',district:'Çankaya',view:'map'})}));
-  expect(screen.getByText('Mesleki belge güncel')).toBeVisible();
-  expect(screen.getByText('Başvuru ve güncel mesleki belge kontrolü tamamlandı.')).toBeVisible();
-  expect(screen.getByText('Hizmet bölgesi: Çankaya')).toBeVisible();
-  expect(screen.getByRole('link',{name:'Profili İncele →'})).toHaveAttribute('href','/ustalar/test-professional?service=musluk-degisimi&district=%C3%87ankaya');
-  expect(screen.getByLabelText('Hizmet')).toHaveValue('musluk-degisimi');
+  expect(screen.queryByText('Mesleki belge güncel')).not.toBeInTheDocument();
+  expect(screen.queryByText('Başvuru ve güncel mesleki belge kontrolü tamamlandı.')).not.toBeInTheDocument();
+  expect(screen.getByRole('article', {name:/Çankaya/})).toBeVisible();
+  for (const link of screen.getAllByRole('link',{name:/Profili aç ve talep oluştur/})) {
+    expect(link).toHaveAttribute('href','/ustalar/test-professional?service=musluk-degisimi&district=%C3%87ankaya');
+  }
+  for (const select of screen.getAllByLabelText('Hizmet')) {
+    expect(select).toHaveValue('musluk-degisimi');
+  }
   expect(screen.queryByText('Bölgeyi haritada incele')).not.toBeInTheDocument();
   expect(screen.queryByRole('link', {name:/harita/i})).not.toBeInTheDocument();
   expect(document.querySelector('iframe')).toBeNull();
