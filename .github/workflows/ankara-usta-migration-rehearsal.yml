@@ -7,6 +7,7 @@ on:
       - '.github/workflows/ankara-usta-migration-rehearsal.yml'
       - 'ankara-usta-app/supabase/migrations/**'
       - 'ankara-usta-app/supabase/tests/remote/migration_gap_rehearsal.sql'
+      - 'ankara-usta-app/supabase/tests/remote/migration_gap_data_*.sql'
       - 'ankara-usta-app/docs/operations/production-applied-migrations.txt'
 
 permissions:
@@ -56,6 +57,13 @@ jobs:
           baseline_count=$(psql 'postgresql://postgres:postgres@127.0.0.1:54322/postgres' -Atqc 'select count(*) from supabase_migrations.schema_migrations')
           test "$baseline_count" -eq 20
 
+      - name: Insert synthetic requests and quotes into v20 baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          psql 'postgresql://postgres:postgres@127.0.0.1:54322/postgres' -v ON_ERROR_STOP=1 \
+            -f "$GITHUB_WORKSPACE/ankara-usta-app/supabase/tests/remote/migration_gap_data_fixture.sql"
+
       - name: Apply all missing migrations and assert schema contract
         shell: bash
         run: |
@@ -70,6 +78,13 @@ jobs:
           supabase migration up --local --include-all
           psql 'postgresql://postgres:postgres@127.0.0.1:54322/postgres' -v ON_ERROR_STOP=1 \
             -f "$source_root/supabase/tests/remote/migration_gap_rehearsal.sql"
+
+      - name: Assert synthetic request and quote data after v32 migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          psql 'postgresql://postgres:postgres@127.0.0.1:54322/postgres' -v ON_ERROR_STOP=1 \
+            -f "$GITHUB_WORKSPACE/ankara-usta-app/supabase/tests/remote/migration_gap_data_assertions.sql"
 
       - name: Stop isolated Supabase
         if: always()
