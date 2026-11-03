@@ -3,8 +3,11 @@ import userEvent from '@testing-library/user-event';
 import {beforeEach,afterEach,it,expect,vi} from 'vitest';
 import AccountDraftBoundary,{draftAccountKey} from '../../app/components/AccountDraftBoundary';
 const auth=vi.hoisted(()=>({getUser:vi.fn(),onAuthStateChange:vi.fn()}));
+const router=vi.hoisted(()=>({replace:vi.fn()}));
+vi.mock('next/navigation',()=>({useRouter:()=>router}));
 vi.mock('../../app/lib/supabase/browser',()=>({createSupabaseBrowserClient:()=>({auth})}));
 beforeEach(()=>{
+  router.replace.mockReset();
   localStorage.clear();sessionStorage.clear();window.history.replaceState({},'','/');
   auth.getUser.mockResolvedValue({data:{user:{id:'account-a'}},error:null});
   auth.onAuthStateChange.mockReturnValue({data:{subscription:{unsubscribe:vi.fn()}}});

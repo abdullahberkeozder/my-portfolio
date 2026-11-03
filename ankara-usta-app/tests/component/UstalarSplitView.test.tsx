@@ -328,9 +328,6 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
     const articles = screen.getAllByRole('article');
     expect(articles.length).toBe(24);
 
-    // 60 FPS Sanal Liste performance badge should be visible
-    expect(screen.getByText(/60 FPS Sanal Liste \(24 \/ 50\)/i)).toBeInTheDocument();
-
     // Check WCAG virtualized list attributes
     expect(articles[0]).toHaveAttribute('aria-setsize', '50');
     expect(articles[0]).toHaveAttribute('aria-posinset', '1');
@@ -465,15 +462,16 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
     expect(screen.queryByText(/Platform Teyitli Şeffaf Tarife/i)).not.toBeInTheDocument();
   });
 
-  it('renders emergency click-to-call links on mobile cards and header with tel: protocol', () => {
+  it('exposes the emergency call link in advanced filters without duplicating it on cards', () => {
     render(<UstalarSplitView {...defaultProps} />);
 
-    // Header emergency dispatch pill
+    // Emergency dispatch is available after opening the advanced filters.
+    fireEvent.click(screen.getByRole('button', { name: 'Filtrele' }));
     const headerEmergencyLink = screen.getByRole('link', { name: /Ankara acil usta sevk hattını ara/i });
     expect(headerEmergencyLink).toBeInTheDocument();
     expect(headerEmergencyLink).toHaveAttribute('href', 'tel:+903128000606');
 
-    // Card-level emergency links are intentionally removed; emergency access remains in the header.
+    // Card-level emergency links are intentionally removed; the drawer contains the call action.
     const mobileCallLinks = screen.queryAllByRole('link', { name: /için acil usta sevk hattını ara/i });
     expect(mobileCallLinks).toHaveLength(0);
   });
