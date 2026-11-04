@@ -29,6 +29,7 @@ Yerel `.env.local` ve `node_modules` bağlantısı Git tarafından yok sayılır
 | `git diff --check` | Geçti |
 | Vitest | 113 dosya, **743/743 test geçti**; Windows geçici dosya yarışını önlemek için tek işçi ve worktree içi geçici klasör kullanıldı |
 | Playwright landing + wizard | Masaüstü ve mobil Chromium'da **20/20 geçti**; wizard 320, 390, 820 ve 1440 px genişliklerinde doğrulandı |
+| Kimlik bilgisi gerektirmeyen CI smoke | `.env.local` olmadan landing keşfi için Chromium ve mobil Chromium'da **8/8 geçti** |
 
 İlk Playwright denemesinde izole worktree'de `.env.local` bulunmadığı için taslak doğrulaması formu güvenli biçimde açmadı. Git tarafından yok sayılan yerel yapılandırma eklenip üretim derlemesi yenilendiğinde aynı akış geçti. Sandbox içinden `localhost` erişimi engellendiği için tarayıcı koşusu yetkili yerel oturumda çalıştırıldı.
 
@@ -47,4 +48,8 @@ Görsel denetimde landing görselleri ve wizard özeti yüklenmiş durumda; mobi
 
 ## Birleştirme sırası
 
-Bu dal için karşılaştırma tabanı `codex/worktree-preservation` olmalıdır. Önce taban dalın `main` ile entegrasyonu incelenmeli, ardından bu dalın hedefi güncellenmelidir. Şu anda commit, push, PR veya veritabanı değişikliği yapılmadı.
+Bu dal için karşılaştırma tabanı `codex/worktree-preservation` olmalıdır. Önce taban dalın `main` ile entegrasyonu incelenmeli, ardından bu dalın hedefi güncellenmelidir. Taslak PR [#22](https://github.com/abdullahberkeozder/my-portfolio/pull/22) bu tabana açıldı; birleştirme veya veritabanı değişikliği yapılmadı.
+
+## CI smoke sözleşmesi
+
+PR'daki ilk iki kalite koşusu, 20 dakikalık iş sınırında iptal edildi. Eski `End-to-end smoke test` adımı, secretsiz PR işinde bütün Playwright paketini çalıştırıyordu. Ayrıca yerel secretsiz provada `/ustalar` testleri API verisi olmadan başarısız olurken landing keşif testleri geçti. Gemini High ile yapılan dar kapsamlı incelemenin ardından kalite işine `test:e2e:ci-smoke` eklendi; bu komut yalnız landing keşfinin masaüstü ve mobil 8 testini çalıştırır. Tam `test:e2e` komutu yerel ve yapılandırılmış entegrasyon doğrulaması için korunur. Bu ayrım, `/ustalar` ve wizard'ın secretsiz CI'da doğrulandığı anlamına gelmez; bunların yerel yapılandırmalı kanıtı yukarıdadır. Yeni GitHub koşusunun sonucu ayrıca izlenecektir.
