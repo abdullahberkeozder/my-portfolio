@@ -330,7 +330,7 @@ export default function UstalarSplitView({
       setViewMode((current) => (current === nextView ? current : nextView));
     };
 
-    syncViewFromUrl(searchParams.get('view'));
+    syncViewFromUrl(searchParams?.get('view') ?? initialView);
     const handlePopState = () => syncViewFromUrl(new URLSearchParams(window.location.search).get('view'));
     const handlePageShow = () => syncViewFromUrl(new URLSearchParams(window.location.search).get('view'));
     const handleVisibilityChange = () => {
@@ -345,7 +345,7 @@ export default function UstalarSplitView({
       window.removeEventListener('pageshow', handlePageShow);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [searchParams]);
+  }, [searchParams, initialView]);
 
   useEffect(() => {
     filterSelectionRef.current = {

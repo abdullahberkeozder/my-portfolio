@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import {beforeEach,afterEach,it,expect,vi} from 'vitest';
 import AccountDraftBoundary,{draftAccountKey} from '../../app/components/AccountDraftBoundary';
 const auth=vi.hoisted(()=>({getUser:vi.fn(),onAuthStateChange:vi.fn()}));
+vi.mock('next/navigation',()=>({useRouter:()=>({replace:vi.fn()})}));
 vi.mock('../../app/lib/supabase/browser',()=>({createSupabaseBrowserClient:()=>({auth})}));
 beforeEach(()=>{
   localStorage.clear();sessionStorage.clear();window.history.replaceState({},'','/');

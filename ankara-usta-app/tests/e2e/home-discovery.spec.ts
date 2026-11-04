@@ -1,5 +1,12 @@
 import {expect, test} from '@playwright/test';
 
+test('landing page renders its primary search path @ci-smoke', async ({page}) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', {name: 'İşini anlat. Doğru ustayla buluş.', level: 1})).toBeVisible();
+  await expect(page.getByRole('textbox', {name: 'İhtiyacınızı yazın'})).toBeVisible();
+  await expect(page.getByRole('button', {name: 'Hizmet bul', exact: true})).toBeVisible();
+});
+
 test('service search has space, a visible label and reachable action at each viewport', async ({page}) => {
   for (const width of [320, 390, 820, 1440]) {
     await page.setViewportSize({width, height: 900});
@@ -14,7 +21,7 @@ test('service search has space, a visible label and reachable action at each vie
   }
 });
 
-test('unknown service offers recovery and never opens an arbitrary wizard', async ({page}) => {
+test('unknown service offers recovery and never opens an arbitrary wizard @ci-smoke', async ({page}) => {
   await page.goto('/');
   await page.getByRole('textbox', {name: 'İhtiyacınızı yazın'}).fill('zzzzzzzz');
   await page.getByRole('button', {name: 'Hizmet bul', exact: true}).click();
