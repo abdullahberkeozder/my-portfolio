@@ -74,7 +74,7 @@ jobs:
         run: npm run dotnet:check
 
       - name: End-to-end smoke test
-        run: npm run test:e2e
+        run: npm run test:e2e:ci-smoke
 
   supabase-integration:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
