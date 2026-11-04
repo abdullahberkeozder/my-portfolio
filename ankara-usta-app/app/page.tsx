@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState, useRef, useTransition } from 'react';
+import { FormEvent, useEffect, useState, useRef, useTransition, type CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { services, serviceCategories, servicesByCategory } from './data/serviceTaxonomy';
@@ -25,9 +25,11 @@ interface DiscoveryWork {
   categoryLabel: string;
   title: string;
   image: string;
+  imagePosition?: string;
+  imagePositionMobile?: string;
   artisanName: string;
   artisanDistrict: string;
-  materials: string[];
+  sceneDetails: string[];
 }
 
 const DISCOVERY_WORKS: DiscoveryWork[] = [
@@ -37,10 +39,22 @@ const DISCOVERY_WORKS: DiscoveryWork[] = [
     category: 'montaj',
     categoryLabel: 'Montaj',
     title: 'Duvar rafı montajı',
-    image: '/images/discovery/duvar-rafi-montaji.jpg',
+    image: '/images/discovery/duvar-rafi-montaji-v2.webp',
     artisanName: 'Murat Usta',
     artisanDistrict: 'Çankaya',
-    materials: ['40mm Masif Meşe', 'Gizli Çelik Ankraj', 'Lazer Terazi: ±0.5mm'],
+    sceneDetails: ['Ahşap raf', 'Montaj braketi', 'Su terazisi ve matkap'],
+  },
+  {
+    id: 'work-5',
+    serviceId: 'avize-montaji',
+    category: 'elektrik',
+    categoryLabel: 'Elektrik',
+    title: 'Avize montajı',
+    image: '/images/discovery/avize-montaji.jpg',
+    imagePosition: '50% 30%',
+    artisanName: 'Cem Usta',
+    artisanDistrict: 'Mamak',
+    sceneDetails: ['Siyah sarkıt armatür', 'Tavan bağlantı plakası', 'Tornavida ve bağlantı kabloları'],
   },
   {
     id: 'work-2',
@@ -49,9 +63,22 @@ const DISCOVERY_WORKS: DiscoveryWork[] = [
     categoryLabel: 'Tesisat',
     title: 'Mutfak bataryası değişimi',
     image: '/images/discovery/mutfak-bataryasi-degisimi.jpg',
+    imagePosition: '50% 10%',
+    imagePositionMobile: '50% 20%',
     artisanName: 'Selim Usta',
     artisanDistrict: 'Yenimahalle',
-    materials: ['Döküm Pirinç Gövde', '304 Paslanmaz Fleks', 'TS EN 817 Sızdırmazlık'],
+    sceneDetails: ['Kavisli mutfak bataryası', 'Tek kollu kumanda', 'Çift gözlü evye'],
+  },
+  {
+    id: 'work-6',
+    serviceId: 'ev-temizligi',
+    category: 'temizlik',
+    categoryLabel: 'Temizlik',
+    title: 'Mutfak temizliği',
+    image: '/images/discovery/mutfak-temizligi-v2.webp',
+    artisanName: 'Ece Hanım',
+    artisanDistrict: 'Gölbaşı',
+    sceneDetails: ['Temizlik bezi', 'Sprey şişe', 'Evye ve batarya silme'],
   },
   {
     id: 'work-3',
@@ -60,9 +87,10 @@ const DISCOVERY_WORKS: DiscoveryWork[] = [
     categoryLabel: 'Boya',
     title: 'Salon boyama',
     image: '/images/discovery/salon-boyama.jpg',
+    imagePositionMobile: '50% 75%',
     artisanName: 'Derya Usta',
     artisanDistrict: 'Etimesgut',
-    materials: ['Silikonlu Mat İç Cephe', 'Hassas Maskeleme', 'Kraft Zemin Koruması'],
+    sceneDetails: ['Yeşil boyanan duvar', 'Boya rulosu ve tepsi', 'Zemin koruma örtüsü'],
   },
   {
     id: 'work-4',
@@ -73,29 +101,7 @@ const DISCOVERY_WORKS: DiscoveryWork[] = [
     image: '/images/discovery/kornis-montaji.jpg',
     artisanName: 'Emre Usta',
     artisanDistrict: 'Keçiören',
-    materials: ['Ekstrüzyon 3 Ray Alüminyum', 'Çelik Kanatlı Dübel', 'Lazer Aks Doğrulama'],
-  },
-  {
-    id: 'work-5',
-    serviceId: 'avize-montaji',
-    category: 'elektrik',
-    categoryLabel: 'Elektrik',
-    title: 'Avize montajı',
-    image: '/images/discovery/avize-montaji.jpg',
-    artisanName: 'Cem Usta',
-    artisanDistrict: 'Mamak',
-    materials: ['Topraklı Güvenlik Klemensi', 'Döküm Çelik Tavan Mapası', 'Dijital Faz/Yük Testi'],
-  },
-  {
-    id: 'work-6',
-    serviceId: 'ev-temizligi',
-    category: 'temizlik',
-    categoryLabel: 'Temizlik',
-    title: 'Mutfak temizliği',
-    image: '/images/discovery/mutfak-temizligi.jpg',
-    artisanName: 'Ece Hanım',
-    artisanDistrict: 'Gölbaşı',
-    materials: ['Gıda Temas Onaylı Solüsyon', 'Yüksek Emişli Mikrofiber', 'Paslanmaz Çelik Buhar'],
+    sceneDetails: ['Tavan tipi korniş', 'Beyaz perde', 'Pencere kenarı'],
   },
 ];
 
@@ -238,15 +244,6 @@ export default function Home() {
     } else if (fallbackQuery) {
       startClassification(fallbackQuery);
     }
-  }
-
-  function openDirectory() {
-    const el = document.getElementById('services');
-    const details = el?.querySelector('details');
-    if (details) details.open = true;
-    const reducedMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    el?.scrollIntoView({ behavior: reducedMotion ? 'instant' : 'smooth', block: 'start' });
-    el?.focus({ preventScroll: true });
   }
 
   function scrollTabsRight() {
@@ -414,7 +411,7 @@ export default function Home() {
 
         {/* ── 2. İŞLERİ KEŞFET (SAF SOSYAL ZANAAT VE PORTFOLYO AKIŞI) ── */}
         <section className={`${styles.discoverySection} landing-discovery`} id="kesfet" aria-labelledby="discovery-title" aria-busy={isCategoryPending}>
-          {saveNotice && <p role="status">{saveNotice}</p>}
+          {saveNotice && <p className={styles.saveNotice} role="status">{saveNotice}</p>}
           <div className={styles.discoveryHeader}>
             <h2 id="discovery-title" className={styles.discoveryTitle}>
               Evine fikir bul
@@ -451,7 +448,7 @@ export default function Home() {
                     fill="currentColor"
                     stroke="none"
                     aria-hidden="true"
-                    style={{ marginRight: '6px', display: 'inline-block', verticalAlign: '-1px' }}
+                    className={styles.savedIcon}
                   >
                     <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                   </svg>
@@ -518,6 +515,10 @@ export default function Home() {
                     <div className={`${styles.cardImageWrap} ${isLead ? styles.cardLeadImageWrap : ''}`}>
                       <ProgressiveImage
                         src={work.image}
+                        style={{
+                          '--image-focus-desktop': work.imagePosition ?? '50% 50%',
+                          '--image-focus-mobile': work.imagePositionMobile ?? work.imagePosition ?? '50% 50%',
+                        } as CSSProperties}
                         alt={work.title}
                         width={isLead ? 800 : 540}
                         height={isLead ? 600 : 400}
@@ -579,28 +580,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* Daha Fazla İş / Harita Köprüsü */}
-          <div className={styles.moreWorksWrap}>
-            <button
-              type="button"
-              className={styles.moreWorksBtn}
-              onClick={openDirectory}
-            >
-              Tüm hizmetleri gör
-            </button>
-            <a
-              className={styles.mapBridge}
-              href={activeCategoryTab !== 'tumu' && CATEGORY_PRIMARY_SERVICES[activeCategoryTab]
-                ? discoveryHref({ service: CATEGORY_PRIMARY_SERVICES[activeCategoryTab], view: 'split', sort: 'recommended' })
-                : discoveryHref({ view: 'split', sort: 'recommended' })}
-              onClick={() => trackFunnel('discovery_map_opened')}
-            >
-              {activeCategoryTab === 'tumu'
-                ? 'Tüm ustaları haritada gör'
-                : `${CATEGORY_TABS.find(t => t.id === activeCategoryTab)?.label ?? ''} ustalarını haritada gör`}
-            </a>
-          </div>
-
         </section>
 
         {/* ── 3. HİZMET DİZİNİ (TEST VE ERİŞİLEBİLİRLİK SÖZLEŞMESİ) ─── */}
@@ -608,7 +587,7 @@ export default function Home() {
           <h2 id="directory-title" className="sr-only">Hizmet Seçimi</h2>
           <details className={styles.directoryDetails} name="service-category">
             <summary className={styles.directorySummary}>
-              <span>Tüm hizmet kategorileri ve kapsamları ({serviceCategories.length} kategori)</span>
+              <span>Tüm hizmetleri gör <span className={styles.directoryCount}>({serviceCategories.length} kategori)</span></span>
               <svg className={styles.disclosureChevron} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
             </summary>
             <div className={styles.directoryGrid}>
@@ -635,12 +614,20 @@ export default function Home() {
               })}
             </div>
           </details>
+          <div className={styles.mapBridgeWrap}>
+            <a
+              className={styles.mapBridge}
+              href={activeCategoryTab !== 'tumu' && CATEGORY_PRIMARY_SERVICES[activeCategoryTab]
+                ? discoveryHref({ service: CATEGORY_PRIMARY_SERVICES[activeCategoryTab], view: 'split', sort: 'recommended' })
+                : discoveryHref({ view: 'split', sort: 'recommended' })}
+              onClick={() => trackFunnel('discovery_map_opened')}
+            >
+              {activeCategoryTab === 'tumu'
+                ? 'Tüm ustaları haritada gör'
+                : `${CATEGORY_TABS.find(t => t.id === activeCategoryTab)?.label ?? ''} ustalarını haritada gör`}
+            </a>
+          </div>
         </section>
-
-        {/* Tasarım Taslağı İmzası */}
-        <div className={styles.draftFooterNotice}>
-          <span>Görseller örnek uygulamalardır.</span>
-        </div>
 
       </div>
 

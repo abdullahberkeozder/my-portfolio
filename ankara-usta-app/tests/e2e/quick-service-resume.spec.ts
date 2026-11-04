@@ -7,7 +7,7 @@ for(const service of ['Musluk Değişimi','Tek Oda Boya','Avize Montajı']) {
       await page.goto('/');
       await page.getByRole('button',{name:'Reddet',exact:true}).click();
       const open=async()=>{
-        await page.getByRole('button',{name:service,exact:true}).click();
+        await page.getByRole('button',{name:service === 'Tek Oda Boya' ? 'Salon Boyama' : service,exact:true}).click();
         await page.getByRole('button',{name:'Devam et',exact:true}).click();
       };
       await open();

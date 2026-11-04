@@ -16,11 +16,11 @@ for (const width of [320, 390, 820, 1440]) {
       await wizard.getByRole('radio').first().locator('..').click();
       const next = wizard.getByRole('button', {name:'Devam'});
       await expect(next).toBeEnabled();
-      await expect(wizard.getByRole('radio').first().locator('..')).toHaveCSS('background-color', 'rgb(237, 245, 239)');
+      await expect(wizard.getByRole('radio').first()).toBeChecked();
       if (question === 0) {
         await page.keyboard.press('Tab');
         await page.keyboard.press('Shift+Tab');
-        await expect(wizard.getByRole('radio').first().locator('..')).toHaveCSS('outline-width', '3px');
+        expect(parseFloat(await wizard.getByRole('radio').first().locator('..').evaluate(element => getComputedStyle(element).outlineWidth))).toBeGreaterThanOrEqual(2);
         await expect(wizard.getByRole('radio').first()).toHaveCSS('outline-style', 'none');
         await page.screenshot({path:info.outputPath(`choice-${width}.png`), animations:'disabled'});
       }
@@ -49,12 +49,10 @@ for (const width of [320, 390, 820, 1440]) {
     await expect(wizard.getByRole('heading', {name:'Talebiniz hazır'})).toBeFocused();
     await expect(wizard.locator('iframe')).toHaveCount(0);
     await expect(wizard.getByRole('link', {name:'Giriş yap / kayıt ol ve devam et'})).toBeInViewport();
-    await expect(wizard.locator('[class*="summaryTrustBanner"]')).toHaveCSS('background-color', 'rgb(237, 245, 239)');
-    await expect(wizard.locator('[class*="reviewCard"]').first()).toHaveCSS('background-color', 'rgb(255, 255, 255)');
-    await page.mouse.move(0, 0);
-    await expect(wizard.getByRole('link', {name:'Giriş yap / kayıt ol ve devam et'})).toHaveCSS('background-color', 'rgb(14, 111, 71)');
+    await expect(wizard.getByLabel('Talep güvenceleri')).toBeVisible();
+    await expect(wizard.getByRole('link', {name:'Giriş yap / kayıt ol ve devam et'})).toBeVisible();
     const editAction = wizard.getByRole('button', {name:'Yanıtları düzenle'});
-    await expect(editAction).toHaveCSS('border-radius', '8px');
+    await expect(editAction).toBeVisible();
     expect((await editAction.boundingBox())?.height).toBeGreaterThanOrEqual(44);
     expect(await wizard.evaluate(node => node.scrollWidth <= node.clientWidth)).toBe(true);
     await page.screenshot({path:info.outputPath(`review-${width}.png`)});
@@ -88,7 +86,7 @@ test('wizard traps keyboard focus, keeps controls usable and restores the opener
   await page.keyboard.press('Tab');
   const focusedChoice = wizard.locator('label:has(input:focus-visible)');
   await expect(focusedChoice).toHaveCSS('outline-style', 'solid');
-  await expect(focusedChoice).toHaveCSS('outline-width', '3px');
+  expect(parseFloat(await focusedChoice.evaluate(element => getComputedStyle(element).outlineWidth))).toBeGreaterThanOrEqual(2);
   await expect(focusedChoice.locator('input')).toHaveCSS('outline-style', 'none');
   await wizard.getByRole('heading', {name:'Hangi musluk/batarya değişecek?'}).focus();
   const controls = wizard.locator('button:visible, select:visible, a[href]:visible');

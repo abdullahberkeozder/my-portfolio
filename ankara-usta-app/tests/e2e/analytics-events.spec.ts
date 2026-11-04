@@ -69,7 +69,7 @@ test('izin listesi dışı olay isimler hiçbir zaman dispatch edilmez', async (
   // confirm our listener works, but real module wouldn't emit it.
   // Trigger a real search interaction:
   await page.getByRole('textbox', { name: 'İhtiyacınızı yazın' }).fill('elektrik');
-  await page.getByRole('button', { name: 'Usta bul' }).click();
+  await page.getByRole('button', { name: 'Hizmet bul', exact: true }).click();
   await page.waitForTimeout(400);
 
   const events = await getEvents(page);
@@ -96,7 +96,7 @@ test('analitik olay properties içinde PII alanları bulunmaz', async ({ page })
 
   // Trigger several interactions that could plausibly have PII
   await page.getByRole('textbox', { name: 'İhtiyacınızı yazın' }).fill('musluk tamiri');
-  await page.getByRole('button', { name: 'Usta bul' }).click();
+  await page.getByRole('button', { name: 'Hizmet bul', exact: true }).click();
   await page.waitForTimeout(500);
 
   const events = await getEvents(page);
@@ -132,7 +132,7 @@ test('onay verilmediğinde analitik olayları dispatch edilmez', async ({ page }
 
   // Trigger an interaction
   await page.getByRole('textbox', { name: 'İhtiyacınızı yazın' }).fill('boya badana');
-  await page.getByRole('button', { name: 'Usta bul' }).click();
+  await page.getByRole('button', { name: 'Hizmet bul', exact: true }).click();
   await page.waitForTimeout(400);
 
   const events = await getEvents(page);
