@@ -1,0 +1,21 @@
+{
+  "id": "TASK-ORCH-INDEX-001",
+  "objective": "Fix the orchestration runner's nested Git index preservation comparison. A real raw index tamper that leaves the logical tree hash unchanged must be reported as an index preservation violation, while stat-cache-only rewrites with unchanged size and logical entries must remain tolerated.",
+  "allowedFiles": [
+    ".orchestration/run-gemini-task.mjs"
+  ],
+  "nonGoals": [
+    "Do not change tests, fixtures, task specifications, application code, Git state, or repository configuration.",
+    "Do not broaden credential scanning or alter unrelated snapshot behavior."
+  ],
+  "constraints": [
+    "Read AGENTS.md and .orchestration/README.md before editing.",
+    "Preserve existing stat-cache tolerance semantics.",
+    "Do not stage, commit, push, reset, clean, or checkout files."
+  ],
+  "checks": [
+    "node --test .orchestration/run-gemini-task.test.mjs"
+  ],
+  "readOnly": false,
+  "autoApprove": true
+}
