@@ -102,7 +102,7 @@ describe('MyRequestsPage (Customer Workspace)', () => {
     mockState.jobs = [{ id: 'job-xyz', request_id: 'req-selected-1', status: 'in_progress' }];
 
     render(await MyRequestsPage({ searchParams: Promise.resolve({}) }));
-    expect(screen.getByText('Usta Seçildi')).toBeInTheDocument();
+    expect(screen.getByText('Usta seçildi')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'İş Ekranına Git →' })).toHaveAttribute('href', '/islerim/job-xyz');
     // P1.1: Usta seçildiğinde tek birincil link iş odasıdır, mükerrer eşleşme linki yoktur.
     expect(screen.queryByRole('link', { name: 'Eşleşme ve teklifler →' })).not.toBeInTheDocument();
@@ -158,7 +158,7 @@ describe('MyRequestsPage (Customer Workspace)', () => {
     ];
 
     render(await MyRequestsPage({ searchParams: Promise.resolve({}) }));
-    expect(screen.getByText('Süresi Doldu')).toBeInTheDocument();
+    expect(screen.getByText('Süresi doldu')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Yeni Talep Oluştur →' })).toHaveAttribute('href', '/#services');
     expect(screen.queryByRole('link', { name: 'Eşleşme ve teklifler →' })).not.toBeInTheDocument();
   });

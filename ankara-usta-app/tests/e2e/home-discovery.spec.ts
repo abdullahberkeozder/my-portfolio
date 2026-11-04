@@ -23,11 +23,16 @@ test('service search has space, a visible label and reachable action at each vie
   }
 });
 
-test('district navigation stays visible and service disclosure is keyboard operable', async ({page}) => {
+test('district selection stays available and service disclosure is keyboard operable', async ({page}) => {
   await page.goto('/');
-  const districts = page.getByRole('navigation', {name: 'İlçelere göre usta listesi'});
-  await expect(districts.getByRole('link', {name: 'Çankaya', exact: true})).toBeVisible();
+  const district = page.getByRole('combobox', {name: 'Ankara İlçesi Seçin'});
+  await expect(district).toBeVisible();
+  await district.selectOption('Çankaya');
+  await expect(district).toHaveValue('Çankaya');
   const summary = page.locator('#services summary');
+  await expect(summary).toContainText('Tüm hizmetleri gör');
+  await expect(page.getByRole('button', {name: 'Tüm hizmetleri gör'})).toHaveCount(0);
+  await expect(page.getByRole('link', {name: 'Tüm ustaları haritada gör'})).toBeVisible();
   await summary.focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('#services details')).toHaveAttribute('open', '');

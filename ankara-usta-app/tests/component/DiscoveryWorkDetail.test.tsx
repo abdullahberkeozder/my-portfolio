@@ -4,7 +4,7 @@ import DiscoveryWorkDetail from '../../app/components/DiscoveryWorkDetail';
 
 vi.mock('next/image', () => ({ default: ({ alt }: { alt: string }) => <span role="img" aria-label={alt} /> }));
 
-const work = { id: 'work-1', title: 'Duvar rafı', image: '/work.jpg', artisanName: 'Örnek Usta', artisanDistrict: 'Çankaya', materials: ['Ahşap'] };
+const work = { id: 'work-1', title: 'Duvar rafı', image: '/work.jpg', artisanName: 'Örnek Usta', artisanDistrict: 'Çankaya', sceneDetails: ['Ahşap'] };
 const props = { work, serviceName: 'Montaj', returnFocusRef: { current: null }, onClose: vi.fn(), onRequest: vi.fn() };
 
 describe('DiscoveryWorkDetail', () => {

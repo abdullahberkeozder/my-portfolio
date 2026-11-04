@@ -21,7 +21,7 @@ export default function AppFooter() {
       <footer className="tr-footer tr-footer-landing" role="contentinfo" aria-label="Site alt bilgisi">
         <div className="footer-landing-inner">
           <Link href={canonicalRoute('/')} aria-label="Orkestra ana sayfa">
-            <TaskrabbitBrandLogo size={27} textColor="#18241f" markColor="#0e6f47" />
+            <TaskrabbitBrandLogo size={27} textColor="#17233B" markColor="#2F76D6" />
           </Link>
           <nav aria-label="Alt navigasyon">
             <Link href={canonicalRoute('/yardim')}>Yardım</Link>

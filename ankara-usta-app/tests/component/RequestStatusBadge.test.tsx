@@ -8,15 +8,15 @@ describe('RequestStatusBadge', () => {
     render(<RequestStatusBadge status="draft" />);
     const badge = screen.getByTestId('request-status-badge');
     expect(badge.textContent).toBe('Taslak');
-    expect(badge.className).toContain('req-status-warning');
+    expect(badge.className).toContain('req-status-neutral');
     expect(badge.className).toContain('req-status-draft');
   });
 
   it('renders matching status with pulse indicator', () => {
     const { container } = render(<RequestStatusBadge status="matching" />);
     const badge = screen.getByTestId('request-status-badge');
-    expect(badge.textContent).toBe('Ustalar Aranıyor');
-    expect(badge.className).toContain('req-status-info');
+    expect(badge.textContent).toBe('Usta aranıyor');
+    expect(badge.className).toContain('req-status-accent');
     expect(container.querySelector('.req-status-pulse')).not.toBeNull();
   });
 
@@ -30,14 +30,14 @@ describe('RequestStatusBadge', () => {
   it('renders quotes_received default label when quoteCount is 0 or undefined', () => {
     render(<RequestStatusBadge status="quotes_received" />);
     const badge = screen.getByTestId('request-status-badge');
-    expect(badge.textContent).toBe('Teklifler Geldi');
+    expect(badge.textContent).toBe('Teklifler hazır');
   });
 
-  it('renders provider_selected with accent tone', () => {
+  it('renders provider_selected with success tone', () => {
     render(<RequestStatusBadge status="provider_selected" />);
     const badge = screen.getByTestId('request-status-badge');
-    expect(badge.textContent).toBe('Usta Seçildi');
-    expect(badge.className).toContain('req-status-accent');
+    expect(badge.textContent).toBe('Usta seçildi');
+    expect(badge.className).toContain('req-status-success');
   });
 
   it('falls back gracefully for unknown status', () => {

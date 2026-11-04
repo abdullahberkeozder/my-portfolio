@@ -14,7 +14,7 @@ test('privacy controls cannot cover an open mobile menu',async({page})=>{
   const menu=page.getByRole('button',{name:'Menü',exact:true});await menu.focus();await page.keyboard.press('Enter');
   const dialog=page.getByRole('dialog',{name:'Menü',exact:true});await expect(dialog).toBeVisible();await expect(banner).toBeHidden();
   await expect(dialog.getByRole('button',{name:'Kapat'})).toBeFocused();
-  await expect(dialog.getByRole('link',{name:'Usta olarak katıl'})).toHaveAttribute('href','/usta/kayit');
+  await expect(dialog.getByRole('link',{name:'Usta olarak katıl'})).toHaveAttribute('href','/usta-basvurusu');
   await expect(dialog.getByRole('link',{name:'Yardım ve destek'})).toHaveAttribute('href','/yardim');
   await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(menu).toBeFocused();await expect(banner).toBeVisible();
   await banner.getByRole('button',{name:'Reddet',exact:true}).click();await page.reload();await expect(banner).toHaveCount(0);
@@ -24,7 +24,7 @@ test('hero no longer forces a full-screen sticky spacer',async({page})=>{
   await page.goto('/');
   const heading=page.getByRole('heading',{name:/Evin için bir fikir.*İşin için bir usta|İşini anlat.*Doğru ustayla buluş/});
   await expect(heading).toBeVisible();
-  const logo=page.locator('.orchestra-directional-logo').first();
+  const logo=page.getByRole('banner').getByRole('link',{name:'Orkestra ana sayfa'}).getByRole('img',{name:'Orkestra'});
   await expect(logo).toHaveCount(1);
   const box=await logo.boundingBox();expect(box!.height).toBeGreaterThan(0);expect(box!.y).toBeLessThan(200);
 });
@@ -35,5 +35,5 @@ test('320px routes reflow and reduced motion disables logo animation',async({pag
     await page.goto(route);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+1),route).toBe(true);
   }
-  await page.goto('/');const logo=page.locator('.orchestra-directional-logo').first();await expect(logo).toHaveCount(1);await expect(logo).toHaveCSS('animation-name','none');
+  await page.goto('/');const logo=page.getByRole('banner').getByRole('link',{name:'Orkestra ana sayfa'}).getByRole('img',{name:'Orkestra'});await expect(logo).toHaveCount(1);await expect(logo).toHaveCSS('animation-name','none');
 });

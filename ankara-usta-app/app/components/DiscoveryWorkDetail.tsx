@@ -12,7 +12,7 @@ export type DiscoveryWork = {
   image: string;
   artisanName: string;
   artisanDistrict: string;
-  materials: string[];
+  sceneDetails: string[];
 };
 
 type Props = {
@@ -55,7 +55,7 @@ export default function DiscoveryWorkDetail({ work, serviceName, returnFocusRef,
         </button>
 
         <div className="discovery-detail-layout">
-          {/* Sol sütun: Büyük zanaatkar görseli */}
+          {/* Sol sütun: Editoryal görsel anchor */}
           <div className="discovery-detail-media">
             <div className="discovery-detail-img-wrap">
               <Image
@@ -67,53 +67,32 @@ export default function DiscoveryWorkDetail({ work, serviceName, returnFocusRef,
                 className="discovery-detail-img"
               />
             </div>
-            <p className="discovery-detail-tagline">
-              <span>{serviceName}</span>
-              <span className="discovery-detail-dot">·</span>
-              <span>{work.artisanDistrict}</span>
-            </p>
           </div>
 
-          {/* Sağ sütun: Editoryal içerik, usta kimliği ve eylem köprüsü */}
+          {/* Sağ sütun: Editoryal içerik ve eylem */}
           <div className="discovery-detail-content">
             <div className="discovery-detail-header">
-              <span className="discovery-detail-kicker">Zanaatkar Portfolyosu</span>
-              <h2 id="discovery-detail-title">{work.title}</h2>
+              <h2 id="discovery-detail-title" className="discovery-detail-title">{work.title}</h2>
+              <p className="discovery-detail-meta">
+                <span>{serviceName}</span>
+                <span className="discovery-detail-sep" aria-hidden="true">·</span>
+                <span>{work.artisanDistrict}</span>
+              </p>
+              <p className="discovery-detail-artisan">Usta profili: {work.artisanName}</p>
             </div>
 
-            <div className="discovery-detail-artisan-chip">
-              <span className="discovery-detail-avatar" aria-hidden="true">
-                {work.artisanName.charAt(0)}
-              </span>
-              <div className="discovery-detail-artisan-meta">
-                <strong>{work.artisanName}</strong>
-                <span>{work.artisanDistrict} bölgesi · Doğrulanmış usta</span>
-              </div>
-            </div>
-
-            <p className="discovery-detail-subtext">
-              {work.artisanName} tarafından tamamlanan örnek uygulama.
-            </p>
-
-            <div className="discovery-detail-scope-block">
-              <span className="discovery-detail-scope-heading">İşçilik & Malzeme Detayları</span>
+            <div className="discovery-detail-details">
+              <span className="discovery-detail-section-label">Fotoğrafta görülenler</span>
               <ul className="discovery-detail-materials">
-                {work.materials.map((material) => (
-                  <li key={material}>{material}</li>
+                {work.sceneDetails.map((detail) => (
+                  <li key={detail}>{detail}</li>
                 ))}
               </ul>
             </div>
 
-            <div className="discovery-detail-trust-card">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="16" x2="12" y2="12" />
-                <line x1="12" y1="8" x2="12.01" y2="8" />
-              </svg>
-              <p>
-                Temsili örnek uygulama. Seçtiğin bu referans talep sihirbazına eklenecektir; adımlarda dilediğin gibi değiştirebilir veya kaldırabilirsin.
-              </p>
-            </div>
+            <p className="discovery-detail-disclosure">
+              Temsili örnek uygulama ve usta profili. Bu referans talep sihirbazına aktarılır; adımlarda dilediğin gibi düzenleyebilirsin.
+            </p>
 
             <div className="discovery-detail-footer">
               <button
