@@ -2020,6 +2020,9 @@
     width: min(88%, 280px);
     font-size: 11px;
   }
+  .mapEmptyStateSplitPane {
+    display: none;
+  }
 }
 
 /* Split Pane Dedicated Controls (Airbnb Clean Map standard) */

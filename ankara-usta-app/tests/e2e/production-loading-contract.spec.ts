@@ -46,6 +46,13 @@ for (const width of viewports) {
     expect(directoryCls, `/ustalar CLS at ${width}px`).toBeLessThanOrEqual(0.05);
     console.log(`[production-loading] ${testInfo.project.name} ${width}px landing=${landingCls.toFixed(4)} directory=${directoryCls.toFixed(4)}`);
 
+    if (width <= 390) {
+      const recovery = page.getByRole('button', { name: /Tüm Ankara.yı göster/i });
+      await expect(recovery).toHaveCount(1);
+      await expect(page.getByRole('button', { name: 'Reddet' })).toBeVisible();
+      await recovery.click();
+    }
+
     const drawerToggle = page.getByRole('button', { name: 'Usta çekmecesini daralt' });
     if (await drawerToggle.count()) {
       const toggleBox = await drawerToggle.boundingBox();

@@ -1237,7 +1237,7 @@ export default function RealAnkaraMap({
       )}
 
       {mode === 'picker' ? null : tradespeopleMarkers?.length === 0 ? (
-        <div className={styles.mapEmptyState} aria-live="polite" aria-atomic="true">
+        <div className={`${styles.mapEmptyState}${isSplitPane ? ` ${styles.mapEmptyStateSplitPane}` : ''}`} aria-live="polite" aria-atomic="true">
           <strong>Bu bölgede doğrulanmış usta bulunamadı.</strong>
           <span>Haritayı taşıyın veya “Bu bölgede ara” seçimini kapatın.</span>
           <button type="button" onClick={() => handleToggleSearchThisArea(false)}>
@@ -1245,7 +1245,7 @@ export default function RealAnkaraMap({
           </button>
         </div>
       ) : searchThisArea && visibleMarkerCount === 0 ? (
-        <div className={styles.mapEmptyState} aria-live="polite" aria-atomic="true">
+        <div className={`${styles.mapEmptyState}${isSplitPane ? ` ${styles.mapEmptyStateSplitPane}` : ''}`} aria-live="polite" aria-atomic="true">
           <strong>Bu bölgede doğrulanmış usta bulunamadı.</strong>
           <span>Haritayı taşıyın ya da aramayı tüm Ankara için açın.</span>
           <button type="button" onClick={() => handleToggleSearchThisArea(false)}>
