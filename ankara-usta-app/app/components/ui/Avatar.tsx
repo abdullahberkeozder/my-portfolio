@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import Image from 'next/image';
 import styles from './Avatar.module.css';
 
 export type AvatarSize   = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
@@ -46,13 +47,14 @@ export default function Avatar({
   return (
     <span className={cls}>
       {src ? (
-        <img
+        <Image
           className={styles.image}
           src={src}
           alt={alt ?? name ?? 'Avatar'}
           width={96}
           height={96}
           loading="lazy"
+          unoptimized
         />
       ) : (
         <span className={styles.initials} aria-label={name}>

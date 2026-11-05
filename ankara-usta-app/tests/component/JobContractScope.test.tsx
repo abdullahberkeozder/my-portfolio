@@ -29,6 +29,8 @@ describe('JobWorkspace Scope & Contract Freezing',() => {
         currentUserId="customer-1"
         role="customer"
         status="in_progress"
+        serviceName="Musluk Değişimi"
+        counterpartyName="Mehmet Usta"
         events={[]}
         messages={[]}
         appointments={[]}
@@ -54,6 +56,7 @@ describe('JobWorkspace Scope & Contract Freezing',() => {
     expect(contractCard).toHaveTextContent('Sızdırmazlık testi');
     expect(contractCard).toHaveTextContent('Fayans kırma ve yenileme');
     expect(contractCard).toHaveTextContent('Eski batarya sökülüp yenisi teslim edilecektir.');
+    expect(screen.getByText('Musluk Değişimi · Mehmet Usta ile')).toBeInTheDocument();
   });
 
   it('computes live financial balance adding approved scope changes to original contract',() => {

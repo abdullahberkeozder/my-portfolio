@@ -1,5 +1,6 @@
 export * from './catalog';
 export * from './models';
+export * from './statusDictionary';
 export * from './matching';
 export * from './jobLifecycle';
 export * from './quotes';

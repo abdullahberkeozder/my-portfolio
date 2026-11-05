@@ -1,7 +1,8 @@
 'use client';
 
-import { ChangeEvent, useEffect, useState, useCallback, useRef } from 'react';
-import { Service, serviceCategories, SERVICE_PRICE_RANGES } from '../data/serviceTaxonomy';
+import { ChangeEvent, useEffect, useState, useCallback, useRef, useTransition } from 'react';
+import Image from 'next/image';
+import { Service, serviceCategories } from '../data/serviceTaxonomy';
 import { getWizardDefinition } from '../data/wizardDefinitions';
 import { ankaraDistricts, ankaraNeighborhoods } from '../data/ankaraLocations';
 import { getWizardSafetyGuidance } from '../data/wizardSafety';
@@ -9,18 +10,35 @@ import { getVisibleWizardQuestions, pruneWizardAnswers } from '../domain';
 import { createSupabaseBrowserClient } from '../lib/supabase/browser';
 import { useModalDialog } from '../hooks/useModalDialog';
 import Button from './Button';
+import HoldToConfirmButton from './HoldToConfirmButton';
 import { normalizeRequestTiming, requestTimings, requestTimingLabel } from '../domain/requestTiming';
 import { trackFunnel } from '../lib/analytics';
 import {WizardLocationStep,WizardMediaStep,WizardQuestionStep,WizardSummaryStep} from './wizard/WizardStepScreens';
 import AccountDraftBoundary, {type DraftScope} from './AccountDraftBoundary';
 import WizardPendingDialog from './WizardPendingDialog';
 import WizardSuccessReceipt from './wizard/WizardSuccessReceipt';
+import WizardStepSkeleton from './skeletons/WizardStepSkeleton';
 import {requestDraftKind, requestResumePath, requestRoutingSchema, type RequestTarget} from '../domain/requestRouting';
 import styles from './requestWizard.module.css';
-import WizardRegionPreview from './wizard/WizardRegionPreview';
 import AnkaraInteractiveMap from './map/AnkaraInteractiveMap';
+import { IconClose, IconEdit, IconLocation, IconCalendar, IconLock, IconShield } from './WizardSummaryIcons';
 
-type Props = { service: Service; onClose: () => void; remoteDraft?: LocalDraft; targetProfessional?: RequestTarget; initialDistrict?: string };
+export type WizardReferenceWork = {
+  id: string;
+  title: string;
+  image: string;
+  artisanName?: string;
+  artisanDistrict?: string;
+};
+
+type Props = {
+  service: Service;
+  onClose: () => void;
+  remoteDraft?: LocalDraft;
+  targetProfessional?: RequestTarget;
+  initialDistrict?: string;
+  referenceWork?: WizardReferenceWork;
+};
 type LocalDraft = {
   answers: Record<string, string>;
   district: string;
@@ -57,27 +75,6 @@ export function readLocalDraft(storageKey: string, storage:Storage = localStorag
   }
 }
 
-const resultContent = {
-  package: {
-    eyebrow: 'PAKET HİZMET',
-    title: 'Standart kapsamlı talep',
-    copy: 'Kapsamınız standart bir işe karşılık geliyor. Talebiniz, seçtiğiniz zaman tercihiyle uygun ve başvurusu onaylanmış hizmet verenlere iletilecek.',
-    cta: 'Talebi onayla ve gönder',
-  },
-  quote: {
-    eyebrow: 'TEKLİF MODELİ',
-    title: 'Karşılaştırılabilir teklifler alın',
-    copy: 'Talebiniz aynı kapsam fişiyle uygun ustalara iletilecek. İşçilik, malzeme, süre ve hariç kapsam alanlarını yan yana karşılaştırabileceksiniz.',
-    cta: 'Teklif Talebini Başlat',
-  },
-  inspection: {
-    eyebrow: 'KEŞİF MODELİ',
-    title: 'Önce uzman değerlendirmesi gerekli',
-    copy: 'Fiyat ve uygulama yöntemi yerinde incelemeye bağlı. Talebiniz keşif yapabilen uygun ustalarla eşleştirilecek.',
-    cta: 'Keşif Talebini Gönder',
-  },
-};
-
 export default function RequestWizard(props:Props) {
   return <AccountDraftBoundary key={requestDraftKind(props.service.id,props.targetProfessional?.id)} kind={requestDraftKind(props.service.id,props.targetProfessional?.id)} ttl={7*86400000}
     renderPending={content=><WizardPendingDialog serviceName={props.service.name} onClose={props.onClose}>{content}</WizardPendingDialog>}>
@@ -87,11 +84,15 @@ export default function RequestWizard(props:Props) {
 
 
 
-function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfessional, initialDistrict }: Props & {scope:DraftScope}) {
+function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfessional, initialDistrict, referenceWork }: Props & {scope:DraftScope}) {
   const formRef = useRef<HTMLDivElement>(null);
   const definition = getWizardDefinition(service.id);
   const storageKey = scope.key;
   const [initialDraft] = useState(() => (!scope.discardRemote && !scope.preferLocal ? remoteDraft : undefined) ?? readLocalDraft(storageKey,scope.storage));
+  const [dismissedReferenceKey, setDismissedReferenceKey] = useState<string>();
+  const referenceKey = referenceWork ? `${referenceWork.image}:${referenceWork.title}` : undefined;
+  const activeReferenceWork = referenceWork && referenceKey !== dismissedReferenceKey ? referenceWork : undefined;
+
   const routingMode = targetProfessional ? 'direct' as const : 'open' as const;
   const targetProfessionalId = targetProfessional?.id;
   const savedRouting = requestRoutingSchema.safeParse(initialDraft ?? {});
@@ -104,7 +105,8 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [district, setDistrict] = useState(initialDraft?.district ?? initialDistrict ?? '');
   const [neighborhood, setNeighborhood] = useState(initialDraft?.neighborhood ?? '');
-  const [locationMode, setLocationMode] = useState<'map' | 'list'>('map');
+  const [locationMode, setLocationMode] = useState<'map' | 'list'>('list');
+  const [locationMessage, setLocationMessage] = useState('');
   const [timing, setTiming] = useState(() => {
     try { return normalizeRequestTiming(initialDraft?.timing ?? 'this_week'); }
     catch { return 'this_week' as const; }
@@ -115,7 +117,8 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
   const [message, setMessage] = useState('');
   const [needsAuth, setNeedsAuth] = useState(false);
   const [submittedRequestId, setSubmittedRequestId] = useState<string>();
-  const resumePath = requestResumePath(service.id,targetProfessionalId);
+  const [isStepPending, startStepTransition] = useTransition();
+  const resumePath = requestResumePath(service.id,targetProfessionalId,district);
   const [mediaMessage, setMediaMessage] = useState('');
   const [requestedQuestionIndex, setQuestionIndex] = useState(() => {
     if (Number.isInteger(initialDraft?.questionIndex) && initialDraft!.questionIndex! >= 0) return initialDraft!.questionIndex!;
@@ -127,11 +130,6 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
   const questions = getVisibleWizardQuestions(definition, answers);
   const questionIndex = Math.min(requestedQuestionIndex, Math.max(questions.length - 1, 0));
   const category = serviceCategories.find(item => item.id === service.categoryId);
-  const result = targetProfessional ? {
-    eyebrow: 'USTAYA ÖZEL TALEP', title: `${targetProfessional.name} için talep özeti`,
-    copy: 'Ustalar arasında yalnızca seçtiğiniz usta görebilir. Ustanın yanıt süresi gönderimden itibaren 48 saattir; bu bir hizmet veya randevu garantisi değildir. Yanıt gelmezse talebiniz kendiliğinden diğer ustalara açılmaz.',
-    cta: 'Bu ustaya talebi gönder',
-  } : resultContent[service.deliveryModel];
   const activeQuestion = questions[questionIndex];
   const activeQuestionId = activeQuestion?.id;
   const activeAnswer = activeQuestion?.options.includes(answers[activeQuestion.id]) ? answers[activeQuestion.id] : undefined;
@@ -142,10 +140,28 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
   const scopeComplete = questions.every(question => question.options.includes(answers[question.id]));
   const stepLabels = ['Kapsam', 'Görseller', 'Konum ve zaman', 'Özet'];
 
+  const totalQuestions = Math.max(questions.length, 1);
+  const totalSubSteps = totalQuestions + 3;
+  const progressPercent = submittedRequestId
+    ? 100
+    : step === 0
+    ? Math.min(Math.round(((questionIndex + 1) / totalSubSteps) * 100), 95)
+    : step === 1
+    ? Math.min(Math.round(((totalQuestions + 1) / totalSubSteps) * 100), 95)
+    : step === 2
+    ? Math.min(Math.round(((totalQuestions + 2) / totalSubSteps) * 100), 95)
+    : 100;
+
+  const transitionToStep = useCallback((nextStep: number) => {
+    startStepTransition(() => setStep(nextStep));
+  }, []);
+
+
   useEffect(() => {
     if (formRef.current?.parentElement) formRef.current.parentElement.scrollTop = 0;
     formRef.current?.querySelector<HTMLElement>('#wizard-title')?.focus({preventScroll:true});
   }, [step, questionIndex]);
+
 
   useEffect(() => {
     if (routingConflict || submittedRequestId) return;
@@ -197,6 +213,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
   }
 
   // Önizleme URL'leri — files her değiştiğinde yeniden üret
+
   useEffect(() => {
     const urls = files.map(f => f.type.startsWith('image/') ? URL.createObjectURL(f) : '');
     const timer = setTimeout(() => {
@@ -242,13 +259,13 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
   }, [answers, district, idempotencyKey, neighborhood, service.id, timing, routingMode, targetProfessionalId, routingConflict, scope.guest]);
 
   const continueFromScope = useCallback(async () => {
-    setStep(1);
+    transitionToStep(1);
     try {
       await saveDraft(false);
     } catch {
       /* Local draft remains available offline */
     }
-  }, [saveDraft]);
+  }, [saveDraft, transitionToStep]);
 
   function continueFromQuestion() {
     if (!activeQuestionId || !activeAnswer) return;
@@ -263,6 +280,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
     if (!activeQuestionId) return;
     setAnswers(current => pruneWizardAnswers(definition, { ...current, [activeQuestionId]: option }));
   }
+
 
 
   useEffect(() => {
@@ -379,56 +397,71 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
         className={styles.dialog}
         role="dialog"
         aria-modal="true"
-        aria-label={step === 0 ? service.name : undefined}
-        aria-labelledby={step !== 0 ? 'wizard-title' : undefined}
+        aria-label={step === 0 ? service.name : step === 1 ? 'İsterseniz fotoğraf veya video ekleyin' : undefined}
+        aria-labelledby={step !== 0 && step !== 1 ? 'wizard-title' : undefined}
         onClick={event => event.stopPropagation()}
       >
+        {/* Mikro İlerleme Çubuğu (Hairline 3px) & Beyaz-Turuncu Süzülen Işık Hüzmesi */}
+        <div className={styles.hairlineTrack} aria-hidden="true">
+          <div
+            className={styles.hairlineFill}
+            style={{ transform: `scaleX(${progressPercent / 100})` }}
+          >
+          </div>
+        </div>
+
         <header className={styles.topbar}>
           <div className={styles.serviceContext}>
             <span>{category?.name ?? 'Hizmet talebi'}</span>
             <strong>{service.name}</strong>
           </div>
-          <button data-dialog-initial-focus className={styles.close} onClick={onClose} aria-label="Kapat">×</button>
+          {targetProfessional && <div className={styles.targetContext} aria-label="Seçili usta">
+            <span>Ustaya özel</span>
+            <strong>{targetProfessional.name}</strong>
+          </div>}
+          <button data-dialog-initial-focus className={styles.close} onClick={onClose} aria-label="Kapat">
+            <IconClose size={18} />
+          </button>
         </header>
 
         <div className={styles.workspace}>
-          {!submittedRequestId && <nav className={styles.rail} aria-label="Talep adımları">
-            <p>Talebinizi hazırlayın</p>
-            <ol>{stepLabels.map((label, index) => <li key={label}>
-              <button type="button" aria-current={index === step ? 'step' : undefined}
-                disabled={busy || (index > 0 && !scopeComplete) || (index === 3 && !locationComplete)}
-                onClick={() => setStep(index)}>
-                <span aria-hidden="true">{index + 1}</span>{label}
-              </button>
-            </li>)}</ol>
-            {/* Fiyat aralığı göstergesi */}
-            {(() => {
-              const pr = SERVICE_PRICE_RANGES[service.id];
-              if (!pr) return null;
-              return (
-                <div className={styles.priceRange}>
-                  <span className={styles.priceRangeIcon}>💰</span>
-                  <div className={styles.priceRangeBody}>
-                    <span className={styles.priceRangeLabel}>Tahmini piyasa aralığı</span>
-                    <span className={styles.priceRangeValue}>{pr.min.toLocaleString('tr-TR')} – {pr.max.toLocaleString('tr-TR')} ₺</span>
-                    <span className={styles.priceRangeNote}>İşçilik, malzeme ve kapsamla değişir</span>
-                  </div>
-                </div>
-              );
-            })()}
-            <small>Yanıtlarınızı göndermeden önce değiştirebilirsiniz.</small>
-          </nav>}
         <div className={styles.viewport}>
           <div className={styles.form} ref={formRef}>
             {submittedRequestId ? <WizardSuccessReceipt requestId={submittedRequestId} serviceName={service.name} district={district} neighborhood={neighborhood} timing={timing} targetProfessionalName={targetProfessional?.name}/> : <>
-            {targetProfessional && <p className="account-message">Seçili usta: <strong>{targetProfessional.name}</strong>. Başka ustalara gönderilmez.</p>}
             <div className={styles.progress} role="status" aria-label={`Talep aşaması: ${stepLabels[step]}`}>
-              <span>{stepLabels[step]}</span>
-              <span>{step + 1} / {stepLabels.length}</span>
+              <strong>{step === 0 ? `Soru ${questionIndex + 1} / ${questions.length}` : stepLabels[step]}</strong>
+              <span>{step === 0 ? 'Kapsam' : `${step + 1} / ${stepLabels.length}`}</span>
             </div>
 
+            {isStepPending ? <WizardStepSkeleton step={step} /> : <>
             {step === 0 && (
-              <WizardQuestionStep key={activeQuestionId} kicker={`Soru ${questionIndex + 1} / ${questions.length}`} title={activeQuestion?.label??'Kapsam sorusu'}>
+              <WizardQuestionStep key={activeQuestionId} kicker="" title={activeQuestion?.label??'Kapsam sorusu'}>
+                {activeReferenceWork && (
+                  <div className={styles.referencePill} role="status" aria-label={`Referans görsel: ${activeReferenceWork.title}`}>
+                    <div className={styles.referencePillMedia}>
+                      <Image
+                        src={activeReferenceWork.image}
+                        alt={activeReferenceWork.title}
+                        width={44}
+                        height={44}
+                        className={styles.referencePillThumb}
+                        unoptimized
+                      />
+                    </div>
+                    <div className={styles.referencePillContent}>
+                      <span className={styles.referencePillLabel}>İlham Referansı</span>
+                      <strong className={styles.referencePillTitle}>{activeReferenceWork.title}</strong>
+                    </div>
+                    <button
+                      type="button"
+                      className={styles.referencePillRemove}
+                      onClick={() => setDismissedReferenceKey(referenceKey)}
+                      aria-label="Referans görseli kaldır"
+                    >
+                      ✕ Kaldır
+                    </button>
+                  </div>
+                )}
 
                 <div className="wizard-zero-scroll-choices">
                   {activeQuestion && (
@@ -439,7 +472,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                         return (
                           <label
                             key={option}
-                            className={styles.choice}
+                            className={`${styles.choice} ${isChecked ? styles.choiceActive : ''}`}
                           >
                             <input
                               type="radio"
@@ -449,7 +482,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                               checked={isChecked}
                               onChange={() => handleSelectOption(option)}
                             />
-                            <span>{option}</span>
+                            <span className={styles.choiceText}>{option}</span>
                           </label>
 
                         );
@@ -472,7 +505,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                       onClick={() => setQuestionIndex(current => current - 1)}
                       type="button"
                     >
-                      ← Önceki Soru
+                      Geri
                     </Button>
                   )}
                   <Button
@@ -481,115 +514,135 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                     onClick={continueFromQuestion}
                     type="button"
                   >
-                    {questionIndex === questions.length - 1 ? 'Görsel ekleme adımına geç' : 'Sonraki soruya geç'}
+                    Devam
                   </Button>
+                  {locationComplete && <Button variant="outline" onClick={() => transitionToStep(3)} type="button">Özete dön</Button>}
                 </div>
-                {questionIndex === 0 && <p className="wizard-account-note" role="note">
-                  Taslağınız bu cihazda korunur. Göndermeden önce giriş yapmanız istenir.
-                </p>}
               </WizardQuestionStep>
             )}
 
             {step === 1 && (
-              <WizardMediaStep kicker="GÖRSELLER" title="İsterseniz fotoğraf veya video ekleyin" description="Bu adım isteğe bağlıdır. Görseller ustanın işi daha net anlamasını ve doğru fiyat vermesini sağlar.">
+              <WizardMediaStep kicker="" title="Görsel eklemek ister misiniz?" description="İsteğe bağlıdır. Net bir fotoğraf ustanın doğru teklif hazırlamasını sağlar.">
+                {activeReferenceWork && (
+                  <div className={styles.referencePill} role="status" aria-label={`Referans görsel: ${activeReferenceWork.title}`}>
+                    <div className={styles.referencePillMedia}>
+                      <Image
+                        src={activeReferenceWork.image}
+                        alt={activeReferenceWork.title}
+                        width={44}
+                        height={44}
+                        className={styles.referencePillThumb}
+                        unoptimized
+                      />
+                    </div>
+                    <div className={styles.referencePillContent}>
+                      <span className={styles.referencePillLabel}>İlham Referansı Eklendi</span>
+                      <strong className={styles.referencePillTitle}>{activeReferenceWork.title}</strong>
+                    </div>
+                    <button
+                      type="button"
+                      className={styles.referencePillRemove}
+                      onClick={() => setDismissedReferenceKey(referenceKey)}
+                      aria-label="Referans görseli kaldır"
+                    >
+                      ✕ Kaldır
+                    </button>
+                  </div>
+                )}
 
-                {/* ── Premium sürükle-bırak yükleme alanı ── */}
+                {Boolean(initialDraft?.pendingMediaCount) && files.length === 0 && (
+                  <p className={styles.mediaRestoreNote} role="status">Önceki seçiminizde dosya vardı. Dosyalar giriş dönüşünde veya sayfa yenilendiğinde korunmaz; eklemek isterseniz yeniden seçin.</p>
+                )}
                 <div
-                  className={[styles.dropZone, dragOver ? styles.dropZoneDragging : ''].filter(Boolean).join(' ')}
+                  className={[styles.dropZone, dragOver ? styles.dropZoneDragging : '', mediaMessage ? styles.dropZoneError : ''].filter(Boolean).join(' ')}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
-                  aria-label="Sürükle bırak veya tıkla"
                 >
+                  <div className={styles.dropZoneIcon} aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 7.5h3.1l1.4-2h7l1.4 2H20a2 2 0 0 1 2 2v8.5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5a2 2 0 0 1 2-2Z" />
+                      <circle cx="12" cy="13.5" r="3.4" />
+                    </svg>
+                  </div>
                   <input
                     type="file"
                     accept="image/jpeg,image/png,image/webp,video/mp4"
                     multiple
                     onChange={filesChanged}
                     aria-label="Fotoğraf veya video seçin"
+                    aria-describedby={mediaMessage ? 'wizard-media-help wizard-media-error' : 'wizard-media-help'}
+                    aria-invalid={mediaMessage ? true : undefined}
                   />
-                  <span className={styles.dropZoneIcon} aria-hidden="true">
-                    {dragOver ? '📂' : '📷'}
-                  </span>
                   <strong className={styles.dropZoneTitle}>
-                    {dragOver ? 'Bırakın, eklensin!' : 'Sürükle bırak veya tıkla'}
+                    {dragOver ? 'Dosyaları buraya bırakın' : 'Fotoğraf veya video seçin'}
                   </strong>
-                  <span className={styles.dropZoneHint}>
-                    JPG · PNG · WebP · MP4 &nbsp;·&nbsp; Maks. 50 MB
+                  <span className={styles.dropZoneHint} id="wizard-media-help">
+                    Sürükleyip de bırakabilirsiniz. JPG, PNG, WebP veya MP4; dosya başına en fazla 50 MB.
                   </span>
-                  {files.length > 0 && (
-                    <span className={styles.dropZoneCount}>
-                      ✓ {files.length} dosya hazır
-                    </span>
-                  )}
                 </div>
 
-                {/* ── Görsel önizleme ızgarası ── */}
                 {files.length > 0 && (
-                  <div className={styles.previewGrid}>
+                  <div className={styles.mediaSelection}>
+                    <h3>{files.length} dosya seçildi</h3>
+                    <div className={styles.previewGrid}>
                     {files.map((file, index) => (
                       <div key={`${file.name}-${file.size}-${file.lastModified}`} className={styles.previewItem}>
                         {previewUrls[index] ? (
                           <div className={styles.previewImageWrap}>
-                            <img src={previewUrls[index]} alt={file.name} className={styles.previewImg} />
-                            <span className={styles.previewFileName}>{file.name}</span>
+                            <Image src={previewUrls[index]} alt={file.name} className={styles.previewImg} width={160} height={120} unoptimized />
                           </div>
                         ) : (
                           <div className={styles.previewVideo}>
-                            <span className={styles.previewVideoIcon}>🎬</span>
-                            <span className={styles.previewVideoName}>{file.name}</span>
+                            <span>MP4</span>
                           </div>
                         )}
+                        <span className={styles.previewFileName} title={file.name}>{file.name}</span>
                         <button
                           type="button"
                           className={styles.previewRemove}
                           onClick={() => setFiles(curr => curr.filter((_, i) => i !== index))}
                           aria-label={`${file.name} dosyasını kaldır`}
-                        >×</button>
+                        >Kaldır</button>
                       </div>
                     ))}
+                    </div>
                   </div>
                 )}
 
-                {mediaMessage && <p className="wizard-inline-error" role="alert">{mediaMessage}</p>}
-
-                <p className="media-privacy-note" role="note">
-                  Yüklemeler herkese açık değildir ve hesabınızın özel alanında tutulur. Fotoğraf eklemeden de devam edebilirsiniz.
-                </p>
+                {mediaMessage && <p id="wizard-media-error" className="wizard-inline-error" role="alert">{mediaMessage}</p>}
 
                 <div className="wizard-actions-bottom">
-                  <Button variant="outline" onClick={() => setStep(0)} type="button">
+                  <Button variant="outline" onClick={() => transitionToStep(0)} type="button">
                     Kapsama dön
                   </Button>
-                  <Button variant="primary" onClick={() => setStep(2)} type="button">
-                    Konum ve zamanı ekle
+                  <Button variant="primary" onClick={() => transitionToStep(2)} type="button">
+                    Devam
                   </Button>
                 </div>
               </WizardMediaStep>
             )}
 
             {step === 2 && (
-              <WizardLocationStep kicker="KONUM VE ZAMAN" title="İş nerede ve ne zaman yapılacak?" description="Açık adresiniz teklif onaylanana kadar gizli tutulur; yalnızca ilçe ve mahalle bilgisi paylaşılır.">
+              <WizardLocationStep kicker="" title="İş nerede ve ne zaman yapılacak?" description="Açık adresiniz teklif onaylanana kadar gizli tutulur; yalnızca ilçe ve mahalle bilgisi paylaşılır.">
 
                 <div className="swiss-location-form">
-                  <div className={styles.locationModeToggle} role="tablist" aria-label="Konum Seçim Yöntemi">
+                  <div className={styles.locationModeToggle} role="group" aria-label="Konum seçim yöntemi">
                     <button
                       type="button"
-                      role="tab"
-                      aria-selected={locationMode === 'map'}
+                      aria-pressed={locationMode === 'map'}
                       className={`${styles.locationModeBtn} ${locationMode === 'map' ? styles.locationModeBtnActive : ''}`}
-                      onClick={() => setLocationMode('map')}
+                      onClick={() => {setLocationMessage('');setLocationMode('map');}}
                     >
-                      🗺️ Harita ile Seç
+                      Haritada seç
                     </button>
                     <button
                       type="button"
-                      role="tab"
-                      aria-selected={locationMode === 'list'}
+                      aria-pressed={locationMode === 'list'}
                       className={`${styles.locationModeBtn} ${locationMode === 'list' ? styles.locationModeBtnActive : ''}`}
-                      onClick={() => setLocationMode('list')}
+                      onClick={() => {setLocationMessage('');setLocationMode('list');}}
                     >
-                      📋 Liste ile Seç
+                      Listeden seç
                     </button>
                   </div>
 
@@ -601,27 +654,15 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                         mode="picker"
                         compact={true}
                         onLocationSelect={(dist, neigh) => {
-                          setDistrict(dist);
-                          if (neigh) {
-                            setNeighborhood(neigh);
+                          if (targetProfessional && dist && !targetProfessional.districts.includes(dist)) {
+                            setLocationMessage(`${targetProfessional.name} ${dist} ilçesinde hizmet vermiyor. Hizmet verdiği ilçelerden birini listeden seçin.`);
+                            return;
                           }
+                          setLocationMessage('');
+                          setDistrict(dist);
+                          setNeighborhood(neigh ?? '');
                         }}
                       />
-
-                      {district && (
-                        <div className={styles.selectedLocationBadge}>
-                          <div className={styles.selectedLocationText}>
-                            <span>📍</span>
-                            <span>
-                              <strong>{district}</strong>
-                              {neighborhood ? ` / ${neighborhood} Mahallesi` : ' (Lütfen mahalle seçin)'}
-                            </span>
-                          </div>
-                          <span className={styles.selectedLocationTag}>
-                            {neighborhood ? '✓ Konum Belirlendi' : '⚡ Mahalle Seçimi Bekleniyor'}
-                          </span>
-                        </div>
-                      )}
 
                     </div>
                   ) : (
@@ -631,6 +672,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                         <select
                           value={district}
                           onChange={event => {
+                            setLocationMessage('');
                             setDistrict(event.target.value);
                             setNeighborhood('');
                           }}
@@ -647,7 +689,7 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                         <span>Mahalle / Semt</span>
                         <select
                           value={neighborhood}
-                          onChange={event => setNeighborhood(event.target.value)}
+                          onChange={event => {setLocationMessage('');setNeighborhood(event.target.value);}}
                           disabled={!district}
                         >
                           <option value="">{district ? 'Mahalle seçin' : 'Önce ilçe seçin'}</option>
@@ -659,18 +701,16 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                     </div>
                   )}
 
-                  {district && neighborhood && (
-                    <div className={styles.kvkkPrivacyNotice} role="note">
-                      <span className={styles.kvkkNoticeIcon} aria-hidden="true">🛡️</span>
-                      <div className={styles.kvkkNoticeBody}>
-                        <strong>KVKK 6698 Adres Gizliliği Koruması Aktif</strong>
-                        <p>Açık bina ve daire numaranız teklif aşamasında ustalara gösterilmez. Haritada yalnızca mahallenizin ~300m koruma yarıçapı yayınlanır; açık adresiniz yalnızca teklifini kabul ettiğiniz ustaya iş odasında açılır.</p>
-                      </div>
-                    </div>
+                  {locationMessage && <p className="wizard-inline-error" role="alert">{locationMessage}</p>}
+                  {district && (
+                    <p className={styles.selectedLocationBadge} role="status">
+                      <strong>{neighborhood ? `${neighborhood}, ${district}` : district}</strong>
+                      <span>{locationComplete ? 'Bölge seçildi' : 'Devam etmek için mahalle seçin'}</span>
+                    </p>
                   )}
 
                   <div className="timing-choice-group">
-                    <span className="timing-label">Tercih Edilen Zaman:</span>
+                    <span className="timing-label">Ne zaman yapılsın?</span>
                     <div className="timing-pills-row">
                       {(Object.keys(requestTimings) as Array<keyof typeof requestTimings>).map(t => (
                         <button
@@ -688,57 +728,134 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                 </div>
 
                 <div className="wizard-actions-bottom">
-                  <Button variant="outline" onClick={() => setStep(1)} type="button">
-                    Görsellere dön
+                  <Button variant="outline" onClick={() => transitionToStep(1)} type="button">
+                    Geri
                   </Button>
                   <Button
                     variant="primary"
                     disabled={!locationComplete}
-                    onClick={() => setStep(3)}
+                    onClick={() => transitionToStep(3)}
                     type="button"
                   >
-                    Talep kapsamını kontrol et
+                    Özeti gör
                   </Button>
                 </div>
               </WizardLocationStep>
             )}
 
             {step === 3 && (
-              <WizardSummaryStep kicker="" title="Talebiniz hazır mı?" description="İşin ayrıntılarını kontrol edin, ardından teklif almak için gönderin.">
-                {targetProfessional && <p className="account-message">{result.copy}</p>}
-                <p className={styles.visibilityNote}>{targetProfessional ? `Yalnız ${targetProfessional.name} için hazırlanıyor.` : 'Talebiniz, hizmet ve bölgenize uygun ustalara iletilir.'}</p>
-                {Boolean(initialDraft?.pendingMediaCount) && files.length === 0 && (
-                  <p className="account-message" role="status">Önceki seçiminizdeki dosyalar henüz eklenmedi. <button type="button" onClick={() => setStep(1)}>Görsellere dön ve yeniden ekle</button></p>
+              <WizardSummaryStep kicker="" title="Talebiniz hazır" description="Bilgilerinizi kontrol edin.">
+                <div className={styles.summaryTrustBanner} aria-label="Talep güvenceleri">
+                  <IconShield size={18} className={styles.trustIcon} />
+                  <ul>
+                    <li>Ücretsiz</li>
+                    <li>Bağlayıcı değil</li>
+                    <li>Güvenli Havuz</li>
+                  </ul>
+                </div>
+                {targetProfessional && (
+                  <p className={styles.visibilityNote}>Yalnız {targetProfessional.name} görecek.</p>
                 )}
 
-                <div className={styles.reviewGrid}>
-                <div className={styles.reviewContent}>
+                {Boolean(initialDraft?.pendingMediaCount) && files.length === 0 && (
+                  <p className="account-message" role="status">Önceki seçiminizdeki dosyalar henüz eklenmedi. <button className={styles.inlineRecovery} type="button" onClick={() => transitionToStep(1)}>Fotoğrafları yeniden seç</button></p>
+                )}
+
+                <div className={styles.reviewCard}>
                   <section className={styles.reviewSection} aria-label="İşin ayrıntıları">
                     <header className={styles.sectionHeader}>
-                      <h3>{service.name}</h3>
-                      <button type="button" aria-label="Yanıtları düzenle" title="Yanıtları düzenle" onClick={() => {setQuestionIndex(0);setStep(0);}}><span className={styles.editIcon} aria-hidden="true">✎</span></button>
+                      <div>
+                        <span className={styles.reviewBadge}>{category?.name ?? 'Ev Hizmeti'}</span>
+                        <h3>{service.name}</h3>
+                      </div>
+                      <button
+                        type="button"
+                        aria-label="Yanıtları düzenle"
+                        title="Yanıtları düzenle"
+                        className={styles.reviewEditBtn}
+                        onClick={() => { setQuestionIndex(0); transitionToStep(0); }}
+                      >
+                        <IconEdit size={18} />
+                        <span className="sr-only">Yanıtları düzenle</span>
+                      </button>
                     </header>
-                    <dl className={styles.summary} aria-label="Talep kapsamı">
-                      {questions.map(question => <div key={question.id}>
-                        <dt>{question.label}</dt><dd>{answers[question.id] || 'Yanıtlanmadı'}</dd>
-                      </div>)}
-                    </dl>
+                    <details className={styles.answerDetails}>
+                      <summary>{questions.length} yanıtı gör</summary>
+                      <dl className={styles.summary} aria-label="Talep kapsamı">
+                        {questions.map(question => (
+                          <div key={question.id} className={styles.summaryRow}>
+                            <dt>{question.label}</dt>
+                            <dd>{answers[question.id] || 'Yanıtlanmadı'}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </details>
                   </section>
+
                   <section className={styles.reviewSection} aria-label="Konum ve zaman bilgileri">
-                    <header className={styles.sectionHeader}><h3>Konum ve zaman</h3><button type="button" aria-label="Bölgeyi veya zamanı düzenle" title="Bölgeyi veya zamanı düzenle" onClick={() => setStep(2)}><span className={styles.editIcon} aria-hidden="true">✎</span></button></header>
-                    <dl className={styles.summary}>
+                    <header className={styles.sectionHeader}>
+                      <div>
+                        <h3>Konum ve zaman</h3>
+                        <div className={styles.metaList}>
+                          <div className={styles.metaRow}>
+                            <IconLocation size={18} className={styles.metaIcon} />
+                            <span>{neighborhood ? `${neighborhood}, ` : ''}{district}</span>
+                          </div>
+                          <div className={styles.metaRow}>
+                            <IconCalendar size={18} className={styles.metaIcon} />
+                            <span>{requestTimingLabel(timing)}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        aria-label="Konumu ve zamanı düzenle"
+                        title="Konumu ve zamanı düzenle"
+                        className={styles.reviewEditBtn}
+                        onClick={() => transitionToStep(2)}
+                      >
+                        <IconEdit size={18} />
+                        <span className="sr-only">Bölgeyi veya zamanı düzenle</span>
+                      </button>
+                    </header>
+                    <dl className="sr-only">
                       <div><dt>İşin yapılacağı yer</dt><dd>{neighborhood}, {district}</dd></div>
                       <div><dt>Zaman tercihi</dt><dd>{requestTimingLabel(timing)}</dd></div>
                     </dl>
                   </section>
+
                   <section className={styles.reviewSection} aria-label="Eklenen görseller">
-                    <header className={styles.sectionHeader}><h3>Görseller <span>{files.length ? `${files.length} dosya` : 'İsteğe bağlı'}</span></h3><button type="button" aria-label={files.length ? 'Görselleri düzenle' : 'Görsel ekle'} title={files.length ? 'Görselleri düzenle' : 'Görsel ekle'} onClick={() => setStep(1)}><span className={styles.editIcon} aria-hidden="true">{files.length ? '✎' : '+'}</span></button></header>
-                    <p className={styles.visibilityNote}>{files.length ? files.map(file => file.name).join(', ') : 'Görsel eklemeden devam edebilirsiniz.'}</p>
+                    <header className={styles.sectionHeader}>
+                      <div>
+                        <h3>Görseller</h3>
+                        <p className={styles.sectionSubtext}>
+                          {files.length ? `${files.length} dosya hazır` : (activeReferenceWork ? `1 referans görseli (${activeReferenceWork.title})` : 'Fotoğraf eklenmedi')}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        aria-label={files.length ? 'Görselleri düzenle' : 'Görsel ekle'}
+                        title={files.length ? 'Görselleri düzenle' : 'Görsel ekle'}
+                        className={files.length ? styles.reviewEditBtn : styles.reviewAddBtn}
+                        onClick={() => transitionToStep(1)}
+                      >
+                        {files.length ? (
+                          <>
+                            <IconEdit size={18} />
+                            <span className="sr-only">Görselleri düzenle</span>
+                          </>
+                        ) : (
+                          <span>+ Ekle</span>
+                        )}
+                      </button>
+                    </header>
                   </section>
                 </div>
-                <WizardRegionPreview district={district} serviceId={service.id} targetProfessionalName={targetProfessional?.name}/>
+
+                <div className={styles.privacyNote}>
+                  <IconLock size={18} className={styles.privacyIcon} />
+                  <span>Açık adresiniz ve iletişim bilgileriniz yalnızca teklifi kabul ettiğiniz ustayla paylaşılır; açık havuza dağıtılmaz.</span>
                 </div>
-                <details className={styles.privacyDetails}><summary>Talebimi kimler görebilir?</summary><p>{targetProfessional ? 'Ustalar arasında yalnız seçtiğiniz usta görebilir.' : 'Talebiniz hizmet ve bölgenize uygun ustalarla paylaşılır.'} Yetkili operasyon ekibi gerektiğinde inceleyebilir. Açık adresiniz bu özette paylaşılmaz.</p></details>
 
                 {(message || scope.guest || needsAuth) && (
                   <p className="account-message" role={message ? 'alert' : 'status'}>
@@ -748,19 +865,19 @@ function ScopedRequestWizard({ service, onClose, remoteDraft, scope, targetProfe
                 )}
 
                 <div className="wizard-actions">
-                  <span className={styles.submitNote}>Göndermek, teklif kabul etmek değildir.</span>
+                  <span className={styles.submitNote}>Göndermek için basılı tutun.</span>
                   {authAction}
-                  {!scope.guest && !needsAuth && <Button
-                    variant="primary"
-                    loading={busy}
-                    onClick={() => void submitRequest()}
-                    type="button"
-                  >
-                    {targetProfessional ? 'Bu ustaya talebi gönder' : 'Talebi gönder'}
-                  </Button>}
+                  {!scope.guest && !needsAuth && (
+                    <HoldToConfirmButton
+                      loading={busy}
+                      onConfirm={submitRequest}
+                      label={targetProfessional ? 'Bu ustaya gönder' : 'Talebi gönder'}
+                    />
+                  )}
                 </div>
               </WizardSummaryStep>
             )}
+            </>}
             </>}
           </div>
         </div>

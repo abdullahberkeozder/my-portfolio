@@ -45,6 +45,8 @@ type Props = {
   currentUserId: string;
   role: Role;
   status: string;
+  serviceName?: string | null;
+  counterpartyName?: string | null;
   events: EventRow[];
   messages: MessageRow[];
   appointments: AppointmentRow[];
@@ -413,10 +415,15 @@ export default function JobWorkspace(props: Props) {
 
       {/* Header & Status Bar */}
       <header className="job-header-card">
-        <div className="job-meta-left">
-          <span className="job-id-pill">İŞ KODU: #{props.jobId.slice(0, 8).toUpperCase()}</span>
-          <h1 className="job-title">İş Yönetim Merkezi</h1>
-        </div>
+          <div className="job-meta-left">
+            <span className="job-id-pill">İŞ KODU: #{props.jobId.slice(0, 8).toUpperCase()}</span>
+            <h1 className="job-title">İş Yönetim Merkezi</h1>
+            {(props.serviceName || props.counterpartyName) && (
+              <p className="job-context-line">
+                {props.serviceName ?? 'Hizmet'}{props.counterpartyName ? ` · ${props.counterpartyName} ile` : ''}
+              </p>
+            )}
+          </div>
         <div className="job-meta-right">
           <span className={`job-status-badge ${statusInfo.tone}`}>
             <span className="status-dot" />
@@ -950,11 +957,11 @@ export default function JobWorkspace(props: Props) {
               <h3>Mevcut Durumda Yapabileceğiniz İşlemler</h3>
               {availableActions.length > 0 ? (
                 <div className="actions-buttons-grid">
-                  {availableActions.map(action => (
+                  {availableActions.map((action, index) => (
                     <button
                       key={action.status}
                       type="button"
-                      className={`status-trigger-btn ${action.isDangerous ? 'btn-danger' : 'btn-primary'}`}
+                      className={`status-trigger-btn ${action.isDangerous ? 'btn-danger' : index === 0 ? 'btn-primary' : 'btn-secondary'}`}
                       disabled={Boolean(busy)}
                       onClick={() => setConfirmAction(action)}
                     >

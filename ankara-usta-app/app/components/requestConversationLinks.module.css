@@ -1,0 +1,7 @@
+.panel{margin:28px 0;padding:22px 0;border-block:1px solid var(--border-default)}
+.panel h2{margin:0 0 7px;font-size:20px;line-height:1.25;letter-spacing:-.02em}
+.panel p{max-width:68ch;margin:0 0 14px;color:var(--text-secondary);font-size:14px;line-height:1.55}
+.panel ul{display:grid;gap:4px;margin:0;padding:0;list-style:none}
+.panel a{min-height:44px;width:fit-content;display:inline-flex;align-items:center;color:var(--action-primary);font-weight:700;text-decoration:none}
+.panel a:hover{text-decoration:underline;text-underline-offset:4px}
+.panel a:focus-visible{outline:3px solid var(--action-primary);outline-offset:3px;border-radius:6px}

@@ -1,5 +1,4 @@
 import { chromium } from '@playwright/test';
-import path from 'path';
 
 async function main() {
   const browser = await chromium.launch({ headless: true });

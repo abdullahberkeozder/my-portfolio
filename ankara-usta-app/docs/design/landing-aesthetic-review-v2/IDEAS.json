@@ -1,0 +1,602 @@
+[
+  {
+    "id": 1,
+    "title": "Hero fotoğrafını geri kazan",
+    "source": "Thumbtack / Loom",
+    "proposal": "Soluk perde yerine yazı çevresinde sakin, kenarlarda malzemesi okunur bir fotoğraf; merkezde aramayı koru.",
+    "risk": "Metin kontrastı her kırpımda doğrulanmalı.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "0",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "+",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "+",
+      "Mevcut içerikle yapılabilirlik": "0",
+      "Kapsam disiplini": "0"
+    },
+    "selected": true
+  },
+  {
+    "id": 2,
+    "title": "Editöryal vitrini koru, kadrajı tasarla",
+    "source": "COS / Editorial",
+    "proposal": "Büyük raf görseli + iki küçük iş düzeni kalsın; rafın yerine koltuğun baskınlaşmadığı odak noktası seç.",
+    "risk": "Büyük kart otomatik olarak en iyi usta anlamına gelmemeli.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "+",
+      "Mobil": "0",
+      "Erişilebilirlik": "+",
+      "Performans": "+",
+      "Mevcut içerikle yapılabilirlik": "0",
+      "Kapsam disiplini": "+"
+    },
+    "selected": true
+  },
+  {
+    "id": 3,
+    "title": "Fotoğraflara ortak sanat yönetimi",
+    "source": "COS / Massimo Dutti",
+    "proposal": "Gün ışığı, doğal malzeme, tutarlı beyaz dengesi; bitmiş iş ve çalışma anı aynı görsel aileye ait olsun.",
+    "risk": "Görsel güzelliği gerçek iş kanıtı gibi sunma.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "+",
+      "Mobil": "0",
+      "Erişilebilirlik": "+",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "0",
+      "Kapsam disiplini": "+"
+    },
+    "selected": true
+  },
+  {
+    "id": 4,
+    "title": "Kategorileri tipografik navigasyona dönüştür",
+    "source": "Ink / Airbnb",
+    "proposal": "Yedi ayrı kutu yerine boşlukla ayrılmış metinler; seçilide yeşil çizgi ve ağırlık; klavye odağında belirgin çerçeve.",
+    "risk": "Sadece renk ile seçili durum anlatılmamalı.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "+",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "+",
+      "Kapsam disiplini": "+"
+    },
+    "selected": true
+  },
+  {
+    "id": 5,
+    "title": "Başlık ve kontrol tipografisini disipline et",
+    "source": "Atelier / Ink",
+    "proposal": "Serif yalnız sloganın editöryal sesi; arama, kategori ve kart metinleri aynı okunaklı sans aile.",
+    "risk": "Yeni font eklemek yerine mevcut aile ve ağırlıkları sınırla.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "+",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "+",
+      "Kapsam disiplini": "+"
+    },
+    "selected": true
+  },
+  {
+    "id": 6,
+    "title": "Marka renklerini uçtan uca eşleştir",
+    "source": "Taskrabbit / mevcut logo",
+    "proposal": "Mavi logo her yerde aynı; yeşil ana eylem; koyu nötr metin. Bronz header vurgusu ve footer logo sapmasını gider.",
+    "risk": "Tek renk zorunluluğu değil, her renge sabit görev.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "+",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "+",
+      "Kapsam disiplini": "+"
+    },
+    "selected": true
+  },
+  {
+    "id": 7,
+    "title": "Mobil için ayrı dikey ritim kur",
+    "source": "Airbnb / Ink",
+    "proposal": "Slogan–form–örnekler–keşif arasındaki boşlukları birlikte azalt; küçük yazıya veya küçük hedeflere başvurma.",
+    "risk": "İlk fotoğrafı görünür kılmak uğruna form okunabilirliğini feda etme.",
+    "lenses": {
+      "Sanat yönetimi": "0",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "+",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "+",
+      "Mevcut içerikle yapılabilirlik": "0",
+      "Kapsam disiplini": "+"
+    },
+    "selected": true
+  },
+  {
+    "id": 8,
+    "title": "Kontrol ailelerini önem sırasıyla çiz",
+    "source": "Ink / Taskrabbit",
+    "proposal": "Hizmet bul dolu yeşil; hizmet ver nötr kontur; kategori metin; kaydet simge. Birbiriyle aynı ağırlıkta dört kutu olmasın.",
+    "risk": "Arama alanının sınırı ve focus görünürlüğü korunur.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "+",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "+",
+      "Kapsam disiplini": "+"
+    },
+    "selected": true
+  },
+  {
+    "id": 9,
+    "title": "Kart künyesini fotoğrafın devamı yap",
+    "source": "Airbnb / Terrazzo",
+    "proposal": "Başlık, usta/ilçe ve kaydet eylemi ortak yatay eksende; ayrı beyaz kart kasası ve rozet yığını ekleme.",
+    "risk": "Temsili bilgisini görünmezleştirme; gerçek doğrulama izlenimi verme.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "+",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "+",
+      "Kapsam disiplini": "+"
+    },
+    "selected": true
+  },
+  {
+    "id": 10,
+    "title": "Bölümleri ortak zemin ve hizayla bağla",
+    "source": "COS / Formwork",
+    "proposal": "Tek zemin; keşif, alt eylem ve hizmet dizinini gereksiz çift çizgi/boşluktan kurtar; yalnız anlamlı geçişte ayraç.",
+    "risk": "Bütün borderları kaldırmak hedef değil.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "+",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "+",
+      "Kapsam disiplini": "+"
+    },
+    "selected": true
+  },
+  {
+    "id": 11,
+    "title": "Her şeyi squircle yap",
+    "source": "Bloom",
+    "proposal": "Tüm bileşenlerde sürekli kavis uygula.",
+    "risk": "Tek geometri hiyerarşi yaratmaz; mevcut asıl sorunları çözmez.",
+    "lenses": {
+      "Sanat yönetimi": "0",
+      "Özgünlük": "0",
+      "Bilgi hiyerarşisi": "-",
+      "Görev netliği": "0",
+      "Marka devamlılığı": "0",
+      "Mobil": "0",
+      "Erişilebilirlik": "0",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "-",
+      "Kapsam disiplini": "-"
+    },
+    "selected": false
+  },
+  {
+    "id": 12,
+    "title": "Siyah moda kampanyası hero",
+    "source": "Darkroom / Zara",
+    "proposal": "Tam ekran koyu fotoğraf ve büyük moda başlığı.",
+    "risk": "Arama görünürlüğü ve sıcak yerel hizmet dili kaybolabilir.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "0",
+      "Bilgi hiyerarşisi": "-",
+      "Görev netliği": "-",
+      "Marka devamlılığı": "0",
+      "Mobil": "-",
+      "Erişilebilirlik": "-",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "-",
+      "Kapsam disiplini": "-"
+    },
+    "selected": false
+  },
+  {
+    "id": 13,
+    "title": "Metinleri fotoğraf üzerine bindir",
+    "source": "Mango",
+    "proposal": "Bütün kart başlıklarını görsel üstüne taşı.",
+    "risk": "Farklı iş fotoğraflarında okunabilirlik ve metin seçimi bozulur.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "0",
+      "Bilgi hiyerarşisi": "-",
+      "Görev netliği": "-",
+      "Marka devamlılığı": "0",
+      "Mobil": "-",
+      "Erişilebilirlik": "-",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "-",
+      "Kapsam disiplini": "-"
+    },
+    "selected": false
+  },
+  {
+    "id": 14,
+    "title": "Gerçek işten önce/sonra çifti",
+    "source": "Editorial",
+    "proposal": "Aynı işe ait iki gerçek görüntüyü bir editöryal hikâyede kullan.",
+    "risk": "Mevcut temsili farklı görsellerden sahte önce/sonra üretilemez.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "0",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "-",
+      "Kapsam disiplini": "-"
+    },
+    "selected": false
+  },
+  {
+    "id": 15,
+    "title": "Malzeme yakın planı",
+    "source": "Terrazzo / Loom",
+    "proposal": "Raf damarını veya işçilik birleşimini küçük destek görseli olarak kullan.",
+    "risk": "Ek görsel bütçesi ve gerçek içerik gerekir.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "0",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "0",
+      "Mobil": "+",
+      "Erişilebilirlik": "0",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "-",
+      "Kapsam disiplini": "-"
+    },
+    "selected": false
+  },
+  {
+    "id": 16,
+    "title": "Eşit kart ızgarasına dön",
+    "source": "Airbnb",
+    "proposal": "Altı fotoğrafı aynı ölçüde göster.",
+    "risk": "Tarama kolaylaşır fakat kullanıcının seçtiği editöryal yön kaybolur.",
+    "lenses": {
+      "Sanat yönetimi": "0",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "0",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "+",
+      "Kapsam disiplini": "-"
+    },
+    "selected": false
+  },
+  {
+    "id": 17,
+    "title": "Karuselle ilk görünümü daralt",
+    "source": "Beymen",
+    "proposal": "Keşfi yatay otomatik kayan vitrine dönüştür.",
+    "risk": "Gizli içerik, hareket, kontrol maliyeti.",
+    "lenses": {
+      "Sanat yönetimi": "0",
+      "Özgünlük": "0",
+      "Bilgi hiyerarşisi": "-",
+      "Görev netliği": "-",
+      "Marka devamlılığı": "0",
+      "Mobil": "-",
+      "Erişilebilirlik": "-",
+      "Performans": "-",
+      "Mevcut içerikle yapılabilirlik": "-",
+      "Kapsam disiplini": "0"
+    },
+    "selected": false
+  },
+  {
+    "id": 18,
+    "title": "Sticky hizmet bul ekle",
+    "source": "Pazaryeri kalıbı",
+    "proposal": "Mobil alt sabit CTA.",
+    "risk": "Bu araştırmada yeni kontrol istemiyoruz; içerikle çakışma riski.",
+    "lenses": {
+      "Sanat yönetimi": "0",
+      "Özgünlük": "0",
+      "Bilgi hiyerarşisi": "-",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "0",
+      "Mobil": "-",
+      "Erişilebilirlik": "-",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "-",
+      "Kapsam disiplini": "-"
+    },
+    "selected": false
+  },
+  {
+    "id": 19,
+    "title": "Gerçek ustayı işin içinde göster",
+    "source": "Editorial / Werkstatt",
+    "proposal": "Portre rozeti yerine bir çalışma anında ustanın elleri ve iş ilişkisini göster.",
+    "risk": "İzinli gerçek içerik gelene kadar temsili olarak kalmalı.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "0",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "-",
+      "Kapsam disiplini": "-"
+    },
+    "selected": false
+  },
+  {
+    "id": 20,
+    "title": "Arama örneklerini iki satıra kontrollü dağıt",
+    "source": "Ink",
+    "proposal": "Virgüllü bağlantı cümlesi yerine dengeli, sade metin aralıkları.",
+    "risk": "Yeni chips/kutulara dönüşmesin; ana kompozisyon kararına dahil edilebilir.",
+    "lenses": {
+      "Sanat yönetimi": "0",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "+",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "+",
+      "Kapsam disiplini": "+"
+    },
+    "selected": false
+  },
+  {
+    "id": 21,
+    "title": "Headerı fotoğrafa bindir",
+    "source": "Zara",
+    "proposal": "Şeffaf header ile görseli ekran başından başlat.",
+    "risk": "İkon kontrastı her görselde değişir; gerekli değil.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "0",
+      "Bilgi hiyerarşisi": "-",
+      "Görev netliği": "-",
+      "Marka devamlılığı": "0",
+      "Mobil": "-",
+      "Erişilebilirlik": "-",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "-",
+      "Kapsam disiplini": "-"
+    },
+    "selected": false
+  },
+  {
+    "id": 22,
+    "title": "Kaydetme için sakin mikro animasyon",
+    "source": "Airbnb",
+    "proposal": "Basılınca kısa dolgu geçişi.",
+    "risk": "Statik kompozisyon düzelmeden düşük öncelik; reduced motion gerekir.",
+    "lenses": {
+      "Sanat yönetimi": "0",
+      "Özgünlük": "0",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "0",
+      "Mobil": "+",
+      "Erişilebilirlik": "0",
+      "Performans": "+",
+      "Mevcut içerikle yapılabilirlik": "0",
+      "Kapsam disiplini": "+"
+    },
+    "selected": false
+  },
+  {
+    "id": 23,
+    "title": "Temsili açıklamasını yeniden yaz",
+    "source": "Mevcut vitrin",
+    "proposal": "Kısa ve tek anlamlı açıklama; kart düzeyinde gerektiğinde açıkça tekrarla.",
+    "risk": "Açıklamayı salt estetik için kaldırma.",
+    "lenses": {
+      "Sanat yönetimi": "0",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "0",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "+",
+      "Kapsam disiplini": "+"
+    },
+    "selected": false
+  },
+  {
+    "id": 24,
+    "title": "Consent yüzeyinin kompozisyonunu sadeleştir",
+    "source": "Mevcut ilk ziyaret",
+    "proposal": "Kısa satırlar ve iki eşit okunur tercih; ilk fotoğrafı daha az örten konum.",
+    "risk": "Rızayı yönlendiren tasarım veya gizli ret kabul edilmez.",
+    "lenses": {
+      "Sanat yönetimi": "0",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "+",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "+",
+      "Kapsam disiplini": "0"
+    },
+    "selected": false
+  },
+  {
+    "id": 25,
+    "title": "İskeleti final kadrajıyla aynı tut",
+    "source": "Mevcut loading",
+    "proposal": "Büyük/küçük fotoğraf oranları yüklemede de korunsun.",
+    "risk": "Gri placeholder tek ekran görüntüsünde yükleme hatası sayılmaz.",
+    "lenses": {
+      "Sanat yönetimi": "0",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "+",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "+",
+      "Mevcut içerikle yapılabilirlik": "0",
+      "Kapsam disiplini": "+"
+    },
+    "selected": false
+  },
+  {
+    "id": 26,
+    "title": "Alt hizmet dizinini metin listesine yaklaştır",
+    "source": "Terrazzo",
+    "proposal": "Accordion dış kabuğunu sakinleştir; alt bağlantıları tipografik sırayla sun.",
+    "risk": "Yeni uzun SEO metni ekleme; D10 kapsamına birleşebilir.",
+    "lenses": {
+      "Sanat yönetimi": "0",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "+",
+      "Görev netliği": "+",
+      "Marka devamlılığı": "+",
+      "Mobil": "+",
+      "Erişilebilirlik": "+",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "+",
+      "Kapsam disiplini": "+"
+    },
+    "selected": false
+  },
+  {
+    "id": 27,
+    "title": "Hero videosu",
+    "source": "Lüks kampanya yaklaşımı",
+    "proposal": "İşçilik hareketini arka planda göster.",
+    "risk": "Performans ve hareket yükü; mevcut fotoğraf sorununu pahalılaştırır.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "+",
+      "Bilgi hiyerarşisi": "-",
+      "Görev netliği": "-",
+      "Marka devamlılığı": "0",
+      "Mobil": "-",
+      "Erişilebilirlik": "-",
+      "Performans": "-",
+      "Mevcut içerikle yapılabilirlik": "-",
+      "Kapsam disiplini": "0"
+    },
+    "selected": false
+  },
+  {
+    "id": 28,
+    "title": "Sıfır çerçeve yaklaşımı",
+    "source": "Yanlış lüks genellemesi",
+    "proposal": "Input dahil bütün sınırları kaldır.",
+    "risk": "Arama ve odak affordance kaybı; reddedildi.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "0",
+      "Bilgi hiyerarşisi": "-",
+      "Görev netliği": "-",
+      "Marka devamlılığı": "-",
+      "Mobil": "0",
+      "Erişilebilirlik": "-",
+      "Performans": "-",
+      "Mevcut içerikle yapılabilirlik": "0",
+      "Kapsam disiplini": "-"
+    },
+    "selected": false
+  },
+  {
+    "id": 29,
+    "title": "Bölgesel konut anlatısını geri getir",
+    "source": "Eski rapor I07",
+    "proposal": "Ankara bölgelerini açıklayan dört blok.",
+    "risk": "Kullanıcı kaldırdı; yeni estetik çalışmasında geri gelmeyecek.",
+    "lenses": {
+      "Sanat yönetimi": "0",
+      "Özgünlük": "0",
+      "Bilgi hiyerarşisi": "-",
+      "Görev netliği": "0",
+      "Marka devamlılığı": "-",
+      "Mobil": "-",
+      "Erişilebilirlik": "0",
+      "Performans": "-",
+      "Mevcut içerikle yapılabilirlik": "-",
+      "Kapsam disiplini": "-"
+    },
+    "selected": false
+  },
+  {
+    "id": 30,
+    "title": "Bronzu yeni premium ana renk yap",
+    "source": "Gemini karşı görüşü",
+    "proposal": "Mavi/yeşili bronz kimliğe taşı.",
+    "risk": "Renk değişimi özgünlük kanıtı değil; onaylı marka yönüyle çelişiyor.",
+    "lenses": {
+      "Sanat yönetimi": "+",
+      "Özgünlük": "0",
+      "Bilgi hiyerarşisi": "0",
+      "Görev netliği": "-",
+      "Marka devamlılığı": "-",
+      "Mobil": "0",
+      "Erişilebilirlik": "0",
+      "Performans": "0",
+      "Mevcut içerikle yapılabilirlik": "-",
+      "Kapsam disiplini": "-"
+    },
+    "selected": false
+  }
+]

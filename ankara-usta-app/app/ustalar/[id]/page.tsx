@@ -1,16 +1,36 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { services } from '../../data/serviceTaxonomy';
+import { ankaraDistricts } from '../../data/ankaraLocations';
 import { createSupabaseServerClient } from '../../lib/supabase/server';
 import { directedRequestsEnabled } from '../../lib/directedRequests';
-import styles from '../directory.module.css';
+import { canonicalDiscoveryDistrictSlug, parseDiscoveryParams, serializeDiscoveryFilters } from '../../lib/discoveryContract';
+import { buildPublicTrustClaims } from '../../lib/trustClaims';
 import profileStyles from './profile.module.css';
-import BeforeAfterSlider from '../../components/BeforeAfterSlider';
 import { RatingStars } from '../../components/ui';
-import { calculateTradespersonLevel } from '../../domain/trust';
 import UstaServiceAreaMapClient from '../../components/map/UstaServiceAreaMapClient';
+import SurfaceCard from '../../components/ui/SurfaceCard';
 
 export const dynamic = 'force-dynamic';
+
+const CRAFT_PORTFOLIO = [
+  {
+    title: 'Siteler Atölye İmalatı & Yerinde Montaj',
+    desc: 'Lazer gönye ve hassas ray bağlantılı demonte ve özel mobilya kurulumu.',
+    image: '/services/montaj.jpg',
+  },
+  {
+    title: 'Rüzgarlı Tesisat Testi & Sıhhi Yenileme',
+    desc: 'Basınç testli batarya, gizli sifon ve su sızdırmazlık müdahaleleri.',
+    image: '/services/tesisat.jpg',
+  },
+  {
+    title: 'Lazer Terazili Hat & Hatasız Duvar İşçiliği',
+    desc: 'Pürüzsüz macun, astar ve silinebilir boya ile korumalı yüzeyler.',
+    image: '/services/boya-tadilat.jpg',
+  },
+];
 
 export default async function PublicTradespersonPage({
   params,
@@ -20,12 +40,14 @@ export default async function PublicTradespersonPage({
   searchParams?: Promise<{ service?: string; district?: string }>;
 }) {
   const { id } = await params;
-  const filters = await searchParams ?? {};
-  const selectedService = services.find(service => service.id === filters.service)?.id;
-  const backQuery = new URLSearchParams({
-    ...(selectedService ? { service: selectedService } : {}),
-    ...(filters.district ? { district: filters.district } : {}),
+  const rawFilters = await searchParams ?? {};
+  const filters = parseDiscoveryParams(rawFilters, {
+    serviceIds: services.map((service) => service.id),
+    districts: ankaraDistricts,
   });
+  const selectedServiceRecord = services.find(service => service.id === filters.service);
+  const selectedService = filters.service;
+  const backQuery = serializeDiscoveryFilters({ service: selectedService, district: filters.district });
   const supabase = await createSupabaseServerClient();
 
   const [
@@ -88,19 +110,31 @@ export default async function PublicTradespersonPage({
   const avgRating = reviewsResult.data?.length
     ? reviewsResult.data.reduce((acc, r) => acc + r.rating, 0) / reviewsResult.data.length
     : 0;
-  const levelInfo = calculateTradespersonLevel(totalCompletedJobs, avgRating);
 
   // ── Service Area Map data preparation ─────────────────────────────────────
   const serviceAreas = areasResult.data ?? [];
-  // Unique district names for polygon highlighting
   const serviceDistricts = [...new Set(serviceAreas.map(a => a.district))];
-  // Highest-metric district = primary
   const primaryDistrictName =
     metricsResult.data?.[0]?.district ??
     serviceDistricts[0] ??
     undefined;
+  const trustClaims = buildPublicTrustClaims({
+    verificationConfirmed: verificationResult.data === true,
+    reviewCount: reviewsResult.data?.length,
+    averageRating: avgRating,
+    completedJobs: totalCompletedJobs,
+    serviceAreaCount: serviceDistricts.length,
+  });
 
-  const backHref = backQuery.toString() ? `/ustalar?${backQuery}` : '/ustalar';
+  const backHref = backQuery ? `/ustalar?${backQuery}&view=split&sort=recommended` : '/ustalar?view=split&sort=recommended';
+  const canRequest = directedRequestsEnabled() && !servicesResult.error && !areasResult.error &&
+    Boolean(servicesResult.data?.length && areasResult.data?.length);
+  const serviceOffered = !selectedService || Boolean(servicesResult.data?.some(item => item.service_id === selectedService));
+  const districtServed = !filters.district || serviceDistricts.includes(filters.district);
+  const directRequestQuery = serializeDiscoveryFilters({ service: selectedService, district: filters.district });
+  const directRequestHref = selectedService
+    ? `/ustalar/${id}/talep?${directRequestQuery}`
+    : `/ustalar/${id}`;
 
   return (
     <main className="account-shell public-profile-page">
@@ -109,25 +143,77 @@ export default async function PublicTradespersonPage({
           ← Ustalara dön
         </Link>
 
-        {/* ── Hero ── */}
-        <header className="public-profile-hero">
-          <div className="public-profile-monogram" aria-hidden="true">
-            {profile.display_name.slice(0, 1).toLocaleUpperCase('tr-TR')}
-          </div>
-          <div>
-            <span>ORKESTRA PROFİLİ</span>
-            <h1>{profile.display_name}</h1>
-            <p>{profile.bio}</p>
-            <div className="profile-badges">
-              <span>
-                {levelInfo.badge} {levelInfo.title}
-              </span>
-              <span>Başvuru onaylı</span>
-              <span>Mesleki belge güncel</span>
-              {totalCompletedJobs > 0 && <span>{totalCompletedJobs} tamamlanan iş</span>}
+        {/* ── ÜST PROFİL VE KARAR ALANI ───────────────────────── */}
+        <div className={profileStyles.profileTop}>
+          <header className={profileStyles.profileIntro}>
+            <div className={profileStyles.profileAvatar} aria-hidden="true">
+              {profile.display_name.slice(0, 1).toLocaleUpperCase('tr-TR')}
             </div>
-          </div>
-        </header>
+            <div>
+              <h1>{profile.display_name}</h1>
+              {profile.bio && <p className={profileStyles.profileBio}>{profile.bio}</p>}
+
+              <div className={profileStyles.profileTrustRow} aria-label="Profil özeti">
+                <span
+                  className={profileStyles.verifiedMark}
+                  aria-label="Orkestra doğrulaması tamamlandı"
+                  title="Orkestra doğrulaması tamamlandı"
+                >
+                  ✓
+                </span>
+                {reviewsResult.data?.length ? (
+                  <span className={profileStyles.ratingSummary}>
+                    <span aria-hidden="true">★</span> {avgRating.toFixed(1)} · {reviewsResult.data.length} yorum
+                  </span>
+                ) : (
+                  <span className={profileStyles.profileTrustText}>Yeni profil</span>
+                )}
+                {totalCompletedJobs > 0 ? (
+                  <span className={profileStyles.profileTrustText}>{totalCompletedJobs} tamamlanan iş</span>
+                ) : null}
+              </div>
+
+              <div className={profileStyles.guildBadges} aria-label="Profil kanıtları">
+                {trustClaims.map((claim) => (
+                  <span className={profileStyles.guildBadge} key={claim.key} title={claim.detail}>
+                    {claim.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </header>
+
+          {/* ── KARAR PANELİ ───────────────────────────────────── */}
+          <aside className={profileStyles.decisionPanel} aria-label="Bu ustayla devam et">
+            <h2>Bu ustayla devam edin</h2>
+            <p>{selectedServiceRecord ? selectedServiceRecord.name : 'Önce hizmeti seçin'}</p>
+            {filters.district && <p className={profileStyles.decisionDistrict}>{filters.district}</p>}
+            {!serviceOffered ? <p className={profileStyles.decisionWarning}>Bu usta seçilen hizmeti sunmuyor. Hizmeti yeniden seçin.</p> : null}
+            {!districtServed ? <p className={profileStyles.decisionWarning}>Bu usta seçilen ilçede hizmet vermiyor. Bölgeyi yeniden seçin.</p> : null}
+            {canRequest && serviceOffered && districtServed ? (
+              selectedService ? (
+                <a className={profileStyles.decisionAction} href={directRequestHref}>
+                  Bu ustadan teklif al <span aria-hidden="true">→</span>
+                </a>
+              ) : (
+                <form className={profileStyles.decisionForm} action={`/ustalar/${id}/talep`} method="get">
+                  <label htmlFor="direct-service">Hizmet</label>
+                  <select id="direct-service" name="service" required defaultValue="">
+                    <option value="" disabled>Hizmet seçin</option>
+                    {servicesResult.data?.map(item => {
+                      const service = services.find(entry => entry.id === item.service_id);
+                      return service ? <option key={service.id} value={service.id}>{service.name}</option> : null;
+                    })}
+                  </select>
+                  {filters.district ? <input type="hidden" name="district" value={canonicalDiscoveryDistrictSlug(filters.district)} /> : null}
+                  <button className={profileStyles.decisionAction} type="submit">Bu ustadan teklif al <span aria-hidden="true">→</span></button>
+                </form>
+              )
+            ) : canRequest ? null : <p className={profileStyles.decisionUnavailable}>Şu anda bu ustaya yeni talep gönderilemiyor.</p>}
+            {canRequest && serviceOffered && districtServed ? <small>Talebi göndermeden önce kapsamı ve bölgeyi kontrol edeceksiniz.</small> : null}
+            {(selectedServiceRecord || filters.district) && <Link className={profileStyles.decisionBack} href={backHref}>Seçimi değiştir</Link>}
+          </aside>
+        </div>
 
         {hasLoadError ? (
           <p className="account-message" role="status">
@@ -135,117 +221,55 @@ export default async function PublicTradespersonPage({
           </p>
         ) : null}
 
-        {/* ── Direct Request ── */}
-        {directedRequestsEnabled() &&
-          verificationResult.data === true &&
-          !servicesResult.error &&
-          !areasResult.error &&
-          areasResult.data?.length &&
-          servicesResult.data?.length ? (
-          <section className="account-card">
-            <h2>Bu ustadan teklif al</h2>
-            <p>
-              İşinizi aynı talep adımlarıyla anlatın. Talebiniz diğer ustalara açılmaz. Göndermeden
-              önce giriş yapmanız istenir.
-            </p>
-            <form
-              className={styles.filters}
-              action={`/ustalar/${id}/talep${filters.district ? `?district=${encodeURIComponent(filters.district)}` : ''}`}
-              method="get"
-            >
-              <label htmlFor="direct-service">
-                Hangi hizmete ihtiyacınız var?
-                <select
-                  id="direct-service"
-                  name="service"
-                  required
-                  defaultValue={
-                    servicesResult.data.some(item => item.service_id === selectedService)
-                      ? selectedService
-                      : ''
-                  }
-                >
-                  <option value="" disabled>
-                    Hizmet seçin
-                  </option>
-                  {servicesResult.data.map(item => {
-                    const service = services.find(s => s.id === item.service_id);
-                    return service ? (
-                      <option key={service.id} value={service.id}>
-                        {service.name}
-                      </option>
-                    ) : null;
-                  })}
-                </select>
-              </label>
-              <button className="dialog-primary" type="submit">
-                Bu ustadan teklif al
-              </button>
-            </form>
-          </section>
-        ) : null}
-
-        {/* ── Before / After Showcase ── */}
-        <section className={`account-card ${styles.showcaseSection}`}>
-          <div className={styles.showcaseHeader}>
+        {/* ── ATÖLYE & UYGULAMA FOTOĞRAF GALERİSİ ─────────────── */}
+        <SurfaceCard className={`${profileStyles.profileSurface} ${profileStyles.portfolioCard}`}>
+          <div className={profileStyles.portfolioHeader}>
             <div>
-              <span className={styles.showcaseEyebrow}>GÖRSEL İŞ KANITI</span>
-              <h2 className={styles.showcaseTitle}>Tamamlanan İşlerden Önce &amp; Sonra</h2>
+              <span className={profileStyles.portfolioEyebrow}>ZANAAT KANITI</span>
+              <h2 className={profileStyles.portfolioTitle}>Atölye ve Uygulama Galerisi</h2>
             </div>
-            <span className={styles.showcaseTag}>Usta Tarafından Fotoğraflanmış</span>
+            <span className={profileStyles.serviceAreaCount}>Görsel örnekler</span>
           </div>
-          <BeforeAfterSlider />
-        </section>
+          <div className={profileStyles.portfolioGrid}>
+            {CRAFT_PORTFOLIO.map(item => (
+              <div key={item.title} className={profileStyles.portfolioItem}>
+                <div className={profileStyles.portfolioImgWrap}>
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    unoptimized
+                    sizes="(max-width: 640px) 100vw, (max-width: 900px) 50vw, 33vw"
+                    className={profileStyles.portfolioImg}
+                  />
+                </div>
+                <div className={profileStyles.portfolioCaption}>
+                  <h3 className={profileStyles.portfolioCaptionTitle}>{item.title}</h3>
+                  <p className={profileStyles.portfolioCaptionDesc}>{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </SurfaceCard>
 
         <div className="public-profile-grid">
 
-          {/* ── Credentials ── */}
-          <section className="account-card profile-credentials-card">
-            <h2>Mesleki Belgeler ve Teyitler</h2>
-            <ul className={styles.credentialsList}>
-              <li className={styles.credentialItem}>
-                <span className={styles.credentialCheck}>✓</span>
-                <span>
-                  <strong>MYK Mesleki Yeterlilik Belgesi:</strong> T.C. Çalışma Bakanlığı Onaylı
-                </span>
-              </li>
-              <li className={styles.credentialItem}>
-                <span className={styles.credentialCheck}>✓</span>
-                <span>
-                  <strong>Esnaf ve Sanatkarlar Odası:</strong> Ankara Odası Kaydı Aktif
-                </span>
-              </li>
-              <li className={styles.credentialItem}>
-                <span className={styles.credentialCheck}>✓</span>
-                <span>
-                  <strong>Kimlik ve Sabıka Kaydı:</strong> E-Devlet Üzerinden Doğrulandı
-                </span>
-              </li>
-              <li className={styles.credentialItem}>
-                <span className={styles.credentialShield}>🛡️</span>
-                <span>
-                  <strong>Orkestra Güvenlik Standardı:</strong> Şeffaf Fiyat ve Usta Garantisi
-                </span>
-              </li>
-            </ul>
-          </section>
-
-          {/* ── Services ── */}
-          <section className="account-card">
+          {/* ── Hizmetler ── */}
+          <SurfaceCard className={profileStyles.profileSurface}>
             <h2>Hizmetler</h2>
-            <ul>
+            <ul className={profileStyles.profileServiceList}>
               {serviceNames.map(name => (
                 <li key={name}>{name}</li>
               ))}
             </ul>
-          </section>
+          </SurfaceCard>
 
-          {/* ── Service Area Polygon Map ─────────────────────────────────────── */}
-          <section className={`account-card ${profileStyles.serviceAreaCard}`}>
+          {/* ── Hizmet Bölgesi Poligon Haritası ───────────────── */}
+          <SurfaceCard className={`${profileStyles.profileSurface} ${profileStyles.serviceAreaCard}`}>
             <div className={profileStyles.serviceAreaHeader}>
               <div>
                 <span className={profileStyles.serviceAreaEyebrow}>HİZMET BÖLGESİ</span>
-                <h2 className={profileStyles.serviceAreaTitle}>Çalışma Alanları Haritası</h2>
+                <h2 className={profileStyles.serviceAreaTitle}>Hizmet bölgeleri</h2>
               </div>
               {serviceDistricts.length > 0 && (
                 <span className={profileStyles.serviceAreaCount}>
@@ -254,7 +278,7 @@ export default async function PublicTradespersonPage({
               )}
             </div>
 
-            {/* Interactive polygon map */}
+            {/* İnteraktif Poligon Haritası */}
             <div className={profileStyles.serviceAreaMapWrapper}>
               <UstaServiceAreaMapClient
                 districts={serviceDistricts}
@@ -263,7 +287,7 @@ export default async function PublicTradespersonPage({
               />
             </div>
 
-            {/* District chips below the map */}
+            {/* Bölge Çipleri */}
             {serviceAreas.length > 0 && (
               <div className={profileStyles.serviceAreaChips}>
                 {[...new Map(serviceAreas.map(a => [a.district, a])).values()].map(area => (
@@ -273,7 +297,6 @@ export default async function PublicTradespersonPage({
                       area.district === primaryDistrictName ? profileStyles.areaChipPrimary : ''
                     }`}
                   >
-                    {area.district === primaryDistrictName ? '★ ' : ''}
                     {area.district}
                     {area.neighborhood ? ` · ${area.neighborhood}` : ''}
                   </span>
@@ -286,13 +309,13 @@ export default async function PublicTradespersonPage({
                 Bu ustanın hizmet bölgeleri henüz tanımlanmamış.
               </p>
             )}
-          </section>
+          </SurfaceCard>
 
-          {/* ── District Trust Metrics ── */}
-          <section className="account-card profile-metrics">
-            <h2>Yerel iş kanıtı</h2>
-            {metricsResult.data?.length ? (
-              metricsResult.data.map(metric => (
+          {/* ── Yerel İş Kanıtı (Metrikler) ───────────────────── */}
+          {metricsResult.data?.length ? (
+            <SurfaceCard className={`${profileStyles.profileSurface} ${profileStyles.profileMetrics} profile-metrics`}>
+              <h2>Yerel iş kanıtı</h2>
+              {metricsResult.data.map(metric => (
                 <div key={metric.district}>
                   <strong>{metric.district}</strong>
                   <span>
@@ -300,16 +323,12 @@ export default async function PublicTradespersonPage({
                     {Number(metric.average_rating).toFixed(1)}/5
                   </span>
                 </div>
-              ))
-            ) : (
-              <p>
-                İlçe metriği, aynı ilçede en az beş onaylı değerlendirme oluştuğunda yayınlanır.
-              </p>
-            )}
-          </section>
+              ))}
+            </SurfaceCard>
+          ) : null}
 
-          {/* ── Reviews ── */}
-          <section className="account-card profile-reviews">
+          {/* ── Onaylı Değerlendirmeler ───────────────────────── */}
+          <SurfaceCard className={`${profileStyles.profileSurface} ${profileStyles.profileReviews} profile-reviews`}>
             <h2>Onaylı değerlendirmeler</h2>
             {reviewsResult.data?.length ? (
               reviewsResult.data.map((review, index) => (
@@ -325,7 +344,7 @@ export default async function PublicTradespersonPage({
             ) : (
               <p>Henüz kamusal değerlendirme bulunmuyor.</p>
             )}
-          </section>
+          </SurfaceCard>
         </div>
       </div>
     </main>

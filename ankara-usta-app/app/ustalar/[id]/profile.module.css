@@ -1,11 +1,395 @@
-/* ─── Usta Public Profile — Service Area Section ────────────────────────── */
+/* ============================================================
+   profile.module.css — Usta Public Profile & Craft Showcase
+   Haute-Craft Design System (Orman Yeşili, Sıcak Kemik, Örs Antrasiti)
+   ============================================================ */
 
-/* Service Area Card container — spans full width in the grid */
-.serviceAreaCard {
-  grid-column: 1 / -1;
+.profileTop {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+  gap: 36px;
+  align-items: start;
+  padding: 40px 0 32px;
+  border-bottom: 1.5px solid var(--border-default, #DCE2DF);
 }
 
-/* Header row: title + district count badge */
+.profileIntro {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.profileAvatar {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 16px;
+  background: var(--text-primary, #17233B);
+  color: #FAF8F5;
+  font-size: 28px;
+  font-weight: 750;
+  box-shadow: 0 4px 14px rgba(23, 35, 59, 0.12);
+  border: 2px solid #ffffff;
+}
+
+.profileIntro h1 {
+  margin: 0 0 8px;
+  color: var(--text-primary, #17233B);
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
+}
+
+.profileBio {
+  max-width: 65ch;
+  margin: 0 0 14px;
+  color: var(--text-secondary, #526368);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.profileTrustRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin-top: 14px;
+}
+
+.verifiedMark {
+  width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--action-primary, #0E6F47);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  box-shadow: 0 0 0 3px rgba(14, 111, 71, 0.15);
+}
+
+.profileTrustText,
+.ratingSummary {
+  color: var(--text-secondary, #526368);
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.ratingSummary {
+  color: var(--text-primary, #17233B);
+}
+
+.ratingSummary > span {
+  color: var(--brand-brass, #d97706);
+}
+
+/* ── ZANAAT GÜVENCE ROZETLERİ ───────────────────────────────── */
+.guildBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.guildBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: var(--surface-brand-soft, #F0F7F4);
+  border: 1px solid #D2E7DD;
+  color: var(--action-primary, #0E6F47);
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 6px;
+}
+
+/* ── KARAR VE TEKLİF ALMA PANELİ ────────────────────────────── */
+.decisionPanel {
+  padding: 28px 24px;
+  border: 1.5px solid var(--border-default, #DCE2DF);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 6px 24px rgba(23, 35, 59, 0.06);
+  position: sticky;
+  top: 96px;
+}
+
+.decisionPanel h2 {
+  margin: 0 0 12px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary, #17233B);
+  letter-spacing: -0.015em;
+}
+
+.decisionPanel p {
+  margin: 0 0 6px;
+  font-weight: 700;
+  color: var(--text-primary, #17233B);
+  font-size: 0.95rem;
+}
+
+.decisionPanel .decisionDistrict {
+  color: var(--text-secondary, #526368);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.decisionPanel small {
+  display: block;
+  margin-top: 14px;
+  color: var(--text-secondary, #526368);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.decisionAction {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  margin-top: 20px;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  background: var(--action-primary, #0E6F47);
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 750;
+  font-size: 0.9375rem;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 12px rgba(14, 111, 71, 0.2);
+}
+
+.decisionAction:hover {
+  background: var(--action-primary-hover, #0A5235);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(14, 111, 71, 0.28);
+}
+
+.decisionAction:focus-visible,
+.decisionBack:focus-visible {
+  outline: 2.5px solid var(--action-primary, #0E6F47);
+  outline-offset: 3px;
+}
+
+.decisionBack {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  margin-top: 8px;
+  color: var(--action-primary, #0E6F47);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.decisionPanel .decisionUnavailable {
+  margin-top: 18px;
+  color: var(--text-secondary, #526368);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.decisionPanel .decisionWarning {
+  margin-top: 14px;
+  color: var(--status-danger, #B91C1C);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.5;
+  background: #FEF2F2;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #FCA5A5;
+}
+
+.decisionForm {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.decisionForm label {
+  color: var(--text-primary, #17233B);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.decisionForm select {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border-default, #DCE2DF);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--text-primary, #17233B);
+  font: inherit;
+  font-size: 0.9375rem;
+  transition: border-color 0.15s ease;
+}
+
+.decisionForm select:focus-visible {
+  outline: 2.5px solid var(--action-primary, #0E6F47);
+  outline-offset: 2px;
+}
+
+.decisionForm .decisionAction {
+  width: 100%;
+  margin-top: 8px;
+  border: 0;
+  cursor: pointer;
+}
+
+/* ── ATÖLYE & SAHA FOTOĞRAF GALERİSİ ────────────────────────── */
+.portfolioCard {
+  grid-column: 1 / -1;
+  padding: 30px;
+}
+
+.portfolioHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.portfolioTitle {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary, #17233B);
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+.portfolioEyebrow {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--action-primary, #0E6F47);
+  margin-bottom: 4px;
+}
+
+.portfolioGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.portfolioItem {
+  border-radius: 14px;
+  border: 1.5px solid var(--border-default, #DCE2DF);
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(23, 35, 59, 0.04);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.18s ease;
+}
+
+.portfolioItem:hover {
+  transform: translateY(-3px);
+  border-color: var(--action-primary, #0E6F47);
+  box-shadow: 0 12px 28px rgba(23, 35, 59, 0.08);
+}
+
+.portfolioImgWrap {
+  position: relative;
+  height: 160px;
+  background: #E2E8F0;
+  overflow: hidden;
+}
+
+.portfolioImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.portfolioItem:hover .portfolioImg {
+  transform: scale(1.05);
+}
+
+.portfolioCaption {
+  padding: 14px 16px;
+}
+
+.portfolioCaptionTitle {
+  font-weight: 750;
+  font-size: 0.875rem;
+  color: var(--text-primary, #17233B);
+  margin: 0 0 4px;
+}
+
+.portfolioCaptionDesc {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #526368);
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* ── HİZMET LİSTESİ ─────────────────────────────────────────── */
+.profileSurface {
+  padding: 30px;
+  border-radius: 16px;
+  border: 1.5px solid var(--border-default, #DCE2DF);
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(23, 35, 59, 0.03);
+}
+
+.profileSurface h2 {
+  color: var(--text-primary, #17233B);
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0 0 16px;
+  letter-spacing: -0.015em;
+}
+
+.profileServiceList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.profileServiceList li {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border: 1.5px solid var(--border-default, #DCE2DF);
+  border-radius: 9999px;
+  background: var(--surface-brand-soft, #F0F7F4);
+  color: var(--text-primary, #17233B);
+  font-size: 0.875rem;
+  font-weight: 650;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.profileServiceList li:hover {
+  border-color: var(--action-primary, #0E6F47);
+  background: #EAF5EE;
+}
+
+/* ── HİZMET BÖLGESİ VE HARİTA ───────────────────────────────── */
+.serviceAreaCard {
+  grid-column: 1 / -1;
+  order: 3;
+}
+
+.profileReviews { order: 1; }
+.profileMetrics { order: 2; }
+
 .serviceAreaHeader {
   display: flex;
   align-items: flex-start;
@@ -19,45 +403,43 @@
   display: block;
   font-size: 0.6875rem;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--brand-cobalt, #0b132b);
-  opacity: 0.55;
+  color: var(--action-primary, #0E6F47);
   margin-bottom: 4px;
 }
 
 .serviceAreaTitle {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--text-primary, #0f172a);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary, #17233B);
   margin: 0;
+  letter-spacing: -0.015em;
 }
 
 .serviceAreaCount {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 14px;
-  background: var(--brand-lemonade-soft, #fef9c3);
-  color: #7a6800;
+  padding: 5px 14px;
+  background: var(--surface-brand-soft, #F0F7F4);
+  color: var(--action-primary, #0E6F47);
   font-size: 0.8125rem;
-  font-weight: 700;
+  font-weight: 750;
   border-radius: 999px;
-  border: 1px solid rgba(234, 179, 8, 0.4);
+  border: 1.5px solid #D2E7DD;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-/* Map wrapper */
 .serviceAreaMapWrapper {
   border-radius: 14px;
   overflow: hidden;
-  border: 1.5px solid var(--border-default, #e2e8f0);
-  box-shadow: 0 4px 16px rgba(11, 19, 43, 0.06);
+  border: 1.5px solid var(--border-default, #DCE2DF);
+  box-shadow: 0 4px 16px rgba(23, 35, 59, 0.04);
   margin-bottom: 16px;
 }
 
-/* District chips strip below map */
 .serviceAreaChips {
   display: flex;
   flex-wrap: wrap;
@@ -69,37 +451,93 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 5px 12px;
-  background: #f1f5f9;
-  color: var(--text-secondary, #475569);
+  padding: 6px 14px;
+  background: #F8FAFC;
+  color: var(--text-primary, #17233B);
   font-size: 0.8125rem;
   font-weight: 600;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  transition: border-color 100ms;
+  border: 1.5px solid var(--border-default, #DCE2DF);
+  transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease;
 }
 
 .areaChipPrimary {
-  background: #fffbeb;
-  color: #78350f;
-  border-color: rgba(234, 179, 8, 0.5);
+  border-color: var(--action-primary, #0E6F47);
+  background: var(--surface-brand-soft, #F0F7F4);
+  color: var(--action-primary, #0E6F47);
+  font-weight: 700;
 }
 
-/* Empty state text */
 .serviceAreaEmpty {
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary, #526368);
   font-size: 0.875rem;
   padding: 12px 0 4px;
 }
 
-/* ─── Responsive ─────────────────────────────────────────────────────────── */
-@media (max-width: 640px) {
-  .serviceAreaHeader {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+/* ── DEĞERLENDİRMELER & METRİKLER ───────────────────────────── */
+.profileMetrics div {
+  padding: 12px 0;
+  border-bottom: 1.5px solid #F1F5F9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  .serviceAreaTitle {
-    font-size: 1rem;
+.profileMetrics div:last-child {
+  border-bottom: none;
+}
+
+.profileMetrics strong {
+  font-size: 0.9375rem;
+  color: var(--text-primary, #17233B);
+}
+
+.profileMetrics span {
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #526368);
+}
+
+.profileReviews article {
+  padding: 14px 0;
+  border-bottom: 1.5px solid #F1F5F9;
+}
+
+.profileReviews article:last-child {
+  border-bottom: none;
+}
+
+.profileReviews p {
+  margin: 6px 0 0;
+  font-size: 0.9375rem;
+  color: var(--text-primary, #17233B);
+  line-height: 1.55;
+}
+
+/* ── RESPONSIVE RULES ───────────────────────────────────────── */
+@media (max-width: 900px) {
+  .profileTop {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .portfolioGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .profileIntro {
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 16px;
+  }
+  .profileAvatar {
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+  .portfolioGrid {
+    grid-template-columns: 1fr;
+  }
+  .profileSurface {
+    padding: 20px;
   }
 }

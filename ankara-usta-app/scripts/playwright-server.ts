@@ -48,9 +48,19 @@ export default async function setup() {
   if (!nodeExecutable) {
     throw new Error(`Playwright E2E için Node.js ${minimumNode.join('.')} veya daha yeni bir sürüm gerekli; sistem Node ${process.versions.node}, proje portable runtime bulunamadı.`);
   }
-  const child = spawn(nodeExecutable, [resolve('node_modules/vinext/dist/cli.js'),'start','--port',String(port)], {
+  const noCompression = process.env.PLAYWRIGHT_NO_COMPRESSION === '1';
+  const serverArgs = noCompression
+    ? [resolve('scripts/start-vinext-no-compression.mjs')]
+    : [resolve('node_modules/vinext/dist/cli.js'),'start','--port',String(port)];
+  const child = spawn(nodeExecutable, serverArgs, {
     shell:false, windowsHide:true, stdio:['ignore','inherit','inherit'],
-    env:{...process.env,PLAYWRIGHT_TEST:'1'},
+    env:{
+      ...process.env,
+      PLAYWRIGHT_TEST:'1',
+      PLAYWRIGHT_PORT:String(port),
+      // Keep production E2E deterministic without weakening the public route.
+      ORKESTRA_DIRECTORY_VISUAL_FIXTURES:'true',
+    },
   });
   let ended = false;
   let failure: Error | undefined;
@@ -75,9 +85,14 @@ export default async function setup() {
     while (Date.now()<deadline) {
       if (ended) throw failure ?? new Error(`E2E server exited before readiness (${child.exitCode}).`);
       try {
-        const response = await fetch(`http://127.0.0.1:${port}/`,{signal:AbortSignal.timeout(2000)});
-        await response.body?.cancel();
-        if (response.ok) return stop;
+        // Probe a small, dependency-free route. The home page is a dynamic
+        // product surface and may legitimately wait on external data during a
+        // staging build; it is not a reliable signal that the HTTP server is up.
+        const response = await fetch(`http://127.0.0.1:${port}/api/version`,{signal:AbortSignal.timeout(2000)});
+        if (response.ok) {
+          await response.arrayBuffer();
+          return stop;
+        }
       } catch { /* Startup may not yet have bound the port. */ }
       await delay(100);
     }

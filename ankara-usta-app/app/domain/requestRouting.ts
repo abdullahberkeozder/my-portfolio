@@ -16,7 +16,8 @@ export function requestDraftKind(serviceId: string, targetId?: string) {
   return `request:${serviceId}${targetId ? `:direct:${targetId}` : ''}`;
 }
 
-export function requestResumePath(serviceId: string, targetId?: string) {
+export function requestResumePath(serviceId: string, targetId?: string, district?: string) {
   const query = new URLSearchParams({resume: '1', service: serviceId});
+  if (district) query.set('district', district);
   return `${targetId ? `/ustalar/${encodeURIComponent(targetId)}/talep` : '/'}?${query}`;
 }

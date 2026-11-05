@@ -2,15 +2,21 @@ import Link from 'next/link';
 import {notFound,redirect} from 'next/navigation';
 import {z} from 'zod';
 import {services} from '../../../data/serviceTaxonomy';
+import {ankaraDistricts} from '../../../data/ankaraLocations';
 import {createSupabaseServerClient} from '../../../lib/supabase/server';
 import {directedRequestsEnabled} from '../../../lib/directedRequests';
+import {parseDiscoveryParams, serializeDiscoveryFilters} from '../../../lib/discoveryContract';
 import DirectedRequestEntry from '../../../components/DirectedRequestEntry';
 
 export const dynamic='force-dynamic';
 
 export default async function DirectedRequestPage({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{service?:string;district?:string;draftId?:string;resume?:string}>}) {
   const {id}=await params;
-  const {service:serviceId,district:districtId,draftId}=await searchParams;
+  const rawSearchParams=await searchParams;
+  const {draftId}=rawSearchParams;
+  const discovery=parseDiscoveryParams(rawSearchParams,{serviceIds:services.map(item=>item.id),districts:ankaraDistricts});
+  const serviceId=discovery.service;
+  const districtId=discovery.district;
   if(!z.uuid().safeParse(id).success)notFound();
   if(!directedRequestsEnabled())return <main className="account-shell"><section className="account-card"><h1>Ustaya özel talepler henüz açılmadı</h1><p>Talebiniz başka ustalara gönderilmedi.</p><Link href={`/ustalar/${id}`}>Profile dön</Link></section></main>;
   const service=services.find(item=>item.id===serviceId);
@@ -35,6 +41,9 @@ export default async function DirectedRequestPage({params,searchParams}:{params:
     remoteDraft={answers:data.answers??{},district:data.district??'',neighborhood:data.neighborhood??'',timing:data.preferred_timing??'this_week',step:0,idempotencyKey:data.idempotency_key,requestId:data.id,updatedAt:Date.parse(data.updated_at),routingMode:'direct' as const,targetProfessionalId:id};
   }
   const targetDistricts=[...new Set(areas.data.map(area=>area.district))];
+  if(districtId && !draftId && !targetDistricts.includes(districtId))return <main className="account-shell"><section className="account-card"><h1>Bu bölgede talep gönderilemiyor</h1><p>Seçtiğiniz usta {districtId} ilçesinde hizmet vermiyor. Profilindeki hizmet bölgelerini kontrol edin.</p><Link href={`/ustalar/${id}?service=${encodeURIComponent(service.id)}`}>Profile dön</Link></section></main>;
   const initialDistrict=districtId && targetDistricts.includes(districtId) ? districtId : undefined;
-  return <main className="account-shell"><DirectedRequestEntry service={service} target={{id,name:profile.data.display_name,districts:targetDistricts}} initialDistrict={initialDistrict} remoteDraft={remoteDraft}/></main>;
+  const returnQuery = serializeDiscoveryFilters({ service: service.id, district: districtId });
+  const returnHref = `/ustalar/${id}${returnQuery ? `?${returnQuery}` : ''}`;
+  return <main className="account-shell"><DirectedRequestEntry service={service} target={{id,name:profile.data.display_name,districts:targetDistricts}} initialDistrict={initialDistrict} remoteDraft={remoteDraft} returnHref={returnHref}/></main>;
 }

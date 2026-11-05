@@ -1,0 +1,172 @@
+{
+  "works": [
+    {
+      "categoryLabel": "Montaj",
+      "title": "Duvar rafı montajı",
+      "image": "/images/discovery/duvar-rafi-montaji.jpg",
+      "artisanName": "Murat Usta",
+      "artisanDistrict": "Çankaya",
+      "materials": [
+        "40mm Masif Meşe",
+        "Gizli Çelik Ankraj",
+        "Lazer Terazi: ±0.5mm"
+      ]
+    },
+    {
+      "categoryLabel": "Tesisat",
+      "title": "Mutfak bataryası değişimi",
+      "image": "/images/discovery/mutfak-bataryasi-degisimi.jpg",
+      "artisanName": "Selim Usta",
+      "artisanDistrict": "Yenimahalle",
+      "materials": [
+        "Döküm Pirinç Gövde",
+        "304 Paslanmaz Fleks",
+        "TS EN 817 Sızdırmazlık"
+      ]
+    },
+    {
+      "categoryLabel": "Boya",
+      "title": "Salon boyama",
+      "image": "/images/discovery/salon-boyama.jpg",
+      "artisanName": "Derya Usta",
+      "artisanDistrict": "Etimesgut",
+      "materials": [
+        "Silikonlu Mat İç Cephe",
+        "Hassas Maskeleme",
+        "Kraft Zemin Koruması"
+      ]
+    },
+    {
+      "categoryLabel": "Montaj",
+      "title": "Korniş montajı",
+      "image": "/images/discovery/kornis-montaji.jpg",
+      "artisanName": "Emre Usta",
+      "artisanDistrict": "Keçiören",
+      "materials": [
+        "Ekstrüzyon 3 Ray Alüminyum",
+        "Çelik Kanatlı Dübel",
+        "Lazer Aks Doğrulama"
+      ]
+    },
+    {
+      "categoryLabel": "Elektrik",
+      "title": "Avize montajı",
+      "image": "/images/discovery/avize-montaji.jpg",
+      "artisanName": "Cem Usta",
+      "artisanDistrict": "Mamak",
+      "materials": [
+        "Topraklı Güvenlik Klemensi",
+        "Döküm Çelik Tavan Mapası",
+        "Dijital Faz/Yük Testi"
+      ]
+    },
+    {
+      "categoryLabel": "Temizlik",
+      "title": "Mutfak temizliği",
+      "image": "/images/discovery/mutfak-temizligi.jpg",
+      "artisanName": "Ece Hanım",
+      "artisanDistrict": "Gölbaşı",
+      "materials": [
+        "Gıda Temas Onaylı Solüsyon",
+        "Yüksek Emişli Mikrofiber",
+        "Paslanmaz Çelik Buhar"
+      ]
+    }
+  ],
+  "regions": [
+    {
+      "code": "BÖLGE 01",
+      "zone": "Klasik Konut & Restorasyon Hattı",
+      "neighborhoods": "Tunalı · Ayrancı · Gaziosmanpaşa · Bahçelievler",
+      "craftFocus": "Masif parke sistre, döküm tesisat yenileme, gizli korniş ve retro banyo tadilatı.",
+      "districts": [
+        "Çankaya"
+      ]
+    },
+    {
+      "code": "BÖLGE 02",
+      "zone": "Müstakil Konut & Çatı/Bahçe Hattı",
+      "neighborhoods": "Çayyolu · Ümitköy · İncek · Bağlıca · Mogan",
+      "craftFocus": "Çelik sundurma, bahçe kapısı/ferforje, çatı izolasyonu ve kış bahçesi montajı.",
+      "districts": [
+        "Gölbaşı",
+        "Etimesgut"
+      ]
+    },
+    {
+      "code": "BÖLGE 03",
+      "zone": "Merkezi Yerleşim & Tesisat Yenileme Hattı",
+      "neighborhoods": "Batıkent · Keçiören Merkez · Mamak · Altındağ",
+      "craftFocus": "Modüler mutfak montajı, kombi/petek tesisatı, ana elektrik panosu ve sıhhi tesisat.",
+      "districts": [
+        "Yenimahalle",
+        "Keçiören",
+        "Mamak",
+        "Altındağ"
+      ]
+    },
+    {
+      "code": "BÖLGE 04",
+      "zone": "Gelişim Aksı & Yeni Yapı Hattı",
+      "neighborhoods": "Sincan Merkez · Eryaman · Saray · Pursaklar",
+      "craftFocus": "Alçıpan asma tavan, spot/avize montajı, laminat parke ve kapı/kasa ayarı.",
+      "districts": [
+        "Sincan",
+        "Pursaklar"
+      ]
+    }
+  ],
+  "protocol": [
+    {
+      "title": "Zemin Koruma ve Galoş Disiplini",
+      "description": "Çalışma sahasında parke veya halı üzerine koruyucu kraft örtü serilmeden takım çantası açılmaz; konuta galoşsuz adım atılmaz."
+    },
+    {
+      "title": "Eski Parçaların Şeffaf İadesi",
+      "description": "Sökülen eski batarya, kartuş, arızalı vana veya kablo atılmaz; kutulanarak ev sahibine teslim edilir."
+    },
+    {
+      "title": "TS Belgeli Sarf Malzeme Şartı",
+      "description": "Conta, dübel, klemens, boru ve yapıştırıcıda merdiven altı ürün kullanılamaz; tüm sarf malzemeler TSE standartlıdır."
+    },
+    {
+      "title": "Apartman ve Gürültü Saatleri",
+      "description": "Bina yönetim planına, pazar günleri sessizlik kurallarına ve delme-kırma saatlerine harfiyen uyulur."
+    },
+    {
+      "title": "Sabit İşçilik Güvencesi",
+      "description": "İş başlangıcında mutabık kalınan kapsam dışına çıkılmaz; süreç içinde keyfi sürpriz ek maliyet yansıtılamaz."
+    },
+    {
+      "title": "Süpürülmüş ve Temiz Teslimat",
+      "description": "Montaj veya tamirat tamamlandığında talaş, harç kalıntısı, tel ve ambalaj atığı bırakılmaz; alan temizlenerek teslim edilir."
+    },
+    {
+      "title": "1 Yıl İşçilik Sicil Sorumluluğu",
+      "description": "Tamamlanan her uygulama Orkestra usta siciline kaydedilir; montaj kaynaklı sorunlar 1 yıl boyunca ustanın garantisindedir."
+    }
+  ],
+  "headline": "Evin için bir fikir. İşin için bir usta.",
+  "heroKicker": "Ankara Doğrulanmış Usta ve Zanaatkâr Sicili · 2026",
+  "examples": [
+    "Sızıntı ve Kartuş Değişimi",
+    "Ana Pano ve Sigorta Arızası",
+    "Menteşe ve Kapı Ayarı",
+    "Tek Oda Yüzey Boyası"
+  ],
+  "categories": [
+    "Tümü",
+    "Montaj",
+    "Tesisat",
+    "Boya",
+    "Elektrik",
+    "Temizlik",
+    "Kaynak"
+  ],
+  "discoveryTitle": "Evine fikir bul",
+  "discoveryDescription": "Örnek uygulamalar. Beğendiğin fikri incele, istersen benzerini yaptır.",
+  "regionTitle": "Ankara Konut Dokusu ve Yerel Zanaatkârlar",
+  "regionDescription": "Ankara’nın farklı mimari dönemlerine, tavan yüksekliklerine ve tesisat altyapılarına göre uzmanlaşmış yerel usta kadrosu.",
+  "protocolTitle": "Zanaat ve Nezaket Protokolü",
+  "protocolDescription": "Orkestra kayıtlarındaki her usta, konutunuza adım attığı andan teslimata kadar bu yedi mesleki ilkeye uymakla yükümlüdür."
+}

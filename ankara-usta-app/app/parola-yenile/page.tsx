@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type {AuthChangeEvent, Session, User} from '@supabase/supabase-js';
 import { createSupabaseBrowserClient } from '../lib/supabase/browser';
@@ -14,6 +14,7 @@ export default function PasswordUpdatePage() {
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const passwordInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let active = true;
@@ -51,9 +52,11 @@ export default function PasswordUpdatePage() {
   async function submit(event: FormEvent) {
     event.preventDefault();
     if (password !== confirmation) {
+      passwordInput.current?.focus();
       return setMessage({ type: 'error', text: 'Girdiğiniz parolalar birbiriyle eşleşmiyor.' });
     }
     if (password.length < 8) {
+      passwordInput.current?.focus();
       return setMessage({ type: 'error', text: 'Parolanız en az 8 karakter uzunluğunda olmalıdır.' });
     }
 
@@ -129,12 +132,15 @@ export default function PasswordUpdatePage() {
               <div className="password-input-wrap">
                 <input
                   id="reset-new-password"
+                  ref={passwordInput}
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="new-password"
                   minLength={8}
                   required
                   placeholder="En az 8 karakter"
                   value={password}
+                  aria-invalid={message?.type === 'error' ? true : undefined}
+                  aria-describedby={message ? 'password-update-message' : undefined}
                   onChange={event => setPassword(event.target.value)}
                 />
                 <button
@@ -158,13 +164,15 @@ export default function PasswordUpdatePage() {
                 required
                 placeholder="Parolayı tekrar girin"
                 value={confirmation}
+                aria-invalid={message?.type === 'error' ? true : undefined}
+                aria-describedby={message ? 'password-update-message' : undefined}
                 onChange={event => setConfirmation(event.target.value)}
               />
             </div>
 
             {message && (
-              <div className={`account-alert-box alert-${message.type}`} role={message.type === 'error' ? 'alert' : 'status'}>
-                <span className="alert-icon" aria-hidden="true">{message.type === 'success' ? '✓' : '⚠️'}</span>
+              <div id="password-update-message" className={`account-alert-box alert-${message.type}`} role={message.type === 'error' ? 'alert' : 'status'} aria-live="polite">
+                <span className="alert-icon" aria-hidden="true">{message.type === 'success' ? '✓' : '!'}</span>
                 <span>{message.text}</span>
               </div>
             )}

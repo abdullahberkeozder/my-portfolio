@@ -2,7 +2,7 @@ import {expect, test} from '@playwright/test';
 
 test('landing page renders its primary search path @ci-smoke', async ({page}) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', {name: 'İşini anlat. Doğru ustayla buluş.', level: 1})).toBeVisible();
+  await expect(page.getByRole('heading', {name: 'Evin için bir fikir. İşin için bir usta.', level: 1})).toBeVisible();
   await expect(page.getByRole('textbox', {name: 'İhtiyacınızı yazın'})).toBeVisible();
   await expect(page.getByRole('button', {name: 'Hizmet bul', exact: true})).toBeVisible();
 });
@@ -12,19 +12,45 @@ test('service search has space, a visible label and reachable action at each vie
     await page.setViewportSize({width, height: 900});
     await page.goto('/');
     const search = page.getByRole('textbox', {name: 'İhtiyacınızı yazın'});
-    const action = page.getByRole('button', {name: 'Hizmet bul', exact: true});
+    const action = page.getByRole('button', {name: /^(Hizmet bul|Bul)$/i});
+    const row = page.locator('.landing-search-row');
+    await expect(search).toBeVisible();
+    const label = page.locator('label[for="service-search-input"]');
+    await expect(label).toBeVisible();
+    expect((await label.boundingBox())!.height).toBeGreaterThan(16);
+    await expect(action).toBeVisible();
     const bounds = await search.boundingBox();
-    expect(bounds!.width).toBeGreaterThan(width < 600 ? width - 70 : 400);
+    const rowBounds = await row.boundingBox();
+    expect(rowBounds).not.toBeNull();
+    expect(rowBounds!.width).toBeGreaterThanOrEqual(width < 600 ? width - 52 : 500);
+    expect(bounds!.width).toBeGreaterThanOrEqual(width < 600 ? 180 : 300);
     expect((await action.boundingBox())!.height).toBeGreaterThanOrEqual(44);
     await expect(action).toBeInViewport();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
 
+test('district selection stays available and service disclosure is keyboard operable', async ({page}) => {
+  await page.goto('/');
+  const district = page.getByRole('combobox', {name: 'Ankara İlçesi Seçin'});
+  await expect(district).toBeVisible();
+  await district.selectOption('Çankaya');
+  await expect(district).toHaveValue('Çankaya');
+  const summary = page.locator('#services summary');
+  await expect(summary).toContainText('Tüm hizmetleri gör');
+  await expect(page.getByRole('button', {name: 'Tüm hizmetleri gör'})).toHaveCount(0);
+  await expect(page.getByRole('link', {name: 'Tüm ustaları haritada gör'})).toBeVisible();
+  await summary.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#services details')).toHaveAttribute('open', '');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#services details')).not.toHaveAttribute('open', '');
+});
+
 test('unknown service offers recovery and never opens an arbitrary wizard @ci-smoke', async ({page}) => {
   await page.goto('/');
   await page.getByRole('textbox', {name: 'İhtiyacınızı yazın'}).fill('zzzzzzzz');
-  await page.getByRole('button', {name: 'Hizmet bul', exact: true}).click();
+  await page.getByRole('button', {name: /^(Hizmet bul|Bul)$/i}).click();
   await page.getByRole('link', {name: 'Kategorilerden hizmet seç'}).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page).toHaveURL(/#services$/);
@@ -33,4 +59,15 @@ test('unknown service offers recovery and never opens an arbitrary wizard @ci-sm
   await page.keyboard.press('Enter');
   await expect(category).toHaveAttribute('open', '');
   await expect(category.getByRole('button', {name: /Priz ve Anahtar/})).toBeVisible();
+});
+
+test('landing exposes the canonical map discovery bridge', async ({ page }) => {
+  await page.goto('/');
+  const bridge = page.getByRole('link', { name: 'Tüm ustaları haritada gör' });
+  await expect(bridge).toHaveAttribute('href', '/ustalar?view=split&sort=recommended');
+  await Promise.all([
+    page.waitForURL(/\/ustalar\?view=split&sort=recommended/),
+    bridge.click(),
+  ]);
+  await expect(page).toHaveURL(/\/ustalar\?view=split&sort=recommended/);
 });

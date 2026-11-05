@@ -18,7 +18,7 @@ export default async function JobPage({params}:{params:Promise<{id:string}>}){
   const supabase=await createSupabaseServerClient();const {data:{user},error:authError}=await supabase.auth.getUser();
   if(authError&&authError.name!=='AuthSessionMissingError')return <LoadFailure/>;
   if(!user)redirect('/giris?next='+encodeURIComponent('/islerim/'+id));
-  const {data:job,error:jobError}=await supabase.from('jobs').select('id,status,customer_id,tradesperson_id,accepted_quote_id').eq('id',id).maybeSingle();if(jobError)return <LoadFailure/>;if(!job)notFound();
+  const {data:job,error:jobError}=await supabase.from('jobs').select('id,status,customer_id,tradesperson_id,accepted_quote_id,service_requests(service_id),tradesperson_profiles(display_name)').eq('id',id).maybeSingle();if(jobError)return <LoadFailure/>;if(!job)notFound();
   let role:'customer'|'tradesperson'|'admin';
   if(job.customer_id===user.id)role='customer';
   else if(job.tradesperson_id===user.id)role='tradesperson';
@@ -59,6 +59,14 @@ export default async function JobPage({params}:{params:Promise<{id:string}>}){
   if([eventsResult,messagesResult,appointmentsResult,scopeChangesResult,addressResult,workLogResult,reviewResult,certificateResult,disputesResult,acceptedQuoteResult].some(result=>result.error))return <LoadFailure/>;
 
   const entries=await Promise.all(((workLogResult.data??[]) as WorkEntry[]).map(async entry=>{const {data}=await supabase.storage.from('job-media').createSignedUrl(entry.storage_path,3600);return {...entry,signedUrl:data?.signedUrl??null}}));
-  return <main className="account-shell job-page"><JobIdentityBoundary key={user.id} userId={user.id}><RealtimeRefresh channelName={`job-room-${id}`} subscriptions={[{table:'jobs',filter:`id=eq.${id}`},{table:'job_events',filter:`job_id=eq.${id}`},{table:'job_messages',filter:`job_id=eq.${id}`},{table:'inspection_appointments',filter:`job_id=eq.${id}`},{table:'scope_changes',filter:`job_id=eq.${id}`},{table:'job_addresses',filter:`job_id=eq.${id}`},{table:'work_log_entries',filter:`job_id=eq.${id}`},{table:'reviews',filter:`job_id=eq.${id}`},{table:'workmanship_certificates',filter:`job_id=eq.${id}`},{table:'dispute_cases',filter:`job_id=eq.${id}`}]} label="İş odası"/><Link className="account-back" href="/islerim">← İşlerim</Link><JobWorkspace jobId={id} currentUserId={user.id} role={role} status={job.status} events={(eventsResult.data??[]) as never[]} messages={(messagesResult.data??[]) as never[]} appointments={(appointmentsResult.data??[]) as never[]} scopeChanges={(scopeChangesResult.data??[]) as never[]} address={addressResult.data as never} acceptedQuote={acceptedQuoteResult.data as never}/><JobTrustCenter currentUserId={user.id} jobId={id} role={role} status={job.status} entries={entries} review={reviewResult.data as never} certificate={certificateResult.data as never} disputes={(disputesResult.data??[]) as never[]}/></JobIdentityBoundary></main>;
+  const relations = job as unknown as {
+    service_requests?: { service_id?: string } | { service_id?: string }[] | null;
+    tradesperson_profiles?: { display_name?: string } | { display_name?: string }[] | null;
+  };
+  const serviceId = Array.isArray(relations.service_requests) ? relations.service_requests[0]?.service_id : relations.service_requests?.service_id;
+  const counterpartyName = role === 'customer'
+    ? (Array.isArray(relations.tradesperson_profiles) ? relations.tradesperson_profiles[0]?.display_name : relations.tradesperson_profiles?.display_name)
+    : 'Müşteriniz';
+  return <main className="account-shell job-page"><JobIdentityBoundary key={user.id} userId={user.id}><RealtimeRefresh channelName={`job-room-${id}`} subscriptions={[{table:'jobs',filter:`id=eq.${id}`},{table:'job_events',filter:`job_id=eq.${id}`},{table:'job_messages',filter:`job_id=eq.${id}`},{table:'inspection_appointments',filter:`job_id=eq.${id}`},{table:'scope_changes',filter:`job_id=eq.${id}`},{table:'job_addresses',filter:`job_id=eq.${id}`},{table:'work_log_entries',filter:`job_id=eq.${id}`},{table:'reviews',filter:`job_id=eq.${id}`},{table:'workmanship_certificates',filter:`job_id=eq.${id}`},{table:'dispute_cases',filter:`job_id=eq.${id}`}]} label="İş odası"/><Link className="account-back" href="/islerim">← İşlerim</Link><JobWorkspace jobId={id} currentUserId={user.id} role={role} status={job.status} serviceName={serviceId} counterpartyName={counterpartyName} events={(eventsResult.data??[]) as never[]} messages={(messagesResult.data??[]) as never[]} appointments={(appointmentsResult.data??[]) as never[]} scopeChanges={(scopeChangesResult.data??[]) as never[]} address={addressResult.data as never} acceptedQuote={acceptedQuoteResult.data as never}/><JobTrustCenter currentUserId={user.id} jobId={id} role={role} status={job.status} entries={entries} review={reviewResult.data as never} certificate={certificateResult.data as never} disputes={(disputesResult.data??[]) as never[]}/></JobIdentityBoundary></main>;
 }
 

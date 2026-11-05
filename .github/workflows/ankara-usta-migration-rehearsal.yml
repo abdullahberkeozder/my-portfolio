@@ -1,0 +1,81 @@
+name: Orkestra migration gap rehearsal
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/ankara-usta-migration-rehearsal.yml'
+      - 'ankara-usta-app/supabase/migrations/**'
+      - 'ankara-usta-app/supabase/tests/remote/migration_gap_rehearsal.sql'
+      - 'ankara-usta-app/docs/operations/production-applied-migrations.txt'
+
+permissions:
+  contents: read
+
+jobs:
+  rehearse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: supabase/setup-cli@v3
+        with:
+          version: 2.115.0
+
+      - name: Prepare production migration baseline locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_root="$GITHUB_WORKSPACE/ankara-usta-app"
+          rehearsal="$RUNNER_TEMP/orkestra-migration-rehearsal"
+          mkdir -p "$rehearsal/supabase/migrations"
+          cp "$source_root/supabase/config.toml" "$rehearsal/supabase/config.toml"
+          : > "$rehearsal/supabase/seed.sql"
+          while IFS= read -r version; do
+            version="${version%$'\r'}"
+            [[ -z "$version" ]] && continue
+            files=("$source_root/supabase/migrations/${version}_"*.sql)
+            if [[ ${#files[@]} -ne 1 || ! -f "${files[0]}" ]]; then
+              echo "Missing or ambiguous production migration: $version" >&2
+              exit 1
+            fi
+            cp "${files[0]}" "$rehearsal/supabase/migrations/"
+          done < "$source_root/docs/operations/production-applied-migrations.txt"
+          test "$(find "$rehearsal/supabase/migrations" -maxdepth 1 -name '*.sql' | wc -l)" -eq 20
+          echo "REHEARSAL_DIR=$rehearsal" >> "$GITHUB_ENV"
+
+      - name: Start isolated Postgres with production migration history
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$REHEARSAL_DIR"
+          supabase db start
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client
+          baseline_count=$(psql 'postgresql://postgres:postgres@127.0.0.1:54322/postgres' -Atqc 'select count(*) from supabase_migrations.schema_migrations')
+          test "$baseline_count" -eq 20
+
+      - name: Apply all missing migrations and assert schema contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_root="$GITHUB_WORKSPACE/ankara-usta-app"
+          for file in "$source_root"/supabase/migrations/*.sql; do
+            target="$REHEARSAL_DIR/supabase/migrations/$(basename "$file")"
+            [[ -f "$target" ]] || cp "$file" "$target"
+          done
+          test "$(find "$REHEARSAL_DIR/supabase/migrations" -maxdepth 1 -name '*.sql' | wc -l)" -eq 32
+          cd "$REHEARSAL_DIR"
+          supabase migration up --local --include-all
+          psql 'postgresql://postgres:postgres@127.0.0.1:54322/postgres' -v ON_ERROR_STOP=1 \
+            -f "$source_root/supabase/tests/remote/migration_gap_rehearsal.sql"
+
+      - name: Stop isolated Supabase
+        if: always()
+        shell: bash
+        run: |
+          if [[ -n "${REHEARSAL_DIR:-}" && -d "$REHEARSAL_DIR/supabase" ]]; then
+            cd "$REHEARSAL_DIR"
+            supabase stop --no-backup || true
+          fi
