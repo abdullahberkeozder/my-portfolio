@@ -40,6 +40,12 @@ for (const width of viewports) {
     expect(searchButton!.height, `landing CTA height at ${width}px`).toBeGreaterThanOrEqual(44);
     expect(searchRow!.width).toBeLessThanOrEqual(width);
 
+    if (width <= 390) {
+      const dock = await readBox(page, '.privacy-consent-banner');
+      expect(dock).not.toBeNull();
+      expect(searchButton!.y + searchButton!.height).toBeLessThanOrEqual(dock!.y);
+    }
+
     await page.goto('/ustalar?view=split&fixture=limited');
     await expect(page.getByRole('heading', { level: 1, name: 'İhtiyacınıza uygun ustayı bulun' })).toBeVisible();
     const directoryCls = await readCls(page);
@@ -47,9 +53,25 @@ for (const width of viewports) {
     console.log(`[production-loading] ${testInfo.project.name} ${width}px landing=${landingCls.toFixed(4)} directory=${directoryCls.toFixed(4)}`);
 
     if (width <= 390) {
+      const directoryPrimary = page.getByRole('link', { name: /İhtiyacını anlat/i }).first();
+      await expect(directoryPrimary).toBeInViewport();
+      const directoryPrimaryBox = await directoryPrimary.boundingBox();
       const recovery = page.getByRole('button', { name: /Tüm Ankara.yı göster/i });
       await expect(recovery).toHaveCount(1);
       await expect(page.getByRole('button', { name: 'Reddet' })).toBeVisible();
+      const dock = await readBox(page, '.privacy-consent-banner');
+      expect(directoryPrimaryBox).not.toBeNull();
+      expect(dock).not.toBeNull();
+      expect(directoryPrimaryBox!.y + directoryPrimaryBox!.height).toBeLessThanOrEqual(dock!.y);
+      const recoveryBox = await recovery.boundingBox();
+      expect(recoveryBox).not.toBeNull();
+      const scrollPastDock = recoveryBox!.y + recoveryBox!.height - dock!.y + 12;
+      if (scrollPastDock > 0) {
+        await page.evaluate((delta) => window.scrollBy(0, delta), scrollPastDock);
+      }
+      const reachableRecoveryBox = await recovery.boundingBox();
+      expect(reachableRecoveryBox).not.toBeNull();
+      expect(reachableRecoveryBox!.y + reachableRecoveryBox!.height).toBeLessThanOrEqual(dock!.y);
       await recovery.click();
     }
 
