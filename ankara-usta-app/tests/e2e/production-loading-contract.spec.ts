@@ -3,7 +3,8 @@ import { expect, test } from '@playwright/test';
 const viewports = [320, 390, 820, 1440];
 
 async function readCls(page: import('@playwright/test').Page) {
-  await page.waitForLoadState('networkidle');
+  // Background account/map requests can keep the network active after the view is ready.
+  await page.waitForTimeout(1000);
   await page.evaluate(async () => {
     if (document.fonts?.ready) await document.fonts.ready;
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -40,6 +41,7 @@ for (const width of viewports) {
     expect(searchRow!.width).toBeLessThanOrEqual(width);
 
     await page.goto('/ustalar?view=split&fixture=limited');
+    await expect(page.getByRole('heading', { level: 1, name: 'İhtiyacınıza uygun ustayı bulun' })).toBeVisible();
     const directoryCls = await readCls(page);
     expect(directoryCls, `/ustalar CLS at ${width}px`).toBeLessThanOrEqual(0.05);
     console.log(`[production-loading] ${testInfo.project.name} ${width}px landing=${landingCls.toFixed(4)} directory=${directoryCls.toFixed(4)}`);

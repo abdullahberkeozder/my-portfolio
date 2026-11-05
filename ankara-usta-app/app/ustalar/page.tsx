@@ -50,11 +50,11 @@ export default async function UstalarIndexPage({
   const neighborhoodMap: Record<string, string[]> = {};
   const metricsMap: Record<string, { totalCompletedJobs: number; averageRating: number; totalReviews: number }> = {};
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = visualFixture ? null : await createSupabaseServerClient();
   // Visual fixtures intentionally bypass the network contract. This keeps
   // deterministic QA states usable even when a local Supabase project does
   // not have the staging RPC installed yet.
-  const { data: directoryRows, error } = visualFixture
+  const { data: directoryRows, error } = visualFixture || !supabase
     ? { data: [], error: null }
     : await supabase.rpc(
         'list_public_verified_professionals',
@@ -123,7 +123,7 @@ export default async function UstalarIndexPage({
   // has no supply. Check one unfiltered row before choosing between the
   // limited-scope and true cold-start messages. A fallback error stays
   // neutral; it must never be presented as a waitlist state.
-  if (count === 0 && hasFilters && !visualFixture) {
+  if (count === 0 && hasFilters && supabase) {
     const { data: globalRows, error: globalError } = await supabase.rpc(
       'list_public_verified_professionals',
       {
@@ -148,7 +148,7 @@ export default async function UstalarIndexPage({
   });
 
   const tradespersonIds = profiles.map((p) => p.user_id);
-  if (tradespersonIds.length > 0) {
+  if (tradespersonIds.length > 0 && supabase) {
       const [{ data: serviceRows }, { data: areaRows }, { data: metricRows }, { data: reviewRows }] = await Promise.all([
         supabase
           .from('tradesperson_services')
