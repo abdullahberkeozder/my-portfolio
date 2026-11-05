@@ -1,5 +1,6 @@
 import {expect,test,type Page} from '@playwright/test';
 import {createClient} from '@supabase/supabase-js';
+import {attachStreamDiagnostics} from './streamDiagnostics';
 
 const stagingUrl='https://hyuijuafuayzultbjvjb.supabase.co';
 
@@ -27,6 +28,7 @@ async function signOut(page:Page) {
 }
 
 test('same browser keeps customer A draft isolated from customer B',async({page})=>{
+  attachStreamDiagnostics(page);
   await page.setViewportSize({width:390,height:844});
   expect(process.env.E2E_SUPABASE_URL).toBe(stagingUrl);
   const publicClient=createClient(stagingUrl,process.env.E2E_SUPABASE_KEY!,{auth:{persistSession:false,autoRefreshToken:false}});
@@ -40,9 +42,9 @@ test('same browser keeps customer A draft isolated from customer B',async({page}
   let draftResponse:ReturnType<Page['waitForResponse']>|undefined;
   for(let index=0;index<3;index+=1) {
     const radios=page.getByRole('radio');
-    await radios.first().check();
+    await radios.first().check({force:true});
     if(index===2) draftResponse=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/requests/draft'&&response.request().method()==='POST');
-    await page.getByRole('button',{name:index===2?'Görsel ekleme adımına geç':'Sonraki soruya geç'}).click();
+    await page.getByRole('button',{name:'Devam'}).click();
   }
   expect((await draftResponse!).ok()).toBe(true);
   const customerALocalKeys=await page.evaluate(()=>Object.keys(localStorage).filter(key=>key.startsWith('orkestra:draft:v2:')));

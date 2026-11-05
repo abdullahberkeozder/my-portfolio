@@ -6,33 +6,33 @@ test.beforeEach(async({page})=>{
 });
 
 test('customer classifies a service, reads scope and opens the wizard',async({page})=>{
-  await expect(page.getByRole('heading',{name:/İşini anlat.*Doğru ustayla buluş/})).toBeVisible();
+  await expect(page.getByRole('heading',{name:/Evin için bir fikir.*İşin için bir usta|İşini anlat.*Doğru ustayla buluş/})).toBeVisible();
   const search=page.getByRole('textbox',{name:'İhtiyacınızı yazın'});
   await search.fill('tavandan su geliyor');await search.press('Enter');
-  const dialog=page.getByRole('dialog',{name:/İhtiyacınızı doğru anladık mı/i});
-  await expect(dialog.getByRole('heading',{level:3})).toContainText('Su Kaçağı Tespiti');
-  await dialog.getByText('Kapsam hakkında',{exact:true}).click();
+  const dialog=page.getByRole('dialog',{name:'Su Kaçağı Tespiti'});
+  await expect(dialog.getByRole('heading',{level:2})).toContainText('Su Kaçağı Tespiti');
+  await dialog.getByText('Neler dahil?',{exact:true}).click();
   await expect(dialog.getByRole('listitem')).toHaveCount(6);
   for(const item of await dialog.getByRole('listitem').all())await expect(item).not.toBeEmpty();
-  await dialog.getByRole('button',{name:/Bu Hizmetle Devam Et/}).click();
+  await dialog.getByRole('button',{name:'Devam et'}).click();
   await expect(page.getByRole('dialog',{name:'Su Kaçağı Tespiti'})).toBeVisible();
 });
 
 test('draft refresh requires explicit resume and preserves the selected answers',async({page})=>{
   const search=page.getByRole('textbox',{name:'İhtiyacınızı yazın'});
   await search.fill('TV Duvar Montajı');await search.press('Enter');
-  await page.getByRole('button',{name:/Bu Hizmetle Devam Et/}).click();
+  await page.getByRole('button',{name:'Devam et'}).click();
   await page.locator('label').filter({has:page.getByRole('radio',{name:'32–49 inç',exact:true})}).click();
   await expect(page.getByRole('radio',{name:'32–49 inç',exact:true})).toBeChecked();
-  await page.getByRole('button',{name:/Sonraki soru/}).click();
+  await page.getByRole('button',{name:'Devam'}).click();
   await page.locator('label').filter({has:page.getByRole('radio',{name:'Beton / tuğla',exact:true})}).click();
-  await page.getByRole('button',{name:/Sonraki soru/}).click();
+  await page.getByRole('button',{name:'Devam'}).click();
   await page.locator('label').filter({has:page.getByRole('radio',{name:'Evet, hazır',exact:true})}).click();
-  await page.getByRole('button',{name:/Görsel ekleme adımına geç/}).click();
-  await expect(page.getByRole('heading',{name:'İsterseniz fotoğraf veya video ekleyin'})).toBeFocused();
+  await page.getByRole('button',{name:'Devam'}).click();
+  await expect(page.getByRole('heading',{name:'Görsel eklemek ister misiniz?'})).toBeFocused();
   await page.reload();
   await search.fill('TV Duvar Montajı');await search.press('Enter');
-  await page.getByRole('button',{name:/Bu Hizmetle Devam Et/}).click();
+  await page.getByRole('button',{name:'Devam et'}).click();
   await expect(page.getByRole('heading',{name:'Kayıtlı taslağınız var'})).toBeVisible();
   await page.getByRole('button',{name:'Hesabımdaki taslağa devam et'}).click();
   await expect(page.getByRole('dialog',{name:'İsterseniz fotoğraf veya video ekleyin'})).toBeVisible();
@@ -43,7 +43,7 @@ test('draft refresh requires explicit resume and preserves the selected answers'
 test('keyboard search restores focus on Escape',async({page})=>{
   const search=page.getByRole('textbox',{name:'İhtiyacınızı yazın'});
   await search.focus();await page.keyboard.type('musluk akıtıyor');await page.keyboard.press('Enter');
-  const dialog=page.getByRole('dialog',{name:/İhtiyacınızı doğru anladık mı/i});
+  const dialog=page.getByRole('dialog',{name:'Musluk Değişimi'});
   await expect(dialog.getByRole('button',{name:'Kapat'})).toBeFocused();
   await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(search).toBeFocused();
   await expect(page.locator('footer a[href="#"]')).toHaveCount(0);
@@ -54,17 +54,17 @@ test('narrow mobile match and wizard fit without horizontal clipping',async({pag
     await page.setViewportSize({width,height:844});
     const search=page.getByRole('textbox',{name:'İhtiyacınızı yazın'});
     await search.fill('Musluk Değişimi');await search.press('Enter');
-    const match=page.getByRole('dialog',{name:/İhtiyacınızı doğru anladık mı/i});
+    const match=page.getByRole('dialog',{name:'Musluk Değişimi'});
     await expect(match).toBeVisible();
     const bounds=await match.boundingBox();expect(bounds).not.toBeNull();expect(bounds!.x).toBeGreaterThanOrEqual(0);expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(width+1);
-    await match.getByRole('button',{name:/Bu Hizmetle Devam Et/}).click();
+    await match.getByRole('button',{name:'Devam et'}).click();
     const resume=page.getByRole('button',{name:'Taslağı sil ve yeni başla'});
     if(width===390){await expect(resume).toBeVisible();await resume.click();}
     const wizard=page.getByRole('dialog',{name:'Musluk Değişimi'});
     await expect(wizard.getByRole('heading',{level:2})).toBeFocused();
     await wizard.locator('label').filter({has:page.getByRole('radio',{name:'Mutfak bataryası',exact:true})}).click();
     await expect(wizard.getByRole('radio',{name:'Mutfak bataryası',exact:true})).toBeChecked();
-    await wizard.getByRole('button',{name:/Sonraki soru/}).click();
+    await wizard.getByRole('button',{name:'Devam'}).click();
     await expect(wizard.getByText('Soru 2 / 3',{exact:true})).toBeVisible();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+1)).toBe(true);
     await page.keyboard.press('Escape');
@@ -79,7 +79,7 @@ test('wizard uses a single task surface across the responsive matrix',async({pag
     const search=page.getByRole('textbox',{name:'İhtiyacınızı yazın'});
     await search.fill('Musluk Değişimi');
     await search.press('Enter');
-    await page.getByRole('button',{name:/Bu Hizmetle Devam Et/}).click();
+    await page.getByRole('button',{name:'Devam et'}).click();
     const resume=page.getByRole('button',{name:'Taslağı sil ve yeni başla'});
     if(await resume.isVisible()) await resume.click();
     const wizard=page.getByRole('dialog',{name:'Musluk Değişimi'});

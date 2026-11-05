@@ -17,17 +17,23 @@ test('classification and request dialogs have no serious accessibility violation
   await search.fill('TV duvar montajı');
   await search.press('Enter');
 
-  const classification = page.getByRole('dialog', { name: 'İhtiyacınızı doğru anladık mı?' });
+  const classification = page.getByRole('dialog', { name: 'TV Duvar Montajı' });
   await expect(classification).toBeVisible();
+  await classification.evaluate(async (element) => {
+    await Promise.all(element.getAnimations().map((animation) => animation.finished.catch(() => undefined)));
+  });
   let results = await new AxeBuilder({page}).include('[role="dialog"]').analyze();
   expect(
     results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? '')),
     JSON.stringify(results.violations, null, 2),
   ).toEqual([]);
 
-  await classification.getByRole('button', { name: /Bu Hizmetle Devam Et/i }).click();
+  await classification.getByRole('button', { name: 'Devam et' }).click();
   const wizard = page.getByRole('dialog', { name: 'TV Duvar Montajı' });
   await expect(wizard).toBeVisible();
+  await wizard.evaluate(async (element) => {
+    await Promise.all(element.getAnimations().map((animation) => animation.finished.catch(() => undefined)));
+  });
   results = await new AxeBuilder({page}).include('[role="dialog"]').analyze();
   expect(
     results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? '')),
@@ -60,7 +66,7 @@ test('classification dialog traps keyboard focus and restores focus on Escape di
   await search.fill('TV duvar montajı');
   await search.press('Enter');
 
-  const classification = page.getByRole('dialog', { name: 'İhtiyacınızı doğru anladık mı?' });
+  const classification = page.getByRole('dialog', { name: 'TV Duvar Montajı' });
   await expect(classification).toBeVisible();
 
   // Focus must be inside dialog
@@ -92,8 +98,8 @@ test('request wizard exposes modal semantics, progress status and modal-open mar
   await search.fill('TV duvar montajı');
   await search.press('Enter');
 
-  const classification = page.getByRole('dialog', { name: 'İhtiyacınızı doğru anladık mı?' });
-  await classification.getByRole('button', { name: /Bu Hizmetle Devam Et/i }).click();
+  const classification = page.getByRole('dialog', { name: 'TV Duvar Montajı' });
+  await classification.getByRole('button', { name: 'Devam et' }).click();
 
   const wizard = page.getByRole('dialog', { name: 'TV Duvar Montajı' });
   await expect(wizard).toBeVisible();

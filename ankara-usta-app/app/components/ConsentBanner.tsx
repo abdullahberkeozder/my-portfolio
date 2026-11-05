@@ -27,6 +27,11 @@ export default function ConsentBanner() {
   const bannerRef = useRef<HTMLElement>(null);
 
   useEffect(()=>{
+    document.body.dataset.consentVisible = show ? 'true' : 'false';
+    return () => { delete document.body.dataset.consentVisible; };
+  }, [show]);
+
+  useEffect(()=>{
     if(!show || !bannerRef.current) return;
     const element=bannerRef.current;
     const previous=document.body.style.paddingBottom;

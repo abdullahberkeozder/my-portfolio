@@ -46,7 +46,7 @@ test('usta çalışma alanı gerçek oturumla açılır ve müşteri alanı ayr�
   for (const name of required) env(name);
   await signIn(page, 'tradesperson', env('E2E_TRADESPERSON_EMAIL'), env('E2E_TRADESPERSON_PASSWORD'));
   await expect(page.getByRole('heading', {name: 'İş fırsatları', level: 1})).toBeVisible();
-  await expect(page.getByText('USTA ÇALIŞMA ALANI')).toBeVisible();
+  await expect(page.getByText('Size özel ve uygun açık talepleri inceleyin, sonraki adıma karar verin.')).toBeVisible();
   await page.goto('/taleplerim');
   await expect(page).toHaveURL(/\/taleplerim$/);
   await expect(page.getByRole('heading', {name: 'Taleplerim', level: 1})).toBeVisible();

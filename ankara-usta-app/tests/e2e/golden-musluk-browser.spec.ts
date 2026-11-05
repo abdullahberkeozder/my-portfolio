@@ -58,37 +58,42 @@ test('Musluk Değişimi: wizarddan iki oturumlu iş tamamlamaya gerçek tarayıc
   // Guest wizard: the request is assembled before authentication.
   await page.goto('/');
   await page.getByLabel('Hızlı arama etiketleri').getByRole('button',{name:'Musluk Değişimi'}).click();
-  await page.getByRole('button',{name:'Bu Hizmetle Devam Et →'}).click();
+  await page.getByRole('button',{name:'Devam et'}).click();
   // The dialog's accessible name intentionally follows the active step title.
   // Anchor to the single modal and assert the service context separately.
   const wizard=page.getByRole('dialog');
   await expect(wizard.getByText('Musluk Değişimi',{exact:true})).toBeVisible();
   for(const [answer,next] of [
-    ['Mutfak bataryası','Sonraki soruya geç'],
-    ['Evet, yeni bataryayı aldım','Sonraki soruya geç'],
-    ['Evet, su kesilebiliyor','Görsel ekleme adımına geç'],
+    ['Mutfak bataryası','Devam'],
+    ['Evet, yeni bataryayı aldım','Devam'],
+    ['Evet, su kesilebiliyor','Devam'],
   ] as const){
-    await wizard.getByRole('radio',{name:answer,exact:true}).check();
+    await wizard.getByRole('radio',{name:answer,exact:true}).check({force:true});
     await wizard.getByRole('button',{name:next,exact:true}).click();
   }
-  const locationStep=wizard.getByRole('button',{name:'Konum ve zamanı ekle',exact:true});
+  const locationStep=wizard.getByRole('button',{name:'Devam',exact:true});
   await locationStep.focus();
   await expect(locationStep).toBeFocused();
   await locationStep.press('Enter');
+  await wizard.getByRole('tab',{name:/Liste ile Seç/i}).click();
   await wizard.getByLabel('İlçe Seçin').selectOption('Sincan');
   await wizard.getByLabel('Mahalle / Semt').selectOption('Törekent');
-  await wizard.getByRole('button',{name:'Talep kapsamını kontrol et',exact:true}).click();
+  await wizard.getByRole('button',{name:'Özeti gör',exact:true}).click();
   const beforeAuth=await wizard.getByLabel('Talep kapsamı').innerText();
 
   // Same-tab auth return must restore the exact draft and summary.
   await wizard.getByRole('link',{name:'Giriş yap / kayıt ol ve devam et'}).click();
   await signIn(page,env('E2E_CUSTOMER_EMAIL'),env('E2E_CUSTOMER_PASSWORD'));
   await page.getByRole('button',{name:'Giriş öncesi taslağı bu hesaba aktar ve devam et',exact:true}).click();
-  await expect(page.getByRole('heading',{name:'Talebiniz hazır mı?'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Talebiniz hazır'})).toBeVisible();
   await expect(page.getByLabel('Talep kapsamı')).toHaveText(beforeAuth,{useInnerText:true});
   const submitResponse=page.waitForResponse(response=>
     /\/api\/requests\/[^/]+\/submit$/.test(new URL(response.url()).pathname)&&response.request().method()==='POST');
-  await page.getByRole('button',{name:'Talebi gönder',exact:true}).click();
+  const submitButton=page.getByRole('button',{name:/Talebi gönder.*basılı tutun/i});
+  await submitButton.hover();
+  await page.mouse.down();
+  await page.waitForTimeout(950);
+  await page.mouse.up();
   const submitted=await submitResponse;
   expect(submitted.ok()).toBe(true);
   const requestId=new URL(submitted.url()).pathname.split('/')[3];

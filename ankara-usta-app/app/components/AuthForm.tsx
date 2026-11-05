@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createSupabaseBrowserClient } from '../lib/supabase/browser';
 import { landingPathForRoles, safeNextPath } from '../lib/authRedirect';
+import TaskrabbitBrandLogo from './TaskrabbitBrandLogo';
+import styles from './authForm.module.css';
 
-// Eye icon for password toggle
 const subscribeToHydration = () => () => {};
 const clientReady = () => true;
 const serverReady = () => false;
+
 function EyeIcon({ closed }: { closed?: boolean }) {
   return closed ? (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -28,15 +30,23 @@ export default function AuthForm({
   audience = 'customer',
   initialMode = 'sign-in',
   nextPath = null,
+  isModal = false,
+  onClose,
 }: {
   audience?: 'customer' | 'tradesperson';
   initialMode?: 'sign-in' | 'sign-up';
   nextPath?: string | null;
+  isModal?: boolean;
+  onClose?: () => void;
 }) {
   const router = useRouter();
   const ready = useSyncExternalStore(subscribeToHydration, clientReady, serverReady);
   const [authMode, setAuthMode] = useState<'sign-in' | 'sign-up'>(initialMode);
   const [displayName, setDisplayName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('+90');
+  const [postalCode, setPostalCode] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(true);
   const professional = audience === 'tradesperson';
   const withNext = (path: string) =>
     nextPath ? `${path}?next=${encodeURIComponent(nextPath)}` : path;
@@ -44,11 +54,22 @@ export default function AuthForm({
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const inFlight = useRef(false);
   const emailInput = useRef<HTMLInputElement>(null);
   const [registrationPending, setRegistrationPending] = useState(false);
-  const registrationNotice = 'Bu adresle yeni kayıt yapılabiliyorsa doğrulama e-postasını kontrol edin; gelen kutusu ve spam klasörüne bakın. Zaten hesabınız varsa giriş yapın veya parolanızı yenileyin.';
+  const registrationNotice =
+    'Bu adresle yeni kayıt yapılabiliyorsa doğrulama e-postasını kontrol edin; gelen kutusu ve spam klasörüne bakın. Zaten hesabınız varsa giriş yapın veya parolanızı yenileyin.';
+
+  // Password criteria check for Taskrabbit live validation
+  const hasMinLength = password.length >= 8;
+  const hasUpper = /[A-Z]/.test(password);
+  const hasLower = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSymbol = /[^A-Za-z0-9]/.test(password);
+  const diversityCount = [hasUpper, hasLower, hasNumber, hasSymbol].filter(Boolean).length;
+  const hasDiversity = diversityCount >= 3;
 
   function requestedPath() {
     return safeNextPath(nextPath);
@@ -56,11 +77,19 @@ export default function AuthForm({
 
   async function authenticate(mode: 'sign-in' | 'sign-up') {
     if (inFlight.current) return;
+    const submittedEmail = email.trim();
+    if (!submittedEmail) {
+      setEmailError('E-posta adresi gereklidir');
+      emailInput.current?.focus();
+      return;
+    }
+
     inFlight.current = true;
     setBusy(true);
     setMessage(null);
+    setEmailError(null);
     setRegistrationPending(false);
-    const submittedEmail = email.trim();
+
     try {
       const supabase = createSupabaseBrowserClient();
       const result =
@@ -70,7 +99,12 @@ export default function AuthForm({
               email: submittedEmail,
               password,
               options: {
-                data: { display_name: displayName.trim(), registration_intent: audience },
+                data: {
+                  display_name: displayName.trim(),
+                  registration_intent: audience,
+                  phone: phone ? `${countryCode} ${phone.trim()}` : undefined,
+                  postal_code: postalCode.trim() || undefined,
+                },
                 emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(
                   requestedPath() ??
                     (professional ? '/usta-basvurusu' : '/taleplerim')
@@ -79,11 +113,10 @@ export default function AuthForm({
             });
 
       if (result.error) {
-        // Auth remains the authority for duplicate accounts. Do not expose an email lookup API.
         if (mode === 'sign-up' && ['user_already_exists', 'email_exists'].includes(result.error.code ?? '')) {
           setRegistrationPending(true);
           setPassword('');
-          return setMessage({type: 'success', text: registrationNotice});
+          return setMessage({ type: 'success', text: registrationNotice });
         }
         return setMessage({
           type: 'error',
@@ -119,6 +152,7 @@ export default function AuthForm({
           ? requested ?? '/usta-basvurusu'
           : landingPathForRoles(roles, requested);
 
+      if (onClose) onClose();
       router.push(targetPath);
       router.refresh();
     } catch {
@@ -172,7 +206,7 @@ export default function AuthForm({
     authMode === 'sign-in'
       ? professional
         ? 'Usta Girişi'
-        : 'Hesabınıza Giriş Yapın'
+        : 'Hoş Geldiniz'
       : professional
       ? 'Usta Hesabı Oluştur'
       : 'Hesap Oluşturun';
@@ -181,51 +215,77 @@ export default function AuthForm({
     authMode === 'sign-in'
       ? professional
         ? 'İş fırsatlarınızı ve başvurunuzu takip edin.'
-        : 'Taleplerinizi ve tekliflerinizi kendi hesabınızdan takip edin.'
+        : 'Taleplerinizi ve tekliflerinizi tek ekrandan yönetin.'
       : professional
       ? 'Hesabınızı oluşturun; ardından hizmetlerinizi ve belgelerinizi ekleyin.'
-      : 'Hesabınızı oluşturun; hazırladığınız talebe dönüp teklif almaya başlayın.';
+      : 'Dakikalar içinde hesabınızı açın, güvenilir ustalarla buluşun.';
 
   return (
-    <main className="auth-shell account-shell">
-      {/* Card */}
-      <div className="auth-form-container">
-        <div className="auth-card">
-          <span className="auth-eyebrow">ORKESTRA HESAP MERKEZİ</span>
-          <h1>{pageTitle}</h1>
-          <p className="auth-subtitle">{pageSubtitle}</p>
-          <nav className="auth-audience-links" aria-label="Hesap kullanım amacı">
-            <Link href={withNext(authMode === 'sign-up' ? '/kayit' : '/giris')} aria-current={!professional ? 'page' : undefined}>Hizmet almak istiyorum</Link>
-            <Link href={withNext(authMode === 'sign-up' ? '/usta/kayit' : '/usta/giris')} aria-current={professional ? 'page' : undefined}>Ustayım</Link>
-          </nav>
+    <main className={`${isModal ? styles.modalScreen : styles.screen} auth-surface`}>
+      <div className={styles.container}>
+        {onClose && (
+          <button
+            type="button"
+            className={styles.closeBtn}
+            onClick={onClose}
+            aria-label="Kapat"
+          >
+            ✕
+          </button>
+        )}
 
-          {/* Giriş / Kayıt tabs */}
-          <div className="auth-mode-tabs" role="group" aria-label="Giriş veya Kayıt">
-            <button
-              className={`auth-mode-tab${authMode === 'sign-in' ? ' active' : ''}`}
-              type="button"
-              aria-pressed={authMode === 'sign-in'}
-              disabled={busy}
-              onClick={() => { setAuthMode('sign-in'); setMessage(null); setRegistrationPending(false); }}
-            >
-              Giriş Yap
-            </button>
-            <button
-              className={`auth-mode-tab${authMode === 'sign-up' ? ' active' : ''}`}
-              type="button"
-              aria-pressed={authMode === 'sign-up'}
-              disabled={busy}
-              onClick={() => { setAuthMode('sign-up'); setMessage(null); setRegistrationPending(false); }}
-            >
-              Kayıt Ol
-            </button>
+        <div className={styles.brandHeader}>
+          <TaskrabbitBrandLogo size={34} />
+        </div>
+
+        <header className={styles.header}>
+          <h1>{pageTitle}</h1>
+          <p>{pageSubtitle}</p>
+          {nextPath && (
+            <p className={styles.returnNote}>
+              {authMode === 'sign-up'
+                ? 'Doğrulama tamamlandığında işleminize döneceksiniz.'
+                : 'Giriş tamamlandığında işleminize döneceksiniz.'}
+            </p>
+          )}
+        </header>
+
+        <form className={styles.form} onSubmit={submit}>
+          {/* Email */}
+          <div className={styles.field}>
+            <label htmlFor="auth-email" className={styles.requiredLabel}>
+              E-posta Adresi
+            </label>
+            <input
+              id="auth-email"
+              ref={emailInput}
+              disabled={busy || !ready}
+              type="email"
+              autoComplete="email"
+              required
+              aria-invalid={Boolean(emailError)}
+              aria-describedby={emailError ? 'auth-email-error' : undefined}
+              className={`${styles.input} ${emailError ? styles.inputError : ''}`}
+              placeholder="ornek@eposta.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setEmailError(null);
+                setMessage(null);
+                setRegistrationPending(false);
+              }}
+            />
+            {emailError && <span id="auth-email-error" className={styles.fieldError} role="alert">{emailError}</span>}
           </div>
 
-          <form className="auth-form" onSubmit={submit}>
-            {/* Display name (sign-up only) */}
-            {authMode === 'sign-up' && (
-              <div className="auth-field">
-                <label htmlFor="auth-name">Ad Soyad</label>
+          {/* Sign-up specific fields */}
+          {authMode === 'sign-up' && (
+            <>
+              {/* Display name */}
+              <div className={styles.field}>
+                <label htmlFor="auth-name" className={styles.requiredLabel}>
+                  Ad Soyad
+                </label>
                 <input
                   id="auth-name"
                   disabled={busy || !ready}
@@ -233,119 +293,249 @@ export default function AuthForm({
                   required
                   minLength={2}
                   maxLength={120}
+                  className={styles.input}
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Adınız Soyadınız"
+                  placeholder="Adınız ve Soyadınız"
                 />
               </div>
-            )}
 
-            {/* Email */}
-            <div className="auth-field">
-              <label htmlFor="auth-email">E-posta Adresi</label>
-              <input
-                id="auth-email"
-                ref={emailInput}
-                disabled={busy || !ready}
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="ornek@eposta.com"
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); setMessage(null); setRegistrationPending(false); }}
-              />
-            </div>
-
-            {/* Password */}
-            <div className="auth-field">
-              <div className="auth-label-row">
-                <label htmlFor="auth-password">Parola</label>
-                {authMode === 'sign-in' && (
-                  <button
-                    type="button"
-                    className="auth-label-action"
-                    onClick={() => void requestPasswordReset()}
-                    disabled={busy}
+              {/* Phone number with country selector */}
+              <div className={styles.field}>
+                <label htmlFor="auth-phone" className={styles.requiredLabel}>
+                  Telefon Numarası
+                </label>
+                <div className={styles.phoneRow}>
+                  <select
+                    className={styles.countryCode}
+                    value={countryCode}
+                    onChange={(e) => setCountryCode(e.target.value)}
+                    aria-label="Ülke kodu"
                   >
-                    Parolamı unuttum?
-                  </button>
-                )}
+                    <option value="+90">🇹🇷 +90</option>
+                    <option value="+49">🇩🇪 +49</option>
+                    <option value="+44">🇬🇧 +44</option>
+                    <option value="+1">🇺🇸 +1</option>
+                  </select>
+                  <input
+                    id="auth-phone"
+                    type="tel"
+                    disabled={busy || !ready}
+                    className={styles.input}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="5XX XXX XX XX"
+                    autoComplete="tel-national"
+                  />
+                </div>
+                <p className={styles.fieldPrivacyHint}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  <span>Numaranız yalnızca teklifi kabul ettiğiniz ustayla paylaşılır; açık havuza dağıtılmaz.</span>
+                </p>
               </div>
-              <div className="auth-password-wrap">
+
+              {/* Postal code / district */}
+              <div className={styles.field}>
+                <label htmlFor="auth-postal">
+                  İlçe / Posta Kodu
+                </label>
                 <input
-                  id="auth-password"
+                  id="auth-postal"
+                  type="text"
                   disabled={busy || !ready}
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete={authMode === 'sign-in' ? 'current-password' : 'new-password'}
-                  minLength={authMode === 'sign-up' ? 8 : undefined}
-                  required
-                  placeholder={authMode === 'sign-up' ? 'En az 8 karakter' : 'Parolanız'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  className={styles.input}
+                  value={postalCode}
+                  onChange={(e) => setPostalCode(e.target.value)}
+                  placeholder="Örn: Çankaya veya 06420"
                 />
+              </div>
+            </>
+          )}
+
+          {/* Password */}
+          <div className={styles.field}>
+            <div className={styles.labelRow}>
+              <label htmlFor="auth-password" className={styles.requiredLabel}>
+                Parola
+              </label>
+              {authMode === 'sign-in' && (
                 <button
                   type="button"
-                  className="auth-eye-btn"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? 'Parolayı gizle' : 'Parolayı göster'}
+                  className={styles.passwordHelpLink}
+                  onClick={() => void requestPasswordReset()}
+                  disabled={busy}
                 >
-                  <EyeIcon closed={showPassword} />
+                  Şifrenizi mi unuttunuz?
                 </button>
-              </div>
+              )}
+            </div>
+            <div className={styles.passwordWrap}>
+              <input
+                id="auth-password"
+                disabled={busy || !ready}
+                type={showPassword ? 'text' : 'password'}
+                autoComplete={authMode === 'sign-in' ? 'current-password' : 'new-password'}
+                minLength={authMode === 'sign-up' ? 8 : undefined}
+                required
+                className={styles.input}
+                placeholder={authMode === 'sign-up' ? 'Şifre oluşturun' : 'Şifrenizi girin'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className={styles.eyeBtn}
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Parolayı gizle' : 'Parolayı göster'}
+                disabled={busy}
+              >
+                <EyeIcon closed={showPassword} />
+              </button>
             </div>
 
-            {/* Alert message */}
-            {message && (
-              <div
-                className={`auth-alert auth-alert-${message.type}`}
-                role={message.type === 'error' ? 'alert' : 'status'}
+            {/* Taskrabbit live criteria checklist for sign-up */}
+            {authMode === 'sign-up' && (
+              <ul className={styles.checklist} aria-label="Parola kuralları">
+                <li className={`${styles.checkItem} ${hasMinLength ? styles.checkItemFulfilled : ''}`}>
+                  <span className={`${styles.checkIcon} ${hasMinLength ? styles.checkIconFulfilled : ''}`} aria-hidden="true">
+                    {hasMinLength ? '✓' : '○'}
+                  </span>
+                  En az 8 karakter
+                </li>
+                <li className={`${styles.checkItem} ${hasDiversity ? styles.checkItemFulfilled : ''}`}>
+                  <span className={`${styles.checkIcon} ${hasDiversity ? styles.checkIconFulfilled : ''}`} aria-hidden="true">
+                    {hasDiversity ? '✓' : '○'}
+                  </span>
+                  En az 3 kural: büyük harf, küçük harf, rakam veya sembol
+                </li>
+              </ul>
+            )}
+          </div>
+
+          {/* Terms checkbox for sign-up */}
+          {authMode === 'sign-up' && (
+            <label className={styles.termsLabel}>
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                required
+              />
+              <span>
+                <Link href="/kullanim-kosullari" target="_blank">Kullanım Koşulları</Link>&apos;nı kabul ediyorum ve{' '}
+                <Link href="/gizlilik" target="_blank">Gizlilik Politikası</Link>&apos;nı okudum.
+              </span>
+            </label>
+          )}
+
+          {/* Alert feedback message */}
+          {message && (
+            <div
+              className={`${styles.alert} ${message.type === 'error' ? styles.alertError : styles.alertSuccess}`}
+              role={message.type === 'error' ? 'alert' : 'status'}
+            >
+              <span>{message.text}</span>
+            </div>
+          )}
+
+          {/* Recovery actions if account already exists */}
+          {registrationPending && (
+            <div className={styles.recoveryActions} role="group" aria-label="Hesabınıza erişin">
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  setAuthMode('sign-in');
+                  setRegistrationPending(false);
+                  setMessage(null);
+                }}
               >
-                <span className="auth-alert-icon">{message.type === 'success' ? '✓' : '⚠'}</span>
-                <span>{message.text}</span>
-              </div>
-            )}
+                Mevcut hesabımla giriş yap
+              </button>
+              <button type="button" disabled={busy} onClick={() => void requestPasswordReset()}>
+                Parolamı yenile
+              </button>
+            </div>
+          )}
 
-            {/* Submit */}
-            {registrationPending && <div className="auth-mode-tabs" role="group" aria-label="Hesabınıza erişin">
-              <button className="auth-mode-tab" type="button" disabled={busy} onClick={() => {setAuthMode('sign-in'); setRegistrationPending(false); setMessage(null);}}>Mevcut hesabımla giriş yap</button>
-              <button className="auth-mode-tab" type="button" disabled={busy} onClick={() => void requestPasswordReset()}>Parolamı yenile</button>
-            </div>}
-            <button className="auth-submit-btn" disabled={!ready || busy || registrationPending} type="submit">
-              {busy ? (
-                <>
-                  <span className="btn-spinner" aria-hidden="true" />
-                  İşleniyor…
-                </>
-              ) : authMode === 'sign-in' ? (
-                'Giriş Yap →'
-              ) : (
-                'Hesap Oluştur ve Devam Et →'
-              )}
-            </button>
-          </form>
-
-          {/* Footer note */}
-          <div className="auth-footer-note">
-            {professional ? (
+          {/* Primary Taskrabbit Solid Pill Submit Button */}
+          <button
+            className={styles.submitBtn}
+            disabled={!ready || busy || registrationPending}
+            type="submit"
+          >
+            {busy ? (
               <>
-                Tek hesapla hem hizmet alabilir hem usta başvurusu yapabilirsiniz.{' '}
-                <Link href={withNext('/giris')}>Müşteri girişi →</Link>
+                <span className={styles.spinner} aria-hidden="true" />
+                İşleniyor…
               </>
+            ) : authMode === 'sign-in' ? (
+              'Giriş Yap →'
             ) : (
-              <>
-                Usta olarak başvuru yapmak ister misiniz?{' '}
-                <Link href={withNext('/usta/kayit')}>Usta olarak kayıt ol →</Link>
-              </>
+              'Hesap Oluştur ve Devam Et →'
             )}
-          </div>
+          </button>
+        </form>
 
-          {/* Minimal legal links */}
-          <div className="auth-minimal-footer">
-            <Link href="/gizlilik">Gizlilik</Link>
-            <Link href="/kullanim-kosullari">Kullanım Koşulları</Link>
-          </div>
+        {/* Divider OR / VEYA */}
+        {!registrationPending && (
+          <>
+            <div className={styles.divider}>VEYA</div>
+            <button
+              type="button"
+              className={styles.outlineBtn}
+              onClick={() => {
+                setAuthMode(authMode === 'sign-in' ? 'sign-up' : 'sign-in');
+                setMessage(null);
+                setEmailError(null);
+              }}
+            >
+              {authMode === 'sign-in' ? 'Hesap oluşturun' : 'Zaten hesabınız var mı? Giriş yapın'}
+            </button>
+          </>
+        )}
+
+        {/* Audience switch: Customer vs Tradesperson */}
+        <div className={styles.audienceSwitch}>
+          {professional ? (
+            <>
+              <span>Hizmet mi almak istiyorsunuz?</span>
+              <a href={withNext(authMode === 'sign-up' ? '/kayit' : '/giris')}>
+                Hizmet almak istiyorum
+              </a>
+            </>
+          ) : (
+            <>
+              <span>Usta olarak mı devam edeceksiniz?</span>
+              <a href={withNext(authMode === 'sign-up' ? '/usta/kayit' : '/usta/giris')}>
+                Ustayım
+              </a>
+            </>
+          )}
+        </div>
+
+        {/* Legal links */}
+        <div className={styles.legal}>
+          <Link href="/gizlilik">Gizlilik</Link>
+          <span aria-hidden="true">·</span>
+          <Link href="/kullanim-kosullari">Kullanım Koşulları</Link>
         </div>
       </div>
+
+      {/* Floating Taskrabbit Help Pill at bottom-left */}
+      {!isModal && (
+        <a href="/yardim" className={styles.helpFloat} title="Yardım ve Destek">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+          Yardım
+        </a>
+      )}
     </main>
   );
 }

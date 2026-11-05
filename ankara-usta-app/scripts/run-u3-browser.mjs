@@ -5,17 +5,23 @@ const ref='hyuijuafuayzultbjvjb';
 const local=parseEnv(readFileSync('.env.e2e.local','utf8'));
 if(local.E2E_STAGING_PROJECT_REF!==ref||local.E2E_SUPABASE_URL!==`https://${ref}.supabase.co`) throw new Error('Wrong test target.');
 for(const name of ['E2E_CUSTOMER_EMAIL','E2E_CUSTOMER_PASSWORD','E2E_SECOND_CUSTOMER_EMAIL','E2E_SECOND_CUSTOMER_PASSWORD']) if(!local[name]) throw new Error(`Missing ${name}`);
-const lookup=spawnSync(process.execPath,['node_modules/supabase/dist/supabase.js','projects','api-keys','--project-ref',ref,'--output','json'],{encoding:'utf8',windowsHide:true});
-if(lookup.status!==0) throw new Error('Staging public key unavailable.');
-const data=JSON.parse(lookup.stdout); const rows=Array.isArray(data)?data:data.api_keys??data.keys;
-const key=rows.find(k=>k.type==='publishable')?.api_key??rows.find(k=>k.name==='anon')?.api_key;
+// A publishable key is safe to provide through the process environment and
+// avoids requiring a Supabase CLI access token on the test machine. The CLI
+// remains a fallback for developers who are already authenticated there.
+let key=process.env.E2E_SUPABASE_KEY?.trim()||local.E2E_SUPABASE_KEY?.trim();
+if(!key) {
+  const lookup=spawnSync(process.execPath,['node_modules/supabase/dist/supabase.js','projects','api-keys','--project-ref',ref,'--output','json'],{encoding:'utf8',windowsHide:true});
+  if(lookup.status!==0) throw new Error('Staging public key unavailable. Set E2E_SUPABASE_KEY to the staging publishable key or authenticate the Supabase CLI.');
+  const data=JSON.parse(lookup.stdout); const rows=Array.isArray(data)?data:data.api_keys??data.keys;
+  key=rows.find(k=>k.type==='publishable')?.api_key??rows.find(k=>k.name==='anon')?.api_key;
+}
 if(!key||key.startsWith('sb_secret_')) throw new Error('Invalid public key.');
 const env={...process.env,...local,NEXT_PUBLIC_SUPABASE_URL:local.E2E_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:key,E2E_SUPABASE_KEY:key,ORKESTRA_DIRECT_REQUESTS_ENABLED:'true'};
 function run(args,environment){return spawnSync(process.execPath,args,{env:environment,stdio:'inherit',windowsHide:true}).status??1;}
 let code=1;
 try {
   if(run(['scripts/run-vinext.mjs','build'],env)!==0) throw new Error('Staging build failed.');
-  code=run(['scripts/run-project-tool.mjs','playwright','test','--config','playwright.u3.config.ts'],env);
+  code=run(['scripts/run-project-tool.mjs','playwright','test','--config','playwright.u3.config.ts',...process.argv.slice(2)],env);
 } finally {
   console.log('Restoring normal local build without test credentials.');
   if(run(['scripts/run-vinext.mjs','build'],process.env)!==0) code=1;

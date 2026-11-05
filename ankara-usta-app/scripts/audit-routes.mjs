@@ -71,6 +71,12 @@ function routeExists(targetUrl) {
   return false;
 }
 
+// JSX template hrefs can depend on runtime state (query params, profile ids,
+// pagination, etc.). Only validate targets whose route is statically known.
+function isStaticInternalTarget(target) {
+  return !target.includes('${');
+}
+
 const deadLinks = [];
 
 for (const f of files) {
@@ -81,6 +87,7 @@ for (const f of files) {
   let match;
   while ((match = hrefRegex.exec(content)) !== null) {
     const val = match[1];
+    if (!isStaticInternalTarget(val)) continue;
     if (!val.startsWith('http') && !val.startsWith('mailto:') && !val.startsWith('tel:') && !val.startsWith('#')) {
       if (!routeExists(val)) {
         deadLinks.push({ file: f, type: 'href', target: val });
@@ -92,6 +99,7 @@ for (const f of files) {
   const hrefTemplateRegex = /href=\{`([^`]+)`\}/g;
   while ((match = hrefTemplateRegex.exec(content)) !== null) {
     const val = match[1];
+    if (!isStaticInternalTarget(val)) continue;
     if (!val.startsWith('http') && !val.startsWith('#')) {
       if (!routeExists(val)) {
         deadLinks.push({ file: f, type: 'href-template', target: val });
@@ -126,4 +134,5 @@ if (deadLinks.length === 0) {
   deadLinks.forEach(d => {
     console.log(`- [${d.type}] "${d.target}" in ${path.relative(process.cwd(), d.file).replace(/\\/g, '/')}`);
   });
+  process.exitCode = 1;
 }

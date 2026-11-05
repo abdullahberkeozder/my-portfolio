@@ -16,7 +16,14 @@ export default defineConfig({
   // Remote multi-account fixtures mutate one isolated project. Serializing the
   // required integration run avoids cross-project Realtime load/race noise and
   // keeps local evidence equivalent to CI.
-  workers: process.env.CI || process.env.REQUIRE_AUTH_E2E === 'true' ? 1 : undefined,
+  // Vinext's production server owns one static-file stream per request. Parallel
+  // browser workers can close those streams while a viewport is being torn down,
+  // producing noisy Premature close / ERR_STREAM_UNABLE_TO_PIPE warnings even
+  // when every assertion passes. Keep local UI evidence deterministic; callers
+  // can opt into parallelism explicitly when the server supports it.
+  workers: process.env.PLAYWRIGHT_WORKERS
+    ? Number(process.env.PLAYWRIGHT_WORKERS)
+    : 1,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: 'http://localhost:4187',

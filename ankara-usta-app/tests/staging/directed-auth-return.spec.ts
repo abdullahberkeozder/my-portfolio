@@ -12,15 +12,19 @@ test('selected professional survives sign-in and one submission',async({page})=>
   expect(profiles.error).toBeNull(); const id=profiles.data!.user_id;
   await page.route('**/*.supabase.co/**',route=>new URL(route.request().url()).hostname==='hyuijuafuayzultbjvjb.supabase.co'?route.continue():route.abort());
   await page.goto(`/ustalar/${id}?service=tv-duvar-montaji`);
-  await page.getByRole('button',{name:'Bu ustadan teklif al',exact:true}).click();
+  await page.getByRole('link',{name:'Bu ustadan teklif al',exact:true}).click();
   for(let i=0;i<3;i++) {
-    await page.getByRole('radio').first().check();
-    await page.getByRole('button',{name:i===2?'Görsel ekleme adımına geç':'Sonraki soruya geç'}).click();
+    // The visual choice label intentionally owns the click target for the
+    // custom radio. Force the semantic input check instead of treating the
+    // label overlay as an obstruction.
+    await page.getByRole('radio').first().check({force:true});
+    await page.getByRole('button',{name:'Devam'}).click();
   }
-  await page.getByRole('button',{name:'Konum ve zamanı ekle'}).click();
+  await page.getByRole('button',{name:'Devam'}).click();
+  await page.getByRole('tab',{name:/Liste ile Seç/i}).click();
   await page.getByLabel('İlçe Seçin').selectOption('Çankaya');
   await page.getByLabel('Mahalle / Semt').selectOption('Ayrancı');
-  await page.getByRole('button',{name:'Talep kapsamını kontrol et'}).click();
+  await page.getByRole('button',{name:'Özeti gör'}).click();
   const before=await page.getByLabel('Talep kapsamı').innerText();
   await page.getByRole('link',{name:'Giriş yap / kayıt ol ve devam et'}).click();
   await page.getByLabel('E-posta Adresi').fill(process.env.E2E_CUSTOMER_EMAIL!);
@@ -30,11 +34,15 @@ test('selected professional survives sign-in and one submission',async({page})=>
   await page.getByRole('button',{name:'Giriş Yap →',exact:true}).click();
   expect((await authResponse).ok()).toBe(true);
   await page.getByRole('button',{name:'Giriş öncesi taslağı bu hesaba aktar ve devam et',exact:true}).click();
-  await expect(page.getByRole('heading',{name:'Talebiniz hazır mı?'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Talebiniz hazır'})).toBeVisible();
   await expect(page.getByLabel('Talep kapsamı')).toHaveText(before,{useInnerText:true});
-  await expect(page.getByText('Yalnız TEST PROFİLİ · Montaj Ustası için hazırlanıyor.',{exact:true})).toBeVisible();
+  await expect(page.getByText('Yalnız TEST PROFİLİ · Montaj Ustası görecek.',{exact:true})).toBeVisible();
   const response=page.waitForResponse(r=>/\/api\/requests\/[^/]+\/submit$/.test(new URL(r.url()).pathname)&&r.request().method()==='POST');
-  await page.getByRole('button',{name:'Bu ustaya talebi gönder',exact:true}).click();
+  const submitButton=page.getByRole('button',{name:/Bu ustaya gönder.*basılı tutun/i});
+  await submitButton.hover();
+  await page.mouse.down();
+  await page.waitForTimeout(950);
+  await page.mouse.up();
   const submitted=await response; expect(submitted.ok()).toBe(true);
   const requestId=new URL(submitted.url()).pathname.split('/')[3];
   const login=await client.auth.signInWithPassword({email:process.env.E2E_CUSTOMER_EMAIL!,password:process.env.E2E_CUSTOMER_PASSWORD!});

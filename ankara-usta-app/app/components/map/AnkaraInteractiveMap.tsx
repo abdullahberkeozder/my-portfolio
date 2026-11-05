@@ -269,11 +269,11 @@ export default function AnkaraInteractiveMap({
           ? styles.mapWrapperCompact
           : ''
       }`}
-      aria-label="Ankara Canlı Sevk ve Zanaat Haritası"
+      aria-label={mode === 'picker' ? 'Ankara ilçe ve mahalle haritası' : 'Ankara usta keşif haritası'}
     >
       <div className={styles.mapViewport}>
         {/* Apple Maps & Wolt Benchmark: Floating Search & Filter Island (Only in full discovery mode, omitted in split-pane to prevent duplication) */}
-        {!isSplitPane && (
+        {!isSplitPane && mode !== 'picker' && (
           <div className={styles.floatingSearchIsland} role="search" aria-label="Harita Arama ve Zanaat Filtresi">
             <div className={styles.searchBarRow}>
               <span className={styles.searchBarIcon} aria-hidden="true">🔍</span>

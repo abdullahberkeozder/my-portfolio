@@ -242,6 +242,14 @@ static async Task VerifySecretKeyHeaderAsync()
     await client.ProbeAsync(CancellationToken.None);
     Assert(handler.Method == HttpMethod.Get && handler.Path == "/rest/v1/", "Connection probe must be a read-only REST GET.");
     Assert(handler.ApiKey == "sb_secret_test" && handler.Authorization is null, "Opaque secret keys must use apikey without a Bearer JWT header.");
+
+    var jwtHandler = new ProbeRecordingHandler();
+    var jwt = "eyJhbGciOiJub25lIn0.eyJyb2xlIjoic2VydmljZV9yb2xlIn0.signature";
+    var jwtClient = new SupabaseOutboxClient(
+        new HttpClient(jwtHandler),
+        new NotificationWorkerOptions { SupabaseUrl = "https://example.supabase.co", SupabaseSecretKey = jwt });
+    await jwtClient.ProbeAsync(CancellationToken.None);
+    Assert(jwtHandler.ApiKey == jwt && jwtHandler.Authorization == $"Bearer {jwt}", "Legacy JWT keys must use both apikey and Bearer authentication.");
     Console.WriteLine("Secret API key contract passed: apikey-only header and read-only REST probe.");
 }
 

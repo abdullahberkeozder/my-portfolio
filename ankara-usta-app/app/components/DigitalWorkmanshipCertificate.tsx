@@ -33,6 +33,7 @@ export default function DigitalWorkmanshipCertificate({
   const scope = parseCertificateScopeSnapshot(certificate.scope_snapshot);
   const warranty = calculateWarrantyStatus(certificate.issued_at, certificate.warranty_ends_at);
   const verificationHash = generateCertificateVerificationHash(certificate.certificate_number, jobId);
+  const detailsId = `protocol-details-${jobId}`;
 
   const formattedIssuedDate = new Intl.DateTimeFormat('tr-TR', { dateStyle: 'long' }).format(
     new Date(certificate.issued_at)
@@ -55,7 +56,7 @@ export default function DigitalWorkmanshipCertificate({
   };
 
   return (
-    <article className={`certificate ${styles.certificateWrapper}`} aria-label="Dijital İşçilik Garantisi ve Saha Teslim Tutanağı">
+    <article className={`certificate ${styles.certificateWrapper}`} data-role={role} aria-label="Dijital İşçilik Garantisi ve Saha Teslim Tutanağı">
       <div className={styles.headerRow}>
         <div className={styles.titleBlock}>
           <span className={styles.subJurisdiction}>T.C. Ankara İli Pilot Bölge Sicili</span>
@@ -126,7 +127,12 @@ export default function DigitalWorkmanshipCertificate({
       </div>
 
       {detailsOpen && (
-        <div className={styles.protocolDetails}>
+        <section
+          id={detailsId}
+          role="region"
+          aria-label="Saha Teslim Tutanağı Detayları"
+          className={styles.protocolDetails}
+        >
           <div className={styles.sectionHeader}>Onaylanan İş ve İmalat Kapsamı</div>
           {scope.includedScope.length > 0 ? (
             <ul className={styles.scopeList}>
@@ -169,7 +175,7 @@ export default function DigitalWorkmanshipCertificate({
               <small className={styles.docSubtitle}>Ankara Pilot Koordinasyon Merkezi</small>
             </div>
           </div>
-        </div>
+        </section>
       )}
 
       <div className={styles.verificationFooter}>
@@ -213,6 +219,7 @@ export default function DigitalWorkmanshipCertificate({
           onClick={() => setDetailsOpen(!detailsOpen)}
           className={styles.detailsToggleButton}
           aria-expanded={detailsOpen}
+          aria-controls={detailsId}
         >
           {detailsOpen ? '▲ Tutanağı Daralt' : '▼ Saha Teslim Tutanağını Görüntüle'}
         </button>

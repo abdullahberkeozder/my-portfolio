@@ -71,7 +71,17 @@ describe('ustaCoordinates - Live Supabase Showcase Synchronization', () => {
     expect(marker.latLng[1]).toBeLessThan(32.70);
   });
 
-  it('computes dynamic price estimates based on offered services and taxonomy ranges', () => {
+  it('does not assign a different district when the profile has no service-area row', () => {
+    const [marker] = generateUstaMapMarkers(
+      [{ user_id: 'usta-city-only', display_name: 'Şehir Usta', city: 'Ankara' }],
+      {},
+      {},
+    );
+
+    expect(marker.district).toBe('Ankara');
+  });
+
+  it('does not invent price amounts before a quote exists', () => {
     const markers = generateUstaMapMarkers(
       mockProfiles,
       mockAreaMap,
@@ -80,12 +90,11 @@ describe('ustaCoordinates - Live Supabase Showcase Synchronization', () => {
       mockMetricsMap
     );
 
-    // Musluk Tamiri: usually ~₺350 - ₺900 or similar in SERVICE_PRICE_RANGES
-    expect(markers[0].priceEstimate).toMatch(/₺/);
-    // Kombi: should have dynamic range
-    expect(markers[1].priceEstimate).toMatch(/₺/);
-    // Mobilya: should have dynamic range
-    expect(markers[2].priceEstimate).toMatch(/₺/);
+    expect(markers.map(marker => marker.priceEstimate)).toEqual([
+      'Teklif alınır',
+      'Teklif alınır',
+      'Teklif alınır',
+    ]);
   });
 
   it('applies honest TRUST-01 rating and review metrics (debut vs veteran)', () => {
@@ -125,7 +134,22 @@ describe('ustaCoordinates - Live Supabase Showcase Synchronization', () => {
       expect(m.latLng.length).toBe(2);
       expect(m.badge).toBe('Yeni Katıldı');
       expect(m.reviewCount).toBe(0);
-      expect(m.priceEstimate).toMatch(/₺/);
+      expect(m.priceEstimate).toBe('Teklif alınır');
     });
+  });
+
+  it('marks every public pin as an approximate verified projection', () => {
+    const [neighborhoodMarker, districtMarker] = generateUstaMapMarkers(
+      [mockProfiles[0], mockProfiles[1]],
+      mockAreaMap,
+      mockServiceMap,
+      mockNeighborhoodMap,
+      mockMetricsMap
+    );
+
+    expect(neighborhoodMarker.source).toBe('verified_public_projection');
+    expect(neighborhoodMarker.locationPrecision).toBe('neighborhood');
+    expect(districtMarker.locationPrecision).toBe('district');
+    expect(neighborhoodMarker.locationDisclosure).toBe('approximate_service_area');
   });
 });

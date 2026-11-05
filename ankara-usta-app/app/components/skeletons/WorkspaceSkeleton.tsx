@@ -11,19 +11,28 @@ export interface WorkspaceSkeletonProps {
 export default function WorkspaceSkeleton({
   title = 'Yükleniyor…',
   count = 3,
+  role,
   ariaLabel,
 }: WorkspaceSkeletonProps) {
   const accessibleLabel = ariaLabel ?? `${title} yükleniyor, lütfen bekleyin…`;
+  const roleClass = role === 'customer'
+    ? styles.customer
+    : role === 'tradesperson'
+      ? styles.tradesperson
+      : role === 'jobs'
+        ? styles.jobs
+        : '';
 
   return (
     <div
-      className={styles.container}
+      className={`${styles.container} ${roleClass}`}
+      data-role={role ?? 'generic'}
       role="status"
       aria-busy="true"
       aria-label={accessibleLabel}
     >
       <span className="sr-only">{accessibleLabel}</span>
-      <header className={styles.header}>
+      <header className={styles.header} aria-hidden="true">
         <div className={`${styles.pulse} ${styles.titleSkeleton}`} />
         <div className={`${styles.pulse} ${styles.headerActionSkeleton}`} />
       </header>

@@ -64,7 +64,7 @@ describe('TradespersonAvailabilityPage Server Guard', () => {
           data: { user: { id: 'pro-1', email: 'usta@example.com' } },
         }),
       },
-      from: vi.fn().mockReturnValue({
+      from: vi.fn().mockImplementation(() => ({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -72,9 +72,13 @@ describe('TradespersonAvailabilityPage Server Guard', () => {
                 maybeSingle: vi.fn().mockResolvedValue({ data: { role: 'tradesperson' } }),
               }),
             }),
+            limit: vi.fn().mockReturnValue({
+              maybeSingle: vi.fn().mockResolvedValue({ data: null }),
+            }),
+            maybeSingle: vi.fn().mockResolvedValue({ data: null }),
           }),
         }),
-      }),
+      })),
     };
     vi.mocked(createSupabaseServerClient).mockResolvedValue(mockSupabase as never);
 

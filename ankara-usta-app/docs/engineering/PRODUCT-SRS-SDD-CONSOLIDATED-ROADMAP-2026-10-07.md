@@ -580,3 +580,38 @@ U5 müşteri/usta çalışma alanlarının erişim, durum ve hata sözleşmeleri
 U5 durumu: **yerel sözleşme doğrulandı**. Gerçek staging hesaplarıyla `/taleplerim`, `/usta/talepler`, expired/unauthorized/partial-error ve doğrudan iş bağlantısı tarayıcı kanıtı henüz alınmadı; bu nedenle U5 yayınlandı kabul edilmez. Sonraki döngü, mevcut güvenli staging anahtarlarıyla U5 browser paketinin eklenmesi/çalıştırılması ve ardından notification worker doğrulamasıdır.
 
 U5 gerçek tarayıcı kapısı için `playwright.u5.config.ts`, `scripts/run-u5-browser.mjs` ve `tests/staging/u5-workspaces-browser.spec.ts` eklendi. Runner yalnız süreç ortamından sağlanan publishable/secret anahtarları kabul eder, staging hedefini fail-closed doğrular ve veri yazmaz. Browser paketi müşteri çalışma alanı + usta alanına gerçek giriş, müşteri hesabının usta alanındaki güvenli reddi ve rol çalışma alanlarının ayrışmasını kontrol eder. Runner sözdizimi ve diff kontrolü geçti; staging koşusu kullanıcı terminalindeki güvenli anahtarlarla bekliyor.
+
+Gerçek staging U5 koşusu tamamlandı: `npm run test:remote:u5` **2/2 geçti**. Müşteri oturumunda `/taleplerim` açıldı ve `/usta/talepler` erişimi güvenli müşteri alanı yönlendirmesiyle reddedildi; onaylı usta oturumunda `/usta/talepler` açıldı ve `/taleplerim` ayrı müşteri çalışma alanı olarak kaldı. Her iki oturum da güvenilir çıkışla sonlandı. Build ve teardown başarılı; `ERR_STREAM_UNABLE_TO_PIPE` veya buna eşlik eden server yazma hatası görülmedi. Bu kanıt U5’ün temel rol/çalışma alanı tarayıcı kapısını staging’de doğrular.
+
+**Güncel U5 durumu:** `Uygulandı → Yerel sözleşme 73/73 → Staging browser rol/alan doğrulandı 2/2 → Yayınlanmadı`. Expired/partial-error/doğrudan iş bağlantısı ayrıntılarının gerçek fixture’lı browser kanıtı hâlâ ayrı bir genişletme dilimidir; component sözleşmesi bu durumları kapsar.
+
+### 2026-10-08 — Notification worker gönderimsiz sözleşme kapısı
+
+`AnkaraUsta.NotificationWorker.Tests` gönderimsiz contract paketi sandbox dışı geçici HTTP portuyla yeniden çalıştırıldı. İlk sandbox koşusu socket 10013 nedeniyle başlamadan durdu; ikinci koşu başarılıdır:
+
+- Health HTTP sözleşmeleri: 8 yapılandırma vakası, liveness/readiness ve redaction geçti.
+- Provider failure, eksik alıcı ve shutdown cancellation sözleşmeleri geçti.
+- Lease generation forwarding, RPC payload ve tek acknowledgement sözleşmeleri geçti.
+- Modern Secret API key için yalnız `apikey` başlığı ve salt-okunur REST probe sözleşmesi geçti.
+- Sonuç: **Notification worker contract tests passed.** Bu koşuda gerçek Supabase RPC, outbox claim veya Resend e-postası çalıştırılmadı.
+
+Worker durumu: **yerel contract doğrulandı**. Gerçek staging claim/result, retry/dead-letter ve lease recovery provası ile kontrollü test e-postası hâlâ ayrı ve açıkça yetkilendirilmiş bir adım olarak bekliyor.
+
+Gönderimsiz staging rehearsal tamamlandı: `E2E_ALLOW_STAGING_WRITES=true node scripts/run-notification-rehearsal.mjs` retry, dead-letter, stale-owner/generation rejection, recovery ve cron sözleşmelerini geçti; ayrı bağlantıdan rollback cleanup doğrulandı. Worker veya Resend başlatılmadı.
+
+İki bağlantılı concurrency provası (`node scripts/run-notification-concurrency.mjs`) fixture cleanup ve unrelated queue digest kontrolünü geçti; ancak stale worker acknowledgement’ının reddedilmesi gereken adımda `Stale acknowledgement accepted` hatası verdi. Remote function tanımı salt-okunur incelemede fenced imzayı ve doğru `worker_id + attempts` koşullarını içeriyor; migration `20260922205318` uygulanmış ve legacy imza yok. Bu nedenle sonuç **lease-fencing blocker** olarak kaydedildi: yarış scriptinin transaction/lock gözlemi ve gerçek claim sonrası satır sahipliği ayrıştırılmadan tekrar çalıştırılmamalı, kontrollü e-posta veya worker polling başlatılmamalıdır.
+
+### 2026-10-08 — Concurrency harness düzeltmesi ve staging yeniden doğrulaması
+
+Önceki kırmızı sonuç uygulama RPC’sinden değil, test harness’inin B claim transaction’ı başlamadan sabit `350 ms` sonra A stale acknowledgement’ını başlatmasından kaynaklandı. Harness’te zamanlamaya dayalı bekleme ve B açıkken polling bağlantıları kaldırıldı. B’nin ayrı transaction’ı commit olduktan sonra A ayrı transaction’da stale sonucu gönderiyor; böylece lease fence deterministik olarak ölçülüyor ve Supabase CLI bağlantı havuzu yapay bir yarışa sokulmuyor. Bu değişiklik yalnız `scripts/run-notification-concurrency.mjs` kapsamındadır; migration veya worker davranışı değişmedi.
+
+Allowlist’teki `orkestra-e2e` staging koşusu başarılıdır:
+
+```text
+PASS race 0: separate transaction takeover/ack fence; stale success rejected; same owner=false; current owner acknowledged.
+PASS: fixture cleanup and unrelated queue digest (fixture created).
+```
+
+İki önceki yeniden koşuda görülen `Initialising login role...` bağlantı hataları da fixture cleanup sonrasında oluştu; yeni düzenlemede tekrarlanmadı. Worker polling ve Resend gönderimi hâlâ başlatılmadı. **Güncel durum:** retry/dead-letter/lease recovery rehearsal ve deterministic lease-fencing staging kanıtı tamamlandı; kontrollü worker başlatma ve gerçek test e-postası ayrı onaylı dilim olarak bekliyor.
+
+Kapsam sınırı: bu kanıt gerçek claim/ack transaction overlap’ı değildir; B commit olduktan sonra A başlatılır. Aynı-owner ve başarısız sonuç varyantları bu tek fixture koşusunun dışındadır ve sonraki concurrency paketi için açık kalır.

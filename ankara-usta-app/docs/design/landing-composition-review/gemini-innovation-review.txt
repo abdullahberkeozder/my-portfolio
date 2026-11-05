@@ -1,0 +1,61 @@
+### Kıdemli Bağımsız UI/UX Değerlendirmesi: Orkestra
+
+Bu incelemede belirtilen tüm görsel ve markdown referansları native okuma araçlarıyla doğrudan açılmış ve incelenmiştir. Orijinal sosyal/lüks kıyaslama arşivi sistemde mevcut olmadığından, var olmayan arşiv verisi üzerinden varsayım üretilmemiştir.
+
+---
+
+### 1. Doğrudan Gözlem vs. Çıkarım
+
+* **Gözlem (Observed Evidence):**
+  * `after-1440.png`: Merkezde yeşil butonlu (`#1b6f4a` tonlarında) "Hizmet bul" arama kutusu ve altında 3x2 simetrik, eşit ağırlıklı kart ızgarası yer alıyor. Her kartta usta adı, ilçe ve kaydetme ikonu var. Sayfa altında 9 ilçelik statik metin listesi ve akordeon bulunuyor.
+  * `garden.jpg`: Kesintisiz krem zemin, kart kutuları yerine kılcal tekil çizgiler (`hairline`) ve sol tarafta devasa serifsiz "22" tipografik veri dökümü ile asimetrik düzen sunuyor.
+  * `loom.jpg`: Çerçevesiz, zamansal matris (0-8 haftalık süreç tablosu) ile doğrusal akış gösteriyor.
+  * `vellum.jpg`: Kart gölgeleri yerine kobalt mavisi monolitik yüzey üzerinde entegre segmentli seçim alanları ve anlık sipariş dökümü barındırıyor.
+  * `20-ecosystem-index.md` & `patterns.md`: Devasa global duyurular yerine keşif rayları (`.rail`), açık uçlu etiket bantları yerine fiil odaklı bağlantılar tanımlıyor.
+
+* **Çıkarım (Inference):**
+  * Kullanıcının "kenarlıksız / continuous yüzeyler lüks hissettirir" tezi estetik olarak geçerli olsa da, yerel pazar yerinde görsel tıklanabilirlik sınırları (`affordance`) silindiğinde güven ve netlik zedelenir. Lüks algısı pazar yerinde dönüşüm garantilemez; dönüşümü sağlayan sürtünmesiz eylem ve veri şeffaflığıdır.
+
+---
+
+### 2. "A (İki Eşit Sütun)" vs. "B (Editoryal Büyük İlk Görsel)" Eleştirisi
+
+İki yaklaşım da **yüzeyseldir**; çünkü problem bir ızgara geometrisi (2 sütun vs. 3 sütun) veya vitrin mizanpajı meselesi değildir. 
+* "Mutfak bataryası değişimi" ile "Salon boyama" zihinsel model olarak taban tabana zıttır: Biri 15 dakikalık acil fayda/onarım, diğeri günlerce süren estetik/ilham projesidir. 
+* İster eşit iki sütun yapın, ister ilk görseli devasa yapın; bu hizmetleri aynı görsel hiyerarşiyle sunmak kullanıcının arama niyetini homojenleştirir ve bilişsel karmaşa yaratır.
+
+---
+
+### 3. Codex Hipotezine Karşı Dürüst İtirazlar
+
+1. **"İlçe bilgisi kartlarda gizlensin, sadece usta ararken gösterilsin" Tezi:**  
+   * **İtiraz:** Ankara pazarında lojistik fizibilite (Eryaman'daki ustanın Mamak'taki işe gelip gelmeyeceği) kritik bir güven eşiğidir. Karttan ilçeyi kaldırmak kullanıcıyı belirsizliğe iter. Yapılması gereken ilçeyi her karta körlemesine basmak ya da sayfa altına 9 ilçelik ölü bir liste yığmak değil; kullanıcının konum bağlamına göre dinamik olarak yerelleştirmektir.
+2. **"Fotoğraftan doğrudan mevcut wizard'a atlama" Tezi:**  
+   * **İtiraz:** Karttaki "Benzerini yaptır" butonunun kullanıcıyı doğrudan çok adımlı sihirbaza fırlatması keşif akışını sert biçimde böler (`context switch`). Kullanıcı keşif modundayken önce kapsam ve maliyet önizlemesi görmek ister.
+3. **"Kaydedilenlerin pasif bir panoya dönüşmesi" Tezi:**  
+   * **İtiraz:** Pasif Pinterest panoları yerel hizmette çöp bilgiye dönüşür. Toplanan örnekler birikmek yerine doğrudan birleştirilebilir proje taslağına dönüştürülebilmelidir.
+
+---
+
+### 4. Orkestra İçin 3 Özgün Etkileşim / Bilgi Mimarisi (IA) Konsepti
+
+#### Konsept 1: Çift Eksenli Niyet Yüzeyi (Dual-Intent Adaptive Surface)
+* **Esinlenen Somut Kanıt:** `garden.jpg`'deki asimetrik denge ve `20-ecosystem-index.md`'deki farklı içerik kesitleri.
+* **Görev Faydası:** Merkezdeki yeşil CTA ve arama alanı korunur. Ancak alt yüzey, kullanıcının niyetine göre iki kesintisiz ray halinde ayrışır: Sol akış "Hızlı Onarım & Bakım" (işlevsel/teknik), sağ akış "Ev Yenileme & Dönüşüm" (görsel/ilham). 
+* **Bilişsel Maliyet:** İki ray arasında göz gezdirme maliyeti; ancak yanlış kategoriye tıklama sürtünmesini tamamen sıfırlar.
+* **Veri Gereksinimi:** Hizmetlerin `kategori_amacı: [fayda | ilham]` olarak etiketlenmesi.
+* **Red Koşulu:** Kullanıcıların %75'i filtre ve rayları kullanmayıp doğrudan arama çubuğundan sihirbaza geçiyorsa terk edilmelidir.
+
+#### Konsept 2: Bağlamsal Kapsam Köprüsü (Inline Pre-Wizard Sheet)
+* **Esinlenen Somut Kanıt:** `vellum.jpg`'deki canlı sipariş konfigüratörü ve `patterns.md` segment kontrolleri.
+* **Görev Faydası:** Görsel detayındaki "Benzerini yaptır" tıklandığında tam sayfa sihirbaza geçilmez. Görselin yanından hafif bir yüzey açılarak referans fotoğraftaki iş kapsamı ("1 adet mutfak bataryası montajı + conta kontrolü", tahmini süre: 45 dk) gösterilir. Kullanıcı tek tıkla onaylayıp mevcut sihirbazı doldurulmuş verilerle başlatır.
+* **Bilişsel Maliyet:** Arayüz üzerinde geçici bir yan panel odağı; ancak keşiften kopuşu önler.
+* **Veri Gereksinimi:** Fotoğraflara atanmış doğrulanmış asgari iş kalemleri (scope metadata).
+* **Red Koşulu:** Yan panelin açılıp kapatılma (vazgeçme) oranı %40'ı geçerse doğrudan akışa dönülmelidir.
+
+#### Konsept 3: Lojistik Uygunluk Çizgisi (Logistical Availability Stream)
+* **Esinlenen Somut Kanıt:** `loom.jpg`'deki zaman çizelgesi ve `patterns.md`'deki `.rail` yapısı.
+* **Görev Faydası:** Sayfa altındaki 9 ilçelik statik liste kaldırılır. Bunun yerine, keşif yüzeyinde seçilen kategoriye göre "Bu Hafta Ankara'da Müsait Usta Yoğunluğu" gösteren hafif, yatay bir takvim çizgisi sunulur. Kartlarda ilçe adı tekrar etmez; usta uygunluğu bu lojistik çizgi üzerinden netleşir.
+* **Bilişsel Maliyet:** Kullanıcının tarih ve bölge uygunluğunu okuma eforu.
+* **Veri Gereksinimi:** Usta takvimlerinden çekilen gerçek müsaitlik verisi (uydurma istatistik yasaktır).
+* **Red Koşulu:** Usta müsaitlik verisi operasyonel olarak güncel tutulamıyorsa anında kaldırılmalıdır.

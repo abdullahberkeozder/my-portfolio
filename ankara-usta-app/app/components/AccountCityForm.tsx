@@ -20,13 +20,18 @@ export default function AccountCityForm({userId,saved}:{userId:string;saved:bool
   }
   return <section id="bolge" className={styles.region} aria-labelledby="account-city-title">
     <h2 id="account-city-title">Hesap bölgeniz</h2>
-    <p>Şehir bilgisi, hesabınızdaki bölge tercihini ve gelecekte sunulabilecek yerel hizmetleri belirlemek için kullanılır. Açık adresiniz burada saklanmaz.</p>
-    <form onSubmit={save}>
+    <p>Şehir bilginiz yerel hizmetleri göstermek için kullanılır. Açık adresiniz burada saklanmaz.</p>
+    <div className={styles.cityValue}>
       <label htmlFor="account-city">Şehir</label>
-      <select id="account-city" name="city" defaultValue="Ankara" disabled={busy}><option value="Ankara">Ankara</option></select>
-      <p>{saved?'Kayıtlı şehir: Ankara':'Pilot uygulamada şu anda yalnız Ankara kaydedilebilir.'}</p>
-      <button type="submit" disabled={busy}>{busy?'Kaydediliyor…':'Şehri kaydet'}</button>
-      {message&&<p role={failed?'alert':'status'}>{message}</p>}
-    </form>
+      <input id="account-city" type="text" readOnly value="Ankara" className={styles.hiddenInput} />
+      <strong>Ankara</strong>
+    </div>
+    {saved ? <p className={styles.savedState}>Kayıtlı şehir: Ankara</p> : (
+      <form onSubmit={save}>
+        <p>Pilot uygulamada şu anda yalnız Ankara kaydedilebilir.</p>
+        <button type="submit" disabled={busy}>{busy?'Kaydediliyor…':'Şehri kaydet'}</button>
+      </form>
+    )}
+    {message&&<p role={failed?'alert':'status'}>{message}</p>}
   </section>;
 }

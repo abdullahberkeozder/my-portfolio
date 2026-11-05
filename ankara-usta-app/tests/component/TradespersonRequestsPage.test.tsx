@@ -62,9 +62,9 @@ describe('TradespersonRequestsPage (Artisan Workspace)', () => {
   it('renders workspace title, tabs, and action links', async () => {
     render(await TradespersonRequestsPage({ searchParams: Promise.resolve({ view: 'open' }) }));
     expect(screen.getByRole('heading', { name: 'İş fırsatları', level: 1 })).toBeInTheDocument();
-    expect(screen.getByText('USTA ÇALIŞMA ALANI')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Müsaitliğimi güncelle →' })).toHaveAttribute('href', '/usta/musaitlik');
-    expect(screen.getByRole('link', { name: 'Özel görüşmelerim →' })).toHaveAttribute('href', '/gorusmeler');
+    expect(screen.getByText('Size özel ve uygun açık talepleri inceleyin, sonraki adıma karar verin.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Müsaitliğimi güncelle' })).toHaveAttribute('href', '/usta/musaitlik');
+    expect(screen.getByRole('link', { name: 'Görüşmelerim' })).toHaveAttribute('href', '/gorusmeler');
     expect(screen.getByRole('link', { name: 'Bana özel talepler' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Uygun açık talepler' })).toBeInTheDocument();
   });
@@ -86,9 +86,10 @@ describe('TradespersonRequestsPage (Artisan Workspace)', () => {
     ];
 
     render(await TradespersonRequestsPage({ searchParams: Promise.resolve({ view: 'open' }) }));
-    expect(screen.getByText('Yeni Fırsat')).toBeInTheDocument();
-    expect(screen.getByText('🎯 %95 Uygunluk')).toBeInTheDocument();
-    expect(screen.getByText(/📍 Fatih, Sincan/)).toBeInTheDocument();
+    expect(screen.getByText('Yeni fırsat')).toBeInTheDocument();
+    expect(screen.getByText('Fatih, Sincan')).toBeInTheDocument();
+    expect(screen.getByText('Neden uygun?')).toBeInTheDocument();
+    expect(screen.queryByText(/%95 Uygunluk/)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Talebi İncele / Teklif Ver →' })).toHaveAttribute(
       'href',
       '/usta/teklifler/req-opp-1'
@@ -121,7 +122,8 @@ describe('TradespersonRequestsPage (Artisan Workspace)', () => {
     ];
 
     render(await TradespersonRequestsPage({ searchParams: Promise.resolve({ view: 'open' }) }));
-    expect(screen.getByText(/Teklifiniz İletildi \(v1 · 1.500 ₺\)/)).toBeInTheDocument();
+    expect(screen.getByText('Teklifiniz iletildi')).toBeInTheDocument();
+    expect(screen.getByText('Teklif v1 · 1.500 ₺')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Teklifi İncele / Güncelle →' })).toHaveAttribute(
       'href',
       '/usta/teklifler/req-opp-2'
@@ -155,7 +157,7 @@ describe('TradespersonRequestsPage (Artisan Workspace)', () => {
     mockState.jobs = [{ id: 'job-win', request_id: 'req-opp-3' }];
 
     render(await TradespersonRequestsPage({ searchParams: Promise.resolve({ view: 'open' }) }));
-    expect(screen.getByText('✓ Teklifiniz Kabul Edildi')).toBeInTheDocument();
+    expect(screen.getByText('Teklifiniz kabul edildi')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'İş Ekranına Git →' })).toHaveAttribute('href', '/islerim/job-win');
   });
 
@@ -179,7 +181,7 @@ describe('TradespersonRequestsPage (Artisan Workspace)', () => {
     ];
 
     render(await TradespersonRequestsPage({ searchParams: Promise.resolve({ view: 'direct' }) }));
-    expect(screen.getByText('🎯 Size Özel Davet')).toBeInTheDocument();
+    expect(screen.getByText('Size özel')).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Özel talep durumu' })).toBeInTheDocument();
   });
 

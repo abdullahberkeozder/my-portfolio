@@ -5,6 +5,7 @@ import AccountDraftBoundary,{draftAccountKey} from '../../app/components/Account
 const auth=vi.hoisted(()=>({getUser:vi.fn(),onAuthStateChange:vi.fn()}));
 vi.mock('next/navigation',()=>({useRouter:()=>({replace:vi.fn()})}));
 vi.mock('../../app/lib/supabase/browser',()=>({createSupabaseBrowserClient:()=>({auth})}));
+vi.mock('next/navigation',()=>({useRouter:()=>({replace:vi.fn()})}));
 beforeEach(()=>{
   localStorage.clear();sessionStorage.clear();window.history.replaceState({},'','/');
   auth.getUser.mockResolvedValue({data:{user:{id:'account-a'}},error:null});

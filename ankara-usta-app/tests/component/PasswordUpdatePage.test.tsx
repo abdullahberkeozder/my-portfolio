@@ -67,6 +67,10 @@ it('keeps mismatched passwords on screen and announces the error', async () => {
 
   expect(screen.getByRole('alert')).toHaveTextContent('eşleşmiyor');
   expect(password).toHaveValue('new-password-1');
+  expect(document.activeElement).toBe(password);
+  expect(password).toHaveAttribute('aria-invalid', 'true');
+  expect(password).toHaveAttribute('aria-describedby', 'password-update-message');
+  expect(screen.getByRole('alert')).toHaveTextContent('!');
   expect(mocks.updateUser).not.toHaveBeenCalled();
 });
 

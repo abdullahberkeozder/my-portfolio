@@ -13,6 +13,19 @@
   align-items: flex-end;
 }
 
+/* A wizard owns the viewport while a task is being completed. The global
+   support capsule yields to its primary controls instead of covering them on
+   narrow screens or intercepting pointer events behind the modal. */
+body:has([aria-label="Talep adımları"]) .supportPillWrapper {
+  display: none;
+}
+
+/* The consent prompt is a first-run decision surface. Do not let the
+   persistent support capsule overlap its actions on small screens. */
+body[data-consent-visible="true"] .supportPillWrapper {
+  display: none;
+}
+
 /* Expanded Card Menu */
 .supportCardMenu {
   width: 320px;
@@ -69,8 +82,9 @@
 }
 
 .supportCloseBtn {
-  width: 26px;
-  height: 26px;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
   border-radius: 50%;
   border: 1px solid #e2e8f0;
   background: #f8fafc;
@@ -223,4 +237,64 @@
   background: #10b981;
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
   margin-left: 2px;
+}
+
+/* Landing is a first-decision surface. On narrow screens the persistent
+   support affordance stays available without competing with the hero,
+   trust strip, or first service choice. Keep the label for assistive tech,
+   but reduce the visual footprint to a thumb-friendly icon control. */
+@media (max-width: 600px) {
+  .supportPillWrapper {
+    right: 14px;
+    bottom: max(14px, env(safe-area-inset-bottom));
+  }
+
+  .floatingCapsuleBtn {
+    width: 44px;
+    min-height: 44px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 14px;
+  }
+
+  .floatingCapsuleBtn .capsuleText {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .floatingCapsuleBtn .capsuleLiveDot {
+    position: absolute;
+    right: 8px;
+    top: 7px;
+    margin-left: 0;
+  }
+}
+
+/* Directory owns a bottom action zone on narrow screens. Keep the global
+   support affordance above that zone when the drawer is collapsed; once the
+   drawer expands it owns the viewport and the floating support is removed so
+   card actions remain unobstructed. */
+@media (max-width: 767px) {
+  /* This file is CSS-module scoped; use an attribute selector for the
+     global route class so the rule survives the generated class names. */
+  body:has(main[class~="ustalar-page"]) .supportPillWrapper {
+    bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+
+  body:has(main[class~="ustalar-page"] [class*="unifiedBottomSheet"]:not([class*="unifiedBottomSheetCollapsed"])) .supportPillWrapper {
+    display: none;
+  }
+}
+
+/* The tradesperson application has a sticky primary action and dense form
+   controls. Its footer still exposes support, so the floating capsule yields
+   at phone and tablet widths instead of covering the current field or CTA. */
+@media (max-width: 900px) {
+  body:has(main[class~="tradesperson-application"]) .supportPillWrapper {
+    display: none;
+  }
 }

@@ -1,0 +1,704 @@
+[
+  {
+    "id": "I01",
+    "title": "Temiz, kesintisiz ana zemin",
+    "refs": [
+      "H23",
+      "B05",
+      "B08"
+    ],
+    "proposal": "Sayfa genelindeki gren ve yinelenen yüzey efektlerini kaldır; dokuyu yalnız fotoğrafta bırak.",
+    "lenses": [
+      "D",
+      "N",
+      "D",
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "D",
+      "D"
+    ],
+    "risk": "Düzlük riski fotoğraf ve boşlukla çözülmeli, yeni efektle değil.",
+    "selected": true
+  },
+  {
+    "id": "I02",
+    "title": "Renklerin görevlerini sabitle",
+    "refs": [
+      "H18",
+      "B11",
+      "B12"
+    ],
+    "proposal": "Ana eylem yeşil, logo mavi, metin koyu nötr; pirinç, espresso ve lacivert CTA yarışını bitir.",
+    "lenses": [
+      "D",
+      "N",
+      "N",
+      "D",
+      "D",
+      "D",
+      "D",
+      "D",
+      "D",
+      "D"
+    ],
+    "risk": "Logo rengini değiştirme; yeşilin her yere yayılması da çözüm değil.",
+    "selected": true
+  },
+  {
+    "id": "I03",
+    "title": "Tipografiyi rollere göre yeniden kur",
+    "refs": [
+      "H23",
+      "H37",
+      "B05"
+    ],
+    "proposal": "Mevcut serifleri premium kanıtı sayma. Bir başlık ailesi ve sade okuma/kontrol ailesi; sicil/mono katmanını azalt.",
+    "lenses": [
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "D",
+      "D",
+      "D",
+      "D",
+      "D"
+    ],
+    "risk": "Serif tamamen yasak değil; Türkçe harfler ve mobil satır kırılması karşılaştırılmalı.",
+    "selected": true
+  },
+  {
+    "id": "I04",
+    "title": "Hero için tek fotoğraf–başlık kompozisyonu",
+    "refs": [
+      "H25",
+      "B13",
+      "B07"
+    ],
+    "proposal": "Ortalanmış başlık ve arama korunur; metin arkasında sakin kadraj, daha az opak yüzey ve daha az dekoratif satır.",
+    "lenses": [
+      "D",
+      "N",
+      "D",
+      "D",
+      "D",
+      "D",
+      "D",
+      "K",
+      "K",
+      "D"
+    ],
+    "risk": "Arama sınırı ve yazı kontrastı kaybolmamalı; fotoğraf kadrajı mobilde ayrı seçilmeli.",
+    "selected": true
+  },
+  {
+    "id": "I05",
+    "title": "Tek fotoğraf sanat yönetimi",
+    "refs": [
+      "H15",
+      "H25",
+      "H48",
+      "B08"
+    ],
+    "proposal": "İşin sonucu ile yapılışını aynı doğal ışık ve renk sıcaklığında göster; rastgele steril oda kolajını bırak.",
+    "lenses": [
+      "D",
+      "N",
+      "D",
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "K",
+      "D"
+    ],
+    "risk": "Yeni üretim bu adımda yok. Gerçek iş/temsili görsel ayrımı korunmalı; kaynak hakkı kontrol edilmeli.",
+    "selected": true
+  },
+  {
+    "id": "I06",
+    "title": "Fotoğraf ve açıklamayı dış kutudan kurtar",
+    "refs": [
+      "B05",
+      "H15",
+      "B08"
+    ],
+    "proposal": "Çift çerçeve, paspartu ve kart gölgesini kaldır; fotoğrafın altında yakın başlık–usta ilişkisi kur.",
+    "lenses": [
+      "D",
+      "D",
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "D",
+      "K",
+      "D"
+    ],
+    "risk": "Kart tıklanabilirliği ve kaydetme hedefi görünür kalmalı; kaynakların kendisi tümüyle çerçevesiz değil.",
+    "selected": true
+  },
+  {
+    "id": "I07",
+    "title": "Bölge alanını sakin bir dizine dönüştür",
+    "refs": [
+      "H23",
+      "H01",
+      "H44"
+    ],
+    "proposal": "Bölge kutusu içindeki ilçe butonlarını ortak zeminde hizalı bağlantı satırlarıyla sun; yeni rota ekleme.",
+    "lenses": [
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "D",
+      "D",
+      "K",
+      "K",
+      "D"
+    ],
+    "risk": "Mobilde yatay tablo kullanılmamalı; bağlantı hedefleri küçültülmemeli.",
+    "selected": true
+  },
+  {
+    "id": "I08",
+    "title": "Tek, ölçülü kontrol geometrisi",
+    "refs": [
+      "H23",
+      "B11",
+      "B05"
+    ],
+    "proposal": "Butonları düz dolgu/ikincil çizgi/metin önceliğinde bir aileye bağla; kabartma ve çifte konturu azalt.",
+    "lenses": [
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "D",
+      "D",
+      "K",
+      "K",
+      "D"
+    ],
+    "risk": "Köşe biçimi tek başına premium yaratmaz; odak halkası ve dokunma alanı korunmalı.",
+    "selected": true
+  },
+  {
+    "id": "I09",
+    "title": "Kategori seçiminde tipografik sekmeler",
+    "refs": [
+      "H15",
+      "B05"
+    ],
+    "proposal": "Her kategoriyi kutulamak yerine metin, boşluk ve tek etkin işaretle ayır; davranışı koru.",
+    "lenses": [
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "D",
+      "D",
+      "K",
+      "K",
+      "D"
+    ],
+    "risk": "Sadece renk ile seçim gösterilmemeli; görsel sekme olması otomatik ARIA tab gerektirmez.",
+    "selected": true
+  },
+  {
+    "id": "I10",
+    "title": "Mobil hero için bağımsız kompozisyon",
+    "refs": [
+      "B05",
+      "H23"
+    ],
+    "proposal": "Aynı başlık–arama ilişkisini korurken hızlı örneklerin dikey yığınını azalt; keşif fotoğrafına daha erken yer aç.",
+    "lenses": [
+      "D",
+      "N",
+      "D",
+      "D",
+      "D",
+      "D",
+      "D",
+      "K",
+      "K",
+      "D"
+    ],
+    "risk": "Yazıyı ve hedefleri küçültmek çözüm değil; küçük/yatay ekranlarda ayrıca doğrulanmalı.",
+    "selected": true
+  },
+  {
+    "id": "I11",
+    "title": "Tüm sayfayı kenarlıksız yapmak",
+    "refs": [
+      "B08",
+      "H23"
+    ],
+    "proposal": "Her çerçeve ve ayracı kaldırıp sadece boşluk kullan.",
+    "lenses": [
+      "K",
+      "N",
+      "N",
+      "K",
+      "D",
+      "K",
+      "K",
+      "K",
+      "R",
+      "K"
+    ],
+    "risk": "Seçim/arama grupları belirsizleşebilir. Finalde seçici çerçeve azaltma tercih edildi.",
+    "selected": false
+  },
+  {
+    "id": "I12",
+    "title": "Tüm köşeleri gerçek squircle yapmak",
+    "refs": [
+      "B03",
+      "H03"
+    ],
+    "proposal": "Kontrollerde tek eğrilik yaklaşımı denemek.",
+    "lenses": [
+      "K",
+      "N",
+      "N",
+      "K",
+      "N",
+      "K",
+      "N",
+      "K",
+      "K",
+      "K"
+    ],
+    "risk": "Etkisi fotoğraf ve tipografiden küçük; screenshot gerçek eğri matematiğini kanıtlamaz.",
+    "selected": false
+  },
+  {
+    "id": "I13",
+    "title": "Protokoldeki koyu sayısal bloğu hafifletmek",
+    "refs": [
+      "H15",
+      "H23"
+    ],
+    "proposal": "07 kutusunu ve mühür benzeri alanı kaldırıp mevcut maddeleri doğrudan zemine yerleştirmek.",
+    "lenses": [
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "K",
+      "D"
+    ],
+    "risk": "İçerik iddiaları ayrıca doğrulanmalı. Final 01/03/07 ilkeleriyle ikinci dilime alındı.",
+    "selected": false
+  },
+  {
+    "id": "I14",
+    "title": "Harf avatarlarını sade imza satırına çevirmek",
+    "refs": [
+      "B05",
+      "H15"
+    ],
+    "proposal": "Fotoğrafı olmayan ustalarda harf diski yerine isim/yer tipografisini sakinleştirmek.",
+    "lenses": [
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "K",
+      "D"
+    ],
+    "risk": "Gerçek insan bağını zayıflatabilir; varsa gerçek profil fotoğrafı öncelikli. Final 06 alt çalışması.",
+    "selected": false
+  },
+  {
+    "id": "I15",
+    "title": "Tek büyük fotoğraf yerine eş ölçekli keşif dizisi",
+    "refs": [
+      "B05",
+      "B08"
+    ],
+    "proposal": "Dev raf kartı yerine benzer fotoğraf ağırlıklarıyla ritim kurmak.",
+    "lenses": [
+      "D",
+      "N",
+      "D",
+      "D",
+      "N",
+      "N",
+      "D",
+      "D",
+      "K",
+      "D"
+    ],
+    "risk": "Salt kolon sayısı değişikliği yetmez; final 05/06 sonrasında denenebilir.",
+    "selected": false
+  },
+  {
+    "id": "I16",
+    "title": "Bir süreç/sonuç fotoğraf çifti",
+    "refs": [
+      "H15",
+      "H25",
+      "B08"
+    ],
+    "proposal": "Aynı işi bitmiş mekân ve çalışma anıyla iki fotoğrafta anlatmak.",
+    "lenses": [
+      "D",
+      "N",
+      "D",
+      "D",
+      "N",
+      "N",
+      "K",
+      "K",
+      "K",
+      "D"
+    ],
+    "risk": "Aynı işe ait iki doğrulanmış fotoğraf yoksa sahte önce/sonra üretilmemeli.",
+    "selected": false
+  },
+  {
+    "id": "I17",
+    "title": "Malzeme makrosuyla zanaat vurgusu",
+    "refs": [
+      "H44",
+      "H24"
+    ],
+    "proposal": "Ahşap bağlantı veya işçilik yakın planını bir fotoğraf odağı yapmak.",
+    "lenses": [
+      "D",
+      "N",
+      "D",
+      "D",
+      "D",
+      "N",
+      "K",
+      "K",
+      "K",
+      "D"
+    ],
+    "risk": "Hizmetin ne olduğu kaybolabilir; hero için otomatik doğru değil.",
+    "selected": false
+  },
+  {
+    "id": "I18",
+    "title": "Büyük harfli teknik etiketleri sakinleştirmek",
+    "refs": [
+      "H23",
+      "H01"
+    ],
+    "proposal": "Malzeme/bağlantı/standart etiketlerinin ağırlığını ve satır yoğunluğunu azaltmak.",
+    "lenses": [
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "K",
+      "D"
+    ],
+    "risk": "Teknik bilgiye ihtiyaç duyan kullanıcı için okunurluk korunmalı; final 03/06 içinde.",
+    "selected": false
+  },
+  {
+    "id": "I19",
+    "title": "Bölüm başlarında tek çizgi ağırlığı",
+    "refs": [
+      "H15",
+      "H44",
+      "B02"
+    ],
+    "proposal": "Kalın kesikler yerine gerekli yerlerde bir tutarlı ince ayraç kullanmak.",
+    "lenses": [
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "K",
+      "D"
+    ],
+    "risk": "Her başlığa çizgi de şablonlaşır; final 01/07 kapsamında.",
+    "selected": false
+  },
+  {
+    "id": "I20",
+    "title": "Ortak hizalama rayları",
+    "refs": [
+      "H19",
+      "H42"
+    ],
+    "proposal": "Hero, keşif, bölge ve footer kenarlarını tek genişlik sistemine oturtmak.",
+    "lenses": [
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "D",
+      "D"
+    ],
+    "risk": "Temel kalite koşulu; bağımsız yeni estetik yön değil, finalin tamamına uygulanır.",
+    "selected": false
+  },
+  {
+    "id": "I21",
+    "title": "Başlıklar arasında kontrollü ölçek farkı",
+    "refs": [
+      "H23",
+      "H37"
+    ],
+    "proposal": "Hero, bölüm, kart başlığı ölçülerini görünür ama sakin bir ritme bağlamak.",
+    "lenses": [
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "K",
+      "D"
+    ],
+    "risk": "Aşırı büyük display mobil taşmaya yol açar; final 03 altında.",
+    "selected": false
+  },
+  {
+    "id": "I22",
+    "title": "Header ve footer marka tutarlılığı",
+    "refs": [
+      "B07",
+      "B08"
+    ],
+    "proposal": "Üstte mavi, altta kahverengi görünen marka ve farklı konturları aynı role bağlamak.",
+    "lenses": [
+      "D",
+      "N",
+      "N",
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "D",
+      "D"
+    ],
+    "risk": "Yeni logo tasarımı gerekmiyor; final 02 altında.",
+    "selected": false
+  },
+  {
+    "id": "I23",
+    "title": "Tam ekran moda benzeri hero",
+    "refs": [
+      "B06",
+      "B09"
+    ],
+    "proposal": "Fotoğrafı ilk ekranın tamamına yaymak.",
+    "lenses": [
+      "D",
+      "N",
+      "D",
+      "K",
+      "K",
+      "N",
+      "K",
+      "R",
+      "K",
+      "K"
+    ],
+    "risk": "Keşif gecikir ve arama ağırlaşır; mevcut kapsayıcı ve ortalama korunmalı.",
+    "selected": false
+  },
+  {
+    "id": "I24",
+    "title": "Koyu tema ile dramatik dönüşüm",
+    "refs": [
+      "H12",
+      "H24",
+      "B01"
+    ],
+    "proposal": "Tüm zemini koyulaştırıp fotoğrafları parlatmak.",
+    "lenses": [
+      "K",
+      "N",
+      "K",
+      "K",
+      "R",
+      "K",
+      "K",
+      "K",
+      "K",
+      "R"
+    ],
+    "risk": "Yeşil ev hizmeti kimliği ve gündelik kullanım yerine atölye sergisine kayar; elendi.",
+    "selected": false
+  },
+  {
+    "id": "I25",
+    "title": "Bej–pirinç lüks paleti",
+    "refs": [
+      "H03",
+      "H36"
+    ],
+    "proposal": "Kontrolleri espresso, detayları altın yapmak.",
+    "lenses": [
+      "K",
+      "N",
+      "N",
+      "K",
+      "R",
+      "K",
+      "K",
+      "K",
+      "K",
+      "R"
+    ],
+    "risk": "Mevcut kimlik kaymasının nedeni; elendi.",
+    "selected": false
+  },
+  {
+    "id": "I26",
+    "title": "Serif ağırlıklı editoryal marka",
+    "refs": [
+      "H29",
+      "H37"
+    ],
+    "proposal": "Slogan, bölüm ve kart başlıklarının tamamını serif yapmak.",
+    "lenses": [
+      "K",
+      "K",
+      "N",
+      "K",
+      "K",
+      "K",
+      "K",
+      "K",
+      "K",
+      "K"
+    ],
+    "risk": "Mevcut serif kullanımını çoğaltmak gözlenen sorunu çözmüyor; rol bazlı 03 seçildi.",
+    "selected": false
+  },
+  {
+    "id": "I27",
+    "title": "Butonlarda 3D cam/kabartma",
+    "refs": [
+      "H04",
+      "H13"
+    ],
+    "proposal": "Her kontrolü ışıklı dokunsal nesneye dönüştürmek.",
+    "lenses": [
+      "K",
+      "N",
+      "N",
+      "K",
+      "R",
+      "K",
+      "K",
+      "K",
+      "K",
+      "R"
+    ],
+    "risk": "Katman kalabalığını artırır; kullanıcının önceki cam fikri bütün kontrollere yayılmamalı.",
+    "selected": false
+  },
+  {
+    "id": "I28",
+    "title": "Seyrek, içeriğe bağlı hareket",
+    "refs": [
+      "H33",
+      "H14"
+    ],
+    "proposal": "Görsellerde geçiş veya seçili durumda küçük hareket düşünmek.",
+    "lenses": [
+      "K",
+      "N",
+      "N",
+      "K",
+      "N",
+      "K",
+      "K",
+      "K",
+      "K",
+      "K"
+    ],
+    "risk": "Statik arşiv hareketi kanıtlamıyor; temel görünüm çözülmeden öncelik değil.",
+    "selected": false
+  },
+  {
+    "id": "I29",
+    "title": "Sicil/katalog seri numaralarını kaldırmak",
+    "refs": [
+      "H23",
+      "B05"
+    ],
+    "proposal": "2026, Bölge 01 ve mühür benzeri süslerin görsel ağırlığını kaldırmak.",
+    "lenses": [
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "K",
+      "D"
+    ],
+    "risk": "Operasyonel olarak gerekli kayıt bilgisi varsa korunmalı; final 03/07 kapsamında.",
+    "selected": false
+  },
+  {
+    "id": "I30",
+    "title": "Keşifte kaydetme işaretini fotoğrafa daha hafif bağlamak",
+    "refs": [
+      "B05",
+      "B08"
+    ],
+    "proposal": "Büyük beyaz kare yerine görüntüye uyan sakin tek ikon yüzeyi tasarlamak.",
+    "lenses": [
+      "D",
+      "N",
+      "D",
+      "D",
+      "N",
+      "D",
+      "D",
+      "K",
+      "K",
+      "D"
+    ],
+    "risk": "İkonu kontrastsız bırakmamak ve hedefi küçültmemek şart; final 06/08 altında.",
+    "selected": false
+  }
+]

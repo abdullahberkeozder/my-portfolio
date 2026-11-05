@@ -1021,7 +1021,7 @@
   font-weight: 600;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 120ms ease;
+  transition: background-color 120ms ease, color 120ms ease;
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -1056,7 +1056,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  transition: all 120ms ease;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
 }
 
 .mapActionBtn:hover {
@@ -1270,7 +1270,7 @@
   border: 1px solid #cbd5e1;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   cursor: pointer;
-  transition: all 120ms ease;
+  transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
   white-space: nowrap;
 }
 
@@ -1376,7 +1376,7 @@
   color: #334155;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 120ms ease;
+  transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
   flex-shrink: 0;
 }
 
@@ -1534,6 +1534,7 @@
   user-select: none;
   /* position:relative needed so z-index works on Leaflet DivIcon elements */
   position: relative;
+  margin-left: var(--pill-shift-x, 0px);
   transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), background 140ms ease, color 140ms ease, border-color 140ms ease, box-shadow 160ms ease;
 }
 
@@ -1555,7 +1556,7 @@
   position: relative;
   z-index: 2500 !important;
   box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.2), 0 8px 24px rgba(15, 23, 42, 0.35) !important;
-  animation: pillResonancePulse 2s ease-in-out infinite alternate;
+  animation: none;
 }
 
 @keyframes pillResonancePulse {
@@ -1572,6 +1573,13 @@
   font-weight: 800;
   letter-spacing: -0.01em;
   color: #ffdd00;
+  line-height: 1;
+}
+
+.airbnbPillRatingMuted {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748b;
   line-height: 1;
 }
 
@@ -1678,7 +1686,7 @@
   justify-content: center !important;
   border: none !important;
   padding: 0 !important;
-  transition: all 140ms ease !important;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, transform 140ms ease !important;
 }
 
 .airbnbCustomPopupWrapper :global(.leaflet-popup-close-button:hover) {
@@ -1824,7 +1832,7 @@
   font-size: 11px;
   font-weight: 700;
   text-decoration: none;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
   display: inline-flex;
   align-items: center;
 }
@@ -1843,7 +1851,7 @@
   font-size: 11px;
   font-weight: 700;
   text-decoration: none;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
   display: inline-flex;
   align-items: center;
@@ -1916,7 +1924,7 @@
   padding: 3px 9px;
   margin-left: 8px;
   cursor: pointer;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -2245,7 +2253,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
   flex-shrink: 0;
 }
 
@@ -2345,26 +2353,45 @@
   font-weight: 700;
   color: #64748b;
   cursor: pointer;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
   white-space: nowrap;
   letter-spacing: 0.01em;
 }
 
 .layerOptionBtn:hover {
-  color: #1d4ed8;
-  background: rgba(29, 78, 216, 0.06);
+  color: #0e6f47;
+  background: rgba(14, 111, 71, 0.08);
 }
 
-/* Active layer button: vibrant blue accent — high discoverability */
+/* Active layer button: Orkestra craft green */
 .layerOptionBtnActive {
-  background: #1d4ed8;
+  background: #0e6f47;
   color: #ffffff;
-  box-shadow: 0 1px 4px rgba(29, 78, 216, 0.35);
+  box-shadow: 0 1px 4px rgba(14, 111, 71, 0.35);
 }
 
 .layerOptionBtnActive:hover {
-  background: #1e40af;
+  background: #0a5334;
   color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mapLoadingSpinner,
+  .leafletPulseRing,
+  .userGpsDot::after,
+  .targetPinTeardrop,
+  .livePulseDot {
+    animation: none !important;
+  }
+
+  .ustaMapMarker,
+  .craftPinToken,
+  .airbnbMapPill,
+  .airbnbSearchAreaPill,
+  .utilityBtn,
+  .layerOptionBtn {
+    transition: none !important;
+  }
 }
 
 @media (max-width: 767px) {
@@ -2531,6 +2558,7 @@
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.24);
   cursor: pointer;
   white-space: nowrap;
+  margin-left: var(--pill-shift-x, 0px);
   transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 160ms ease, border-color 160ms ease;
 }
 
@@ -2684,7 +2712,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
   flex-shrink: 0;
 }
 
@@ -2716,6 +2744,19 @@
   background: #dcfce7;
   padding: 2px 7px;
   border-radius: 6px;
+}
+
+.sheetVerifiedMark {
+  display: inline-grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .sheetSlaBadge {
@@ -2799,7 +2840,7 @@
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: all 120ms ease;
+  transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
 }
 
 .sheetNeighborhoodChip:hover {
@@ -2843,7 +2884,7 @@
   align-items: center;
   gap: 6px;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
-  transition: all 140ms ease;
+  transition: color 140ms ease, background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
   white-space: nowrap;
 }
 

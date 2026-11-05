@@ -1,7 +1,13 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   ORKESTRA · SABİT FİYATLI HİZMETLER (BENCHMARK-OPTIMIZED V2)
+   7 Platform Denetimi (Taskrabbit, Thumbtack, Airtasker, Armut, MyBuilder, Stripe, Airbnb)
+   ══════════════════════════════════════════════════════════════════════════ */
+
 .container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
+  width: 100%;
 }
 
 .headerRow {
@@ -11,52 +17,70 @@
 }
 
 .kicker {
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-family: var(--font-heading, var(--font-outfit), sans-serif);
+  font-size: 0.8125rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--brand-cobalt, #1246b5);
+  letter-spacing: 0.09em;
+  color: #0e6f47;
 }
 
 .heading {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--text-primary, #0f172a);
-  letter-spacing: -0.02em;
+  font-family: var(--font-heading, var(--font-outfit), sans-serif);
+  font-size: clamp(1.85rem, 3.5vw, 2.4rem);
+  font-weight: 850;
+  color: #10243e;
+  letter-spacing: -0.03em;
   margin: 0;
+  line-height: 1.2;
 }
 
 .subheading {
-  font-size: 0.9375rem;
-  color: var(--text-secondary, #475569);
+  font-size: 0.96875rem;
+  color: #64748b;
   margin: 0;
-  max-width: 600px;
+  max-width: 680px;
+  line-height: 1.55;
 }
 
+/* ── RESPONSIVE BALANCED GRID ───────────────────────────────────────── */
+/* Never squeeze 5 cards into 210px slivers; give each card 280px+ */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
 }
 
+@media (min-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── INDEPENDENT ELEVATED PACKAGE CARD ─────────────────────────────── */
 .packageCard {
-  background: var(--bg-card, #ffffff);
-  border: 1px solid var(--border-subtle, #e2e8f0);
-  border-radius: var(--radius-lg, 14px);
-  padding: 1.25rem;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 24px 22px 22px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   position: relative;
-  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+  box-shadow: 0 2px 8px rgba(16, 36, 62, 0.03);
 }
 
 .packageCard:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 24px rgba(18, 70, 181, 0.08);
-  border-color: var(--brand-cobalt, #1246b5);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px -8px rgba(14, 111, 71, 0.16), 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-color: #bce2ce;
+}
+
+/* Featured (Popüler Paket) highlight */
+.packageCardFeatured {
+  border-color: #bce2ce;
+  background: linear-gradient(180deg, #ffffff 0%, #fafcfb 100%);
+  box-shadow: 0 4px 18px rgba(14, 111, 71, 0.08);
 }
 
 .cardTop {
@@ -64,139 +88,212 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
+  margin-bottom: 16px;
 }
 
-.iconBadge {
-  font-size: 1.75rem;
-  line-height: 1;
-  width: 44px;
-  height: 44px;
+/* Monoline SVG Icon Chip */
+.iconChip {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #eaf5ee;
+  color: #0e6f47;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-surface, #f8fafc);
-  border: 1px solid var(--border-subtle, #e2e8f0);
-  border-radius: var(--radius-md, 10px);
+  flex-shrink: 0;
+  border: 1px solid #bce2ce;
 }
 
+/* ── UNIFIED SAGE BADGE (REFINED & HARMONIOUS) ──────────────────────── */
 .badge {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  padding: 0.25rem 0.5rem;
-  border-radius: 999px;
-  background: rgba(18, 70, 181, 0.08);
-  color: var(--brand-cobalt, #1246b5);
-  border: 1px solid rgba(18, 70, 181, 0.16);
+  font-family: var(--font-heading, var(--font-outfit), sans-serif);
+  font-size: 0.75rem;
+  font-weight: 750;
+  padding: 4px 11px;
+  border-radius: 9999px;
   white-space: nowrap;
+  letter-spacing: 0.02em;
+  background: #eaf5ee;
+  color: #0e6f47;
+  border: 1px solid #bce2ce;
 }
 
+/* ── TITLE & CATEGORY ───────────────────────────────────────────────── */
 .titleGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.35rem;
+  margin-bottom: 16px;
 }
 
 .categoryTag {
-  font-size: 0.6875rem;
-  font-weight: 600;
+  font-family: var(--font-heading, var(--font-outfit), sans-serif);
+  font-size: 0.71875rem;
+  font-weight: 750;
   text-transform: uppercase;
-  color: var(--text-tertiary, #94a3b8);
-  letter-spacing: 0.04em;
+  color: #0e6f47;
+  letter-spacing: 0.07em;
 }
 
 .cardTitle {
+  font-family: var(--font-heading, var(--font-outfit), sans-serif);
   font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--text-primary, #0f172a);
+  font-weight: 850;
+  color: #10243e;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  min-height: 48px;
 }
 
+/* ── PRICE CONTAINER (ROCK-SOLID, NO WRAPPING) ─────────────────────── */
 .priceRow {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  padding: 0.625rem 0.75rem;
-  background: var(--bg-surface, #f8fafc);
-  border-radius: var(--radius-md, 8px);
-  border: 1px solid var(--border-subtle, #edf2f7);
+  padding: 12px 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #edf2f7;
+  margin-bottom: 16px;
 }
 
 .priceLabel {
-  font-size: 0.75rem;
-  color: var(--text-secondary, #64748b);
-  font-weight: 500;
+  font-size: 0.78125rem;
+  color: #64748b;
+  font-weight: 600;
 }
 
 .priceValue {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: var(--brand-cobalt, #1246b5);
+  font-family: var(--font-heading, var(--font-outfit), sans-serif);
+  font-size: 1.35rem;
+  font-weight: 850;
+  color: #10243e;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
 
+/* ── METADATA TAGS WITH SVG ICONS ───────────────────────────────────── */
 .metaRow {
   display: flex;
-  gap: 1rem;
-  font-size: 0.75rem;
-  color: var(--text-secondary, #475569);
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .metaItem {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-family: var(--font-heading, var(--font-outfit), sans-serif);
+  font-size: 0.75rem;
+  font-weight: 650;
+  color: #475569;
 }
 
-.scopeList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  font-size: 0.8125rem;
-}
-
-.scopeIncluded {
-  color: var(--text-secondary, #334155);
-  display: flex;
-  align-items: flex-start;
-  gap: 0.375rem;
-}
-
-.checkIcon {
-  color: #10b981;
-  font-weight: bold;
+.metaItem svg {
+  color: #0e6f47;
   flex-shrink: 0;
 }
 
+/* ── SCOPE CHECKLIST ────────────────────────────────────────────────── */
+.scopeList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 0.8125rem;
+  flex: 1;
+}
+
+.scopeIncluded {
+  color: #334155;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.4;
+}
+
+.checkIcon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #eaf5ee;
+  color: #0e6f47;
+  font-weight: 850;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── UNIFIED CONFIDENT ACTION BUTTONS ──────────────────────────────── */
 .selectButton {
   margin-top: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.375rem;
-  padding: 0.625rem 1rem;
-  background: var(--brand-cobalt, #1246b5);
+  gap: 8px;
+  width: 100%;
+  min-height: 46px;
+  border-radius: 12px;
+  font-family: var(--font-heading, var(--font-outfit), sans-serif);
+  font-size: 0.9375rem;
+  font-weight: 750;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #0e6f47;
   color: #ffffff;
   border: none;
-  border-radius: var(--radius-md, 8px);
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.1s ease;
+  box-shadow: 0 4px 14px rgba(14, 111, 71, 0.22);
 }
 
-.selectButton:hover {
-  background: var(--brand-cobalt-hover, #0e378f);
-  transform: translateY(-1px);
+.selectButtonFeatured {
+  background: #0e6f47;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(14, 111, 71, 0.25);
+}
+
+.selectButtonFeatured:hover,
+.selectButtonStandard:hover {
+  background: #0a5235;
+  transform: translateY(-1.5px);
+  box-shadow: 0 8px 22px rgba(14, 111, 71, 0.32);
 }
 
 .selectButton:active {
   transform: translateY(0);
+  background: #063823;
 }
 
-@media (max-width: 640px) {
+.selectButton:focus-visible {
+  outline: 3px solid #78a5f5;
+  outline-offset: 3px;
+}
+
+.buttonArrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.18s ease;
+}
+
+.selectButton:hover .buttonArrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 768px) {
   .grid {
     grid-template-columns: 1fr;
   }

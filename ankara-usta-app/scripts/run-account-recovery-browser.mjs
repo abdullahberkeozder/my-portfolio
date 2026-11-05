@@ -13,21 +13,52 @@ for (const name of ['E2E_CUSTOMER_EMAIL', 'E2E_CUSTOMER_PASSWORD']) {
   if (!local[name]) throw new Error(`Missing ${name}`);
 }
 
-const cli = join(root, 'node_modules', 'supabase', 'dist', 'supabase.js');
-const lookup = spawnSync(process.execPath, [cli, 'projects', 'api-keys', '--project-ref', ref, '--output', 'json'], {
-  cwd: root,
-  encoding: 'utf8',
-  windowsHide: true,
-});
-if (lookup.status !== 0) throw new Error('Staging public key unavailable.');
-const parsed = JSON.parse(lookup.stdout);
-const keys = Array.isArray(parsed) ? parsed : parsed.api_keys ?? parsed.keys;
-const key = keys.find(item => item.type === 'publishable')?.api_key ?? keys.find(item => item.name === 'anon')?.api_key;
-if (!key || key.startsWith('sb_secret_')) throw new Error('Invalid staging public key.');
-const secret = keys.find(item => item.name === 'service_role')?.api_key ?? keys.find(item => item.type === 'secret')?.api_key;
-if (!secret || (!secret.startsWith('sb_secret_') && !secret.startsWith('eyJ'))) {
-  throw new Error('Staging secret key unavailable.');
+function isPublishable(value) {
+  return typeof value === 'string' && value.length > 20 && !value.startsWith('sb_secret_');
 }
+
+function isSecret(value) {
+  return typeof value === 'string' && value.length > 20
+    && (value.startsWith('sb_secret_') || value.startsWith('eyJ'));
+}
+
+let key = process.env.E2E_SUPABASE_KEY;
+let secret = process.env.E2E_SUPABASE_SERVICE_ROLE_KEY;
+
+// Prefer process-injected secrets so local runs never need to write keys to a
+// file and do not depend on Supabase CLI telemetry/profile state. Keep the CLI
+// lookup as a convenience fallback for already-configured developer machines.
+if (!isPublishable(key) || !isSecret(secret)) {
+  const cli = join(root, 'node_modules', 'supabase', 'dist', 'supabase.js');
+  const lookup = spawnSync(process.execPath, [cli, 'projects', 'api-keys', '--project-ref', ref, '--output', 'json'], {
+    cwd: root,
+    encoding: 'utf8',
+    windowsHide: true,
+  });
+  if (lookup.status !== 0) throw new Error('Staging API keys unavailable. Provide E2E_SUPABASE_KEY and E2E_SUPABASE_SERVICE_ROLE_KEY as process secrets.');
+  const parsed = JSON.parse(lookup.stdout);
+  const keys = Array.isArray(parsed) ? parsed : parsed.api_keys ?? parsed.keys;
+  key = keys.find(item => item.type === 'publishable')?.api_key ?? keys.find(item => item.name === 'anon')?.api_key;
+  // Auth Admin on this staging project still requires the JWT service_role
+  // credential. Keep the modern secret key for worker/PostgREST paths, but use
+  // the explicitly re-enabled legacy key only for this isolated recovery E2E.
+  secret = keys.find(item => item.name === 'service_role')?.api_key
+    ?? keys.find(item => item.type === 'secret')?.api_key;
+}
+if (!isPublishable(key)) throw new Error('Invalid staging public key.');
+if (!isSecret(secret)) throw new Error('Invalid staging secret key.');
+
+async function assertAuthAdminAccess() {
+  const headers = {apikey: secret};
+  if (secret.startsWith('eyJ')) headers.Authorization = `Bearer ${secret}`;
+  const response = await fetch(`${local.E2E_SUPABASE_URL}/auth/v1/admin/users?limit=1`, {
+    headers,
+  });
+  if (response.ok) return;
+  throw new Error(`Staging Auth Admin is unavailable for the configured secret key (HTTP ${response.status}). Enable an approved isolated Auth Admin credential before running account-recovery E2E.`);
+}
+
+await assertAuthAdminAccess();
 
 const env = {
   ...baseEnv,

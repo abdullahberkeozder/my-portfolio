@@ -45,21 +45,58 @@
   font-weight: 700;
   color: var(--text-primary);
 }
+.titleSplit {
+  margin: 2px 0 0;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+.headerSummary {
+  margin: 2px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.35;
+}
+.directoryListHeading {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.directoryListHeading h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  line-height: 1.25;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+.directoryListHeading span {
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
 .ctaBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  background: var(--brand-cobalt);
+  background: var(--action-primary, #0e6f47);
   color: white;
   font-weight: 700;
   min-height: 44px;
   padding: 0 20px;
   border-radius: var(--radius-control);
-  transition: background 140ms ease;
+  transition: background 140ms ease, transform 140ms ease;
 }
 .ctaBtn:hover {
-  background: var(--brand-cobalt-hover);
+  background: var(--action-primary-hover, #0a5235);
+  transform: translateY(-1px);
+}
+.ctaBtnSplit {
+  min-height: 40px;
+  padding-inline: 16px;
+  font-size: 12px;
+  white-space: nowrap;
 }
 .filterBar {
   display: flex;
@@ -105,7 +142,7 @@
 .filterSubmit {
   min-height: 46px;
   padding: 0 20px;
-  background: var(--brand-cobalt);
+  background: var(--action-primary, #0e6f47);
   color: white;
   border: 0;
   border-radius: var(--radius-control);
@@ -115,7 +152,7 @@
   transition: background-color 140ms ease;
 }
 .filterSubmit:hover {
-  background: var(--brand-cobalt-hover);
+  background: var(--action-primary-hover, #0a5235);
 }
 .filterClear {
   min-height: 46px;
@@ -164,9 +201,14 @@
   margin: 32px auto;
 }
 .emptyIcon {
-  font-size: 40px;
-  display: block;
-  margin-bottom: 12px;
+  width: 48px;
+  height: 48px;
+  display: inline-grid;
+  place-items: center;
+  color: var(--action-primary, #0e6f47);
+  background: color-mix(in srgb, var(--action-primary, #0e6f47) 9%, white);
+  border-radius: 14px;
+  margin: 0 auto 12px;
 }
 .emptyTitle {
   font-size: 20px;
@@ -187,6 +229,21 @@
   justify-content: center;
   gap: 12px;
 }
+.secondaryBtn {
+  min-height: 44px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-control);
+  background: var(--surface-page, #fff);
+  color: var(--text-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+.secondaryBtn:hover { border-color: var(--action-primary); color: var(--action-primary); }
+.secondaryBtn:focus-visible { outline: 3px solid var(--focus-ring, #9cc7ff); outline-offset: 2px; }
 .pagination {
   display: flex;
   align-items: center;
@@ -220,6 +277,9 @@
   .filterBar { flex-direction: column; align-items: stretch; }
   .resultCount { margin-left: 0; align-self: flex-start; }
   .filterGroup { flex-basis:100%; }
+  .directoryListHeading { gap: 8px; margin-bottom: 12px; }
+  .directoryListHeading h2 { font-size: 1.125rem; }
+  .directoryListHeading span { font-size: 0.75rem; }
 }
 
 .viewModeToggle {
@@ -242,7 +302,7 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  transition: all 140ms ease;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
 }
 .viewToggleBtn:hover {
   border-color: var(--brand-cobalt);
@@ -374,4 +434,3 @@
   color: var(--brand-cobalt, #1246B5);
   border: 1px solid rgba(18, 70, 181, 0.15);
 }
-

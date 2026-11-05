@@ -4,6 +4,9 @@ import { createSupabaseServerClient } from '../lib/supabase/server';
 import { ankaraDistricts } from '../data/ankaraLocations';
 import UstalarSplitView from './UstalarSplitView';
 import styles from './directory.module.css';
+import { discoveryHref, parseDiscoveryParams } from '../lib/discoveryContract';
+import { getPilotCoverage } from '../data/pilotCoverage';
+import { parseDirectoryVisualFixture, resolveDirectoryAvailability } from '../lib/directoryAvailability';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,61 +27,129 @@ type PublicProfessionalRow = {
 export default async function UstalarIndexPage({
   searchParams,
 }: {
-  searchParams: Promise<{ service?: string; district?: string; page?: string; view?: string; sort?: string }>;
+  searchParams: Promise<{ service?: string; district?: string; page?: string; view?: string; sort?: string; fixture?: string }>;
 }) {
   const params = await searchParams;
-  const service = services.some((s) => s.id === params.service) ? params.service : undefined;
-  const district = ankaraDistricts.find((d) => d === params.district);
-  const page = Math.min(1000, Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1));
+  const visualFixture = parseDirectoryVisualFixture(
+    params.fixture,
+    process.env.ORKESTRA_DIRECTORY_VISUAL_FIXTURES === 'true' || process.env.NODE_ENV !== 'production'
+  );
+  const discovery = parseDiscoveryParams(params, {
+    serviceIds: services.map((service) => service.id),
+    districts: ankaraDistricts,
+  });
+  const service = discovery.service;
+  const district = discovery.district;
+  const page = discovery.page;
   const pageSize = 12;
-  const sortMode = params.sort === 'rating' || params.sort === 'jobs' ? params.sort : 'recommended';
-
-  const baseHref = `/ustalar?${new URLSearchParams({
-    ...(service ? { service } : {}),
-    ...(district ? { district } : {}),
-    ...(params.view ? { view: params.view } : {}),
-  })}`;
+  const sortMode = discovery.sort;
+  const baseHref = discoveryHref(discovery);
 
   const serviceMap: Record<string, string[]> = {};
   const areaMap: Record<string, string[]> = {};
   const neighborhoodMap: Record<string, string[]> = {};
-  const metricsMap: Record<string, { totalCompletedJobs: number; averageRating: number }> = {};
+  const metricsMap: Record<string, { totalCompletedJobs: number; averageRating: number; totalReviews: number }> = {};
 
   const supabase = await createSupabaseServerClient();
-  const { data: directoryRows, error } = await supabase.rpc(
-    'list_public_verified_professionals',
-    {
-      p_service_id: service ?? null,
-      p_district: district ?? null,
-      p_offset: (page - 1) * pageSize,
-      p_limit: pageSize,
-    }
-  );
+  // Visual fixtures intentionally bypass the network contract. This keeps
+  // deterministic QA states usable even when a local Supabase project does
+  // not have the staging RPC installed yet.
+  const { data: directoryRows, error } = visualFixture
+    ? { data: [], error: null }
+    : await supabase.rpc(
+        'list_public_verified_professionals',
+        {
+          p_service_id: service ?? null,
+          p_district: district ?? null,
+          p_offset: (page - 1) * pageSize,
+          p_limit: pageSize,
+        }
+      );
 
   if (error) {
     return (
-      <main className="account-shell ustalar-page">
+      <main
+        className="account-shell ustalar-page"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100dvh',
+          background: 'var(--surface-page, #faf8f5)',
+          padding: '48px 16px',
+        }}
+      >
         <div className={styles.container}>
           <div className={styles.emptyState}>
-            <span className={styles.emptyIcon} role="img" aria-label="Hata">⚠️</span>
+            <span className={styles.emptyIcon} role="img" aria-label="Hata">
+              <svg
+                width="36"
+                height="36"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--action-primary, #0E6F47)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </span>
             <h2 className={styles.emptyTitle}>Usta listesi yüklenemedi</h2>
             <p className={styles.emptyDesc}>Bir bağlantı sorunu oluştu. Lütfen daha sonra tekrar deneyin.</p>
-            <Link className={styles.ctaBtn} href="/">
-              ← Ana Sayfaya Dön
-            </Link>
+            <div className={styles.emptyActions}>
+              <Link className={styles.ctaBtn} href={baseHref}>
+                Tekrar dene
+              </Link>
+              <Link className={styles.secondaryBtn} href="/">
+                Ana sayfaya dön
+              </Link>
+            </div>
           </div>
         </div>
       </main>
     );
   }
 
-  const profiles = (directoryRows ?? []) as PublicProfessionalRow[];
-  const count = profiles[0]?.total_count ?? 0;
+  const profiles = visualFixture ? [] : (directoryRows ?? []) as PublicProfessionalRow[];
+  const count = visualFixture ? 0 : Number(profiles[0]?.total_count ?? profiles.length);
   const hasDbError = false;
+  const hasFilters = Boolean(service || district);
+  let hasGlobalSupply: boolean | undefined = hasFilters ? undefined : count > 0;
 
-    const tradespersonIds = profiles.map((p) => p.user_id);
-    if (tradespersonIds.length > 0) {
-      const [{ data: serviceRows }, { data: areaRows }, { data: metricRows }] = await Promise.all([
+  // A filtered empty result is not enough evidence to say that the platform
+  // has no supply. Check one unfiltered row before choosing between the
+  // limited-scope and true cold-start messages. A fallback error stays
+  // neutral; it must never be presented as a waitlist state.
+  if (count === 0 && hasFilters && !visualFixture) {
+    const { data: globalRows, error: globalError } = await supabase.rpc(
+      'list_public_verified_professionals',
+      {
+        p_service_id: null,
+        p_district: null,
+        p_offset: 0,
+        p_limit: 1,
+      }
+    );
+    if (!globalError) {
+      const rows = (globalRows ?? []) as PublicProfessionalRow[];
+      const globalCount = Number(rows[0]?.total_count ?? rows.length);
+      hasGlobalSupply = globalCount > 0;
+    }
+  }
+
+  const availability = visualFixture ?? resolveDirectoryAvailability({
+    filteredCount: count,
+    hasGlobalSupply,
+    hasFilters,
+    pilotScope: !district || getPilotCoverage(district, service).tier !== 'unsupported',
+  });
+
+  const tradespersonIds = profiles.map((p) => p.user_id);
+  if (tradespersonIds.length > 0) {
+      const [{ data: serviceRows }, { data: areaRows }, { data: metricRows }, { data: reviewRows }] = await Promise.all([
         supabase
           .from('tradesperson_services')
           .select('tradesperson_id, service_id')
@@ -90,6 +161,11 @@ export default async function UstalarIndexPage({
         supabase
           .from('district_trust_metrics')
           .select('tradesperson_id, district, completed_jobs, average_rating')
+          .in('tradesperson_id', tradespersonIds),
+        supabase
+          .from('reviews')
+          .select('tradesperson_id')
+          .eq('moderation_status', 'approved')
           .in('tradesperson_id', tradespersonIds),
       ]);
 
@@ -127,13 +203,18 @@ export default async function UstalarIndexPage({
         metricsMap[id] = {
           totalCompletedJobs: acc.totalJobs,
           averageRating: acc.totalJobs > 0 ? Number((acc.weightedRatingSum / acc.totalJobs).toFixed(1)) : 0,
+          totalReviews: 0,
         };
+      }
+      for (const row of reviewRows ?? []) {
+        const id = row.tradesperson_id;
+        if (!id) continue;
+        if (!metricsMap[id]) metricsMap[id] = { totalCompletedJobs: 0, averageRating: 0, totalReviews: 0 };
+        metricsMap[id].totalReviews += 1;
       }
     }
 
-  const hasFilters = Boolean(service || district);
-
-  const isSplit = params.view === 'split' || !params.view;
+  const isSplit = discovery.view === 'split';
 
   return (
     <main
@@ -164,24 +245,26 @@ export default async function UstalarIndexPage({
         <div className={`${styles.header} ${isSplit ? styles.headerSplit : ''}`}>
           <div className={styles.headerText}>
             <span className={styles.kicker}>ANKARA DOĞRULANMIŞ USTA DİZİNİ</span>
-            <h1 className={styles.title} style={isSplit ? { fontSize: '20px', margin: '2px 0 0' } : undefined}>
-              İşinize uygun ustayı haritada bulun
+            <h1 className={`${styles.title} ${isSplit ? styles.titleSplit : ''}`}>
+              İhtiyacınıza uygun ustayı bulun
             </h1>
-            {!isSplit && (
-              <p>Hizmet ve ilçeyi seçin. Ustanın çalışma alanlarını, puanlarını ve profilindeki belge bilgilerini inceleyin.</p>
-            )}
+            <p className={isSplit ? styles.headerSummary : undefined}>
+              {isSplit
+                ? 'Önce hizmet ve ilçeyi seçin; doğrulanmış profilleri karşılaştırın.'
+                : 'Hizmet ve ilçeyi seçin. Ustanın çalışma alanlarını, puanlarını ve profilindeki belge bilgilerini inceleyin.'}
+            </p>
           </div>
           <Link
-            className={styles.ctaBtn}
+            className={`${styles.ctaBtn} ${isSplit ? styles.ctaBtnSplit : ''}`}
             href="/#services"
-            style={isSplit ? { minHeight: '34px', height: '34px', padding: '0 14px', fontSize: '12px' } : undefined}
           >
-            Hizmet Talep Et →
+            İhtiyacını anlat →
           </Link>
         </div>
 
         {/* Airbnb Style Interactive Split-View (List + Map) */}
         <UstalarSplitView
+          verificationConfirmed
           profiles={profiles}
           serviceMap={serviceMap}
           areaMap={areaMap}
@@ -195,9 +278,10 @@ export default async function UstalarIndexPage({
           page={page}
           pageSize={pageSize}
           hasFilters={hasFilters}
+          availability={availability}
           baseHref={baseHref}
           hasDbError={hasDbError}
-          initialView={params.view === 'map' ? 'map' : params.view === 'list' ? 'list' : 'split'}
+          initialView={discovery.view}
           initialSortMode={sortMode}
         />
       </div>
