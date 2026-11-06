@@ -1,0 +1,74 @@
+# ==============================================================================
+# PROJE ADI       : Spring Boot 2026 Enterprise Blog Platform
+# MODÜL ADI       : WebSocket & STOMP / SockJS Gerçek Zamanlı Canlı Bildirimler
+# ADIM NUMARASI   : ADIM 18
+# YAZAR           : Berke Özder
+# TARİH           : 2026-11-06
+# ==============================================================================
+
+1. MİMARİ VE GENEL BAKIŞ
+------------------------------------------------------------------------------
+Modern web ve mobil platformlarda kullanıcıların yeni paylaşımlardan, yorumlardan
+ve sistem duyurularından anında haberdar olması için iki yönlü ve asenkron iletişim
+protokolleri gereklidir. Adım 18 kapsamında Spring Boot STOMP over WebSocket
+mimarisinde in-memory Simple Message Broker entegre edilmiştir.
+
+Özellikler:
+- SockJS Fallback Desteği: Eski veya WebSocket kısıtlamalı tarayıcılar için XHR polling desteği.
+- Saf WebSocket Desteği: Mobil istemciler, CLI veya Postman için doğrudan ws:// bağlantısı.
+- Event-Driven Architecture (EDA): Blog ve yorum oluşturma işlemleri doğrudan WebSocket'e
+  bağımlı olmadan Spring ApplicationEvent (BlogCreatedEvent, CommentCreatedEvent) üzerinden
+  gevşek bağlı (loosely coupled) olarak dinlenir.
+
+2. WEBSOCKET KANALLARI (DESTINATIONS)
+------------------------------------------------------------------------------
+A) Abone Olunabilir Kanallar (Broker Destinations):
+   - /topic/live-feed            : Tüm kullanıcılara açık anlık genel aktivite ve duyuru akışı
+   - /topic/blogs                : Yeni blog eklendiğinde veya güncellendiğinde yayın yapılan kanal
+   - /topic/comments             : Bloglara yapılan yeni yorumların anlık yayın kanalı
+   - /user/queue/notifications   : Bireysel kullanıcıya özel bildirim kanalı (Örn: Blog yazarına özel bildirim)
+
+B) İstemci Gönderim Prefix'i:
+   - /app                        : İstemcilerin sunucuya göndereceği mesajların hedef öneki
+
+C) Bağlantı (Handshake) Endpoint'i:
+   - /ws                         : SockJS ve doğrudan WebSocket bağlantı adresi (CORS wildcard yetkili)
+
+3. TEMEL BİLEŞENLER
+------------------------------------------------------------------------------
+1. WebSocketConfig (com.berkeozder.config.WebSocketConfig)
+   - @EnableWebSocketMessageBroker ile STOMP broker'ı devreye alır.
+   - /topic ve /queue kanallarını etkinleştirir, /user prefix'ini ayarlar.
+
+2. NotificationDto & NotificationType (com.berkeozder.business.dto.notification.*)
+   - Bildirim veri modeli: id (UUID), type, title, message, targetUser, payload, timestamp.
+   - Tipler: INFO, BLOG_CREATED, BLOG_UPDATED, BLOG_DELETED, COMMENT_ADDED, BROADCAST, SYSTEM_ALERT.
+
+3. INotificationService & NotificationServiceImpl (com.berkeozder.business.services.*)
+   - SimpMessagingTemplate aracılığıyla convertAndSend ve convertAndSendToUser çağrılarını yönetir.
+   - notifyBlogCreated: /topic/live-feed ve /topic/blogs hedeflerine yayın yapar.
+   - notifyCommentCreated: /topic/comments yayını yapar ve yazar farklı ise /user/{author}/queue/notifications hedefine iletir.
+
+4. WebSocketNotificationListener (com.berkeozder.business.event.listener.WebSocketNotificationListener)
+   - @EventListener ile BlogCreatedEvent ve CommentCreatedEvent yakalar, ilgili bildirimleri tetikler.
+
+5. NotificationApiImpl (com.berkeozder.controller.api.impl.NotificationApiImpl)
+   - POST /api/v1/notifications/broadcast : Admin genel duyuru yayını
+   - POST /api/v1/notifications/user/{user} : Admin kullanıcıya özel bildirim
+   - GET  /api/v1/notifications/types      : Herkese açık bildirim tipleri
+   - POST /api/v1/notifications/test       : Canlı akış test bildirimi
+
+4. GÜVENLİK (SECURITY & CSRF)
+------------------------------------------------------------------------------
+- SecurityConfig üzerinde /ws ve /ws/** endpoint'leri beyaz listeye (whiteList) alınmıştır.
+- SockJS XHR ve WebSocket handshake çağrılarının CSRF engeline takılmaması için
+  csrf.ignoringRequestMatchers("/ws", "/ws/**", "/api/v1/notifications/**") eklenmiştir.
+- Bildirim tetikleme endpoint'leri rol bazlı (ADMIN / SUPER_ADMIN) koruma altındadır.
+
+5. TEST VE DOĞRULAMA
+------------------------------------------------------------------------------
+- NotificationServiceTest: SimpMessagingTemplate mock'lanarak broadcast, topic, user queue,
+  blog yayını ve yoruma özel hedef testleri (6 unit test).
+- NotificationIntegrationTest: MockMvc ile /types, /test, /broadcast ve /user/{username}
+  API testleri, yetkilendirme doğrulaması ve event listener testi (6 integration test).
+

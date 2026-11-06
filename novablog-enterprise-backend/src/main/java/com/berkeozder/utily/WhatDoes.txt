@@ -1,0 +1,35 @@
+================================================================================
+WHAT DOES "UTILY (UTILITIES & POSTMAN RESOURCES)" MEAN?
+SPRING BOOT'TA "UTILY (YARDIMCI ARAÇLAR VE POSTMAN DOSYALARI)" NE ANLAMA GELİR?
+================================================================================
+
+1. GENEL ANLAMI VE İÇERİĞİ:
+--------------------------------------------------------------------------------
+"utily" paketi; projede tekrar eden sabitleri (Constants), yardımcı metotları, 
+Postman API test koleksiyonlarını ve geliştirme notlarını barındıran yardımcı 
+kaynak klasörüdür.
+
+
+2. DOSYALAR VE GÖREVLERİ:
+--------------------------------------------------------------------------------
++-------------------------------+----------------------------------------------------+
+| Dosya Adı                     | İçeriği ve Görevi                                  |
++-------------------------------+----------------------------------------------------+
+| 1. FrontEnd.java              | Frontend sabit URL'lerini barındırır:              |
+|                               | public static final String REACT_URL =             |
+|                               | "http://localhost:3000";                           |
+|                               | Controller'larda @CrossOrigin için kullanılır.     |
++-------------------------------+----------------------------------------------------+
+| 2. postman/Postman_Blog.txt   | Blog API'leri için örnek cURL ve JSON istek        |
+|                               | gövdeleri (Create, List, Find, Update, Delete).    |
++-------------------------------+----------------------------------------------------+
+| 3. postman/_1_BlogCategory.txt| Kategori API'leri için hazır Postman istekleri.    |
++-------------------------------+----------------------------------------------------+
+| 4. Persist_Url.txt            | H2 DB, Swagger UI ve sistem port linkleri:         |
+|                               | - Swagger: http://localhost:5555/swagger-ui.html   |
+|                               | - H2 DB: http://localhost:5555/h2-console          |
++-------------------------------+----------------------------------------------------+
+| 5. Role_Management_Listesi    | İlerleyen adımlarda eklenecek olan Roller          |
+|                               | (ADMIN, USER vb.) ve yetkilendirme haritası.       |
++-------------------------------+----------------------------------------------------+
+================================================================================

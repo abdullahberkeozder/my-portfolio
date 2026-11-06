@@ -1,0 +1,84 @@
+================================================================================
+WHAT DOES "DATA LAYER & RELATIONAL MODELING" MEAN IN SPRING BOOT?
+SPRING BOOT'TA "DATA KATMANI VE İLİŞKİSEL VERİTABANI MODELLEMESİ" NE ANLAMA GELİR?
+================================================================================
+
+1. GENEL ANLAMI VE KURUMSAL MİMARİDEKİ YERİ:
+--------------------------------------------------------------------------------
+Data katmanı, uygulamanın veritabanı (RDBMS - PostgreSQL / H2) ile konuştuğu, 
+verileri sakladığı, sorguladığı ve Java nesneleri ile veritabanı tabloları 
+arasındaki ilişkisel eşleşmeyi (ORM - Object Relational Mapping) sağladığı katmandır.
+
+Projemizde Gerçek Hayat Kurumsal İlişkisel Modeli Kurulmuştur:
+- 1-N (One-to-Many): Kategori -> Bloglar (Bir kategoride çok blog)
+- N-1 (Many-to-One): Blog -> Yazar/Kullanıcı (Her blog bir kullanıcıya ait)
+- 1-N (One-to-Many): Blog -> Yorumlar (Bir blogun altında çok sayıda onaylı yorum)
+- N-1 (Many-to-One): Yorum -> Kullanıcı (Her yorum bir kullanıcı tarafından yapıldı)
+- N-M (Many-to-Many): Bloglar <-> Etiketler (`blog_tags` ara tablosu)
+- N-M (Many-to-Many): Kullanıcılar <-> Roller (`user_roles` ara tablosu)
+
+
+2. VARLIKLAR VE İLİŞKİSEL TABLO ŞEMASI:
+--------------------------------------------------------------------------------
++--------------------+----------------------------------------------------------+
+| Tablo / Entity     | İlişkileri ve Görevi                                     |
++--------------------+----------------------------------------------------------+
+| 1. users           | Sistemdeki kayıtlı kullanıcılar.                         |
+|                    | - user_roles (N-M ile roles tablosuna bağlı)             |
+|                    | - 1-N ile blogs tablosunun yazarıdır.                    |
+|                    | - 1-N ile comments tablosunun yorumcusudur.              |
++--------------------+----------------------------------------------------------+
+| 2. roles           | ROLE_USER, ROLE_ADMIN, ROLE_SUPER_ADMIN yetkilerini tutar|
++--------------------+----------------------------------------------------------+
+| 3. blog_categories | Blog yazılarını kategorize eder (1-N blogs).             |
++--------------------+----------------------------------------------------------+
+| 4. blogs           | Blog başlığı, içeriği, kapak görseli.                    |
+|                    | - category (N-1)                                         |
+|                    | - author (N-1)                                           |
+|                    | - comments (1-N, cascade = ALL, orphanRemoval = true)    |
+|                    | - tags (N-M, blog_tags tablosu ile)                     |
++--------------------+----------------------------------------------------------+
+| 5. comments        | Bloglara yapılan onaylı kullanıcı yorumları.             |
+|                    | - blog_id (N-1)                                          |
+|                    | - user_id (N-1)                                          |
++--------------------+----------------------------------------------------------+
+| 6. tags            | Etiketler (#spring, #react, #docker).                    |
+|                    | - N-M ile blogs tablosuna bağlıdır.                      |
++--------------------+----------------------------------------------------------+
+
+
+3. JPA ANOTASYONLARI VE PÜF NOKTALARI:
+--------------------------------------------------------------------------------
+- `@ManyToOne(fetch = FetchType.LAZY / EAGER)`:
+  * N-1 ilişkilerde veritabanı performansını optimize eder.
+- `@OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)`:
+  * `cascade = ALL`: Blog silindiğinde ona bağlı tüm yorumlar da veritabanından 
+    otomatik ve tutarlı biçimde temizlenir.
+  * `orphanRemoval = true`: Yorum listeden çıkarıldığında yetim kalan kayıt silinir.
+- `@ManyToMany & @JoinTable`:
+  * Çoktan çoğa ilişkilerde Spring Data JPA otomatik olarak `blog_tags` ve 
+    `user_roles` isimli iki sütunlu ara tablolar oluşturur.
+- `@Lob @Column(columnDefinition = "TEXT")`:
+  * PostgreSQL'de uzun blog içeriklerinin OID yerine doğal TEXT tipinde saklanmasını 
+    sağlar, bellek taşmalarını önler.
+
+
+4. BİLEŞENLERİN İŞLEYİŞ AKIŞI:
+--------------------------------------------------------------------------------
+   [HTTP Request]
+         |
+         v
+   [Controller]  --->  Parametreleri alır, @Valid doğrular
+         |
+         v
+   [Service]     --->  İş kuralları, Güvenlik kimliği (SecurityContext),
+         |             İlişkileri bağlar (Author, Category, Tags, Comments)
+         v
+   [Mapper]      --->  DTO <-> Entity dönüşümü
+         |
+         v
+   [Repository]  --->  Spring Data JPA sorguları çalıştırır
+         |
+         v
+   [PostgreSQL]  --->  ACID garantili kalıcı veri saklama
+================================================================================

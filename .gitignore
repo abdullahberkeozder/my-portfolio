@@ -174,3 +174,7 @@ vite.config.ts.timestamp-*
 
 # Separate private repository; never publish it through this portfolio repository
 /the-psychologist-app/
+
+# Deprecated local copy (superseded by novablog-enterprise-backend)
+/springboot2026/
+

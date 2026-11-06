@@ -1,0 +1,142 @@
+================================================================================
+WHAT DOES "CONTROLLER / REST API" MEAN IN SPRING BOOT?
+SPRING BOOT'TA "CONTROLLER / REST API" KATMANI NE ANLAMA GELİR?
+================================================================================
+
+1. GENEL ANLAMI VE GÖREVİ:
+--------------------------------------------------------------------------------
+Controller (veya REST Controller); uygulamanın dış dünyaya (React, Vue, mobil, 
+Postman vb.) açılan kapısıdır. HTTP protokolü üzerinden gelen GET, POST, PUT, 
+DELETE isteklerini karşılar, parametreleri ayıklar, doğrular ve işi Service 
+katmanına devreder.
+
+Controller Asla İş Mantığı (Business Logic) İçermez!
+- Controller: Sadece HTTP istek/yanıt trafiğini yönetir ("Trafik Polisi").
+- Service: Kararları alır, veritabanı ile konuşur ve kuralları işletir ("İş Merkezi").
+
+
+2. KULLANILAN TEMEL ANOTASYONLAR:
+--------------------------------------------------------------------------------
++--------------------+----------------------------------------------------------+
+| Anotasyon          | Görevi ve Anlamı                                         |
++--------------------+----------------------------------------------------------+
+| @RestController    | @Controller + @ResponseBody birleşimidir. Dönen veriyi   |
+|                    | otomatik olarak JSON/XML formatına çevirir.              |
++--------------------+----------------------------------------------------------+
+| @RequestMapping    | Controller veya metodun kök adresini belirler:           |
+|                    | - Blog: "/blog/api/v1.0.0"                               |
+|                    | - Kategori: "/blog/category/api/v1.0.0"                  |
++--------------------+----------------------------------------------------------+
+| @CrossOrigin       | Frontend'den gelen isteklerin CORS engeline takılmasını  |
+|                    | önler (FrontEnd.REACT_URL = "http://localhost:3000").    |
++--------------------+----------------------------------------------------------+
+| @Valid             | DTO üzerindeki (@NotEmpty, @Size vb.) kuralları çalıştırır|
+|                    | ve geçersiz veride hata fırlatır.                        |
++--------------------+----------------------------------------------------------+
+| @RequestBody       | HTTP Request Body'sindeki JSON veriyi Java DTO nesnesine  |
+|                    | dönüştürür (Deserialization).                            |
++--------------------+----------------------------------------------------------+
+| @PathVariable      | URL yolundaki dinamik parametreyi alır (örn: /find/{id}).|
++--------------------+----------------------------------------------------------+
+| @RequestParam      | URL sorgu parametrelerini okur (örn: ?current_page=0).   |
++--------------------+----------------------------------------------------------+
+
+
+3. @PathVariable VE @RequestParam ARASINDAKİ FARKLAR:
+--------------------------------------------------------------------------------
+| Özellik          | @PathVariable                                        | @RequestParam                                              |
+|------------------|------------------------------------------------------|------------------------------------------------------------|
+| Amaç             | URL yolundaki dinamik kaynağı / kimliği alır.        | Sorgu (query) parametrelerini filtrelemek/ayarlamak içindir|
+| Kullanım Yeri    | URL'in bir parçasıdır (/api/users/{id})              | `?` işaretinden sonra gelir (/api/users?name=Berke)        |
+| URL Örneği       | `/blog/api/v1.0.0/find/1`                            | `/blog/api/v1.0.0/pagination?current_page=0&page_size=4`  |
+| Tanımlama Şekli  | `@PathVariable("id") Long id`                        | `@RequestParam("current_page") int currentPage`           |
+| Zorunluluk       | Varsayılan olarak zorunludur.                        | Opsiyonel yapılabilir (required=false, defaultValue="0").  |
+| Kullanım Amacı   | Belirli bir kaynağı tekil olarak bulma/güncelleme/sil| Sayfalama, sıralama, arama ve filtreleme kriterleri.       |
+
+
+4. CONTROLLER KATMANINDA INTERFACE SEGREGATION PRINCIPLE (ISP):
+--------------------------------------------------------------------------------
+Projemizde controller seviyesinde modüler arayüzler kurulmuştur:
+
++----------------------------+-----------------------------------------------------+
+| Interface                  | Sağladığı API Endpoint'leri ve İmzaları             |
++----------------------------+-----------------------------------------------------+
+| 1. ICrudApi<D>             | /create (POST), /list (GET),                        |
+|                            | /find/{id} (GET), /update/{id} (PUT),               |
+|                            | /delete/{id} (DELETE)                               |
++----------------------------+-----------------------------------------------------+
+| 2. ISortingPagingApi<D>    | /pagination (GET -> ResponseEntity<Page<?>>),       |
+|                            | /sorting (GET -> ResponseEntity<List<D>>),          |
+|                            | /sorting/header/asc (GET -> ResponseEntity<List<D>>)|
+|                            | /sorting/header/desc (GET -> ResponseEntity<List<D>>|
++----------------------------+-----------------------------------------------------+
+| 3. IImageApi<D>            | /upload/create (POST - MultipartFile),              |
+|                            | /upload/update/{id} (PUT - MultipartFile)           |
++----------------------------+-----------------------------------------------------+
+| 4. ISpeedAndDeleteApi<D>   | /speed (GET - Test verisi üret),                    |
+|                            | /delete-all (GET - Tüm kayıtları temizle)           |
++----------------------------+-----------------------------------------------------+
+
+
+5. PROJEDEKİ REST ENDPOINT LİSTESİ (PORT: 5555):
+--------------------------------------------------------------------------------
+
+A) Kimlik Doğrulama ve JWT API (/api/v1/auth):
+- POST   /register                  -> Yeni kullanıcı kaydı oluşturur ve JWT token döner.
+- POST   /login                     -> Kullanıcı adı/e-posta ve şifre ile giriş yapar, JWT döner.
+- POST   /refresh-token             -> Refresh Token ile yeni Access Token üretir.
+- GET    /me                        -> Giriş yapan kullanıcının profilini getirir (JWT gerektirir).
+
+B) Kategori API (/blog/category/api/v1.0.0):
+- GET    /speed?data=3              -> Test kategorileri oluşturur.
+- GET    /delete-all                -> Tüm kategorileri siler (ROLE_SUPER_ADMIN).
+- POST   /create                    -> Yeni kategori oluşturur (ROLE_ADMIN veya ROLE_SUPER_ADMIN).
+- GET    /list                      -> Tüm kategorileri listeler (Herkese açık).
+- GET    /find/{id}                 -> ID'ye göre tekil kategori getirir (Herkese açık).
+- PUT    /update/{id}               -> Kategori günceller (ROLE_ADMIN veya ROLE_SUPER_ADMIN).
+- DELETE /delete/{id}               -> Kategoriyi siler (ROLE_ADMIN veya ROLE_SUPER_ADMIN).
+
+C) Blog API (/blog/api/v1.0.0):
+- GET    /speed?data=5              -> Test blogları üretir.
+- GET    /delete-all                -> Tüm blogları ve resimleri siler (ROLE_SUPER_ADMIN).
+- POST   /create (application/json) -> Resimsiz blog oluşturur.
+- POST   /create (multipart/form-data) -> Resimli blog oluşturur.
+- GET    /list                      -> Tüm blogları listeler (Herkese açık).
+- GET    /find/{id}                 -> ID'ye göre blog getirir (Herkese açık).
+- PUT    /update/{id}               -> Blog günceller (ROLE_ADMIN veya ROLE_SUPER_ADMIN).
+- DELETE /delete/{id}               -> Blogu siler (ROLE_ADMIN veya ROLE_SUPER_ADMIN).
+- GET    /pagination?current_page=0&page_size=10 -> Sayfalanmış blog listesi.
+- GET    /search                    -> Dinamik Çoklu Arama & Sayfalama (JPA Specification):
+                                       * search: Başlık, header veya içerikte kelime arar.
+                                       * category_id: Kategoriye göre filtreler.
+                                       * tag: Etiket adına göre filtreler (#spring-boot).
+                                       * author: Yazara göre filtreler (username).
+                                       * page, size, sort_by, sort_dir: Sıralama ve sayfalama.
+                                       * Dönen veri: PagedResponseDto<BlogDto>
+- GET    /sorting?sorted_by=header  -> Belirtilen alana göre sıralanmış liste.
+- GET    /sorting/header/asc        -> Başlığa göre A->Z sıralı liste.
+- GET    /sorting/header/desc       -> Başlığa göre Z->A sıralı liste.
+
+D) Yorum API (/blog/api/v1.0.0/comments):
+- POST   /{blogId}                  -> Blog yazısına yeni yorum ekler (Oturum gerektirir).
+- GET    /{blogId}                  -> Blog yazısının yorumlarını listeler (Herkese açık).
+- DELETE /{commentId}               -> Yorumu siler (Yorum sahibi veya ADMIN).
+
+E) Etiket API (/blog/api/v1.0.0/tags):
+- GET    /                          -> Tüm etiketleri listeler.
+- GET    /{name}                    -> İsme göre etiket getirir.
+- POST   /                          -> Yeni etiket oluşturur (ROLE_ADMIN veya ROLE_SUPER_ADMIN).
+- POST   /{blogId}/{tagName}        -> Blog yazısına etiket ekler (ROLE_ADMIN veya ROLE_SUPER_ADMIN).
+- DELETE /{blogId}/{tagName}        -> Blog yazısından etiket kaldırır (ROLE_ADMIN veya ROLE_SUPER_ADMIN).
+- GET    /{tagName}/blogs           -> Belirli bir etikete sahip blogları getirir.
+
+
+6. ResponseEntity DÖNDÜRME YOLLARI (BlogCategoryApiImpl):
+--------------------------------------------------------------------------------
+Controller içerisinde ResponseEntity dönerken farklı yaklaşımlar sergilenebilir:
+- 1. YOL: ResponseEntity.status(201).body(...)
+- 2. YOL: ResponseEntity.status(HttpStatus.CREATED).body(...)
+- 3. YOL: new ResponseEntity<>(..., HttpStatus.CREATED)
+- 4. YOL: ResponseEntity.ok().body(...)
+- 5. YOL: ResponseEntity.ok(ApiResult.success(...))  -> (Projemizde tercih edilen standart yol)
+================================================================================

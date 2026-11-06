@@ -1,0 +1,99 @@
+================================================================================
+WHAT DOES "EXCEPTION HANDLING" MEAN IN SOFTWARE & SPRING BOOT?
+YAZILIMDA VE SPRING BOOT'TA "EXCEPTION (HATA YÖNETİMİ)" NE ANLAMA GELİR?
+===============================================================================
+
+1. GENEL ANLAMI (Exception / Hata Yönetimi Nedir?):
+--------------------------------------------------------------------------------
+Yazılımda bir işlem sırasında beklenmedik veya kural dışı bir durum oluştuğunda 
+(örneğin veritabanında aranan kaydın bulunamaması, şifrenin yanlış girilmesi veya 
+veritabanı bağlantısının kopması), uygulamanın çökmesini (crash) önleyen ve 
+kullanıcıya / frontend'e anlamlı bir geri bildirim dönen mekanizmaya 
+"Exception Handling" (Hata Yönetimi) denir.
+
+Geleneksel Kötü Yaklaşım:
+   - Hata yönetimi olmadığında sistem 500 koduyla tüm Java StackTrace hatasını 
+     (kod satırları, veritabanı şeması vb.) kullanıcıya basar.
+   - Bu durum hem ciddi bir GÜVENLİK AÇIĞIDIR (bilgi sızdırır) hem de kötü bir 
+     kullanıcı deneyimidir (UX).
+
+Spring Boot Yaklaşımı:
+   - Her hata tipi için uygun bir HTTP Durum Kodu (Status Code) ile temiz, 
+     anlaşılır ve standart bir JSON hata mesajı dönülür.
+
+
+2. HTTP STATUS KODU GRUPLARI (ÖZET):
+--------------------------------------------------------------------------------
++-----------+-----------------------+-------------------------------------------+
+| Kod Grubu | Kategori              | Anlamı / Ne Zaman Dönülür?                |
++-----------+-----------------------+-------------------------------------------+
+| 1xx       | Bilgilendirme (Info)  | İstek alındı, işlem devam ediyor.         |
+| 2xx       | Başarı (Success)      | İstek başarıyla tamamlandı (200 OK, 201). |
+| 3xx       | Yönlendirme (Redirect)| Kaynak başka bir adrese taşındı.          |
+| 4xx       | İstemci Hatası (Client| Hata KULLANICIDAN kaynaklı (hatalı veri,  |
+|           | Error)                | olmayan ID, yetkisiz erişim vb.).         |
+| 5xx       | Sunucu Hatası (Server | Hata SUNUCUDAN / KODDAN kaynaklı          |
+|           | Error)                | (çöken veritabanı, kod mantık hatası vb.).|
++-----------+-----------------------+-------------------------------------------+
+
+
+3. BİZİM PROJEMİZDEKİ ÖZEL EXCEPTION SINIFLARI TABLOSU:
+--------------------------------------------------------------------------------
+Projenizdeki "com.berkeozder.exception" paketinde tanımlanan sınıflar ve görevleri:
+
++-----------------------------------+------------+-----------------------------------------------------+
+| Sınıf Adı                         | HTTP Kodu  | Ne Zaman Fırlatılır? (Kullanım Senaryosu)           |
++-----------------------------------+------------+-----------------------------------------------------+
+| BerkeOzderException               | Genel      | Projeye özel iş kuralları (Business Rule)           |
+|                                   | Runtime    | ihlallerinde fırlatılan genel istisna sınıfıdır.    |
++-----------------------------------+------------+-----------------------------------------------------+
+| _400_BadRequestException          | 400        | Kullanıcının gönderdiği veri eksik, formata uygun   |
+|                                   | BAD REQUEST| değil veya geçersiz olduğunda.                      |
++-----------------------------------+------------+-----------------------------------------------------+
+| _401_UnAuthorizedRequestException | 401        | Kullanıcı henüz sisteme LOGIN OLMAMIŞSA (kimlik     |
+|                                   | UNAUTHORIZED doğrulanmamış) ve korumalı bir kaynağa geldiyse. |
++-----------------------------------+------------+-----------------------------------------------------+
+| _402_PaymentRequiredException     | 402        | Ödeme veya abonelik gerektiren bir kaynağa          |
+|                                   | PAYMENT_REQ| ödeme tamamlanmadan erişilmek istendiğinde.         |
++-----------------------------------+------------+-----------------------------------------------------+
+| _403_ForbiddenException           | 403        | Kullanıcı login olmuş AMA yetkisi (Rolü) yetmiyorsa |
+|                                   | FORBIDDEN  | (Örn: Normal kullanıcı ADMIN paneline eriştiğinde). |
++-----------------------------------+------------+-----------------------------------------------------+
+| _404_NotFoundException            | 404        | İstenen kayıt veritabanında YOKSA.                  |
+|                                   | NOT FOUND  | (Örn: findById(99) dendiğinde kayıt bulunamazsa).   |
++-----------------------------------+------------+-----------------------------------------------------+
+| _500_IntervalServerException      | 500        | Sunucu tarafında beklenmedik, yakalanamayan bir     |
+|                                   | INTERNAL   | çökme veya sistem arızası meydana geldiğinde.       |
+|                                   | SERVER ERR |                                                     |
++-----------------------------------+------------+-----------------------------------------------------+
+
+
+4. NASIL ÇALIŞIR? (@ResponseStatus MEKANİZMASI):
+--------------------------------------------------------------------------------
+Sınıfın üzerine koyduğumuz @ResponseStatus(value = HttpStatus.NOT_FOUND) anotasyonu;
+Spring Web MVC'ye şu emri verir:
+
+  "Bu exception bir Service veya Controller içinde fırlatıldığında (throw edildiğinde),
+   HTTP Response'un durum kodunu otomatik olarak 404 yap ve mesajı gövdeye yerleştir."
+
+Örnek Kod Kullanımları:
+-----------------------
+// 1. Kategori bulunamadığında 404:
+BlogCategoryEntity category = iBlogCategoryRepository.findById(id)
+    .orElseThrow(() -> new _404_NotFoundException(id + " id'li kategori bulunamadı!"));
+
+// 2. Kategori seçilmediğinde BerkeOzderException:
+if (blogCategoryId == null) {
+    throw new BerkeOzderException("=== Kategori seçiniz ===");
+}
+
+
+5. NEDEN RuntimeException'DAN TÜRETİLİR? (Unchecked Exception):
+--------------------------------------------------------------------------------
+Tüm bu sınıflar "extends RuntimeException" yapar:
+1) Java'da Checked Exception'lar (örn: IOException) her metotta "throws" 
+   yazılmasını zorunlu kılar ve kod kirliliği yaratır.
+2) RuntimeException (Unchecked) olduğunda, kodun içinde rahatça "throw new ..." 
+   diyebiliriz; Spring Transaction (@Transactional) hata fırlatıldığında 
+   otomatik ROLLBACK yapar (veritabanı işlemlerini geri alır).
+================================================================================
