@@ -33,22 +33,19 @@ describe('ProfessionalMilestoneBadge', () => {
     expect(badgeRoot.contains(region)).toBe(false);
   });
 
-  it.each(['Enter', ' '])('opens and closes (toggles) with %s key and restores focus on Escape', (key) => {
+  it('opens and closes with the native button click path and restores focus on Escape', () => {
     render(<ProfessionalMilestoneBadge count={27} professionalName="Ayşe Usta" />);
     const trigger = screen.getByRole('button', { name: /Ayşe Usta: 20 iş tamamladı/ });
 
     trigger.focus();
-    // Open with key
-    fireEvent.keyDown(trigger, { key });
+    fireEvent.click(trigger);
     expect(screen.getByRole('region', { name: '20 iş tamamladı' })).toHaveTextContent('27 iş tamamladı');
     expect(screen.getByRole('region')).toHaveTextContent('kalite puanı veya sıralama değildir');
 
-    // Toggle closed with key
-    fireEvent.keyDown(trigger, { key });
+    fireEvent.click(trigger);
     expect(screen.queryByRole('region')).not.toBeInTheDocument();
 
-    // Reopen and close with Escape
-    fireEvent.keyDown(trigger, { key });
+    fireEvent.click(trigger);
     expect(screen.getByRole('region', { name: '20 iş tamamladı' })).toBeInTheDocument();
 
     fireEvent.keyDown(trigger, { key: 'Escape' });
@@ -131,7 +128,7 @@ describe('ProfessionalMilestoneBadge', () => {
     expect(trigger).toHaveFocus();
   });
 
-  it('does not bubble click or keyboard events to parent card container', () => {
+  it('does not bubble pointer or keyboard events to parent card container', () => {
     const onParentClick = vi.fn();
     const onParentKeyDown = vi.fn();
     const onParentFocus = vi.fn();
@@ -151,8 +148,13 @@ describe('ProfessionalMilestoneBadge', () => {
     fireEvent.click(region);
     expect(onParentClick).not.toHaveBeenCalled();
 
-    // KeyDown on trigger
+    // Enter and Space retain native button activation without reaching the parent card.
     fireEvent.keyDown(trigger, { key: 'Enter' });
+    fireEvent.keyDown(trigger, { key: ' ' });
+    expect(onParentKeyDown).not.toHaveBeenCalled();
+
+    // Escape is handled by the badge and must not reach the parent card.
+    fireEvent.keyDown(trigger, { key: 'Escape' });
     expect(onParentKeyDown).not.toHaveBeenCalled();
 
     trigger.focus();

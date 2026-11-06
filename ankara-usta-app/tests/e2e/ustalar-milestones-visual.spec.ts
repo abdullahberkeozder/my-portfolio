@@ -9,6 +9,38 @@ const viewports = [
 
 test.describe.configure({ mode: 'serial' });
 
+test('milestone button toggles exactly once with Enter and Space', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.addInitScript(() => localStorage.setItem('ankara_analytics_consent', 'rejected'));
+  await page.goto('/ustalar?fixture=milestones&view=split&sort=recommended');
+
+  const trigger = page.locator('button[aria-label*="Selin Usta: 50 iş tamamladı"]:visible').first();
+  const panel = page.getByRole('region', { name: '50 iş tamamladı' });
+  await trigger.scrollIntoViewIfNeeded();
+  await trigger.focus();
+  await expect(trigger).toBeFocused();
+
+  await trigger.press('Enter');
+  await expect(panel).toBeVisible();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  await trigger.press('Enter');
+  await expect(panel).toBeHidden();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+
+  await trigger.press('Space');
+  await expect(panel).toBeVisible();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  await trigger.press('Space');
+  await expect(panel).toBeHidden();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+
+  await trigger.press('Enter');
+  await expect(panel).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(panel).toBeHidden();
+  await expect(trigger).toBeFocused();
+});
+
 for (const viewport of viewports) {
   test(`milestone panels stay inside the viewport at ${viewport.width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });

@@ -110,14 +110,8 @@ export default function ProfessionalMilestoneBadge({
   }, [align]);
 
   const toggleOpen = useCallback(() => {
-    setIsOpen((prev) => {
-      if (!prev) {
-        computePosition();
-        return true;
-      }
-      return false;
-    });
-  }, [computePosition]);
+    setIsOpen((prev) => !prev);
+  }, []);
 
   useIsomorphicLayoutEffect(() => {
     if (!isOpen) return;
@@ -245,16 +239,6 @@ export default function ProfessionalMilestoneBadge({
           toggleOpen();
         }}
         onPointerDown={(event) => event.stopPropagation()}
-        onKeyDown={(event) => {
-          event.stopPropagation();
-          if (event.key === 'Escape' && isOpen) {
-            event.preventDefault();
-            close(true);
-          } else if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            toggleOpen();
-          }
-        }}
       >
         <span className={styles.plate} aria-hidden="true">{milestone.threshold}</span>
       </button>
