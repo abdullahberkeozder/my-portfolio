@@ -24,6 +24,49 @@ type PublicProfessionalRow = {
   total_count: number;
 };
 
+type CompletedJobCountRow = {
+  user_id: string;
+  completed_jobs: number | string;
+};
+
+const MILESTONE_FIXTURE_PROFILES: PublicProfessionalRow[] = [
+  {
+    user_id: 'fixture-usta-5',
+    display_name: 'Deniz Usta · Çankaya Tesisat Atölyesi',
+    bio: 'Konut içi sıhhi tesisat ve armatür uygulamaları.',
+    city: 'Ankara',
+    total_count: 4,
+  },
+  {
+    user_id: 'fixture-usta-20',
+    display_name: 'Mert Usta · Batıkent Elektrik Atölyesi',
+    bio: 'Aydınlatma, anahtar ve konut elektrik işleri.',
+    city: 'Ankara',
+    total_count: 4,
+  },
+  {
+    user_id: 'fixture-usta-50',
+    display_name: 'Selin Usta · Siteler Mobilya Atölyesi',
+    bio: 'Mobilya kurulumu, duvar rafı ve sabitleme işleri.',
+    city: 'Ankara',
+    total_count: 4,
+  },
+  {
+    user_id: 'fixture-usta-sub',
+    display_name: 'Eren Usta · Etimesgut Boya Atölyesi',
+    bio: 'İç cephe boya ve yüzey hazırlığı.',
+    city: 'Ankara',
+    total_count: 4,
+  },
+];
+
+const MILESTONE_FIXTURE_COUNTS: Record<string, number> = {
+  'fixture-usta-5': 7,
+  'fixture-usta-20': 27,
+  'fixture-usta-50': 54,
+  'fixture-usta-sub': 3,
+};
+
 export default async function UstalarIndexPage({
   searchParams,
 }: {
@@ -34,6 +77,7 @@ export default async function UstalarIndexPage({
     params.fixture,
     process.env.ORKESTRA_DIRECTORY_VISUAL_FIXTURES === 'true' || process.env.NODE_ENV !== 'production'
   );
+  const isMilestoneFixture = visualFixture === 'milestones';
   const discovery = parseDiscoveryParams(params, {
     serviceIds: services.map((service) => service.id),
     districts: ankaraDistricts,
@@ -49,6 +93,7 @@ export default async function UstalarIndexPage({
   const areaMap: Record<string, string[]> = {};
   const neighborhoodMap: Record<string, string[]> = {};
   const metricsMap: Record<string, { totalCompletedJobs: number; averageRating: number; totalReviews: number }> = {};
+  const completedJobCountMap: Record<string, number> = {};
 
   const supabase = visualFixture ? null : await createSupabaseServerClient();
   // Visual fixtures intentionally bypass the network contract. This keeps
@@ -113,8 +158,16 @@ export default async function UstalarIndexPage({
     );
   }
 
-  const profiles = visualFixture ? [] : (directoryRows ?? []) as PublicProfessionalRow[];
-  const count = visualFixture ? 0 : Number(profiles[0]?.total_count ?? profiles.length);
+  const profiles = isMilestoneFixture
+    ? MILESTONE_FIXTURE_PROFILES
+    : visualFixture
+      ? []
+      : (directoryRows ?? []) as PublicProfessionalRow[];
+  const count = isMilestoneFixture
+    ? MILESTONE_FIXTURE_PROFILES.length
+    : visualFixture
+      ? 0
+      : Number(profiles[0]?.total_count ?? profiles.length);
   const hasDbError = false;
   const hasFilters = Boolean(service || district);
   let hasGlobalSupply: boolean | undefined = hasFilters ? undefined : count > 0;
@@ -140,16 +193,72 @@ export default async function UstalarIndexPage({
     }
   }
 
-  const availability = visualFixture ?? resolveDirectoryAvailability({
+  const availability = isMilestoneFixture ? undefined : visualFixture ?? resolveDirectoryAvailability({
     filteredCount: count,
     hasGlobalSupply,
     hasFilters,
     pilotScope: !district || getPilotCoverage(district, service).tier !== 'unsupported',
   });
 
+  if (isMilestoneFixture) {
+    const fixtureDetails = [
+      {
+        id: 'fixture-usta-5',
+        service: 'Tesisat',
+        district: 'Çankaya',
+        neighborhoods: ['Ayrancı', 'Bahçelievler'],
+        rating: 4.7,
+        reviews: 6,
+      },
+      {
+        id: 'fixture-usta-20',
+        service: 'Elektrik',
+        district: 'Yenimahalle',
+        neighborhoods: ['Batıkent', 'Demetevler'],
+        rating: 4.8,
+        reviews: 18,
+      },
+      {
+        id: 'fixture-usta-50',
+        service: 'Mobilya Montajı',
+        district: 'Altındağ',
+        neighborhoods: ['Siteler', 'Önder'],
+        rating: 4.9,
+        reviews: 42,
+      },
+      {
+        id: 'fixture-usta-sub',
+        service: 'Boya & Badana',
+        district: 'Etimesgut',
+        neighborhoods: ['Eryaman', 'Elvankent'],
+        rating: 4.6,
+        reviews: 3,
+      },
+    ] as const;
+
+    for (const fixture of fixtureDetails) {
+      const completedJobs = MILESTONE_FIXTURE_COUNTS[fixture.id];
+      serviceMap[fixture.id] = [fixture.service];
+      areaMap[fixture.id] = [fixture.district];
+      neighborhoodMap[fixture.id] = [...fixture.neighborhoods];
+      completedJobCountMap[fixture.id] = completedJobs;
+      metricsMap[fixture.id] = {
+        totalCompletedJobs: completedJobs,
+        averageRating: fixture.rating,
+        totalReviews: fixture.reviews,
+      };
+    }
+  }
+
   const tradespersonIds = profiles.map((p) => p.user_id);
   if (tradespersonIds.length > 0 && supabase) {
-      const [{ data: serviceRows }, { data: areaRows }, { data: metricRows }, { data: reviewRows }] = await Promise.all([
+      const [
+        { data: serviceRows },
+        { data: areaRows },
+        { data: metricRows },
+        { data: reviewRows },
+        completedJobResult,
+      ] = await Promise.all([
         supabase
           .from('tradesperson_services')
           .select('tradesperson_id, service_id')
@@ -167,7 +276,23 @@ export default async function UstalarIndexPage({
           .select('tradesperson_id')
           .eq('moderation_status', 'approved')
           .in('tradesperson_id', tradespersonIds),
+        supabase.rpc('list_public_professional_completed_job_counts', {
+          p_professional_ids: tradespersonIds,
+        }),
       ]);
+
+      if (!completedJobResult.error) {
+        for (const row of (completedJobResult.data ?? []) as CompletedJobCountRow[]) {
+          const completedJobs = Number(row.completed_jobs);
+          if (
+            tradespersonIds.includes(row.user_id) &&
+            Number.isFinite(completedJobs) &&
+            completedJobs >= 0
+          ) {
+            completedJobCountMap[row.user_id] = completedJobs;
+          }
+        }
+      }
 
       for (const row of serviceRows ?? []) {
         const name = services.find((s) => s.id === row.service_id)?.name;
@@ -270,6 +395,7 @@ export default async function UstalarIndexPage({
           areaMap={areaMap}
           neighborhoodMap={neighborhoodMap}
           metricsMap={metricsMap}
+          completedJobCountMap={completedJobCountMap}
           selectedService={service}
           selectedDistrict={district}
           servicesList={services}

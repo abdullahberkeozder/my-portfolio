@@ -64,19 +64,13 @@ export function generateUstaMapMarkers(
 
     // 3. Resolve Verified Metrics (TRUST-01: Authentic Data from Database)
     const metrics = metricsMap?.[profile.user_id];
-    let rating: number;
+    let rating = 0;
     let reviewCount = 0;
-    let badge = 'Doğrulanmış Usta';
+    const badge = 'Doğrulanmış Usta';
 
     if (metrics && metrics.totalCompletedJobs > 0) {
       reviewCount = metrics.totalReviews ?? metrics.totalCompletedJobs;
       rating = metrics.averageRating > 0 ? metrics.averageRating : 0;
-      badge = metrics.totalCompletedJobs >= 20 ? 'Onaylı Usta' : 'Doğrulanmış Usta';
-    } else {
-      // In pilot / onboarding mode when a verified usta has zero completed jobs yet
-      reviewCount = 0;
-      rating = 0;
-      badge = 'Yeni Katıldı';
     }
 
     return {

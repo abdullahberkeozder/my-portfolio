@@ -108,6 +108,18 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
     expect(screen.getAllByRole('link', { name: 'Hasan Usta — Profili aç' })).toHaveLength(2);
   });
 
+  it('shows the highest earned milestone in desktop and mobile cards only', () => {
+    const { rerender } = render(
+      <UstalarSplitView {...defaultProps} completedJobCountMap={{ u1: 27, u2: 4 }} />
+    );
+
+    expect(screen.getAllByRole('button', { name: /Hasan Usta: 20 iş tamamladı/ })).toHaveLength(2);
+    expect(screen.queryByRole('button', { name: /Mehmet Usta: .*iş tamamladı/ })).not.toBeInTheDocument();
+
+    rerender(<UstalarSplitView {...defaultProps} />);
+    expect(screen.queryByRole('button', { name: /iş tamamladı/ })).not.toBeInTheDocument();
+  });
+
   it('filters cards to visible bounding-box when onVisibleTradespeopleChange is invoked', () => {
     render(<UstalarSplitView {...defaultProps} />);
 
