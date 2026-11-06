@@ -1,0 +1,80 @@
+# ==============================================================================
+# PROJE ADI       : Spring Boot 2026 Enterprise Blog Platform
+# MODÜL ADI       : OAuth2 & OpenID Connect ile Sosyal Giriş (Google & GitHub)
+# ADIM NUMARASI   : ADIM 19
+# YAZAR           : Berke Özder
+# TARİH           : 2026-11-06
+# ==============================================================================
+
+1. MİMARİ VE GENEL BAKIŞ
+------------------------------------------------------------------------------
+Enterprise seviyesindeki modern web platformlarında kullanıcıların hızlı ve güvenli
+şekilde üye olabilmesi veya giriş yapabilmesi için OAuth2 ve OpenID Connect (OIDC)
+protokolleri kritik öneme sahiptir. Adım 19 kapsamında sistemimize Google ve GitHub
+ile sosyal giriş altyapısı entegre edilmiştir.
+
+Sosyal Giriş Akışı:
+1. İstemci (Web / Mobil), /oauth2/authorization/google veya /oauth2/authorization/github
+   bağlantısını tetikleyerek ilgili sağlayıcının giriş/yetkilendirme ekranına yönlendirilir.
+2. Sağlayıcıda kimlik doğrulandıktan sonra Spring Security geri çağırma (callback) adresi
+   olan /login/oauth2/code/* üzerinden yetki kodunu (authorization code) alır ve erişim
+   belirtecine (access token) takas eder.
+3. CustomOAuth2UserService, harici profilden kullanıcının bilgilerini (email, isim, avatar)
+   okur; sistemde kullanıcı varsa bağlar/günceller, yoksa otomatik güvenli yeni üye oluşturur.
+4. OAuth2AuthenticationSuccessHandler, mevcut JWT Token altyapımızı kullanarak kullanıcıya
+   özel JWT Access Token ve Refresh Token üretir ve ön yüz yönlendirme adresine
+   (app.oauth2.redirect-uri) query parametreleri olarak güvenle aktarır.
+
+2. TEMEL BİLEŞENLER
+------------------------------------------------------------------------------
+A) AuthProvider (com.berkeozder.security.oauth2.AuthProvider)
+   - Kimlik doğrulama kaynağını belirtir: LOCAL, GOOGLE, GITHUB.
+
+B) OAuth2UserInfo & Fabrikası (com.berkeozder.security.oauth2.user.*)
+   - GoogleOAuth2UserInfo: sub, name, email, picture özniteliklerini eşitler.
+   - GithubOAuth2UserInfo: id, login/name, email, avatar_url özniteliklerini eşitler.
+   - OAuth2UserInfoFactory: registrationId'ye göre doğru çözümleyiciyi üretir.
+
+C) CustomUserDetails (com.berkeozder.security.userdetails.CustomUserDetails)
+   - Hem UserDetails hem de OAuth2User arabirimlerini uygular. Bu sayede uygulamanın
+     SecurityContext'inde kullanıcı ister parola ile ister OAuth2 ile giriş yapmış olsun
+     tek tip (polymorphic) CustomUserDetails nesnesi yer alır.
+
+D) CustomOAuth2UserService (com.berkeozder.security.oauth2.CustomOAuth2UserService)
+   - DefaultOAuth2UserService sınıfını genişletir.
+   - processOAuth2User: E-posta üzerinden veritabanında arama yapar; varsa günceller,
+     yoksa benzersiz kullanıcı adı ve rastgele güçlü şifrelenmiş parola ile ROLE_USER rolünde
+     yeni UserEntity kaydı açar.
+
+E) OAuth2AuthenticationSuccessHandler & FailureHandler
+   - Başarılı girişte JWT token üretimi ve redirectUri'ye aktarımı.
+   - Başarısız girişte hata açıklamasıyla failureUri'ye güvenli yönlendirme.
+
+F) RESTful API (com.berkeozder.controller.api.impl.OAuth2ApiImpl)
+   - GET /api/v1/auth/oauth2/providers : Frontend butonları için sağlayıcı listesi ve URL'ler.
+   - GET /api/v1/auth/oauth2/success   : Callback onaylama ve token döndürme uç noktası.
+   - GET /api/v1/auth/oauth2/failure   : Hata geri çağırma uç noktası.
+
+3. VERİTABANI & FLYWAY MİGRASYONU
+------------------------------------------------------------------------------
+- V5__add_oauth2_fields_to_users.sql:
+  - users tablosuna 'provider', 'provider_id' ve 'image_url' sütunları eklenmiştir.
+  - Sık sorgulanan provider ve provider_id sütunlarına B-Tree indeksleri tanımlanmıştır.
+
+4. GÜVENLİK (SECURITY CONFIGURATION)
+------------------------------------------------------------------------------
+- SecurityConfig üzerinde .oauth2Login() bloğu eklenmiştir:
+  - authorizationEndpoint: /oauth2/authorization
+  - redirectionEndpoint: /login/oauth2/code/*
+  - userInfoEndpoint: CustomOAuth2UserService
+  - successHandler & failureHandler entegrasyonu
+- CSRF ve Whitelist istisnaları /oauth2/** ve /login/oauth2/** için tanımlanmıştır.
+
+5. TEST VE DOĞRULAMA
+------------------------------------------------------------------------------
+- CustomOAuth2UserServiceTest: Google ve GitHub profil öznitelik çıkarma, yeni kullanıcı kaydı,
+  mevcut kullanıcı bağlama ve eksik email istisnası testleri (6 unit test).
+- OAuth2IntegrationTest: MockMvc ile sağlayıcı listesi, başarı ve hata callback endpoint'leri,
+  SuccessHandler JWT üretimi ve 302 OAuth2 yönlendirme testleri (7 integration test).
+- Toplam 13 yeni test başarıyla geçirilmiştir.
+

@@ -1,0 +1,72 @@
+================================================================================
+WHAT DOES "ERROR & API RESULT" MEAN IN SPRING BOOT?
+SPRING BOOT'TA "ERROR (HATA YÖNETİMİ) & APIRESULT" NE ANLAMA GELİR?
+================================================================================
+
+1. GENEL ANLAMI VE AMACI:
+--------------------------------------------------------------------------------
+Spring Boot varsayılan olarak bir hata oluştuğunda (örneğin 404 Not Found veya 500
+Internal Server Error) kullanıcıya ya çirkin bir "Whitelabel Error Page" (HTML sayfası) 
+ya da frontend'in işlemekte zorlandığı ham bir JSON objesi döner.
+
+"error" paketi, uygulamanın dış dünyaya (React, Vue, mobil uygulamalar, Postman) 
+döndüğü tüm yanıtları ve sistem hatalarını TEK BİR STANDART ŞABLONA oturtmak için 
+kullanılır. Böylece frontend geliştiricisi hangi endpoint'e giderse gitsin, 
+başarılı da olsa hata da alsa her zaman aynı şablonu (ApiResult) karşılar.
+
+
+2. "error" PAKETİNDEKİ KRİTİK SINIFLAR VE GÖREVLERİ:
+--------------------------------------------------------------------------------
++-------------------------------+----------------------------------------------------+
+| Sınıf Adı                     | Görevi ve Sorumluluğu                              |
++-------------------------------+----------------------------------------------------+
+| 1. ApiResult<T>               | Tüm API yanıtlarının (başarı veya hata) ortak      |
+|                               | taşıyıcı modelidir (Generic DTO / Wrapper).        |
+|                               | status, message, error, path, errors, data,        |
+|                               | createdDate alanlarını barındırır.                 |
++-------------------------------+----------------------------------------------------+
+| 2. CustomErrorHandleWebRequest| Spring Boot'un ErrorController arayüzünü uygular.  |
+|                               | /error endpoint'ini dinleyerek Spring'in yakaladığı|
+|                               | tüm genel web/framework seviyesindeki hataları     |
+|                               | ApiResult formatına dönüştürüp istemciye sunar.    |
++-------------------------------+----------------------------------------------------+
+
+
+3. ApiResult<T> YAPISININ ALANLARI VE ANLAMLARI:
+--------------------------------------------------------------------------------
+- status: Hata veya başarının durum kategorisi (SUCCESS, ERROR, NOT_FOUND, vb.)
+- message: Kullanıcıya gösterilmeye uygun açıklama mesajı.
+- error: Kısa hata tanımı veya HTTP durum başlığı (örn: "Not Found", "Bad Request").
+- path: Hatanın gerçekleştiği endpoint URI'si (örn: "/api/v1/blogs/99").
+- errors: Validasyon (form doğrulama) hatalarının alan-mesaj haritası (Map<String, String>).
+- data: Başarılı durumlarda dönen asıl veri payload'ı (Generic T).
+- createdDate: Hatanın veya işlemin gerçekleştiği zaman damgası.
+- @JsonInclude(NON_NULL): Değeri null olan alanları JSON çıktısına dahil etmez, 
+  böylece gereksiz ağ trafiği ve karmaşa önlenir.
+
+
+4. "error" PAKETİ İLE "exception" PAKETİ ARASINDAKİ FARK:
+--------------------------------------------------------------------------------
+- "exception" paketi:
+  İş mantığında (Service katmanında) fırlatılan özel iş kuralı hatalarını 
+  (_404_NotFoundException, _400_BadRequestException vb.) ve bunların 
+  @RestControllerAdvice ile yakalanmasını yönetir.
+
+- "error" paketi:
+  Spring Boot'un altyapı seviyesinde `/error` adresine yönlendirdiği 
+  tüm genel web hatalarını (olmayan URL çağrısı, filtre hataları, 
+  framework istisnaları) yakalar ve herkesin ortak kullandığı `ApiResult` 
+  şablonunu sunar.
+
+
+5. ÖRNEK STANDART JSON ÇIKTISI:
+--------------------------------------------------------------------------------
+Hatalı bir istek sonrası dönen standart JSON örneği:
+{
+  "status": "NOT_FOUND",
+  "message": "Aradığınız kayıt bulunamadı",
+  "error": "Not Found",
+  "path": "/api/v1/blogs/99",
+  "createdDate": "2026-10-27T23:05:00.000+00:00"
+}
+================================================================================

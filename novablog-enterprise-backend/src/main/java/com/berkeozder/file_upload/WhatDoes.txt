@@ -1,0 +1,93 @@
+================================================================================
+WHAT DOES "FILE UPLOAD" MEAN IN SOFTWARE & SPRING BOOT?
+YAZILIMDA VE SPRING BOOT'TA "FILE UPLOAD (DOSYA YÜKLEME)" NE ANLAMA GELİR?
+================================================================================
+
+1. GENEL ANLAMI (File Upload Mimarisi Nedir?):
+--------------------------------------------------------------------------------
+Web uygulamalarında kullanıcıların profil fotoğrafı, blog görseli, PDF veya belge 
+yükleyebilmesini sağlayan mekanizmadır. 
+
+Klasik Acemi Hatası (Resmi Veritabanında BLOB Olarak Saklamak):
+   - Resimleri doğrudan veritabanında byte array (BLOB) olarak saklamak; 
+     veritabanını şişirir, yedek almayı imkansızlaştırır ve performansı çökertir.
+
+Profesyonel / Modern Yaklaşım (Bizim Kullandığımız Model):
+   - Fiziksel dosya sunucunun DİSKİNE (veya AWS S3 gibi buluta) kaydedilir.
+   - Veritabanına ise SADECE dosyanın göreceli internet adresi (URL) kaydedilir:
+     Örn DB'ye yazılan string: "/upload/blog/2026/10/27/a3b1-4f9e.jpg"
+
+
+2. DOSYA DİZİNLEME VE İSİMLENDİRME STRATEJİSİ:
+--------------------------------------------------------------------------------
+Sistemimiz yüklenen dosyaları şu hiyerarşide depolar:
+  ./upload / {module} / {YIL} / {AY} / {GÜN} / {UUID}.{uzantı}
+
+Örnek:
+  ./upload/blog/2026/10/27/d89df292-cdf1-454e-939d-cc1b5fa7f1a2.png
+
+Neden Bu Strateji Kullanılır?
+1) UUID (Benzersiz İsim): İki farklı kullanıcı aynı anda "profil.jpg" yüklese 
+   bile birbirlerinin dosyasını ezmez (overwrite etmez).
+2) Tarih Klasörlemesi (Yıl/Ay/Gün): İşletim sistemlerinin dosya sistemleri (NTFS, ext4), 
+   tek bir klasör altında 10.000'den fazla dosya olduğunda çok yavaşlar. Klasörlemek 
+   dosya erişim performansını zirvede tutar.
+
+
+3. GÜVENLİK KONTROLLERİ VE BOYUT SINIRLARI (Adım 7 Geliştirmeleri):
+--------------------------------------------------------------------------------
+A) MAGIC BYTES (DOSYA İMZA DOĞRULAMASI):
+Saldırganlar zararlı PHP, shell script veya çalıştırılabilir (.exe) dosyaların adını
+"trojan.png" yaparak ve sahte "image/png" Content-Type başlığı göndererek MIME kontrolünü
+atlatmaya çalışabilir.
+FileStorageServiceImpl sınıfında dosyanın ilk 12 baytı (Magic Bytes) okunur ve doğrulanır:
+  * JPEG: FF D8 FF
+  * PNG : 89 50 4E 47 0D 0A 1A 0A
+  * GIF : GIF87a / GIF89a
+  * WEBP: RIFF .... WEBP
+Bayt imzası tutmayan sahte uzantılı dosyalar anında `_400_BadRequestException` ile reddedilir.
+
+B) PATH TRAVERSAL KORUMASI:
+`module` veya dosya yolu parametrelerinde "../" veya "..\windows\system32" gibi işletim sistemi
+dizinlerine sızma girişimleri regex ve `Path.normalize()` kontrolleri ile taranır. Kök upload
+dizininden dışarı çıkan her istek engellenir.
+
+C) BOYUT VE MIME KISITLAMALARI:
+- Servis Seviyesi Maksimum Dosya Boyutu: 5 MB (MAX_FILE_SIZE_BYTES).
+- ALLOWED_MIME = [ "image/jpeg", "image/png", "image/webp", "image/gif" ]
+- Global İstek Limiti (application.properties): 10MB dosya, 12MB toplam istek.
+
+
+4. BİZİM PROJEMİZDEKİ SINIFLARIN GÖREV DAĞILIMI TABLOSU:
+--------------------------------------------------------------------------------
++--------------------------+----------------------------------------------------+
+| Sınıf Adı                | Görevi ve Sorumluluğu                              |
++--------------------------+----------------------------------------------------+
+| 1. FileProps.java        | application.properties dosyasındaki "file.upload-  |
+|                          | dir" ve "file.base-url" ayarlarını Java nesnesine  |
+|                          | bağlar (@ConfigurationProperties).                 |
++--------------------------+----------------------------------------------------+
+| 2. FileStorageService    | Dosya yükleme (store), silme (delete) ve okuma     |
+|    (Interface)           | (loadAsResource) işlemlerinin soyut sözleşmesidir. |
++--------------------------+----------------------------------------------------+
+| 3. FileStorageServiceImpl| Java NIO (Files.copy, Path) kullanarak fiziksel    |
+|                          | disk işlemlerini yapan, klasör açan ana sınıftır.  |
++--------------------------+----------------------------------------------------+
+| 4. ImageService.java     | İş katmanına (Service) yönelik cephe (Facade).     |
+|                          | Örn: saveBlogImage(), saveRegisterImage() gibi     |
+|                          | modüle özel pratik metotlar sunar.                 |
++--------------------------+----------------------------------------------------+
+
+
+5. WEB MİMARİSİ İLE ENTEGRASYONU (WebConfig Köprüsü):
+--------------------------------------------------------------------------------
+1) Kullanıcı form veya Postman üzerinden resmi gönderir (MultipartFile).
+2) Service -> ImageService.saveBlogImage(file) çağrılır.
+3) Dosya diske kaydedilir ve "/upload/blog/..." yolu elde edilir.
+4) Bu yol veritabanındaki BlogEntity.image kolonuna String olarak kaydedilir.
+5) WebConfig.java sınıfındaki addResourceHandlers() sayesinde:
+   Tarayıcı "http://localhost:5555/upload/blog/..." adresine istek attığında 
+   Spring resmi diskten okuyup kullanıcıya gösterir.
+6) Kayıt güncellenirken eski resim `imageService.deleteByUrl(oldUrl)` ile 
+   fiziksel diskten otomatik silinir.
+================================================================================
