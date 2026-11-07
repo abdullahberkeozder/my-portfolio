@@ -1,0 +1,118 @@
+.root {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+}
+
+.trigger {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--action-primary, #0e6f47);
+  cursor: pointer;
+}
+
+.trigger:focus-visible,
+.closeButton:focus-visible {
+  outline: 2px solid var(--action-primary, #0e6f47);
+  outline-offset: 2px;
+}
+
+.plate {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 18px;
+  box-sizing: border-box;
+  border: 1px solid var(--border-subtle, #d7dfda);
+  border-radius: 2px;
+  background: var(--surface-subtle, #f3f6f4);
+  color: var(--action-primary, #0e6f47);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.trigger[aria-expanded='true'] .plate {
+  border-color: var(--action-primary, #0e6f47);
+  background: #eaf2ed;
+}
+
+.panel {
+  position: fixed;
+  z-index: 1200;
+  width: min(272px, calc(100vw - 32px));
+  box-sizing: border-box;
+  margin: 0;
+  padding: 12px 14px 14px;
+  border: 1px solid var(--border-subtle, #d7dfda);
+  border-radius: 8px;
+  background: var(--surface-card, #fbfcfb);
+  box-shadow: 0 12px 28px rgb(20 42 31 / 12%);
+  color: var(--text-primary, #17241d);
+}
+
+.alignStart {
+  /* JS clamps within viewport */
+}
+
+.alignEnd {
+  /* JS clamps within viewport */
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+}
+
+.panelHeader strong {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.panel p {
+  max-width: 34ch;
+  margin: 4px 0 0;
+  color: var(--text-secondary, #526158);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.closeButton {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin: -4px -8px -4px 0;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary, #526158);
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .trigger:hover .plate {
+    border-color: var(--action-primary, #0e6f47);
+    background: #edf3ef;
+  }
+
+  .closeButton:hover {
+    background: var(--surface-subtle, #f3f6f4);
+    color: var(--text-primary, #17241d);
+  }
+}

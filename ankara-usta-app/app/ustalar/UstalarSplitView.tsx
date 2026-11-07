@@ -12,6 +12,7 @@ import { generateUstaMapMarkers, type TradespersonMetrics } from './ustaCoordina
 import styles from './ustalarSplitView.module.css';
 import dirStyles from './directory.module.css';
 import { IconClose, IconLocation, IconShield } from '../components/WizardSummaryIcons';
+import ProfessionalMilestoneBadge from '../components/ProfessionalMilestoneBadge';
 
 export interface UstalarSplitViewProps {
   profiles: {
@@ -25,6 +26,7 @@ export interface UstalarSplitViewProps {
   areaMap: Record<string, string[]>;
   neighborhoodMap?: Record<string, string[]>;
   metricsMap?: Record<string, TradespersonMetrics>;
+  completedJobCountMap?: Record<string, number>;
   selectedService?: string;
   selectedDistrict?: string;
   servicesList: { id: string; name: string }[];
@@ -215,6 +217,7 @@ export default function UstalarSplitView({
   areaMap,
   neighborhoodMap,
   metricsMap,
+  completedJobCountMap,
   selectedService,
   selectedDistrict,
   servicesList,
@@ -820,6 +823,7 @@ export default function UstalarSplitView({
     areaCount,
     averageRating,
     reviewCount,
+    completedJobCount,
     profileHref,
     professionalId,
     surface,
@@ -834,6 +838,7 @@ export default function UstalarSplitView({
     areaCount: number;
     averageRating: number;
     reviewCount: number;
+    completedJobCount: number | null;
     profileHref: string;
     professionalId: string;
     surface: 'desktop' | 'mobile';
@@ -853,6 +858,11 @@ export default function UstalarSplitView({
             {verificationConfirmed && <span className={resultStyles.verified} title="Doğrulanmış profil" aria-label="Doğrulanmış profil">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12 3 3 6-6" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </span>}
+            <ProfessionalMilestoneBadge
+              count={completedJobCount}
+              professionalName={craftsman}
+              align="start"
+            />
           </div>
           <p className={resultStyles.service}>{primaryService}</p>
           {workshop && workshop !== primaryService && <p className={resultStyles.workshop}>{workshop}</p>}
@@ -1049,6 +1059,7 @@ export default function UstalarSplitView({
           areaCount: areaNames.length,
           averageRating,
           reviewCount,
+          completedJobCount: completedJobCountMap?.[profile.user_id] ?? null,
           profileHref,
           professionalId: profile.user_id,
           surface: 'desktop',
@@ -1701,7 +1712,11 @@ export default function UstalarSplitView({
                                 if ((e.target as HTMLElement).closest('a, button')) return;
                                 handleSelectMobileCard(profile.user_id);
                               }}
-                              onFocus={() => handleSelectMobileCard(profile.user_id)}
+                              onFocus={(event) => {
+                                if (event.target === event.currentTarget) {
+                                  handleSelectMobileCard(profile.user_id);
+                                }
+                              }}
                               onKeyDown={(e) => handleMobileCardKeyDown(e, profile.user_id, idx)}
                             >
                               {renderResultContent({
@@ -1713,6 +1728,7 @@ export default function UstalarSplitView({
                                 areaCount: areaNames.length,
                                 averageRating,
                                 reviewCount: userMetrics?.totalReviews ?? 0,
+                                completedJobCount: completedJobCountMap?.[profile.user_id] ?? null,
                                 profileHref,
                                 professionalId: profile.user_id,
                                 surface: 'mobile',

@@ -1,14 +1,20 @@
 export type DirectoryAvailability = 'limited' | 'waitlist' | 'unavailable';
+export type DirectoryVisualFixture = DirectoryAvailability | 'milestones';
 
-const FIXTURES: readonly DirectoryAvailability[] = ['limited', 'waitlist', 'unavailable'];
+const FIXTURES: readonly DirectoryVisualFixture[] = [
+  'limited',
+  'waitlist',
+  'unavailable',
+  'milestones',
+];
 
 export function parseDirectoryVisualFixture(
   value: string | null | undefined,
   enabled: boolean
-): DirectoryAvailability | undefined {
+): DirectoryVisualFixture | undefined {
   if (!enabled || !value) return undefined;
-  return FIXTURES.includes(value as DirectoryAvailability)
-    ? value as DirectoryAvailability
+  return FIXTURES.includes(value as DirectoryVisualFixture)
+    ? value as DirectoryVisualFixture
     : undefined;
 }
 

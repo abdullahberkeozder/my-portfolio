@@ -106,19 +106,19 @@ describe('ustaCoordinates - Live Supabase Showcase Synchronization', () => {
       mockMetricsMap
     );
 
-    // Debut usta with 0 jobs
+    // Completed-work volume never changes public verification language.
     expect(markers[0].reviewCount).toBe(0);
-    expect(markers[0].badge).toBe('Yeni Katıldı');
+    expect(markers[0].badge).toBe('Doğrulanmış Usta');
 
     // Proven usta with 6 jobs
     expect(markers[1].reviewCount).toBe(6);
     expect(markers[1].rating).toBe(4.8);
     expect(markers[1].badge).toBe('Doğrulanmış Usta');
 
-    // Veteran usta with 28 jobs
+    // Veteran volume is not presented as a stronger verification state.
     expect(markers[2].reviewCount).toBe(28);
     expect(markers[2].rating).toBe(4.9);
-    expect(markers[2].badge).toBe('Onaylı Usta');
+    expect(markers[2].badge).toBe('Doğrulanmış Usta');
   });
 
   it('preserves backwards compatibility when optional maps are omitted', () => {
@@ -132,7 +132,7 @@ describe('ustaCoordinates - Live Supabase Showcase Synchronization', () => {
     markers.forEach(m => {
       expect(m.id).toBeDefined();
       expect(m.latLng.length).toBe(2);
-      expect(m.badge).toBe('Yeni Katıldı');
+      expect(m.badge).toBe('Doğrulanmış Usta');
       expect(m.reviewCount).toBe(0);
       expect(m.priceEstimate).toBe('Teklif alınır');
     });
