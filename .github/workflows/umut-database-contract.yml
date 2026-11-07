@@ -25,11 +25,11 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-          cache-dependency-path: the-welding-expert-app/package-lock.json
+          cache-dependency-path: the-welding-expert-app/frontend/package-lock.json
       - run: npm ci
-        working-directory: the-welding-expert-app
+        working-directory: the-welding-expert-app/frontend
       - run: npx playwright install --with-deps chromium
-        working-directory: the-welding-expert-app
+        working-directory: the-welding-expert-app/frontend
       - run: mvn -B -f the-welding-expert-app/backend/pom.xml verify
         env:
           CI_BROWSER: 'true'

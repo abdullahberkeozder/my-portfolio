@@ -11,7 +11,7 @@ This repository brings together marketplace and appointment products, a small C#
 | [Orkestra](./ankara-usta-app/README.md) | Service discovery, request-to-quote journeys, database-enforced transitions, and a transactional email worker | TypeScript, Next.js, React, PostgreSQL, Supabase, C#/ASP.NET Core |
 | [Resilience Kit](./resilience-kit/README.md) | Retry policies, backoff, circuit breaking, and the trade-offs of composing them | C#, .NET 10, xUnit |
 | [DevTool CLI](./devtool-cli/README.md) | Environment validation, SDK selection diagnostics, and JSON reports for CI | C#, .NET 10, System.Text.Json, xUnit |
-| [Umut Usta](./the-welding-expert-app/README.md) | Customer booking, private tracking, team scheduling, and operational analytics | JavaScript, React, TanStack Query, Supabase, Styled Components |
+| [Umut Usta](./the-welding-expert-app/README.md) | Appointment scheduling and service operations: [Frontend](./the-welding-expert-app/frontend/README.md) (React, TanStack Query, Vitest, Playwright) & [Backend](./the-welding-expert-app/backend/README.md) (Spring Boot 3.2, Java 17, PostgreSQL, slot locking) | React, JavaScript, Spring Boot, Java 17, PostgreSQL, Supabase, Playwright, Docker |
 | [The Wild Oasis](./the-wild-oasis/README.md) | Hotel bookings, cabins, guests, and administrative screens | JavaScript, React, TanStack Query, Supabase, React Hook Form |
 | [NovaBlog Full-Stack](./novablog/README.md) | Scalable enterprise content platform: [Backend](./novablog/backend/README.md) (Spring Boot 4, Spring AI Vector Search, Spring Batch ETL, PostgreSQL, Redis, MinIO S3, 184 tests) & [Next.js Showcase](./novablog/frontend/README.md) (React 19, Semantic Studio, AI Lab, Batch Console) | Java 22, Spring Boot 4, Spring AI, Next.js 16, React 19, TypeScript, PostgreSQL, Redis, MinIO S3, Docker |
 
@@ -97,7 +97,7 @@ These are independent projects rather than a single application. Dependencies, e
 | Orkestra | Node.js 22.13+; see its README for environment setup, then run `npm ci` and `npm run dev` in `ankara-usta-app`. The worker requires .NET 10. |
 | Resilience Kit | Install the .NET 10 SDK, then run `dotnet test resilience-kit/ResilienceKit.slnx` from the repository root. |
 | DevTool CLI | Install the .NET 10 SDK, then run `dotnet test devtool-cli/DevTool.slnx`. You can pack it via `dotnet pack devtool-cli/src/DevTool/DevTool.csproj --configuration Release`. |
-| Umut Usta | Configure the project environment, then run `npm ci` and `npm run dev` in `the-welding-expert-app`. |
+| Umut Usta | Node.js 20+ & Java 17+; run `docker compose up -d` in `the-welding-expert-app`, then start `backend` (`mvn spring-boot:run` in `the-welding-expert-app/backend`) and `frontend` (`npm run dev` in `the-welding-expert-app/frontend`). |
 | The Wild Oasis | Follow its README for database and environment setup, then run `npm ci` and `npm run dev` in `the-wild-oasis`. |
 | NovaBlog Full-Stack | Docker, Java 22+ & Node.js 20+; run `docker compose up -d` in `novablog` for complete infrastructure (PostgreSQL, Redis, MinIO S3, Mailpit, Prometheus), then start `backend` (`.\mvnw.cmd spring-boot:run` on port 5555; 184 tests pass) and `frontend` (`npm run dev` on port 3000). Full documentation: [NovaBlog README](./novablog/README.md). |
 

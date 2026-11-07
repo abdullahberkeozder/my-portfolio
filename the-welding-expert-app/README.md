@@ -1,254 +1,228 @@
-# Umut Usta - Appointment and Service Operations Platform
+# Umut Usta (The Welding Expert App)
 
-A production-ready appointment and operations experience for a local welding, metalwork, and home maintenance business in Ankara. The product combines a low-friction customer journey with secure scheduling, self-service request management, and an analytics-driven admin workspace.
+[![React](https://img.shields.io/badge/React-18%2F19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.2-6DB33F?style=flat-square&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![Java 17](https://img.shields.io/badge/Java-17-ED8B00?style=flat-square&logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-316192?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Playwright](https://img.shields.io/badge/Playwright-E2E%20Covered-2EAD33?style=flat-square&logo=playwright&logoColor=white)](https://playwright.dev/)
+[![Docker](https://img.shields.io/badge/Docker-Compose%20Ready-2496ED?style=flat-square&logo=docker&logoColor=white)](#local-setup)
 
-[**Open the live application**](https://umut-usta.vercel.app/appointment) | [View the work gallery](https://umut-usta.vercel.app/gallery)
+<p align="center">
+  <strong>Language:</strong> <a href="#english">English</a> | <a href="#türkçe">Türkçe</a>
+</p>
 
-![Umut Usta customer appointment experience](./docs/readme-assets/current/customer-experience-desktop.png)
+---
 
-## Product Overview
+<div id="english"></div>
 
-Local service appointments are often coordinated through repeated calls and messages. This creates uncertainty for customers and leaves the business with fragmented request details, schedule conflicts, and little insight into demand.
+# English
 
-Umut Usta turns that process into one connected product:
+## Overview
 
-- Customers describe the job, select an available date and time, and leave contact details in a focused three-step flow.
-- Returning customers can follow a private tracking link to request a cancellation or schedule change and share feedback.
-- The team manages requests, availability, services, portfolio content, and access permissions from a protected admin area.
-- Product and operational analytics reveal acquisition quality, booking friction, service demand, and workload patterns.
+Umut Usta is an appointment scheduling and operations platform designed for a local metalwork, welding, and repair business in Ankara. It addresses common operational bottlenecks in service businesses: double bookings, coordination overhead across phone calls, lack of customer self-service, and fragmented job tracking.
 
-## Customer Experience
+The product consists of:
+- **Customer Booking Experience:** A focused, low-friction three-step booking flow (Service Selection &rarr; Date/Time Slot &rarr; Contact & Review).
+- **Customer Self-Service:** Token-based tracking allowing customers to cancel, reschedule, or submit feedback without creating an account.
+- **Admin Workspace:** Role-based dashboard for slot management, request triage, capacity planning, and operational analytics.
+- **Backend Services:** Spring Boot backend with PostgreSQL transaction boundaries, slot-locking verification, and Supabase integration.
 
-### Focused three-step booking
-
-The booking flow progressively reveals only the information needed for the current decision:
-
-1. **Service:** choose the closest service category or use **Birlikte belirleyelim** when the scope is unclear.
-2. **Date and time:** browse weekly availability and choose a two-hour appointment window.
-3. **Contact:** enter the minimum required details, review the request, and submit it for confirmation.
-
-The progress indicator supports backward navigation, selected information remains editable, and optional fields stay collapsed until requested. This reduces competing actions without removing customer control.
-
-<table>
-  <tr>
-    <td width="50%"><img src="./docs/readme-assets/current/booking-service-step.png" alt="Service selection step" /></td>
-    <td width="50%"><img src="./docs/readme-assets/current/booking-time-step.png" alt="Date and time selection step" /></td>
-  </tr>
-  <tr>
-    <td align="center"><strong>Service selection</strong></td>
-    <td align="center"><strong>Weekly availability and time slots</strong></td>
-  </tr>
-</table>
-
-### Customer capabilities
-
-- Responsive appointment experience optimized for desktop, tablet, and mobile layouts
-- Database-backed service definitions and weekly availability
-- Clear available, unavailable, selected, loading, validation, and submission states
-- Optional local contact-detail recall on the customer's device
-- Before-and-after work gallery with service attribution
-- Private appointment tracking through a public token
-- Self-service cancellation and schedule-change requests
-- Cancellation reasons, customer notes, and feedback capture
-- Contextual WhatsApp contact without interrupting the primary booking flow
-
-<table>
-  <tr>
-    <td width="68%"><img src="./docs/readme-assets/current/booking-contact-step.png" alt="Contact details step" /></td>
-    <td width="32%"><img src="./docs/readme-assets/current/customer-self-service-mobile.png" alt="Customer self-service request management on mobile" /></td>
-  </tr>
-  <tr>
-    <td align="center"><strong>Contact and submission</strong></td>
-    <td align="center"><strong>Mobile self-service</strong></td>
-  </tr>
-</table>
-
-## UX and Visual Direction
-
-The customer experience was redesigned through iterative PUX sprints informed by design-thinking research, cognitive-load principles, responsive testing, and direct visual review.
-
-- **One decision at a time:** progressive disclosure keeps the active task visually dominant.
-- **Recognition over recall:** selected service, date, and time remain visible where they affect the next choice.
-- **Reduced choice noise:** duplicate actions, redundant summaries, unsupported shortcuts, and unnecessary status copy were removed.
-- **Clear hierarchy:** spacing, typography, borders, and contrast communicate structure before decoration.
-- **Premium craft language:** the Forged U identity, warm forged-metal accent, restrained neutral surfaces, and deliberate micro-interactions connect the interface to metal craftsmanship.
-- **Accessible interaction:** keyboard navigation, visible focus states, semantic labels, non-color status cues, reduced-motion support, and forced-colors behavior are included.
-- **Stable responsive layouts:** controls maintain usable touch targets and predictable geometry across common mobile and desktop widths.
-
-The design rationale and validation history are documented in the [cognitive-load UX/UI research report](./docs/Umut_Usta_Bilissel_Yuk_UX_UI_Arastirma_Raporu_2026-07-19.md) and [premium design-language benchmark](./docs/Umut_Usta_Premium_Tasarim_Dili_Benchmark_Raporu_2026-07-19.md).
-
-## Operations and Analytics
-
-The protected admin workspace supports the business after a customer submits a request.
-
-### Operations
-
-- Request search, filtering, status updates, pagination, archiving, and restoration
-- Weekly availability and individual time-slot management
-- Dynamic service content and gallery management
-- Role-based access for `owner`, `admin`, `operator`, and `technician`
-- Owner-controlled team approval, suspension, and role assignment
-- Automatic slot locking and reopening as appointment status changes
-- Customer action history and notification outbox support
-
-### Data visualization
-
-- Booking funnel and step-level drop-off analysis
-- Channel-to-request, confirmation, and completion conversion
-- Confirmation and completion rates by service type
-- Day-and-hour demand heatmap
-- Cancellation reasons and customer feedback
-- Self-service request activity
-- Gallery-assisted conversion attribution
-- Operational totals and weekly request trends
-
-Analytics events are first-party and sanitized before persistence. Properties that resemble names, phone numbers, email addresses, notes, or free-form messages are excluded from product analytics.
+---
 
 ## Architecture
 
 ```mermaid
-flowchart LR
-    Customer["Customer experience"] --> React["React and React Router"]
-    Team["Admin workspace"] --> React
-    React --> Query["TanStack Query"]
-    Query --> Services["Domain service modules"]
-    Services --> Supabase["Supabase"]
-    Supabase --> Auth["Authentication"]
-    Supabase --> Database["PostgreSQL, RPC, and RLS"]
-    Supabase --> Storage["Gallery storage"]
+flowchart TD
+    subgraph ClientLayer["Frontend Clients"]
+        CustomerUI["Customer Booking Flow (Vite / React)"]
+        TrackingUI["Public Self-Service Tracking (Token-based)"]
+        AdminUI["Protected Admin Dashboard (Role-based)"]
+    end
+
+    subgraph BackendLayer["Backend Services"]
+        SpringBoot["Spring Boot Backend (:8080)"]
+        AuthFilter["JWT / Supabase Auth Guard"]
+        SlotEngine["Slot-Locking & Concurrency Controller"]
+        ReadService["Appointment Read & Filter Service"]
+    end
+
+    subgraph DataLayer["Persistence & Infrastructure"]
+        Postgres[(PostgreSQL 15 Database)]
+        Supabase[(Supabase BaaS / RLS Policies)]
+        DockerCompose["Docker Compose Local Orchestration"]
+    end
+
+    ClientLayer --> BackendLayer
+    BackendLayer --> DataLayer
 ```
 
-### Engineering highlights
+---
 
-- Anonymous appointment creation is routed through a validated PostgreSQL RPC instead of unrestricted table inserts.
-- Row-level security limits data access by public and authenticated roles.
-- Transaction-level slot locking and synchronization protect scheduling integrity.
-- Customer-authored notes are preserved separately from internal operational notes.
-- Public tracking responses expose only the minimum data required for self-service.
-- Customer routes and admin features are lazy-loaded to reduce the initial bundle.
-- Responsive image formats, performance budgets, and Lighthouse checks protect loading quality.
-- Unit, integration, responsive, accessibility, and end-to-end scenarios cover critical journeys.
+## Monorepo Layout
 
-## Technology
-
-| Area | Stack |
-| --- | --- |
-| Frontend | React 18, Vite, React Router |
-| Server state | TanStack Query |
-| Forms and feedback | Controlled React forms, React Hot Toast |
-| Styling | Styled Components, Plus Jakarta Sans |
-| Visualization | Recharts |
-| Backend | Supabase Auth, PostgreSQL, RPC, Storage, RLS |
-| Testing | Vitest, React Testing Library, Playwright |
-| Quality | ESLint, Lighthouse CI, custom performance and image audits |
-| Deployment | Vercel |
-
-## Application Routes
-
-| Route | Access | Purpose |
-| --- | --- | --- |
-| `/appointment` | Public | Customer booking experience |
-| `/appointment/track/:publicToken` | Public token | Appointment tracking and self-service requests |
-| `/gallery` | Public | Before-and-after work portfolio |
-| `/privacy` | Public | Privacy information |
-| `/login` | Public | Team sign-in |
-| `/signup` | Public | Team account request |
-| `/admin/dashboard` | Protected | Operational KPIs and analytics |
-| `/admin/bookings` | Protected | Request management |
-| `/admin/availability` | Protected | Weekly schedule management |
-| `/admin/services` | Owner/Admin | Service configuration |
-| `/admin/gallery` | Owner/Admin | Portfolio management |
-| `/admin/users` | Owner | Team and permission management |
-
-Legacy `/dashboard` and `/bookings` URLs redirect to their protected admin equivalents.
-
-## Project Structure
-
-```text
-src/
-|- analytics/         Event taxonomy and analytics helpers
-|- features/          Booking, analytics, and domain components
-|- hooks/             Query and UI behavior hooks
-|- pages/             Public and protected route views
-|- services/          Supabase and domain API modules
-|- styles/            Global design tokens and shared styles
-|- ui/                Reusable interface components
-|- utils/             Permissions, formatting, and validation
-supabase/              Schema, security, and feature migrations
-e2e/                   Playwright journeys and visual baselines
-docs/                  UX research, sprint plans, and release evidence
-scripts/               Image and performance quality checks
+```
+the-welding-expert-app/
+├── docker-compose.yml          # PostgreSQL local service definition
+├── README.md                   # Full-stack documentation (English & Turkish)
+│
+├── backend/                    # Spring Boot backend
+│   ├── pom.xml                 # Maven dependencies (Spring Data JPA, PostgreSQL, Security, Validation)
+│   ├── src/                    # Controllers, Services, Entities, Integration Tests
+│   ├── admin-ci/               # Admin acceptance test scripts and SQL grants
+│   └── README.md               # Backend technical specification and architecture decisions
+│
+├── backend-contract/           # PostgreSQL contract test suite
+│   ├── pom.xml                 # Testcontainers and JUnit test definitions
+│   └── src/                    # Schema compliance assertions
+│
+├── frontend/                   # React / Vite application
+│   ├── package.json            # Dependencies (React, TanStack Query, Styled Components, Vitest)
+│   ├── vite.config.js          # Vite build and dev configuration
+│   ├── src/                    # Components, hooks, context, pages
+│   ├── e2e/                    # Playwright end-to-end test suites
+│   └── README.md               # Frontend user journey and interface documentation
+│
+├── supabase/                   # Database schemas and migration definitions
+└── docs/                       # Screenshots and user journey assets
 ```
 
-## Local Development
+---
+
+## Key Technical Decisions
+
+### 1. Conflict-Free Slot Locking
+To prevent double bookings during simultaneous customer checkouts, appointment slots employ database-backed transactional locking:
+- Available time slots are partitioned into deterministic two-hour windows.
+- When a customer submits an appointment, the operation executes within an isolated database transaction that validates slot availability before persisting the reservation.
+- Slot-locking integrity is verified by automated integration tests (`BookingReadPostgresIT.java`).
+
+### 2. Token-Based Customer Self-Service
+Requiring customers to create an account increases booking drop-off. Umut Usta uses cryptographically secure public tokens:
+- Upon booking confirmation, a unique tracking token is generated and delivered to the customer (via confirmation screen and direct URL).
+- Customers can access their reservation details, request cancellations, or modify appointment times directly via this token.
+- Sensitive administrative fields and other customer records remain strictly inaccessible.
+
+### 3. Privilege Separation & Read/Write Boundaries
+- Public endpoints allow unauthenticated customers to view available slots and submit booking requests.
+- Administrative endpoints (capacity adjustment, status overrides, revenue reporting) require authenticated sessions with role-based verification (`ReadSecurity.java`).
+- Database constraints and Row-Level Security (RLS) enforce data segregation at the persistence tier.
+
+---
+
+## Test Suite & Quality Assurance
+
+The repository includes test suites across unit, component, contract, and browser levels:
+- **Frontend Component & Unit Tests:** Vitest and React Testing Library covering step transitions, form validations, and date helpers.
+- **Backend Contract Tests:** Testcontainers-based PostgreSQL schema validation (`backend-contract/`).
+- **End-to-End Tests:** Playwright suites exercising customer booking flows, mobile responsiveness, and administrator workflows.
+
+---
+
+## Local Setup
 
 ### Prerequisites
+- **Node.js 20+** & **npm 10+**
+- **Java 17+** & **Maven**
+- **Docker & Docker Compose**
 
-- Node.js 18 or newer
-- npm
-- A Supabase project
-
-### Setup
-
+### 1. Start Database
 ```bash
-git clone https://github.com/abdullahberkeozder/my-portfolio.git
-cd my-portfolio/the-welding-expert-app
+cd the-welding-expert-app
+docker compose up -d
+```
+Starts PostgreSQL on `localhost:54322` with the initial schema loaded.
+
+### 2. Run Backend
+```bash
+cd backend
+mvn test
+mvn spring-boot:run
+```
+
+### 3. Run Frontend
+```bash
+cd ../frontend
 npm install
+npm run dev
+```
+Application opens at `http://localhost:5173`.
+
+---
+
+<div id="türkçe"></div>
+
+# Türkçe
+
+<p align="center">
+  <a href="#english"><strong>⬆️ Return to English</strong></a>
+</p>
+
+## Genel Bakış
+
+Umut Usta, Ankara'da faaliyet gösteren kaynak, demir doğrama ve mekanik tadilat işletmesi için geliştirilmiş randevu ve operasyon yönetim platformudur. Telefon trafiği üzerinden yürüyen randevu süreçlerindeki çakışmaları, müşteri bilgi kaybını ve planlama belirsizliklerini çözmeyi hedefler.
+
+Sistem bileşenleri:
+- **Müşteri Randevu Akışı:** Hizmet Seçimi &rarr; Tarih ve Saat Dilimi &rarr; İletişim Bilgileri adımlarından oluşan üç aşamalı akış.
+- **Kayıtsız Self-Servis:** Müşterilerin üyelik oluşturmadan, randevu takip bağlantısı üzerinden iptal veya saat değişikliği talebi iletebilmesi.
+- **Yönetici Paneli:** Kapasite yönetimi, randevu onay/ret işlemleri ve operasyonel iş yükü takibi.
+- **Spring Boot Arka Yüz:** PostgreSQL işlem sınırları, slot kilitleme ve yetkilendirme katmanları.
+
+---
+
+## Monorepo Düzeni
+
+```
+the-welding-expert-app/
+├── docker-compose.yml          # PostgreSQL yerel veritabanı tanımı
+├── README.md                   # Proje ana dokümantasyonu (İngilizce & Türkçe)
+│
+├── backend/                    # Spring Boot arka yüz uygulaması
+├── backend-contract/           # Veritabanı şema ve sözleşme testleri
+├── frontend/                   # React + Vite arayüz uygulaması
+├── supabase/                   # Veritabanı şema ve migration dosyaları
+└── docs/                       # Ekran görüntüleri ve dokümantasyon varlıkları
 ```
 
-Create `.env.local` in the application directory:
+---
 
-```env
-VITE_SUPABASE_URL=https://your-project-id.supabase.co
-VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-```
+## Temel Mühendislik Kararları
 
-Start the local application:
+### 1. Çakışmasız Randevu Kilitleme (Slot Locking)
+Aynı saat dilimine birden fazla müşterinin kayıt yapmasını engellemek için iki saatlik deterministik randevu pencereleri tanımlanmıştır. Randevu kaydı, veritabanı düzeyinde işlem (transaction) izolasyonu ile korunur.
+
+### 2. Token Tabanlı Müşteri Takibi
+Kullanıcıların randevu takibi için şifre ve üyelik zorunluluğu kaldırılmıştır. Randevu oluşturulduğunda üretilen güvenli erişim belirteci (token) ile müşteri randevusunu görüntüleyebilir, iptal veya değişiklik talebinde bulunabilir.
+
+### 3. Okuma/Yazma ve Yetki Ayrımı
+Müşteri uç noktaları yalnızca uygun zaman dilimlerini okuma ve yeni talep oluşturma ile sınırlandırılmıştır. Takvim düzenleme ve operasyonel durum değişiklikleri yönetici doğrulaması gerektirir.
+
+---
+
+## Yerel Kurulum
 
 ```bash
+# 1. Veritabanını başlatın
+cd the-welding-expert-app
+docker compose up -d
+
+# 2. Backend uygulamasını derleyin ve çalıştırın
+cd backend
+mvn test
+mvn spring-boot:run
+
+# 3. Frontend uygulamasını çalıştırın
+cd ../frontend
+npm install
 npm run dev
 ```
 
-Vite prints the local URL in the terminal, typically `http://localhost:5173`.
+---
 
-## Database Setup
+## Geliştirici & Lisans
 
-SQL migrations live in [`supabase/`](./supabase). For a new environment, apply them by capability group:
-
-1. Base appointment schema
-2. Authentication, role-based access, services, gallery, and analytics
-3. Appointment integrity, secure request RPC, note separation, and status synchronization
-4. Customer self-service, follow-up history, and measurement hardening
-5. Seed data only after the required schema and storage configuration exist
-
-Existing environments should apply only migrations that have not already been deployed. Review each script header and validate a backup and rollback path before execution.
-
-## Quality Commands
-
-| Command | Purpose |
-| --- | --- |
-| `npm run lint` | Run static analysis |
-| `npm run test:run` | Run the Vitest suite once |
-| `npm run test:e2e` | Run Playwright customer journeys |
-| `npm run build` | Create the production build |
-| `npm run images:audit` | Check responsive image coverage |
-| `npm run perf:budget` | Enforce asset and bundle budgets |
-| `npm run pux8:rc` | Run the local release-candidate pipeline |
-
-## Deployment
-
-The production application is deployed on Vercel. SPA rewrites are defined in [`vercel.json`](./vercel.json), allowing public tracking and protected admin routes to resolve correctly after direct navigation or refresh.
-
-**Production:** [https://umut-usta.vercel.app/appointment](https://umut-usta.vercel.app/appointment)
-
-### Backend showcase
-
-The related Spring Boot, JPA/Hibernate, PostgreSQL, JWT, transaction, and slot-locking work is documented separately in the [The Welding Expert App - Spring Backend Showcase](../the-welding-expert-app-spring-backend/README.md). It is a portfolio engineering showcase and is not a production dependency of this Vercel deployment.
-
-## License
-
-This project is available under the [MIT License](../LICENSE).
-
-## Author
-
-Designed and developed by [Abdullah Berke Ozder](https://github.com/abdullahberkeozder).
+- **Geliştirici:** Abdullah Berke Özder
+- **GitHub:** [@abdullahberkeozder](https://github.com/abdullahberkeozder)
+- **LinkedIn:** [Abdullah Özder](https://www.linkedin.com/in/abdullah-ozder/)
+- **E-posta:** `abdullahberkeozder@gmail.com`
+- **Lisans:** MIT
