@@ -10,14 +10,15 @@
 ![Redis](https://img.shields.io/badge/Redis-Cache-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 ![MinIO](https://img.shields.io/badge/MinIO-S3_Storage-C72C48?style=for-the-badge&logo=minio&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Spring AI](https://img.shields.io/badge/Spring_AI-Vector_Search-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
-![Tests](https://img.shields.io/badge/Tests-158%20%2F%20158%20Passing-brightgreen?style=for-the-badge&logo=junit5&logoColor=white)
+![Tests](https://img.shields.io/badge/Tests-184%20%2F%20184%20Passing-brightgreen?style=for-the-badge&logo=junit5&logoColor=white)
 
 <br/>
 
-**NovaBlog Enterprise Backend**, kurumsal ölçekte tasarlanmış, yüksek performanslı, bulut yerel (cloud-native) ve modern Clean Architecture prensiplerine tam uyumlu bir İçerik ve Blog Yönetim Platformudur.
+**NovaBlog Enterprise Backend**, kurumsal ölçekte tasarlanmış, yüksek performanslı, bulut yerel (cloud-native), Spring AI destekli Vektör Arama & LLM motoruna sahip ve modern Clean Architecture prensiplerine tam uyumlu bir İçerik ve Blog Yönetim Platformudur.
 
-[Özellikler](#-temel-mimari-yetenekler-21-ad%C4%B1m) • [Mimari](#-sistem-mimarisi) • [Hızlı Başlangıç](#-h%C4%B1zl%C4%B1-ba%C5%9Flang%C4%B1%C3%A7-docker--yerel) • [API & Swagger](#-api-dok%C3%BCmantasyonu) • [Testler](#-test-kapsam%C4%B1)
+[Özellikler](#-temel-mimari-yetenekler-22-ad%C4%B1m) • [Mimari](#-sistem-mimarisi) • [Hızlı Başlangıç](#-h%C4%B1zl%C4%B1-ba%C5%9Flang%C4%B1%C3%A7-docker--yerel) • [API & Swagger](#-api-dok%C3%BCmantasyonu) • [Testler](#-test-kapsam%C4%B1)
 
 </div>
 
@@ -44,6 +45,13 @@ flowchart TD
         NotificationService["WebSocket STOMP / SockJS Live Stream"]
     end
 
+    subgraph AiLayer ["Spring AI & Vector Intelligence Layer"]
+        AiVector["Vektör Arama & Kosinüs Benzerliği (128D Embeddings)"]
+        AiHybrid["Hibrit Arama (RRF / Weighted Fusion)"]
+        AiSummary["Otomatik TL;DR Özetleyici (Salience & Compression)"]
+        AiModeration["AI İçerik & Yorum Denetimi (Toksisite & Duygu Analizi)"]
+    end
+
     subgraph BatchLayer ["ETL & Batch Automation Layer"]
         JobScheduler["Batch Scheduler (@Scheduled Cron)"] --> SoftDeleteJob["Cleanup Job (Purge Soft-Deleted > 30 Days)"]
         JobScheduler --> AnalyticsJob["Analytics Job (Author Engagement to CSV)"]
@@ -51,7 +59,7 @@ flowchart TD
     end
 
     subgraph PersistenceLayer ["Persistence & Caching Infrastructure"]
-        Flyway["Flyway Migration (V1..V6)"] --> Postgres[("PostgreSQL 16")]
+        Flyway["Flyway Migration (V1..V7)"] --> Postgres[("PostgreSQL 16")]
         Postgres <--> Hibernate["Spring Data JPA + Soft Delete"]
         Redis[("Redis Cache Cluster")] <--> CacheManager["Spring Cache (@Cacheable / Evict)"]
         MinioStore[("MinIO S3 Object Storage")] <--> StorageService
@@ -59,15 +67,16 @@ flowchart TD
     end
 
     SecurityLayer --> ServiceLayer
+    ServiceLayer --> AiLayer
     ServiceLayer --> PersistenceLayer
     ServiceLayer --> BatchLayer
 ```
 
 ---
 
-## 🌟 Temel Mimari Yetenekler (21 Adım)
+## 🌟 Temel Mimari Yetenekler (22 Adım)
 
-Proje sıfırdan kurumsal seviyeye 21 aşamalı enterprise yol haritası ile geliştirilmiştir:
+Proje sıfırdan kurumsal seviyeye 22 aşamalı enterprise yol haritası ile geliştirilmiştir:
 
 | Adım | Modül / Yetenek | Açıklama |
 | :--- | :--- | :--- |
@@ -78,7 +87,7 @@ Proje sıfırdan kurumsal seviyeye 21 aşamalı enterprise yol haritası ile gel
 | **05** | **Redis Caching & Invalidation** | Distributed Redis önbellekleme, TTL yönetimi ve otomatik cache eviction stratejisi. |
 | **06** | **JPA Specification & Criteria API** | Çok kriterli dinamik filtreleme, karmaşık `Predicate` zincirleri ve arama sorguları. |
 | **07** | **Asenkron E-posta Bildirimleri** | `@Async` ve `JavaMailSender` ile thread havuzu üzerinden gecikmesiz e-posta gönderimi. |
-| **08** | **Flyway Veritabanı Migrasyonu** | Versiyon kontrollü DDL ve DML SQL migrasyonları (`V1__init...V6__2fa`). |
+| **08** | **Flyway Veritabanı Migrasyonu** | Versiyon kontrollü DDL ve DML SQL migrasyonları (`V1__init...V7__ai`). |
 | **09** | **Global Hata Yönetimi & RFC 7807** | `@RestControllerAdvice` ile standartlaştırılmış `ProblemDetails` hata yanıtları. |
 | **10** | **Actuator & Prometheus Metrikleri** | JVM, bellek, CPU, HTTP istek ve veritabanı metriklerinin Prometheus'a aktarımı. |
 | **11** | **OpenAPI 3 / Swagger UI** | Bütün REST uç noktalarının interaktif API dokümantasyonu (`/swagger-ui/index.html`). |
@@ -92,6 +101,7 @@ Proje sıfırdan kurumsal seviyeye 21 aşamalı enterprise yol haritası ile gel
 | **19** | **OAuth2 & OIDC Social Login** | Google ve GitHub hesapları ile tek tıkla sosyal oturum açma ve JWT köprüsü. |
 | **20** | **Two-Factor Auth (2FA / MFA TOTP)** | Google Authenticator uyumlu RFC 6238 TOTP, ZXing QR kod üretimi ve tek kullanımlık kurtarma kodları. |
 | **21** | **Spring Batch 6 & ETL Automation** | Soft-delete temizliği (`cleanupSoftDeletedJob`) ve yazar analitik raporlama (`authorAnalyticsJob`). |
+| **22** | **Spring AI & Akıllı Vektör Arama** | 128D Dense Vektörler, Kosinüs Benzerliği Anlamsal Arama, Hibrit Füzyon, Otomatik TL;DR Özetleme ve Toksisite/Duygu AI Moderasyonu. |
 
 ---
 
@@ -157,6 +167,13 @@ Uygulama çalıştırıldığında tüm REST API dökümantasyonuna ve canlı de
 | `POST` | `/blog/api/v1.0.0/create` | Yeni blog oluşturma (WebSocket bildirimi tetikler) | Admin / Super Admin |
 | `GET` | `/blog/api/v1.0.0/export/excel` | Blog listesini Excel (.xlsx) olarak indirme | Admin / Super Admin |
 | `POST` | `/api/v1/storage/upload` | MinIO S3 / Yerel diske görsel yükleme | Kullanıcı |
+| `POST` | `/api/v1/ai/search/semantic` | Vektör Kosinüs Benzerliği ile Anlamsal Arama | Herkese Açık |
+| `POST` | `/api/v1/ai/search/hybrid` | Hibrit Arama (Semantic + Keyword Füzyonu) | Herkese Açık |
+| `POST` | `/api/v1/ai/summarize-text` | Serbest metin için anlık TL;DR yönetici özeti | Herkese Açık |
+| `POST` | `/api/v1/ai/suggest-tags` | Blog için akıllı etiket ve kategori önerisi | Herkese Açık |
+| `POST` | `/api/v1/ai/moderate` | Yorum ve içerik toksisite / duygu denetimi | Herkese Açık |
+| `POST` | `/api/v1/ai/summarize/{id}` | Blog yazısı için AI özeti kaydetme | Admin |
+| `POST` | `/api/v1/ai/reindex` | Tüm blog vektörlerini baştan indeksleme | Admin |
 | `POST` | `/api/v1/batch/jobs/cleanup` | Soft-deleted kayıtları kalıcı temizleme Batch Job'ı | Admin |
 | `POST` | `/api/v1/batch/jobs/analytics` | Yazar analitik raporlama Batch Job'ı | Admin |
 
@@ -164,7 +181,7 @@ Uygulama çalıştırıldığında tüm REST API dökümantasyonuna ve canlı de
 
 ## 🧪 Test Kapsamı
 
-Projede katı bir test odaklı geliştirme (TDD / BDD) yaklaşımı benimsenmiştir. Servis mantığı, güvenlik filtreleri, JWT doğrulama, rate limiter, Spring Batch işleri ve REST controller katmanı 158 adet otomatik birim ve entegrasyon testiyle %100 oranında doğrulanmıştır.
+Projede katı bir test odaklı geliştirme (TDD / BDD) yaklaşımı benimsenmiştir. Servis mantığı, güvenlik filtreleri, JWT doğrulama, rate limiter, Spring Batch işleri, Spring AI vektör arama ve REST controller katmanı 184 adet otomatik birim ve entegrasyon testiyle %100 oranında doğrulanmıştır.
 
 ```bash
 # Tüm testleri çalıştırmak için:
@@ -177,7 +194,7 @@ Projede katı bir test odaklı geliştirme (TDD / BDD) yaklaşımı benimsenmiş
 [INFO] -------------------------------------------------------
 [INFO] Results:
 [INFO] 
-[INFO] Tests run: 158, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 184, Failures: 0, Errors: 0, Skipped: 0
 [INFO] 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS

@@ -21,6 +21,11 @@ public class CommentResponseDto implements Serializable {
     private boolean isApproved;
     private Date createdDate;
 
+    // AI Moderation (Adım 22)
+    private Boolean isAiModerated;
+    private String sentiment;
+    private Double toxicityScore;
+
     // Soft Delete Bilgisi
     @com.fasterxml.jackson.annotation.JsonProperty("isDeleted")
     private boolean isDeleted;

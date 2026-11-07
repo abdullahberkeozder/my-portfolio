@@ -1,0 +1,81 @@
+# ==============================================================================
+# PROJE ADI       : NovaBlog Enterprise Backend
+# MODÜL ADI       : Spring AI, Vektör Gömme (Embedding), Kosinüs Benzerliği & Akıllı Arama
+# ADIM NUMARASI   : ADIM 22
+# YAZAR           : Berke Özder
+# TARİH           : 2026-11-07
+# ==============================================================================
+
+1. MİMARİ VE GENEL BAKIŞ
+------------------------------------------------------------------------------
+Modern kurumsal sistemlerde geleneksel SQL `LIKE` aramaları yetersiz kalmakta; kullanıcıların
+doğal dille sorduğu sorguları anlayan Anlamsal Arama (Semantic Search), otomatik blog özetleme (TL;DR),
+akıllı etiketleme (Auto-tagging) ve yapay zeka destekli içerik moderasyonu büyük bir rekabet
+avantajı sağlamaktadır.
+
+Adım 22 kapsamında çok katmanlı, sıfır dış bağımlılıkla test edilebilen (offline deterministic)
+ve istendiğinde OpenAI / Ollama LLM modellerine geçebilen kurumsal bir AI mimarisi inşa edilmiştir.
+
+Temel Yetenekler:
+1. Çok Boyutlu Yoğun Vektör Gömme (Dense Vector Embeddings):
+   - Metinler 128 boyutlu L2-normalize vektör uzayına dönüştürülür.
+   - Kosinüs benzerliği (Cosine Similarity) [-1.0, 1.0] formülü ile hesaplanır.
+2. Anlamsal Arama (Semantic Vector Search):
+   - Kullanıcının doğal dil sorgusu vektöre dönüştürülür ve veritabanındaki blog vektörleriyle
+     kosinüs benzerliği hesaplanarak en alakalı yazılar sıralanır.
+3. Hibrit Arama (Hybrid Search Fusion):
+   - Klasik kelime eşleşmesi (%40) ile vektör kosinüs benzerliği (%60) füzyonla birleştirilir.
+4. Otomatik Yönetici Özeti (TL;DR / Summarization):
+   - Blog yazılarından en can alıcı 2-3 cümleyi seçerek sıkıştırma oranıyla birlikte
+     yönetici özeti üretir ve veri tabanında saklar.
+5. Akıllı Etiket ve Kategori Önerisi (Auto-Tagging):
+   - Blog içeriğini analiz ederek en uygun 3-5 etiketi ve en yakın kategoriyi otomatik önerir.
+6. AI İçerik Denetimi ve Duygu Durum (Sentiment) Analizi:
+   - Yeni eklenen yorumları toksisite, nefret söylemi ve argo açısından denetler.
+   - Toksik yorumları otomatik olarak `isApproved=false` yaparak admin onayına çeker.
+   - Pozitif/Negatif/Nötr duygu durumu skorlar.
+
+2. TEMEL BİLEŞENLER
+------------------------------------------------------------------------------
+A) VectorUtils (com.berkeozder.ai.vector.VectorUtils)
+   - cosineSimilarity(float[] v1, float[] v2): Vektör kosinüs benzerliği hesabı.
+   - l2Normalize(float[] v): Vektörü birim uzunluğa normalize eder.
+   - serialize(float[] v) / deserialize(String json): Vektörleri JSON formatında TEXT kolonunda saklar.
+
+B) IAiEmbeddingClient & LocalAiEmbeddingClientImpl (com.berkeozder.ai.client)
+   - Deterministik, n-gram ve anlamsal kümeleme (Semantic Concept Clustering) ile dense vektör üretir.
+
+C) IAiChatClient & LocalAiChatClientImpl (com.berkeozder.ai.client)
+   - Salience scoring tabanlı cümle çıkarımı (Extractive Summarization).
+   - Toksisite ve duygu analiz sözlüğü ile içerik moderasyonu.
+
+D) OpenAiChatAndEmbeddingClientImpl (com.berkeozder.ai.client.impl)
+   - app.ai.provider=OPENAI ve api-key girildiğinde OpenAI v1 API'sine bağlanır;
+     ağ hatasında otomatik olarak yerel motora geri düşer (Fault-tolerant Fallback).
+
+E) IAiBlogService & AiBlogServiceImpl (com.berkeozder.ai.service)
+   - Blog özetleme, vektör arama, hibrit füzyon arama ve toplu yeniden indeksleme.
+
+F) IAiModerationService & CommentServiceImpl Entegrasyonu
+   - Yeni eklenen yorumlarda anında AI denetimi:
+     * Toksik yorum -> isApproved=false, sentiment=NEGATIVE, toxicityScore >= 0.65
+     * Temiz yorum -> isApproved=true, sentiment=POSITIVE, toxicityScore < 0.20
+
+G) REST API (com.berkeozder.ai.controller.AiApiController)
+   - POST /api/v1/ai/summarize/{blogId}       (Admin - Blog için AI Özeti kaydet)
+   - POST /api/v1/ai/summarize-text           (Herkese açık - Serbest metin TL;DR)
+   - POST /api/v1/ai/suggest-tags             (Blog etiket ve kategori önerisi)
+   - POST /api/v1/ai/moderate                 (Metin toksisite ve duygu analizi)
+   - GET  /api/v1/ai/search/semantic?q=...    (Anlamsal Vektör Araması)
+   - GET  /api/v1/ai/search/hybrid?q=...      (Hibrit Arama)
+   - POST /api/v1/ai/reindex                  (Admin - Tüm blog vektörlerini güncelle)
+
+3. VERİTABANI VE FLYWAY V7 MİGRASYONU
+------------------------------------------------------------------------------
+V7__add_ai_and_vector_search_support.sql:
+- ALTER TABLE blogs ADD COLUMN IF NOT EXISTS ai_summary TEXT;
+- ALTER TABLE blogs ADD COLUMN IF NOT EXISTS embedding TEXT;
+- ALTER TABLE comments ADD COLUMN IF NOT EXISTS is_ai_moderated BOOLEAN DEFAULT FALSE;
+- ALTER TABLE comments ADD COLUMN IF NOT EXISTS sentiment VARCHAR(20) DEFAULT 'NEUTRAL';
+- ALTER TABLE comments ADD COLUMN IF NOT EXISTS toxicity_score DOUBLE PRECISION DEFAULT 0.0;
+- CREATE INDEX IF NOT EXISTS idx_comments_is_ai_moderated ON comments (is_ai_moderated);

@@ -32,6 +32,8 @@ public class BlogMapper implements IGenericMapper<BlogDto, BlogEntity> {
                         ? blogEntity.getTags().stream().map(TagEntity::getName).collect(Collectors.toSet())
                         : Collections.emptySet())
                 .commentCount(blogEntity.getComments() != null ? blogEntity.getComments().size() : 0)
+                .aiSummary(blogEntity.getAiSummary())
+                .hasEmbedding(blogEntity.getEmbedding() != null && !blogEntity.getEmbedding().isBlank())
                 .isDeleted(blogEntity.isDeleted())
                 .deletedAt(blogEntity.getDeletedAt())
                 .build();
@@ -46,6 +48,7 @@ public class BlogMapper implements IGenericMapper<BlogDto, BlogEntity> {
                 .title(blogDto.getTitle())
                 .content(blogDto.getContent())
                 .image(blogDto.getImage())
+                .aiSummary(blogDto.getAiSummary())
                 .blogCategoryEntity(blogCategoryMapper.toEntity(blogDto.getBlogCategoryDto()))
                 .isDeleted(blogDto.isDeleted())
                 .deletedAt(blogDto.getDeletedAt())

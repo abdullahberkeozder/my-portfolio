@@ -172,6 +172,12 @@ public class SecurityConfig {
                         // Spring Batch & ETL Automation (Adım 21)
                         .requestMatchers("/api/v1/batch/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
 
+                        // Spring AI, Vektör Arama & Akıllı İçerik (Adım 22)
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/ai/search/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/ai/summarize-text", "/api/v1/ai/suggest-tags", "/api/v1/ai/moderate").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/ai/summarize/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/ai/reindex").hasAnyRole("ADMIN", "SUPER_ADMIN")
+
                         // Blog ve Kategori Okuma (GET) herkese açık (Arama, listeleme, detay)
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/blog/api/v1.0.0/**", "/blog/category/api/v1.0.0/**").permitAll()
 

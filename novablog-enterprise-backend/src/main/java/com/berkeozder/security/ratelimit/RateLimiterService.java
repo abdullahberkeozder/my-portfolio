@@ -135,7 +135,7 @@ public class RateLimiterService {
         if (uri.startsWith("/api/v1/auth/")) {
             return "auth";
         }
-        if (uri.startsWith("/blog/api/v1.0.0/search")) {
+        if (uri.startsWith("/blog/api/v1.0.0/search") || uri.startsWith("/api/v1/ai/")) {
             return "search";
         }
         if (uri.startsWith("/blog/api/v1.0.0/upload")) {

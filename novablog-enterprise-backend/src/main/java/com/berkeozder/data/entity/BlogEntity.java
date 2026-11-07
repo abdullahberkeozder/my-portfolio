@@ -48,6 +48,13 @@ public class BlogEntity extends AuditingAwareBaseEntity {
     // Image
     private String image;
 
+    // AI Summary & Vector Embedding (Adım 22 - Spring AI & Semantic Search)
+    @Column(name = "ai_summary", columnDefinition = "TEXT")
+    private String aiSummary;
+
+    @Column(name = "embedding", columnDefinition = "TEXT")
+    private String embedding;
+
     // Soft Delete
     @Builder.Default
     @Column(name = "is_deleted", nullable = false)

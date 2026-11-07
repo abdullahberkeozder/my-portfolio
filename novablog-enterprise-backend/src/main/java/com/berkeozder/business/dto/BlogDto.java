@@ -60,6 +60,10 @@ public class BlogDto extends AuditingAwareBaseDto implements Serializable {
     // Yorum Sayısı
     private int commentCount;
 
+    // AI Summary & Vector Search (Adım 22)
+    private String aiSummary;
+    private boolean hasEmbedding;
+
     // Soft Delete Bilgisi
     @com.fasterxml.jackson.annotation.JsonProperty("isDeleted")
     private boolean isDeleted;
