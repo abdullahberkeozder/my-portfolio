@@ -1,0 +1,8 @@
+{
+  "name": "the-welding-expert-app",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix frontend install && npm --prefix frontend run build",
+    "start": "npm --prefix frontend run preview"
+  }
+}
