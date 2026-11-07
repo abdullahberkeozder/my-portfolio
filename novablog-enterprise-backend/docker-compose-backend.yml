@@ -1,0 +1,122 @@
+# ==============================================================================
+# Docker Compose: Backend + PostgreSQL + Redis Services
+# ==============================================================================
+# mvn clean package -DskipTests
+# docker compose -f docker-compose-backend.yml up -d --build
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: container_blog_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-blog_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - fullstack_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-blog_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: container_blog_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - fullstack_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    container_name: container_blog_springboot
+    image: image_blog_springboot
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5555:5555"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-blog_db}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-root}
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_CACHE_TYPE: redis
+      FILE_UPLOAD_DIR: /upload
+      FILE_BASE_URL: http://localhost:5555
+    volumes:
+      - ./upload:/upload
+    networks:
+      - fullstack_network
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: container_blog_prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - fullstack_network
+
+  grafana:
+    image: grafana/grafana:10.4.1
+    container_name: container_blog_grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - fullstack_network
+
+volumes:
+  postgres_data:
+    name: springboot2026_postgres_data
+    driver: local
+  redis_data:
+    name: springboot2026_redis_data
+    driver: local
+  prometheus_data:
+    name: springboot2026_prometheus_data
+    driver: local
+  grafana_data:
+    name: springboot2026_grafana_data
+    driver: local
+
+networks:
+  fullstack_network:
+    name: fullstack_network
+    driver: bridge

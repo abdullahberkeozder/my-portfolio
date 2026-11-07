@@ -1,0 +1,121 @@
+================================================================================
+WHAT DOES "DYNAMIC SPECIFICATIONS & CRITERIA API FILTERING" MEAN IN SPRING BOOT?
+SPRING BOOT'TA "JPA CRITERIA API VE DİNAMİK SPECIFICATION FİLTRELEME MİMARİSİ" NE ANLAMA GELİR?
+================================================================================
+
+1. GENEL ANLAMI VE HEDEF:
+--------------------------------------------------------------------------------
+Kurumsal seviyedeki backend sistemlerinde kullanıcılar, editörler ve yöneticiler
+içerikleri tek bir parametre yerine birden çok kriteri eşzamanlı ve esnek şekilde
+kombine ederek sorgulamak ister. 
+
+Örnek Senaryo:
+"Başlığında veya içeriğinde 'Spring Boot' geçen, 'Yazılım Mimarisi' kategorisinde olan,
+'#java' ve '#devops' etiketlerine sahip, 'admin' tarafından yazılmış, en az 2 yorumu olan
+ve görseli bulunan blogları tarihe göre tersten sıralayarak sayfala."
+
+Sabit `@Query` veya JPQL ile onlarca `WHERE (arg IS NULL OR col = arg)` kombinasyonu
+yazmak sorgu optimizasyonunu bozar, veritabanı yürütme planlarını (Execution Plan)
+olumsuz etkiler ve bakım maliyetini artırır.
+
+Spring Data JPA `JpaSpecificationExecutor` ve JPA `Criteria API` sayesinde:
+- Sadece istemcinin gönderdiği (boş olmayan) kriterler dinamik olarak SQL `WHERE` koşuluna eklenir.
+- Tip güvenli (Type-safe) `Predicate` nesneleri ile SQL injection riski sıfıra iner.
+- Modüler ve birleştirilebilir (`Specification.and()`, `Specification.or()`) filtre bileşenleri oluşturulur.
+
+
+2. MODÜLER SPECIFICATION MİMARİSİ (`BlogSpecification`):
+--------------------------------------------------------------------------------
+Her bir arama kriteri bağımsız ve tekrar kullanılabilir bir `Specification<BlogEntity>`
+olarak modellenmiştir:
+
+1) withSearch(String search):
+   - Başlık (`title`), alt başlık (`header`) veya içerik (`content`) alanlarında büyük/küçük
+     harf duyarsız (Case-insensitive) `LIKE %search%` araması yapar (`criteriaBuilder.or(...)`).
+
+2) withCategoryId(Long categoryId):
+   - Doğrudan kategori ID'si ile eşleşme sağlar (`root.get("blogCategoryEntity").get("blogCategoryId")`).
+
+3) withCategoryName(String categoryName):
+   - Kategori adında kısmi veya tam kelime araması yapar (`LIKE %categoryName%`).
+
+4) withTags(Collection<String> tags):
+   - `BlogEntity` -> `TagEntity` arasındaki Many-to-Many ilişkide `INNER JOIN` kurar.
+   - SQL `IN (...)` yantümcesi ile verilen etiketlerden herhangi birini içeren blogları bulur.
+   - Tekrarlayan satırları önlemek için `query.distinct(true)` uygular.
+
+5) withAuthor(String author):
+   - Blog yazarı (`UserEntity`) ilişkisine `LEFT JOIN` yaparak `username`, `email` veya `createdBy`
+     alanlarında esnek arama yapar.
+
+6) withDateRange(Date startDate, Date endDate):
+   - Oluşturulma tarihi (`createdDate`) için alt ve üst sınır uygular.
+   - Bitiş tarihi (`endDate`) için günün son milisaniyesine (`23:59:59.999`) kadar otomatik ayar yapar.
+
+7) withMinCommentCount(Integer minCommentCount):
+   - JPA Criteria API'nin yerleşik `criteriaBuilder.size(root.get("comments"))` fonksiyonunu kullanarak
+     alt sorgu (subquery) ile minimum yorum adedini filtreler.
+
+8) withHasImage(Boolean hasImage):
+   - `true` ise görsel alanının `IS NOT NULL` ve boşluk olmadığını doğrular.
+   - `false` ise görseli olmayan kayıtları getirir.
+
+9) fromFilter(BlogFilterRequestDto filter):
+   - Yukarıdaki tüm kuralları `spec.and(...)` ile akıllıca bir araya getirir.
+
+
+3. REST API VE UÇ NOKTALAR:
+--------------------------------------------------------------------------------
+Base URL: `/blog/api/v1.0.0`
+
+A) POST `/blog/api/v1.0.0/filter` (Önerilen - JSON İstek Gövdesi):
+   - Karmaşık ve uzun filtre parametrelerinin URL uzunluk sınırına (URL Length Limit)
+     takılmadan güvenle gönderilmesini sağlar.
+   - Örnek İstek Gövdesi:
+     ```json
+     {
+       "search": "Spring Boot",
+       "categoryId": 1,
+       "tags": ["spring-boot", "microservices"],
+       "author": "admin",
+       "startDate": "2026-01-01",
+       "endDate": "2026-12-31",
+       "minCommentCount": 1,
+       "hasImage": true,
+       "page": 0,
+       "size": 10,
+       "sortBy": "createdDate",
+       "sortDir": "desc"
+     }
+     ```
+
+B) GET `/blog/api/v1.0.0/filter` (Query Parameters):
+   - URL üzerinden doğrudan parametre vererek tarayıcı veya frontend linkleri ile arama imkanı sunar:
+     `/blog/api/v1.0.0/filter?search=Spring&page=0&size=10&sort_by=blogId&sort_dir=desc`
+
+C) GET `/blog/api/v1.0.0/search` (Geriye Dönük Uyumluluk):
+   - Eski arama uç noktası korunmuş ve arka planda Criteria API motoruna bağlanmıştır.
+
+
+4. GÜVENLİK VE ERİŞİM KONTROLÜ:
+--------------------------------------------------------------------------------
+- Filtreleme ve arama işlemleri herkese açık (public) okuma operasyonlarıdır.
+- `SecurityConfig` üzerinde `POST /blog/api/v1.0.0/filter` ve `GET /blog/api/v1.0.0/filter`
+  uç noktalarına `.permitAll()` verilmiştir.
+- Normal kullanıcılar ve misafirler arama yaparken, silinmiş (soft-deleted) kayıtlar
+  Hibernate `@SQLRestriction("is_deleted = false")` filtresi sayesinde veritabanı seviyesinde
+  otomatik olarak hariç tutulur.
+
+
+5. TEST VE DOĞRULAMA:
+--------------------------------------------------------------------------------
+- `BlogSpecificationTest.java`:
+  * `fromFilter(null)` ve dolu nesneler ile null-safety doğrulamaları.
+  * Modüler `with*` metotlarının güvenli ve geçerli `Specification` üretimi.
+- `BlogFilterIntegrationTest.java`:
+  * Boş filtre ile sayfalama testi.
+  * Arama kelimesi (`search`), kategori ID, etiketler (`tags`) ve görsel durumu (`hasImage`) uçtan uca testleri.
+  * GET sorgu parametreleri ile sayfalama testi.
+- Projedeki tüm testler (75 testin tamamı) sıfır hata ile geçmektedir.
+================================================================================
+

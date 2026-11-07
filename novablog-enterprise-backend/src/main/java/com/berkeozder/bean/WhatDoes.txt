@@ -1,0 +1,106 @@
+================================================================================
+WHAT DOES "BEAN" MEAN IN SPRING & SOFTWARE?
+SPRING BOOT'TA "BEAN" NE ANLAMA GELİR VE NEDEN KULLANILIR?
+================================================================================
+
+1. GENEL ANLAMI (Spring Bean Nedir?):
+--------------------------------------------------------------------------------
+En basit tanımıyla:
+"Spring Bean; oluşturulması (new'lenmesi), yapılandırılması, bağımlılıklarının 
+bağlanması ve yok edilmesi tamamen SPRING (IoC Container) tarafından yönetilen 
+bir Java nesnesidir (Object)."
+
+Geleneksel Java (Spring Olmadan):
+   - Nesneyi YAZILIMCI 'new' anahtar kelimesiyle oluşturur:
+     ModelMapper mapper = new ModelMapper();
+   - Yaşam döngüsünden, hafızadan ve yönetilmesinden tamamen yazılımcı sorumludur.
+
+Spring Mantığı (Bean Yaklaşımı):
+   - Yazılımcı nesneyi bir kez Spring'e tanıtır (@Bean veya @Component).
+   - Nesneyi Spring bir defa oluşturur (IoC Container içine koyar).
+   - İhtiyacı olan her sınıfa (Service, Controller) otomatik olarak enjekte eder (Dependency Injection).
+
+
+2. İKİ TEMEL KAVRAM: IoC VE DI (Inversion of Control & Dependency Injection):
+--------------------------------------------------------------------------------
+1) IoC (Inversion of Control - Kontrolün Tersine Çevrilmesi):
+   - Normalde nesnelerin yaşam kontrolü bizdeyken, kontrolün çerçeveye (Spring'e) 
+     devredilmesidir.
+
+2) DI (Dependency Injection - Bağımlılık Enjeksiyonu):
+   - Bir sınıfın ihtiyaç duyduğu nesnelerin dışarıdan otomatik verilmesidir.
+   - Örn: BlogCategoryServicesImpl içinde "new ModelMapper()" yapmak yerine, 
+     Spring'in hazır tuttuğu bean'i Constructor Injection (@RequiredArgsConstructor) 
+     ile içeri almasıdır.
+
+
+3. BİR SINIF NASIL BEAN YAPILIR? (2 TEMEL YOL):
+--------------------------------------------------------------------------------
+Yol A: Stereotype Anotasyonları (Kendi Yazdığımız Sınıflar İçin)
+   - @Component  -> Genel amaçlı Spring Bean
+   - @Service    -> İş mantığı (Business logic) barındıran servis bean'leri
+   - @Repository -> Veritabanı veri erişim nesneleri (DAO)
+   - @Controller / @RestController -> Web API isteklerini karşılayan sınıflar
+
+Yol B: @Configuration + @Bean (Harici / Dış Kütüphaneler İçin)
+   - Kaynak kodunu bizim yazmadığımız (üçüncü parti kütüphaneler: ModelMapper, 
+     BCryptPasswordEncoder, OpenAPI Swagger vb.) sınıfları Spring konteynerine 
+     tanıtmak için kullanılır.
+
+
+4. BEAN YAŞAM DÖNGÜSÜ (LIFECYCLE):
+--------------------------------------------------------------------------------
+Spring Bean'ler doğar, yaşar ve ölürler:
+
+  [1. Başlatma]   -> Spring sınıfı tarar ve nesnesini oluşturur.
+  [2. Enjeksiyon] -> Bağımlılıklarını (@Autowired / final) enjekte eder.
+  [3. @PostConstruct] -> Bean hazır olduğunda çalışan ilk metot (örn: onInit()).
+  [4. Kullanım]   -> Uygulama boyunca servisler bu bean'i kullanır.
+  [5. @PreDestroy]    -> Uygulama kapanırken çalışan son metot (örn: onDestory()).
+
+
+5. BEAN KAPSAMLARI (SCOPES):
+--------------------------------------------------------------------------------
++-------------------+-----------------------------------------------------------+
+| Scope             | Anlamı                                                    |
++-------------------+-----------------------------------------------------------+
+| Singleton (Def.)  | Uygulama boyunca bu nesneden YALNIZCA 1 ADET üretilir     |
+|                   | ve herkes aynı referansı paylaşır (En performanslısı).    |
++-------------------+-----------------------------------------------------------+
+| Prototype         | Bu bean her çağrıldığında (@Autowired) YENİ bir nesne     |
+|                   | (new) oluşturulur.                                        |
++-------------------+-----------------------------------------------------------+
+| Request           | Her gelen HTTP isteğinde (Request) yeni bir bean üretilir.|
++-------------------+-----------------------------------------------------------+
+| Session           | Kullanıcı oturumu (Session) boyunca 1 adet yaşar.         |
++-------------------+-----------------------------------------------------------+
+
+
+6. BİZİM PROJEMİZDEKİ UYGULANIŞI (com.berkeozder.bean):
+--------------------------------------------------------------------------------
+Projenizdeki "bean" paketindeki sınıfların görevleri:
+
+1) AllBeanMethod.java (Soyut Sınıf):
+   - Bean yaşam döngüsü metotlarını (onInit ve onDestory) tanımlayan sözleşmedir.
+
+2) ModelMapperBean.java:
+   - Dışarıdan aldığımız "ModelMapper" kütüphanesini Spring'e tanıtır.
+   - @Bean(name = "modelMapper") diyerek bir Singleton nesne oluşturur.
+   - Böylece istediğimiz her serviste "private final ModelMapper modelMapper;" 
+     diyerek kullanabiliriz.
+   - @PostConstruct ile başladığını, @PreDestroy ile kapandığını konsola yazar.
+
+3) PasswordEncoderBean.java:
+   - Şifreleri hashlemek (BCrypt) için Spring Security'nin PasswordEncoder 
+     nesnesini bir @Bean olarak tanımlar.
+
+4) SwaggerBean.java:
+   - OpenAPI Swagger dokümantasyon nesnesini (@Bean OpenAPI) yapılandırır.
+   - Basic Auth güvenlik şemasını ekleyerek Swagger UI üzerinden şifreli API testini sağlar.
+
+5) ObjectMapperBean.java:
+   - Jackson kütüphanesinin ObjectMapper sınıfını bir @Bean olarak Spring'e tanıtır.
+   - Multipart dosya yükleme isteklerinde (BlogApiImpl içinde @RequestPart("blog") String json), 
+     gelen ham JSON string metnini doğrudan BlogDto Java nesnesine dönüştürmek 
+     (JSON Deserialization) amacıyla kullanılır.
+================================================================================

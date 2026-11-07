@@ -1,0 +1,139 @@
+================================================================================
+WHAT DOES "SECURITY (JWT & ROLE-BASED ACCESS CONTROL)" MEAN IN SPRING BOOT?
+SPRING BOOT'TA "GÜVENLİK (JWT, KULLANICI YÖNETİMİ VE RBAC)" NE ANLAMA GELİR?
+================================================================================
+
+1. GENEL ANLAMI VE KURUMSAL MİMARİDEKİ YERİ:
+--------------------------------------------------------------------------------
+Spring Security; uygulamanın kimlik doğrulama (Authentication - "Sen kimsin?") 
+ve yetkilendirme (Authorization - "Nereye erişebilirsin?") süreçlerini yöneten 
+en kritik kurumsal altyapı bileşenidir.
+
+Adım 2 ile Geçici In-Memory Yapıdan Tam Kurumsal JWT & Veritabanı Mimarisine Geçildi:
+- Veritabanı Tabanlı Kullanıcı ve Rol Yönetimi (UserEntity, RoleEntity, RoleType).
+- Durumsuz (Stateless) Kimlik Doğrulama: Sunucu oturum (Session) saklamaz; her istek 
+  `Authorization: Bearer <jwt_access_token>` başlığı ile kimliğini ispatlar.
+- Çift Belirteç Mekanizması:
+  * Access Token (24 Saat): API çağrılarını yetkilendirmek için kullanılır.
+  * Refresh Token (7 Gün): Access Token süresi bittiğinde kullanıcıyı tekrar şifre 
+    girmeden yeni Access Token almaya yarar.
+- Çoklu Yetki (RBAC): `ROLE_USER`, `ROLE_ADMIN`, `ROLE_SUPER_ADMIN`.
+- Hibrit Arayüz Desteği: Hem modern SPA / mobil için JWT Bearer, hem de Swagger UI ve 
+  geliştirme aşaması için HTTP Basic Auth birlikte desteklenir.
+
+
+2. KULLANILAN TEMEL BİLEŞENLER VE GÖREVLERİ:
+--------------------------------------------------------------------------------
++-------------------------------+----------------------------------------------------+
+| Sınıf / Dosya Adı             | Görevi ve Sorumluluğu                              |
++-------------------------------+----------------------------------------------------+
+| 1. UserEntity.java            | Veritabanındaki `users` tablosunu temsil eder.     |
+|                               | BCrypt şifreli parola ve rolleri (@ManyToMany)     |
+|                               | barındırır. AuditingAwareBaseEntity'den türer.     |
++-------------------------------+----------------------------------------------------+
+| 2. RoleEntity.java            | `roles` tablosudur. ROLE_USER, ROLE_ADMIN,         |
+|                               | ROLE_SUPER_ADMIN enum tiplerini saklar.            |
++-------------------------------+----------------------------------------------------+
+| 3. CustomUserDetails.java     | UserEntity'yi Spring Security'nin anladığı         |
+|                               | `UserDetails` arayüzüne uyarlar (Adapter Pattern). |
++-------------------------------+----------------------------------------------------+
+| 4. CustomUserDetailsService   | Veritabanından kullanıcı adı veya e-posta ile      |
+|                               | kullanıcıyı sorgular ve UserDetails döner.         |
++-------------------------------+----------------------------------------------------+
+| 5. JwtTokenProvider.java      | JJWT 0.12 ile Access/Refresh token üretir, imzalar |
+|                               | (HMAC-SHA256) ve doğrulamasını (Validate) yapar.   |
++-------------------------------+----------------------------------------------------+
+| 6. JwtAuthenticationFilter    | Her HTTP isteğinde `Authorization: Bearer ...`     |
+|                               | başlığını yakalar, token'ı doğrular ve isteği      |
+|                               | SecurityContext'e kimlikli olarak yerleştirir.     |
++-------------------------------+----------------------------------------------------+
+| 7. JwtAuthenticationEntryPoint| Yetkisiz (401) isteklerde tarayıcı yönlendirmesi   |
+|                               | yerine standart JSON ApiResult hata mesajı üretir. |
++-------------------------------+----------------------------------------------------+
+| 8. AuthServiceImpl & AuthApi  | /register, /login, /refresh-token ve /me           |
+|                               | uç noktalarını sunan iş ve API katmanıdır.        |
++-------------------------------+----------------------------------------------------+
+| 9. _0_User_Role_Seeder.java   | Uygulama ayağa kalktığında veritabanında roller ve |
+|                               | varsayılan admin/superadmin yoksa otomatik üretir. |
++-------------------------------+----------------------------------------------------+
+
+
+3. REST AUTHENTICATION API UÇ NOKTALARI (/api/v1/auth):
+--------------------------------------------------------------------------------
+
+1. POST /api/v1/auth/register
+   - Gövde (JSON): username, email, password, firstName, lastName
+   - İşlev: Yeni kullanıcı oluşturur, şifresini BCrypt ile tuzlar/özetler, 
+     varsayılan olarak ROLE_USER atar ve anında Access+Refresh Token döner.
+
+2. POST /api/v1/auth/login
+   - Gövde (JSON): usernameOrEmail, password
+   - İşlev: Kullanıcı adı ya da e-posta ile kimliği doğrular. Başarılı ise 
+     rolleri içeren JWT Access Token ve Refresh Token döner.
+
+3. POST /api/v1/auth/refresh-token
+   - Gövde (JSON): refreshToken
+   - İşlev: Süresi dolan Access Token yerine yeni bir Access Token üretir.
+
+4. GET /api/v1/auth/me
+   - Başlık: `Authorization: Bearer <access_token>`
+   - İşlev: O an oturum açmış kullanıcının kimlik, e-posta ve rollerini getirir.
+
+
+4. GÜVENLİK FİLTRE VE ERİŞİM MATRİSİ (SecurityFilterChain):
+--------------------------------------------------------------------------------
+A) Herkese Açık Uç Noktalar (permitAll):
+   - `/api/v1/auth/**` (Kayıt ve Giriş)
+   - `/swagger-ui/**`, `/v3/api-docs/**` (API Belgeleri)
+   - `/blog/api/v1.0.0/**` (GET - Yazı okuma, arama, sayfalama)
+   - `/blog/category/api/v1.0.0/**` (GET - Kategori listeleme)
+   - Statik dosyalar: `/css/**`, `/js/**`, `/images/**`
+
+B) Rol Bazlı Korumalı Uç Noktalar:
+   - Sadece SUPER_ADMIN:
+     * `/blog/api/v1.0.0/delete-all`
+     * `/blog/category/api/v1.0.0/delete-all`
+     * `/super-admin/**`
+   - ADMIN veya SUPER_ADMIN:
+     * POST, PUT, PATCH, DELETE `/blog/api/v1.0.0/**`
+     * POST, PUT, PATCH, DELETE `/blog/category/api/v1.0.0/**`
+   - Giriş Yapmış Herhangi Bir Kullanıcı (ROLE_USER+):
+     * `/api/v1/auth/me`
+     * (Sıradaki adımda: Yorum yapma ve beğeni gönderme)
+
+
+5. SWAGGER UI İLE JWT NASIL TEST EDİLİR?
+--------------------------------------------------------------------------------
+1. Tarayıcıdan `http://localhost:5555/swagger-ui/index.html` adresini açın.
+2. `Authentication API` -> `POST /api/v1/auth/login` seçeneğini çalıştırın:
+   - Username: `admin` (veya `superadmin`)
+   - Password: `root`
+3. Dönen yanıttaki `accessToken` değerini kopyalayın.
+4. Sayfanın en üst sağındaki yeşil `Authorize` butonuna tıklayın:
+   - `bearerAuth` alanına kopyaladığınız token'ı yapıştırın ve `Authorize` deyin.
+5. Artık Swagger üzerinden yapacağınız tüm POST/PUT/DELETE çağrıları otomatik 
+   olarak `Bearer <token>` ile yetkilendirilecektir!
+
+
+6. RATE LIMITING & BRUTE-FORCE KORUMASI (Adım 10):
+--------------------------------------------------------------------------------
+Token Bucket algoritması ile API uç noktaları DoS ve kaba kuvvet (Brute-Force)
+saldırılarına karşı korunur:
+
+- TokenBucket.java: Thread-safe atomik token tüketim ve zamana dayalı sürekli dolum.
+- RateLimiterService.java:
+  * Proxy arkasındaki gerçek istemci IP adresini (X-Forwarded-For, X-Real-IP) çözer.
+  * Uç noktaya göre farklı dinamik limitler uygular:
+    - Auth (/api/v1/auth/**): 10 istek / 60 saniye (Brute-force ve Bcrypt CPU tükenmesi engellenir).
+    - Arama (/blog/api/v1.0.0/search): 30 istek / 60 saniye (Veritabanı DoS koruması).
+    - Dosya Yükleme (/blog/api/v1.0.0/upload): 15 istek / 60 saniye (Disk tükenmesi koruması).
+    - Genel API: 100 istek / 60 saniye.
+  * Hafıza Temizliği: Tam dolan (inaktif) bucket'lar 5 dakikada bir bellekten temizlenir.
+- RateLimitFilter.java:
+  * Spring Security zincirinde JwtAuthenticationFilter'ın da ÖNÜNDE çalışır. Böylece
+    hacker'ların şifre denemeleri Bcrypt algoritmasını çalıştırmadan 429 ile anında kesilir.
+  * Yanıtlara RFC standart başlıkları ekler: `X-RateLimit-Limit`, `X-RateLimit-Remaining`.
+  * Limit aşıldığında: HTTP 429 Too Many Requests, `Retry-After: <saniye>` başlığı ve
+    standart `ApiResult.tooManyRequests` JSON gövdesi döner.
+  * Prometheus Metriği: `api.rate.limit.exceeded` sayacı tetiklenir ve Grafana'ya iletilir.
+================================================================================
