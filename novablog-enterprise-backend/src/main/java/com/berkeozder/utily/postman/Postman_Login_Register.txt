@@ -29,7 +29,7 @@ http://localhost:4444/auth/api/v1/login
   "password": "Hm123456@."
 }
 
-Bearer Token vericek:  eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJST0xFX0FETUlOIl0sInN1YiI6ImhhbWl0bWl6cmFrQGdtYWlsLmNvbSIsImlhdCI6MTc1NTk4NTcwMCwiZXhwIjoxNzU1OTg5MzAwfQ.o40Ch1Nd_kBrNzbcSqfxPEmoIUynPrxIRpkEwuhfO-I
+Bearer Token vericek:  <JWT_TOKEN_PLACEHOLDER>
 
 ------------------------------------------------------
 
@@ -51,7 +51,7 @@ Swagger UI’da token nasıl girilir?
 
 Tarayıcıda /swagger (veya /swagger-ui.html) açın.
 Üstte Authorize butonuna tıklayın.
-Açılan pencerede yalnızca raw JWT’yi yapıştırın (örn. eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...).
+Açılan pencerede yalnızca raw JWT’yi yapıştırın (örn. <JWT_TOKEN_PLACEHOLDER>).
 
 “Bearer ” yazmayın. Şemayı scheme=bearer yaptığımız için Swagger UI otomatik Authorization: Bearer <token> header’ını oluşturur.
 

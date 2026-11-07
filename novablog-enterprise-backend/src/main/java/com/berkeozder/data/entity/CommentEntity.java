@@ -32,6 +32,19 @@ public class CommentEntity extends AuditingAwareBaseEntity {
     @Column(name = "is_approved", nullable = false)
     private boolean isApproved = true;
 
+    // AI Content Moderation & Sentiment (Adım 22)
+    @Builder.Default
+    @Column(name = "is_ai_moderated")
+    private Boolean isAiModerated = false;
+
+    @Builder.Default
+    @Column(name = "sentiment", length = 20)
+    private String sentiment = "NEUTRAL";
+
+    @Builder.Default
+    @Column(name = "toxicity_score")
+    private Double toxicityScore = 0.0;
+
     // Soft Delete
     @Builder.Default
     @Column(name = "is_deleted", nullable = false)

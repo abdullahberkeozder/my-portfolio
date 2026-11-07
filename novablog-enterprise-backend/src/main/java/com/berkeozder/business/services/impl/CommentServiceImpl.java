@@ -33,6 +33,7 @@ public class CommentServiceImpl implements ICommentService {
     private final IBlogRepository iBlogRepository;
     private final IUserRepository iUserRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final com.berkeozder.ai.service.IAiModerationService aiModerationService;
 
     @Override
     @Transactional
@@ -49,11 +50,36 @@ public class CommentServiceImpl implements ICommentService {
         UserEntity user = iUserRepository.findByUsername(username)
                 .orElseThrow(() -> new _404_NotFoundException("Kullanıcı profili bulunamadı: " + username));
 
+        // AI İçerik Denetimi ve Duygu Durum Tespiti (Adım 22 - Spring AI & Content Moderation)
+        boolean approved = true;
+        boolean aiModerated = false;
+        String sentiment = "NEUTRAL";
+        Double toxicityScore = 0.0;
+
+        if (aiModerationService != null) {
+            try {
+                var modResult = aiModerationService.moderateComment(dto.getContent());
+                aiModerated = true;
+                sentiment = modResult.getSentiment();
+                toxicityScore = modResult.getToxicityScore();
+                if (modResult.isFlagged()) {
+                    approved = false;
+                    log.warn("Yorum AI moderasyonu tarafından sakıncalı bulundu ve admin onayına çekildi! Toksisite: {}, Sebep: {}",
+                            toxicityScore, modResult.getReason());
+                }
+            } catch (Exception e) {
+                log.warn("AI moderasyonu çalışırken hata oluştu, varsayılan onay geçerli kılındı: {}", e.getMessage());
+            }
+        }
+
         CommentEntity comment = CommentEntity.builder()
                 .content(dto.getContent())
                 .blog(blog)
                 .user(user)
-                .isApproved(true)
+                .isApproved(approved)
+                .isAiModerated(aiModerated)
+                .sentiment(sentiment)
+                .toxicityScore(toxicityScore)
                 .build();
 
         CommentEntity saved = iCommentRepository.save(comment);
@@ -151,6 +177,9 @@ public class CommentServiceImpl implements ICommentService {
                 .username(entity.getUser() != null ? entity.getUser().getUsername() : null)
                 .userFullName(fullName)
                 .isApproved(entity.isApproved())
+                .isAiModerated(entity.getIsAiModerated())
+                .sentiment(entity.getSentiment())
+                .toxicityScore(entity.getToxicityScore())
                 .createdDate(entity.getCreatedDate())
                 .isDeleted(entity.isDeleted())
                 .deletedAt(entity.getDeletedAt())

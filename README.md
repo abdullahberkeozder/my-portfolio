@@ -13,7 +13,7 @@ This repository brings together marketplace and appointment products, a small C#
 | [DevTool CLI](./devtool-cli/README.md) | Environment validation, SDK selection diagnostics, and JSON reports for CI | C#, .NET 10, System.Text.Json, xUnit |
 | [Umut Usta](./the-welding-expert-app/README.md) | Customer booking, private tracking, team scheduling, and operational analytics | JavaScript, React, TanStack Query, Supabase, Styled Components |
 | [The Wild Oasis](./the-wild-oasis/README.md) | Hotel bookings, cabins, guests, and administrative screens | JavaScript, React, TanStack Query, Supabase, React Hook Form |
-| [NovaBlog](./novablog-enterprise-backend/README.md) | Scalable enterprise content platform with Spring Batch ETL, OAuth2/OIDC, 2FA TOTP, Redis cache, MinIO S3, and WebSocket live stream | Java 22/25, Spring Boot 4, Spring Batch 6, PostgreSQL, Redis, MinIO S3, Docker |
+| [NovaBlog](./novablog-enterprise-backend/README.md) | Scalable enterprise content platform with Spring AI Vector Search, Spring Batch ETL, OAuth2/OIDC, 2FA TOTP, Redis cache, MinIO S3, and WebSocket live stream | Java 22/25, Spring Boot 4, Spring AI, Spring Batch 6, PostgreSQL, Redis, MinIO S3, Docker |
 
 For backend and reliability work, start with the [notification worker](./ankara-usta-app/services/AnkaraUsta.NotificationWorker/README.md), [Resilience Kit](./resilience-kit/README.md), and [DevTool CLI](./devtool-cli/README.md).
 For product flows and interfaces, start with [Orkestra](./ankara-usta-app/README.md) or [Umut Usta](./the-welding-expert-app/README.md).
@@ -99,7 +99,7 @@ These are independent projects rather than a single application. Dependencies, e
 | DevTool CLI | Install the .NET 10 SDK, then run `dotnet test devtool-cli/DevTool.slnx`. You can pack it via `dotnet pack devtool-cli/src/DevTool/DevTool.csproj --configuration Release`. |
 | Umut Usta | Configure the project environment, then run `npm ci` and `npm run dev` in `the-welding-expert-app`. |
 | The Wild Oasis | Follow its README for database and environment setup, then run `npm ci` and `npm run dev` in `the-wild-oasis`. |
-| NovaBlog | Java 22+ & Maven; run `docker-compose up -d` in `novablog-enterprise-backend` for PostgreSQL, Redis, MinIO and Prometheus, then run `.\mvnw.cmd spring-boot:run`. Full test suite: `.\mvnw.cmd test` (158 passing tests). |
+| NovaBlog | Java 22+ & Maven; run `docker-compose up -d` in `novablog-enterprise-backend` for PostgreSQL, Redis, MinIO and Prometheus, then run `.\mvnw.cmd spring-boot:run`. Full test suite: `.\mvnw.cmd test` (184 passing tests). |
 
 The [Orkestra CI workflow](./.github/workflows/ankara-usta-ci.yml) runs repository checks, lint, TypeScript validation, unit/component coverage, a production build, .NET worker checks, and browser tests. Its authenticated integration job requires configured credentials; a skipped job is not evidence that those scenarios passed.
 

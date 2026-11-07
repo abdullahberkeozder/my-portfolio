@@ -59,6 +59,10 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     private org.springframework.context.ApplicationEventPublisher eventPublisher;
 
+    // AI Embedding Client (Vektör Gömme - Adım 22)
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.berkeozder.ai.client.IAiEmbeddingClient aiEmbeddingClient;
+
     // Sorting Default Fiedl
     private static final String DEFAULT_SORT_FIELD = "blogId";
 
@@ -297,6 +301,19 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
             }
         }
 
+        // AI Vektör Gömme (Embedding - Adım 22)
+        if (aiEmbeddingClient != null) {
+            try {
+                String textToEmbed = (blogEntity.getHeader() != null ? blogEntity.getHeader() : "") + " " +
+                        (blogEntity.getTitle() != null ? blogEntity.getTitle() : "") + " " +
+                        (blogEntity.getContent() != null ? blogEntity.getContent() : "");
+                float[] embedding = aiEmbeddingClient.generateEmbedding(textToEmbed);
+                blogEntity.setEmbedding(com.berkeozder.ai.vector.VectorUtils.serialize(embedding));
+            } catch (Exception e) {
+                log.warn("Blog kaydedilirken embedding üretilemedi: {}", e.getMessage());
+            }
+        }
+
         // Repository Ekle
         BlogEntity created = iBlogRepository.save(blogEntity);
         BlogDto createdDto = entityToDto(created);
@@ -370,6 +387,19 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
         Long blogCAtegoryId = validateBlogCategoryId(blogDto,true);
         if(blogCAtegoryId != null) {
             blogEntity.setBlogCategoryEntity(findBlogCategoryEntityById(blogCAtegoryId));
+        }
+
+        // AI Vektör Gömme Güncelleme (Embedding - Adım 22)
+        if (aiEmbeddingClient != null) {
+            try {
+                String textToEmbed = (blogEntity.getHeader() != null ? blogEntity.getHeader() : "") + " " +
+                        (blogEntity.getTitle() != null ? blogEntity.getTitle() : "") + " " +
+                        (blogEntity.getContent() != null ? blogEntity.getContent() : "");
+                float[] embedding = aiEmbeddingClient.generateEmbedding(textToEmbed);
+                blogEntity.setEmbedding(com.berkeozder.ai.vector.VectorUtils.serialize(embedding));
+            } catch (Exception e) {
+                log.warn("Blog güncellenirken embedding güncellenemedi: {}", e.getMessage());
+            }
         }
 
         // Update
