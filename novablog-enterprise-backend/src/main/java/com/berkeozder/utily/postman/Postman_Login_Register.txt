@@ -29,7 +29,7 @@ http://localhost:4444/auth/api/v1/login
   "password": "Hm123456@."
 }
 
-Bearer Token vericek:  eyJhbGciOiJIUzI1NiJ9.<JWT_TOKEN_PLACEHOLDER>
+Bearer Token vericek:  <JWT_TOKEN_PLACEHOLDER>
 
 ------------------------------------------------------
 
