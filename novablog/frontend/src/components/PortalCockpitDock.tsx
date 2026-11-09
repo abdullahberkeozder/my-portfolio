@@ -11,7 +11,6 @@ import {
   Cpu,
   LayoutGrid,
 } from 'lucide-react';
-import { LiquidThemeToggle } from './LiquidThemeToggle';
 
 interface PortalCockpitDockProps {
   activeTab: 'feed' | 'ai-search' | 'ai-lab' | 'admin-batch';
@@ -139,12 +138,8 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           <Plus className="w-3.5 h-3.5 stroke-[3]" />
           <span>YAZ</span>
         </button>
-
-        {/* Kaolti Liquid Theme Switcher */}
-        <div className="pl-0.5">
-          <LiquidThemeToggle />
-        </div>
       </div>
     </aside>
   );
 };
+
