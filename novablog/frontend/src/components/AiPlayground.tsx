@@ -83,123 +83,171 @@ export const AiPlayground: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Header */}
-      <div className="rounded-3xl p-8 bg-gradient-to-r from-slate-900 via-emerald-950/30 to-slate-900 border border-emerald-500/30 shadow-2xl relative overflow-hidden">
-        <div className="relative z-10 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-mono mb-4">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            Spring AI NLP & LLM Playground
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+      {/* Header Banner (Ride Also Industrial Spec Sheet) */}
+      <div className="relative rounded-3xl p-8 sm:p-10 bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden">
+        <div className="absolute inset-0 bg-tech-grid opacity-30 dark:opacity-20 pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+          <div className="space-y-3 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-xs font-mono font-bold uppercase text-[#a3c900] dark:text-[#d4f933]">
+              <span className="w-2 h-2 rounded-full bg-[#d4f933] shadow-[0_0_8px_#d4f933]" />
+              <span>03 {'//'} NEURAL INFERENCE LAB</span>
+            </div>
+
+            <h2 className="text-3xl sm:text-5xl font-black text-zinc-950 dark:text-white uppercase tracking-tight">
+              SPRING AI NLP & LLM DENEYİM ATÖLYESİ
+            </h2>
+
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 font-mono leading-relaxed">
+              Spring AI servislerinin doğal dil işleme yeteneklerini gerçek zamanlı test edin: Otomatik TL;DR Yönetici
+              Özeti, Kategori & Etiket Çıkarımı ve Toksisite & Duygu Durumu Güvenlik Radarı.
+            </p>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            AI Test & Deneyim Laboratuvarı
-          </h2>
-          <p className="mt-3 text-sm sm:text-base text-slate-300 leading-relaxed">
-            Spring AI servislerinin doğal dil işleme yeteneklerini canlı olarak test edin: Otomatik TL;DR Özet Çıkarma,
-            NLP tabanlı Akıllı Etiket & Kategori Önerisi ve Toksisite & Duygu Durum Denetimi.
-          </p>
+
+          <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
+            <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-center min-w-[110px]">
+              <div className="text-[10px] text-zinc-400 uppercase">INFERENCE</div>
+              <div className="text-sm font-bold text-zinc-950 dark:text-white mt-0.5">LOCAL + API</div>
+            </div>
+            <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-center min-w-[110px]">
+              <div className="text-[10px] text-zinc-400 uppercase">PIPELINE</div>
+              <div className="text-sm font-bold text-zinc-950 dark:text-[#d4f933] mt-0.5">ZERO-LEAK</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex border-b border-slate-800 gap-4">
+      {/* Cockpit Mode Selector Pills */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none font-mono">
         <button
           onClick={() => setActiveTab('summarize')}
-          className={`flex items-center gap-2 pb-3 px-2 text-sm font-semibold border-b-2 transition-all ${
+          className={`px-4 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-2 ${
             activeTab === 'summarize'
-              ? 'border-emerald-400 text-emerald-300'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'bg-zinc-950 dark:bg-[#d4f933] text-white dark:text-black shadow-md'
+              : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-black/10 dark:border-white/10'
           }`}
         >
           <Bot className="w-4 h-4" />
-          1. Canlı TL;DR Özetleme
+          <span>01 {'//'} TL;DR ÖZET ÇIKARICI</span>
         </button>
+
         <button
           onClick={() => setActiveTab('tagging')}
-          className={`flex items-center gap-2 pb-3 px-2 text-sm font-semibold border-b-2 transition-all ${
+          className={`px-4 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-2 ${
             activeTab === 'tagging'
-              ? 'border-indigo-400 text-indigo-300'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'bg-zinc-950 dark:bg-[#d4f933] text-white dark:text-black shadow-md'
+              : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-black/10 dark:border-white/10'
           }`}
         >
           <Tags className="w-4 h-4" />
-          2. Akıllı Etiket & Kategori
+          <span>02 {'//'} AKILLI TAKSONOMİ</span>
         </button>
+
         <button
           onClick={() => setActiveTab('moderation')}
-          className={`flex items-center gap-2 pb-3 px-2 text-sm font-semibold border-b-2 transition-all ${
+          className={`px-4 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-2 ${
             activeTab === 'moderation'
-              ? 'border-purple-400 text-purple-300'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'bg-zinc-950 dark:bg-[#d4f933] text-white dark:text-black shadow-md'
+              : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-black/10 dark:border-white/10'
           }`}
         >
           <ShieldCheck className="w-4 h-4" />
-          3. Toksisite & Duygu Denetimi
+          <span>03 {'//'} GÜVENLİK & DUYGU RADARI</span>
         </button>
       </div>
 
       {/* Tab 1: Summarize */}
       {activeTab === 'summarize' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Bot className="w-5 h-5 text-emerald-400" />
-              Girdi Metni (Serbest Makale veya Paragraf)
-            </h3>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Input Console (7 cols) */}
+          <div className="lg:col-span-7 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 space-y-5 shadow-xl">
+            <div className="flex items-center justify-between font-mono text-xs">
+              <span className="flex items-center gap-2 text-zinc-950 dark:text-white font-bold uppercase">
+                <Bot className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
+                METİN GİRDİ TAMPONU
+              </span>
+              <span className="text-zinc-400 uppercase">{sumText.length} KARAKTER</span>
+            </div>
+
             <textarea
-              rows={8}
+              rows={7}
               value={sumText}
               onChange={(e) => setSumText(e.target.value)}
-              className="w-full p-4 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-emerald-500 leading-relaxed"
+              className="w-full p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-black/10 dark:border-white/10 text-zinc-900 dark:text-white text-xs font-mono focus:outline-none focus:border-[#d4f933] leading-relaxed shadow-inner"
             />
-            <button
-              onClick={handleSummarize}
-              disabled={isSummarizing || !sumText.trim()}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-xs shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all"
-            >
-              {isSummarizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-              Spring AI ile TL;DR Yönetici Özeti Çıkar
-            </button>
+
+            <div className="flex items-center justify-between pt-2">
+              <button
+                onClick={handleSummarize}
+                disabled={isSummarizing || !sumText.trim()}
+                className="px-6 py-3 rounded-full bg-zinc-950 dark:bg-[#d4f933] hover:opacity-90 disabled:opacity-50 text-white dark:text-black text-xs font-mono font-black uppercase tracking-wider shadow-md flex items-center gap-2 transition-transform active:scale-95 cursor-pointer"
+              >
+                {isSummarizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                <span>INFERENCE // ÇALIŞTIR</span>
+              </button>
+
+              <span className="text-[11px] font-mono text-zinc-400 hidden sm:inline">
+                SALIENCE GRAPH + FALLBACK
+              </span>
+            </div>
           </div>
 
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                  Spring AI Çıktısı (TL;DR)
-                </h3>
+          {/* Telemetry Output (5 cols) */}
+          <div className="lg:col-span-5 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 space-y-5 shadow-xl flex flex-col justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between font-mono text-xs">
+                <span className="flex items-center gap-2 text-zinc-950 dark:text-white font-bold uppercase">
+                  <CheckCircle2 className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
+                  TL;DR YÖNETİCİ ÇIKTISI
+                </span>
                 {sumResult && (
-                  <span className="text-xs font-mono text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/30">
-                    -%{(sumResult.compressionRatio * 100).toFixed(0)} Sıkıştırma
+                  <span className="font-bold text-zinc-950 dark:text-black bg-[#d4f933] px-2.5 py-0.5 rounded-full text-[10px]">
+                    -%{(sumResult.compressionRatio * 100).toFixed(0)} SIKIŞTIRMA
                   </span>
                 )}
               </div>
 
               {sumResult ? (
-                <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 text-slate-200 text-sm leading-relaxed space-y-3">
-                  <p className="font-sans">{sumResult.summary}</p>
-                  <div className="pt-3 border-t border-emerald-500/20 grid grid-cols-3 gap-2 text-[11px] font-mono text-slate-400">
-                    <div>
-                      Orijinal: <strong className="text-slate-200">{sumResult.originalLength} krk</strong>
+                <div className="space-y-4 font-mono">
+                  <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed font-sans">
+                    {sumResult.summary}
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.06] dark:border-white/[0.06]">
+                      <div className="text-[10px] text-zinc-400">ORİJİNAL</div>
+                      <div className="font-bold text-zinc-950 dark:text-white mt-0.5">
+                        {sumResult.originalLength} krk
+                      </div>
                     </div>
-                    <div>
-                      Özet: <strong className="text-slate-200">{sumResult.summaryLength} krk</strong>
+                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.06] dark:border-white/[0.06]">
+                      <div className="text-[10px] text-zinc-400">ÖZET</div>
+                      <div className="font-bold text-zinc-950 dark:text-white mt-0.5">
+                        {sumResult.summaryLength} krk
+                      </div>
                     </div>
-                    <div>
-                      Süre: <strong className="text-emerald-400">{sumResult.executionTimeMs} ms</strong>
+                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.06] dark:border-white/[0.06]">
+                      <div className="text-[10px] text-zinc-400">GECİKME</div>
+                      <div className="font-bold text-emerald-500 mt-0.5">
+                        {sumResult.executionTimeMs} ms
+                      </div>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="p-8 rounded-xl bg-slate-950/50 border border-slate-800/80 text-center text-xs text-slate-500">
-                  Soldaki alana metin girip butona basarak anlık AI özet sonucunu görüntüleyin.
+                <div className="py-14 text-center font-mono text-xs text-zinc-400 border border-dashed border-black/10 dark:border-white/10 rounded-2xl p-6">
+                  Sol paneldeki metni onaylayarak çıkarımı başlatın.
                 </div>
               )}
             </div>
-            <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-400 flex items-center gap-2">
-              <Cpu className="w-3.5 h-3.5 text-emerald-400" />
-              Model: Extractive Salience Graph + Spring AI Fallback
+
+            <div className="pt-3 border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-zinc-400">
+              <span className="flex items-center gap-1.5">
+                <Cpu className="w-3.5 h-3.5 text-[#a3c900] dark:text-[#d4f933]" />
+                SPRING AI CHAT ENGINE
+              </span>
+              <span className="text-emerald-500 font-bold">READY</span>
             </div>
           </div>
         </div>
@@ -207,64 +255,73 @@ export const AiPlayground: React.FC = () => {
 
       {/* Tab 2: Tagging */}
       {activeTab === 'tagging' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Tags className="w-5 h-5 text-indigo-400" />
-              Blog Başlığı ve İçeriği
-            </h3>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-7 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 space-y-4 shadow-xl">
+            <div className="flex items-center justify-between font-mono text-xs">
+              <span className="flex items-center gap-2 text-zinc-950 dark:text-white font-bold uppercase">
+                <Tags className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
+                İÇERİK ANALİZ GİRDİSİ
+              </span>
+            </div>
+
             <input
               type="text"
               value={tagTitle}
               onChange={(e) => setTagTitle(e.target.value)}
               placeholder="Blog Başlığı"
-              className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-indigo-500"
+              className="w-full p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-black/10 dark:border-white/10 text-zinc-900 dark:text-white text-xs font-mono focus:outline-none focus:border-[#d4f933]"
             />
+
             <textarea
-              rows={6}
+              rows={5}
               value={tagContent}
               onChange={(e) => setTagContent(e.target.value)}
               placeholder="Blog İçeriği"
-              className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-indigo-500 leading-relaxed"
+              className="w-full p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-black/10 dark:border-white/10 text-zinc-900 dark:text-white text-xs font-mono focus:outline-none focus:border-[#d4f933] leading-relaxed"
             />
+
             <button
               onClick={handleTagging}
               disabled={isTagging || !tagTitle.trim()}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-xs shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2 transition-all"
+              className="px-6 py-3 rounded-full bg-zinc-950 dark:bg-[#d4f933] hover:opacity-90 disabled:opacity-50 text-white dark:text-black text-xs font-mono font-black uppercase tracking-wider shadow-md flex items-center gap-2 transition-transform active:scale-95 cursor-pointer"
             >
               {isTagging ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-              NLP ile Otomatik Etiket & Kategori Belirle
+              <span>OTOMATİK TAKSONOMİ OLUŞTUR</span>
             </button>
           </div>
 
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-indigo-400" />
-              AI Öneri Sonuçları
-            </h3>
+          <div className="lg:col-span-5 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 space-y-5 shadow-xl flex flex-col justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between font-mono text-xs">
+                <span className="flex items-center gap-2 text-zinc-950 dark:text-white font-bold uppercase">
+                  <CheckCircle2 className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
+                  ÖNERİ TELEMETRİSİ
+                </span>
+              </div>
 
-            {tagResult ? (
-              <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-indigo-950/20 border border-indigo-500/30 space-y-3">
-                  <div>
-                    <span className="text-xs text-slate-400">Önerilen Kategori:</span>
-                    <div className="text-lg font-bold text-indigo-300 mt-0.5">
+              {tagResult ? (
+                <div className="space-y-4 font-mono text-xs">
+                  <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] space-y-2">
+                    <span className="text-[10px] text-zinc-400 uppercase">ÖNERİLEN KATEGORİ</span>
+                    <div className="text-xl font-black text-zinc-950 dark:text-white uppercase">
                       {tagResult.suggestedCategory}
                     </div>
                   </div>
-                  <div>
-                    <span className="text-xs text-slate-400">Güven Skoru:</span>
-                    <div className="text-sm font-mono text-emerald-400 font-bold">
+
+                  <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] space-y-1">
+                    <span className="text-[10px] text-zinc-400 uppercase">GÜVEN SKORU</span>
+                    <div className="text-base font-bold text-zinc-950 dark:text-[#d4f933]">
                       %{(tagResult.confidenceScore * 100).toFixed(1)}
                     </div>
                   </div>
-                  <div>
-                    <span className="text-xs text-slate-400">Önerilen Etiketler:</span>
-                    <div className="flex flex-wrap gap-2 mt-1.5">
+
+                  <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] space-y-2">
+                    <span className="text-[10px] text-zinc-400 uppercase">ÇIKARILAN ETİKETLER</span>
+                    <div className="flex flex-wrap gap-1.5">
                       {tagResult.suggestedTags.map((tag, i) => (
                         <span
                           key={i}
-                          className="px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-200 border border-indigo-500/30 text-xs font-mono"
+                          className="px-3 py-1 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-black font-bold text-xs"
                         >
                           #{tag}
                         </span>
@@ -272,112 +329,127 @@ export const AiPlayground: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div className="p-8 rounded-xl bg-slate-950/50 border border-slate-800/80 text-center text-xs text-slate-500">
-                Başlık ve içerik girip butona basarak Spring AI&apos;ın otomatik etiketleme sonucunu inceleyin.
-              </div>
-            )}
+              ) : (
+                <div className="py-14 text-center font-mono text-xs text-zinc-400 border border-dashed border-black/10 dark:border-white/10 rounded-2xl p-6">
+                  İçerik bilgilerini girerek taksonomi çıkarımını tetikleyin.
+                </div>
+              )}
+            </div>
+
+            <div className="pt-3 border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-zinc-400">
+              <span>ZERO-SHOT CLASSIFICATION</span>
+              <span className="text-emerald-500 font-bold">ACCURATE</span>
+            </div>
           </div>
         </div>
       )}
 
       {/* Tab 3: Moderation */}
       {activeTab === 'moderation' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-purple-400" />
-              İçerik / Yorum Metni
-            </h3>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-7 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 space-y-4 shadow-xl">
+            <div className="flex items-center justify-between font-mono text-xs">
+              <span className="flex items-center gap-2 text-zinc-950 dark:text-white font-bold uppercase">
+                <ShieldCheck className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
+                İÇERİK / YORUM GÜVENLİK GİRDİSİ
+              </span>
+            </div>
+
             <textarea
-              rows={6}
+              rows={5}
               value={modText}
               onChange={(e) => setModText(e.target.value)}
-              className="w-full p-4 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-purple-500 leading-relaxed"
+              className="w-full p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-black/10 dark:border-white/10 text-zinc-900 dark:text-white text-xs font-mono focus:outline-none focus:border-[#d4f933] leading-relaxed"
             />
-            <div className="flex gap-2">
+
+            <div className="flex flex-wrap gap-2 font-mono text-xs">
               <button
                 onClick={() => setModText('Mükemmel bir anlatım, kod örnekleri çok kaliteli ve öğretici.')}
-                className="text-[11px] px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300"
+                className="text-[11px] px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black text-zinc-600 dark:text-zinc-300 border border-black/10 dark:border-white/10 transition-colors cursor-pointer"
               >
-                Pozitif Yorum Örneği
+                + POZİTİF TEST ÖRNEĞİ
               </button>
               <button
                 onClick={() => setModText('Bu sistem tam bir rezalet, çok kötü ve berbat bir proje!')}
-                className="text-[11px] px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-rose-300"
+                className="text-[11px] px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 hover:bg-rose-600 hover:text-white text-zinc-600 dark:text-zinc-300 border border-black/10 dark:border-white/10 transition-colors cursor-pointer"
               >
-                Negatif Yorum Örneği
+                - TOKSİK TEST ÖRNEĞİ
               </button>
             </div>
+
             <button
               onClick={handleModerate}
               disabled={isModerating || !modText.trim()}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-xs shadow-md shadow-purple-500/20 flex items-center justify-center gap-2 transition-all"
+              className="px-6 py-3 rounded-full bg-zinc-950 dark:bg-[#d4f933] hover:opacity-90 disabled:opacity-50 text-white dark:text-black text-xs font-mono font-black uppercase tracking-wider shadow-md flex items-center gap-2 transition-transform active:scale-95 cursor-pointer"
             >
               {isModerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-              AI Toksisite & Duygu Durumu Denetle
+              <span>GÜVENLİK VE DUYGU DENETLE</span>
             </button>
           </div>
 
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-purple-400" />
-              Moderasyon Değerlendirmesi
-            </h3>
+          <div className="lg:col-span-5 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 space-y-5 shadow-xl flex flex-col justify-between">
+            <div className="space-y-4 font-mono">
+              <div className="flex items-center justify-between text-xs">
+                <span className="flex items-center gap-2 text-zinc-950 dark:text-white font-bold uppercase">
+                  <CheckCircle2 className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
+                  RADAR ANALİZİ
+                </span>
+              </div>
 
-            {modResult ? (
-              <div
-                className={`p-5 rounded-xl border space-y-4 ${
-                  modResult.toxic
-                    ? 'bg-rose-950/20 border-rose-500/40 text-rose-200'
-                    : 'bg-emerald-950/20 border-emerald-500/40 text-emerald-200'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    {modResult.toxic ? (
-                      <AlertTriangle className="w-5 h-5 text-rose-400" />
-                    ) : (
-                      <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                    )}
-                    <span className="font-bold text-base">
-                      {modResult.toxic ? 'Sakıncalı / Toksik İçerik Algılandı' : 'Güvenli ve Kurallara Uygun'}
+              {modResult ? (
+                <div className="space-y-4">
+                  <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {modResult.toxic ? (
+                        <AlertTriangle className="w-5 h-5 text-rose-500" />
+                      ) : (
+                        <ShieldCheck className="w-5 h-5 text-[#a3c900] dark:text-[#d4f933]" />
+                      )}
+                      <span className="font-bold text-sm text-zinc-950 dark:text-white uppercase">
+                        {modResult.toxic ? 'TOKSİK / SAKINCALI' : 'GÜVENLİ VE UYGUN'}
+                      </span>
+                    </div>
+
+                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-zinc-950 dark:bg-[#d4f933] text-white dark:text-black font-bold">
+                      %{(modResult.toxicityScore * 100).toFixed(1)}
                     </span>
                   </div>
-                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-900 border border-slate-700">
-                    Toksisite: {(modResult.toxicityScore * 100).toFixed(1)}%
-                  </span>
-                </div>
 
-                <div className="grid grid-cols-2 gap-3 text-xs pt-2 border-t border-slate-700/60">
-                  <div>
-                    <span className="text-slate-400">Duygu Durumu (Sentiment):</span>
-                    <div className="font-bold font-mono text-sm mt-0.5 text-white">
-                      {modResult.sentiment}
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.06] dark:border-white/[0.06]">
+                      <div className="text-[10px] text-zinc-400 uppercase">SENTIMENT</div>
+                      <div className="font-bold text-zinc-950 dark:text-white mt-0.5">
+                        {modResult.sentiment}
+                      </div>
+                    </div>
+                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.06] dark:border-white/[0.06]">
+                      <div className="text-[10px] text-zinc-400 uppercase">SENTIMENT SCORE</div>
+                      <div className="font-bold text-zinc-950 dark:text-[#d4f933] mt-0.5">
+                        {modResult.sentimentScore > 0 ? `+${modResult.sentimentScore.toFixed(2)}` : modResult.sentimentScore.toFixed(2)}
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <span className="text-slate-400">Duygu Skoru:</span>
-                    <div className="font-bold font-mono text-sm mt-0.5 text-white">
-                      {modResult.sentimentScore > 0 ? `+${modResult.sentimentScore.toFixed(2)}` : modResult.sentimentScore.toFixed(2)}
-                    </div>
-                  </div>
-                </div>
 
-                {modResult.reason && (
-                  <p className="text-xs text-slate-300 leading-relaxed font-sans">{modResult.reason}</p>
-                )}
-              </div>
-            ) : (
-              <div className="p-8 rounded-xl bg-slate-950/50 border border-slate-800/80 text-center text-xs text-slate-500">
-                Yorum metnini analiz ederek Spring AI pre-moderasyon motorunun sonucunu görün.
-              </div>
-            )}
+                  {modResult.reason && (
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-black/[0.06] dark:border-white/[0.06]">
+                      {modResult.reason}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="py-14 text-center text-xs text-zinc-400 border border-dashed border-black/10 dark:border-white/10 rounded-2xl p-6">
+                  İçeriği denetime göndererek sonucu analiz edin.
+                </div>
+              )}
+            </div>
+
+            <div className="pt-3 border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-zinc-400">
+              <span>SAFETY GUARDRAIL</span>
+              <span className="text-emerald-500 font-bold">ONLINE</span>
+            </div>
           </div>
         </div>
       )}
     </div>
   );
 };
-
