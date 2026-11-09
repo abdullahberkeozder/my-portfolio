@@ -17,21 +17,33 @@ export interface BlogCategoryDto {
 
 export interface BlogDto {
   id?: number;
+  blogId?: number;
   header: string;
   title: string;
   content: string;
   author?: string;
+  authorId?: number;
+  authorUsername?: string;
   imagePath?: string;
+  image?: string;
   views?: number;
+  viewsCount?: number;
   likes?: number;
+  likesCount?: number;
+  version?: number;
+  commentCount?: number;
   isPublished?: boolean;
+  isDeleted?: boolean;
   publishedAt?: string;
   createdDate?: string;
   updatedDate?: string;
   category?: BlogCategoryDto;
+  blogCategoryDto?: BlogCategoryDto;
   tags?: string[];
   aiSummary?: string;
   hasVectorEmbedding?: boolean;
+  hasEmbedding?: boolean;
+  isLiked?: boolean; // Client-side Optimistic UI state
 }
 
 export interface BlogFilterRequestDto {
@@ -112,6 +124,7 @@ export interface CommentResponseDto {
   isApproved: boolean;
   sentiment?: 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE';
   moderationReason?: string;
+  isOptimistic?: boolean; // Optimistic UI pending indicator
 }
 
 export interface CommentCreateRequestDto {

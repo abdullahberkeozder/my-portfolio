@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, Terminal, Cpu, Database, Server, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Sparkles, Cpu, Database, Server, CheckCircle2, AlertCircle } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
 
 interface NavbarProps {

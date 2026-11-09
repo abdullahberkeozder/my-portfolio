@@ -1,9 +1,10 @@
-﻿# NovaBlog
+# NovaBlog
 
 [![Java 22](https://img.shields.io/badge/Java-22%20Loom-ED8B00?style=flat-square&logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/22/)
 [![Spring Boot 4.1.1](https://img.shields.io/badge/Spring_Boot-4.1.1-6DB33F?style=flat-square&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16%20App%20Router-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![TanStack Query](https://img.shields.io/badge/TanStack_Query-v5_Optimistic_UI-FF4154?style=flat-square&logo=react-query&logoColor=white)](https://tanstack.com/query/latest)
 [![Tests](https://img.shields.io/badge/Tests-195%20Passing%20(100%25)-brightgreen?style=flat-square&logo=checkmarx&logoColor=white)](#test-suite--quality-assurance)
 [![Resilience4j](https://img.shields.io/badge/Resilience4j-Circuit_Breaker_%26_Idempotency-blue?style=flat-square&logo=shield&logoColor=white)](#resilience4j--fault-tolerance)
 [![Concurrency](https://img.shields.io/badge/Concurrency-Write--Behind_Counters_%26_Optimistic_Locking-orange?style=flat-square&logo=speedtest&logoColor=white)](#8-concurrency--locking-redis-write-behind-counters--jpa-optimistic-locking)
@@ -27,7 +28,7 @@ NovaBlog is a full-stack content publishing platform built with **Spring Boot 4.
 
 The repository is structured as a monorepo containing:
 - `backend/`: Spring Boot 4 REST API, Spring AI vector engine, Resilience4j fault tolerance & circuit breakers, Idempotency filter, Redis Write-Behind engagement counters, Spring Batch jobs, Flyway database migrations, and 195 unit and integration tests.
-- `frontend/`: Next.js 16 showcase with App Router, semantic search studio, AI moderation tools, and administrative batch triggers.
+- `frontend/`: Next.js 16 showcase with App Router, TanStack Query v5 optimistic state management, semantic search studio, AI moderation tools, and administrative batch triggers.
 - `docker-compose.yml`: Local infrastructure orchestrating PostgreSQL 16, Redis 7, MinIO S3, Mailpit SMTP, and Prometheus.
 
 ---
@@ -192,9 +193,10 @@ Production high-traffic engagement systems must isolate high-frequency counter u
 
 ## Next.js 16 Frontend
 
-The frontend is located in `novablog/frontend` and built with Next.js 16, React 19, and Tailwind CSS v4.
+The frontend is located in `novablog/frontend` and built with Next.js 16, React 19, TanStack Query v5, and Tailwind CSS v4.
 
 Features:
+- **TanStack Query v5 & Optimistic UI:** Instant zero-latency like/unlike interactions (`useToggleLikeMutation`), optimistic comment submission (`useAddCommentMutation`) with automatic rollback on network failure, and seamless synchronization with Redis Write-Behind counters upon query settlement (`onSettled`).
 - **Semantic Search Studio:** Switch between Semantic Vector, Hybrid RRF, and Lexical SQL modes with similarity threshold controls and match explanations.
 - **AI Playground:** Interactive tool for testing text summarization, auto-tagging, and comment toxicity inspection.
 - **System Console:** Real-time health indicators for database connection pool, Redis cache hit rate (94%), MinIO S3, and WebSocket topics.
@@ -202,9 +204,9 @@ Features:
 
 ---
 
-## 24 Engineering Milestones
+## 25 Engineering Milestones
 
-The project was constructed across 24 architectural milestones:
+The project was constructed across 25 architectural milestones:
 
 | # | Milestone | Scope |
 | :-: | :--- | :--- |
@@ -232,6 +234,7 @@ The project was constructed across 24 architectural milestones:
 | **22** | Spring AI & Vector Search | 128D embeddings, Cosine similarity, RRF hybrid search, TL;DR, and moderation. |
 | **23** | Resilience4j & Idempotency | CircuitBreaker (CLOSED/OPEN/HALF_OPEN), Bulkhead, Retry, Redis `X-Idempotency-Key`, RFC 7807 ProblemDetails. |
 | **24** | Concurrency & Locking | Redis Write-Behind engagement counters (INCR buffer + batch DB flusher) & JPA @Version optimistic locking with RFC 7807 409 Conflict. |
+| **25** | TanStack Query v5 & Optimistic UI | Zero-latency likes, optimistic comment rendering, cache snapshot rollback on failure, and Write-Behind buffer synchronization. |
 
 ---
 
@@ -413,9 +416,9 @@ Yüksek trafikli etkileşim sistemlerinde eşzamanlı sayfa görüntülenme ve b
 
 ---
 
-## 24 Mimari Adım
+## 25 Mimari Adım
 
-Proje 24 geliştirme adımı üzerinden tamamlanmıştır:
+Proje 25 geliştirme adımı üzerinden tamamlanmıştır:
 
 1. Mimari Temel (Java 22, Spring Boot 4.1.1)
 2. Entity Auditing (`createdDate`, `updatedDate`)
@@ -441,6 +444,7 @@ Proje 24 geliştirme adımı üzerinden tamamlanmıştır:
 22. Spring AI Vektör Arama & Next.js 16 Vitrini
 23. Resilience4j & Idempotency (CircuitBreaker, Bulkhead, Retry, Redis X-Idempotency-Key, RFC 7807)
 24. Eşzamanlılık ve Kilitleme (Redis Write-Behind Sayaçları, Zamanlanmış DB Flush & JPA @Version Optimistic Locking HTTP 409 Conflict)
+25. Next.js 16 & TanStack Query v5 Optimistic UI (Sıfır gecikmeli beğeni/yorum, hata anında anlık snapshot geri alma ve Redis Write-Behind önbellek senkronizasyonu)
 
 ---
 

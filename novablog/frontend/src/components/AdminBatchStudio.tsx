@@ -9,8 +9,6 @@ import {
   Cpu,
   Trash2,
   BarChart3,
-  Server,
-  CheckCircle2,
   Loader2,
   Activity,
   Layers,
@@ -192,7 +190,7 @@ export const AdminBatchStudio: React.FC = () => {
               className="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs flex items-center justify-center gap-2 transition-all"
             >
               {isLoadingCleanup ? <Loader2 className="w-4 h-4 animate-spin" /> : <Database className="w-4 h-4" />}
-              Temizleme Job'ını Başlat
+              Temizleme Job&apos;ını Başlat
             </button>
           </div>
         </div>
@@ -225,7 +223,7 @@ export const AdminBatchStudio: React.FC = () => {
               className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all shadow-md shadow-cyan-500/20"
             >
               {isLoadingAnalytics ? <Loader2 className="w-4 h-4 animate-spin" /> : <Layers className="w-4 h-4" />}
-              Analitik Rapor Job'ını Çalıştır
+              Analitik Rapor Job&apos;ını Çalıştır
             </button>
           </div>
         </div>

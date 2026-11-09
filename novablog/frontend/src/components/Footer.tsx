@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Sparkles, Terminal, Code2 } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
 
 export const Footer: React.FC = () => {

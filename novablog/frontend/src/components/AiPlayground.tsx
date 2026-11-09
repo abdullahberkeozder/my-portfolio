@@ -275,7 +275,7 @@ export const AiPlayground: React.FC = () => {
               </div>
             ) : (
               <div className="p-8 rounded-xl bg-slate-950/50 border border-slate-800/80 text-center text-xs text-slate-500">
-                Başlık ve içerik girip butona basarak Spring AI'ın otomatik etiketleme sonucunu inceleyin.
+                Başlık ve içerik girip butona basarak Spring AI&apos;ın otomatik etiketleme sonucunu inceleyin.
               </div>
             )}
           </div>

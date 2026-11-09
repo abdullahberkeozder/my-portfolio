@@ -1,15 +1,21 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { BlogDto, CommentResponseDto } from '@/types/api';
+import React, { useState, useEffect, useRef } from 'react';
+import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
+import {
+  useCommentsQuery,
+  useAddCommentMutation,
+  useToggleLikeMutation,
+  useRecordViewMutation,
+  useBlogDetailQuery,
+} from '@/hooks/useBlogs';
 import {
   X,
   Bot,
-  Sparkles,
   Calendar,
   Eye,
-  ThumbsUp,
+  Heart,
   MessageSquare,
   Send,
   ShieldCheck,
@@ -24,26 +30,35 @@ interface BlogDetailModalProps {
 }
 
 export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose }) => {
-  const [comments, setComments] = useState<CommentResponseDto[]>([]);
+  const blogId = blog?.id ?? blog?.blogId;
+  const { data: liveBlog } = useBlogDetailQuery(blogId);
+  const currentBlog = liveBlog || blog;
+
+  const { data: comments = [], isLoading: isLoadingComments } = useCommentsQuery(blogId);
+  const addCommentMutation = useAddCommentMutation();
+  const toggleLikeMutation = useToggleLikeMutation();
+  const recordViewMutation = useRecordViewMutation();
+
   const [newComment, setNewComment] = useState('');
   const [authorName, setAuthorName] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [moderationPreview, setModerationPreview] = useState<{
     toxic: boolean;
     sentiment: string;
     score: number;
   } | null>(null);
 
+  // Görüntülenme Sayacı (Write-Behind Redis Buffer): Modal açıldığında bir kez tetiklenir
+  const hasRecordedView = useRef<number | null>(null);
   useEffect(() => {
-    if (blog?.id) {
-      ApiClient.getComments(blog.id).then(setComments);
+    if (blogId && hasRecordedView.current !== blogId) {
+      hasRecordedView.current = blogId;
+      recordViewMutation.mutate(blogId);
     }
-  }, [blog]);
+  }, [blogId, recordViewMutation]);
 
   // Real-time AI moderation check on comment typing
   useEffect(() => {
     if (!newComment.trim()) {
-      setModerationPreview(null);
       return;
     }
     const timer = setTimeout(async () => {
@@ -57,40 +72,54 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
       } catch {
         // ignore
       }
-    }, 400);
+    }, 350);
 
     return () => clearTimeout(timer);
   }, [newComment]);
 
-  if (!blog) return null;
+  if (!currentBlog || !blogId) return null;
 
-  const handleAddComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newComment.trim() || !blog.id) return;
-
-    setIsSubmitting(true);
-    try {
-      const added = await ApiClient.addComment(blog.id, {
-        content: newComment,
-        authorName: authorName.trim() || 'Ziyaretçi Mühendis',
-      });
-      setComments([added, ...comments]);
-      setNewComment('');
-      setModerationPreview(null);
-    } catch {
-      alert('Yorum kaydedilemedi.');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleToggleLike = () => {
+    toggleLikeMutation.mutate({
+      blogId,
+      currentlyLiked: Boolean(currentBlog.isLiked),
+    });
   };
 
-  const formattedDate = blog.publishedAt || blog.createdDate
-    ? new Date(blog.publishedAt || blog.createdDate!).toLocaleDateString('tr-TR', {
+  const handleAddComment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+
+    addCommentMutation.mutate(
+      {
+        blogId,
+        dto: {
+          content: newComment,
+          authorName: authorName.trim() || 'Ziyaretçi Mühendis',
+        },
+      },
+      {
+        onSuccess: () => {
+          setNewComment('');
+          setModerationPreview(null);
+        },
+        onError: () => {
+          alert('Yorum kaydedilemedi. Otomatik geri alma uygulandı.');
+        },
+      }
+    );
+  };
+
+  const formattedDate = currentBlog.publishedAt || currentBlog.createdDate
+    ? new Date(currentBlog.publishedAt || currentBlog.createdDate!).toLocaleDateString('tr-TR', {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
       })
     : '5 Kasım 2026';
+
+  const liveViews = currentBlog.viewsCount ?? currentBlog.views ?? 0;
+  const liveLikes = currentBlog.likesCount ?? currentBlog.likes ?? 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
@@ -100,15 +129,20 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
-                {blog.category?.categoryName || 'Genel'}
+                {currentBlog.category?.categoryName || 'Genel'}
               </span>
               <span className="flex items-center gap-1 text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                 <CheckCircle2 className="w-3 h-3" />
                 128D Vektör İndeksli
               </span>
+              {currentBlog.version !== undefined && (
+                <span className="text-[10px] font-mono text-slate-500 bg-slate-800/80 px-1.5 py-0.5 rounded" title="JPA @Version Optimistic Lock">
+                  v{currentBlog.version}
+                </span>
+              )}
             </div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">{blog.title}</h2>
-            <p className="text-xs font-mono text-slate-400 mt-1 uppercase tracking-wider">{blog.header}</p>
+            <h2 className="text-2xl font-bold text-white tracking-tight">{currentBlog.title}</h2>
+            <p className="text-xs font-mono text-slate-400 mt-1 uppercase tracking-wider">{currentBlog.header}</p>
           </div>
           <button
             onClick={onClose}
@@ -121,29 +155,45 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
         {/* Modal Body */}
         <div className="p-6 overflow-y-auto space-y-6">
           {/* Metadata Row */}
-          <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 pb-4 border-b border-slate-800">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white text-xs">
-                {blog.author ? blog.author.charAt(0) : 'A'}
+          <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400 pb-4 border-b border-slate-800">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white text-xs">
+                  {currentBlog.author ? currentBlog.author.charAt(0) : 'A'}
+                </div>
+                <span className="font-medium text-slate-200">{currentBlog.author || 'Abdullah Berke Özder'}</span>
               </div>
-              <span className="font-medium text-slate-200">{blog.author || 'Abdullah Berke Özder'}</span>
+              <span className="flex items-center gap-1">
+                <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                {formattedDate}
+              </span>
+              <span className="flex items-center gap-1" title="Write-Behind Buffer + DB">
+                <Eye className="w-3.5 h-3.5 text-slate-500" />
+                {liveViews} Görüntülenme
+              </span>
             </div>
-            <span className="flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5 text-slate-500" />
-              {formattedDate}
-            </span>
-            <span className="flex items-center gap-1">
-              <Eye className="w-3.5 h-3.5 text-slate-500" />
-              {blog.views || 0} Görüntülenme
-            </span>
-            <span className="flex items-center gap-1">
-              <ThumbsUp className="w-3.5 h-3.5 text-slate-500" />
-              {blog.likes || 0} Beğeni
-            </span>
+
+            {/* Interactive Optimistic Like Button */}
+            <button
+              onClick={handleToggleLike}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                currentBlog.isLiked
+                  ? 'bg-pink-500/20 text-pink-300 border border-pink-500/40 font-semibold'
+                  : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-pink-300 border border-slate-700'
+              }`}
+              title={currentBlog.isLiked ? 'Beğeniyi geri al' : 'Beğen (TanStack Query Optimistic UI)'}
+            >
+              <Heart
+                className={`w-4 h-4 transition-transform active:scale-125 ${
+                  currentBlog.isLiked ? 'fill-pink-500 text-pink-500' : ''
+                }`}
+              />
+              <span>{liveLikes} Beğeni</span>
+            </button>
           </div>
 
           {/* AI TL;DR Section */}
-          {blog.aiSummary && (
+          {currentBlog.aiSummary && (
             <div className="rounded-xl p-4 bg-gradient-to-r from-purple-950/40 via-indigo-950/40 to-slate-900 border border-purple-500/30">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2 font-semibold text-purple-300 text-sm">
@@ -154,19 +204,19 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
                   Local-Extractive NLP
                 </span>
               </div>
-              <p className="text-sm text-slate-200 leading-relaxed">{blog.aiSummary}</p>
+              <p className="text-sm text-slate-200 leading-relaxed">{currentBlog.aiSummary}</p>
             </div>
           )}
 
-          {/* Main Content */}
-          <div className="prose prose-invert max-w-none text-slate-300 leading-relaxed text-sm space-y-4">
-            <p>{blog.content}</p>
+          {/* Blog Content */}
+          <div className="text-slate-300 leading-relaxed whitespace-pre-wrap font-sans text-sm">
+            {currentBlog.content}
           </div>
 
           {/* Tags */}
-          {blog.tags && (
+          {currentBlog.tags && (
             <div className="pt-2 flex flex-wrap gap-2">
-              {blog.tags.map((t, idx) => (
+              {currentBlog.tags.map((t, idx) => (
                 <span
                   key={idx}
                   className="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-indigo-300 border border-slate-700/80"
@@ -199,7 +249,12 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
                 rows={3}
                 placeholder="Yorumunuzu yazın... (Spring AI Moderasyonu canlı olarak duygu durum ve toksisite analizini gösterir)"
                 value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
+                onChange={(e) => {
+                  setNewComment(e.target.value);
+                  if (!e.target.value.trim()) {
+                    setModerationPreview(null);
+                  }
+                }}
                 className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-indigo-500"
               />
 
@@ -233,28 +288,45 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  disabled={isSubmitting || !newComment.trim()}
+                  disabled={addCommentMutation.isPending || !newComment.trim()}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold shadow-md shadow-indigo-500/20 transition-all"
                 >
-                  {isSubmitting ? (
+                  {addCommentMutation.isPending ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   ) : (
                     <Send className="w-3.5 h-3.5" />
                   )}
-                  Yorum Gönder (AI Doğrulamalı)
+                  Yorum Gönder (Optimistic UI)
                 </button>
               </div>
             </form>
 
             {/* Comments List */}
             <div className="space-y-3">
+              {isLoadingComments && (
+                <div className="flex items-center justify-center py-6 text-slate-400 gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-indigo-400" />
+                  <span className="text-xs">Yorumlar yükleniyor...</span>
+                </div>
+              )}
               {comments.map((c) => (
                 <div
                   key={c.id}
-                  className="p-3 rounded-xl bg-slate-950/40 border border-slate-800/80 text-xs space-y-1.5"
+                  className={`p-3 rounded-xl border text-xs space-y-1.5 transition-all ${
+                    c.isOptimistic
+                      ? 'bg-indigo-950/20 border-indigo-500/40 animate-pulse'
+                      : 'bg-slate-950/40 border-slate-800/80'
+                  }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-200">{c.authorName}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-slate-200">{c.authorName}</span>
+                      {c.isOptimistic && (
+                        <span className="px-1.5 py-0.5 rounded text-[10px] bg-indigo-500/20 text-indigo-300 font-mono">
+                          Sunucuya İletiliyor...
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2">
                       {c.isApproved ? (
                         <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">

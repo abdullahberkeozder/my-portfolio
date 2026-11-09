@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Navbar } from '@/components/Navbar';
 import { HeroSection } from '@/components/HeroSection';
 import { BlogCard } from '@/components/BlogCard';
@@ -10,50 +11,41 @@ import { SemanticSearchStudio } from '@/components/SemanticSearchStudio';
 import { AiPlayground } from '@/components/AiPlayground';
 import { AdminBatchStudio } from '@/components/AdminBatchStudio';
 import { Footer } from '@/components/Footer';
-import { BlogDto, BlogCategoryDto } from '@/types/api';
+import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
+import { useBlogsQuery, useCategoriesQuery } from '@/hooks/useBlogs';
 import { Search, RefreshCw } from 'lucide-react';
 
 export default function Home() {
+  const queryClient = useQueryClient();
+  const { data: blogs = [], isLoading: isLoadingBlogs, refetch: refetchBlogs } = useBlogsQuery();
+  const { data: categories = [] } = useCategoriesQuery();
+
   const [activeTab, setActiveTab] = useState<'feed' | 'ai-search' | 'ai-lab' | 'admin-batch'>('feed');
-  const [blogs, setBlogs] = useState<BlogDto[]>([]);
-  const [categories, setCategories] = useState<BlogCategoryDto[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBlog, setSelectedBlog] = useState<BlogDto | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const loadData = async () => {
-    setIsLoading(true);
-    try {
-      const [bList, cList, online] = await Promise.all([
-        ApiClient.getBlogs(),
-        ApiClient.getCategories(),
-        ApiClient.checkBackendHealth(),
-      ]);
-      setBlogs(bList);
-      setCategories(cList);
-      setIsBackendOnline(online);
-    } catch {
-      setIsBackendOnline(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
-    loadData();
+    ApiClient.checkBackendHealth().then(setIsBackendOnline);
   }, []);
 
+  const handleRefresh = async () => {
+    const online = await ApiClient.checkBackendHealth();
+    setIsBackendOnline(online);
+    refetchBlogs();
+  };
+
   const handleBlogCreated = (newBlog: BlogDto) => {
-    setBlogs([newBlog, ...blogs]);
+    queryClient.setQueryData<BlogDto[]>(['blogs'], (old) => [newBlog, ...(old || [])]);
   };
 
   // Filtered blogs for feed view
   const filteredBlogs = blogs.filter((blog) => {
-    const matchesCategory = selectedCategory === null || blog.category?.categoryId === selectedCategory;
+    const categoryId = blog.category?.categoryId || blog.blogCategoryDto?.categoryId;
+    const matchesCategory = selectedCategory === null || categoryId === selectedCategory;
     const matchesSearch =
       !searchTerm.trim() ||
       blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -69,7 +61,7 @@ export default function Home() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         isBackendOnline={isBackendOnline}
-        onRefreshHealth={loadData}
+        onRefreshHealth={handleRefresh}
       />
 
       {/* Main Content Area */}
@@ -127,7 +119,7 @@ export default function Home() {
               </div>
 
               {/* Blog Cards Grid */}
-              {isLoading ? (
+              {isLoadingBlogs ? (
                 <div className="py-20 text-center text-slate-400 space-y-3">
                   <RefreshCw className="w-6 h-6 animate-spin mx-auto text-indigo-400" />
                   <p className="text-sm">Yazılar yükleniyor...</p>
@@ -135,7 +127,7 @@ export default function Home() {
               ) : filteredBlogs.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredBlogs.map((blog) => (
-                    <BlogCard key={blog.id} blog={blog} onSelect={setSelectedBlog} />
+                    <BlogCard key={blog.id ?? blog.blogId} blog={blog} onSelect={setSelectedBlog} />
                   ))}
                 </div>
               ) : (

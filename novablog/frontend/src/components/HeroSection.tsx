@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, CheckCircle2, Cpu, Zap, Shield, Search } from 'lucide-react';
+import { Sparkles, CheckCircle2, Cpu, Zap, Shield } from 'lucide-react';
 
 interface HeroSectionProps {
   onExploreAI: () => void;
@@ -21,7 +21,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreAI, onOpenCre
             <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
             <span className="font-semibold text-emerald-400">2026 Enterprise Edition</span>
             <span className="text-slate-500">|</span>
-            <span className="font-mono text-slate-400">184/184 Unit & Integration Tests (%100 Pass)</span>
+            <span className="font-mono text-slate-400">195/195 Unit & Integration Tests (%100 Pass)</span>
           </div>
 
           {/* Main Headline */}

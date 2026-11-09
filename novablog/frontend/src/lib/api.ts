@@ -10,7 +10,6 @@ import {
   AiModerationResponseDto,
   CommentResponseDto,
   CommentCreateRequestDto,
-  JwtResponseDto,
   JobExecutionResponseDto,
 } from '@/types/api';
 
@@ -18,7 +17,6 @@ import {
   MOCK_BLOGS,
   MOCK_CATEGORIES,
   MOCK_COMMENTS,
-  MOCK_SEMANTIC_RESULTS,
 } from '@/lib/mockData';
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555';
@@ -77,6 +75,25 @@ export class ApiClient {
     return this.isBackendAvailable;
   }
 
+  public static normalizeBlog(blog: Record<string, unknown> | BlogDto | null | undefined): BlogDto {
+    if (!blog) return blog as unknown as BlogDto;
+    const b = blog as Record<string, unknown>;
+    return {
+      ...(blog as BlogDto),
+      id: (b.id ?? b.blogId) as number,
+      blogId: (b.blogId ?? b.id) as number,
+      views: (b.viewsCount ?? b.views ?? 0) as number,
+      viewsCount: (b.viewsCount ?? b.views ?? 0) as number,
+      likes: (b.likesCount ?? b.likes ?? 0) as number,
+      likesCount: (b.likesCount ?? b.likes ?? 0) as number,
+      version: (b.version ?? 0) as number,
+      category: (b.category ?? b.blogCategoryDto) as BlogCategoryDto,
+      blogCategoryDto: (b.blogCategoryDto ?? b.category) as BlogCategoryDto,
+      aiSummary: b.aiSummary as string | undefined,
+      hasVectorEmbedding: Boolean(b.hasVectorEmbedding ?? b.hasEmbedding ?? false),
+    };
+  }
+
   // --- BLOGS ---
   public static async getBlogs(): Promise<BlogDto[]> {
     try {
@@ -88,10 +105,11 @@ export class ApiClient {
       if (!res.ok) throw new Error('Backend HTTP error');
       const data: ApiResult<BlogDto[]> = await res.json();
       this.isBackendAvailable = true;
-      return data.data && data.data.length > 0 ? data.data : MOCK_BLOGS;
+      const rawList = data.data && data.data.length > 0 ? data.data : MOCK_BLOGS;
+      return rawList.map((b) => this.normalizeBlog(b));
     } catch {
       this.isBackendAvailable = false;
-      return MOCK_BLOGS;
+      return MOCK_BLOGS.map((b) => this.normalizeBlog(b));
     }
   }
 
@@ -104,10 +122,10 @@ export class ApiClient {
       });
       if (!res.ok) throw new Error('Not found');
       const data: ApiResult<BlogDto> = await res.json();
-      return data.data;
+      return this.normalizeBlog(data.data);
     } catch {
-      const found = MOCK_BLOGS.find((b) => b.id === id);
-      return found || MOCK_BLOGS[0];
+      const found = MOCK_BLOGS.find((b) => (b.id ?? b.blogId) === id);
+      return this.normalizeBlog(found || MOCK_BLOGS[0]);
     }
   }
 
@@ -119,16 +137,20 @@ export class ApiClient {
         body: JSON.stringify(blog),
       });
       const data: ApiResult<BlogDto> = await res.json();
-      return data.data;
+      return this.normalizeBlog(data.data);
     } catch {
       const mockCreated: BlogDto = {
         id: Date.now(),
+        blogId: Date.now(),
         header: blog.header,
         title: blog.title,
         content: blog.content,
         author: 'Demo User',
         views: 1,
+        viewsCount: 1,
         likes: 0,
+        likesCount: 0,
+        version: 0,
         isPublished: true,
         createdDate: new Date().toISOString(),
         category: MOCK_CATEGORIES[0],
@@ -136,6 +158,95 @@ export class ApiClient {
         hasVectorEmbedding: true,
       };
       return mockCreated;
+    }
+  }
+
+  // --- CONCURRENCY & ENGAGEMENT WRITE-BEHIND METRICS (Adım 24) ---
+  public static async recordView(id: number): Promise<{ blogId: number; viewsCount: number }> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/${id}/view`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+      });
+      if (!res.ok) throw new Error('Failed to record view');
+      const data: ApiResult<{ blogId: number; viewsCount: number }> = await res.json();
+      return data.data;
+    } catch {
+      const found = MOCK_BLOGS.find((b) => (b.id ?? b.blogId) === id);
+      if (found) {
+        found.views = (found.views || 0) + 1;
+        found.viewsCount = found.views;
+        return { blogId: id, viewsCount: found.views };
+      }
+      return { blogId: id, viewsCount: 1 };
+    }
+  }
+
+  public static async recordLike(id: number): Promise<{ blogId: number; likesCount: number }> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/${id}/like`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+      });
+      if (!res.ok) throw new Error('Failed to record like');
+      const data: ApiResult<{ blogId: number; likesCount: number }> = await res.json();
+      return data.data;
+    } catch {
+      const found = MOCK_BLOGS.find((b) => (b.id ?? b.blogId) === id);
+      if (found) {
+        found.likes = (found.likes || 0) + 1;
+        found.likesCount = found.likes;
+        return { blogId: id, likesCount: found.likes };
+      }
+      return { blogId: id, likesCount: 1 };
+    }
+  }
+
+  public static async removeLike(id: number): Promise<{ blogId: number; likesCount: number }> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/${id}/like`, {
+        method: 'DELETE',
+        headers: this.getHeaders(),
+      });
+      if (!res.ok) throw new Error('Failed to remove like');
+      const data: ApiResult<{ blogId: number; likesCount: number }> = await res.json();
+      return data.data;
+    } catch {
+      const found = MOCK_BLOGS.find((b) => (b.id ?? b.blogId) === id);
+      if (found) {
+        found.likes = Math.max(0, (found.likes || 0) - 1);
+        found.likesCount = found.likes;
+        return { blogId: id, likesCount: found.likes };
+      }
+      return { blogId: id, likesCount: 0 };
+    }
+  }
+
+  public static async updateBlog(id: number, blog: Partial<BlogDto>): Promise<BlogDto> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/${id}`, {
+        method: 'PUT',
+        headers: this.getHeaders(),
+        body: JSON.stringify(blog),
+      });
+      if (res.status === 409) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Bu makale başka bir işlem tarafından güncellendi (409 Conflict).');
+      }
+      if (!res.ok) throw new Error('Update failed');
+      const data: ApiResult<BlogDto> = await res.json();
+      return this.normalizeBlog(data.data);
+    } catch (e: unknown) {
+      const err = e as Error;
+      if (err.message?.includes('409') || err.message?.includes('Conflict')) {
+        throw e;
+      }
+      const found = MOCK_BLOGS.find((b) => (b.id ?? b.blogId) === id);
+      if (found) {
+        Object.assign(found, blog);
+        return this.normalizeBlog(found);
+      }
+      throw e;
     }
   }
 

@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
-import { Sparkles, Eye, ThumbsUp, Calendar, User, ArrowRight, Loader2, Bot } from 'lucide-react';
+import { useToggleLikeMutation } from '@/hooks/useBlogs';
+import { Sparkles, Eye, Heart, Calendar, ArrowRight, Loader2, Bot } from 'lucide-react';
 
 interface BlogCardProps {
   blog: BlogDto;
@@ -15,17 +16,29 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect }) => {
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
   const [showSummary, setShowSummary] = useState(Boolean(blog.aiSummary));
 
+  const toggleLikeMutation = useToggleLikeMutation();
+  const blogId = blog.id ?? blog.blogId;
+
+  const handleToggleLike = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!blogId) return;
+    toggleLikeMutation.mutate({
+      blogId,
+      currentlyLiked: Boolean(blog.isLiked),
+    });
+  };
+
   const handleFetchSummary = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (summary) {
       setShowSummary(!showSummary);
       return;
     }
-    if (!blog.id) return;
+    if (!blogId) return;
 
     setIsLoadingSummary(true);
     try {
-      const res = await ApiClient.generateBlogSummary(blog.id);
+      const res = await ApiClient.generateBlogSummary(blogId);
       setSummary(res.aiSummary);
       setShowSummary(true);
     } catch {
@@ -43,6 +56,9 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect }) => {
       })
     : '5 Kas 2026';
 
+  const liveViews = blog.viewsCount ?? blog.views ?? 0;
+  const liveLikes = blog.likesCount ?? blog.likes ?? 0;
+
   return (
     <article
       onClick={() => onSelect(blog)}
@@ -54,15 +70,27 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect }) => {
           <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-500/15 text-indigo-300 border border-indigo-500/25">
             {blog.category?.categoryName || 'Genel Teknoloji'}
           </span>
-          <div className="flex items-center gap-3 text-xs text-slate-400">
-            <span className="flex items-center gap-1">
+          <div className="flex items-center gap-2 text-xs text-slate-400">
+            <span className="flex items-center gap-1 px-1.5 py-0.5" title="Canlı İzlenme (Redis Write-Behind)">
               <Eye className="w-3.5 h-3.5 text-slate-500" />
-              {blog.views || 0}
+              {liveViews}
             </span>
-            <span className="flex items-center gap-1">
-              <ThumbsUp className="w-3.5 h-3.5 text-slate-500" />
-              {blog.likes || 0}
-            </span>
+            <button
+              onClick={handleToggleLike}
+              className={`flex items-center gap-1 px-2 py-0.5 rounded-md transition-all ${
+                blog.isLiked
+                  ? 'text-pink-400 bg-pink-500/15 border border-pink-500/30 font-semibold'
+                  : 'text-slate-400 hover:text-pink-400 hover:bg-slate-800/80'
+              }`}
+              title={blog.isLiked ? 'Beğeniyi geri al' : 'Beğen (TanStack Query Optimistic UI)'}
+            >
+              <Heart
+                className={`w-3.5 h-3.5 transition-transform active:scale-125 ${
+                  blog.isLiked ? 'fill-pink-500 text-pink-500' : ''
+                }`}
+              />
+              <span>{liveLikes}</span>
+            </button>
           </div>
         </div>
 
