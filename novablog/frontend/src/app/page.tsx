@@ -84,7 +84,7 @@ export default function Home() {
   const hasActiveFilters = Boolean(selectedCategory !== null || searchTerm.trim());
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col font-sans transition-colors duration-300 pb-16 sm:pb-20">
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col font-sans transition-colors duration-300">
       {/* Navigation (Ride Also Interactive Mega-Drawer & Ticker Header) */}
       <Navbar
         activeTab={activeTab}

@@ -309,9 +309,13 @@ export const Footer: React.FC<FooterProps> = ({
       </div>
 
       {/* The Iconic Ride Also Monumental Giant Brandmark ("NOVA.") */}
-      <div className="mt-12 sm:mt-16 lg:mt-20 w-full overflow-hidden select-none pointer-events-none">
-        <h1 className="text-[22vw] font-black tracking-tight text-[#9d4edd] dark:text-[#a855f7] leading-[0.8] uppercase text-left pl-3 sm:pl-6 lg:pl-10 -mb-4 sm:-mb-8 lg:-mb-14">
-          NOVA<span className="text-[#d4f933]">.</span>
+      <div className="mt-12 sm:mt-16 lg:mt-20 w-full overflow-hidden select-none group cursor-pointer pb-0 mb-0">
+        <h1
+          onClick={handleNavFeed}
+          title="Sayfa Başına Dön"
+          className="text-[22vw] font-black tracking-tight text-[#a78bfa] group-hover:text-white transition-colors duration-500 ease-out leading-[0.78] uppercase text-left pl-3 sm:pl-6 lg:pl-10 -mb-2 sm:-mb-6 lg:-mb-10 cursor-pointer select-none"
+        >
+          NOVA<span className="text-[#d4f933] group-hover:text-white transition-colors duration-500">.</span>
         </h1>
       </div>
     </footer>
