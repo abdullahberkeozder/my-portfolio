@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import {
   Sparkles,
   ArrowRight,
@@ -123,6 +124,28 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <div className="flex items-center gap-1.5 text-[11px] text-[#a3c900] dark:text-[#d4f933]">
                   <Radio className="w-3.5 h-3.5 animate-pulse" />
                   <span>ONLINE</span>
+                </div>
+              </div>
+
+              {/* Hardware Visual Preview (Ride Also Product Rendering) */}
+              <div className="relative rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 aspect-[16/9] bg-zinc-950">
+                <Image
+                  src="/images/hardware-core.jpg"
+                  alt="NovaBlog Hardware Engine Core"
+                  fill
+                  priority
+                  className="object-cover object-center transform hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none" />
+
+                {/* Hardware Badge */}
+                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-[10px] font-mono text-zinc-300 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#d4f933] animate-pulse" />
+                  <span>TITANIUM SILICON // V4.1</span>
+                </div>
+
+                <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-[10px] font-mono text-[#d4f933] font-bold">
+                  128D VECTOR CORE
                 </div>
               </div>
 

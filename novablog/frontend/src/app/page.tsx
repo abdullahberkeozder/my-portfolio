@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Navbar } from '@/components/Navbar';
 import { HeroSection } from '@/components/HeroSection';
+import { ModularArchitectureConsole } from '@/components/ModularArchitectureConsole';
+import { PortalCockpitDock } from '@/components/PortalCockpitDock';
 import { BlogCard } from '@/components/BlogCard';
 import { BlogDetailModal } from '@/components/BlogDetailModal';
 import { CreateBlogModal } from '@/components/CreateBlogModal';
@@ -81,8 +83,8 @@ export default function Home() {
   const hasActiveFilters = Boolean(selectedCategory !== null || searchTerm.trim());
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col font-sans transition-colors duration-300">
-      {/* Navigation */}
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col font-sans transition-colors duration-300 pb-16 sm:pb-20">
+      {/* Navigation (Ride Also Minimalist Hairline Header) */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -95,11 +97,14 @@ export default function Home() {
       <main className="flex-1">
         {activeTab === 'feed' && (
           <div>
-            {/* Hero Banner (Ride Also High-Performance Industrial) */}
+            {/* Hero Banner (Ride Also High-Performance Industrial + 3D Hardware Core) */}
             <HeroSection
               onExploreAI={() => setActiveTab('ai-search')}
               onOpenCreateModal={() => setIsCreateModalOpen(true)}
             />
+
+            {/* Modular Architecture Console (Inspired by Ride Also TM-B Modular Frames) */}
+            <ModularArchitectureConsole />
 
             {/* Articles Feed */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
@@ -264,6 +269,15 @@ export default function Home() {
         {/* Tab 4: Admin Batch & System Studio */}
         {activeTab === 'admin-batch' && <AdminBatchStudio />}
       </main>
+
+      {/* Floating "Portal Display" Cockpit Dock (Ride Also Mission Control) */}
+      <PortalCockpitDock
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onOpenCreateModal={() => setIsCreateModalOpen(true)}
+        onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
+        onMetricsFlushed={() => refetchBlogs()}
+      />
 
       {/* Detail Modal */}
       <BlogDetailModal
