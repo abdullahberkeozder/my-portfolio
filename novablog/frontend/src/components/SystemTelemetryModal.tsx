@@ -53,29 +53,31 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-2xl rounded-2xl bg-slate-900 border border-slate-800 text-slate-100 shadow-2xl overflow-hidden my-auto animate-in fade-in duration-200">
-        {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-2xl rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 text-zinc-900 dark:text-zinc-100 shadow-2xl overflow-hidden my-auto animate-in fade-in duration-200">
+        {/* Header (Ride Also Spec Sheet) */}
+        <div className="p-6 border-b border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between bg-zinc-50 dark:bg-zinc-950/60">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+            <div className="w-10 h-10 rounded-2xl bg-zinc-900 dark:bg-zinc-800 border border-black/10 dark:border-white/10 flex items-center justify-center text-[#d4f933] shadow-sm">
               <Activity className="w-5 h-5 animate-pulse" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-white text-base">Sistem Telemetrisi & Canlı Mimari</h3>
-                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                  {isBackendOnline ? 'Backend Online (Port 5555)' : 'Canlı Mock & Demo Modu'}
+                <h3 className="font-mono font-bold text-zinc-950 dark:text-white text-base uppercase">
+                  SİSTEM TELEMETRİSİ // CANLI MİMARİ
+                </h3>
+                <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-[#d4f933]/20 text-zinc-900 dark:text-[#d4f933] font-bold border border-[#d4f933]/30">
+                  {isBackendOnline ? 'ONLINE :5555' : 'DEMO MODU'}
                 </span>
               </div>
-              <p className="text-xs text-slate-400 font-mono">
-                Loom Virtual Threads • Redis Write-Behind • Resilience4j
+              <p className="text-xs text-zinc-500 font-mono mt-0.5">
+                JAVA 22 LOOM &bull; REDIS WRITE-BEHIND &bull; RESILIENCE4J
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all"
+            className="p-2 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-500 hover:text-black dark:hover:text-white transition-all cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -84,97 +86,97 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
         {/* Content Body */}
         <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto text-xs">
           {/* Top Architecture Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {/* JVM Virtual Threads */}
-            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80 space-y-2">
-              <div className="flex items-center justify-between text-slate-300 font-semibold">
-                <span className="flex items-center gap-1.5 text-indigo-400">
-                  <Cpu className="w-4 h-4" />
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] space-y-2">
+              <div className="flex items-center justify-between font-mono font-semibold">
+                <span className="flex items-center gap-1.5 text-zinc-900 dark:text-white">
+                  <Cpu className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
                   Java 22 Virtual Threads
                 </span>
-                <span className="font-mono text-emerald-400 text-[11px] font-bold">Project Loom</span>
+                <span className="text-[#a3c900] dark:text-[#d4f933] text-[11px] font-bold">PROJECT LOOM</span>
               </div>
-              <p className="text-slate-400 leading-relaxed">
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
                 Platform OS thread havuzu yerine lightweight sanal thread&apos;ler devrede. Her gelen I/O isteği
                 carrier thread&apos;i bloke etmeden askıya alınır.
               </p>
-              <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-slate-500">
+              <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-zinc-400">
                 <span>Thread-per-request: Aktif</span>
-                <span>•</span>
+                <span>&bull;</span>
                 <span>Throughput: ~10k+ req/s</span>
               </div>
             </div>
 
             {/* Resilience4j Circuit Breaker */}
-            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80 space-y-2">
-              <div className="flex items-center justify-between text-slate-300 font-semibold">
-                <span className="flex items-center gap-1.5 text-emerald-400">
-                  <ShieldCheck className="w-4 h-4" />
-                  Resilience4j Circuit Breaker
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] space-y-2">
+              <div className="flex items-center justify-between font-mono font-semibold">
+                <span className="flex items-center gap-1.5 text-zinc-900 dark:text-white">
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                  Circuit Breaker
                 </span>
-                <span className="font-mono text-emerald-400 text-[11px] font-bold">CLOSED</span>
+                <span className="text-emerald-600 dark:text-emerald-400 text-[11px] font-bold">CLOSED</span>
               </div>
-              <p className="text-slate-400 leading-relaxed">
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
                 Hata oranı %50&apos;yi aştığında devre açılır (OPEN), çağrılar anında fallback yanıtına yönlendirilir.
                 Ring buffer boyutu: 10 istek.
               </p>
-              <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-slate-500">
+              <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-zinc-400">
                 <span>Hata Oranı: %0.0</span>
-                <span>•</span>
-                <span>Fallback: Aktif</span>
+                <span>&bull;</span>
+                <span>Fallback: Devrede</span>
               </div>
             </div>
 
             {/* Optimistic Locking */}
-            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80 space-y-2">
-              <div className="flex items-center justify-between text-slate-300 font-semibold">
-                <span className="flex items-center gap-1.5 text-cyan-400">
-                  <Zap className="w-4 h-4" />
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] space-y-2">
+              <div className="flex items-center justify-between font-mono font-semibold">
+                <span className="flex items-center gap-1.5 text-zinc-900 dark:text-white">
+                  <Zap className="w-4 h-4 text-amber-500" />
                   JPA @Version Locking
                 </span>
-                <span className="font-mono text-cyan-400 text-[11px] font-bold">Optimistic</span>
+                <span className="text-amber-600 dark:text-amber-400 text-[11px] font-bold">OPTIMISTIC</span>
               </div>
-              <p className="text-slate-400 leading-relaxed">
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
                 Eşzamanlı güncelleme yarışlarını (Lost Update) engeller. Eski versiyon ile gelen istekler veritabanı
                 kilidi tutulmadan 409 Conflict ile reddedilir.
               </p>
-              <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-slate-500">
+              <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-zinc-400">
                 <span>Row Lock: Yok (Lock-free)</span>
-                <span>•</span>
-                <span>Auto-Retry: Devrede</span>
+                <span>&bull;</span>
+                <span>Conflict Map: RFC 7807</span>
               </div>
             </div>
 
             {/* Multi-Layer Cache */}
-            <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800/80 space-y-2">
-              <div className="flex items-center justify-between text-slate-300 font-semibold">
-                <span className="flex items-center gap-1.5 text-purple-400">
-                  <Layers className="w-4 h-4" />
-                  Multi-Layer Caching
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] space-y-2">
+              <div className="flex items-center justify-between font-mono font-semibold">
+                <span className="flex items-center gap-1.5 text-zinc-900 dark:text-white">
+                  <Layers className="w-4 h-4 text-purple-500" />
+                  Multi-Layer Cache
                 </span>
-                <span className="font-mono text-purple-400 text-[11px] font-bold">L1 + L2</span>
+                <span className="text-purple-600 dark:text-purple-400 text-[11px] font-bold">L1 + L2</span>
               </div>
-              <p className="text-slate-400 leading-relaxed">
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
                 L1 Caffeine in-memory önbellek (sıfır ağ gecikmesi) + L2 Redis kümesi. Okuma trafiğinde veritabanı
                 yükü %90 oranında bypass edilir.
               </p>
-              <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-slate-500">
+              <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-zinc-400">
                 <span>Caffeine TTL: 5 dk</span>
-                <span>•</span>
+                <span>&bull;</span>
                 <span>Redis TTL: 10 dk</span>
               </div>
             </div>
           </div>
 
-          {/* Interactive Redis Write-Behind Section */}
-          <div className="p-5 rounded-2xl bg-gradient-to-r from-rose-950/30 via-slate-950 to-slate-950 border border-rose-500/30 space-y-4">
+          {/* Interactive Redis Write-Behind Section (Ride Also Spec Card) */}
+          <div className="p-5 rounded-3xl bg-zinc-100 dark:bg-zinc-900/90 border border-black/10 dark:border-white/10 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="space-y-1">
-                <div className="flex items-center gap-2 font-bold text-white text-sm">
-                  <Database className="w-4 h-4 text-rose-400" />
-                  Redis Write-Behind Buffer & Scheduled Sync
+                <div className="flex items-center gap-2 font-mono font-bold text-zinc-950 dark:text-white text-sm">
+                  <Database className="w-4 h-4 text-rose-500" />
+                  REDIS WRITE-BEHIND BUFFER & BATCH FLUSH
                 </div>
-                <p className="text-slate-400 text-xs leading-relaxed max-w-lg">
+                <p className="text-zinc-600 dark:text-zinc-400 text-xs leading-relaxed max-w-lg font-sans">
                   Kullanıcıların her tıklamasında PostgreSQL&apos;e anlık UPDATE atmak yerine sayaçlar Redis tamponunda
                   atomik INCR komutlarıyla toplanır. Her 30 saniyede bir Scheduled Batch Job bu deltaları topluca
                   veritabanına yazar.
@@ -182,11 +184,11 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
               </div>
 
               <div className="flex flex-col items-end gap-1 font-mono text-[11px]">
-                <span className="flex items-center gap-1 text-slate-400">
-                  <Clock className="w-3.5 h-3.5 text-slate-500" />
-                  Scheduled: Her 30s
+                <span className="flex items-center gap-1 text-zinc-500">
+                  <Clock className="w-3.5 h-3.5" />
+                  Schedule: 30s
                 </span>
-                <span className="text-emerald-400 flex items-center gap-1">
+                <span className="text-[#a3c900] dark:text-[#d4f933] flex items-center gap-1 font-bold">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   Buffer: Canlı
                 </span>
@@ -195,31 +197,31 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
 
             {/* Flush Feedback Message */}
             {flushMessage && (
-              <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs font-mono flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+              <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-mono flex items-center gap-2.5">
+                <Sparkles className="w-4 h-4 text-emerald-500 shrink-0" />
                 <span>{flushMessage}</span>
               </div>
             )}
 
-            {/* Action Button */}
-            <div className="flex items-center justify-between pt-2 border-t border-slate-800/80">
-              <span className="text-slate-400 text-[11px]">
+            {/* Action Button (Ride Also Pill Button) */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-black/[0.08] dark:border-white/[0.08]">
+              <span className="text-zinc-500 text-[11px] font-mono">
                 Zamanlayıcıyı beklemeden tamponlanmış sayaçları hemen senkronize edin:
               </span>
               <button
                 onClick={handleFlush}
                 disabled={isFlushing}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 disabled:opacity-50 text-white font-semibold text-xs flex items-center gap-2 transition-all shadow-lg shadow-rose-500/20 whitespace-nowrap cursor-pointer"
+                className="px-5 py-2.5 rounded-full bg-[#d4f933] hover:bg-[#c4e82b] disabled:opacity-50 text-black font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md shadow-[#d4f933]/20 cursor-pointer active:scale-95"
               >
                 {isFlushing ? (
                   <>
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    DB&apos;ye Yazılıyor...
+                    DB&apos;YE YAZILIYOR...
                   </>
                 ) : (
                   <>
                     <ArrowDownToLine className="w-3.5 h-3.5" />
-                    Şimdi DB&apos;ye Flush Et
+                    ŞİMDİ DB&apos;YE FLUSH ET
                   </>
                 )}
               </button>
@@ -228,16 +230,16 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-800 bg-slate-950/80 flex items-center justify-between text-xs text-slate-500 font-mono">
+        <div className="p-5 border-t border-black/[0.08] dark:border-white/[0.08] bg-zinc-50 dark:bg-zinc-950/80 flex items-center justify-between text-xs text-zinc-500 font-mono">
           <span className="flex items-center gap-1.5">
-            <Server className="w-3.5 h-3.5 text-slate-400" />
-            NovaBlog Core v2.4.0-SNAPSHOT
+            <Server className="w-3.5 h-3.5" />
+            CORE V4.1.1 &bull; KONSOL
           </span>
           <button
             onClick={onClose}
-            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all text-xs"
+            className="px-4 py-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-200 transition-all text-xs font-mono font-semibold cursor-pointer"
           >
-            Kapat
+            KAPAT
           </button>
         </div>
       </div>

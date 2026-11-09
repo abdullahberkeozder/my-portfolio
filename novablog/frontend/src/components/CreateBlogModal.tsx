@@ -93,38 +93,40 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-2xl rounded-2xl bg-slate-900 border border-slate-800 text-slate-100 shadow-2xl overflow-hidden my-auto animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-2xl rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 text-zinc-900 dark:text-zinc-100 shadow-2xl overflow-hidden my-auto animate-in fade-in duration-200">
         {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
-          <div className="flex items-center gap-2.5 font-bold text-white text-base">
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-              <Sparkles className="w-4 h-4" />
+        <div className="p-6 border-b border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between bg-zinc-50 dark:bg-zinc-950/60">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-zinc-900 dark:bg-zinc-800 border border-black/10 dark:border-white/10 flex items-center justify-center text-[#d4f933] shadow-sm">
+              <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h3>Yeni Teknik Makale Yayınla</h3>
-              <p className="text-xs text-slate-400 font-normal">
-                Spring AI 128D Vektör İndeksleme & Markdown Desteği
+              <h3 className="font-mono font-bold text-base uppercase text-zinc-950 dark:text-white">
+                YENİ TEKNİK MAKALE YAYINLA
+              </h3>
+              <p className="text-xs text-zinc-500 font-mono">
+                SPRING AI 128D VEKTÖR İNDEKSİ &bull; MARKDOWN SÖZDİZİMİ
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all"
+            className="p-2 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-500 hover:text-black dark:hover:text-white transition-all cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto text-xs font-mono">
           {/* Title */}
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-slate-300">
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="font-bold text-zinc-900 dark:text-white uppercase">
                 Makale Başlığı (Title)
               </label>
-              <span className="text-[10px] font-mono text-slate-500">
+              <span className="text-[10px] text-zinc-400">
                 {title.length}/100
               </span>
             </div>
@@ -135,17 +137,17 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               placeholder="Örn: Java 22 Virtual Threads ve Loom ile Yüksek Throughput Mimarisi"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-xs focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full px-4 py-2.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-zinc-900 dark:text-white text-xs focus:outline-none focus:border-[#d4f933] transition-colors"
             />
           </div>
 
           {/* Subheader */}
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-slate-300">
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="font-bold text-zinc-900 dark:text-white uppercase">
                 Alt Başlık / Kapsam (Header)
               </label>
-              <span className="text-[10px] font-mono text-slate-500">
+              <span className="text-[10px] text-zinc-400">
                 {header.length}/100
               </span>
             </div>
@@ -156,20 +158,20 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               placeholder="Örn: Concurrency, Thread Pool Darboğazı ve Non-blocking I/O"
               value={header}
               onChange={(e) => setHeader(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-xs focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full px-4 py-2.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-zinc-900 dark:text-white text-xs focus:outline-none focus:border-[#d4f933] transition-colors"
             />
           </div>
 
           {/* Category & AI Tag Assistant */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-medium text-slate-300">Kategori</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="font-bold text-zinc-900 dark:text-white uppercase">Kategori</label>
               </div>
               <select
                 value={selectedCatId}
                 onChange={(e) => setSelectedCatId(Number(e.target.value))}
-                className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-indigo-500"
+                className="w-full px-4 py-2.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-zinc-900 dark:text-white text-xs focus:outline-none focus:border-[#d4f933]"
               >
                 {categories.map((c) => (
                   <option key={c.categoryId} value={c.categoryId}>
@@ -184,29 +186,29 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
                 type="button"
                 onClick={handleAutoSuggest}
                 disabled={isSuggestingTags}
-                className="w-full py-2 px-3 rounded-xl bg-purple-950/40 hover:bg-purple-900/50 text-purple-300 border border-purple-500/30 text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-full bg-zinc-100 dark:bg-zinc-900 hover:bg-[#d4f933] hover:text-black dark:hover:bg-[#d4f933] dark:hover:text-black text-zinc-700 dark:text-zinc-300 border border-black/10 dark:border-white/10 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer uppercase"
               >
                 {isSuggestingTags ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
-                  <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                  <Sparkles className="w-3.5 h-3.5" />
                 )}
-                Spring AI ile Otomatik Etiket & Kategori Belirle
+                SPRING AI İLE ETİKET ÖNER
               </button>
             </div>
           </div>
 
           {/* Content Body */}
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-medium text-slate-300">Teknik İçerik</label>
-              <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="font-bold text-zinc-900 dark:text-white uppercase">Teknik İçerik</label>
+              <div className="flex items-center gap-2 text-[10px] text-zinc-400">
                 <span className="flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-slate-500" />
-                  ~{readingTimeMinutes} dk okuma
+                  <Clock className="w-3 h-3 text-zinc-400" />
+                  ~{readingTimeMinutes} DK OKUMA
                 </span>
-                <span>•</span>
-                <span>{wordCount} kelime</span>
+                <span>&bull;</span>
+                <span>{wordCount} KELİME</span>
               </div>
             </div>
             <textarea
@@ -215,28 +217,28 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               placeholder="Makalenizi yazın... Kod blokları için ```java veya ```ts formatını kullanabilirsiniz."
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-indigo-500 leading-relaxed font-mono"
+              className="w-full px-4 py-3 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-zinc-900 dark:text-white text-xs leading-relaxed focus:outline-none focus:border-[#d4f933] font-mono"
             />
           </div>
 
           {/* Tags */}
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
+            <label className="block font-bold text-zinc-900 dark:text-white mb-2 uppercase">
               Etiketler (Tagging)
             </label>
-            <div className="flex flex-wrap items-center gap-1.5 mb-2">
+            <div className="flex flex-wrap items-center gap-1.5 mb-2.5">
               {tags.map((t, idx) => (
                 <span
                   key={idx}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 text-indigo-300 border border-slate-700/80 text-xs font-mono"
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 border border-black/10 dark:border-white/10 text-xs font-mono uppercase font-semibold"
                 >
                   #{t}
                   <button
                     type="button"
                     onClick={() => handleRemoveTag(t)}
-                    className="hover:text-pink-400 transition-colors"
+                    className="hover:text-rose-500 transition-colors cursor-pointer ml-1"
                   >
-                    ×
+                    &times;
                   </button>
                 </span>
               ))}
@@ -245,58 +247,58 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
             <div className="flex items-center gap-2">
               <input
                 type="text"
-                placeholder="Yeni etiket ekle (örn: docker, redis)..."
+                placeholder="Yeni etiket (örn: redis, loom)..."
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleAddTag}
-                className="flex-1 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-indigo-500 font-mono"
+                className="flex-1 px-4 py-2 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-zinc-900 dark:text-white text-xs focus:outline-none focus:border-[#d4f933]"
               />
               <button
                 type="button"
                 onClick={handleAddTag}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs flex items-center gap-1 cursor-pointer"
+                className="px-4 py-2 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-200 text-xs font-bold flex items-center gap-1 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
-                Ekle
+                EKLE
               </button>
             </div>
           </div>
 
-          {/* AI Banner Notice */}
-          <div className="p-3.5 rounded-xl bg-emerald-950/25 border border-emerald-500/25 text-xs text-emerald-300 flex items-start gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-            <div className="space-y-0.5">
-              <span className="font-semibold text-emerald-200">Otomatik Vektör İndeksleme:</span>
-              <p className="text-[11px] text-emerald-300/80 leading-relaxed">
-                Bu makale kaydedildiğinde Spring AI arkada 128 boyutlu gömme (embedding) çıkarıp semantik arama
+          {/* AI Notice Banner */}
+          <div className="p-4 rounded-2xl bg-[#d4f933]/10 border border-[#d4f933]/30 text-xs text-zinc-800 dark:text-zinc-200 flex items-start gap-2.5 font-sans">
+            <CheckCircle2 className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933] shrink-0 mt-0.5" />
+            <div className="space-y-0.5 font-mono text-[11px]">
+              <span className="font-bold text-zinc-950 dark:text-white uppercase">OTOMATİK VEKTÖR İNDEKSLEME:</span>
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
+                Bu makale yayınlandığında Spring AI arka planda 128 boyutlu gömme (embedding) çıkarıp semantik arama
                 motoruna anında kaydedecektir.
               </p>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-black/[0.08] dark:border-white/[0.08]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition-colors"
+              className="px-5 py-2.5 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-bold transition-colors cursor-pointer uppercase"
             >
               Vazgeç
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-semibold shadow-lg shadow-indigo-500/20 transition-all cursor-pointer"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-zinc-950 dark:bg-[#d4f933] hover:opacity-90 text-white dark:text-black text-xs font-bold uppercase tracking-wider shadow-md transition-all cursor-pointer"
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  Yayınlanıyor & Vektörleniyor...
+                  YAYINLANIYOR...
                 </>
               ) : (
                 <>
                   <Send className="w-3.5 h-3.5" />
-                  Makaleyi Yayınla
+                  MAKALEYİ YAYINLA
                 </>
               )}
             </button>

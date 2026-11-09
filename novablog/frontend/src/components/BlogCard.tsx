@@ -87,34 +87,34 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
   return (
     <article
       onClick={() => onSelect(blog)}
-      className="group relative flex flex-col rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-slate-700 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 cursor-pointer overflow-hidden backdrop-blur-sm"
+      className="group relative flex flex-col rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/[0.08] dark:border-white/[0.08] hover:border-[#d4f933]/50 transition-all duration-300 hover:shadow-2xl hover:shadow-[#d4f933]/5 cursor-pointer overflow-hidden"
     >
-      {/* Top Banner & Category */}
-      <div className="p-5 pb-3">
-        <div className="flex items-center justify-between gap-2 mb-3">
+      {/* Top Banner & Spec Header */}
+      <div className="p-6 pb-3">
+        <div className="flex items-center justify-between gap-2 mb-4">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-500/15 text-indigo-300 border border-indigo-500/25">
-              {blog.category?.categoryName || 'Genel Teknoloji'}
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-zinc-900/5 dark:bg-white/10 text-zinc-900 dark:text-zinc-200 border border-black/10 dark:border-white/10">
+              {blog.category?.categoryName || 'SİSTEM // GENEL'}
             </span>
-            <span className="flex items-center gap-1 text-[11px] font-mono text-slate-500">
-              <Clock className="w-3 h-3" />
-              {readingTime} dk
+            <span className="flex items-center gap-1 text-[11px] font-mono text-zinc-500">
+              <Clock className="w-3 h-3 text-zinc-400" />
+              {readingTime} DK
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-slate-400">
+          <div className="flex items-center gap-2 text-xs font-mono text-zinc-500">
             <span className="flex items-center gap-1 px-1.5 py-0.5" title="Canlı İzlenme (Redis Write-Behind)">
-              <Eye className="w-3.5 h-3.5 text-slate-500" />
+              <Eye className="w-3.5 h-3.5 text-zinc-400" />
               {liveViews}
             </span>
             <button
               onClick={handleToggleLike}
-              className={`flex items-center gap-1 px-2 py-0.5 rounded-md transition-all cursor-pointer ${
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer ${
                 blog.isLiked
-                  ? 'text-pink-400 bg-pink-500/15 border border-pink-500/30 font-semibold'
-                  : 'text-slate-400 hover:text-pink-400 hover:bg-slate-800/80'
+                  ? 'text-pink-600 dark:text-pink-400 bg-pink-500/15 border border-pink-500/30 font-bold'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-pink-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent'
               }`}
-              title={blog.isLiked ? 'Beğeniyi geri al' : 'Beğen (TanStack Query Optimistic UI)'}
+              title={blog.isLiked ? 'Beğeniyi geri al' : 'Beğen (Optimistic UI)'}
             >
               <Heart
                 className={`w-3.5 h-3.5 transition-transform active:scale-125 ${
@@ -126,55 +126,55 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
             <button
               onClick={handleCopyLink}
               title={isCopied ? 'Bağlantı Kopyalandı' : 'Yazı Bağlantısını Kopyala'}
-              className="p-1 rounded-md hover:bg-slate-800 text-slate-500 hover:text-slate-300 transition-colors"
+              className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
             >
-              {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
+              {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
             </button>
           </div>
         </div>
 
-        <h3 className="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors line-clamp-2 leading-snug">
+        <h3 className="text-xl font-black text-zinc-950 dark:text-white group-hover:text-[#a3c900] dark:group-hover:text-[#d4f933] transition-colors line-clamp-2 leading-snug tracking-tight">
           {blog.title}
         </h3>
-        <p className="text-xs font-mono text-slate-400 mt-1 uppercase tracking-wider">
+        <p className="text-xs font-mono text-zinc-500 dark:text-zinc-400 mt-1 uppercase tracking-wider">
           {blog.header}
         </p>
 
-        <p className="mt-3 text-sm text-slate-300 line-clamp-3 leading-relaxed">
+        <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3 leading-relaxed">
           {blog.content}
         </p>
       </div>
 
       {/* AI TL;DR Section */}
-      <div className="px-5 py-2">
+      <div className="px-6 py-2">
         {showSummary && summary ? (
-          <div className="rounded-xl p-3 bg-gradient-to-r from-purple-950/40 via-indigo-950/40 to-slate-900 border border-purple-500/30 text-xs text-purple-200">
-            <div className="flex items-center justify-between gap-2 mb-1.5 font-semibold text-purple-300">
+          <div className="rounded-2xl p-4 bg-zinc-100 dark:bg-zinc-900/90 border border-black/10 dark:border-white/10 text-xs text-zinc-800 dark:text-zinc-300">
+            <div className="flex items-center justify-between gap-2 mb-2 font-mono font-semibold text-zinc-900 dark:text-white">
               <span className="flex items-center gap-1.5">
-                <Bot className="w-4 h-4 text-purple-400" />
-                Spring AI TL;DR Özeti
+                <Bot className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
+                SPRING AI // TL;DR
               </span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono">
-                -%65 Sıkıştırma
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#d4f933]/20 text-zinc-900 dark:text-[#d4f933] font-bold font-mono">
+                -%65 SIKIŞTIRMA
               </span>
             </div>
-            <p className="text-slate-300 leading-relaxed font-sans">{summary}</p>
+            <p className="leading-relaxed font-sans">{summary}</p>
           </div>
         ) : (
           <button
             onClick={handleFetchSummary}
             disabled={isLoadingSummary}
-            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium bg-slate-800/80 hover:bg-purple-950/40 text-purple-300 border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-full text-xs font-mono font-semibold bg-zinc-100 dark:bg-zinc-900/90 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-black/[0.08] dark:border-white/[0.08] hover:border-[#d4f933]/50 transition-all cursor-pointer"
           >
             {isLoadingSummary ? (
               <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-400" />
-                Spring AI Özeti Çıkarılıyor...
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#a3c900] dark:text-[#d4f933]" />
+                SPRING AI ANALİZİ ÇIKARILIYOR...
               </>
             ) : (
               <>
-                <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-                Spring AI ile TL;DR Özeti Gör
+                <Sparkles className="w-3.5 h-3.5 text-[#a3c900] dark:text-[#d4f933]" />
+                SPRING AI İLE TL;DR ÖZETİ GÖR
               </>
             )}
           </button>
@@ -183,7 +183,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
 
       {/* Tags */}
       {blog.tags && blog.tags.length > 0 && (
-        <div className="px-5 pt-2 flex flex-wrap gap-1.5">
+        <div className="px-6 pt-2 flex flex-wrap gap-1.5">
           {blog.tags.slice(0, 4).map((tag, idx) => (
             <button
               key={idx}
@@ -191,7 +191,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
                 e.stopPropagation();
                 if (onTagClick) onTagClick(tag);
               }}
-              className="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 hover:bg-indigo-950 hover:text-indigo-300 text-slate-300 border border-slate-700/60 transition-colors cursor-pointer"
+              className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 hover:bg-[#d4f933] hover:text-black dark:hover:bg-[#d4f933] dark:hover:text-black text-zinc-600 dark:text-zinc-400 border border-black/10 dark:border-white/10 transition-colors cursor-pointer uppercase"
             >
               #{tag}
             </button>
@@ -200,23 +200,23 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
       )}
 
       {/* Footer Info */}
-      <div className="mt-auto p-5 pt-4 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+      <div className="mt-auto p-6 pt-4 border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-xs font-mono text-zinc-500">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-[10px] font-bold text-white uppercase">
+          <div className="w-6 h-6 rounded-full bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center text-[10px] font-bold uppercase">
             {blog.author ? blog.author.charAt(0) : 'A'}
           </div>
-          <span className="font-medium text-slate-300 truncate max-w-[130px]">
+          <span className="font-semibold text-zinc-900 dark:text-zinc-300 truncate max-w-[130px]">
             {blog.author || 'Berke Özder'}
           </span>
-          <span className="text-slate-600">•</span>
-          <span className="flex items-center gap-1 text-slate-400">
-            <Calendar className="w-3 h-3 text-slate-500" />
+          <span className="text-zinc-400">&bull;</span>
+          <span className="flex items-center gap-1 text-zinc-500">
+            <Calendar className="w-3 h-3" />
             {formattedDate}
           </span>
         </div>
 
-        <div className="flex items-center gap-1 text-indigo-400 font-medium group-hover:translate-x-1 transition-transform">
-          <span>Detay</span>
+        <div className="flex items-center gap-1 font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-[#a3c900] dark:group-hover:text-[#d4f933] group-hover:translate-x-1 transition-all">
+          <span>İNCELE</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </div>
       </div>
