@@ -209,7 +209,7 @@ export const ModularArchitectureConsole: React.FC = () => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-10">
+    <section id="modular-architecture-console" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-10">
       {/* Section Header (Ride Also Style) */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-black/[0.08] dark:border-white/[0.08]">
         <div className="space-y-2">

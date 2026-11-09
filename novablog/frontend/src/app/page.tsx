@@ -85,23 +85,34 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col font-sans transition-colors duration-300 pb-16 sm:pb-20">
-      {/* Navigation (Ride Also Minimalist Hairline Header) */}
+      {/* Navigation (Ride Also Interactive Mega-Drawer & Ticker Header) */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         isBackendOnline={isBackendOnline}
         onRefreshHealth={handleRefresh}
         onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
+        onOpenArchitectureConsole={() => {
+          setActiveTab('feed');
+          setTimeout(() => {
+            const el = document.getElementById('modular-architecture-console');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }, 50);
+        }}
       />
 
       {/* Main Content Area */}
       <main className="flex-1">
         {activeTab === 'feed' && (
           <div>
-            {/* Hero Banner (Ride Also High-Performance Industrial + 3D Hardware Core) */}
+            {/* Hero Banner (Ride Also High-Performance Industrial + 3-Slide Hardware Core) */}
             <HeroSection
               onExploreAI={() => setActiveTab('ai-search')}
               onOpenCreateModal={() => setIsCreateModalOpen(true)}
+              onOpenArchitectureConsole={() => {
+                const el = document.getElementById('modular-architecture-console');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
             />
 
             {/* Modular Architecture Console (Inspired by Ride Also TM-B Modular Frames) */}
