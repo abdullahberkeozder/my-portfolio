@@ -1,69 +1,318 @@
+'use client';
+
 import React from 'react';
+import {
+  ExternalLink,
+  Zap,
+  Cpu,
+  Database,
+  Layers,
+  ShieldCheck,
+  Terminal,
+  Code2,
+} from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  setActiveTab?: (tab: 'feed' | 'ai-search' | 'ai-lab' | 'admin-batch') => void;
+  onOpenTelemetry?: () => void;
+  onOpenArchitectureConsole?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({
+  setActiveTab,
+  onOpenTelemetry,
+  onOpenArchitectureConsole,
+}) => {
+  const handleNavFeed = () => {
+    if (setActiveTab) setActiveTab('feed');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNavModule = (moduleId: string) => {
+    if (setActiveTab) setActiveTab('feed');
+    if (onOpenArchitectureConsole) {
+      onOpenArchitectureConsole();
+    } else {
+      setTimeout(() => {
+        const el = document.getElementById('modular-architecture-console');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    }
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('select-console-module', { detail: moduleId }));
+    }, 100);
+  };
+
+  const handleNavAi = () => {
+    if (setActiveTab) setActiveTab('ai-search');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNavBatch = () => {
+    if (setActiveTab) setActiveTab('admin-batch');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNavBlueprint = () => {
+    if (setActiveTab) setActiveTab('feed');
+    setTimeout(() => {
+      const el = document.getElementById('system-blueprint-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
   return (
-    <footer className="border-t border-black/[0.08] dark:border-white/[0.08] bg-white/50 dark:bg-[#07080a]/90 text-zinc-500 dark:text-zinc-400 text-xs py-12 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center md:text-left">
-            <div className="flex items-center justify-center md:justify-start gap-2.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#d4f933] shadow-[0_0_8px_#d4f933]" />
-              <span className="font-mono font-black text-sm text-zinc-950 dark:text-white uppercase tracking-tight">
-                NOVA // BLOG &bull; ARCHITECTURE MANIFEST
-              </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-white/10 text-zinc-800 dark:text-zinc-300 border border-black/10 dark:border-white/10">
-                2026 EDITION
-              </span>
-            </div>
-            <p className="text-zinc-600 dark:text-zinc-400 max-w-lg leading-relaxed font-sans text-xs">
-              Spring Boot 4.1.1, Java 22 Virtual Threads (Loom), 128D Vektör Anlamsal Arama, 
-              Redis Write-Behind Buffer ve Next.js 16 ile inşa edilmiş endüstriyel portfolyo platformu.
-            </p>
+    <footer className="relative bg-[#200e38] text-[#c084fc] overflow-hidden pt-16 sm:pt-20 lg:pt-24 border-t border-[#3b1d63] select-none">
+      {/* Ambient Radial Lighting matching Ride Also Aubergine Tone */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[300px] bg-[#8c52ff]/10 blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/3 w-[500px] h-[250px] bg-[#d4f933]/5 blur-[160px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Main Grid: Split Layout (Direct Ride Also Footer Clone) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
+          {/* Left Column: Monumental Category Links (Matching Bike, Quad, Helmet, Gear) */}
+          <div className="lg:col-span-5 space-y-4 font-sans">
+            <button
+              onClick={handleNavFeed}
+              className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#c084fc] hover:text-white transition-colors duration-200 cursor-pointer block text-left tracking-tight leading-tight"
+            >
+              Makaleler
+            </button>
+            <button
+              onClick={() => handleNavModule('loom')}
+              className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#c084fc] hover:text-white transition-colors duration-200 cursor-pointer block text-left tracking-tight leading-tight"
+            >
+              Çekirdek
+            </button>
+            <button
+              onClick={handleNavAi}
+              className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#c084fc] hover:text-white transition-colors duration-200 cursor-pointer block text-left tracking-tight leading-tight"
+            >
+              Vektör AI
+            </button>
+            <button
+              onClick={handleNavBatch}
+              className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#c084fc] hover:text-white transition-colors duration-200 cursor-pointer block text-left tracking-tight leading-tight"
+            >
+              Batch ETL
+            </button>
           </div>
 
-          {/* Quick Hardware Spec Badges (Ride Also Style) */}
-          <div className="flex flex-wrap items-center justify-center gap-2 font-mono text-[11px]">
-            <span className="px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-zinc-800 dark:text-zinc-300">
-              JAVA 22 LOOM
-            </span>
-            <span className="px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-zinc-800 dark:text-zinc-300">
-              128D VECTOR COSINE
-            </span>
-            <span className="px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-zinc-800 dark:text-zinc-300">
-              REDIS WRITE-BEHIND
-            </span>
-            <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold">
-              195/195 TESTS (%100 PASS)
-            </span>
+          {/* Right Columns: Technical Directory (Company, Resources, Account) */}
+          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8 font-mono text-xs">
+            {/* Column 1: Company / Platform */}
+            <div className="space-y-4">
+              <span className="text-[#e9d5ff] font-bold text-sm tracking-wide block font-sans">
+                Company
+              </span>
+              <ul className="space-y-2.5 text-[11px] tracking-wider uppercase font-semibold">
+                <li>
+                  <a
+                    href="https://github.com/abdullahberkeozder"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors flex items-center gap-1.5"
+                  >
+                    <span>ABOUT US</span>
+                    <ExternalLink className="w-3 h-3 opacity-60" />
+                  </a>
+                </li>
+                <li>
+                  <button
+                    onClick={handleNavFeed}
+                    className="hover:text-white transition-colors text-left cursor-pointer"
+                  >
+                    BLOG
+                  </button>
+                </li>
+                <li>
+                  <a
+                    href="https://abdullahberkeozder.vercel.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors flex items-center gap-1.5"
+                  >
+                    <span>CAREERS</span>
+                    <ExternalLink className="w-3 h-3 opacity-60" />
+                  </a>
+                </li>
+                <li>
+                  <button
+                    onClick={handleNavBlueprint}
+                    className="hover:text-white transition-colors text-left cursor-pointer"
+                  >
+                    SPEC // V4.1.1
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 2: Resources / Specifications */}
+            <div className="space-y-4">
+              <span className="text-[#e9d5ff] font-bold text-sm tracking-wide block font-sans">
+                Resources
+              </span>
+              <ul className="space-y-2.5 text-[11px] tracking-wider uppercase font-semibold">
+                <li>
+                  <button
+                    onClick={() => handleNavModule('loom')}
+                    className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1"
+                  >
+                    <Zap className="w-3 h-3 text-[#d4f933]" />
+                    <span>JAVA 22 LOOM</span>
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleNavModule('spring-ai')}
+                    className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1"
+                  >
+                    <Layers className="w-3 h-3 text-purple-300" />
+                    <span>SPRING AI 128D</span>
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleNavModule('write-behind')}
+                    className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1"
+                  >
+                    <Database className="w-3 h-3 text-rose-300" />
+                    <span>WRITE-BEHIND</span>
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleNavModule('optimistic-locking')}
+                    className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1"
+                  >
+                    <ShieldCheck className="w-3 h-3 text-emerald-300" />
+                    <span>JPA @VERSION</span>
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleNavModule('spring-batch')}
+                    className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1"
+                  >
+                    <Cpu className="w-3 h-3 text-amber-300" />
+                    <span>SPRING BATCH 5</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3: Account & Access */}
+            <div className="space-y-4">
+              <span className="text-[#e9d5ff] font-bold text-sm tracking-wide block font-sans">
+                Account
+              </span>
+              <ul className="space-y-2.5 text-[11px] tracking-wider uppercase font-semibold">
+                <li>
+                  <button
+                    onClick={() => {
+                      if (onOpenTelemetry) onOpenTelemetry();
+                    }}
+                    className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1.5"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#d4f933] animate-pulse" />
+                    <span>LOG-IN (2FA)</span>
+                  </button>
+                </li>
+                <li>
+                  <a
+                    href="http://localhost:5555/swagger-ui.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors flex items-center gap-1.5"
+                  >
+                    <span>SWAGGER UI</span>
+                    <ExternalLink className="w-3 h-3 opacity-60" />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="http://localhost:5555/h2-console"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors flex items-center gap-1.5"
+                  >
+                    <span>H2 CONSOLE</span>
+                    <ExternalLink className="w-3 h-3 opacity-60" />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="http://localhost:5555/actuator/health"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors flex items-center gap-1.5"
+                  >
+                    <span>ACTUATOR</span>
+                    <ExternalLink className="w-3 h-3 opacity-60" />
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
-        <div className="pt-6 border-t border-black/[0.08] dark:border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 text-zinc-500 font-mono text-[11px]">
-          <p className="flex items-center gap-1.5">
-            <span>ENGINEER //</span>
+        {/* Sub-Footer Row: Social Icons on Left & Legal Specifications on Right */}
+        <div className="mt-16 pt-8 border-t border-[#3b1d63] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 font-mono text-xs">
+          {/* Social Icons (Directly below Company Column as in Ride Also) */}
+          <div className="flex items-center gap-4 text-[#c084fc]">
             <a
               href="https://github.com/abdullahberkeozder"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-zinc-900 dark:text-white font-bold hover:underline"
+              className="p-2 rounded-full bg-white/5 hover:bg-white/15 hover:text-white transition-all cursor-pointer"
+              title="GitHub Profile"
             >
-              Abdullah Berke Özder
+              <GithubIcon className="w-4 h-4" />
             </a>
-          </p>
-
-          <div className="flex items-center gap-4">
             <a
               href="https://github.com/abdullahberkeozder/my-portfolio"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
+              className="p-2 rounded-full bg-white/5 hover:bg-white/15 hover:text-white transition-all cursor-pointer"
+              title="Portfolio Monorepo"
             >
-              <GithubIcon className="w-4 h-4" />
-              <span>my-portfolio Repository</span>
+              <Code2 className="w-4 h-4" />
+            </a>
+            <a
+              href="https://abdullahberkeozder.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-full bg-white/5 hover:bg-white/15 hover:text-white transition-all cursor-pointer"
+              title="Architect Portfolio"
+            >
+              <Terminal className="w-4 h-4" />
             </a>
           </div>
+
+          {/* Secondary Legal & Protocol Badges (Direct Ride Also Alignment) */}
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-[11px] text-[#c084fc]/80 tracking-widest uppercase">
+            <span className="hover:text-white transition-colors cursor-default">
+              MEDIA INQUIRIES
+            </span>
+            <span className="hover:text-white transition-colors cursor-default">
+              TERMS
+            </span>
+            <span className="hover:text-white transition-colors cursor-default">
+              PRIVACY
+            </span>
+            <span className="text-[#d4f933] font-bold">
+              201/201 AUTOMATED TESTS (100% PASS)
+            </span>
+          </div>
         </div>
+      </div>
+
+      {/* The Iconic Ride Also Monumental Giant Brandmark ("NOVA.") */}
+      <div className="mt-12 sm:mt-16 lg:mt-20 w-full overflow-hidden select-none pointer-events-none">
+        <h1 className="text-[22vw] font-black tracking-tight text-[#9d4edd] dark:text-[#a855f7] leading-[0.8] uppercase text-left pl-3 sm:pl-6 lg:pl-10 -mb-4 sm:-mb-8 lg:-mb-14">
+          NOVA<span className="text-[#d4f933]">.</span>
+        </h1>
       </div>
     </footer>
   );

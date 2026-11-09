@@ -320,8 +320,18 @@ export default function Home() {
         onMetricsFlushed={() => refetchBlogs()}
       />
 
-      {/* Footer (Ride Also Architecture Manifest) */}
-      <Footer />
+      {/* Footer (Ride Also Architecture Manifest & Monumental Brandmark) */}
+      <Footer
+        setActiveTab={setActiveTab}
+        onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
+        onOpenArchitectureConsole={() => {
+          setActiveTab('feed');
+          setTimeout(() => {
+            const el = document.getElementById('modular-architecture-console');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }, 50);
+        }}
+      />
     </div>
   );
 }
