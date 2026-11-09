@@ -4,17 +4,30 @@ import React, { useState } from 'react';
 import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
 import { useToggleLikeMutation } from '@/hooks/useBlogs';
-import { Sparkles, Eye, Heart, Calendar, ArrowRight, Loader2, Bot } from 'lucide-react';
+import {
+  Sparkles,
+  Eye,
+  Heart,
+  Calendar,
+  ArrowRight,
+  Loader2,
+  Bot,
+  Clock,
+  Share2,
+  Check,
+} from 'lucide-react';
 
 interface BlogCardProps {
   blog: BlogDto;
   onSelect: (blog: BlogDto) => void;
+  onTagClick?: (tag: string) => void;
 }
 
-export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect }) => {
+export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }) => {
   const [summary, setSummary] = useState<string | undefined>(blog.aiSummary);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
   const [showSummary, setShowSummary] = useState(Boolean(blog.aiSummary));
+  const [isCopied, setIsCopied] = useState(false);
 
   const toggleLikeMutation = useToggleLikeMutation();
   const blogId = blog.id ?? blog.blogId;
@@ -48,6 +61,18 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect }) => {
     }
   };
 
+  const handleCopyLink = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (typeof window !== 'undefined') {
+      navigator.clipboard.writeText(`${window.location.origin}/#blog-${blogId}`);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    }
+  };
+
+  const wordCount = (blog.content || '').split(/\s+/).filter(Boolean).length;
+  const readingTime = Math.max(1, Math.ceil(wordCount / 180));
+
   const formattedDate = blog.publishedAt || blog.createdDate
     ? new Date(blog.publishedAt || blog.createdDate!).toLocaleDateString('tr-TR', {
         day: 'numeric',
@@ -67,9 +92,16 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect }) => {
       {/* Top Banner & Category */}
       <div className="p-5 pb-3">
         <div className="flex items-center justify-between gap-2 mb-3">
-          <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-500/15 text-indigo-300 border border-indigo-500/25">
-            {blog.category?.categoryName || 'Genel Teknoloji'}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-500/15 text-indigo-300 border border-indigo-500/25">
+              {blog.category?.categoryName || 'Genel Teknoloji'}
+            </span>
+            <span className="flex items-center gap-1 text-[11px] font-mono text-slate-500">
+              <Clock className="w-3 h-3" />
+              {readingTime} dk
+            </span>
+          </div>
+
           <div className="flex items-center gap-2 text-xs text-slate-400">
             <span className="flex items-center gap-1 px-1.5 py-0.5" title="Canlı İzlenme (Redis Write-Behind)">
               <Eye className="w-3.5 h-3.5 text-slate-500" />
@@ -77,7 +109,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect }) => {
             </span>
             <button
               onClick={handleToggleLike}
-              className={`flex items-center gap-1 px-2 py-0.5 rounded-md transition-all ${
+              className={`flex items-center gap-1 px-2 py-0.5 rounded-md transition-all cursor-pointer ${
                 blog.isLiked
                   ? 'text-pink-400 bg-pink-500/15 border border-pink-500/30 font-semibold'
                   : 'text-slate-400 hover:text-pink-400 hover:bg-slate-800/80'
@@ -91,10 +123,17 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect }) => {
               />
               <span>{liveLikes}</span>
             </button>
+            <button
+              onClick={handleCopyLink}
+              title={isCopied ? 'Bağlantı Kopyalandı' : 'Yazı Bağlantısını Kopyala'}
+              className="p-1 rounded-md hover:bg-slate-800 text-slate-500 hover:text-slate-300 transition-colors"
+            >
+              {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
+            </button>
           </div>
         </div>
 
-        <h3 className="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors line-clamp-2">
+        <h3 className="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors line-clamp-2 leading-snug">
           {blog.title}
         </h3>
         <p className="text-xs font-mono text-slate-400 mt-1 uppercase tracking-wider">
@@ -125,7 +164,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect }) => {
           <button
             onClick={handleFetchSummary}
             disabled={isLoadingSummary}
-            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium bg-slate-800/80 hover:bg-purple-950/40 text-purple-300 border border-purple-500/20 hover:border-purple-500/40 transition-all"
+            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium bg-slate-800/80 hover:bg-purple-950/40 text-purple-300 border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer"
           >
             {isLoadingSummary ? (
               <>
@@ -146,12 +185,16 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect }) => {
       {blog.tags && blog.tags.length > 0 && (
         <div className="px-5 pt-2 flex flex-wrap gap-1.5">
           {blog.tags.slice(0, 4).map((tag, idx) => (
-            <span
+            <button
               key={idx}
-              className="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700/60"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onTagClick) onTagClick(tag);
+              }}
+              className="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 hover:bg-indigo-950 hover:text-indigo-300 text-slate-300 border border-slate-700/60 transition-colors cursor-pointer"
             >
               #{tag}
-            </span>
+            </button>
           ))}
         </div>
       )}
@@ -180,4 +223,3 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect }) => {
     </article>
   );
 };
-

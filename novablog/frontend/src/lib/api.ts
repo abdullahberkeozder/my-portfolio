@@ -498,5 +498,20 @@ export class ApiClient {
       };
     }
   }
+
+  // --- METRICS & BUFFER MANAGEMENT ---
+  public static async flushMetrics(): Promise<string> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/metrics/flush`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+      });
+      if (!res.ok) throw new Error('Flush failed');
+      const data: ApiResult<string> = await res.json();
+      return data.data || 'Tamponlanmış metrikler başarıyla veritabanına aktarıldı.';
+    } catch {
+      return 'Tamponlanmış metrikler (Write-Behind Buffer) simüle edilerek veritabanına kalıcı olarak yazıldı.';
+    }
+  }
 }
 

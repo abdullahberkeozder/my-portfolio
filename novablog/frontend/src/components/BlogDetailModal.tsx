@@ -22,14 +22,62 @@ import {
   AlertTriangle,
   Loader2,
   CheckCircle2,
+  Clock,
+  Share2,
+  Copy,
+  Check,
+  FileCode,
 } from 'lucide-react';
 
 interface BlogDetailModalProps {
   blog: BlogDto | null;
   onClose: () => void;
+  onTagClick?: (tag: string) => void;
 }
 
-export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose }) => {
+const CodeSnippet: React.FC<{ code: string; language: string }> = ({ code, language }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    if (typeof window !== 'undefined') {
+      navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <div className="my-4 rounded-xl overflow-hidden border border-slate-800 bg-slate-950/90 shadow-lg">
+      <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border-b border-slate-800 text-[11px] font-mono text-slate-400">
+        <span className="flex items-center gap-1.5 uppercase font-semibold text-indigo-400">
+          <FileCode className="w-3.5 h-3.5" />
+          {language || 'CODE'}
+        </span>
+        <button
+          onClick={handleCopy}
+          className="flex items-center gap-1 px-2 py-0.5 rounded hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3 h-3 text-emerald-400" />
+              <span className="text-emerald-400">Kopyalandı</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3 h-3" />
+              <span>Kopyala</span>
+            </>
+          )}
+        </button>
+      </div>
+      <pre className="p-4 overflow-x-auto text-xs font-mono text-emerald-300/90 leading-relaxed scrollbar-thin">
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+};
+
+export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose, onTagClick }) => {
   const blogId = blog?.id ?? blog?.blogId;
   const { data: liveBlog } = useBlogDetailQuery(blogId);
   const currentBlog = liveBlog || blog;
@@ -41,6 +89,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
 
   const [newComment, setNewComment] = useState('');
   const [authorName, setAuthorName] = useState('');
+  const [isCopiedLink, setIsCopiedLink] = useState(false);
   const [moderationPreview, setModerationPreview] = useState<{
     toxic: boolean;
     sentiment: string;
@@ -86,6 +135,14 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
     });
   };
 
+  const handleShareLink = () => {
+    if (typeof window !== 'undefined') {
+      navigator.clipboard.writeText(`${window.location.origin}/#blog-${blogId}`);
+      setIsCopiedLink(true);
+      setTimeout(() => setIsCopiedLink(false), 2000);
+    }
+  };
+
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
@@ -110,6 +167,9 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
     );
   };
 
+  const wordCount = (currentBlog.content || '').split(/\s+/).filter(Boolean).length;
+  const readingTime = Math.max(1, Math.ceil(wordCount / 180));
+
   const formattedDate = currentBlog.publishedAt || currentBlog.createdDate
     ? new Date(currentBlog.publishedAt || currentBlog.createdDate!).toLocaleDateString('tr-TR', {
         day: 'numeric',
@@ -121,13 +181,76 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
   const liveViews = currentBlog.viewsCount ?? currentBlog.views ?? 0;
   const liveLikes = currentBlog.likesCount ?? currentBlog.likes ?? 0;
 
+  const renderContent = (rawText: string) => {
+    if (!rawText) return null;
+
+    // Split by code blocks: ```lang ... ```
+    const codeBlockRegex = /(```[\s\S]*?```)/g;
+    const parts = rawText.split(codeBlockRegex);
+
+    return parts.map((part, index) => {
+      if (part.startsWith('```') && part.endsWith('```')) {
+        const lines = part.slice(3, -3).trimStart();
+        const firstNewline = lines.indexOf('\n');
+        let lang = 'java';
+        let code = lines;
+        if (firstNewline !== -1) {
+          lang = lines.slice(0, firstNewline).trim();
+          code = lines.slice(firstNewline + 1);
+        }
+        return <CodeSnippet key={index} code={code} language={lang} />;
+      }
+
+      // Regular text parsing: paragraphs, headings, bullet lists
+      const paragraphs = part.split('\n\n').filter((p) => p.trim());
+      return (
+        <div key={index} className="space-y-4">
+          {paragraphs.map((p, pIdx) => {
+            const trimmed = p.trim();
+            if (trimmed.startsWith('### ')) {
+              return (
+                <h4 key={pIdx} className="text-base font-bold text-white pt-2 border-b border-slate-800 pb-1.5">
+                  {trimmed.replace(/^###\s+/, '')}
+                </h4>
+              );
+            }
+            if (trimmed.startsWith('## ')) {
+              return (
+                <h3 key={pIdx} className="text-lg font-bold text-indigo-300 pt-3 border-b border-slate-800 pb-1.5">
+                  {trimmed.replace(/^##\s+/, '')}
+                </h3>
+              );
+            }
+            if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+              const items = trimmed.split('\n').filter((line) => line.trim().startsWith('- ') || line.trim().startsWith('* '));
+              return (
+                <ul key={pIdx} className="list-disc list-inside space-y-2 pl-2 text-slate-300 text-sm">
+                  {items.map((item, iIdx) => (
+                    <li key={iIdx} className="leading-relaxed">
+                      {item.replace(/^[-*]\s+/, '')}
+                    </li>
+                  ))}
+                </ul>
+              );
+            }
+            return (
+              <p key={pIdx} className="text-slate-300 leading-relaxed text-sm">
+                {trimmed}
+              </p>
+            );
+          })}
+        </div>
+      );
+    });
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-3xl max-h-[90vh] flex flex-col rounded-2xl bg-slate-900 border border-slate-800 text-slate-100 shadow-2xl overflow-hidden my-auto">
+      <div className="relative w-full max-w-3xl max-h-[90vh] flex flex-col rounded-2xl bg-slate-900 border border-slate-800 text-slate-100 shadow-2xl overflow-hidden my-auto animate-in fade-in duration-200">
         {/* Modal Header */}
-        <div className="p-6 border-b border-slate-800 flex items-start justify-between bg-slate-950/50">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
+        <div className="p-6 border-b border-slate-800 flex items-start justify-between bg-slate-950/60">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
                 {currentBlog.category?.categoryName || 'Genel'}
               </span>
@@ -135,18 +258,22 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
                 <CheckCircle2 className="w-3 h-3" />
                 128D Vektör İndeksli
               </span>
+              <span className="flex items-center gap-1 text-xs font-mono text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded">
+                <Clock className="w-3 h-3 text-slate-500" />
+                ~{readingTime} dk okuma
+              </span>
               {currentBlog.version !== undefined && (
-                <span className="text-[10px] font-mono text-slate-500 bg-slate-800/80 px-1.5 py-0.5 rounded" title="JPA @Version Optimistic Lock">
+                <span className="text-[10px] font-mono text-slate-400 bg-slate-800/80 px-1.5 py-0.5 rounded" title="JPA @Version Optimistic Lock">
                   v{currentBlog.version}
                 </span>
               )}
             </div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">{currentBlog.title}</h2>
-            <p className="text-xs font-mono text-slate-400 mt-1 uppercase tracking-wider">{currentBlog.header}</p>
+            <h2 className="text-2xl font-bold text-white tracking-tight leading-snug">{currentBlog.title}</h2>
+            <p className="text-xs font-mono text-slate-400 uppercase tracking-wider">{currentBlog.header}</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all"
+            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -156,9 +283,9 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
         <div className="p-6 overflow-y-auto space-y-6">
           {/* Metadata Row */}
           <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400 pb-4 border-b border-slate-800">
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white text-xs">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-xs">
                   {currentBlog.author ? currentBlog.author.charAt(0) : 'A'}
                 </div>
                 <span className="font-medium text-slate-200">{currentBlog.author || 'Abdullah Berke Özder'}</span>
@@ -173,23 +300,33 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
               </span>
             </div>
 
-            {/* Interactive Optimistic Like Button */}
-            <button
-              onClick={handleToggleLike}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                currentBlog.isLiked
-                  ? 'bg-pink-500/20 text-pink-300 border border-pink-500/40 font-semibold'
-                  : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-pink-300 border border-slate-700'
-              }`}
-              title={currentBlog.isLiked ? 'Beğeniyi geri al' : 'Beğen (TanStack Query Optimistic UI)'}
-            >
-              <Heart
-                className={`w-4 h-4 transition-transform active:scale-125 ${
-                  currentBlog.isLiked ? 'fill-pink-500 text-pink-500' : ''
+            {/* Actions: Share & Like */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleShareLink}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all cursor-pointer"
+              >
+                {isCopiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
+                <span>{isCopiedLink ? 'Kopyalandı' : 'Paylaş'}</span>
+              </button>
+
+              <button
+                onClick={handleToggleLike}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                  currentBlog.isLiked
+                    ? 'bg-pink-500/20 text-pink-300 border border-pink-500/40 font-semibold'
+                    : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-pink-300 border border-slate-700'
                 }`}
-              />
-              <span>{liveLikes} Beğeni</span>
-            </button>
+                title={currentBlog.isLiked ? 'Beğeniyi geri al' : 'Beğen (TanStack Query Optimistic UI)'}
+              >
+                <Heart
+                  className={`w-4 h-4 transition-transform active:scale-125 ${
+                    currentBlog.isLiked ? 'fill-pink-500 text-pink-500' : ''
+                  }`}
+                />
+                <span>{liveLikes} Beğeni</span>
+              </button>
+            </div>
           </div>
 
           {/* AI TL;DR Section */}
@@ -208,21 +345,28 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
             </div>
           )}
 
-          {/* Blog Content */}
-          <div className="text-slate-300 leading-relaxed whitespace-pre-wrap font-sans text-sm">
-            {currentBlog.content}
+          {/* Formatted Blog Content with Code Syntax Support */}
+          <div className="text-slate-300 leading-relaxed font-sans text-sm space-y-4">
+            {renderContent(currentBlog.content)}
           </div>
 
           {/* Tags */}
-          {currentBlog.tags && (
+          {currentBlog.tags && currentBlog.tags.length > 0 && (
             <div className="pt-2 flex flex-wrap gap-2">
               {currentBlog.tags.map((t, idx) => (
-                <span
+                <button
                   key={idx}
-                  className="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-indigo-300 border border-slate-700/80"
+                  onClick={() => {
+                    if (onTagClick) {
+                      onTagClick(t);
+                      onClose();
+                    }
+                  }}
+                  className="text-xs px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-indigo-950 hover:text-indigo-300 text-indigo-300 border border-slate-700/80 transition-colors cursor-pointer"
+                  title="Bu etikete sahip yazıları filtrele"
                 >
                   #{t}
-                </span>
+                </button>
               ))}
             </div>
           )}
@@ -239,7 +383,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input
                   type="text"
-                  placeholder="Adınız veya Unvanınız (örn. Ahmet Kaya - Java Dev)"
+                  placeholder="Adınız veya Unvanınız (örn. Caner Kaya - Senior Java Dev)"
                   value={authorName}
                   onChange={(e) => setAuthorName(e.target.value)}
                   className="px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-indigo-500"
@@ -289,7 +433,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
                 <button
                   type="submit"
                   disabled={addCommentMutation.isPending || !newComment.trim()}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold shadow-md shadow-indigo-500/20 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold shadow-md shadow-indigo-500/20 transition-all cursor-pointer"
                 >
                   {addCommentMutation.isPending ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -352,4 +496,3 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
     </div>
   );
 };
-

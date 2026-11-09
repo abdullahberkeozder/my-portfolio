@@ -21,6 +21,6 @@ public class BlogCategoryDto extends AuditingAwareBaseDto implements Serializabl
     private Long blogCategoryId;
 
     @NotEmpty(message = "{blog.category.validation.constraints.NotNull.message}")
-    @Size(min = 5, max = 25, message = "{blog.category.least.validation.constraints.NotNull.message}")
+    @Size(min = 2, max = 50, message = "{blog.category.least.validation.constraints.NotNull.message}")
     private String categoryName;
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, Cpu, Database, Server, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Sparkles, Cpu, Database, Server, CheckCircle2, AlertCircle, Activity } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
 
 interface NavbarProps {
@@ -9,6 +9,7 @@ interface NavbarProps {
   setActiveTab: (tab: 'feed' | 'ai-search' | 'ai-lab' | 'admin-batch') => void;
   isBackendOnline: boolean | null;
   onRefreshHealth: () => void;
+  onOpenTelemetry?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -16,6 +17,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   setActiveTab,
   isBackendOnline,
   onRefreshHealth,
+  onOpenTelemetry,
 }) => {
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md bg-slate-950/80 border-b border-slate-800 text-slate-100">
@@ -47,7 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <nav className="hidden md:flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
             <button
               onClick={() => setActiveTab('feed')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
                 activeTab === 'feed'
                   ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-500/25'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
@@ -57,7 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               onClick={() => setActiveTab('ai-search')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
                 activeTab === 'ai-search'
                   ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-500/25'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
@@ -68,7 +70,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               onClick={() => setActiveTab('ai-lab')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
                 activeTab === 'ai-lab'
                   ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/25'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
@@ -79,7 +81,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               onClick={() => setActiveTab('admin-batch')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
                 activeTab === 'admin-batch'
                   ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md shadow-cyan-500/25'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
@@ -91,12 +93,24 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Right Status / Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* System Telemetry Modal Button */}
+            {onOpenTelemetry && (
+              <button
+                onClick={onOpenTelemetry}
+                title="Sistem Telemetrisi ve Canlı Mimari"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono transition-all border bg-slate-900 border-slate-800 hover:border-indigo-500/50 hover:bg-slate-800 text-indigo-300 cursor-pointer"
+              >
+                <Activity className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
+                <span className="hidden sm:inline">Telemetri</span>
+              </button>
+            )}
+
             {/* Backend Health Badge */}
             <button
               onClick={onRefreshHealth}
               title="Backend Durumu (Tıklayarak yeniden sorgulayın)"
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all border bg-slate-900 border-slate-800 hover:border-slate-700"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all border bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer"
             >
               <Server className="w-3.5 h-3.5 text-slate-400" />
               {isBackendOnline === true ? (
@@ -107,7 +121,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               ) : (
                 <span className="flex items-center gap-1 text-amber-400">
                   <AlertCircle className="w-3 h-3" />
-                  Canlı Demo Modu
+                  Canlı Demo
                 </span>
               )}
             </button>
@@ -117,7 +131,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               href="https://github.com/abdullahberkeozder/my-portfolio"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all cursor-pointer"
             >
               <GithubIcon className="w-4 h-4" />
               <span className="hidden sm:inline">GitHub</span>
@@ -137,7 +151,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('ai-search')}
             className={`px-2 py-1 rounded ${activeTab === 'ai-search' ? 'text-purple-400 font-semibold' : 'text-slate-400'}`}
           >
-            Vektör Arama
+            Vektör
           </button>
           <button
             onClick={() => setActiveTab('ai-lab')}
@@ -151,6 +165,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             Batch
           </button>
+          {onOpenTelemetry && (
+            <button
+              onClick={onOpenTelemetry}
+              className="px-2 py-1 rounded text-indigo-400 font-medium"
+            >
+              Telemetri
+            </button>
+          )}
         </div>
       </div>
     </header>
