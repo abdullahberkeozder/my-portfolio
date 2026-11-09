@@ -28,6 +28,11 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
+        // Preflight OPTIONS isteklerini hız sınırlama kontrolünden muaf tut
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         String uri = request.getRequestURI();
         if (uri == null) {
             return false;

@@ -190,7 +190,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
               {/* Secondary Liquid Glass Capsule Pill */}
               <button
-                onClick={onOpenCreateModal}
+                onClick={() => {
+                  if (activeSlide === 2) {
+                    const el = document.getElementById('system-blueprint-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  } else {
+                    onOpenCreateModal();
+                  }
+                }}
                 className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full glass-liquid hover:border-[#8c52ff]/50 text-zinc-900 dark:text-zinc-100 font-mono font-medium text-xs uppercase tracking-wider transition-all duration-300 active:scale-95 cursor-pointer btn-tactile"
               >
                 <Sparkles className="w-4 h-4 text-[#8c52ff] dark:text-[#a259ff]" />
@@ -239,6 +246,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   alt={slide.title1}
                   fill
                   priority
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
                   className="object-cover object-center transform hover:scale-105 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none" />
@@ -255,7 +263,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </div>
 
               {/* Gauge 1: Loom Virtual Threads RPM */}
-              <div className="space-y-1.5">
+              <div
+                title="NEDEN VAR? Tomcat'in sınırlı 200 OS thread havuzu yerine Project Loom sanal thread'leri ile 10.000+ eşzamanlı istek sıfır blokeleme ile işlenir."
+                className="space-y-1.5 cursor-help"
+              >
                 <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                     <Zap className="w-3.5 h-3.5 text-amber-400" />
@@ -278,7 +289,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </div>
 
               {/* Gauge 2: Redis Write-Behind Buffer Pressure */}
-              <div className="space-y-1.5">
+              <div
+                title="NEDEN VAR? Her beğeni ve görüntülenmede PostgreSQL satır kilidi (Row Lock) almak yerine Redis Hash'te atomik O(1) toplanır ve 30 saniyede bir topluca DB'ye yazılır."
+                className="space-y-1.5 cursor-help"
+              >
                 <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                     <Database className="w-3.5 h-3.5 text-rose-400" />
@@ -301,7 +315,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </div>
 
               {/* Gauge 3: Vector Embedding 128D Radar */}
-              <div className="space-y-1.5">
+              <div
+                title="NEDEN VAR? Geleneksel SQL LIKE araması 'performans' arandığında 'garbage collector' makalesini bulamaz; 128 boyutlu kosinüs mesafesi kavramsal bağlamı yakalar."
+                className="space-y-1.5 cursor-help"
+              >
                 <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                     <Layers className="w-3.5 h-3.5 text-purple-400" />

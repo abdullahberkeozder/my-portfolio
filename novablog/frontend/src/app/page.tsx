@@ -137,7 +137,7 @@ export default function Home() {
                     </button>
                     {categories.map((c, idx) => (
                       <button
-                        key={c.categoryId}
+                        key={c.categoryId ?? `cat-${idx}`}
                         onClick={() => setSelectedCategory(c.categoryId || null)}
                         className={`px-4 py-2 rounded-full text-xs font-mono font-bold whitespace-nowrap transition-all cursor-pointer ${
                           selectedCategory === c.categoryId
@@ -154,6 +154,8 @@ export default function Home() {
                   <div className="relative min-w-[280px]">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
                     <input
+                      id="blog-search-input"
+                      name="blogSearch"
                       type="text"
                       placeholder="Başlık, içerik veya etiket ara (#java-22)..."
                       value={searchTerm}
@@ -241,9 +243,9 @@ export default function Home() {
                 </div>
               ) : sortedBlogs.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {sortedBlogs.map((blog) => (
+                  {sortedBlogs.map((blog, idx) => (
                     <BlogCard
-                      key={blog.id ?? blog.blogId}
+                      key={blog.blogId ?? blog.id ?? `blog-${idx}`}
                       blog={blog}
                       onSelect={setSelectedBlog}
                       onTagClick={(tag) => setSearchTerm(tag)}

@@ -172,10 +172,10 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
 
   const formattedDate = currentBlog.publishedAt || currentBlog.createdDate
     ? new Date(currentBlog.publishedAt || currentBlog.createdDate!).toLocaleDateString('tr-TR', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
     : '5 Kasım 2026';
 
   const liveViews = currentBlog.viewsCount ?? currentBlog.views ?? 0;
@@ -310,17 +310,15 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
 
               <button
                 onClick={handleToggleLike}
-                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono font-bold transition-all cursor-pointer ${
-                  currentBlog.isLiked
-                    ? 'bg-pink-500/20 text-pink-600 dark:text-pink-300 border border-pink-500/40'
-                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-pink-500/10 hover:text-pink-500 border border-black/10 dark:border-white/10'
-                }`}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono font-bold transition-all cursor-pointer ${currentBlog.isLiked
+                  ? 'bg-pink-500/20 text-pink-600 dark:text-pink-300 border border-pink-500/40'
+                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-pink-500/10 hover:text-pink-500 border border-black/10 dark:border-white/10'
+                  }`}
                 title={currentBlog.isLiked ? 'Beğeniyi geri al' : 'Beğen (Optimistic UI)'}
               >
                 <Heart
-                  className={`w-4 h-4 transition-transform active:scale-125 ${
-                    currentBlog.isLiked ? 'fill-pink-500 text-pink-500' : ''
-                  }`}
+                  className={`w-4 h-4 transition-transform active:scale-125 ${currentBlog.isLiked ? 'fill-pink-500 text-pink-500' : ''
+                    }`}
                 />
                 <span>{liveLikes} BEĞENİ</span>
               </button>
@@ -380,6 +378,8 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
             <form onSubmit={handleAddComment} className="mb-6 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950/60 border border-black/10 dark:border-white/10 space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input
+                  id="comment-author-name"
+                  name="authorName"
                   type="text"
                   placeholder="Adınız veya Unvanınız (örn. Caner Kaya - Senior Java Dev)"
                   value={authorName}
@@ -388,6 +388,8 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
                 />
               </div>
               <textarea
+                id="comment-content"
+                name="commentContent"
                 rows={3}
                 placeholder="Yorumunuzu yazın... (Spring AI Moderasyonu canlı olarak duygu durum ve toksisite analizini gösterir)"
                 value={newComment}
@@ -403,11 +405,10 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
               {/* Real-Time Moderation Feedback Banner */}
               {moderationPreview && (
                 <div
-                  className={`p-2.5 rounded-xl text-xs font-mono flex items-center justify-between border ${
-                    moderationPreview.toxic
-                      ? 'bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-300'
-                      : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
-                  }`}
+                  className={`p-2.5 rounded-xl text-xs font-mono flex items-center justify-between border ${moderationPreview.toxic
+                    ? 'bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-300'
+                    : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
+                    }`}
                 >
                   <div className="flex items-center gap-2">
                     {moderationPreview.toxic ? (
@@ -454,11 +455,10 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
               {comments.map((c) => (
                 <div
                   key={c.id}
-                  className={`p-4 rounded-2xl border text-xs space-y-1.5 transition-all ${
-                    c.isOptimistic
-                      ? 'bg-indigo-500/10 border-indigo-500/40 animate-pulse'
-                      : 'bg-zinc-50 dark:bg-zinc-950/40 border-black/[0.08] dark:border-white/[0.08]'
-                  }`}
+                  className={`p-4 rounded-2xl border text-xs space-y-1.5 transition-all ${c.isOptimistic
+                    ? 'bg-indigo-500/10 border-indigo-500/40 animate-pulse'
+                    : 'bg-zinc-50 dark:bg-zinc-950/40 border-black/[0.08] dark:border-white/[0.08]'
+                    }`}
                 >
                   <div className="flex items-center justify-between font-mono">
                     <div className="flex items-center gap-2">

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import {
   Cpu,
@@ -45,15 +45,50 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const closeMegaMenu = () => setMegaMenu(null);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeMegaMenu();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const handleSelectTab = (tab: 'feed' | 'ai-search' | 'ai-lab' | 'admin-batch') => {
     setActiveTab(tab);
     closeMegaMenu();
   };
 
+  const navigateToConsoleModule = (moduleId: string) => {
+    setActiveTab('feed');
+    closeMegaMenu();
+    setTimeout(() => {
+      const el = document.getElementById('modular-architecture-console');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      window.dispatchEvent(new CustomEvent('select-console-module', { detail: moduleId }));
+    }, 100);
+  };
+
+  const handleTestDrive = () => {
+    setActiveTab('feed');
+    closeMegaMenu();
+    setTimeout(() => {
+      const el = document.getElementById('modular-architecture-console');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      window.dispatchEvent(new CustomEvent('select-console-module', { detail: 'loom' }));
+      window.dispatchEvent(new CustomEvent('run-console-simulation'));
+    }, 100);
+  };
+
   return (
     <header className="sticky top-0 z-50 transition-colors duration-300">
-      {/* 1. Ride Also Top Marquee Ticker (Seamless Infinite Loop Lavender / Violet Band) */}
-      <div className="bg-[#8c52ff] dark:bg-[#7232e8] text-white py-1.5 text-[11px] font-mono tracking-widest font-semibold uppercase border-b border-black/10 select-none overflow-hidden relative">
+      {/* 1. Ride Also Top Marquee Ticker (Interactive Infinite Loop Lavender / Violet Band) */}
+      <div
+        onClick={handleTestDrive}
+        title="Mimarî Test Drive konsoluna gitmek ve sanal thread simülasyonunu başlatmak için tıklayınız"
+        className="bg-[#8c52ff] dark:bg-[#7232e8] text-white py-1.5 text-[11px] font-mono tracking-widest font-semibold uppercase border-b border-black/10 select-none overflow-hidden relative cursor-pointer hover:bg-[#783cf5] transition-colors group"
+      >
         <div className="flex animate-marquee whitespace-nowrap">
           {/* First loop track */}
           <div className="flex items-center gap-6 px-4">
@@ -289,7 +324,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </li>
                       <li>
                         <button
-                          onClick={() => handleSelectTab('feed')}
+                          onClick={() => navigateToConsoleModule('spring-ai')}
                           className="text-left text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer block"
                         >
                           SİSTEM MİMARİSİ
@@ -297,7 +332,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </li>
                       <li>
                         <button
-                          onClick={() => handleSelectTab('feed')}
+                          onClick={() => navigateToConsoleModule('loom')}
                           className="text-left text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer block"
                         >
                           SPRING BOOT 4.1.1
@@ -305,7 +340,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </li>
                       <li>
                         <button
-                          onClick={() => handleSelectTab('feed')}
+                          onClick={() => navigateToConsoleModule('loom')}
                           className="text-left text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer block"
                         >
                           JAVA 22 LOOM CONCURRENCY
@@ -313,7 +348,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </li>
                       <li>
                         <button
-                          onClick={() => handleSelectTab('feed')}
+                          onClick={() => navigateToConsoleModule('write-behind')}
                           className="text-left text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer block"
                         >
                           REDIS WRITE-BEHIND BUFFER
@@ -326,10 +361,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <ul className="space-y-2.5">
                       <li>
                         <button
-                          onClick={() => {
-                            if (onOpenArchitectureConsole) onOpenArchitectureConsole();
-                            closeMegaMenu();
-                          }}
+                          onClick={() => navigateToConsoleModule('spring-ai')}
                           className="text-left font-bold text-[#8c52ff] dark:text-[#a259ff] transition-colors cursor-pointer block"
                         >
                           &rarr; MODULAR SIMULATOR CONSOLE
@@ -337,10 +369,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </li>
                       <li>
                         <button
-                          onClick={() => {
-                            if (onOpenTelemetry) onOpenTelemetry();
-                            closeMegaMenu();
-                          }}
+                          onClick={() => navigateToConsoleModule('loom')}
                           className="text-left text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer block"
                         >
                           LOOM VIRTUAL THREADS HUD
@@ -348,10 +377,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </li>
                       <li>
                         <button
-                          onClick={() => {
-                            if (onOpenTelemetry) onOpenTelemetry();
-                            closeMegaMenu();
-                          }}
+                          onClick={() => navigateToConsoleModule('write-behind')}
                           className="text-left text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer block"
                         >
                           REDIS WRITE-BEHIND BUFFER
@@ -359,10 +385,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </li>
                       <li>
                         <button
-                          onClick={() => {
-                            if (onOpenTelemetry) onOpenTelemetry();
-                            closeMegaMenu();
-                          }}
+                          onClick={() => navigateToConsoleModule('optimistic-locking')}
                           className="text-left text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer block"
                         >
                           JPA OPTIMISTIC LOCKING
@@ -402,7 +425,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </li>
                       <li>
                         <button
-                          onClick={() => handleSelectTab('ai-lab')}
+                          onClick={() => navigateToConsoleModule('spring-ai')}
                           className="text-left text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer block"
                         >
                           128D COSINE DİSTANCE PROJECTION
@@ -431,7 +454,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </li>
                       <li>
                         <button
-                          onClick={() => handleSelectTab('admin-batch')}
+                          onClick={() => navigateToConsoleModule('spring-batch')}
                           className="text-left text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer block"
                         >
                           SOFT-DELETE RETENTION PURGE
@@ -447,7 +470,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </li>
                       <li>
                         <button
-                          onClick={() => handleSelectTab('admin-batch')}
+                          onClick={() => {
+                            if (onOpenTelemetry) onOpenTelemetry();
+                            closeMegaMenu();
+                          }}
                           className="text-left text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer block"
                         >
                           POSTGRES &bull; REDIS L2 TELEMETRİ
@@ -467,6 +493,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           src="/images/architecture-cutaway.jpg"
                           alt="Transparent Core Architecture"
                           fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
                           className="object-cover transition-transform hover:scale-105 duration-700 ease-out"
                         />
                       </div>
@@ -492,14 +519,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                     {/* Dual-Pill Buttons (Ride Also Style) */}
                     <div className="flex items-center gap-2 pt-2">
                       <button
-                        onClick={() => handleSelectTab(megaMenu === 'batch' ? 'admin-batch' : megaMenu === 'ai' ? 'ai-search' : 'feed')}
+                        onClick={() => navigateToConsoleModule(megaMenu === 'batch' ? 'spring-batch' : megaMenu === 'ai' ? 'spring-ai' : 'loom')}
                         className="px-4 py-2 rounded-full border border-black/20 dark:border-white/20 bg-white dark:bg-zinc-800 text-xs font-mono font-bold uppercase hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all cursor-pointer btn-tactile"
                       >
                         İNCELE
                       </button>
                       <button
                         onClick={() => {
-                          if (onOpenArchitectureConsole) onOpenArchitectureConsole();
+                          if (onOpenTelemetry) onOpenTelemetry();
                           closeMegaMenu();
                         }}
                         className="px-4 py-2 rounded-full bg-black dark:bg-[#d4f933] text-white dark:text-black text-xs font-mono font-bold uppercase hover:opacity-90 transition-all cursor-pointer btn-tactile"
@@ -517,6 +544,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           src="/images/terminal-hardware.jpg"
                           alt="Tactile Hardware Terminal"
                           fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
                           className="object-cover transition-transform hover:scale-105 duration-700 ease-out"
                         />
                       </div>
@@ -541,7 +569,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                     <div className="flex items-center gap-2 pt-2">
                       <button
-                        onClick={() => handleSelectTab(megaMenu === 'ai' ? 'ai-lab' : 'feed')}
+                        onClick={() => navigateToConsoleModule(megaMenu === 'ai' ? 'spring-ai' : megaMenu === 'batch' ? 'spring-batch' : 'write-behind')}
                         className="w-full px-4 py-2 rounded-full border border-black/20 dark:border-white/20 bg-white dark:bg-zinc-800 text-xs font-mono font-bold uppercase hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all cursor-pointer text-center btn-tactile"
                       >
                         KEŞFET
@@ -557,6 +585,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           src="/images/lifestyle-hero.jpg"
                           alt="Engineering Lifestyle"
                           fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
                           className="object-cover transition-transform hover:scale-105 duration-700 ease-out"
                         />
                       </div>
@@ -575,10 +604,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                     <div className="flex items-center gap-2 pt-2">
                       <button
-                        onClick={() => {
-                          if (onOpenArchitectureConsole) onOpenArchitectureConsole();
-                          closeMegaMenu();
-                        }}
+                        onClick={handleTestDrive}
                         className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-[#d4f933] text-black text-xs font-mono font-bold uppercase hover:bg-[#c4e82b] transition-all cursor-pointer btn-tactile"
                       >
                         <span>TEST DRIVE BAŞLAT</span>

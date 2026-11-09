@@ -131,6 +131,8 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               </span>
             </div>
             <input
+              id="blog-create-title"
+              name="title"
               type="text"
               required
               maxLength={100}
@@ -144,7 +146,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
           {/* Subheader */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="font-bold text-zinc-900 dark:text-white uppercase">
+              <label htmlFor="blog-create-header" className="font-bold text-zinc-900 dark:text-white uppercase">
                 Alt Başlık / Kapsam (Header)
               </label>
               <span className="text-[10px] text-zinc-400">
@@ -152,6 +154,8 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               </span>
             </div>
             <input
+              id="blog-create-header"
+              name="header"
               type="text"
               required
               maxLength={100}
@@ -166,9 +170,11 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="font-bold text-zinc-900 dark:text-white uppercase">Kategori</label>
+                <label htmlFor="blog-create-category" className="font-bold text-zinc-900 dark:text-white uppercase">Kategori</label>
               </div>
               <select
+                id="blog-create-category"
+                name="categoryId"
                 value={selectedCatId}
                 onChange={(e) => setSelectedCatId(Number(e.target.value))}
                 className="w-full px-4 py-2.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-zinc-900 dark:text-white text-xs focus:outline-none focus:border-[#d4f933]"
@@ -212,6 +218,8 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               </div>
             </div>
             <textarea
+              id="blog-create-content"
+              name="content"
               rows={7}
               required
               placeholder="Makalenizi yazın... Kod blokları için ```java veya ```ts formatını kullanabilirsiniz."
@@ -223,7 +231,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
 
           {/* Tags */}
           <div>
-            <label className="block font-bold text-zinc-900 dark:text-white mb-2 uppercase">
+            <label htmlFor="blog-create-tag-input" className="block font-bold text-zinc-900 dark:text-white mb-2 uppercase">
               Etiketler (Tagging)
             </label>
             <div className="flex flex-wrap items-center gap-1.5 mb-2.5">
@@ -246,6 +254,8 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
 
             <div className="flex items-center gap-2">
               <input
+                id="blog-create-tag-input"
+                name="tagInput"
                 type="text"
                 placeholder="Yeni etiket (örn: redis, loom)..."
                 value={tagInput}
