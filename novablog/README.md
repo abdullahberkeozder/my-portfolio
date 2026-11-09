@@ -1,11 +1,12 @@
-# NovaBlog
+﻿# NovaBlog
 
 [![Java 22](https://img.shields.io/badge/Java-22%20Loom-ED8B00?style=flat-square&logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/22/)
 [![Spring Boot 4.1.1](https://img.shields.io/badge/Spring_Boot-4.1.1-6DB33F?style=flat-square&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16%20App%20Router-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
-[![Tests](https://img.shields.io/badge/Tests-191%20Passing%20(100%25)-brightgreen?style=flat-square&logo=checkmarx&logoColor=white)](#test-suite--quality-assurance)
+[![Tests](https://img.shields.io/badge/Tests-195%20Passing%20(100%25)-brightgreen?style=flat-square&logo=checkmarx&logoColor=white)](#test-suite--quality-assurance)
 [![Resilience4j](https://img.shields.io/badge/Resilience4j-Circuit_Breaker_%26_Idempotency-blue?style=flat-square&logo=shield&logoColor=white)](#resilience4j--fault-tolerance)
+[![Concurrency](https://img.shields.io/badge/Concurrency-Write--Behind_Counters_%26_Optimistic_Locking-orange?style=flat-square&logo=speedtest&logoColor=white)](#8-concurrency--locking-redis-write-behind-counters--jpa-optimistic-locking)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%20%2B%20Flyway%20V8-316192?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/Redis-7%20Cache-DC382D?style=flat-square&logo=redis&logoColor=white)](https://redis.io/)
 [![Docker](https://img.shields.io/badge/Docker-Compose%20Ready-2496ED?style=flat-square&logo=docker&logoColor=white)](#local-setup)
@@ -25,7 +26,7 @@
 NovaBlog is a full-stack content publishing platform built with **Spring Boot 4.1.1** (Java 22) and **Next.js 16** (React 19, TypeScript). It addresses standard production requirements beyond basic CRUD: high concurrency via virtual threads, semantic vector retrieval alongside lexical search, multi-tier caching, asynchronous chunk-based batch ETL, and two-factor authentication.
 
 The repository is structured as a monorepo containing:
-- `backend/`: Spring Boot 4 REST API, Spring AI vector engine, Resilience4j fault tolerance & circuit breakers, Idempotency filter, Spring Batch jobs, Flyway database migrations, and 191 unit and integration tests.
+- `backend/`: Spring Boot 4 REST API, Spring AI vector engine, Resilience4j fault tolerance & circuit breakers, Idempotency filter, Redis Write-Behind engagement counters, Spring Batch jobs, Flyway database migrations, and 195 unit and integration tests.
 - `frontend/`: Next.js 16 showcase with App Router, semantic search studio, AI moderation tools, and administrative batch triggers.
 - `docker-compose.yml`: Local infrastructure orchestrating PostgreSQL 16, Redis 7, MinIO S3, Mailpit SMTP, and Prometheus.
 
@@ -180,6 +181,13 @@ Production resilience patterns protect against downstream dependency outages and
 - **Idempotency Filter (`X-Idempotency-Key`):** Atomically locks mutating requests in Redis using `SETNX`. Concurrent in-flight requests return `409 Conflict`. Once completed, the exact HTTP status and response payload are cached with 24-hour TTL, ensuring network retries return identical cached responses (`X-Idempotency-Status: CACHED`) without duplicate side-effects.
 - **RFC 7807 Problem Details:** Global `@RestControllerAdvice` standardizes error responses with machine-readable URIs, titles, status codes, and validation error maps.
 
+### 8. Concurrency & Locking: Redis Write-Behind Counters & JPA Optimistic Locking
+Production high-traffic engagement systems must isolate high-frequency counter updates from database row-locks while protecting article content from concurrent overwrites:
+- **Write-Behind Engagement Buffering (`POST /{id}/view`, `POST /{id}/like`):** Page views and likes do not issue synchronous database `UPDATE` statements. Instead, counters are buffered in Redis (`HINCRBY`) or thread-safe in-memory `LongAdder` maps (`O(1)` time complexity).
+- **Scheduled Batch DB Flusher:** `BlogMetricFlushScheduler` periodically drains buffers via atomic Redis `RENAME` (guaranteeing zero dropped increments under load) and flushes deltas to PostgreSQL using native SQL queries (`UPDATE blogs SET views_count = views_count + :delta WHERE blog_id = :id`) every 30 seconds and during graceful application shutdown (`@PreDestroy`).
+- **Live Real-Time Reads:** Queries via `GET /blog/api/v1.0.0/{id}` dynamically compute `dbCount + bufferDelta` on the fly, presenting users with instantaneous real-time engagement figures without sacrificing database isolation.
+- **JPA `@Version` Optimistic Locking:** Article entity updates are protected by `@Version`. If a user attempts to update a blog with a stale version, Spring Data throws `ObjectOptimisticLockingFailureException`, which `GlobalProblemDetailsExceptionHandler` catches and maps to RFC 7807 `409 Conflict`. Native metric updates deliberately bypass `@Version` bumping so continuous reader engagement never collides with author edits.
+
 ---
 
 ## Next.js 16 Frontend
@@ -194,9 +202,9 @@ Features:
 
 ---
 
-## 23 Engineering Milestones
+## 24 Engineering Milestones
 
-The project was constructed across 23 architectural milestones:
+The project was constructed across 24 architectural milestones:
 
 | # | Milestone | Scope |
 | :-: | :--- | :--- |
@@ -223,12 +231,13 @@ The project was constructed across 23 architectural milestones:
 | **21** | Spring Batch 5 ETL | High-throughput chunked cleanup and author analytics CSV generation. |
 | **22** | Spring AI & Vector Search | 128D embeddings, Cosine similarity, RRF hybrid search, TL;DR, and moderation. |
 | **23** | Resilience4j & Idempotency | CircuitBreaker (CLOSED/OPEN/HALF_OPEN), Bulkhead, Retry, Redis `X-Idempotency-Key`, RFC 7807 ProblemDetails. |
+| **24** | Concurrency & Locking | Redis Write-Behind engagement counters (INCR buffer + batch DB flusher) & JPA @Version optimistic locking with RFC 7807 409 Conflict. |
 
 ---
 
 ## Test Suite & Quality Assurance
 
-All 191 unit and integration tests run with zero failures:
+All 195 unit and integration tests run with zero failures:
 
 ```
 [INFO] -------------------------------------------------------
@@ -248,13 +257,15 @@ All 191 unit and integration tests run with zero failures:
 [INFO] Running com.berkeozder.ResilienceCircuitBreakerIntegrationTest -> 3 tests passed
 [INFO] Running com.berkeozder.IdempotencyIntegrationTest        -> 3 tests passed
 [INFO] Running com.berkeozder.ProblemDetailsIntegrationTest     -> 1 test passed
+[INFO] Running com.berkeozder.OptimisticLockingIntegrationTest  -> 1 test passed
+[INFO] Running com.berkeozder.WriteBehindMetricsIntegrationTest -> 3 tests passed
 [INFO] ... [31 additional test classes] ...
 [INFO] 
 [INFO] Results:
 [INFO] 
-[INFO] Tests run: 191, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 195, Failures: 0, Errors: 0, Skipped: 0
 [INFO] 
-[INFO] BUILD SUCCESS (Total time: 42.516 s)
+[INFO] BUILD SUCCESS (Total time: 40.103 s)
 ```
 
 ---
@@ -313,6 +324,11 @@ npm run dev
 | `POST` | `/api/v1/ai/reindex` | Re-generate embeddings for all database records | `ROLE_ADMIN` |
 | `GET` | `/blog/api/v1.0.0/list` | List blogs with pagination and filtering | Public |
 | `POST` | `/blog/api/v1.0.0/create` | Create new blog (generates vector embedding) | Authenticated |
+| `PUT` | `/blog/api/v1.0.0/{id}` | Update blog with JPA @Version optimistic locking (409 on conflict) | `ROLE_ADMIN` |
+| `POST` | `/blog/api/v1.0.0/{id}/view` | Atomically increment view counter in Write-Behind buffer | Public |
+| `POST` | `/blog/api/v1.0.0/{id}/like` | Increment like counter in buffer | Public |
+| `DELETE` | `/blog/api/v1.0.0/{id}/like` | Decrement like counter in buffer | Public |
+| `POST` | `/blog/api/v1.0.0/metrics/flush` | Immediately flush buffered metrics to database | `ROLE_ADMIN` |
 | `POST` | `/api/v1/batch/jobs/cleanup` | Trigger soft-delete cleanup batch job | `ROLE_ADMIN` |
 | `POST` | `/api/v1/batch/jobs/analytics` | Trigger author analytics batch job | `ROLE_ADMIN` |
 | `POST` | `/api/v1/auth/login` | Authenticate with email/password; returns JWT | Public |
@@ -333,7 +349,7 @@ npm run dev
 NovaBlog, **Spring Boot 4.1.1** (Java 22) ve **Next.js 16** (React 19, TypeScript) ile geliştirilmiş tam kapsamlı bir içerik yönetim platformudur. Basit CRUD operasyonlarının ötesindeki kurumsal gereksinimleri adresler: sanal iş parçacıklarıyla yüksek eşzamanlılık, vektör benzerliği ve anahtar kelime araması, çok katmanlı önbellekleme, chunk tabanlı Spring Batch işleri ve iki faktörlü kimlik doğrulama.
 
 Monorepo yapısı:
-- `backend/`: Spring Boot 4 REST API, Spring AI vektör motoru, Resilience4j devre kesiciler ve tekrarlayıcılar, Idempotency filtresi, Spring Batch işleri, Flyway veritabanı migrasyonları ve 191 adet birim/entegrasyon testi.
+- `backend/`: Spring Boot 4 REST API, Spring AI vektör motoru, Resilience4j devre kesiciler ve tekrarlayıcılar, Idempotency filtresi, Redis Write-Behind sayaç tamponlaması, Spring Batch işleri, Flyway veritabanı migrasyonları ve 195 adet birim/entegrasyon testi.
 - `frontend/`: Next.js 16 App Router ile geliştirilmiş arayüz; anlamsal arama stüdyosu, AI moderasyon araçları ve sistem yönetim konsolu.
 - `docker-compose.yml`: PostgreSQL 16, Redis 7, MinIO S3, Mailpit SMTP ve Prometheus servislerini tek komutla ayağa kaldıran altyapı tanımı.
 
@@ -388,11 +404,18 @@ Dış servis çökmelerine ve ağ kesintilerinde mükerrer işlem oluşmasına k
 - **Idempotency Filtresi (`X-Idempotency-Key`):** Mutasyon içeren istekler (POST, PUT, PATCH, DELETE) Redis üzerinde `SETNX` atomik kilidiyle korunur. Aynı anahtarla gelen eşzamanlı istekler `409 Conflict` döner; tamamlanan işlemlerin HTTP yanıtı 24 saat önbelleğe alınarak ağ tekrarında çift kayıt oluşması önlenir (`X-Idempotency-Status: CACHED`).
 - **RFC 7807 Problem Details:** Global `@RestControllerAdvice` ile tüm hata yanıtları endüstri standardı makine okunabilir URI, başlık ve doğrulama haritalarıyla sunulur.
 
+### 8. Eşzamanlılık ve Kilitleme: Redis Write-Behind Sayaçları & JPA Optimistic Locking
+Yüksek trafikli etkileşim sistemlerinde eşzamanlı sayfa görüntülenme ve beğeni isteklerinin doğrudan veritabanı satırlarını kilitlemesini önlemek ve makale güncellemelerinde kayıp veri oluşmasını engellemek için iki katmanlı eşzamanlılık mimarisi kurulmuştur:
+- **Write-Behind Metrik Tamponlama (`POST /{id}/view`, `POST /{id}/like`):** Sayfa açılışları ve beğeniler doğrudan veritabanına `UPDATE` atmaz. Bunun yerine sayaç artışları Redis Hash (`HINCRBY`) veya lock-free `LongAdder` bellek tamponuna yazılır (`O(1)` erişim süresi).
+- **Zamanlanmış Toplu DB Aktarımı (Batch Flusher):** `BlogMetricFlushScheduler`, Redis üzerindeki tamponu atomik `RENAME` komutuyla yeni bir işleme anahtarına taşır (bu esnada gelen yeni sayaç istekleri asla kaybolmaz) ve 30 saniyede bir ile sunucu kapanışında (`@PreDestroy`) yerel SQL (`UPDATE blogs SET views_count = views_count + :delta WHERE blog_id = :id`) ile veritabanına toplu yansıtır.
+- **Canlı Anlık Okuma:** Kullanıcı makaleyi okuduğunda `GET /blog/api/v1.0.0/{id}` uç noktası `veritabanı değeri + tampon farkı` toplamını hesaplayarak gecikmesiz canlı etkileşim rakamlarını döner.
+- **JPA `@Version` Optimistic Locking:** Makale güncellemeleri `@Version` sütunuyla korunur. Stale (eski) sürümle gönderilen güncellemeler `ObjectOptimisticLockingFailureException` fırlatır ve RFC 7807 `409 Conflict` olarak istemciye iletilir. Native sayaç artırımları `@Version` alanını etkilemediği için yoğun okuma/beğeni trafiği yazarın güncelleme yapmasını hiçbir zaman engellemez.
+
 ---
 
-## 23 Mimari Adım
+## 24 Mimari Adım
 
-Proje 23 geliştirme adımı üzerinden tamamlanmıştır:
+Proje 24 geliştirme adımı üzerinden tamamlanmıştır:
 
 1. Mimari Temel (Java 22, Spring Boot 4.1.1)
 2. Entity Auditing (`createdDate`, `updatedDate`)
@@ -417,16 +440,17 @@ Proje 23 geliştirme adımı üzerinden tamamlanmıştır:
 21. Spring Batch 5 Chunk-Based ETL İşleri
 22. Spring AI Vektör Arama & Next.js 16 Vitrini
 23. Resilience4j & Idempotency (CircuitBreaker, Bulkhead, Retry, Redis X-Idempotency-Key, RFC 7807)
+24. Eşzamanlılık ve Kilitleme (Redis Write-Behind Sayaçları, Zamanlanmış DB Flush & JPA @Version Optimistic Locking HTTP 409 Conflict)
 
 ---
 
 ## Test Paketi
 
-191 testin tamamı hatasız geçmektedir:
+195 testin tamamı hatasız geçmektedir:
 
 ```
-Tests run: 191, Failures: 0, Errors: 0, Skipped: 0
-BUILD SUCCESS (Total time: 42.516 s)
+Tests run: 195, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS (Total time: 40.103 s)
 ```
 
 ---

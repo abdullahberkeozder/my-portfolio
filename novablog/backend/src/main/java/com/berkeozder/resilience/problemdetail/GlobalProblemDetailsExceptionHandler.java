@@ -170,4 +170,28 @@ public class GlobalProblemDetailsExceptionHandler {
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 .body(problem);
     }
+
+    // 8. JPA Optimistic Locking Çakışma Hatası (HTTP 409 Conflict - Adım 24)
+    @ExceptionHandler({
+            jakarta.persistence.OptimisticLockException.class,
+            org.springframework.orm.ObjectOptimisticLockingFailureException.class
+    })
+    public ResponseEntity<ProblemDetail> handleOptimisticLockConflict(Exception ex, HttpServletRequest request) {
+        log.warn("🔒 [OPTIMISTIC_LOCK] Eşzamanlı düzenleme çakışması tespit edildi: {}", ex.getMessage());
+
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                "Bu blog yazısı siz düzenlerken başka bir kullanıcı veya işlem tarafından değiştirildi. Lütfen sayfayı yenileyip en güncel veriyi aldıktan sonra tekrar deneyin."
+        );
+        problem.setType(URI.create(BASE_ERROR_URI + "optimistic-lock-conflict"));
+        problem.setTitle("Conflict - Stale Object State");
+        problem.setInstance(URI.create(request.getRequestURI()));
+        problem.setProperty("timestamp", Instant.now().toString());
+        problem.setProperty("conflictType", "OPTIMISTIC_LOCK_VERSION_MISMATCH");
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+                .body(problem);
+    }
 }
+

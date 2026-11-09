@@ -121,5 +121,15 @@ public interface IBlogRepository extends JpaRepository<BlogEntity, Long>, JpaSpe
             @Param("candidateLimit") int candidateLimit,
             @Param("limit") int limit
     );
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE blogs SET views_count = views_count + :delta WHERE blog_id = :id", nativeQuery = true)
+    int incrementViewsCountNative(@Param("id") Long id, @Param("delta") long delta);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE blogs SET likes_count = likes_count + :delta WHERE blog_id = :id", nativeQuery = true)
+    int incrementLikesCountNative(@Param("id") Long id, @Param("delta") long delta);
 }
 

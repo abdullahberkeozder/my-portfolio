@@ -7,9 +7,6 @@ import com.berkeozder.data.entity.TagEntity;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-/**
- * Mapper converting between BlogEntity and BlogDto.
- */
 public class BlogMapper implements IGenericMapper<BlogDto, BlogEntity> {
 
     private final BlogCategoryMapper blogCategoryMapper;
@@ -39,6 +36,9 @@ public class BlogMapper implements IGenericMapper<BlogDto, BlogEntity> {
                 .hasEmbedding(blogEntity.getEmbedding() != null && !blogEntity.getEmbedding().isBlank())
                 .isDeleted(blogEntity.isDeleted())
                 .deletedAt(blogEntity.getDeletedAt())
+                .version(blogEntity.getVersion())
+                .viewsCount(blogEntity.getViewsCount() != null ? blogEntity.getViewsCount() : 0L)
+                .likesCount(blogEntity.getLikesCount() != null ? blogEntity.getLikesCount() : 0L)
                 .build();
     }
 
@@ -55,6 +55,10 @@ public class BlogMapper implements IGenericMapper<BlogDto, BlogEntity> {
                 .blogCategoryEntity(blogCategoryMapper.toEntity(blogDto.getBlogCategoryDto()))
                 .isDeleted(blogDto.isDeleted())
                 .deletedAt(blogDto.getDeletedAt())
+                .version(blogDto.getVersion() != null ? blogDto.getVersion() : 0L)
+                .viewsCount(blogDto.getViewsCount() != null ? blogDto.getViewsCount() : 0L)
+                .likesCount(blogDto.getLikesCount() != null ? blogDto.getLikesCount() : 0L)
                 .build();
     }
-}
+
+} // end BlogMapper

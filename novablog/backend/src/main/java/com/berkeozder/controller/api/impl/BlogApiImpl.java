@@ -10,9 +10,8 @@ import com.berkeozder.business.services.interfaces.IBlogServices;
 import com.berkeozder.controller.api.interfaces.IBlogApi;
 import com.berkeozder.data.entity.BlogEntity;
 import com.berkeozder.error.ApiResult;
-import com.berkeozder.util.FrontEnd;
+import com.berkeozder.utily.FrontEnd;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,43 +23,53 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-/**
- * REST controller implementation for Blog management endpoints.
- */
-@Tag(name = "Blog API", description = "Endpoints for creating, querying, updating and managing blog posts")
+// LOMBOK
+@RequiredArgsConstructor
+@Log4j2
+
+// API
 @RestController
 @RequestMapping("/blog/api/v1.0.0")
 @CrossOrigin(origins = FrontEnd.REACT_URL)
-@RequiredArgsConstructor
-@Log4j2
 public class BlogApiImpl implements IBlogApi<BlogDto> {
 
+    // DI
+    // Field
     private final IBlogServices<BlogDto, BlogEntity> iBlogServices;
     private final ObjectMapper objectMapper;
 
+    /// ///////////////////////////////////////////////////////////////
+    /// SPEED DATA
+    /// http://localhost:5555/blog/api/v1.0.0/speed
     @Override
     @GetMapping("/speed")
     public ResponseEntity<ApiResult<List<BlogDto>>> speedData(Integer data) {
         return ResponseEntity.ok(ApiResult.success(iBlogServices.speedData(data)));
     }
 
+    /// DELETE DATA
+    /// http://localhost:5555/blog/api/v1.0.0/delete-all
     @Override
     @GetMapping("/delete-all")
     public ResponseEntity<ApiResult<List<BlogDto>>> deleteData() {
         return ResponseEntity.ok(ApiResult.success(iBlogServices.deleteData()));
     }
 
+    /// ///////////////////////////////////////////////////////////////
+    /// CREATE RESIMSIZ (BLOG)
+    /// http://localhost:5555/blog/api/v1.0.0/create
     @Override
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResult<?>> objectApiCreate(@Valid @RequestBody BlogDto blogDto) {
         try {
             return ResponseEntity.ok(ApiResult.success(iBlogServices.objectServiceCreate(blogDto)));
         } catch (Exception ex) {
-            log.error("Failed to create blog: {}", ex.getMessage(), ex);
+            ex.printStackTrace();
             return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/api/v1.0.0/create"));
         }
     }
 
+    /// CREATE RESIMLI (BLOG)
     @Override
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResult<?>> objectApiCreateWithFile(
@@ -70,44 +79,41 @@ public class BlogApiImpl implements IBlogApi<BlogDto> {
             BlogDto blogDto = objectMapper.readValue(json, BlogDto.class);
             return ResponseEntity.ok(ApiResult.success(iBlogServices.objectServiceCreateWithFile(blogDto, multipartFile)));
         } catch (Exception ex) {
-            log.error("Failed to create blog with file: {}", ex.getMessage(), ex);
+            ex.printStackTrace();
             return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/api/v1.0.0/create"));
         }
     }
 
+    ///  LIST (BLOG)
     @Override
     @GetMapping("/list")
     public ResponseEntity<ApiResult<List<BlogDto>>> objectApiList() {
         try {
             return ResponseEntity.ok(ApiResult.success(iBlogServices.objectServiceList()));
         } catch (Exception ex) {
-            log.error("Failed to list blogs: {}", ex.getMessage(), ex);
             return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/api/v1.0.0/liste"));
         }
     }
 
+    /// FIND BY ID (BLOG)
     @Override
-    @GetMapping("/find/{id}")
+    @GetMapping({"/find/{id}", "/{id}"})
     public ResponseEntity<ApiResult<?>> objectApiFindById(@PathVariable(name = "id") Long id) {
         try {
             return ResponseEntity.ok(ApiResult.success(iBlogServices.objectServiceFindById(id)));
         } catch (Exception ex) {
-            log.error("Failed to find blog by id {}: {}", id, ex.getMessage(), ex);
             return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/api/v1.0.0/find/" + id));
         }
     }
 
+    /// UPDATE RESIMSIZ (BLOG) ==> AYNI ZAMANDA MEVCUT RESİMİ KORUR
     @Override
-    @PutMapping(value = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = {"/update/{id}", "/{id}"}, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResult<?>> objectApiUpdate(@PathVariable(name = "id") Long id, @Valid @RequestBody BlogDto blogDto) {
-        try {
-            return ResponseEntity.ok(ApiResult.success(iBlogServices.objectServiceUpdate(id, blogDto)));
-        } catch (Exception ex) {
-            log.error("Failed to update blog {}: {}", id, ex.getMessage(), ex);
-            return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/api/v1.0.0/update/" + id));
-        }
+        return ResponseEntity.ok(ApiResult.success(iBlogServices.objectServiceUpdate(id, blogDto)));
     }
 
+    /// UPDATE RESIMLI (BLOG)
     @Override
     @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResult<?>> objectApiUpdateWithFile(
@@ -118,22 +124,67 @@ public class BlogApiImpl implements IBlogApi<BlogDto> {
             BlogDto blogDto = objectMapper.readValue(json, BlogDto.class);
             return ResponseEntity.ok(ApiResult.success(iBlogServices.objectServiceUpdateWithFile(id, blogDto, multipartFile)));
         } catch (Exception ex) {
-            log.error("Failed to update blog with file {}: {}", id, ex.getMessage(), ex);
-            return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/api/v1.0.0/update/" + id));
+            ex.printStackTrace();
+            return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/api/v1.0.0/update"));
         }
     }
 
+    /// DELETE (BLOG)
     @Override
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResult<?>> objectApiDelete(@PathVariable(name = "id") Long id) {
         try {
             return ResponseEntity.ok(ApiResult.success(iBlogServices.objectServiceDelete(id)));
         } catch (Exception ex) {
-            log.error("Failed to delete blog {}: {}", id, ex.getMessage(), ex);
             return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/api/v1.0.0/delete/" + id));
         }
     }
 
+    /// ////////////////////////////////////////////////////////////////////
+    // PAGINATION/SORTING
+    /*
+     PathVariable ve RequestParam Arasındaki Farklar
+
+    | Özellik             | @PathVariable                                         | @RequestParam                                   |
+    |-------------------------------------------------------|----------------------------------------------------|
+    | Amaç                | URL yolundaki bir parametreyi alır.                   | Sorgu parametrelerini (query parameters) alır.     |
+    | Kullanım Yeri       | URL'nin bir parçası olarak tanımlanır.                | URL'deki `?` işaretinden sonra gelen parametrelerle çalışır. |
+    | URL Örneği          | `/api/users/{id}`                                     | `/api/users?name=Berke`                             |
+    | Tanımlama Şekli     | `@PathVariable("id") Long id`                         | `@RequestParam("name") String name`               |
+    | Zorunluluk          | Varsayılan olarak zorunludur (opsiyonel yapılabilir). | Varsayılan olarak zorunludur (opsiyonel yapılabilir).|
+    | Çoklu Değerler      | Sadece tek bir değer alır.                            | Birden fazla parametreyi kolayca alabilir.         |
+
+     Örnekler
+     @PathVariable Kullanımı
+    URL: `/api/users/123`
+
+    @GetMapping("/api/users/{id}")
+    public ResponseEntity<String> getUserById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok("User ID: " + id);
+    }
+
+    @RequestParam Kullanımı
+    URL: `/api/users?name=Berke`
+
+    @GetMapping("/api/users")
+    public ResponseEntity<String> getUserByName(@RequestParam("name") String name) {
+        return ResponseEntity.ok("User Name: " + name);
+    }
+    ---
+
+     Temel Fark
+    - @PathVariable, dinamik bir URL'nin bir parçasını temsil eder.
+    - @RequestParam, sorgu parametrelerini alır ve genelde isteğe bağlı parametreler için kullanılır.
+
+    Hangi Durumda Kullanılır?
+    - @PathVariable: Kaynak kimliğini veya bir URL'nin parçasını almak için.
+    - @RequestParam: Filtreleme, sıralama veya arama gibi isteğe bağlı parametrelerle çalışmak için.
+    */
+
+    /// PAGINATION & SORTING
+    /// PAGINATION
+    // 1.sayfada 4 tane veri getir.
+    // http://localhost:5555/blog/api/v1.0.0/pagination?current_page=0&page_size=4
     @Override
     @GetMapping(value = "/pagination")
     public ResponseEntity<Page<?>> objectApiPagination(
@@ -142,8 +193,10 @@ public class BlogApiImpl implements IBlogApi<BlogDto> {
         return ResponseEntity.ok(iBlogServices.objectServicePagination(currentPage, pageSize));
     }
 
-    @Operation(summary = "Advanced multi-criteria blog search and pagination",
-            description = "Returns paginated and sorted blog list matching title, content, category, tag, and author.")
+    /// ADVANCED SEARCH & FILTERING & PAGINATION (Adım 5)
+    // http://localhost:5555/blog/api/v1.0.0/search?search=java&category_id=1&tag=spring-boot&author=admin&page=0&size=10&sort_by=createdDate&sort_dir=desc
+    @Operation(summary = "Gelişmiş Çok Kriterli Blog Arama ve Sayfalama",
+            description = "Başlık, header, içerik kelime araması, kategori, etiket ve yazar filtresi ile sıralanmış ve sayfalanmış blog listesi döner.")
     @GetMapping(value = "/search")
     public ResponseEntity<ApiResult<PagedResponseDto<BlogDto>>> searchBlogs(
             @RequestParam(name = "search", required = false) String search,
@@ -158,8 +211,11 @@ public class BlogApiImpl implements IBlogApi<BlogDto> {
         return ResponseEntity.ok(ApiResult.success(result));
     }
 
-    @Operation(summary = "Dynamic criteria blog filter (POST)",
-            description = "Filters blogs using JPA Criteria API across date range, comments, tags, author, and categories.")
+    /// ///////////////////////////////////////////////////////////////
+    /// DYNAMIC CRITERIA API FILTERING (Adım 14)
+    /// http://localhost:5555/blog/api/v1.0.0/filter
+    @Operation(summary = "Gelişmiş Çok Kriterli Dinamik Blog Filtreleme (POST)",
+            description = "Arama kelimesi, kategori ID/adı, etiketler, yazar, tarih aralığı, minimum yorum sayısı ve görsel durumu kriterlerini Criteria API ile filtreler.")
     @PostMapping(value = "/filter", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResult<PagedResponseDto<BlogDto>>> filterBlogsPost(
             @Valid @RequestBody(required = false) BlogFilterRequestDto filterRequest) {
@@ -170,8 +226,8 @@ public class BlogApiImpl implements IBlogApi<BlogDto> {
         return ResponseEntity.ok(ApiResult.success(result));
     }
 
-    @Operation(summary = "Dynamic criteria blog filter (GET)",
-            description = "Query parameter driven blog filter and pagination.")
+    @Operation(summary = "Gelişmiş Çok Kriterli Dinamik Blog Filtreleme (GET)",
+            description = "URL sorgu parametreleri üzerinden çok kriterli blog filtreleme ve sayfalama.")
     @GetMapping(value = "/filter")
     public ResponseEntity<ApiResult<PagedResponseDto<BlogDto>>> filterBlogsGet(
             @Valid @ModelAttribute BlogFilterRequestDto filterRequest) {
@@ -182,6 +238,8 @@ public class BlogApiImpl implements IBlogApi<BlogDto> {
         return ResponseEntity.ok(ApiResult.success(result));
     }
 
+    ///  SORTING
+    // SORTING (Belli Sütuna göre)
     @Override
     @GetMapping(value = "/sorting")
     public ResponseEntity<List<BlogDto>> objectApiListSortedByDefault(
@@ -189,37 +247,86 @@ public class BlogApiImpl implements IBlogApi<BlogDto> {
         return ResponseEntity.ok(iBlogServices.objectServiceListSortedByDefault(sortedBy));
     }
 
+    ///  SORTING ASC (Küçükten büyüğe doğru)
     @Override
     @GetMapping(value = "/sorting/header/asc")
     public ResponseEntity<List<BlogDto>> objectApiListSortedByAsc() {
         return ResponseEntity.ok(iBlogServices.objectServiceListSortedByAsc());
     }
 
+    ///  SORTING DESC (Büyükten küçüğe doğru)
     @Override
     @GetMapping(value = "/sorting/header/desc")
     public ResponseEntity<List<BlogDto>> objectApiListSortedByDesc() {
         return ResponseEntity.ok(iBlogServices.objectServiceListSortedByDesc());
     }
 
-    @Operation(summary = "Restore soft-deleted blog", description = "Restores a soft-deleted blog post to active status.")
+    /// ///////////////////////////////////////////////////////////////
+    /// SOFT DELETE RESTORE & ARŞİV LİSTESİ (Adım 12)
+    /// RESTORE (SOFT DELETED BLOG)
+    /// http://localhost:5555/blog/api/v1.0.0/restore/{id}
+    @Operation(summary = "Silinmiş blogu geri yükle (Restore)", description = "Soft delete ile silinmiş bir blog yazısını tekrar aktif hale getirir.")
     @PostMapping(value = "/restore/{id}")
     public ResponseEntity<ApiResult<BlogDto>> restoreBlog(@PathVariable(name = "id") Long id) {
         return ResponseEntity.ok(ApiResult.success(iBlogServices.restoreBlog(id)));
     }
 
-    @Operation(summary = "List soft-deleted blogs", description = "Lists archived / soft-deleted blogs (admin only).")
+    /// DELETED BLOGS (ARCHIVED)
+    /// http://localhost:5555/blog/api/v1.0.0/deleted
+    @Operation(summary = "Silinmiş (Arşivdeki) blogları listele", description = "Sadece admin/super-admin yetkisiyle erişilebilen silinmiş blog listesi.")
     @GetMapping(value = "/deleted")
     public ResponseEntity<ApiResult<List<BlogDto>>> findDeletedBlogs() {
         return ResponseEntity.ok(ApiResult.success(iBlogServices.findDeletedBlogs()));
     }
 
-    @Operation(summary = "Bulk batch blog operations",
-            description = "Executes batch deletion, restoration, tag assignment or category updates across multiple blogs.")
+    /// ///////////////////////////////////////////////////////////////
+    /// BULK BATCH OPERATIONS (Adım 15)
+    /// http://localhost:5555/blog/api/v1.0.0/bulk
+    @Operation(summary = "Toplu Blog İşlemleri (Bulk Batch Operations)",
+            description = "Birden çok blog üzerinde tek seferde toplu silme, geri yükleme, kategori değiştirme, etiket ekleme veya kalıcı silme işlemi gerçekleştirir. Sadece ADMIN/SUPER_ADMIN yetkisiyle çalışır.")
     @PostMapping(value = "/bulk", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResult<BulkOperationResponseDto>> executeBulkOperation(
             @Valid @RequestBody BulkOperationRequestDto request) {
-        log.info("REST: Executing bulk operation. Action: {}, ID count: {}", request.getAction(), request.getBlogIds().size());
+        log.info("REST: Toplu işlem talebi alındı. Action: {}, ID adedi: {}", request.getAction(), request.getBlogIds().size());
         BulkOperationResponseDto response = iBlogServices.executeBulkOperation(request);
         return ResponseEntity.ok(ApiResult.success(response));
     }
-}
+
+    /// ///////////////////////////////////////////////////////////////
+    /// WRITE-BEHIND ENGAGEMENT METRICS (Adım 24)
+    /// GÖRÜNTÜLENME ARTTIR (VIEW COUNTER)
+    /// http://localhost:5555/blog/api/v1.0.0/{id}/view
+    @Operation(summary = "Blog görüntülenme sayısını artır", description = "Write-Behind tamponlama ile DB satır kilitlenmesi olmaksızın görüntülenme sayısını atomik artırır ve anlık toplamı döner.")
+    @PostMapping(value = "/{id}/view")
+    public ResponseEntity<ApiResult<java.util.Map<String, Object>>> recordView(@PathVariable(name = "id") Long id) {
+        long liveViews = iBlogServices.recordView(id);
+        return ResponseEntity.ok(ApiResult.success(java.util.Map.of("blogId", id, "viewsCount", liveViews)));
+    }
+
+    /// BEĞENİ ARTTIR (LIKE COUNTER)
+    /// http://localhost:5555/blog/api/v1.0.0/{id}/like
+    @Operation(summary = "Blogu beğen (Like)", description = "Write-Behind tamponlama ile beğeni sayısını artırır ve anlık toplamı döner.")
+    @PostMapping(value = "/{id}/like")
+    public ResponseEntity<ApiResult<java.util.Map<String, Object>>> recordLike(@PathVariable(name = "id") Long id) {
+        long liveLikes = iBlogServices.recordLike(id);
+        return ResponseEntity.ok(ApiResult.success(java.util.Map.of("blogId", id, "likesCount", liveLikes)));
+    }
+
+    /// BEĞENİ GERİ AL (UNLIKE COUNTER)
+    /// http://localhost:5555/blog/api/v1.0.0/{id}/like
+    @Operation(summary = "Blog beğenisini geri al (Unlike)", description = "Beğeni sayısını 1 azaltır ve güncel toplamı döner.")
+    @DeleteMapping(value = "/{id}/like")
+    public ResponseEntity<ApiResult<java.util.Map<String, Object>>> removeLike(@PathVariable(name = "id") Long id) {
+        long liveLikes = iBlogServices.removeLike(id);
+        return ResponseEntity.ok(ApiResult.success(java.util.Map.of("blogId", id, "likesCount", liveLikes)));
+    }
+
+    /// METRICS BATCH DB FLUSH (MANUEL FLUSH ENDPOINT)
+    /// http://localhost:5555/blog/api/v1.0.0/metrics/flush
+    @Operation(summary = "Tamponlanmış metrikleri DB'ye zorla yaz (Flush)", description = "Sadece ADMIN/SUPER_ADMIN yetkisiyle tampon bellekteki sayaçları veritabanına anında yansıtır.")
+    @PostMapping(value = "/metrics/flush")
+    public ResponseEntity<ApiResult<String>> flushMetrics() {
+        iBlogServices.flushMetrics();
+        return ResponseEntity.ok(ApiResult.success("Tamponlanmış blog metrikleri başarıyla veritabanına aktarıldı."));
+    }
+} // end BlogApiImpl

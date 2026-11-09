@@ -45,6 +45,8 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
+    /// ///////////////////////////////////////////////////////////////////
+    /// WHITE_LIST
     private String[] whiteList() {
         return new String[]{
                 "/",
@@ -70,6 +72,8 @@ public class SecurityConfig {
                 "/actuator/**"
         };
     }
+
+    /// ///////////////////////////////////////////////////////////////////
     // SWAGGER_UI
     private String[] swaggerWhiteList() {
         return new String[]{
@@ -79,6 +83,8 @@ public class SecurityConfig {
                 "/v3/api-docs/**",
         };
     }
+
+    /// ///////////////////////////////////////////////////////////////////
     // ADMIN
     private String[] adminMatchers() {
         return new String[]{
@@ -87,6 +93,8 @@ public class SecurityConfig {
                 "/api/admin/**",
         };
     }
+
+    /// ///////////////////////////////////////////////////////////////////
     // SUPERADMIN
     private String[] superAdminMatchers() {
         return new String[]{
@@ -96,6 +104,7 @@ public class SecurityConfig {
         };
     }
 
+    /// ///////////////////////////////////////////////////////////////////
     private RequestMatcher apiRequestMatcher() {
         return request -> {
             String uri = request.getRequestURI();
@@ -174,6 +183,12 @@ public class SecurityConfig {
 
                         // Çok Kriterli Filtreleme (POST /filter - Adım 14): Herkese açık arama sorgusu
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/filter").permitAll()
+
+                        // Concurrency & Engagement (Adım 24): Görüntülenme ve beğeni sayaçları herkese açık
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/*/view").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/*/like").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/blog/api/v1.0.0/*/like").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/metrics/flush").hasAnyRole("ADMIN", "SUPER_ADMIN")
 
                         // CRUD write endpoints for blog and category (ADMIN veya SUPER_ADMIN)
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/**", "/blog/category/api/v1.0.0/**")

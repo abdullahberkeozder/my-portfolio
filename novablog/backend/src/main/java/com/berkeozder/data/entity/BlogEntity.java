@@ -4,70 +4,97 @@ import com.berkeozder.audit.AuditingAwareBaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
+
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * JPA entity representing a Blog post with audit, soft delete, AI metadata, and relational mappings.
- */
+// LOMBOK
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Log4j2
+
+// Table
 @Entity
 @Table(name = "blogs")
-@SQLDelete(sql = "UPDATE blogs SET is_deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE blog_id = ?")
+@SQLDelete(sql = "UPDATE blogs SET is_deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE blog_id = ? AND version = ?")
 @SQLRestriction("is_deleted = false")
 public class BlogEntity extends AuditingAwareBaseEntity {
 
+    // ID
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "blog_id")
     private Long blogId;
 
+    // Header
     @Column(nullable = false, unique = true)
     private String header;
 
+    // Title
     private String title;
 
+    // Content
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    // Image
     private String image;
 
+    // AI Summary & Vector Embedding (Adım 22 - Spring AI & Semantic Search)
     @Column(name = "ai_summary", columnDefinition = "TEXT")
     private String aiSummary;
 
     @Column(name = "embedding", columnDefinition = "TEXT")
     private String embedding;
 
+    // Concurrency: JPA Optimistic Locking (Adım 24)
+    @Version
+    @Column(name = "version", nullable = false)
+    @Builder.Default
+    private Long version = 0L;
+
+    // Engagement Metrics: Write-Behind Counter Buffer (Adım 24)
+    @Column(name = "views_count", nullable = false)
+    @Builder.Default
+    private Long viewsCount = 0L;
+
+    @Column(name = "likes_count", nullable = false)
+    @Builder.Default
+    private Long likesCount = 0L;
+
+    // Soft Delete
     @Builder.Default
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
     @Column(name = "deleted_at")
-    private Date deletedAt;
+    private java.util.Date deletedAt;
 
+    /// //////////////////////////////////////////////
+    // Relation with Category (1-N)
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "blog_category_id", nullable = false)
     private BlogCategoryEntity blogCategoryEntity;
 
+    // Relation with Author/User (N-1)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_user_id")
     private UserEntity author;
 
+    // Relation with Comments (1-N)
     @Builder.Default
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CommentEntity> comments = new ArrayList<>();
 
+    // Relation with Tags (N-M)
     @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -96,4 +123,4 @@ public class BlogEntity extends AuditingAwareBaseEntity {
         tags.remove(tag);
         tag.getBlogs().remove(this);
     }
-}
+} // end BlogEntity

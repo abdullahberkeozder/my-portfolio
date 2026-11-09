@@ -30,4 +30,17 @@ public interface IBlogServices<D,E> extends
     java.util.List<D> findDeletedBlogs();
 
     com.berkeozder.business.dto.bulk.BulkOperationResponseDto executeBulkOperation(com.berkeozder.business.dto.bulk.BulkOperationRequestDto request);
+
+    // Concurrency & Engagement (Write-Behind Metrics - Adım 24)
+    long recordView(Long id);
+
+    long recordLike(Long id);
+
+    long removeLike(Long id);
+
+    long getLiveViews(Long id);
+
+    long getLiveLikes(Long id);
+
+    void flushMetrics();
 }
