@@ -15,6 +15,7 @@ import { AiPlayground } from '@/components/AiPlayground';
 import { AdminBatchStudio } from '@/components/AdminBatchStudio';
 import { SystemBlueprintSection } from '@/components/SystemBlueprintSection';
 import { Footer } from '@/components/Footer';
+import { FloatingCopilotWidget } from '@/components/FloatingCopilotWidget';
 import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
 import { useBlogsQuery, useCategoriesQuery } from '@/hooks/useBlogs';
@@ -323,6 +324,19 @@ export default function Home() {
       {/* Footer (Ride Also Architecture Manifest & Monumental Brandmark) */}
       <Footer
         setActiveTab={setActiveTab}
+        onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
+        onOpenArchitectureConsole={() => {
+          setActiveTab('feed');
+          setTimeout(() => {
+            const el = document.getElementById('modular-architecture-console');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }, 50);
+        }}
+      />
+
+      {/* Ride Also Signature Floating Lavender Copilot Widget (Screenshots 1-6) */}
+      <FloatingCopilotWidget
+        onSelectTab={setActiveTab}
         onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
         onOpenArchitectureConsole={() => {
           setActiveTab('feed');
