@@ -4,7 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Navbar } from '@/components/Navbar';
 import { HeroSection } from '@/components/HeroSection';
+import { StoriesCarousel } from '@/components/StoriesCarousel';
 import { ModularArchitectureConsole } from '@/components/ModularArchitectureConsole';
+import { SpotlightBanner } from '@/components/SpotlightBanner';
+import { PressReviewsCarousel } from '@/components/PressReviewsCarousel';
 import { BlogCard } from '@/components/BlogCard';
 import { BlogDetailModal } from '@/components/BlogDetailModal';
 import { CreateBlogModal } from '@/components/CreateBlogModal';
@@ -115,8 +118,27 @@ export default function Home() {
               }}
             />
 
+            {/* 1. Stories Horizontal Snap Carousel (Direct Ride Also Screenshot 1) */}
+            <StoriesCarousel
+              onSelectTab={setActiveTab}
+              onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
+              onOpenArchitectureConsole={() => {
+                const el = document.getElementById('modular-architecture-console');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+            />
+
             {/* Modular Architecture Console (Inspired by Ride Also TM-B Modular Frames) */}
             <ModularArchitectureConsole />
+
+            {/* 2. Full-Width Architectural Spotlight Banner (Direct Ride Also TM-Q Screenshot 2) */}
+            <SpotlightBanner
+              onExploreAI={() => setActiveTab('ai-search')}
+              onOpenArchitectureConsole={() => {
+                const el = document.getElementById('modular-architecture-console');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+            />
 
             {/* Articles Feed */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
@@ -281,6 +303,9 @@ export default function Home() {
                 </div>
               )}
             </div>
+
+            {/* 3. In the Press / Architecture Reviews Carousel (Direct Ride Also Screenshot 3) */}
+            <PressReviewsCarousel />
 
             {/* Technical Specifications & System Blueprint (Ride Also Specs Matrix) */}
             <SystemBlueprintSection />
