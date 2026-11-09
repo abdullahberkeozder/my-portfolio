@@ -1,12 +1,11 @@
 package com.berkeozder.business.services.impl;
 
-import com.berkeozder.bean.ModelMapperBean;
 import com.berkeozder.business.dto.BlogCategoryDto;
+import com.berkeozder.business.services.interfaces.IBlogCategoryServices;
 import com.berkeozder.data.entity.BlogCategoryEntity;
 import com.berkeozder.data.mapper.BlogCategoryMapper;
 import com.berkeozder.data.repository.IBlogCategoryRepository;
 import com.berkeozder.exception._404_NotFoundException;
-import com.berkeozder.business.services.interfaces.IBlogCategoryServices;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.CacheEvict;
@@ -19,16 +18,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
-/**
- * Service implementation for Blog Category operations with Redis caching.
- */
-@Service
-@RequiredArgsConstructor
 @Log4j2
+@RequiredArgsConstructor
+@Service
 public class BlogCategoryServicesImpl implements IBlogCategoryServices<BlogCategoryDto, BlogCategoryEntity> {
 
     private final IBlogCategoryRepository iBlogCategoryRepository;
-    private final ModelMapperBean modelMapperBean;
     private final BlogCategoryMapper blogCategoryMapper = new BlogCategoryMapper();
 
     @Override
@@ -44,15 +39,16 @@ public class BlogCategoryServicesImpl implements IBlogCategoryServices<BlogCateg
     @Override
     @CacheEvict(value = "categories", allEntries = true)
     public List<BlogCategoryDto> speedData(Integer data) {
-        if (data == null) {
-            throw new IllegalArgumentException("Data count cannot be null");
-        }
         List<BlogCategoryDto> listData = new ArrayList<>();
-        for (int i = 1; i <= data; i++) {
-            BlogCategoryEntity blogCategoryEntity = new BlogCategoryEntity();
-            blogCategoryEntity.setCategoryName("category-" + UUID.randomUUID());
-            iBlogCategoryRepository.save(blogCategoryEntity);
-            listData.add(blogCategoryMapper.toDto(blogCategoryEntity));
+        if (data != null) {
+            for (int i = 1; i <= data; i++) {
+                BlogCategoryEntity blogCategoryEntity = new BlogCategoryEntity();
+                blogCategoryEntity.setCategoryName("category" + UUID.randomUUID().toString());
+                iBlogCategoryRepository.save(blogCategoryEntity);
+                listData.add(blogCategoryMapper.toDto(blogCategoryEntity));
+            }
+        } else {
+            throw new NullPointerException("Integer data cannot be null");
         }
         return listData;
     }
@@ -66,17 +62,15 @@ public class BlogCategoryServicesImpl implements IBlogCategoryServices<BlogCateg
 
     private <T> void validate(T dto, Function<T, String> nameExtractor, String currentName) {
         if (dto == null) {
-            throw new IllegalArgumentException("DTO payload cannot be null");
+            throw new NullPointerException("DTO cannot be null");
         }
-
         String categoryName = nameExtractor.apply(dto);
         if (categoryName == null || categoryName.isBlank()) {
-            throw new IllegalArgumentException("Category name cannot be null or blank");
+            throw new NullPointerException("Category name cannot be null or blank");
         }
-
         boolean sameAsCurrentName = currentName != null && currentName.equalsIgnoreCase(categoryName);
         if (!sameAsCurrentName && iBlogCategoryRepository.existsByCategoryNameIgnoreCase(categoryName)) {
-            throw new IllegalArgumentException("Category name already exists: " + categoryName);
+            throw new IllegalArgumentException("Kategori adı zaten mevcut: " + categoryName);
         }
     }
 
@@ -100,10 +94,10 @@ public class BlogCategoryServicesImpl implements IBlogCategoryServices<BlogCateg
     @Cacheable(value = "categories", key = "#id")
     public BlogCategoryDto objectServiceFindById(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("Category ID cannot be null");
+            throw new NullPointerException("Category ID cannot be null");
         }
         BlogCategoryEntity entity = iBlogCategoryRepository.findById(id)
-                .orElseThrow(() -> new _404_NotFoundException("Category not found with ID: " + id));
+                .orElseThrow(() -> new _404_NotFoundException("Kategori bulunamadı. ID: " + id));
         return entityToDto(entity);
     }
 
@@ -112,13 +106,11 @@ public class BlogCategoryServicesImpl implements IBlogCategoryServices<BlogCateg
     @CacheEvict(value = "categories", allEntries = true)
     public BlogCategoryDto objectServiceUpdate(Long id, BlogCategoryDto blogCategoryDto) {
         if (blogCategoryDto == null || blogCategoryDto.getCategoryName() == null || blogCategoryDto.getCategoryName().isBlank()) {
-            throw new IllegalArgumentException("Category name is required");
+            throw new NullPointerException("Kategori adı zorunludur");
         }
-
         if (iBlogCategoryRepository.existsByCategoryNameIgnoreCase(blogCategoryDto.getCategoryName())) {
-            throw new IllegalArgumentException("Category name already exists: " + blogCategoryDto.getCategoryName());
+            throw new IllegalArgumentException("Kategori adı zaten mevcut: " + blogCategoryDto.getCategoryName());
         }
-
         BlogCategoryEntity entity = dtoToEntity(objectServiceFindById(id));
         entity.setCategoryName(blogCategoryDto.getCategoryName());
         return entityToDto(iBlogCategoryRepository.save(entity));

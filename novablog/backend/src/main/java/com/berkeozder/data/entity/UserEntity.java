@@ -1,6 +1,7 @@
 package com.berkeozder.data.entity;
 
 import com.berkeozder.audit.AuditingAwareBaseEntity;
+import com.berkeozder.security.oauth2.AuthProvider;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,7 +40,7 @@ public class UserEntity extends AuditingAwareBaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "provider", length = 50)
     @Builder.Default
-    private com.berkeozder.security.oauth2.AuthProvider provider = com.berkeozder.security.oauth2.AuthProvider.LOCAL;
+    private AuthProvider provider = AuthProvider.LOCAL;
 
     @Column(name = "provider_id", length = 150)
     private String providerId;

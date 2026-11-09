@@ -1,89 +1,81 @@
 package com.berkeozder.business.services.impl;
 
-import com.berkeozder.bean.ModelMapperBean;
+import com.berkeozder.ai.client.IAiEmbeddingClient;
+import com.berkeozder.ai.vector.VectorUtils;
 import com.berkeozder.business.dto.BlogDto;
 import com.berkeozder.business.dto.BlogFilterRequestDto;
-import com.berkeozder.business.dto.bulk.BulkActionType;
 import com.berkeozder.business.dto.bulk.BulkOperationRequestDto;
 import com.berkeozder.business.dto.bulk.BulkOperationResponseDto;
 import com.berkeozder.business.dto.common.PagedResponseDto;
+import com.berkeozder.business.event.BlogCreatedEvent;
+import com.berkeozder.business.metrics.BlogMetricFlushScheduler;
+import com.berkeozder.business.metrics.IBlogMetricBufferService;
+import com.berkeozder.business.services.interfaces.IBlogServices;
 import com.berkeozder.data.entity.BlogCategoryEntity;
 import com.berkeozder.data.entity.BlogEntity;
 import com.berkeozder.data.entity.TagEntity;
 import com.berkeozder.data.mapper.BlogMapper;
 import com.berkeozder.data.repository.IBlogCategoryRepository;
 import com.berkeozder.data.repository.IBlogRepository;
+import com.berkeozder.data.repository.ITagRepository;
+import com.berkeozder.data.repository.IUserRepository;
 import com.berkeozder.data.specification.BlogSpecification;
 import com.berkeozder.exception.BerkeOzderException;
 import com.berkeozder.exception._404_NotFoundException;
 import com.berkeozder.file_upload.ImageService;
-import com.berkeozder.business.services.interfaces.IBlogServices;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
-// LOMBOK
-@RequiredArgsConstructor //DI
 @Log4j2
-
-// SERVICE
+@RequiredArgsConstructor
 @Service
-//@Transactional
 public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
 
-    // DI
+    private static final String DEFAULT_SORT_FIELD = "blogId";
+
     private final IBlogCategoryRepository iBlogCategoryRepository;
     private final IBlogRepository iBlogRepository;
     private final ImageService imageService;
-    private final com.berkeozder.data.repository.IUserRepository iUserRepository;
-    private final com.berkeozder.data.repository.ITagRepository iTagRepository;
+    private final IUserRepository iUserRepository;
+    private final ITagRepository iTagRepository;
 
-    // Mapper
-    private final ModelMapperBean modelMapperBean;
     private final BlogMapper blogMapper = new BlogMapper();
 
-    // Event Publisher (WebSocket Canlı Bildirimler - Adım 18)
-    @org.springframework.beans.factory.annotation.Autowired(required = false)
-    private org.springframework.context.ApplicationEventPublisher eventPublisher;
+    @Autowired(required = false)
+    private ApplicationEventPublisher eventPublisher;
 
-    // AI Embedding Client (Vektör Gömme - Adım 22)
-    @org.springframework.beans.factory.annotation.Autowired(required = false)
-    private com.berkeozder.ai.client.IAiEmbeddingClient aiEmbeddingClient;
+    @Autowired(required = false)
+    private IAiEmbeddingClient aiEmbeddingClient;
 
-    // Concurrency & Engagement (Write-Behind Metrik Tamponlama - Adım 24)
-    @org.springframework.beans.factory.annotation.Autowired(required = false)
-    private com.berkeozder.business.metrics.IBlogMetricBufferService metricBufferService;
+    @Autowired(required = false)
+    private IBlogMetricBufferService metricBufferService;
 
-    @org.springframework.beans.factory.annotation.Autowired(required = false)
-    private com.berkeozder.business.metrics.BlogMetricFlushScheduler metricFlushScheduler;
+    @Autowired(required = false)
+    private BlogMetricFlushScheduler metricFlushScheduler;
 
-    public void setMetricBufferService(com.berkeozder.business.metrics.IBlogMetricBufferService metricBufferService) {
+    public void setMetricBufferService(IBlogMetricBufferService metricBufferService) {
         this.metricBufferService = metricBufferService;
     }
 
-    public void setMetricFlushScheduler(com.berkeozder.business.metrics.BlogMetricFlushScheduler metricFlushScheduler) {
+    public void setMetricFlushScheduler(BlogMetricFlushScheduler metricFlushScheduler) {
         this.metricFlushScheduler = metricFlushScheduler;
     }
 
-    // Sorting Default Fiedl
-    private static final String DEFAULT_SORT_FIELD = "blogId";
-
-    /// ///////////////////////////////////////////////////////////////
-    // METHOD
-    // MODEL MAPPER
     @Override
     public BlogDto entityToDto(BlogEntity blogEntity) {
         if (blogEntity == null) return null;
@@ -99,15 +91,9 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
 
     @Override
     public BlogEntity dtoToEntity(BlogDto blogDto) {
-        // 1.YOL
-        // return modelMapperBean.modelMapperMethod().map(blogDto, BlogCategoryEntity.class);
-
-        // 2.YOL
         return blogMapper.toEntity(blogDto);
     }
 
-    /// ////////////////////////////////////////////////////////////////
-    /// Generics Null Validation
     private <T> T validateNotNull(T value, String message) {
         if (value == null) {
             throw new BerkeOzderException(message);
@@ -115,75 +101,14 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
         return value;
     }
 
-    /// Generics String Validation
     private Long validateId(Long id, String objectName) {
-        validateNotNull(id, objectName + "ID boş olamaz.");
-
+        validateNotNull(id, objectName + " ID boş olamaz.");
         if (id <= 0) {
-            throw new BerkeOzderException(objectName + "ID 0'dan büyük olmalıdır.");
+            throw new BerkeOzderException(objectName + " ID 0'dan büyük olmalıdır.");
         }
         return id;
     }
 
-    ///  Generics ValidateBlog Validation
-    private BlogDto validateBlog(BlogDto blogDto, boolean imageRequired) {
-        validateNotNull(blogDto, "Blog verisi boş");
-
-        blogDto.setHeader(validateNotBlank(blogDto.getHeader(), "Blog başlığı zorunludur"));
-        blogDto.setTitle(validateNotBlank(blogDto.getTitle(), "Blog title zorunludur"));
-        blogDto.setContent(validateNotBlank(blogDto.getContent(), "Blog içeriği zorunludur"));
-
-        // Eğer resim eklenecekse
-        if (imageRequired) {
-            blogDto.setImage(validateNotBlank(blogDto.getImage(), "Blog image zorunludur"));
-        }
-        return blogDto;
-    }
-
-    // Blog Category ID Validation
-    private Long validateBlogCategoryId(BlogDto blogDto, boolean required) {
-        validateNotNull(blogDto, "Blog verisi boş");
-
-        Long categoryId = blogDto.getBlogCategoryDto() == null
-                ? null
-                : blogDto.getBlogCategoryDto().getBlogCategoryId();
-
-        if (categoryId == null && !required) {
-            return null;
-        }
-
-        return validateId(categoryId, "Blog Category");
-    }
-
-    // Blog Entity Find
-    private BlogEntity findBlogEntityById(Long id) {
-        Long validatedId = validateId(id, "Blog");
-        return iBlogRepository.findById(validatedId)
-                .orElseThrow(() -> new _404_NotFoundException(
-                        "Blog id " + validatedId + " blog bulunamadı"));
-    }
-
-    // Blog Category Entity Find
-    private BlogCategoryEntity findBlogCategoryEntityById(Long categoryId) {
-        Long validatedCategoryId = validateId(categoryId, "Blog Category");
-        return iBlogCategoryRepository.findById(validatedCategoryId)
-                .orElseThrow(() -> new _404_NotFoundException(
-                        validatedCategoryId + " id'li kategori bulunamadı"));
-    }
-
-    // Image Delete Helper
-    private void deleteImageSafely(String imageUrl) {
-        if (imageUrl == null || imageUrl.isBlank() || !imageUrl.startsWith("/upload/")) {
-            return;
-        }
-        try {
-            imageService.deleteByUrl(imageUrl);
-        } catch (Exception exception) {
-            log.error("Blog resmi silinemedi. imageUrl={}, message={}", imageUrl, exception.getMessage(), exception);
-        }
-    }
-
-    /// Generics String Validation
     private String validateNotBlank(String value, String message) {
         if (value == null || value.isBlank()) {
             throw new BerkeOzderException(message);
@@ -191,177 +116,153 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
         return value.trim();
     }
 
-    /// Generics Positive Number Validation
     private <N extends Number> int validatePositiveNumber(N value, String fieldName) {
         validateNotNull(value, fieldName + " boş olamaz");
-
         int number = value.intValue();
         if (number <= 0) {
-            throw new BerkeOzderException(fieldName + " o'dan büyük olmalıdır");
+            throw new BerkeOzderException(fieldName + " 0'dan büyük olmalıdır");
         }
         return number;
     }
 
-    // Validation  (Not Image)
-    private void validate(BlogDto blogDto, boolean isResult) {
-        // null
+    private void validateBlogDto(BlogDto blogDto, boolean imageRequired) {
         if (blogDto == null) {
-            throw new BerkeOzderException("Blog verisi boş");
+            throw new BerkeOzderException("Blog verisi boş olamaz");
         }
-
-        if (isResult) {
-            if (blogDto.getHeader() == null || blogDto.getHeader().isBlank()) {
-                throw new BerkeOzderException("Blog başlığı zorunludur");
-            }
-
-            if (blogDto.getContent() == null || blogDto.getContent().isBlank()) {
-                throw new BerkeOzderException("Blog içeriği zorunludur");
-            }
+        if (blogDto.getHeader() == null || blogDto.getHeader().isBlank()) {
+            throw new BerkeOzderException("Blog başlığı zorunludur");
         }
-    } // end validate
-
-    // Validation  (Not Image)
-    private void validateImage(BlogDto blogDto, boolean isResult) {
-        // null
-        if (blogDto == null) {
-            throw new BerkeOzderException("Blog verisi boş");
+        if (blogDto.getContent() == null || blogDto.getContent().isBlank()) {
+            throw new BerkeOzderException("Blog içeriği zorunludur");
         }
-
-        if (isResult) {
-            if (blogDto.getHeader() == null || blogDto.getHeader().isBlank()) {
-                throw new BerkeOzderException("Blog başlığı zorunludur");
-            }
-
-            if (blogDto.getContent() == null || blogDto.getContent().isBlank()) {
-                throw new BerkeOzderException("Blog içeriği zorunludur");
-            }
-
-            if (blogDto.getImage() == null || blogDto.getImage().isBlank()) {
-                throw new BerkeOzderException("Blog resimi zorunludur");
-            }
+        if (imageRequired && (blogDto.getImage() == null || blogDto.getImage().isBlank())) {
+            throw new BerkeOzderException("Blog resmi zorunludur");
         }
-    } // end validate
+    }
 
-    /// ////////////////////////////////////////////////////////////////
-    /// ////////////////////////////////////////////////////////////////
-    // SPEED DATA
+    private Long validateBlogCategoryId(BlogDto blogDto, boolean required) {
+        validateNotNull(blogDto, "Blog verisi boş");
+        Long categoryId = blogDto.getBlogCategoryDto() == null
+                ? null
+                : blogDto.getBlogCategoryDto().getBlogCategoryId();
+
+        if (categoryId == null && !required) {
+            return null;
+        }
+        return validateId(categoryId, "Blog Kategori");
+    }
+
+    private BlogEntity findBlogEntityById(Long id) {
+        Long validatedId = validateId(id, "Blog");
+        return iBlogRepository.findById(validatedId)
+                .orElseThrow(() -> new _404_NotFoundException("Blog id " + validatedId + " blog bulunamadı"));
+    }
+
+    private BlogCategoryEntity findBlogCategoryEntityById(Long categoryId) {
+        Long validatedCategoryId = validateId(categoryId, "Blog Kategori");
+        return iBlogCategoryRepository.findById(validatedCategoryId)
+                .orElseThrow(() -> new _404_NotFoundException(validatedCategoryId + " id'li kategori bulunamadı"));
+    }
+
+    private void deleteImageSafely(String imageUrl) {
+        if (imageUrl == null || imageUrl.isBlank() || !imageUrl.startsWith("/upload/")) {
+            return;
+        }
+        try {
+            imageService.deleteByUrl(imageUrl);
+        } catch (Exception exception) {
+            log.error("Blog resmi silinemedi: imageUrl={}, message={}", imageUrl, exception.getMessage());
+        }
+    }
+
     @Override
     @Transactional
     public List<BlogDto> speedData(Integer data) {
-        int dataCount = validatePositiveNumber(data, " Speed Data sayısı");
-
-        // Find first BlogCategory
-        BlogCategoryEntity defaultBlogCategory = iBlogCategoryRepository.findAll().stream().findFirst().orElseThrow(() -> new _404_NotFoundException("Speed Data oluşturmak için en az 1 adet blog category olması gerekiyor."));
+        int dataCount = validatePositiveNumber(data, "Speed Data sayısı");
+        BlogCategoryEntity defaultCategory = iBlogCategoryRepository.findAll().stream()
+                .findFirst()
+                .orElseThrow(() -> new _404_NotFoundException("Speed Data oluşturmak için en az 1 adet blog category olması gerekiyor."));
 
         for (int i = 1; i <= dataCount; i++) {
             BlogEntity blogEntity = BlogEntity.builder()
                     .header("Blog-" + System.nanoTime())
-                    .title("Blog Title" + i)
-                    .content("BlogContent")
+                    .title("Blog Title " + i)
+                    .content("Speed Data içerik açıklaması.")
                     .image(null)
-                    .blogCategoryEntity(defaultBlogCategory)
+                    .blogCategoryEntity(defaultCategory)
                     .build();
-
             iBlogRepository.save(blogEntity);
         }
         return objectServiceListSortedByAsc();
     }
 
-
-    // DELETE ALL
     @Override
     @Transactional
     public List<BlogDto> deleteData() {
-
-        //Dosya Sistemlerinde blog resimlerin hepsini temizle
-        iBlogRepository.findAll().forEach(blogEntity -> deleteImageSafely(blogEntity.getImage()));
-
-        // Database kayıtlarını Temizle
+        iBlogRepository.findAll().forEach(blog -> deleteImageSafely(blog.getImage()));
         iBlogRepository.deleteAll();
-
-        // Silme sonrasında boş liste dönsün
         return objectServiceList();
     }
 
-    /// ////////////////////////////////////////////////////////////////
-    // CRUD
-    // BLOG CREATE (RESIMSIZ)
     @Override
     @Transactional
     public BlogDto objectServiceCreate(BlogDto blogDto) {
+        validateBlogDto(blogDto, false);
 
-        // validation
-        validate(blogDto, true);
+        Long categoryId = validateBlogCategoryId(blogDto, true);
+        BlogCategoryEntity categoryEntity = findBlogCategoryEntityById(categoryId);
 
-        // Blog'tan öncesinde kategoriye bakmak zorundayız
-        Long blogCategoryId = validateBlogCategoryId(blogDto,true);
-        BlogCategoryEntity blogCategoryEntityCreate = findBlogCategoryEntityById(blogCategoryId);
-
-        // BlogEnetity çağır ve BlogCategory Ekle
         BlogEntity blogEntity = dtoToEntity(blogDto);
-        blogEntity.setBlogCategoryEntity(blogCategoryEntityCreate);
+        blogEntity.setBlogCategoryEntity(categoryEntity);
 
-        // Yazar Bilgisi (Giriş Yapan Kullanıcı)
-        org.springframework.security.core.Authentication authentication =
-                org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getName())) {
             iUserRepository.findByUsername(authentication.getName()).ifPresent(blogEntity::setAuthor);
         }
 
-        // Etiketler (Tags)
         if (blogDto.getTags() != null && !blogDto.getTags().isEmpty()) {
             for (String tagName : blogDto.getTags()) {
                 if (tagName != null && !tagName.isBlank()) {
-                    String clean = tagName.trim().toLowerCase(java.util.Locale.ENGLISH).replace(" ", "-");
-                    com.berkeozder.data.entity.TagEntity tag = iTagRepository.findByNameIgnoreCase(clean)
-                            .orElseGet(() -> iTagRepository.save(com.berkeozder.data.entity.TagEntity.builder().name(clean).build()));
+                    String clean = tagName.trim().toLowerCase(Locale.ENGLISH).replace(" ", "-");
+                    TagEntity tag = iTagRepository.findByNameIgnoreCase(clean)
+                            .orElseGet(() -> iTagRepository.save(TagEntity.builder().name(clean).build()));
                     blogEntity.addTag(tag);
                 }
             }
         }
 
-        // AI Vektör Gömme (Embedding - Adım 22)
         if (aiEmbeddingClient != null) {
             try {
                 String textToEmbed = (blogEntity.getHeader() != null ? blogEntity.getHeader() : "") + " " +
                         (blogEntity.getTitle() != null ? blogEntity.getTitle() : "") + " " +
                         (blogEntity.getContent() != null ? blogEntity.getContent() : "");
                 float[] embedding = aiEmbeddingClient.generateEmbedding(textToEmbed);
-                blogEntity.setEmbedding(com.berkeozder.ai.vector.VectorUtils.serialize(embedding));
+                blogEntity.setEmbedding(VectorUtils.serialize(embedding));
             } catch (Exception e) {
                 log.warn("Blog kaydedilirken embedding üretilemedi: {}", e.getMessage());
             }
         }
 
-        // Repository Ekle
         BlogEntity created = iBlogRepository.save(blogEntity);
         BlogDto createdDto = entityToDto(created);
 
-        // Canlı WebSocket Bildirim Olayı Yayınla (Adım 18)
         if (eventPublisher != null) {
-            eventPublisher.publishEvent(new com.berkeozder.business.event.BlogCreatedEvent(this, createdDto));
+            eventPublisher.publishEvent(new BlogCreatedEvent(this, createdDto));
         }
 
         return createdDto;
     }
 
-    // BLOG CREATE (RESIMLI)
     @Override
     public BlogDto objectServiceCreateWithFile(BlogDto blogDto, MultipartFile multipartFile) {
-
-        // Validation
-        validateNotNull(blogDto, "Blog verisi boş");
-
-        if (multipartFile != null & !multipartFile.isEmpty()) {
+        validateNotNull(blogDto, "Blog verisi boş olamaz");
+        if (multipartFile != null && !multipartFile.isEmpty()) {
             String relative = imageService.saveBlogImage(multipartFile);
             blogDto.setImage(relative);
         }
         return objectServiceCreate(blogDto);
     }
 
-
-    /// ////////////////////////////////////////////////////////
-    // BLOG LIST
     @Override
     @Transactional(readOnly = true)
     public List<BlogDto> objectServiceList() {
@@ -371,171 +272,123 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
                 .toList();
     }
 
-    /// ////////////////////////////////////////////////////////
-    // BLOG FIND
     @Override
     @Transactional(readOnly = true)
     public BlogDto objectServiceFindById(Long id) {
         return entityToDto(findBlogEntityById(id));
     }
 
-
-    /// ////////////////////////////////////////////////////////////////
-    // BLOG UPDATE (RESIMSIZ)
     @Override
     @Transactional
     public BlogDto objectServiceUpdate(Long id, BlogDto blogDto) {
-
-        // validation
-        validate(blogDto, true);
-
-        // Blog Find
+        validateBlogDto(blogDto, false);
         BlogEntity blogEntity = findBlogEntityById(id);
 
-        // Optimistic Locking Check: Eğer istemci spesifik bir versiyon gönderdiyse
-        // ve veritabanındaki sürüm ile uyuşmuyorsa çakışma (stale object state) fırlat
         if (blogDto.getVersion() != null && !blogDto.getVersion().equals(blogEntity.getVersion())) {
-            throw new org.springframework.orm.ObjectOptimisticLockingFailureException(BlogEntity.class, id);
+            throw new ObjectOptimisticLockingFailureException(BlogEntity.class, id);
         }
 
-        // DTO => Existing Entity Update
         blogEntity.setHeader(blogDto.getHeader());
         blogEntity.setTitle(blogDto.getTitle());
         blogEntity.setContent(blogDto.getContent());
 
-        // Yeni image geldiyse güncelle; eğer gelmediyse mevcut image korunsun
-        if(blogDto.getImage() != null && !blogDto.getImage().isBlank()) {
+        if (blogDto.getImage() != null && !blogDto.getImage().isBlank()) {
             blogEntity.setImage(blogDto.getImage());
         }
 
-        // Category opsiyonel olarak güncellenebilir
-        Long blogCAtegoryId = validateBlogCategoryId(blogDto,true);
-        if(blogCAtegoryId != null) {
-            blogEntity.setBlogCategoryEntity(findBlogCategoryEntityById(blogCAtegoryId));
+        Long categoryId = validateBlogCategoryId(blogDto, false);
+        if (categoryId != null) {
+            blogEntity.setBlogCategoryEntity(findBlogCategoryEntityById(categoryId));
         }
 
-        // AI Vektör Gömme Güncelleme (Embedding - Adım 22)
         if (aiEmbeddingClient != null) {
             try {
                 String textToEmbed = (blogEntity.getHeader() != null ? blogEntity.getHeader() : "") + " " +
                         (blogEntity.getTitle() != null ? blogEntity.getTitle() : "") + " " +
                         (blogEntity.getContent() != null ? blogEntity.getContent() : "");
                 float[] embedding = aiEmbeddingClient.generateEmbedding(textToEmbed);
-                blogEntity.setEmbedding(com.berkeozder.ai.vector.VectorUtils.serialize(embedding));
+                blogEntity.setEmbedding(VectorUtils.serialize(embedding));
             } catch (Exception e) {
-                log.warn("Blog güncellenirken embedding güncellenemedi: {}", e.getMessage());
+                log.warn("Blog güncellenirken embedding üretilemedi: {}", e.getMessage());
             }
         }
 
-        // Update & Flush (Hibernate Optimistic Locking kontrolü anında işletilir)
         BlogEntity updated = iBlogRepository.saveAndFlush(blogEntity);
         return entityToDto(updated);
     }
 
-    // BLOG UPDATE (RESIMLISIZ)
     @Override
     public BlogDto objectServiceUpdateWithFile(Long id, BlogDto blogDto, MultipartFile multipartFile) {
-
-        validateNotNull(blogDto, "Blog verisi boş");
-
+        validateNotNull(blogDto, "Blog verisi boş olamaz");
         BlogEntity currentBlogEntity = findBlogEntityById(id);
-
-        // Güncelenecek resimde eski resimi silmek
         String oldImageUrl = currentBlogEntity.getImage();
 
-        if (multipartFile != null & !multipartFile.isEmpty()) {
+        if (multipartFile != null && !multipartFile.isEmpty()) {
             String relative = imageService.saveBlogImage(multipartFile);
             blogDto.setImage(relative);
         }
 
-        BlogDto blogDtoUpdate = objectServiceUpdate(id, blogDto);
+        BlogDto updatedDto = objectServiceUpdate(id, blogDto);
 
-        if (multipartFile != null
-                && !multipartFile.isEmpty()
-                && oldImageUrl != null
-                && oldImageUrl.startsWith("/upload/") &&
-                !oldImageUrl.equals(blogDtoUpdate.getImage())) {
+        if (multipartFile != null && !multipartFile.isEmpty() && oldImageUrl != null &&
+                oldImageUrl.startsWith("/upload/") && !oldImageUrl.equals(updatedDto.getImage())) {
             deleteImageSafely(oldImageUrl);
         }
-        return blogDtoUpdate;
+        return updatedDto;
     }
 
-    /// ////////////////////////////////////////////////////////////////
-    // BLOG DELETE
     @Override
     @Transactional
     public BlogDto objectServiceDelete(Long id) {
-
-        BlogEntity findDelete = dtoToEntity(objectServiceFindById(id));
+        BlogEntity findDelete = findBlogEntityById(id);
         BlogDto blogDto = entityToDto(findDelete);
 
-        // Önce DB kaydını Sil
         iBlogRepository.deleteById(id);
-
-        // Sonra ilişkili upload dosyasını güvenli bir şekilde temizle
         deleteImageSafely(findDelete.getImage());
 
-        return entityToDto(findDelete);
+        return blogDto;
     }
 
-    /// ////////////////////////////////////////////////////////////////
-    /// ////////////////////////////////////////////////////////////////
-    // PAGINATION & SORTING
     @Override
     @Transactional(readOnly = true)
     public Page<BlogDto> objectServicePagination(int currentPage, int pageSize) {
         if (currentPage < 0) {
-            throw new BerkeOzderException(currentPage + " currentPage 0 veya daha büyük olmaldıır");
+            throw new BerkeOzderException("Sayfa numarası 0 veya daha büyük olmalıdır");
         }
-        validatePositiveNumber(pageSize, "Page Size");
+        validatePositiveNumber(pageSize, "Sayfa boyutu");
 
-        // Pageable
-        Pageable pageable = PageRequest.of(
-                currentPage,
-                pageSize,
-                Sort.by(Sort.Direction.ASC, DEFAULT_SORT_FIELD));
-
-        return iBlogRepository.findAll(pageable)
-                .map(this::entityToDto);
+        Pageable pageable = PageRequest.of(currentPage, pageSize, Sort.by(Sort.Direction.ASC, DEFAULT_SORT_FIELD));
+        return iBlogRepository.findAll(pageable).map(this::entityToDto);
     }
 
-    // FILTRELEME()
     @Override
     @Transactional(readOnly = true)
     public List<BlogDto> objectServiceListSortedByDefault(String sortedBy) {
         String validatedSortedBy = validateNotBlank(sortedBy, "Sıralama alanı zorunludur");
-
-        return iBlogRepository
-                .findAll(Sort.by(Sort.Direction.ASC, validatedSortedBy))
+        return iBlogRepository.findAll(Sort.by(Sort.Direction.ASC, validatedSortedBy))
                 .stream()
                 .map(this::entityToDto)
                 .toList();
     }
 
-    // // Default olan blogID'e göre küçükten büyüğe  doğru sıralansın
     @Override
     @Transactional(readOnly = true)
     public List<BlogDto> objectServiceListSortedByAsc() {
-        return iBlogRepository
-                .findAll(Sort.by(Sort.Direction.ASC, DEFAULT_SORT_FIELD))
+        return iBlogRepository.findAll(Sort.by(Sort.Direction.ASC, DEFAULT_SORT_FIELD))
                 .stream()
                 .map(this::entityToDto)
                 .toList();
     }
 
-    // Default olan blogID'e göre büyükten küçüğe doğru sıralansın
     @Override
     @Transactional(readOnly = true)
     public List<BlogDto> objectServiceListSortedByDesc() {
-        return iBlogRepository
-                .findAll(Sort.by(Sort.Direction.DESC, DEFAULT_SORT_FIELD))
+        return iBlogRepository.findAll(Sort.by(Sort.Direction.DESC, DEFAULT_SORT_FIELD))
                 .stream()
                 .map(this::entityToDto)
                 .toList();
     }
 
-    /// ////////////////////////////////////////////////////////////////
-    // ADVANCED SEARCH & FILTERING & PAGINATION (Adım 5)
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<BlogDto> searchBlogs(
@@ -561,16 +414,12 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
                 : Sort.Direction.DESC;
 
         Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, safeSortBy));
-
         Specification<BlogEntity> spec = BlogSpecification.filterBy(search, categoryId, tagName, authorUsername);
         Page<BlogEntity> blogPage = iBlogRepository.findAll(spec, pageable);
 
-        Page<BlogDto> dtoPage = blogPage.map(this::entityToDto);
-        return PagedResponseDto.of(dtoPage);
+        return PagedResponseDto.of(blogPage.map(this::entityToDto));
     }
 
-    /// ////////////////////////////////////////////////////////////////
-    // ADVANCED DYNAMIC CRITERIA API FILTERING (Adım 14)
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<BlogDto> filterBlogs(BlogFilterRequestDto filterRequest) {
@@ -592,16 +441,12 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
                 : Sort.Direction.DESC;
 
         Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, safeSortBy));
-
         Specification<BlogEntity> spec = BlogSpecification.fromFilter(filterRequest);
         Page<BlogEntity> blogPage = iBlogRepository.findAll(spec, pageable);
 
-        Page<BlogDto> dtoPage = blogPage.map(this::entityToDto);
-        return PagedResponseDto.of(dtoPage);
+        return PagedResponseDto.of(blogPage.map(this::entityToDto));
     }
 
-    /// ////////////////////////////////////////////////////////////////
-    // SOFT DELETE RESTORE & ARŞİV LİSTELEME (Adım 12)
     @Override
     @Transactional
     public BlogDto restoreBlog(Long id) {
@@ -611,7 +456,7 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
         }
         BlogEntity restored = iBlogRepository.findById(id)
                 .orElseThrow(() -> new _404_NotFoundException("Blog bulunamadı. ID: " + id));
-        log.info("Soft-deleted blog geri yüklendi (Restore). ID: {}, Başlık: {}", id, restored.getHeader());
+        log.info("Soft-deleted blog geri yüklendi: ID={}, Header={}", id, restored.getHeader());
         return entityToDto(restored);
     }
 
@@ -624,8 +469,6 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
                 .toList();
     }
 
-    /// ////////////////////////////////////////////////////////////////
-    // BULK BATCH OPERATIONS (Adım 15)
     @Override
     @Transactional
     public BulkOperationResponseDto executeBulkOperation(BulkOperationRequestDto request) {
@@ -638,30 +481,30 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
 
         List<Long> ids = request.getBlogIds();
         int requestedCount = ids.size();
-        int affectedCount = 0;
+        int affectedCount;
         String message;
 
         switch (request.getAction()) {
             case SOFT_DELETE -> {
                 affectedCount = iBlogRepository.bulkSoftDeleteNative(ids);
                 message = String.format("%d adet blog başarıyla arşive taşındı (Soft Delete).", affectedCount);
-                log.info("Toplu Soft Delete uygulandı. Talep: {}, Etkilenen: {}", requestedCount, affectedCount);
+                log.info("Toplu Soft Delete uygulandı: Talep={}, Etkilenen={}", requestedCount, affectedCount);
             }
             case RESTORE -> {
                 affectedCount = iBlogRepository.bulkRestoreNative(ids);
                 message = String.format("%d adet blog başarıyla geri yüklendi (Restore).", affectedCount);
-                log.info("Toplu Restore uygulandı. Talep: {}, Etkilenen: {}", requestedCount, affectedCount);
+                log.info("Toplu Restore uygulandı: Talep={}, Etkilenen={}", requestedCount, affectedCount);
             }
             case CHANGE_CATEGORY -> {
                 if (request.getTargetCategoryId() == null || request.getTargetCategoryId() <= 0) {
-                    throw new BerkeOzderException("Kategori değiştirme işlemi için hedef kategori ID'si (targetCategoryId) belirtilmelidir.");
+                    throw new BerkeOzderException("Hedef kategori ID'si (targetCategoryId) belirtilmelidir.");
                 }
                 BlogCategoryEntity targetCategory = iBlogCategoryRepository.findById(request.getTargetCategoryId())
                         .orElseThrow(() -> new _404_NotFoundException("Hedef kategori bulunamadı. ID: " + request.getTargetCategoryId()));
 
                 affectedCount = iBlogRepository.bulkChangeCategoryNative(ids, request.getTargetCategoryId());
                 message = String.format("%d adet blog '%s' kategorisine başarıyla aktarıldı.", affectedCount, targetCategory.getCategoryName());
-                log.info("Toplu Kategori Değiştirme uygulandı. Kategori: {}, Talep: {}, Etkilenen: {}",
+                log.info("Toplu Kategori Değiştirme uygulandı: Kategori={}, Talep={}, Etkilenen={}",
                         targetCategory.getCategoryName(), requestedCount, affectedCount);
             }
             case ADD_TAG -> {
@@ -669,7 +512,6 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
                     throw new BerkeOzderException("Etiket ekleme işlemi için en az bir etiket belirtilmelidir.");
                 }
 
-                // 1) Etiketleri bul veya oluştur
                 Set<TagEntity> tagsToAdd = new HashSet<>();
                 for (String rawTag : request.getTags()) {
                     if (rawTag == null || rawTag.isBlank()) continue;
@@ -679,7 +521,6 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
                     tagsToAdd.add(tag);
                 }
 
-                // 2) Blogları bul ve etiketleri ekle
                 List<BlogEntity> blogs = iBlogRepository.findAllById(ids);
                 for (BlogEntity blog : blogs) {
                     for (TagEntity tag : tagsToAdd) {
@@ -689,12 +530,12 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
                 iBlogRepository.saveAll(blogs);
                 affectedCount = blogs.size();
                 message = String.format("%d adet bloga %d adet etiket başarıyla eklendi.", affectedCount, tagsToAdd.size());
-                log.info("Toplu Etiket Ekleme uygulandı. Talep: {}, Etkilenen: {}", requestedCount, affectedCount);
+                log.info("Toplu Etiket Ekleme uygulandı: Talep={}, Etkilenen={}", requestedCount, affectedCount);
             }
             case HARD_DELETE -> {
                 affectedCount = iBlogRepository.bulkHardDeleteNative(ids);
                 message = String.format("%d adet blog kalıcı olarak silindi (Hard Delete).", affectedCount);
-                log.warn("Toplu Kalıcı Silme (Hard Delete) uygulandı. Talep: {}, Etkilenen: {}", requestedCount, affectedCount);
+                log.warn("Toplu Kalıcı Silme uygulandı: Talep={}, Etkilenen={}", requestedCount, affectedCount);
             }
             default -> throw new BerkeOzderException("Bilinmeyen toplu işlem türü: " + request.getAction());
         }
@@ -708,8 +549,6 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
                 .build();
     }
 
-    /// ///////////////////////////////////////////////////////////////
-    /// CONCURRENCY & ENGAGEMENT WRITE-BEHIND METRICS (Adım 24)
     @Override
     public long recordView(Long id) {
         validateId(id, "Blog");
@@ -770,6 +609,4 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
             metricFlushScheduler.flushMetrics();
         }
     }
-
-    // application.properties ANLAT
-} // end BlogServicesImpl
+}

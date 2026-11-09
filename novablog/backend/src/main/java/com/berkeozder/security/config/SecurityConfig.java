@@ -2,12 +2,16 @@ package com.berkeozder.security.config;
 
 import com.berkeozder.security.jwt.JwtAuthenticationEntryPoint;
 import com.berkeozder.security.jwt.JwtAuthenticationFilter;
+import com.berkeozder.security.oauth2.CustomOAuth2UserService;
+import com.berkeozder.security.oauth2.OAuth2AuthenticationFailureHandler;
+import com.berkeozder.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.berkeozder.security.ratelimit.RateLimitFilter;
 import com.berkeozder.security.userdetails.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -29,9 +33,9 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final PasswordEncoder passwordEncoder;
     private final RateLimitFilter rateLimitFilter;
-    private final com.berkeozder.security.oauth2.CustomOAuth2UserService customOAuth2UserService;
-    private final com.berkeozder.security.oauth2.OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
-    private final com.berkeozder.security.oauth2.OAuth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler;
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -158,49 +162,49 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/blog/api/v1.0.0/tags/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
 
                         // Silinmiş Blogları Listeleme ve Geri Yükleme (Sadece ADMIN veya SUPER_ADMIN)
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/blog/api/v1.0.0/deleted").hasAnyRole("ADMIN", "SUPER_ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/restore/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/blog/api/v1.0.0/deleted").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/blog/api/v1.0.0/restore/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
 
                         // Dışa Aktarma / Raporlama (Export Excel & CSV - Adım 13): Sadece ADMIN veya SUPER_ADMIN
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/blog/api/v1.0.0/export/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/blog/api/v1.0.0/export/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
 
                         // Gerçek Zamanlı Bildirimler (WebSocket / STOMP REST - Adım 18)
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/notifications/types").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/notifications/test").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/notifications/types").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/notifications/test").permitAll()
                         .requestMatchers("/api/v1/notifications/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
 
                         // Spring Batch & ETL Automation (Adım 21)
                         .requestMatchers("/api/v1/batch/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
 
                         // Spring AI, Vektör Arama & Akıllı İçerik (Adım 22)
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/ai/search/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/ai/summarize-text", "/api/v1/ai/suggest-tags", "/api/v1/ai/moderate").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/ai/summarize/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/ai/reindex").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/ai/search/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/ai/summarize-text", "/api/v1/ai/suggest-tags", "/api/v1/ai/moderate").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/ai/summarize/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/ai/reindex").hasAnyRole("ADMIN", "SUPER_ADMIN")
 
                         // Blog ve Kategori Okuma (GET) herkese açık (Arama, listeleme, detay)
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/blog/api/v1.0.0/**", "/blog/category/api/v1.0.0/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/blog/api/v1.0.0/**", "/blog/category/api/v1.0.0/**").permitAll()
 
                         // Çok Kriterli Filtreleme (POST /filter - Adım 14): Herkese açık arama sorgusu
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/filter").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/blog/api/v1.0.0/filter").permitAll()
 
                         // Concurrency & Engagement (Adım 24): Görüntülenme ve beğeni sayaçları herkese açık
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/*/view").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/*/like").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/blog/api/v1.0.0/*/like").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/metrics/flush").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/blog/api/v1.0.0/*/view").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/blog/api/v1.0.0/*/like").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/blog/api/v1.0.0/*/like").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/blog/api/v1.0.0/metrics/flush").hasAnyRole("ADMIN", "SUPER_ADMIN")
 
                         // CRUD write endpoints for blog and category (ADMIN veya SUPER_ADMIN)
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/**", "/blog/category/api/v1.0.0/**")
+                        .requestMatchers(HttpMethod.POST, "/blog/api/v1.0.0/**", "/blog/category/api/v1.0.0/**")
                         .hasAnyRole("ADMIN", "SUPER_ADMIN")
 
-                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/blog/api/v1.0.0/**", "/blog/category/api/v1.0.0/**")
+                        .requestMatchers(HttpMethod.PUT, "/blog/api/v1.0.0/**", "/blog/category/api/v1.0.0/**")
                         .hasAnyRole("ADMIN", "SUPER_ADMIN")
 
-                        .requestMatchers(org.springframework.http.HttpMethod.PATCH, "/blog/api/v1.0.0/**", "/blog/category/api/v1.0.0/**")
+                        .requestMatchers(HttpMethod.PATCH, "/blog/api/v1.0.0/**", "/blog/category/api/v1.0.0/**")
                         .hasAnyRole("ADMIN", "SUPER_ADMIN")
 
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/blog/api/v1.0.0/**", "/blog/category/api/v1.0.0/**")
+                        .requestMatchers(HttpMethod.DELETE, "/blog/api/v1.0.0/**", "/blog/category/api/v1.0.0/**")
                         .hasAnyRole("ADMIN", "SUPER_ADMIN")
 
                         // Süper Admin ve Admin sayfaları

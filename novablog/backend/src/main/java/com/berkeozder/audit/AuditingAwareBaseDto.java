@@ -5,9 +5,6 @@ import lombok.Setter;
 
 import java.util.Date;
 
-/**
- * Base DTO containing audit tracking fields.
- */
 @Getter
 @Setter
 public abstract class AuditingAwareBaseDto {

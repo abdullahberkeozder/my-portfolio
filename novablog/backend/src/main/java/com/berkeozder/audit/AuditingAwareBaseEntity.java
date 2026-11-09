@@ -16,17 +16,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * Base JPA entity supporting automated auditing (creation and last modification timestamps and users).
- */
 @Getter
 @Setter
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
-@JsonIgnoreProperties(value = { "created_date", "last_user_date" }, allowGetters = true)
+@JsonIgnoreProperties(value = {"created_date", "last_user_date"}, allowGetters = true)
 public abstract class AuditingAwareBaseEntity implements Serializable {
 
-    public static final Long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @CreatedBy
     @Column(name = "created_by")

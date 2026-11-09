@@ -4,20 +4,15 @@ import com.berkeozder.audit.AuditingAwareBaseDto;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import lombok.extern.log4j.Log4j2;
 
 import java.io.Serial;
 import java.io.Serializable;
 
-/**
- * Data Transfer Object representing a Blog Category.
- */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Log4j2
 public class BlogCategoryDto extends AuditingAwareBaseDto implements Serializable {
 
     @Serial
