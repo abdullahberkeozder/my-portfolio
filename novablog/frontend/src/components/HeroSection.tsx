@@ -381,36 +381,68 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
         {/* Highlight Hardware Architecture Spec Grid */}
         <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all duration-300 hover:border-[#d4f933]/40 hover:-translate-y-0.5">
+          <div
+            onClick={onExploreAI}
+            title="Spring AI Semantik Vektör Arama Modülünü Aç"
+            className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all duration-300 hover:border-[#8c52ff]/50 hover:-translate-y-0.5 cursor-pointer group"
+          >
             <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-purple-600 dark:text-purple-400 font-bold uppercase">01 // AI CORE</span>
+              <span className="text-purple-600 dark:text-purple-400 font-bold uppercase group-hover:underline">01 // AI CORE</span>
               <span className="text-[10px] text-zinc-400">128D</span>
             </div>
             <div className="text-base font-bold text-zinc-950 dark:text-white">Vektör Arama</div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">Kosinüs Benzerliği, TL;DR Özet & Otomatik Etiket</p>
           </div>
 
-          <div className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all duration-300 hover:border-[#d4f933]/40 hover:-translate-y-0.5">
+          <div
+            onClick={() => {
+              if (onOpenArchitectureConsole) onOpenArchitectureConsole();
+              setTimeout(() => {
+                window.dispatchEvent(new CustomEvent('select-console-module', { detail: 'loom' }));
+                window.dispatchEvent(new CustomEvent('run-console-simulation'));
+              }, 100);
+            }}
+            title="Loom Sanal Thread Simülasyonunu Başlat"
+            className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all duration-300 hover:border-[#d4f933]/50 hover:-translate-y-0.5 cursor-pointer group"
+          >
             <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-[#a3c900] dark:text-[#d4f933] font-bold uppercase">02 // LOOM</span>
+              <span className="text-[#a3c900] dark:text-[#d4f933] font-bold uppercase group-hover:underline">02 // LOOM</span>
               <span className="text-[10px] text-zinc-400">JAVA 22</span>
             </div>
             <div className="text-base font-bold text-zinc-950 dark:text-white">Virtual Threads</div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">Sıfır Thread Havuzu Darboğazı & Yüksek Eşzamanlılık</p>
           </div>
 
-          <div className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all duration-300 hover:border-[#d4f933]/40 hover:-translate-y-0.5">
+          <div
+            onClick={() => {
+              if (onOpenArchitectureConsole) onOpenArchitectureConsole();
+              setTimeout(() => {
+                window.dispatchEvent(new CustomEvent('select-console-module', { detail: 'write-behind' }));
+              }, 100);
+            }}
+            title="Redis Write-Behind Tampon Modülünü İncele"
+            className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all duration-300 hover:border-rose-500/50 hover:-translate-y-0.5 cursor-pointer group"
+          >
             <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-rose-500 font-bold uppercase">03 // CACHE</span>
+              <span className="text-rose-500 font-bold uppercase group-hover:underline">03 // CACHE</span>
               <span className="text-[10px] text-zinc-400">REDIS</span>
             </div>
             <div className="text-base font-bold text-zinc-950 dark:text-white">Write-Behind Buffer</div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">Atomik HINCRBY Sayaçları & 30s Batch Flush</p>
           </div>
 
-          <div className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all duration-300 hover:border-[#d4f933]/40 hover:-translate-y-0.5">
+          <div
+            onClick={() => {
+              if (onOpenArchitectureConsole) onOpenArchitectureConsole();
+              setTimeout(() => {
+                window.dispatchEvent(new CustomEvent('select-console-module', { detail: 'optimistic-locking' }));
+              }, 100);
+            }}
+            title="JPA Optimistic Locking ve Test Matrisini İncele"
+            className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all duration-300 hover:border-cyan-500/50 hover:-translate-y-0.5 cursor-pointer group"
+          >
             <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-cyan-500 font-bold uppercase">04 // TESTS</span>
+              <span className="text-cyan-500 font-bold uppercase group-hover:underline">04 // TESTS</span>
               <span className="text-[10px] text-emerald-400">201/201</span>
             </div>
             <div className="text-base font-bold text-zinc-950 dark:text-white">%100 Başarı</div>

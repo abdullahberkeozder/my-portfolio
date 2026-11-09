@@ -5,7 +5,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Navbar } from '@/components/Navbar';
 import { HeroSection } from '@/components/HeroSection';
 import { ModularArchitectureConsole } from '@/components/ModularArchitectureConsole';
-import { PortalCockpitDock } from '@/components/PortalCockpitDock';
 import { BlogCard } from '@/components/BlogCard';
 import { BlogDetailModal } from '@/components/BlogDetailModal';
 import { CreateBlogModal } from '@/components/CreateBlogModal';
@@ -19,7 +18,7 @@ import { FloatingCopilotWidget } from '@/components/FloatingCopilotWidget';
 import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
 import { useBlogsQuery, useCategoriesQuery } from '@/hooks/useBlogs';
-import { Search, RefreshCw, SlidersHorizontal, X } from 'lucide-react';
+import { Search, RefreshCw, SlidersHorizontal, X, Plus } from 'lucide-react';
 
 type SortOption = 'latest' | 'views' | 'likes';
 
@@ -151,26 +150,38 @@ export default function Home() {
                     ))}
                   </div>
 
-                  {/* Search Input */}
-                  <div className="relative min-w-[280px]">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
-                    <input
-                      id="blog-search-input"
-                      name="blogSearch"
-                      type="text"
-                      placeholder="Başlık, içerik veya etiket ara (#java-22)..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-9 py-2.5 rounded-full bg-zinc-100 dark:bg-zinc-900/90 border border-black/[0.08] dark:border-white/[0.08] text-xs font-mono text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-[#d4f933] transition-colors"
-                    />
-                    {searchTerm && (
-                      <button
-                        onClick={() => setSearchTerm('')}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    )}
+                  {/* Right Actions: Search Input & New Article Pill */}
+                  <div className="flex items-center gap-3 w-full lg:w-auto">
+                    <div className="relative flex-1 sm:w-72">
+                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                      <input
+                        id="blog-search-input"
+                        name="blogSearch"
+                        type="text"
+                        placeholder="Başlık, içerik veya etiket ara (#java-22)..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-9 py-2.5 rounded-full bg-zinc-100 dark:bg-zinc-900/90 border border-black/[0.08] dark:border-white/[0.08] text-xs font-mono text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-[#d4f933] transition-colors"
+                      />
+                      {searchTerm && (
+                        <button
+                          onClick={() => setSearchTerm('')}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() => setIsCreateModalOpen(true)}
+                      className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-full bg-[#d4f933] hover:bg-[#c4e82b] text-black text-xs font-mono font-bold tracking-wider uppercase transition-all shadow-sm hover:shadow-[#d4f933]/25 active:scale-95 cursor-pointer whitespace-nowrap btn-tactile"
+                      title="Yeni Teknik Makale Yayınla"
+                    >
+                      <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                      <span className="hidden sm:inline">YENİ MAKALE YAZ</span>
+                      <span className="sm:hidden">YAZ</span>
+                    </button>
                   </div>
                 </div>
 
@@ -288,15 +299,6 @@ export default function Home() {
         {activeTab === 'admin-batch' && <AdminBatchStudio />}
       </main>
 
-      {/* Floating "Portal Display" Cockpit Dock (Ride Also Mission Control) */}
-      <PortalCockpitDock
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onOpenCreateModal={() => setIsCreateModalOpen(true)}
-        onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
-        onMetricsFlushed={() => refetchBlogs()}
-      />
-
       {/* Detail Modal */}
       <BlogDetailModal
         blog={selectedBlog}
@@ -338,6 +340,7 @@ export default function Home() {
       <FloatingCopilotWidget
         onSelectTab={setActiveTab}
         onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
+        onMetricsFlushed={() => refetchBlogs()}
         onOpenArchitectureConsole={() => {
           setActiveTab('feed');
           setTimeout(() => {

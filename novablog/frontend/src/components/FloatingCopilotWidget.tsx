@@ -1,18 +1,22 @@
 'use client';
 
 import React, { useState } from 'react';
+import { ApiClient } from '@/lib/api';
 import {
   MessageSquare,
   X,
   Sparkles,
   ArrowRight,
   ExternalLink,
+  RefreshCw,
+  Check,
 } from 'lucide-react';
 
 interface FloatingCopilotWidgetProps {
   onOpenArchitectureConsole?: () => void;
   onOpenTelemetry?: () => void;
   onSelectTab?: (tab: 'feed' | 'ai-search' | 'ai-lab' | 'admin-batch') => void;
+  onMetricsFlushed?: () => void;
 }
 
 interface QnA {
@@ -82,9 +86,27 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
   onOpenArchitectureConsole,
   onOpenTelemetry,
   onSelectTab,
+  onMetricsFlushed,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedQnA, setSelectedQnA] = useState<QnA>(KNOWLEDGE_BASE[0]);
+  const [isFlushing, setIsFlushing] = useState(false);
+  const [flushSuccess, setFlushSuccess] = useState(false);
+
+  const handleManualFlush = async () => {
+    setIsFlushing(true);
+    setFlushSuccess(false);
+    try {
+      await ApiClient.flushMetrics();
+      setFlushSuccess(true);
+      if (onMetricsFlushed) onMetricsFlushed();
+      setTimeout(() => setFlushSuccess(false), 2500);
+    } catch {
+      // ignore
+    } finally {
+      setIsFlushing(false);
+    }
+  };
 
   const handleAction = (type?: QnA['actionType']) => {
     setIsOpen(false);
@@ -208,7 +230,36 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
               {selectedQnA.answer}
             </p>
 
-            {selectedQnA.actionText && (
+            {selectedQnA.id === 'write-behind' ? (
+              <div className="pt-2 flex items-center gap-2">
+                <button
+                  onClick={() => handleAction(selectedQnA.actionType)}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-full bg-[#d4f933] hover:bg-[#c4e82b] text-black text-xs font-mono font-bold uppercase transition-all cursor-pointer shadow-sm btn-tactile"
+                >
+                  <span>İncele</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={handleManualFlush}
+                  disabled={isFlushing}
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-full text-xs font-mono font-bold uppercase transition-all cursor-pointer shadow-sm ${
+                    flushSuccess
+                      ? 'bg-emerald-500 text-white'
+                      : 'bg-zinc-900 dark:bg-zinc-800 hover:bg-black text-white'
+                  }`}
+                  title="Redis Write-Behind tamponundaki tüm birikmiş sayaçları tek seferde veritabanına aktarır"
+                >
+                  {isFlushing ? (
+                    <RefreshCw className="w-3 h-3 animate-spin text-[#d4f933]" />
+                  ) : flushSuccess ? (
+                    <Check className="w-3.5 h-3.5" />
+                  ) : (
+                    <Sparkles className="w-3 h-3 text-[#d4f933]" />
+                  )}
+                  <span>{isFlushing ? 'YAZILIYOR' : flushSuccess ? 'BAŞARILI ✓' : 'TEST FLUSH ET'}</span>
+                </button>
+              </div>
+            ) : selectedQnA.actionText ? (
               <div className="pt-2">
                 <button
                   onClick={() => handleAction(selectedQnA.actionType)}
@@ -218,7 +269,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
-            )}
+            ) : null}
           </div>
 
           {/* Quick Engine Links Footer */}

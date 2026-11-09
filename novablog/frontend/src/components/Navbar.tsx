@@ -8,6 +8,8 @@ import {
   ArrowRight,
   Layers,
   Zap,
+  ChevronDown,
+  Menu,
 } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
 import { LiquidThemeToggle } from './LiquidThemeToggle';
@@ -33,8 +35,27 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [megaMenu, setMegaMenu] = useState<MegaDrawerCategory>(null);
 
-  const toggleMegaMenu = (cat: MegaDrawerCategory) => {
-    setMegaMenu((prev) => (prev === cat ? null : cat));
+  const handleNavClick = (cat: MegaDrawerCategory) => {
+    if (megaMenu === cat) {
+      setMegaMenu(null);
+      return;
+    }
+    setMegaMenu(cat);
+
+    // Synchronize active view smoothly
+    if (cat === 'articles') {
+      setActiveTab('feed');
+    } else if (cat === 'ai') {
+      setActiveTab('ai-search');
+    } else if (cat === 'batch') {
+      setActiveTab('admin-batch');
+    } else if (cat === 'system') {
+      setActiveTab('feed');
+      setTimeout(() => {
+        const el = document.getElementById('modular-architecture-console');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    }
   };
 
   const closeMegaMenu = () => setMegaMenu(null);
@@ -190,7 +211,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <nav className="hidden md:flex items-center gap-1.5 font-mono text-xs">
               {/* Category 1: MAKALELER */}
               <button
-                onClick={() => toggleMegaMenu('articles')}
+                onClick={() => handleNavClick('articles')}
                 className={`px-5 py-2 rounded-full font-bold transition-all cursor-pointer ${
                   megaMenu === 'articles'
                     ? 'bg-[#200e38] text-white shadow-md'
@@ -206,7 +227,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               {/* Category 2: ÇEKİRDEK */}
               <button
-                onClick={() => toggleMegaMenu('system')}
+                onClick={() => handleNavClick('system')}
                 className={`flex items-center gap-1.5 px-5 py-2 rounded-full font-bold transition-all cursor-pointer ${
                   megaMenu === 'system'
                     ? 'bg-[#200e38] text-white shadow-md'
@@ -221,7 +242,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               {/* Category 3: AI & VEKTÖR */}
               <button
-                onClick={() => toggleMegaMenu('ai')}
+                onClick={() => handleNavClick('ai')}
                 className={`flex items-center gap-1.5 px-5 py-2 rounded-full font-bold transition-all cursor-pointer ${
                   megaMenu === 'ai'
                     ? 'bg-[#200e38] text-white shadow-md'
@@ -238,7 +259,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               {/* Category 4: BATCH & ETL */}
               <button
-                onClick={() => toggleMegaMenu('batch')}
+                onClick={() => handleNavClick('batch')}
                 className={`flex items-center gap-1.5 px-5 py-2 rounded-full font-bold transition-all cursor-pointer ${
                   megaMenu === 'batch'
                     ? 'bg-[#200e38] text-white shadow-md'
@@ -256,6 +277,20 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Right Status & Controls (Ride Also Clean Minimalism) */}
             <div className="flex items-center gap-2.5 sm:gap-3">
+              {/* Mobile Menu Trigger Pill */}
+              <button
+                onClick={() => handleNavClick(isMegaOpen ? null : 'articles')}
+                className={`md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                  isMegaOpen
+                    ? 'bg-black/30 text-white'
+                    : 'bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-zinc-800 dark:text-zinc-200'
+                }`}
+                aria-label="Menüyü Aç / Kapat"
+              >
+                {isMegaOpen ? <ChevronDown className="w-3.5 h-3.5 rotate-180" /> : <Menu className="w-3.5 h-3.5" />}
+                <span>{isMegaOpen ? 'KAPAT' : 'MENÜ'}</span>
+              </button>
+
               {/* Ride Also "TEST DRIVE" Pill Button (Screenshots 1, 2, 3, 4) */}
               <button
                 onClick={() => {
@@ -297,7 +332,51 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* 3. The Iconic Ride Also Inner White Card (Screenshots 2, 3 & 4) */}
           {isMegaOpen && (
-            <div className="mt-2 bg-white dark:bg-[#090b0e] rounded-3xl p-6 lg:p-8 shadow-2xl border border-black/5 dark:border-white/10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start ride-also-drawer-anim text-zinc-900 dark:text-white">
+            <div className="mt-2 bg-white dark:bg-[#090b0e] rounded-3xl p-5 sm:p-6 lg:p-8 shadow-2xl border border-black/5 dark:border-white/10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start ride-also-drawer-anim text-zinc-900 dark:text-white">
+              {/* Mobile Category Switcher (md:hidden) */}
+              <div className="md:hidden col-span-1 flex items-center gap-2 overflow-x-auto pb-2 border-b border-black/[0.08] dark:border-white/[0.08] scrollbar-none font-mono text-xs">
+                <button
+                  onClick={() => handleNavClick('articles')}
+                  className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                    megaMenu === 'articles'
+                      ? 'bg-[#200e38] text-white shadow-sm'
+                      : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  MAKALELER
+                </button>
+                <button
+                  onClick={() => handleNavClick('system')}
+                  className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                    megaMenu === 'system'
+                      ? 'bg-[#200e38] text-white shadow-sm'
+                      : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  ÇEKİRDEK
+                </button>
+                <button
+                  onClick={() => handleNavClick('ai')}
+                  className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                    megaMenu === 'ai'
+                      ? 'bg-[#200e38] text-white shadow-sm'
+                      : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  AI & VEKTÖR
+                </button>
+                <button
+                  onClick={() => handleNavClick('batch')}
+                  className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                    megaMenu === 'batch'
+                      ? 'bg-[#200e38] text-white shadow-sm'
+                      : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                  }`}
+                >
+                  BATCH & ETL
+                </button>
+              </div>
+
               {/* Left Sub-Navigation Menu (Direct Ride Also Monospace Layout) */}
               <div className="lg:col-span-3 space-y-4 border-b lg:border-b-0 lg:border-r border-black/[0.08] dark:border-white/[0.08] pb-6 lg:pb-0 lg:pr-6 font-mono text-xs">
                 <div className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold tracking-widest uppercase">
