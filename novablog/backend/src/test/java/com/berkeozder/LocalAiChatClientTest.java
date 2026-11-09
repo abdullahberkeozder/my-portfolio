@@ -96,3 +96,4 @@ class LocalAiChatClientTest {
         assertTrue(response.getSentimentScore() > 0.0);
     }
 }
+

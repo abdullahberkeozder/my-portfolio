@@ -27,3 +27,4 @@ public class BlogSemanticSearchResultDto implements Serializable {
     private double combinedScore; // Hibrit (Füzyon) skor
     private String searchType; // "SEMANTIC" veya "HYBRID"
 }
+

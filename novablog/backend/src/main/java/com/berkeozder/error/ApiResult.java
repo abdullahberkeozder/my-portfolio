@@ -6,20 +6,20 @@ import lombok.*;
 import java.util.Date;
 import java.util.Map;
 
-// ------------------ LOMBOK ------------------
+/**
+ * Standard unified API response wrapper for success and error payloads.
+ *
+ * @param <T> data payload type
+ */
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
-// Spring Framework'ün varsayılan Error yapısı yerine yazdığımız standart response yapısıdır.
-// Eğer null değer varsa JSON'a dahil etme:
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResult<T> {
 
-    // Status enum'ı
     public enum Status {
         SUCCESS,
         ERROR,
@@ -31,16 +31,16 @@ public class ApiResult<T> {
         TOO_MANY_REQUESTS
     }
 
-    private Status status;              // Enum tipinde durum
-    private String message;             // Kullanıcıya veya frontend'e gösterilecek mesaj
-    private String error;               // Opsiyonel hata kodu veya kısa açıklama
-    private String path;                // Endpoint path
-    private Map<String, Object> errors; // Validation hataları
-    private T data;                     // Generic data
-    @Builder.Default
-    private Date createdDate = new Date(System.currentTimeMillis()); // Oluşturulma zamanı
+    private Status status;
+    private String message;
+    private String error;
+    private String path;
+    private Map<String, Object> errors;
+    private T data;
 
-    // ------------------ Static Factory Methods ------------------
+    @Builder.Default
+    private Date createdDate = new Date(System.currentTimeMillis());
+
     public static <T> ApiResult<T> success(T data) {
         return ApiResult.<T>builder()
                 .status(Status.SUCCESS)
@@ -115,5 +115,4 @@ public class ApiResult<T> {
                 .path(path)
                 .build();
     }
-
-} // end class ApiResult
+}

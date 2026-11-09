@@ -59,7 +59,7 @@ flowchart TD
     end
 
     subgraph PersistenceLayer ["Persistence & Caching Infrastructure"]
-        Flyway["Flyway Migration (V1..V7)"] --> Postgres[("PostgreSQL 16")]
+        Flyway["Flyway Migration (V1..V8 + pgvector)"] --> Postgres[("PostgreSQL 16")]
         Postgres <--> Hibernate["Spring Data JPA + Soft Delete"]
         Redis[("Redis Cache Cluster")] <--> CacheManager["Spring Cache (@Cacheable / Evict)"]
         MinioStore[("MinIO S3 Object Storage")] <--> StorageService
@@ -87,7 +87,7 @@ Proje sıfırdan kurumsal seviyeye 22 aşamalı enterprise yol haritası ile gel
 | **05** | **Redis Caching & Invalidation** | Distributed Redis önbellekleme, TTL yönetimi ve otomatik cache eviction stratejisi. |
 | **06** | **JPA Specification & Criteria API** | Çok kriterli dinamik filtreleme, karmaşık `Predicate` zincirleri ve arama sorguları. |
 | **07** | **Asenkron E-posta Bildirimleri** | `@Async` ve `JavaMailSender` ile thread havuzu üzerinden gecikmesiz e-posta gönderimi. |
-| **08** | **Flyway Veritabanı Migrasyonu** | Versiyon kontrollü DDL ve DML SQL migrasyonları (`V1__init...V7__ai`). |
+| **08** | **Flyway Veritabanı Migrasyonu** | Versiyon kontrollü DDL ve DML SQL migrasyonları (`V1__init...V8__native_pgvector`). |
 | **09** | **Global Hata Yönetimi & RFC 7807** | `@RestControllerAdvice` ile standartlaştırılmış `ProblemDetails` hata yanıtları. |
 | **10** | **Actuator & Prometheus Metrikleri** | JVM, bellek, CPU, HTTP istek ve veritabanı metriklerinin Prometheus'a aktarımı. |
 | **11** | **OpenAPI 3 / Swagger UI** | Bütün REST uç noktalarının interaktif API dokümantasyonu (`/swagger-ui/index.html`). |

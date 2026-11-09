@@ -152,3 +152,4 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect }) => {
     </article>
   );
 };
+

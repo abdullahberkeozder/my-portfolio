@@ -14,7 +14,7 @@ import com.berkeozder.data.mapper.BlogMapper;
 import com.berkeozder.data.repository.IBlogCategoryRepository;
 import com.berkeozder.data.repository.IBlogRepository;
 import com.berkeozder.data.specification.BlogSpecification;
-import com.berkeozder.exception.BerkeOzderException;
+import com.berkeozder.exception.NovaBlogException;
 import com.berkeozder.exception._404_NotFoundException;
 import com.berkeozder.file_upload.ImageService;
 import com.berkeozder.business.services.interfaces.IBlogServices;
@@ -35,23 +35,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-// LOMBOK
-@RequiredArgsConstructor //DI
+@RequiredArgsConstructor
 @Log4j2
 
-// SERVICE
 @Service
-//@Transactional
 public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
-
-    // DI
     private final IBlogCategoryRepository iBlogCategoryRepository;
     private final IBlogRepository iBlogRepository;
     private final ImageService imageService;
     private final com.berkeozder.data.repository.IUserRepository iUserRepository;
     private final com.berkeozder.data.repository.ITagRepository iTagRepository;
-
-    // Mapper
     private final ModelMapperBean modelMapperBean;
     private final BlogMapper blogMapper = new BlogMapper();
 
@@ -62,51 +55,35 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
     // AI Embedding Client (Vektör Gömme - Adım 22)
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     private com.berkeozder.ai.client.IAiEmbeddingClient aiEmbeddingClient;
-
-    // Sorting Default Fiedl
     private static final String DEFAULT_SORT_FIELD = "blogId";
-
-    /// ///////////////////////////////////////////////////////////////
     // METHOD
     // MODEL MAPPER
     @Override
     public BlogDto entityToDto(BlogEntity blogEntity) {
-        // 1.YOL
-        // return modelMapperBean.modelMapperMethod().map(blogCategoryEntity, BlogCategoryDto.class);
-
-        // 2.YOL
         return blogMapper.toDto(blogEntity);
     }
 
     @Override
     public BlogEntity dtoToEntity(BlogDto blogDto) {
-        // 1.YOL
-        // return modelMapperBean.modelMapperMethod().map(blogDto, BlogCategoryEntity.class);
-
-        // 2.YOL
         return blogMapper.toEntity(blogDto);
     }
-
-    /// ////////////////////////////////////////////////////////////////
-    /// Generics Null Validation
+    /**  */
     private <T> T validateNotNull(T value, String message) {
         if (value == null) {
-            throw new BerkeOzderException(message);
+            throw new NovaBlogException(message);
         }
         return value;
     }
-
-    /// Generics String Validation
+    /**  */
     private Long validateId(Long id, String objectName) {
         validateNotNull(id, objectName + "ID boş olamaz.");
 
         if (id <= 0) {
-            throw new BerkeOzderException(objectName + "ID 0'dan büyük olmalıdır.");
+            throw new NovaBlogException(objectName + "ID 0'dan büyük olmalıdır.");
         }
         return id;
     }
-
-    ///  Generics ValidateBlog Validation
+    /**  */
     private BlogDto validateBlog(BlogDto blogDto, boolean imageRequired) {
         validateNotNull(blogDto, "Blog verisi boş");
 
@@ -163,22 +140,20 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
             log.error("Blog resmi silinemedi. imageUrl={}, message={}", imageUrl, exception.getMessage(), exception);
         }
     }
-
-    /// Generics String Validation
+    /**  */
     private String validateNotBlank(String value, String message) {
         if (value == null || value.isBlank()) {
-            throw new BerkeOzderException(message);
+            throw new NovaBlogException(message);
         }
         return value.trim();
     }
-
-    /// Generics Positive Number Validation
+    /**  */
     private <N extends Number> int validatePositiveNumber(N value, String fieldName) {
         validateNotNull(value, fieldName + " boş olamaz");
 
         int number = value.intValue();
         if (number <= 0) {
-            throw new BerkeOzderException(fieldName + " o'dan büyük olmalıdır");
+            throw new NovaBlogException(fieldName + " o'dan büyük olmalıdır");
         }
         return number;
     }
@@ -187,45 +162,41 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
     private void validate(BlogDto blogDto, boolean isResult) {
         // null
         if (blogDto == null) {
-            throw new BerkeOzderException("Blog verisi boş");
+            throw new NovaBlogException("Blog verisi boş");
         }
 
         if (isResult) {
             if (blogDto.getHeader() == null || blogDto.getHeader().isBlank()) {
-                throw new BerkeOzderException("Blog başlığı zorunludur");
+                throw new NovaBlogException("Blog başlığı zorunludur");
             }
 
             if (blogDto.getContent() == null || blogDto.getContent().isBlank()) {
-                throw new BerkeOzderException("Blog içeriği zorunludur");
+                throw new NovaBlogException("Blog içeriği zorunludur");
             }
         }
-    } // end validate
+    }
 
     // Validation  (Not Image)
     private void validateImage(BlogDto blogDto, boolean isResult) {
         // null
         if (blogDto == null) {
-            throw new BerkeOzderException("Blog verisi boş");
+            throw new NovaBlogException("Blog verisi boş");
         }
 
         if (isResult) {
             if (blogDto.getHeader() == null || blogDto.getHeader().isBlank()) {
-                throw new BerkeOzderException("Blog başlığı zorunludur");
+                throw new NovaBlogException("Blog başlığı zorunludur");
             }
 
             if (blogDto.getContent() == null || blogDto.getContent().isBlank()) {
-                throw new BerkeOzderException("Blog içeriği zorunludur");
+                throw new NovaBlogException("Blog içeriği zorunludur");
             }
 
             if (blogDto.getImage() == null || blogDto.getImage().isBlank()) {
-                throw new BerkeOzderException("Blog resimi zorunludur");
+                throw new NovaBlogException("Blog resimi zorunludur");
             }
         }
-    } // end validate
-
-    /// ////////////////////////////////////////////////////////////////
-    /// ////////////////////////////////////////////////////////////////
-    // SPEED DATA
+    }
     @Override
     @Transactional
     public List<BlogDto> speedData(Integer data) {
@@ -263,8 +234,6 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
         // Silme sonrasında boş liste dönsün
         return objectServiceList();
     }
-
-    /// ////////////////////////////////////////////////////////////////
     // CRUD
     // BLOG CREATE (RESIMSIZ)
     @Override
@@ -339,9 +308,6 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
         }
         return objectServiceCreate(blogDto);
     }
-
-
-    /// ////////////////////////////////////////////////////////
     // BLOG LIST
     @Override
     @Transactional(readOnly = true)
@@ -351,17 +317,12 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
                 .map(this::entityToDto)
                 .toList();
     }
-
-    /// ////////////////////////////////////////////////////////
     // BLOG FIND
     @Override
     @Transactional(readOnly = true)
     public BlogDto objectServiceFindById(Long id) {
         return entityToDto(findBlogEntityById(id));
     }
-
-
-    /// ////////////////////////////////////////////////////////////////
     // BLOG UPDATE (RESIMSIZ)
     @Override
     @Transactional
@@ -434,8 +395,6 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
         }
         return blogDtoUpdate;
     }
-
-    /// ////////////////////////////////////////////////////////////////
     // BLOG DELETE
     @Override
     @Transactional
@@ -452,15 +411,12 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
 
         return entityToDto(findDelete);
     }
-
-    /// ////////////////////////////////////////////////////////////////
-    /// ////////////////////////////////////////////////////////////////
     // PAGINATION & SORTING
     @Override
     @Transactional(readOnly = true)
     public Page<BlogDto> objectServicePagination(int currentPage, int pageSize) {
         if (currentPage < 0) {
-            throw new BerkeOzderException(currentPage + " currentPage 0 veya daha büyük olmaldıır");
+            throw new NovaBlogException(currentPage + " currentPage 0 veya daha büyük olmaldıır");
         }
         validatePositiveNumber(pageSize, "Page Size");
 
@@ -508,8 +464,6 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
                 .map(this::entityToDto)
                 .toList();
     }
-
-    /// ////////////////////////////////////////////////////////////////
     // ADVANCED SEARCH & FILTERING & PAGINATION (Adım 5)
     @Override
     @Transactional(readOnly = true)
@@ -543,8 +497,6 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
         Page<BlogDto> dtoPage = blogPage.map(this::entityToDto);
         return PagedResponseDto.of(dtoPage);
     }
-
-    /// ////////////////////////////////////////////////////////////////
     // ADVANCED DYNAMIC CRITERIA API FILTERING (Adım 14)
     @Override
     @Transactional(readOnly = true)
@@ -574,8 +526,6 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
         Page<BlogDto> dtoPage = blogPage.map(this::entityToDto);
         return PagedResponseDto.of(dtoPage);
     }
-
-    /// ////////////////////////////////////////////////////////////////
     // SOFT DELETE RESTORE & ARŞİV LİSTELEME (Adım 12)
     @Override
     @Transactional
@@ -598,17 +548,15 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
                 .map(this::entityToDto)
                 .toList();
     }
-
-    /// ////////////////////////////////////////////////////////////////
     // BULK BATCH OPERATIONS (Adım 15)
     @Override
     @Transactional
     public BulkOperationResponseDto executeBulkOperation(BulkOperationRequestDto request) {
         if (request == null || request.getBlogIds() == null || request.getBlogIds().isEmpty()) {
-            throw new BerkeOzderException("Toplu işlem yapılacak blog ID listesi boş olamaz.");
+            throw new NovaBlogException("Toplu işlem yapılacak blog ID listesi boş olamaz.");
         }
         if (request.getAction() == null) {
-            throw new BerkeOzderException("Toplu işlem türü (action) belirtilmelidir.");
+            throw new NovaBlogException("Toplu işlem türü (action) belirtilmelidir.");
         }
 
         List<Long> ids = request.getBlogIds();
@@ -629,7 +577,7 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
             }
             case CHANGE_CATEGORY -> {
                 if (request.getTargetCategoryId() == null || request.getTargetCategoryId() <= 0) {
-                    throw new BerkeOzderException("Kategori değiştirme işlemi için hedef kategori ID'si (targetCategoryId) belirtilmelidir.");
+                    throw new NovaBlogException("Kategori değiştirme işlemi için hedef kategori ID'si (targetCategoryId) belirtilmelidir.");
                 }
                 BlogCategoryEntity targetCategory = iBlogCategoryRepository.findById(request.getTargetCategoryId())
                         .orElseThrow(() -> new _404_NotFoundException("Hedef kategori bulunamadı. ID: " + request.getTargetCategoryId()));
@@ -641,7 +589,7 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
             }
             case ADD_TAG -> {
                 if (request.getTags() == null || request.getTags().isEmpty()) {
-                    throw new BerkeOzderException("Etiket ekleme işlemi için en az bir etiket belirtilmelidir.");
+                    throw new NovaBlogException("Etiket ekleme işlemi için en az bir etiket belirtilmelidir.");
                 }
 
                 // 1) Etiketleri bul veya oluştur
@@ -671,7 +619,7 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
                 message = String.format("%d adet blog kalıcı olarak silindi (Hard Delete).", affectedCount);
                 log.warn("Toplu Kalıcı Silme (Hard Delete) uygulandı. Talep: {}, Etkilenen: {}", requestedCount, affectedCount);
             }
-            default -> throw new BerkeOzderException("Bilinmeyen toplu işlem türü: " + request.getAction());
+            default -> throw new NovaBlogException("Bilinmeyen toplu işlem türü: " + request.getAction());
         }
 
         return BulkOperationResponseDto.builder()
@@ -684,4 +632,4 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
     }
 
     // application.properties ANLAT
-} // end BlogServicesImpl
+}

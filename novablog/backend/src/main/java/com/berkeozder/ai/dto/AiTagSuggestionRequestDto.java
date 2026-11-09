@@ -20,3 +20,4 @@ public class AiTagSuggestionRequestDto implements Serializable {
 
     private Long categoryId;
 }
+

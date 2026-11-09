@@ -47,9 +47,9 @@ public class BlogSearchIntegrationTest {
     @Test
     @DisplayName("Genel anahtar kelime araması ile blog bulma testi")
     void testSearchByKeyword() throws Exception {
-        // Runner tarafından oluşturulan 'Header-1' aranır
+        // Runner tarafından oluşturulan 'Resilient' aranır
         MvcResult result = mockMvc.perform(get("/blog/api/v1.0.0/search")
-                        .param("search", "Header-1"))
+                        .param("search", "Resilient"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -59,7 +59,7 @@ public class BlogSearchIntegrationTest {
         JsonNode pagedData = responseNode.get("data");
         assertThat(pagedData.get("totalElements").asLong()).isGreaterThanOrEqualTo(1);
         assertThat(pagedData.get("content").isArray()).isTrue();
-        assertThat(pagedData.get("content").get(0).get("header").asText()).contains("Header-1");
+        assertThat(pagedData.get("content").get(0).get("header").asText()).contains("Resilient");
     }
 
     @Test

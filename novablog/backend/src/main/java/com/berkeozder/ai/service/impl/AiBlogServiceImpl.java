@@ -21,6 +21,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,27 @@ public class AiBlogServiceImpl implements IAiBlogService {
     private final IAiChatClient aiChatClient;
     private final IAiEmbeddingClient aiEmbeddingClient;
     private final AiProperties aiProperties;
+    private final DataSource dataSource;
     private final BlogMapper blogMapper = new BlogMapper();
+    private volatile Boolean isPostgreSql = null;
+
+    private boolean isPostgreSqlDatabase() {
+        if (isPostgreSql != null) {
+            return isPostgreSql;
+        }
+        if (dataSource == null) {
+            isPostgreSql = Boolean.FALSE;
+            return false;
+        }
+        try (var conn = dataSource.getConnection()) {
+            String dbName = conn.getMetaData().getDatabaseProductName();
+            isPostgreSql = (dbName != null && dbName.toLowerCase(Locale.ROOT).contains("postgresql"));
+        } catch (Exception e) {
+            log.warn("Database metadata check failed, defaulting to in-memory vector search: {}", e.getMessage());
+            isPostgreSql = Boolean.FALSE;
+        }
+        return isPostgreSql;
+    }
 
     @Override
     @Transactional
@@ -94,8 +115,37 @@ public class AiBlogServiceImpl implements IAiBlogService {
         int maxResults = (limit != null && limit > 0) ? limit : 10;
 
         float[] queryVector = aiEmbeddingClient.generateEmbedding(query);
-        List<BlogEntity> activeBlogs = blogRepository.findAll();
+        String vectorLiteral = VectorUtils.serialize(queryVector);
 
+        // 1. PostgreSQL pgvector native HNSW index search
+        if (isPostgreSqlDatabase()) {
+            try {
+                List<BlogEntity> nativeResults = blogRepository.findByPgVectorSimilarityNative(vectorLiteral, maxResults);
+                if (nativeResults != null && !nativeResults.isEmpty()) {
+                    List<BlogSemanticSearchResultDto> results = new ArrayList<>();
+                    for (BlogEntity blog : nativeResults) {
+                        float[] blogVector = VectorUtils.deserialize(blog.getEmbedding());
+                        double similarity = VectorUtils.cosineSimilarity(queryVector, blogVector);
+                        if (similarity >= minSimilarity) {
+                            results.add(mapToSearchResult(blog, similarity, 0.0, similarity, "PGVECTOR_NATIVE"));
+                        }
+                    }
+                    if (!results.isEmpty()) {
+                        return results;
+                    }
+                }
+            } catch (Exception ex) {
+                log.debug("Native pgvector query not available ({}), falling back to in-memory cosine engine: {}",
+                        ex.getClass().getSimpleName(), ex.getMessage());
+            }
+        }
+
+        // 2. Fallback: In-memory cosine search (H2 / dev profile)
+        return executeInMemorySemanticSearch(queryVector, minSimilarity, maxResults);
+    }
+
+    private List<BlogSemanticSearchResultDto> executeInMemorySemanticSearch(float[] queryVector, double minSimilarity, int maxResults) {
+        List<BlogEntity> activeBlogs = blogRepository.findAll();
         List<BlogSemanticSearchResultDto> results = new ArrayList<>();
 
         for (BlogEntity blog : activeBlogs) {
@@ -105,7 +155,6 @@ public class AiBlogServiceImpl implements IAiBlogService {
 
             float[] blogVector;
             if (blog.getEmbedding() == null || blog.getEmbedding().isBlank() || "[]".equals(blog.getEmbedding())) {
-                // Kendi kendini onaran vektör deposu (Self-healing Vector Store)
                 String textToEmbed = (blog.getHeader() != null ? blog.getHeader() : "") + " " +
                         (blog.getTitle() != null ? blog.getTitle() : "") + " " +
                         (blog.getContent() != null ? blog.getContent() : "");
@@ -137,11 +186,36 @@ public class AiBlogServiceImpl implements IAiBlogService {
         int maxResults = (limit != null && limit > 0) ? limit : 10;
 
         float[] queryVector = aiEmbeddingClient.generateEmbedding(query);
-        List<BlogEntity> activeBlogs = blogRepository.findAll();
+        String vectorLiteral = VectorUtils.serialize(queryVector);
 
+        // 1. PostgreSQL native Reciprocal Rank Fusion (RRF) using HNSW + GIN indexes
+        if (isPostgreSqlDatabase()) {
+            try {
+                int candidateLimit = Math.max(50, maxResults * 5);
+                List<BlogEntity> nativeResults = blogRepository.findByRrfHybridSearchNative(query, vectorLiteral, candidateLimit, maxResults);
+                if (nativeResults != null && !nativeResults.isEmpty()) {
+                    List<BlogSemanticSearchResultDto> results = new ArrayList<>();
+                    for (BlogEntity blog : nativeResults) {
+                        float[] blogVector = VectorUtils.deserialize(blog.getEmbedding());
+                        double semanticScore = VectorUtils.cosineSimilarity(queryVector, blogVector);
+                        results.add(mapToSearchResult(blog, semanticScore, 1.0, semanticScore, "RRF_PGVECTOR_HYBRID"));
+                    }
+                    return results;
+                }
+            } catch (Exception ex) {
+                log.debug("Native RRF hybrid query not available ({}), falling back to in-memory fusion: {}",
+                        ex.getClass().getSimpleName(), ex.getMessage());
+            }
+        }
+
+        // 2. Fallback: In-memory weighted fusion (H2 / dev profile)
+        return executeInMemoryHybridSearch(query, queryVector, minSimilarity, maxResults);
+    }
+
+    private List<BlogSemanticSearchResultDto> executeInMemoryHybridSearch(String query, float[] queryVector, double minSimilarity, int maxResults) {
+        List<BlogEntity> activeBlogs = blogRepository.findAll();
         String lowerQuery = query.toLowerCase(Locale.ROOT);
         String[] queryTerms = lowerQuery.split("\\s+");
-
         List<BlogSemanticSearchResultDto> results = new ArrayList<>();
 
         for (BlogEntity blog : activeBlogs) {
@@ -149,7 +223,6 @@ public class AiBlogServiceImpl implements IAiBlogService {
                 continue;
             }
 
-            // 1. Kosinüs Benzerliği (Semantic Vector Score)
             float[] blogVector;
             if (blog.getEmbedding() == null || blog.getEmbedding().isBlank() || "[]".equals(blog.getEmbedding())) {
                 String textToEmbed = (blog.getHeader() != null ? blog.getHeader() : "") + " " +
@@ -163,7 +236,6 @@ public class AiBlogServiceImpl implements IAiBlogService {
             }
             double semanticScore = VectorUtils.cosineSimilarity(queryVector, blogVector);
 
-            // 2. Anahtar Kelime Skoru (Lexical Keyword Score)
             String targetText = ((blog.getHeader() != null ? blog.getHeader() : "") + " " +
                     (blog.getTitle() != null ? blog.getTitle() : "") + " " +
                     (blog.getContent() != null ? blog.getContent() : "")).toLowerCase(Locale.ROOT);
@@ -175,8 +247,6 @@ public class AiBlogServiceImpl implements IAiBlogService {
                 }
             }
             double keywordScore = queryTerms.length > 0 ? (matchedTerms / (double) queryTerms.length) : 0.0;
-
-            // 3. Füzyon Skoru (Weighted Hybrid Reciprocal Fusion: %60 Anlamsal + %40 Kelime Eşleşmesi)
             double combinedScore = (0.60 * semanticScore) + (0.40 * keywordScore);
 
             if (combinedScore >= minSimilarity || semanticScore >= minSimilarity || keywordScore > 0.6) {
@@ -247,3 +317,4 @@ public class AiBlogServiceImpl implements IAiBlogService {
                 .build();
     }
 }
+

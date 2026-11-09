@@ -13,3 +13,4 @@ ALTER TABLE comments ADD COLUMN IF NOT EXISTS sentiment VARCHAR(20) DEFAULT 'NEU
 ALTER TABLE comments ADD COLUMN IF NOT EXISTS toxicity_score DOUBLE PRECISION DEFAULT 0.0;
 
 CREATE INDEX IF NOT EXISTS idx_comments_is_ai_moderated ON comments (is_ai_moderated);
+

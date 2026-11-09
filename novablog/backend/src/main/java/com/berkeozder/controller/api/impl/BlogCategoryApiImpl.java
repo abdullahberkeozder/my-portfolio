@@ -5,7 +5,8 @@ import com.berkeozder.business.services.interfaces.IBlogCategoryServices;
 import com.berkeozder.controller.api.interfaces.IBlogCategoryApi;
 import com.berkeozder.data.entity.BlogCategoryEntity;
 import com.berkeozder.error.ApiResult;
-import com.berkeozder.utily.FrontEnd;
+import com.berkeozder.util.FrontEnd;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -14,100 +15,83 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// LOMBOK
-@RequiredArgsConstructor
-@Log4j2
-
-// API
+/**
+ * REST controller implementation for Blog Category management endpoints.
+ */
+@Tag(name = "Category API", description = "Endpoints for managing blog categories")
 @RestController
 @RequestMapping("/blog/category/api/v1.0.0")
 @CrossOrigin(origins = FrontEnd.REACT_URL)
+@RequiredArgsConstructor
+@Log4j2
 public class BlogCategoryApiImpl implements IBlogCategoryApi<BlogCategoryDto> {
 
-    // Field
     private final IBlogCategoryServices<BlogCategoryDto, BlogCategoryEntity> iBlogCategoryServices;
 
-    /// ///////////////////////////////////////////
-    /// SPEED
-    // http://localhost:5555/blog/category/api/v1.0.0/speed
     @GetMapping("/speed")
     @Override
     public ResponseEntity<ApiResult<List<BlogCategoryDto>>> speedData(Integer data) {
         return ResponseEntity.ok(ApiResult.success(iBlogCategoryServices.speedData(data)));
     }
 
-    // DELETE ALL
-    // http://localhost:5555/blog/category/api/v1.0.0/delete-all
     @GetMapping("/delete-all")
     @Override
     public ResponseEntity<ApiResult<List<BlogCategoryDto>>> deleteData() {
         return ResponseEntity.ok(ApiResult.success(iBlogCategoryServices.deleteData()));
     }
 
-    /// ///////////////////////////////////////////
-    /// BLOG CATEGORY CREATE
-    // http://localhost:5555/blog/category/api/v1.0.0/create
     @PostMapping("/create")
     @Override
     public ResponseEntity<ApiResult<?>> objectApiCreate(@Valid @RequestBody BlogCategoryDto blogCategoryDto) {
         try {
-            // 1.YOL: ResponseEntity.status(201).body(...)
-            // 2.YOL: ResponseEntity.status(HttpStatus.CREATED).body(...)
-            // 3.YOL: new ResponseEntity<>(..., HttpStatus.CREATED)
-            // 4.YOL: ResponseEntity.ok().body(...)
-            // 5.YOL:
             return ResponseEntity.ok(ApiResult.success(iBlogCategoryServices.objectServiceCreate(blogCategoryDto)));
         } catch (Exception ex) {
+            log.error("Failed to create blog category: {}", ex.getMessage(), ex);
             return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/category/api/v1.0.0/create"));
         }
     }
 
-    // BLOG_CATEGORY LIST
-    // http://localhost:5555/blog/category/api/v1.0.0/list
     @GetMapping("/list")
     @Override
     public ResponseEntity<ApiResult<List<BlogCategoryDto>>> objectApiList() {
         try {
             return ResponseEntity.ok(ApiResult.success(iBlogCategoryServices.objectServiceList()));
         } catch (Exception ex) {
+            log.error("Failed to list blog categories: {}", ex.getMessage(), ex);
             return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/category/api/v1.0.0/liste"));
         }
     }
 
-    // BLOG_CATEGORY FIND
-    // http://localhost:5555/blog/category/api/v1.0.0/find/1
     @GetMapping("find/{id}")
     @Override
     public ResponseEntity<ApiResult<?>> objectApiFindById(@PathVariable(name = "id") Long id) {
         try {
             return ResponseEntity.ok(ApiResult.success(iBlogCategoryServices.objectServiceFindById(id)));
         } catch (Exception ex) {
-            return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/category/api/v1.0.0/find/1"));
+            log.error("Failed to find blog category {}: {}", id, ex.getMessage(), ex);
+            return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/category/api/v1.0.0/find/" + id));
         }
     }
 
-    // BLOG_CATEGORY UPDATE
-    // http://localhost:5555/blog/category/api/v1.0.0/update/1
     @PutMapping("update/{id}")
     @Override
     public ResponseEntity<ApiResult<?>> objectApiUpdate(@PathVariable(name = "id") Long id, @Valid @RequestBody BlogCategoryDto blogCategoryDto) {
         try {
             return ResponseEntity.ok(ApiResult.success(iBlogCategoryServices.objectServiceUpdate(id, blogCategoryDto)));
         } catch (Exception ex) {
-            return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/category/api/v1.0.0/update/1"));
+            log.error("Failed to update blog category {}: {}", id, ex.getMessage(), ex);
+            return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/category/api/v1.0.0/update/" + id));
         }
     }
 
-    // BLOG_CATEGORY DELETE
-    // http://localhost:5555/blog/category/api/v1.0.0/delete/1
     @DeleteMapping("delete/{id}")
     @Override
     public ResponseEntity<ApiResult<?>> objectApiDelete(@PathVariable(name = "id") Long id) {
         try {
             return ResponseEntity.ok(ApiResult.success(iBlogCategoryServices.objectServiceDelete(id)));
         } catch (Exception ex) {
-            return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/category/api/v1.0.0/delete/1"));
+            log.error("Failed to delete blog category {}: {}", id, ex.getMessage(), ex);
+            return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/blog/category/api/v1.0.0/delete/" + id));
         }
     }
-
-} // end BlogCategoryApiImpl
+}

@@ -18,3 +18,4 @@ public class AiSummaryResponseDto implements Serializable {
     private String provider;
     private String model;
 }
+

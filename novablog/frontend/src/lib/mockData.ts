@@ -166,3 +166,4 @@ export const MOCK_SEMANTIC_RESULTS: BlogSemanticSearchResultDto[] = [
     explanation: 'Önbellekleme ve dağıtık sistemler kavramları ile anlamsal yakınlık tespit edildi.',
   },
 ];
+

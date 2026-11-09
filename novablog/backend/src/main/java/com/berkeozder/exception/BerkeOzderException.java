@@ -1,11 +1,16 @@
 package com.berkeozder.exception;
 
-// Customise Exception
-public class BerkeOzderException extends RuntimeException {
+/**
+ * @deprecated Renamed to {@link NovaBlogException}. Retained for backward compatibility.
+ */
+@Deprecated
+public class BerkeOzderException extends NovaBlogException {
 
-    // Parametreli constructor
     public BerkeOzderException(String message) {
         super(message);
-    } // end BerkeOzderException
-} // end BerkeOzderException
+    }
 
+    public BerkeOzderException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}

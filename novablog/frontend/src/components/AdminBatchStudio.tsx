@@ -233,3 +233,4 @@ export const AdminBatchStudio: React.FC = () => {
     </div>
   );
 };
+

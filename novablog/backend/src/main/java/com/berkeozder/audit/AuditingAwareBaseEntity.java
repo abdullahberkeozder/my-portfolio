@@ -16,42 +16,33 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serializable;
 import java.util.Date;
 
-// LOMBOK
+/**
+ * Base JPA entity supporting automated auditing (creation and last modification timestamps and users).
+ */
 @Getter
 @Setter
-
-// AUDITING
 @EntityListeners(AuditingEntityListener.class)
-
-// SUPER CLASS
 @MappedSuperclass
-@JsonIgnoreProperties(value = { "created_date", "last_user_date" }, allowGetters = true) // Backend'ten Frontend'e bu
-                                                                                         // veriler gitmesin
-abstract public class AuditingAwareBaseEntity implements Serializable {
+@JsonIgnoreProperties(value = { "created_date", "last_user_date" }, allowGetters = true)
+public abstract class AuditingAwareBaseEntity implements Serializable {
 
-    // SERILEŞTIRME
     public static final Long serialVersionUID = 1L;
 
-    // Kim Ekledi
     @CreatedBy
     @Column(name = "created_by")
     @JsonIgnore
     private String createdBy;
 
-    // Kim Ne zaman Ekledi
     @CreatedDate
     @Column(name = "created_date")
     private Date createdDate;
 
-    // Kim Güncelledi
     @LastModifiedBy
     @Column(name = "last_user_by")
     @JsonIgnore
     private String lastUserBy;
 
-    // Kim Ne Zaman Güncelledi
     @LastModifiedDate
     @Column(name = "last_user_date")
     private Date lastUserDate;
-
-} // end AuditingAwareBaseEntity
+}

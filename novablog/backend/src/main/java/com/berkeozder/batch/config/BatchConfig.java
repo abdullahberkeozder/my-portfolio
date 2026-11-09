@@ -21,6 +21,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
+/**
+ * Spring Batch configuration defining jobs and chunk-oriented steps for maintenance and analytics.
+ */
 @Log4j2
 @Configuration
 @RequiredArgsConstructor
@@ -35,10 +38,6 @@ public class BatchConfig {
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final BatchJobExecutionListener jobExecutionListener;
-
-    /// ///////////////////////////////////////////////////////////////////////////////
-    // JOB 1: Soft-Deleted Blogları Kalıcı Olarak Temizleme (Cleanup Job)
-    /// ///////////////////////////////////////////////////////////////////////////////
 
     @Bean
     public Step cleanupSoftDeletedStep(
@@ -62,10 +61,6 @@ public class BatchConfig {
                 .build();
     }
 
-    /// ///////////////////////////////////////////////////////////////////////////////
-    // JOB 2: Yazar Etkileşim ve Performans Analitik Raporu (Author Analytics Job)
-    /// ///////////////////////////////////////////////////////////////////////////////
-
     @Bean
     public Step authorAnalyticsStep(
             AuthorAnalyticsItemReader reader,
@@ -88,4 +83,3 @@ public class BatchConfig {
                 .build();
     }
 }
-

@@ -280,3 +280,4 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
     </div>
   );
 };
+

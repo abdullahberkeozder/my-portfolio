@@ -131,3 +131,4 @@ public class LocalAiEmbeddingClientImpl implements IAiEmbeddingClient {
         }
     }
 }
+

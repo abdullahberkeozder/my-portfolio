@@ -18,3 +18,4 @@ public class AiTagSuggestionResponseDto implements Serializable {
     private double confidenceScore;
     private String provider;
 }
+

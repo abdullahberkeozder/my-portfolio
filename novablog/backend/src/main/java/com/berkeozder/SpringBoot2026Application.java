@@ -12,17 +12,11 @@ import java.util.TimeZone;
 public class SpringBoot2026Application {
 
     @PostConstruct
-    public void examplePostConstruct() {
-        System.out.println("@SpringBootApplication => PostConstruct");
-    }
-
-    @PostConstruct
     public void init() {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Istanbul"));
     }
 
     public static void main(String[] args) {
-        System.setProperty("java.awt.headless", "false");
         SpringApplication.run(SpringBoot2026Application.class, args);
     }
 }

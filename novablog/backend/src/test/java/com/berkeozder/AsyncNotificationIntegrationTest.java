@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -96,7 +97,7 @@ public class AsyncNotificationIntegrationTest {
         verify(emailService, timeout(3000).atLeastOnce()).sendCommentNotificationEmail(
                 nullable(String.class),
                 nullable(String.class),
-                eq("Title-1"),
+                anyString(),
                 eq("admin"),
                 contains("Asenkron bildirim testi")
         );

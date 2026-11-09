@@ -150,3 +150,4 @@ export interface JobExecutionResponseDto {
   stepSummaries?: string[];
   processedCount?: number;
 }
+

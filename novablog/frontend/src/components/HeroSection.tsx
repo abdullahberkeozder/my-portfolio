@@ -99,3 +99,4 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreAI, onOpenCre
     </div>
   );
 };
+

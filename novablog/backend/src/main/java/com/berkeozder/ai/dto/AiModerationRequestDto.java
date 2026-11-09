@@ -17,3 +17,4 @@ public class AiModerationRequestDto implements Serializable {
     @Size(max = 2000, message = "Metin en fazla 2000 karakter olabilir.")
     private String text;
 }
+

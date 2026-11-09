@@ -94,3 +94,4 @@ public class AiApiController {
         return ResponseEntity.ok(ApiResult.success("Toplam " + count + " blog yazısı başarıyla vektör indeksine kaydedildi."));
     }
 }
+

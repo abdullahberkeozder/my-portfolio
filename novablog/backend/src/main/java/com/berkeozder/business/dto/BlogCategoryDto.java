@@ -9,26 +9,23 @@ import lombok.extern.log4j.Log4j2;
 import java.io.Serial;
 import java.io.Serializable;
 
-// LOMBOK
+/**
+ * Data Transfer Object representing a Blog Category.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Log4j2
-
-// BlogCategoryDto(1) - BlogDto(N)
 public class BlogCategoryDto extends AuditingAwareBaseDto implements Serializable {
 
-    // Serial
     @Serial
     private static final long serialVersionUID = 1L;
 
-    // ID
     private Long blogCategoryId;
 
-    // categoryName
     @NotEmpty(message = "{blog.category.validation.constraints.NotNull.message}")
     @Size(min = 5, max = 25, message = "{blog.category.least.validation.constraints.NotNull.message}")
     private String categoryName;
-} // end BlogCategoryDto
+}

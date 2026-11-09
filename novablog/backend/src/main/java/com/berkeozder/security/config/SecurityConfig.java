@@ -45,8 +45,6 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
-    /// ///////////////////////////////////////////////////////////////////
-    /// WHITE_LIST
     private String[] whiteList() {
         return new String[]{
                 "/",
@@ -72,8 +70,6 @@ public class SecurityConfig {
                 "/actuator/**"
         };
     }
-
-    /// ///////////////////////////////////////////////////////////////////
     // SWAGGER_UI
     private String[] swaggerWhiteList() {
         return new String[]{
@@ -83,8 +79,6 @@ public class SecurityConfig {
                 "/v3/api-docs/**",
         };
     }
-
-    /// ///////////////////////////////////////////////////////////////////
     // ADMIN
     private String[] adminMatchers() {
         return new String[]{
@@ -93,8 +87,6 @@ public class SecurityConfig {
                 "/api/admin/**",
         };
     }
-
-    /// ///////////////////////////////////////////////////////////////////
     // SUPERADMIN
     private String[] superAdminMatchers() {
         return new String[]{
@@ -104,7 +96,6 @@ public class SecurityConfig {
         };
     }
 
-    /// ///////////////////////////////////////////////////////////////////
     private RequestMatcher apiRequestMatcher() {
         return request -> {
             String uri = request.getRequestURI();

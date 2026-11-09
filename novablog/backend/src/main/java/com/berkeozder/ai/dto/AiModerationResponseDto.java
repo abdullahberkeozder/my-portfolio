@@ -20,3 +20,4 @@ public class AiModerationResponseDto implements Serializable {
     private String reason;
     private String provider;
 }
+

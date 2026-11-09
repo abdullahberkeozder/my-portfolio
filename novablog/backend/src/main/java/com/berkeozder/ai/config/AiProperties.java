@@ -61,3 +61,4 @@ public class AiProperties {
      */
     private double toxicityThreshold = 0.65;
 }
+

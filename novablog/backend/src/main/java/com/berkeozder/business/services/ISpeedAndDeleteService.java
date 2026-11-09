@@ -2,16 +2,15 @@ package com.berkeozder.business.services;
 
 import java.util.List;
 
-// D: Dto
-// E: Entity
-public interface ISpeedAndDeleteService<D,E> {
+/**
+ * Interface contract for mock speed data generation and batch clearing.
+ *
+ * @param <D> DTO type
+ * @param <E> Entity type
+ */
+public interface ISpeedAndDeleteService<D, E> {
 
-    // SPEED CREATE & DELETE
-    // SPEED DATA
-    public List<D> speedData(Integer data);
+    List<D> speedData(Integer data);
 
-    // DELETE ALL
-    public List<D> deleteData();
-
-
+    List<D> deleteData();
 }

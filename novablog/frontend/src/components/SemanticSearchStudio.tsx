@@ -285,3 +285,4 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
     </div>
   );
 };
+

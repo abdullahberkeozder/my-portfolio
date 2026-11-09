@@ -10,10 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.*;
 
 /**
- * Kurumsal JPA Criteria API Specification Motoru (Adım 14)
- * Tip güvenli, dinamik ve modüler arama/filtreleme sorguları üretir.
- *
- * @author Berke Özder
+ * Type-safe, dynamic JPA Criteria API Specification builder for Blog queries.
  */
 public class BlogSpecification {
 
@@ -92,9 +89,9 @@ public class BlogSpecification {
                 .build());
     }
 
-    /// ///////////////////////////////////////////////////////////////
-    /// MODÜLER CRITERIA API SPECIFICATION PARÇALARI
-    /// ///////////////////////////////////////////////////////////////
+    // =========================================================================
+    // Modular Criteria API Specification Predicates
+    // =========================================================================
 
     /**
      * Başlık, alt başlık (header) veya içerikte arama (Case-insensitive LIKE)

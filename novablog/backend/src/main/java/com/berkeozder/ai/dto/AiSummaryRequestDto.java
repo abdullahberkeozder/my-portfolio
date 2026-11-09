@@ -19,3 +19,4 @@ public class AiSummaryRequestDto implements Serializable {
 
     private String title;
 }
+

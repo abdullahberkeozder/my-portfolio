@@ -200,3 +200,4 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
     </div>
   );
 };
+

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class ObjectMapperBean {
 
     @Bean
-    public ObjectMapper objectMapperBeanMethod(){
+    public ObjectMapper objectMapperBeanMethod() {
         return new ObjectMapper();
     }
-} // end ObjectMapperBean
+}

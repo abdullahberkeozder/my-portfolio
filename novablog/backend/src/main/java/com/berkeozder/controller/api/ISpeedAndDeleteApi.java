@@ -5,14 +5,14 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-// D: Dto
+/**
+ * Controller interface contract for test data seeding and cleanup.
+ *
+ * @param <D> DTO type
+ */
 public interface ISpeedAndDeleteApi<D> {
 
-    // SPEED CREATE & DELETE
-    // SPEED DATA
-    public ResponseEntity<ApiResult<List<D>>>  speedData(Integer data);
+    ResponseEntity<ApiResult<List<D>>> speedData(Integer data);
 
-    // DELETE ALL
-    public ResponseEntity<ApiResult<List<D>>> deleteData();
-
+    ResponseEntity<ApiResult<List<D>>> deleteData();
 }

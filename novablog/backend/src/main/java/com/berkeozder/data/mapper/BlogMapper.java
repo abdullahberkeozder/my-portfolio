@@ -7,6 +7,9 @@ import com.berkeozder.data.entity.TagEntity;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+/**
+ * Mapper converting between BlogEntity and BlogDto.
+ */
 public class BlogMapper implements IGenericMapper<BlogDto, BlogEntity> {
 
     private final BlogCategoryMapper blogCategoryMapper;
@@ -54,5 +57,4 @@ public class BlogMapper implements IGenericMapper<BlogDto, BlogEntity> {
                 .deletedAt(blogDto.getDeletedAt())
                 .build();
     }
-
-} // end BlogMapper
+}

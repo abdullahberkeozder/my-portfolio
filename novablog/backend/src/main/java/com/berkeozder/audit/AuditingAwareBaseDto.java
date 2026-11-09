@@ -5,25 +5,15 @@ import lombok.Setter;
 
 import java.util.Date;
 
-// LOMBOK
+/**
+ * Base DTO containing audit tracking fields.
+ */
 @Getter
 @Setter
+public abstract class AuditingAwareBaseDto {
 
-/**
- * Sisteme giriş yapmış kişinin bir tabloya ekleme, güncelleme yaptığında
- * Database eklenecek kısımdır.
- */
-abstract public class AuditingAwareBaseDto {
-
-    // Kim Ekledi
     private String createdBy;
-
-    // Kim Ne zaman Ekledi
     private Date createdDate;
-
-    // Kim Güncelledi
     private String lastUserBy;
-
-    // Kim Ne Zaman Güncelledi
     private Date lastUserDate;
 }
