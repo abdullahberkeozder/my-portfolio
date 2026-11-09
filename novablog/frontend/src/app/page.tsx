@@ -7,6 +7,7 @@ import { HeroSection } from '@/components/HeroSection';
 import { StoriesCarousel } from '@/components/StoriesCarousel';
 import { ModularArchitectureConsole } from '@/components/ModularArchitectureConsole';
 import { SpotlightBanner } from '@/components/SpotlightBanner';
+import { FieldDemoReels } from '@/components/FieldDemoReels';
 import { PressReviewsCarousel } from '@/components/PressReviewsCarousel';
 import { BlogCard } from '@/components/BlogCard';
 import { BlogDetailModal } from '@/components/BlogDetailModal';
@@ -304,7 +305,17 @@ export default function Home() {
               )}
             </div>
 
-            {/* 3. In the Press / Architecture Reviews Carousel (Direct Ride Also Screenshot 3) */}
+            {/* 3. Field Demo Reels (Direct Ride Also Video Reels with Hover Play, Green Progress & Drag-to-Scroll) */}
+            <FieldDemoReels
+              onOpenArchitectureConsole={(moduleId) => {
+                const el = document.getElementById('modular-architecture-console');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                window.dispatchEvent(new CustomEvent('select-console-module', { detail: moduleId }));
+                window.dispatchEvent(new CustomEvent('run-console-simulation'));
+              }}
+            />
+
+            {/* 4. In the Press / System Bulletin Carousel (Direct Ride Also Screenshot 3 & 4) */}
             <PressReviewsCarousel />
 
             {/* Technical Specifications & System Blueprint (Ride Also Specs Matrix) */}
