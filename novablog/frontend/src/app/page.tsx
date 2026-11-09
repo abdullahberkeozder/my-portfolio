@@ -13,6 +13,7 @@ import { SystemTelemetryModal } from '@/components/SystemTelemetryModal';
 import { SemanticSearchStudio } from '@/components/SemanticSearchStudio';
 import { AiPlayground } from '@/components/AiPlayground';
 import { AdminBatchStudio } from '@/components/AdminBatchStudio';
+import { SystemBlueprintSection } from '@/components/SystemBlueprintSection';
 import { Footer } from '@/components/Footer';
 import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
@@ -255,6 +256,9 @@ export default function Home() {
                 </div>
               )}
             </div>
+
+            {/* Technical Specifications & System Blueprint (Ride Also Specs Matrix) */}
+            <SystemBlueprintSection />
           </div>
         )}
 

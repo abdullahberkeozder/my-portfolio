@@ -93,6 +93,9 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
       <div className="p-6 pb-3">
         <div className="flex items-center justify-between gap-2 mb-4">
           <div className="flex items-center gap-2">
+            <span className="text-[10px] font-mono font-bold text-zinc-400 dark:text-zinc-500">
+              #{String(blogId || 1).padStart(3, '0')}
+            </span>
             <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-zinc-900/5 dark:bg-white/10 text-zinc-900 dark:text-zinc-200 border border-black/10 dark:border-white/10">
               {blog.category?.categoryName || 'SİSTEM // GENEL'}
             </span>
