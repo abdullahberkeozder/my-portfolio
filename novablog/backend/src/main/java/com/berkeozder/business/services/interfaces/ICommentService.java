@@ -16,5 +16,9 @@ public interface ICommentService {
     void restoreComment(Long commentId);
 
     List<CommentResponseDto> findDeletedComments();
+
+    CommentResponseDto approveComment(Long commentId);
+
+    CommentResponseDto flagComment(Long commentId, String reason);
 }
 

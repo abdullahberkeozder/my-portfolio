@@ -80,11 +80,14 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
     public BlogDto entityToDto(BlogEntity blogEntity) {
         if (blogEntity == null) return null;
         BlogDto dto = blogMapper.toDto(blogEntity);
-        if (dto != null && metricBufferService != null && dto.getBlogId() != null) {
-            long bufferedViews = metricBufferService.getBufferedViews(dto.getBlogId());
-            long bufferedLikes = metricBufferService.getBufferedLikes(dto.getBlogId());
-            dto.setViewsCount((dto.getViewsCount() != null ? dto.getViewsCount() : 0L) + bufferedViews);
-            dto.setLikesCount((dto.getLikesCount() != null ? dto.getLikesCount() : 0L) + bufferedLikes);
+        if (dto != null) {
+            dto.setLifecycleStatus(blogEntity.getLifecycleStatus());
+            if (metricBufferService != null && dto.getBlogId() != null) {
+                long bufferedViews = metricBufferService.getBufferedViews(dto.getBlogId());
+                long bufferedLikes = metricBufferService.getBufferedLikes(dto.getBlogId());
+                dto.setViewsCount((dto.getViewsCount() != null ? dto.getViewsCount() : 0L) + bufferedViews);
+                dto.setLikesCount((dto.getLikesCount() != null ? dto.getLikesCount() : 0L) + bufferedLikes);
+            }
         }
         return dto;
     }
@@ -464,6 +467,16 @@ public class BlogServicesImpl implements IBlogServices<BlogDto, BlogEntity> {
     @Transactional(readOnly = true)
     public List<BlogDto> findDeletedBlogs() {
         return iBlogRepository.findDeletedBlogsNative()
+                .stream()
+                .map(this::entityToDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BlogDto> findSoftDeletedBlogsInRetention(int retentionDays) {
+        Date cutoffDate = new Date(System.currentTimeMillis() - (retentionDays * 24L * 60 * 60 * 1000L));
+        return iBlogRepository.findSoftDeletedBlogsInRetentionNative(cutoffDate)
                 .stream()
                 .map(this::entityToDto)
                 .toList();

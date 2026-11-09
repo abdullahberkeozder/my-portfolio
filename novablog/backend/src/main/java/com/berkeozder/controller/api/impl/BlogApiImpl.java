@@ -217,6 +217,13 @@ public class BlogApiImpl implements IBlogApi<BlogDto> {
         return ResponseEntity.ok(ApiResult.success(iBlogServices.findDeletedBlogs()));
     }
 
+    @Operation(summary = "List soft-deleted blogs within retention window", description = "Lists restorable blogs deleted within the retention window (default 30 days).")
+    @GetMapping(value = "/deleted/retention")
+    public ResponseEntity<ApiResult<List<BlogDto>>> findSoftDeletedBlogsInRetention(
+            @RequestParam(name = "days", defaultValue = "30") int days) {
+        return ResponseEntity.ok(ApiResult.success(iBlogServices.findSoftDeletedBlogsInRetention(days)));
+    }
+
     @Operation(summary = "Bulk batch operations on blogs",
             description = "Performs bulk actions (soft delete, restore, change category, add tag, hard delete) in a single transaction.")
     @PostMapping(value = "/bulk", consumes = MediaType.APPLICATION_JSON_VALUE)

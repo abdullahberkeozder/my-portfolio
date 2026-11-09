@@ -100,4 +100,40 @@ public class BlogEntity extends AuditingAwareBaseEntity {
         tags.remove(tag);
         tag.getBlogs().remove(this);
     }
+
+    // ==========================================
+    // LIFECYCLE STATE MACHINE METHODS (Adım 1)
+    // ==========================================
+
+    public void softDelete() {
+        if (this.isDeleted) {
+            throw new IllegalStateException("Blog zaten silinmiş durumda. BlogId: " + this.blogId);
+        }
+        this.isDeleted = true;
+        this.deletedAt = new Date();
+    }
+
+    public void restore() {
+        if (!this.isDeleted) {
+            throw new IllegalStateException("Blog zaten aktif durumda. BlogId: " + this.blogId);
+        }
+        this.isDeleted = false;
+        this.deletedAt = null;
+    }
+
+    public BlogLifecycleStatus getLifecycleStatus() {
+        return getLifecycleStatus(30L);
+    }
+
+    public BlogLifecycleStatus getLifecycleStatus(long retentionDays) {
+        if (!this.isDeleted) {
+            return BlogLifecycleStatus.ACTIVE;
+        }
+        if (this.deletedAt == null) {
+            return BlogLifecycleStatus.SOFT_DELETED;
+        }
+        long ageMs = System.currentTimeMillis() - this.deletedAt.getTime();
+        long retentionMs = retentionDays * 24L * 60 * 60 * 1000L;
+        return (ageMs >= retentionMs) ? BlogLifecycleStatus.PURGE_ELIGIBLE : BlogLifecycleStatus.SOFT_DELETED;
+    }
 }

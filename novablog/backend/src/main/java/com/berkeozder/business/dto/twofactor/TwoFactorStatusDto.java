@@ -1,5 +1,6 @@
 package com.berkeozder.business.dto.twofactor;
 
+import com.berkeozder.data.entity.TwoFactorEnrollmentStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,8 @@ public class TwoFactorStatusDto {
 
     @JsonProperty("is2faEnabled")
     private boolean is2faEnabled;
+
+    private TwoFactorEnrollmentStatus enrollmentStatus;
 
     private int remainingBackupCodes;
 

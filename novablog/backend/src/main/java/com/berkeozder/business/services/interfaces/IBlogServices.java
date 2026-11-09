@@ -29,6 +29,8 @@ public interface IBlogServices<D,E> extends
 
     java.util.List<D> findDeletedBlogs();
 
+    java.util.List<D> findSoftDeletedBlogsInRetention(int retentionDays);
+
     com.berkeozder.business.dto.bulk.BulkOperationResponseDto executeBulkOperation(com.berkeozder.business.dto.bulk.BulkOperationRequestDto request);
 
     // Concurrency & Engagement (Write-Behind Metrics - Adım 24)

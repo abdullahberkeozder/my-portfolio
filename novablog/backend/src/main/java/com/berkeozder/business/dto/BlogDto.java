@@ -1,6 +1,7 @@
 package com.berkeozder.business.dto;
 
 import com.berkeozder.audit.AuditingAwareBaseDto;
+import com.berkeozder.data.entity.BlogLifecycleStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -54,6 +55,8 @@ public class BlogDto extends AuditingAwareBaseDto implements Serializable {
     @JsonProperty("isDeleted")
     private boolean isDeleted;
     private Date deletedAt;
+
+    private BlogLifecycleStatus lifecycleStatus;
 
     private Long version;
 

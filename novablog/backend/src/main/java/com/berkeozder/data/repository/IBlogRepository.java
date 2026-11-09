@@ -50,6 +50,9 @@ public interface IBlogRepository extends JpaRepository<BlogEntity, Long>, JpaSpe
     @Query(value = "SELECT * FROM blogs WHERE is_deleted = true AND (deleted_at IS NULL OR deleted_at < :cutoffDate)", nativeQuery = true)
     List<BlogEntity> findSoftDeletedBlogsOlderThanNative(@Param("cutoffDate") java.util.Date cutoffDate);
 
+    @Query(value = "SELECT * FROM blogs WHERE is_deleted = true AND deleted_at >= :cutoffDate", nativeQuery = true)
+    List<BlogEntity> findSoftDeletedBlogsInRetentionNative(@Param("cutoffDate") java.util.Date cutoffDate);
+
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM blog_tags WHERE blog_id IN (:blogIds)", nativeQuery = true)

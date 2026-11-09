@@ -149,9 +149,11 @@ public class SecurityConfig {
                         .requestMatchers("/blog/api/v1.0.0/delete-all", "/blog/category/api/v1.0.0/delete-all")
                         .hasRole("SUPER_ADMIN")
 
-                        // Yorumlar (Comments): Silinmişleri listeleme ve restore ADMIN yetkisindedir
+                        // Yorumlar (Comments): Silinmişleri listeleme, approve, flag ve restore ADMIN yetkisindedir
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/blog/api/v1.0.0/comments/deleted").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/comments/*/restore").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/comments/*/approve").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/comments/*/flag").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/blog/api/v1.0.0/comments/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/blog/api/v1.0.0/comments/**").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/blog/api/v1.0.0/comments/**").authenticated()
@@ -162,7 +164,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/blog/api/v1.0.0/tags/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
 
                         // Silinmiş Blogları Listeleme ve Geri Yükleme (Sadece ADMIN veya SUPER_ADMIN)
-                        .requestMatchers(HttpMethod.GET, "/blog/api/v1.0.0/deleted").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/blog/api/v1.0.0/deleted/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/blog/api/v1.0.0/restore/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
 
                         // Dışa Aktarma / Raporlama (Export Excel & CSV - Adım 13): Sadece ADMIN veya SUPER_ADMIN

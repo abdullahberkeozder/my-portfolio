@@ -14,6 +14,7 @@ import com.berkeozder.data.repository.IRoleRepository;
 import com.berkeozder.data.repository.IUserRepository;
 import com.berkeozder.exception._400_BadRequestException;
 import com.berkeozder.exception._404_NotFoundException;
+import com.berkeozder.security.jwt.AuthState;
 import com.berkeozder.security.jwt.JwtTokenProvider;
 import com.berkeozder.security.userdetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -102,6 +103,7 @@ public class AuthServiceImpl implements IAuthService {
                 .username(savedUser.getUsername())
                 .email(savedUser.getEmail())
                 .roles(roleNames)
+                .authState(AuthState.AUTHENTICATED)
                 .build();
     }
 
@@ -128,6 +130,7 @@ public class AuthServiceImpl implements IAuthService {
             return JwtResponseDto.builder()
                     .is2faRequired(true)
                     .preAuthToken(preAuthToken)
+                    .authState(AuthState.PRE_AUTH_2FA_REQUIRED)
                     .userId(user.getUserId())
                     .username(user.getUsername())
                     .email(user.getEmail())
@@ -151,6 +154,7 @@ public class AuthServiceImpl implements IAuthService {
                 .username(userDetails.getUsername())
                 .email(userDetails.getEmail())
                 .roles(roles)
+                .authState(AuthState.AUTHENTICATED)
                 .build();
     }
 
@@ -180,6 +184,7 @@ public class AuthServiceImpl implements IAuthService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .roles(roles)
+                .authState(AuthState.AUTHENTICATED)
                 .build();
     }
 

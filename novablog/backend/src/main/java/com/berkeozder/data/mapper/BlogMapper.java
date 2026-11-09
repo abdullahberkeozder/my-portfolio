@@ -36,6 +36,7 @@ public class BlogMapper implements IGenericMapper<BlogDto, BlogEntity> {
                 .hasEmbedding(blogEntity.getEmbedding() != null && !blogEntity.getEmbedding().isBlank())
                 .isDeleted(blogEntity.isDeleted())
                 .deletedAt(blogEntity.getDeletedAt())
+                .lifecycleStatus(blogEntity.getLifecycleStatus())
                 .version(blogEntity.getVersion())
                 .viewsCount(blogEntity.getViewsCount() != null ? blogEntity.getViewsCount() : 0L)
                 .likesCount(blogEntity.getLikesCount() != null ? blogEntity.getLikesCount() : 0L)

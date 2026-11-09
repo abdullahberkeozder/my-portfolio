@@ -1,5 +1,10 @@
 // NovaBlog Enterprise - TypeScript DTO Definitions matching Spring Boot Backend
 
+export type BlogLifecycleStatus = 'ACTIVE' | 'SOFT_DELETED' | 'PURGE_ELIGIBLE';
+export type CommentModerationStatus = 'PENDING_MODERATION' | 'APPROVED' | 'FLAGGED_TOXIC' | 'SOFT_DELETED';
+export type TwoFactorEnrollmentStatus = 'DISABLED' | 'PENDING_VERIFICATION' | 'ENABLED';
+export type AuthState = 'ANONYMOUS' | 'PRE_AUTH_2FA_REQUIRED' | 'AUTHENTICATED' | 'REFRESHING' | 'REVOKED';
+
 export interface ApiResult<T> {
   status: 'SUCCESS' | 'ERROR';
   message?: string;
@@ -43,6 +48,7 @@ export interface BlogDto {
   aiSummary?: string;
   hasVectorEmbedding?: boolean;
   hasEmbedding?: boolean;
+  lifecycleStatus?: BlogLifecycleStatus;
   isLiked?: boolean; // Client-side Optimistic UI state
 }
 
@@ -122,6 +128,7 @@ export interface CommentResponseDto {
   authorAvatar?: string;
   createdAt: string;
   isApproved: boolean;
+  moderationStatus?: CommentModerationStatus;
   sentiment?: 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE';
   moderationReason?: string;
   isOptimistic?: boolean; // Optimistic UI pending indicator
@@ -139,7 +146,14 @@ export interface UserProfileDto {
   email: string;
   role: 'ROLE_USER' | 'ROLE_ADMIN' | 'ROLE_SUPER_ADMIN';
   twoFactorEnabled: boolean;
+  twoFactorEnrollmentStatus?: TwoFactorEnrollmentStatus;
   createdAt?: string;
+}
+
+export interface TwoFactorStatusDto {
+  is2faEnabled: boolean;
+  enrollmentStatus?: TwoFactorEnrollmentStatus;
+  remainingBackupCodes: number;
 }
 
 export interface JwtResponseDto {
@@ -151,6 +165,7 @@ export interface JwtResponseDto {
   name: string;
   roles: string[];
   twoFactorRequired?: boolean;
+  authState?: AuthState;
 }
 
 export interface JobExecutionResponseDto {

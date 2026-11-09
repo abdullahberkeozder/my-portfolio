@@ -61,5 +61,49 @@ public class CommentEntity extends AuditingAwareBaseEntity {
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
+
+    // ==========================================
+    // MODERATION STATE MACHINE METHODS (Adım 2)
+    // ==========================================
+
+    public CommentModerationStatus getModerationStatus() {
+        if (this.isDeleted) {
+            return CommentModerationStatus.SOFT_DELETED;
+        }
+        if (Boolean.TRUE.equals(this.isAiModerated)) {
+            return this.isApproved ? CommentModerationStatus.APPROVED : CommentModerationStatus.FLAGGED_TOXIC;
+        }
+        return this.isApproved ? CommentModerationStatus.APPROVED : CommentModerationStatus.PENDING_MODERATION;
+    }
+
+    public void approve() {
+        if (this.isDeleted) {
+            throw new IllegalStateException("Silinmiş yorum onaylanamaz. CommentId: " + this.commentId);
+        }
+        this.isApproved = true;
+    }
+
+    public void flagToxic(String reason, double toxicityScore, String sentiment) {
+        this.isApproved = false;
+        this.isAiModerated = true;
+        this.toxicityScore = toxicityScore;
+        this.sentiment = (sentiment != null && !sentiment.isBlank()) ? sentiment : "NEGATIVE";
+    }
+
+    public void softDelete() {
+        if (this.isDeleted) {
+            throw new IllegalStateException("Yorum zaten silinmiş durumda. CommentId: " + this.commentId);
+        }
+        this.isDeleted = true;
+        this.deletedAt = new Date();
+    }
+
+    public void restore() {
+        if (!this.isDeleted) {
+            throw new IllegalStateException("Yorum zaten aktif durumda. CommentId: " + this.commentId);
+        }
+        this.isDeleted = false;
+        this.deletedAt = null;
+    }
 }
 

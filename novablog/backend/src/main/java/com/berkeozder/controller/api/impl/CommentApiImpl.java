@@ -64,5 +64,21 @@ public class CommentApiImpl {
     public ResponseEntity<ApiResult<List<CommentResponseDto>>> findDeletedComments() {
         return ResponseEntity.ok(ApiResult.success(commentService.findDeletedComments()));
     }
+
+    @Operation(summary = "Yorumu onayla (Sadece ADMIN/SUPER_ADMIN)", description = "Yorumu aktif ve onaylı duruma geçirir.")
+    @PostMapping("/{commentId}/approve")
+    public ResponseEntity<ApiResult<CommentResponseDto>> approveComment(@PathVariable Long commentId) {
+        CommentResponseDto response = commentService.approveComment(commentId);
+        return ResponseEntity.ok(ApiResult.success(response));
+    }
+
+    @Operation(summary = "Yorumu karantinaya al / bayrakla (Sadece ADMIN/SUPER_ADMIN)", description = "Yorumu sakıncalı olarak işaretler ve karantinaya alır.")
+    @PostMapping("/{commentId}/flag")
+    public ResponseEntity<ApiResult<CommentResponseDto>> flagComment(
+            @PathVariable Long commentId,
+            @RequestParam(name = "reason", defaultValue = "Moderatör tarafından sakıncalı bulundu") String reason) {
+        CommentResponseDto response = commentService.flagComment(commentId, reason);
+        return ResponseEntity.ok(ApiResult.success(response));
+    }
 }
 

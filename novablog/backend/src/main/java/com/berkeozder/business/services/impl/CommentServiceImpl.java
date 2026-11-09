@@ -158,6 +158,28 @@ public class CommentServiceImpl implements ICommentService {
                 .toList();
     }
 
+    @Override
+    @Transactional
+    public CommentResponseDto approveComment(Long commentId) {
+        CommentEntity comment = iCommentRepository.findById(commentId)
+                .orElseThrow(() -> new _404_NotFoundException("Onaylanacak yorum bulunamadı. ID: " + commentId));
+        comment.approve();
+        CommentEntity saved = iCommentRepository.save(comment);
+        log.info("Yorum manuel olarak onaylandı. ID: {}", commentId);
+        return mapToResponseDto(saved);
+    }
+
+    @Override
+    @Transactional
+    public CommentResponseDto flagComment(Long commentId, String reason) {
+        CommentEntity comment = iCommentRepository.findById(commentId)
+                .orElseThrow(() -> new _404_NotFoundException("Karantinaya alınacak yorum bulunamadı. ID: " + commentId));
+        comment.flagToxic(reason, 1.0, "NEGATIVE");
+        CommentEntity saved = iCommentRepository.save(comment);
+        log.warn("Yorum manuel olarak karantinaya alındı. ID: {}, Sebep: {}", commentId, reason);
+        return mapToResponseDto(saved);
+    }
+
     private CommentResponseDto mapToResponseDto(CommentEntity entity) {
         String fullName = "";
         if (entity.getUser() != null) {
@@ -180,6 +202,7 @@ public class CommentServiceImpl implements ICommentService {
                 .isAiModerated(entity.getIsAiModerated())
                 .sentiment(entity.getSentiment())
                 .toxicityScore(entity.getToxicityScore())
+                .moderationStatus(entity.getModerationStatus())
                 .createdDate(entity.getCreatedDate())
                 .isDeleted(entity.isDeleted())
                 .deletedAt(entity.getDeletedAt())

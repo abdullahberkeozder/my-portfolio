@@ -1,5 +1,6 @@
 package com.berkeozder.business.dto.comment;
 
+import com.berkeozder.data.entity.CommentModerationStatus;
 import lombok.*;
 
 import java.io.Serializable;
@@ -25,6 +26,7 @@ public class CommentResponseDto implements Serializable {
     private Boolean isAiModerated;
     private String sentiment;
     private Double toxicityScore;
+    private CommentModerationStatus moderationStatus;
 
     // Soft Delete Bilgisi
     @com.fasterxml.jackson.annotation.JsonProperty("isDeleted")

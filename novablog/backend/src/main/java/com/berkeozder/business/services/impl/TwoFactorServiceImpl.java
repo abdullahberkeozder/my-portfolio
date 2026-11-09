@@ -6,11 +6,13 @@ import com.berkeozder.business.dto.twofactor.TwoFactorSetupResponseDto;
 import com.berkeozder.business.dto.twofactor.TwoFactorStatusDto;
 import com.berkeozder.business.dto.twofactor.TwoFactorVerifyRequestDto;
 import com.berkeozder.business.services.interfaces.ITwoFactorService;
+import com.berkeozder.data.entity.TwoFactorEnrollmentStatus;
 import com.berkeozder.data.entity.UserEntity;
 import com.berkeozder.data.repository.IUserRepository;
 import com.berkeozder.exception._400_BadRequestException;
 import com.berkeozder.exception._401_UnAuthorizedRequestException;
 import com.berkeozder.exception._404_NotFoundException;
+import com.berkeozder.security.jwt.AuthState;
 import com.berkeozder.security.jwt.JwtTokenProvider;
 import com.berkeozder.security.twofactor.TotpService;
 import lombok.RequiredArgsConstructor;
@@ -46,8 +48,8 @@ public class TwoFactorServiceImpl implements ITwoFactorService {
         String otpAuthUrl = totpService.getOtpAuthUrl(user.getUsername(), secret);
         String qrCodeDataUri = totpService.generateQrCodeDataUri(otpAuthUrl, 250, 250);
 
-        // Henüz doğrulanmadı (is2faEnabled=false), ancak gizli anahtar geçici olarak kullanıcıya atanır
-        user.setTwoFactorSecret(secret);
+        // Durum geçişi: DISABLED -> PENDING_VERIFICATION (Henüz doğrulanmadı)
+        user.initiateTwoFactorEnrollment(secret);
         userRepository.save(user);
 
         log.info("2FA kurulum anahtarı üretildi: {}", user.getUsername());
@@ -75,8 +77,8 @@ public class TwoFactorServiceImpl implements ITwoFactorService {
         }
 
         List<String> backupCodes = totpService.generateBackupCodes(8);
-        user.set2faEnabled(true);
-        user.setBackupCodes(String.join(",", backupCodes));
+        // Durum geçişi: PENDING_VERIFICATION -> ENABLED
+        user.confirmTwoFactorEnrollment(backupCodes);
         userRepository.save(user);
 
         log.info("2FA başarıyla etkinleştirildi: {}", user.getUsername());
@@ -92,7 +94,7 @@ public class TwoFactorServiceImpl implements ITwoFactorService {
     public void disable2fa(String username, String code) {
         UserEntity user = findUserByUsername(username);
 
-        if (!user.is2faEnabled()) {
+        if (user.getTwoFactorEnrollmentStatus() != TwoFactorEnrollmentStatus.ENABLED) {
             throw new _400_BadRequestException("2FA bu hesap için zaten etkin değildir.");
         }
 
@@ -101,9 +103,8 @@ public class TwoFactorServiceImpl implements ITwoFactorService {
             throw new _400_BadRequestException("2FA devre dışı bırakılamadı: Girilen doğrulama kodu hatalı.");
         }
 
-        user.set2faEnabled(false);
-        user.setTwoFactorSecret(null);
-        user.setBackupCodes(null);
+        // Durum geçişi: ENABLED -> DISABLED
+        user.disableTwoFactor();
         userRepository.save(user);
 
         log.info("2FA devre dışı bırakıldı: {}", user.getUsername());
@@ -131,13 +132,11 @@ public class TwoFactorServiceImpl implements ITwoFactorService {
         boolean isTotpValid = totpService.verifyCode(user.getTwoFactorSecret(), cleanCode);
         boolean isBackupCodeValid = false;
 
-        if (!isTotpValid && user.getBackupCodes() != null && !user.getBackupCodes().isBlank()) {
-            List<String> codes = new ArrayList<>(Arrays.asList(user.getBackupCodes().split(",")));
-            if (codes.remove(cleanCode.toUpperCase())) {
-                isBackupCodeValid = true;
-                user.setBackupCodes(String.join(",", codes));
+        if (!isTotpValid) {
+            isBackupCodeValid = user.consumeBackupCode(cleanCode);
+            if (isBackupCodeValid) {
                 userRepository.save(user);
-                log.info("Kullanıcı kurtarma koduyla giriş yaptı: {}. Kalan kurtarma kodu: {}", username, codes.size());
+                log.info("Kullanıcı kurtarma koduyla giriş yaptı: {}. Kalan kurtarma kodu: {}", username, user.getRemainingBackupCodesCount());
             }
         }
 
@@ -145,7 +144,7 @@ public class TwoFactorServiceImpl implements ITwoFactorService {
             throw new _400_BadRequestException("Geçersiz 2FA kodu veya kurtarma kodu.");
         }
 
-        // Başarılı doğrulama: Tam yetkili JWT üret
+        // Başarılı doğrulama: Tam yetkili JWT üret (AuthState: PRE_AUTH_2FA_REQUIRED -> AUTHENTICATED)
         List<String> roles = user.getRoles().stream()
                 .map(role -> role.getRoleName().name())
                 .collect(Collectors.toList());
@@ -163,6 +162,7 @@ public class TwoFactorServiceImpl implements ITwoFactorService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .roles(roles)
+                .authState(AuthState.AUTHENTICATED)
                 .is2faRequired(false)
                 .build();
     }
@@ -171,14 +171,11 @@ public class TwoFactorServiceImpl implements ITwoFactorService {
     @Transactional(readOnly = true)
     public TwoFactorStatusDto get2faStatus(String username) {
         UserEntity user = findUserByUsername(username);
-        int remaining = 0;
-        if (user.getBackupCodes() != null && !user.getBackupCodes().isBlank()) {
-            remaining = user.getBackupCodes().split(",").length;
-        }
 
         return TwoFactorStatusDto.builder()
                 .is2faEnabled(user.is2faEnabled())
-                .remainingBackupCodes(remaining)
+                .enrollmentStatus(user.getTwoFactorEnrollmentStatus())
+                .remainingBackupCodes(user.getRemainingBackupCodesCount())
                 .build();
     }
 
@@ -187,7 +184,7 @@ public class TwoFactorServiceImpl implements ITwoFactorService {
     public TwoFactorRecoveryCodesDto regenerateBackupCodes(String username, String code) {
         UserEntity user = findUserByUsername(username);
 
-        if (!user.is2faEnabled()) {
+        if (user.getTwoFactorEnrollmentStatus() != TwoFactorEnrollmentStatus.ENABLED) {
             throw new _400_BadRequestException("Kurtarma kodları üretilemedi: 2FA etkin değil.");
         }
 
@@ -197,7 +194,7 @@ public class TwoFactorServiceImpl implements ITwoFactorService {
         }
 
         List<String> newBackupCodes = totpService.generateBackupCodes(8);
-        user.setBackupCodes(String.join(",", newBackupCodes));
+        user.confirmTwoFactorEnrollment(newBackupCodes);
         userRepository.save(user);
 
         log.info("Yeni kurtarma kodları üretildi: {}", user.getUsername());

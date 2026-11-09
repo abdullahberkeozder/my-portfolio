@@ -1,5 +1,6 @@
 package com.berkeozder.business.dto.auth;
 
+import com.berkeozder.security.jwt.AuthState;
 import lombok.*;
 
 import java.util.List;
@@ -21,6 +22,9 @@ public class JwtResponseDto {
     private String username;
     private String email;
     private List<String> roles;
+
+    @Builder.Default
+    private AuthState authState = AuthState.AUTHENTICATED;
 
     @com.fasterxml.jackson.annotation.JsonProperty("is2faRequired")
     @Builder.Default
