@@ -90,8 +90,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onOpenArchitectureConsole,
 }) => {
   const [activeSlide, setActiveSlide] = useState<0 | 1 | 2>(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [slideProgress, setSlideProgress] = useState(0);
   const [telemetryTick, setTelemetryTick] = useState(0);
 
+  // Background telemetry tick
   useEffect(() => {
     const timer = setInterval(() => {
       setTelemetryTick((prev) => (prev + 1) % 100);
@@ -99,12 +102,41 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     return () => clearInterval(timer);
   }, []);
 
+  // Automatic 6-second rotation timer with smooth progress and hover pause
+  useEffect(() => {
+    if (isPaused) return;
+    const intervalMs = 60;
+    const totalMs = 6000;
+    const step = 100 / (totalMs / intervalMs);
+
+    const timer = setInterval(() => {
+      setSlideProgress((prev) => {
+        if (prev >= 100) {
+          setActiveSlide((s) => ((s + 1) % 3) as 0 | 1 | 2);
+          return 0;
+        }
+        return prev + step;
+      });
+    }, intervalMs);
+
+    return () => clearInterval(timer);
+  }, [isPaused, activeSlide]);
+
+  const handleSelectSlide = (idx: 0 | 1 | 2) => {
+    setActiveSlide(idx);
+    setSlideProgress(0);
+  };
+
   const slide = SLIDES[activeSlide];
   const simulatedIops = 11400 + ((telemetryTick * 37) % 850);
   const bufferDelta = 12 + ((telemetryTick * 3) % 24);
 
   return (
-    <section className="relative overflow-hidden border-b border-black/[0.08] dark:border-white/[0.08] bg-tech-grid">
+    <section
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      className="relative overflow-hidden border-b border-black/[0.08] dark:border-white/[0.08] bg-tech-grid transition-colors duration-300"
+    >
       {/* Ambient Lighting Gradients */}
       <div className="absolute top-0 right-1/4 w-[500px] h-[350px] bg-gradient-to-br from-[#d4f933]/10 via-cyan-500/5 to-transparent blur-[140px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[450px] h-[250px] bg-gradient-to-tr from-[#8c52ff]/15 via-indigo-500/5 to-transparent blur-[120px] pointer-events-none" />
@@ -113,7 +145,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         {/* Main Grid: Split Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column: Industrial Narrative & CTAs (7 cols) */}
-          <div className="lg:col-span-7 space-y-6">
+          <div key={`narrative-${activeSlide}`} className="lg:col-span-7 space-y-6 ride-also-drawer-anim">
             {/* Spec Tag */}
             <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-zinc-900/5 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-xs font-mono">
               <span className="w-2 h-2 rounded-full bg-[#d4f933] shadow-[0_0_8px_#d4f933] animate-pulse" />
@@ -147,7 +179,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   else if (activeSlide === 2 && onOpenArchitectureConsole) onOpenArchitectureConsole();
                   else onExploreAI();
                 }}
-                className="group relative inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#d4f933] hover:bg-[#c4e82b] text-black font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-lg shadow-[#d4f933]/25 hover:shadow-[#d4f933]/40 active:scale-95 cursor-pointer"
+                className="group relative inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#d4f933] hover:bg-[#c4e82b] text-black font-mono font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-lg shadow-[#d4f933]/25 hover:shadow-[#d4f933]/40 active:scale-95 cursor-pointer btn-tactile"
               >
                 {slide.primaryIcon === 'cpu' && <Cpu className="w-4 h-4 text-black" />}
                 {slide.primaryIcon === 'terminal' && <Terminal className="w-4 h-4 text-black" />}
@@ -159,7 +191,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               {/* Secondary Liquid Glass Capsule Pill */}
               <button
                 onClick={onOpenCreateModal}
-                className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full glass-liquid hover:border-[#8c52ff]/50 text-zinc-900 dark:text-zinc-100 font-mono font-medium text-xs uppercase tracking-wider transition-all duration-300 active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full glass-liquid hover:border-[#8c52ff]/50 text-zinc-900 dark:text-zinc-100 font-mono font-medium text-xs uppercase tracking-wider transition-all duration-300 active:scale-95 cursor-pointer btn-tactile"
               >
                 <Sparkles className="w-4 h-4 text-[#8c52ff] dark:text-[#a259ff]" />
                 <span>{slide.secondaryCta}</span>
@@ -185,7 +217,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
           {/* Right Column: Ride Also Product Rendering & Telemetry HUD (5 cols) */}
           <div className="lg:col-span-5">
-            <div className="relative rounded-3xl p-6 glass-liquid border border-black/10 dark:border-white/10 shadow-2xl space-y-5 overflow-hidden">
+            <div className="relative rounded-3xl p-6 glass-liquid border border-black/10 dark:border-white/10 shadow-2xl space-y-5 overflow-hidden hairline-glow">
               {/* HUD Header */}
               <div className="flex items-center justify-between pb-3 border-b border-black/[0.08] dark:border-white/[0.08] text-xs font-mono">
                 <div className="flex items-center gap-2">
@@ -200,14 +232,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
               </div>
 
-              {/* Hardware Visual Preview (Ride Also Product Rendering) */}
-              <div className="relative rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 aspect-[16/9] bg-zinc-950">
+              {/* Hardware Visual Preview (Ride Also Product Rendering) with Smooth Zoom Transition */}
+              <div key={`visual-${activeSlide}`} className="relative rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 aspect-[16/9] bg-zinc-950 ride-also-drawer-anim">
                 <Image
                   src={slide.image}
                   alt={slide.title1}
                   fill
                   priority
-                  className="object-cover object-center transform hover:scale-105 transition-transform duration-700"
+                  className="object-cover object-center transform hover:scale-105 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none" />
 
@@ -235,7 +267,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
                 <div className="w-full h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-[#d4f933] to-emerald-400 transition-all duration-1000"
+                    className="h-full bg-gradient-to-r from-[#d4f933] to-emerald-400 transition-all duration-700"
                     style={{ width: `${65 + ((telemetryTick * 17) % 30)}%` }}
                   />
                 </div>
@@ -258,7 +290,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
                 <div className="w-full h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
                   <div
-                    className="h-full bg-rose-500 transition-all duration-1000"
+                    className="h-full bg-rose-500 transition-all duration-700"
                     style={{ width: `${25 + (bufferDelta * 2.5)}%` }}
                   />
                 </div>
@@ -304,25 +336,35 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
         {/* 5. The Signature Ride Also Bottom Slider Indicator Capsule (Screenshots 1 & 5) */}
         <div className="flex justify-center mt-10">
-          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/80 dark:bg-zinc-900/90 backdrop-blur-md border border-white/10 shadow-lg">
-            {SLIDES.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setActiveSlide(idx as 0 | 1 | 2)}
-                className={`transition-all duration-300 cursor-pointer ${
-                  activeSlide === idx
-                    ? 'w-6 h-2.5 rounded-full bg-[#d4f933] shadow-[0_0_8px_#d4f933]'
-                    : 'w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white/80'
-                }`}
-                title={`Slayt 0${idx + 1}`}
-              />
-            ))}
+          <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-black/85 dark:bg-zinc-900/90 backdrop-blur-md border border-white/10 shadow-2xl">
+            {SLIDES.map((_, idx) => {
+              const isActive = activeSlide === idx;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => handleSelectSlide(idx as 0 | 1 | 2)}
+                  className="relative group transition-all duration-300 cursor-pointer p-0.5"
+                  title={`Slayt 0${idx + 1}`}
+                >
+                  {isActive ? (
+                    <div className="w-8 h-2.5 rounded-full bg-zinc-800 overflow-hidden relative shadow-[0_0_10px_#d4f933]/50">
+                      <div
+                        className="h-full bg-[#d4f933] transition-all duration-75"
+                        style={{ width: `${slideProgress}%` }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-2.5 h-2.5 rounded-full bg-white/40 group-hover:bg-white/80 transition-all duration-200" />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Highlight Hardware Architecture Spec Grid */}
         <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all hover:border-[#d4f933]/40">
+          <div className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all duration-300 hover:border-[#d4f933]/40 hover:-translate-y-0.5">
             <div className="flex items-center justify-between text-xs font-mono">
               <span className="text-purple-600 dark:text-purple-400 font-bold uppercase">01 // AI CORE</span>
               <span className="text-[10px] text-zinc-400">128D</span>
@@ -331,7 +373,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <p className="text-xs text-zinc-500 dark:text-zinc-400">Kosinüs Benzerliği, TL;DR Özet & Otomatik Etiket</p>
           </div>
 
-          <div className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all hover:border-[#d4f933]/40">
+          <div className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all duration-300 hover:border-[#d4f933]/40 hover:-translate-y-0.5">
             <div className="flex items-center justify-between text-xs font-mono">
               <span className="text-[#a3c900] dark:text-[#d4f933] font-bold uppercase">02 // LOOM</span>
               <span className="text-[10px] text-zinc-400">JAVA 22</span>
@@ -340,7 +382,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <p className="text-xs text-zinc-500 dark:text-zinc-400">Sıfır Thread Havuzu Darboğazı & Yüksek Eşzamanlılık</p>
           </div>
 
-          <div className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all hover:border-[#d4f933]/40">
+          <div className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all duration-300 hover:border-[#d4f933]/40 hover:-translate-y-0.5">
             <div className="flex items-center justify-between text-xs font-mono">
               <span className="text-rose-500 font-bold uppercase">03 // CACHE</span>
               <span className="text-[10px] text-zinc-400">REDIS</span>
@@ -349,7 +391,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <p className="text-xs text-zinc-500 dark:text-zinc-400">Atomik HINCRBY Sayaçları & 30s Batch Flush</p>
           </div>
 
-          <div className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all hover:border-[#d4f933]/40">
+          <div className="p-4 rounded-2xl glass-liquid border border-black/10 dark:border-white/10 space-y-1 transition-all duration-300 hover:border-[#d4f933]/40 hover:-translate-y-0.5">
             <div className="flex items-center justify-between text-xs font-mono">
               <span className="text-cyan-500 font-bold uppercase">04 // TESTS</span>
               <span className="text-[10px] text-emerald-400">201/201</span>

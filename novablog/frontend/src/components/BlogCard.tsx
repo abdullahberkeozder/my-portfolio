@@ -87,7 +87,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
   return (
     <article
       onClick={() => onSelect(blog)}
-      className="group relative flex flex-col rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/[0.08] dark:border-white/[0.08] hover:border-[#d4f933]/50 transition-all duration-300 hover:shadow-2xl hover:shadow-[#d4f933]/5 cursor-pointer overflow-hidden"
+      className="group relative flex flex-col rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/[0.08] dark:border-white/[0.08] hover:border-[#d4f933]/50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#d4f933]/10 cursor-pointer overflow-hidden"
     >
       {/* Top Banner & Spec Header */}
       <div className="p-6 pb-3">
