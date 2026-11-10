@@ -40,10 +40,10 @@ const MODULES: ModuleSpec[] = [
     description:
       'Klasik kelime aramasının ötesine geçerek, kullanıcı sorgularını anlam ilişkisine göre analiz eder; farklı kelimeler veya yazım hataları kullanılsa dahi en alakalı makaleleri milisaniyeler içinde bulup sıralar.',
     specs: [
-      { label: 'EMBEDDING DIM', value: '128D Dense' },
-      { label: 'SIMILARITY METRIC', value: 'Kosinüs Benzerliği' },
-      { label: 'HYBRID FUSION', value: 'Hibrit Arama (RRF)' },
-      { label: 'QUERY LATENCY', value: '~1.8ms P99' },
+      { label: 'VEKTÖR BOYUTU', value: '128 Boyutlu Yoğun' },
+      { label: 'BENZERLİK METRİĞİ', value: 'Kosinüs Benzerliği' },
+      { label: 'HİBRİT ARAMA', value: 'Hibrit Skorlama (RRF)' },
+      { label: 'SORGU GECİKMESİ', value: '~1.8ms P99' },
     ],
     whyExists: {
       bottleneck: "Geleneksel SQL 'LIKE %query%' araması semantik bağlamı yakalayamaz ('bellek yönetimi' arandığında 'garbage collector' bulunamaz).",
@@ -74,10 +74,10 @@ public class VectorEmbeddingService {
     description:
       'Spring Boot 4 üzerinde thread-per-request modelini donanım seviyesinde hafif sanal iş parçacıklarına devrederek Tomcat thread pool darboğazlarını tamamen ortadan kaldırır.',
     specs: [
-      { label: 'THREAD MODEL', value: 'M:N User-Mode' },
-      { label: 'CONCURRENCY CAP', value: '10,000+ Concurrent' },
-      { label: 'CARRIER PINNING', value: 'Zero Blocking' },
-      { label: 'RAM CONSUMPTION', value: '~1KB / Thread' },
+      { label: 'İŞ PARÇACIĞI', value: 'Kullanıcı Seviyesi (Sanal)' },
+      { label: 'EŞZAMANLI İSTEK', value: '10,000+ Kapasite' },
+      { label: 'OS THREAD KİLİTLEME', value: 'Sıfır Bloke (Lock-Free)' },
+      { label: 'BELLEK TÜKETİMİ', value: '~1KB / Thread' },
     ],
     whyExists: {
       bottleneck: 'Tomcat varsayılan 200 OS iş parçacığıyla çalışır; yavaş I/O beklemelerinde thread havuzu tükenir ve sunucu 503 kilitlenir.',
@@ -100,10 +100,10 @@ server.tomcat.threads.min-spare=20
     description:
       'Görüntülenme ve beğeni sayaçları PostgreSQL yerine Redis Hash tamponunda atomik HINCRBY komutlarıyla toplanır. Her 30 saniyede bir çalışan arka plan görevi deltaları topluca veritabanına aktarır.',
     specs: [
-      { label: 'WRITE LATENCY', value: '< 0.5ms (O(1))' },
-      { label: 'BUFFER CAPACITY', value: 'Redis In-Memory' },
-      { label: 'BATCH INTERVAL', value: '30s Fixed Delay' },
-      { label: 'DB DISK I/O DROP', value: '%98 Azalma' },
+      { label: 'YAZMA GECİKMESİ', value: '< 0.5ms (O(1))' },
+      { label: 'TAMPON HAFIZA', value: 'Redis In-Memory' },
+      { label: 'TOPLU YAZIM', value: '30sn Periyodik' },
+      { label: 'DİSK YÜKÜNDE DÜŞÜŞ', value: '%98 Azalma' },
     ],
     whyExists: {
       bottleneck: 'Her makale okunmasında veya beğenilmesinde veritabanı satır kilidi (Row Lock) almak yüksek trafikte DB disk I/O kilitlenmesi yaratır.',
@@ -130,10 +130,10 @@ public class RedisMetricBufferService {
     description:
       'Kayıp Güncelleme (Lost Update) anomalilerini lock-free önler. Satır kilidi tutmaksızın eski versiyonla gelen eşzamanlı istekleri tespit eder ve RFC 7807 409 Conflict Problem Details ile yönetir.',
     specs: [
-      { label: 'LOCKING TYPE', value: 'Lock-Free Optimistic' },
-      { label: 'DEADLOCK RISK', value: 'Zero (No Row Locks)' },
-      { label: 'CONFLICT CODE', value: 'HTTP 409 Conflict' },
-      { label: 'RETRY POLICY', value: 'Automatic UI Rollback' },
+      { label: 'KİLİTLEME TİPİ', value: 'İyimser (Lock-Free)' },
+      { label: 'KİLİTLENME RİSKİ', value: 'Sıfır (Satır Kilidi Yok)' },
+      { label: 'ÇAKIŞMA KODU', value: 'HTTP 409 Çakışma' },
+      { label: 'GERİ ALMA İLKESİ', value: 'Otomatik UI Geri Alma' },
     ],
     whyExists: {
       bottleneck: 'Aynı makaleyi eşzamanlı güncelleyen iki editörden biri diğerinin içeriğini farkında olmadan ezebilir (Lost Update anomalisi).',
@@ -161,10 +161,10 @@ public class BlogEntity {
     description:
       'Milyonlarca satırlık veri temizliği (Soft-Delete Cleanup) ve yazar analitik hesaplamalarını 50\'şerli chunk bloklarında işler. Retry, skip ve transaction rollback mekanizmaları devrededir.',
     specs: [
-      { label: 'CHUNK SIZE', value: '50 Items / Commit' },
-      { label: 'FAULT TOLERANCE', value: '3 Retry Limit' },
-      { label: 'EXECUTION STATE', value: 'PostgreSQL Meta' },
-      { label: 'TRIGGER MODES', value: 'Cron & REST API' },
+      { label: 'PAKET BOYUTU', value: '50 Kayıt / Commit' },
+      { label: 'HATA TOLERANSI', value: '3 Tekrar Deneme' },
+      { label: 'YÜRÜTME DURUMU', value: 'PostgreSQL Metadata' },
+      { label: 'TETİKLEME ŞEKLİ', value: 'Zamanlanmış & REST' },
     ],
     whyExists: {
       bottleneck: "Milyonlarca silinmiş makaleyi tek bir 'DELETE FROM' ile silmek tablo kilitlenmesine ve OutOfMemory bellek aşımına yol açar.",
@@ -411,8 +411,8 @@ export const ModularArchitectureConsole: React.FC = () => {
             {activeModuleId === 'spring-ai' && (
               <div className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-black/[0.08] dark:border-white/[0.08] space-y-2">
                 <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-zinc-500">KOSİNÜS AÇISI: cos(θ) = 0.942</span>
-                  <span className="text-emerald-500 font-bold">LATENCY: 1.4 MS</span>
+                  <span className="text-zinc-500">ANLAMSAL UYUM: %94.2 İSABET</span>
+                  <span className="text-emerald-500 font-bold">YANIT SÜRESİ: 1.4 MS</span>
                 </div>
                 <div className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
                   <div
@@ -421,10 +421,10 @@ export const ModularArchitectureConsole: React.FC = () => {
                   />
                 </div>
                 <p className="text-[10px] text-zinc-400 font-sans">
-                  {simStep === 0 && 'Simülasyon hazır: 128D normalize latent vektör projektörü bekliyor.'}
-                  {simStep === 1 && 'Sorgu vektörleştiriliyor: Dense 128 float array hesaplanıyor...'}
-                  {simStep === 2 && 'pgvector HNSW indeksi taranıyor: Kosinüs mesafesi skorlandı...'}
-                  {simStep >= 3 && 'Eşleşme doğrulandı: %94.2 kosinüs benzerliği ile 1.4ms içinde sonuç döndü.'}
+                  {simStep === 0 && 'Simülasyon hazır: Yapay zeka anlamsal eşleştirme motoru sorguyu bekliyor.'}
+                  {simStep === 1 && 'Sorgu çözümleniyor: Cümlenin anlamsal özeti ve anahtar kavramları çıkarılıyor...'}
+                  {simStep === 2 && 'Vektör veritabanı taranıyor: Anlamca en yakın makaleler karşılaştırılıyor...'}
+                  {simStep >= 3 && 'Eşleşme tamamlandı: %94.2 anlamsal uyum ile milisaniyeler içinde en doğru makale bulundu.'}
                 </p>
               </div>
             )}
@@ -533,9 +533,9 @@ export const ModularArchitectureConsole: React.FC = () => {
           <div className="pt-4 border-t border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-500">
             <span className="flex items-center gap-1.5">
               <Terminal className="w-3.5 h-3.5 text-zinc-400" />
-              <span>TESTED: 195/195 PASS</span>
+              <span>TEST DOĞRULAMASI: 201/201 GEÇTİ</span>
             </span>
-            <span className="text-[#d4f933] font-bold">RFC 7807 COMPLIANT</span>
+            <span className="text-[#d4f933] font-bold">RFC 7807 STANDART HATA YÖNETİMİ</span>
           </div>
         </div>
       </div>

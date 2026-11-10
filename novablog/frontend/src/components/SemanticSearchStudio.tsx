@@ -165,9 +165,9 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
           <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] font-mono text-xs">
             <Sliders className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
             <div>
-              <span className="text-[10px] text-zinc-400 uppercase block">BENZERLİK EŞİĞİ</span>
+              <span className="text-[10px] text-zinc-400 uppercase block">ANLAMSAL EŞLEŞME EŞİĞİ</span>
               <span className="font-bold text-zinc-950 dark:text-white">
-                cos(θ) ≥ <span className="text-[#a3c900] dark:text-[#d4f933]">{threshold.toFixed(2)}</span>
+                %{(threshold * 100).toFixed(0)} <span className="text-[#a3c900] dark:text-[#d4f933]">ve üzeri</span>
               </span>
             </div>
             <input
