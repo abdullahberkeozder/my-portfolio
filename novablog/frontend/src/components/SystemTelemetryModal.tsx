@@ -16,6 +16,8 @@ import {
   ArrowDownToLine,
   Server,
   Sparkles,
+  Gauge,
+  Lock,
 } from 'lucide-react';
 
 interface SystemTelemetryModalProps {
@@ -164,6 +166,46 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
                 <span>Caffeine TTL: 5 dk</span>
                 <span>&bull;</span>
                 <span>Redis TTL: 10 dk</span>
+              </div>
+            </div>
+
+            {/* Token Bucket Rate Limiter */}
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] space-y-2">
+              <div className="flex items-center justify-between font-mono font-semibold">
+                <span className="flex items-center gap-1.5 text-zinc-900 dark:text-white">
+                  <Gauge className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
+                  Token Bucket Rate Limiter
+                </span>
+                <span className="text-[#a3c900] dark:text-[#d4f933] text-[11px] font-bold">BURSTABLE</span>
+              </div>
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
+                Sabit kapasiteli token havuzu ve nanosaniye hesaplamalı sürekli dolum. Kategori bazlı DoS koruması
+                (Auth: 10/dk, Arama: 30/dk, Genel: 100/dk). Eşik aşımında HTTP 429 üretir.
+              </p>
+              <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-zinc-400">
+                <span>Algoritma: Token Bucket</span>
+                <span>&bull;</span>
+                <span>Limit: 100 req/dk</span>
+              </div>
+            </div>
+
+            {/* Distributed Request Idempotency */}
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] space-y-2">
+              <div className="flex items-center justify-between font-mono font-semibold">
+                <span className="flex items-center gap-1.5 text-zinc-900 dark:text-white">
+                  <Lock className="w-4 h-4 text-cyan-500" />
+                  Idempotency Filter
+                </span>
+                <span className="text-cyan-600 dark:text-cyan-400 text-[11px] font-bold">SETNX LOCK</span>
+              </div>
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
+                X-Idempotency-Key ile mutasyon isteklerinde 120s süreli distributed lock kurar. Mükerrer çağrılarda
+                24 saat önbelleklenmiş sonucu replay eder, çakışmada 409 Conflict döner.
+              </p>
+              <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-zinc-400">
+                <span>Lock TTL: 120s</span>
+                <span>&bull;</span>
+                <span>Cache TTL: 24h</span>
               </div>
             </div>
           </div>
