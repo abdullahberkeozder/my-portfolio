@@ -53,18 +53,18 @@ const SLIDES: SlideContent[] = [
     metric3: { label: 'EVENTUAL SYNC', value: 'Write-Behind 30s' },
   },
   {
-    tag: 'TACTILE DATA CONSOLE // HARDWARE HUD SPEC',
-    badge: 'TACTILE DATA SLATE // V4.1',
-    title1: 'HASSAS DONANIM TELEMETRİSİ.',
-    title2: 'DOKUNSAL KONSOL.',
+    tag: 'TACTILE ARCHITECTURE CONSOLE // HUD SPEC',
+    badge: 'SYSTEM TELEMETRY // V4.1.1',
+    title1: 'MİKROSANİYE TELEMETRİSİ.',
+    title2: '12.4K REQ/S THROUGHPUT.',
     description:
-      'Teenage Engineering ve Dieter Rams endüstriyel çizgileriyle tasarlanmış dokunsal mimari konsol. Donanım seviyesinde hafif sanal thread’ler ve mikrosaniye IOPS telemetrisi.',
+      'Teenage Engineering ve Dieter Rams endüstriyel çizgileriyle tasarlanmış dokunsal mimari konsol. Mikrosaniye seviyesinde telemetri hassasiyeti ve 12.4K req/s throughput ile sıfır satır kilitleme garantisi.',
     image: '/images/terminal-hardware.jpg',
     primaryCta: 'Mimari Konsolu Aç',
     primaryIcon: 'terminal',
     secondaryCta: 'Telemetriyi İncele',
     metric1: { label: 'THROUGHPUT', value: '12.4K req/s' },
-    metric2: { label: 'INPUT LATENCY', value: '0.4ms Sub-Tick' },
+    metric2: { label: 'SUBCYCLE LATENCY', value: '0.2ms Sub-Tick' },
     metric3: { label: 'TELEMETRY JITTER', value: '< 0.1ms Jitter' },
   },
   {
@@ -146,14 +146,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column: Industrial Narrative & CTAs (7 cols) */}
           <div key={`narrative-${activeSlide}`} className="lg:col-span-7 space-y-6 ride-also-drawer-anim">
-            {/* Spec Tag */}
-            <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-zinc-900/5 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-xs font-mono">
-              <span className="w-2 h-2 rounded-full bg-[#d4f933] shadow-[0_0_8px_#d4f933] animate-pulse" />
-              <span className="text-zinc-600 dark:text-zinc-400 uppercase tracking-wider font-semibold">
-                {slide.tag}
-              </span>
-              <span className="text-zinc-300 dark:text-zinc-700">|</span>
-              <span className="text-zinc-500 dark:text-zinc-400">201/201 TESTS (%100 PASS)</span>
+            {/* Spec Tag & Concept Manifesto */}
+            <div className="flex flex-col gap-2">
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1 rounded-full bg-zinc-900/5 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-xs font-mono w-fit">
+                <span className="w-2 h-2 rounded-full bg-[#d4f933] shadow-[0_0_8px_#d4f933] animate-pulse" />
+                <span className="text-zinc-600 dark:text-zinc-400 uppercase tracking-wider font-semibold">
+                  {slide.tag}
+                </span>
+                <span className="text-zinc-300 dark:text-zinc-700">|</span>
+                <span className="text-zinc-500 dark:text-zinc-400">201/201 TESTS (%100 PASS)</span>
+              </div>
+              <p className="text-[11px] font-mono font-medium text-purple-600 dark:text-purple-400 tracking-wide uppercase">
+                Endüstriyel Donanım Tasarım Felsefesiyle İnşa Edilmiş Yüksek Başarımlı Spring Boot 4 &amp; Java 22 Dağıtık Sistem Mimarisi
+              </p>
             </div>
 
             {/* Headline */}
