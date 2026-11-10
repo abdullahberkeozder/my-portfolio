@@ -314,7 +314,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               )}
 
-              {/* Ride Also "TEST DRIVE" Pill Button (Screenshots 1, 2, 3, 4) */}
+              {/* Architecture Test Pill Button */}
               <button
                 onClick={() => {
                   if (onOpenArchitectureConsole) {
@@ -330,7 +330,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }`}
               >
                 <Zap className={`w-3.5 h-3.5 ${isMegaOpen ? 'text-[#8c52ff]' : 'text-[#8c52ff] dark:text-[#a259ff]'}`} />
-                <span>TEST DRIVE</span>
+                <span>MİMARİYİ TEST ET</span>
               </button>
 
               {/* 2FA / TOTP Security Center Button */}
@@ -692,7 +692,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <div className="space-y-3">
                     <div>
                       <div className="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 font-bold uppercase tracking-wider mb-1">
-                        03 // TEST DRIVE
+                        03 // CANLI SİMÜLASYON
                       </div>
                       <h4 className="text-xl font-black text-zinc-950 dark:text-white tracking-tight">
                         Canlı Simülatör
@@ -710,7 +710,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </div>
 
                     <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
-                      Gerçek zamanlı Loom virtual threads rampası ve 409 conflict simülasyonu.
+                      Gerçek zamanlı Loom sanal thread akışı ve 409 çakışma önleme simülasyonu.
                     </p>
                   </div>
 
@@ -719,7 +719,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onClick={handleTestDrive}
                       className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-[#d4f933] text-black text-xs font-mono font-bold uppercase hover:bg-[#c4e82b] transition-all cursor-pointer btn-tactile shadow-sm"
                     >
-                      <span>TEST DRIVE BAŞLAT</span>
+                      <span>CANLI MİMARİYİ DENE</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
