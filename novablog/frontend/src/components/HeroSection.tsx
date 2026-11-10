@@ -5,6 +5,7 @@ import Image from 'next/image';
 import {
   Sparkles,
   ArrowRight,
+  ArrowDown,
   Cpu,
   Zap,
   Activity,
@@ -207,6 +208,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               >
                 <Sparkles className="w-4 h-4 text-[#8c52ff] dark:text-[#a259ff]" />
                 <span>{slide.secondaryCta}</span>
+              </button>
+
+              {/* Direct Quick-Jump to Articles */}
+              <button
+                onClick={() => {
+                  const el = document.getElementById('articles-feed');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="inline-flex items-center gap-1.5 px-4 py-3 rounded-full text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-mono text-[11px] uppercase tracking-wider transition-colors cursor-pointer border border-transparent hover:border-black/10 dark:hover:border-white/10"
+                title="Doğrudan teknik makale ve blog akışına atla"
+              >
+                <span>MAKALELERE ATLA</span>
+                <ArrowDown className="w-3.5 h-3.5" />
               </button>
             </div>
 
