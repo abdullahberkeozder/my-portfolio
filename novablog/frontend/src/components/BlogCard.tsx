@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
-import { useToggleLikeMutation } from '@/hooks/useBlogs';
+import { useToggleLikeMutation, useSoftDeleteBlogMutation } from '@/hooks/useBlogs';
 import {
   Sparkles,
   Eye,
@@ -15,6 +15,7 @@ import {
   Clock,
   Share2,
   Check,
+  Archive,
 } from 'lucide-react';
 
 interface BlogCardProps {
@@ -30,7 +31,16 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
   const [isCopied, setIsCopied] = useState(false);
 
   const toggleLikeMutation = useToggleLikeMutation();
+  const softDeleteMutation = useSoftDeleteBlogMutation();
   const blogId = blog.id ?? blog.blogId;
+
+  const handleSoftDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!blogId) return;
+    if (confirm(`"${blog.title}" başlıklı yazıyı 30 günlük saklama arşivine (Soft Delete) taşımak istediğinize emin misiniz?`)) {
+      softDeleteMutation.mutate(blogId);
+    }
+  };
 
   const handleToggleLike = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -132,6 +142,18 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
               className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
             >
               {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
+            </button>
+            <button
+              onClick={handleSoftDelete}
+              disabled={softDeleteMutation.isPending}
+              title="Arşive Taşı (Soft Delete & 30G Saklama)"
+              className="p-1 rounded-full hover:bg-rose-500/15 text-zinc-400 hover:text-rose-500 transition-colors cursor-pointer disabled:opacity-50"
+            >
+              {softDeleteMutation.isPending ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Archive className="w-3.5 h-3.5" />
+              )}
             </button>
           </div>
         </div>

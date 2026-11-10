@@ -226,25 +226,86 @@ export function useAddCommentMutation() {
   });
 }
 
-// 8. Admin Moderation State Machine: Approve Comment Mutation
+// 8. Admin Moderation State Machine: Optimistic Approve Comment Mutation
 export function useApproveCommentMutation() {
   const queryClient = useQueryClient();
 
-  return useMutation<CommentResponseDto, Error, { commentId: number; blogId: number }>({
+  return useMutation<
+    CommentResponseDto,
+    Error,
+    { commentId: number; blogId: number },
+    { previousComments?: CommentResponseDto[]; blogId: number }
+  >({
     mutationFn: ({ commentId }) => ApiClient.approveComment(commentId),
-    onSuccess: (_res, { blogId }) => {
+    onMutate: async ({ commentId, blogId }) => {
+      await queryClient.cancelQueries({ queryKey: ['comments', blogId] });
+      const previousComments = queryClient.getQueryData<CommentResponseDto[]>(['comments', blogId]);
+
+      queryClient.setQueryData<CommentResponseDto[]>(['comments', blogId], (old) => {
+        if (!old) return old;
+        return old.map((c) => {
+          if (c.id === commentId) {
+            return {
+              ...c,
+              isApproved: true,
+              moderationStatus: 'APPROVED' as const,
+            };
+          }
+          return c;
+        });
+      });
+
+      return { previousComments, blogId };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousComments && context?.blogId) {
+        queryClient.setQueryData(['comments', context.blogId], context.previousComments);
+      }
+    },
+    onSettled: (_data, _error, { blogId }) => {
       queryClient.invalidateQueries({ queryKey: ['comments', blogId] });
     },
   });
 }
 
-// 9. Admin Moderation State Machine: Quarantine / Flag Comment Mutation
+// 9. Admin Moderation State Machine: Optimistic Quarantine / Flag Comment Mutation
 export function useFlagCommentMutation() {
   const queryClient = useQueryClient();
 
-  return useMutation<CommentResponseDto, Error, { commentId: number; blogId: number; reason?: string }>({
+  return useMutation<
+    CommentResponseDto,
+    Error,
+    { commentId: number; blogId: number; reason?: string },
+    { previousComments?: CommentResponseDto[]; blogId: number }
+  >({
     mutationFn: ({ commentId, reason }) => ApiClient.flagComment(commentId, reason),
-    onSuccess: (_res, { blogId }) => {
+    onMutate: async ({ commentId, blogId }) => {
+      await queryClient.cancelQueries({ queryKey: ['comments', blogId] });
+      const previousComments = queryClient.getQueryData<CommentResponseDto[]>(['comments', blogId]);
+
+      queryClient.setQueryData<CommentResponseDto[]>(['comments', blogId], (old) => {
+        if (!old) return old;
+        return old.map((c) => {
+          if (c.id === commentId) {
+            return {
+              ...c,
+              isApproved: false,
+              moderationStatus: 'FLAGGED_TOXIC' as const,
+              sentiment: 'NEGATIVE' as const,
+            };
+          }
+          return c;
+        });
+      });
+
+      return { previousComments, blogId };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousComments && context?.blogId) {
+        queryClient.setQueryData(['comments', context.blogId], context.previousComments);
+      }
+    },
+    onSettled: (_data, _error, { blogId }) => {
       queryClient.invalidateQueries({ queryKey: ['comments', blogId] });
     },
   });
@@ -259,26 +320,105 @@ export function useDeletedBlogsQuery() {
   });
 }
 
-// 11. Blog Lifecycle State Machine: Restore Blog Mutation
+// 11. Blog Lifecycle State Machine: Optimistic Restore Blog Mutation
 export function useRestoreBlogMutation() {
   const queryClient = useQueryClient();
 
-  return useMutation<BlogDto, Error, number>({
+  return useMutation<
+    BlogDto,
+    Error,
+    number,
+    { previousDeleted?: BlogDto[]; previousBlogs?: BlogDto[] }
+  >({
     mutationFn: (blogId) => ApiClient.restoreBlog(blogId),
-    onSuccess: () => {
+    onMutate: async (blogId) => {
+      await queryClient.cancelQueries({ queryKey: ['blogs'] });
+      await queryClient.cancelQueries({ queryKey: ['deletedBlogs'] });
+
+      const previousDeleted = queryClient.getQueryData<BlogDto[]>(['deletedBlogs']);
+      const previousBlogs = queryClient.getQueryData<BlogDto[]>(['blogs']);
+
+      const restoredItem = previousDeleted?.find((b) => (b.id ?? b.blogId) === blogId);
+
+      if (previousDeleted) {
+        queryClient.setQueryData<BlogDto[]>(
+          ['deletedBlogs'],
+          previousDeleted.filter((b) => (b.id ?? b.blogId) !== blogId)
+        );
+      }
+      if (previousBlogs && restoredItem) {
+        queryClient.setQueryData<BlogDto[]>(['blogs'], [
+          { ...restoredItem, lifecycleStatus: 'ACTIVE', isDeleted: false },
+          ...previousBlogs,
+        ]);
+      }
+
+      return { previousDeleted, previousBlogs };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousDeleted) {
+        queryClient.setQueryData(['deletedBlogs'], context.previousDeleted);
+      }
+      if (context?.previousBlogs) {
+        queryClient.setQueryData(['blogs'], context.previousBlogs);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
       queryClient.invalidateQueries({ queryKey: ['deletedBlogs'] });
     },
   });
 }
 
-// 12. Blog Lifecycle State Machine: Soft Delete Blog Mutation
+// 12. Blog Lifecycle State Machine: Optimistic Soft Delete Blog Mutation
 export function useSoftDeleteBlogMutation() {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, number>({
+  return useMutation<
+    void,
+    Error,
+    number,
+    { previousBlogs?: BlogDto[]; previousDeleted?: BlogDto[] }
+  >({
     mutationFn: (blogId) => ApiClient.softDeleteBlog(blogId),
-    onSuccess: () => {
+    onMutate: async (blogId) => {
+      await queryClient.cancelQueries({ queryKey: ['blogs'] });
+      await queryClient.cancelQueries({ queryKey: ['deletedBlogs'] });
+
+      const previousBlogs = queryClient.getQueryData<BlogDto[]>(['blogs']);
+      const previousDeleted = queryClient.getQueryData<BlogDto[]>(['deletedBlogs']);
+
+      const deletedItem = previousBlogs?.find((b) => (b.id ?? b.blogId) === blogId);
+
+      if (previousBlogs) {
+        queryClient.setQueryData<BlogDto[]>(
+          ['blogs'],
+          previousBlogs.filter((b) => (b.id ?? b.blogId) !== blogId)
+        );
+      }
+      if (deletedItem) {
+        queryClient.setQueryData<BlogDto[]>(['deletedBlogs'], [
+          {
+            ...deletedItem,
+            lifecycleStatus: 'SOFT_DELETED',
+            isDeleted: true,
+            deletedAt: new Date().toISOString(),
+          },
+          ...(previousDeleted || []),
+        ]);
+      }
+
+      return { previousBlogs, previousDeleted };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousBlogs) {
+        queryClient.setQueryData(['blogs'], context.previousBlogs);
+      }
+      if (context?.previousDeleted) {
+        queryClient.setQueryData(['deletedBlogs'], context.previousDeleted);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
       queryClient.invalidateQueries({ queryKey: ['deletedBlogs'] });
     },
