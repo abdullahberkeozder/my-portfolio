@@ -401,6 +401,37 @@ export class ApiClient {
     }
   }
 
+  // --- BLOG LIFECYCLE (STATE MACHINE #1) ---
+  public static async getDeletedBlogs(): Promise<BlogDto[]> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/deleted`, {
+        method: 'GET',
+        headers: this.getHeaders(),
+      });
+      if (!res.ok) return [];
+      const data: ApiResult<BlogDto[]> = await res.json();
+      return data.data || [];
+    } catch {
+      return [];
+    }
+  }
+
+  public static async restoreBlog(id: number): Promise<BlogDto> {
+    const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/restore/${id}`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+    const data: ApiResult<BlogDto> = await res.json();
+    return data.data;
+  }
+
+  public static async softDeleteBlog(id: number): Promise<void> {
+    await fetch(`${API_BASE_URL}/blog/api/v1.0.0/delete/${id}`, {
+      method: 'DELETE',
+      headers: this.getHeaders(),
+    });
+  }
+
   // --- COMMENTS ---
   public static async getComments(blogId: number): Promise<CommentResponseDto[]> {
     try {

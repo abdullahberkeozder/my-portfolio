@@ -250,3 +250,38 @@ export function useFlagCommentMutation() {
   });
 }
 
+// 10. Blog Lifecycle State Machine: Deleted Blogs Query
+export function useDeletedBlogsQuery() {
+  return useQuery<BlogDto[]>({
+    queryKey: ['deletedBlogs'],
+    queryFn: () => ApiClient.getDeletedBlogs(),
+    staleTime: 10 * 1000,
+  });
+}
+
+// 11. Blog Lifecycle State Machine: Restore Blog Mutation
+export function useRestoreBlogMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation<BlogDto, Error, number>({
+    mutationFn: (blogId) => ApiClient.restoreBlog(blogId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+      queryClient.invalidateQueries({ queryKey: ['deletedBlogs'] });
+    },
+  });
+}
+
+// 12. Blog Lifecycle State Machine: Soft Delete Blog Mutation
+export function useSoftDeleteBlogMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, number>({
+    mutationFn: (blogId) => ApiClient.softDeleteBlog(blogId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+      queryClient.invalidateQueries({ queryKey: ['deletedBlogs'] });
+    },
+  });
+}
+
