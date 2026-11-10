@@ -19,62 +19,62 @@ interface ReelItem {
 
 const REELS: ReelItem[] = [
   {
-    id: 'reel-rider',
+    id: 'reel-loom',
     tag: '01 // JAVA 22 LOOM',
     badge: '10K THREADS',
-    caption: 'AHH !',
-    title: '10,000 SANAL THREAD DEVREDE',
-    subtitle: 'KARIYER THREAD DARBOĞAZINA SON',
-    detail: 'Tomcat carrier thread blokajı sıfırlandı. 0.2ms sub-tick gecikmeyle 10K eşzamanlı istek işleniyor.',
-    image: '/images/reel-rider.jpg',
+    caption: '10,000 CONCURRENT',
+    title: 'SANAL THREAD HAVUZU DEVREDE',
+    subtitle: 'CARRIER THREAD DARBOĞAZINA SON',
+    detail: 'Tomcat carrier OS thread blokajı sıfırlandı. 0.2ms sub-tick gecikmeyle 10K eşzamanlı istek işleniyor.',
+    image: '/images/architecture-cutaway.jpg',
     moduleTarget: 'loom',
     durationSec: 6,
   },
   {
-    id: 'reel-crate',
+    id: 'reel-redis',
     tag: '02 // REDIS WRITE-BEHIND',
     badge: 'ROW-LOCKLESS',
-    caption: 'ONE OF MY FAVORITE THINGS ABOUT THIS SYSTEM',
-    title: 'HINCRBY İLE SIFIR ROW-LOCK',
-    subtitle: 'SANİYEDE 12.4K SAYAÇ İŞLEMİ',
+    caption: '12.4K REQ/SEC',
+    title: 'HINCRBY ATOMİK TAMPON',
+    subtitle: 'SIFIR POSTGRESQL SATIR KİLİDİ',
     detail: 'Yüksek trafik anında veritabanı kilitlenmelerini önleyen 30 saniyelik atomik tamponlama mimarisi.',
-    image: '/images/reel-crate.jpg',
+    image: '/images/terminal-hardware.jpg',
     moduleTarget: 'write-behind',
     durationSec: 7,
   },
   {
-    id: 'reel-tent',
-    tag: '03 // SPRING AI 128D',
-    badge: 'VECTOR CORE',
-    caption: 'HERE WE GO',
-    title: '128 BOYUTLU KOSİNÜS VEKTÖR UZAYI',
-    subtitle: 'SEMANTİK ANLAMSAL ARAMA',
+    id: 'reel-springai',
+    tag: '03 // SPRING AI pgvector',
+    badge: '128D VECTOR',
+    caption: 'cos(θ) = 0.942',
+    title: 'KOSİNÜS ANLAMSAL ARAMA',
+    subtitle: 'RECIPROCAL RANK FUSION',
     detail: 'Geleneksel anahtar kelime eşleşmesi yerine kavramsal yakınlık ve RRF hibrit sıralama motoru.',
-    image: '/images/reel-tent.jpg',
+    image: '/images/hardware-core.jpg',
     moduleTarget: 'spring-ai',
     durationSec: 6,
   },
   {
-    id: 'reel-stand',
+    id: 'reel-security',
     tag: '04 // RFC 7807 & 2FA',
     badge: 'STATE MACHINE',
-    caption: 'INSANE MODULARITY',
-    title: 'PRE-AUTH STATE MACHINE & TOTP',
-    subtitle: 'İKİ AŞAMALI GÜVENLİK PROTOKOLÜ',
+    caption: 'ZERO-TRUST 2FA',
+    title: 'PRE-AUTH JWT & 2FA PROTOKOLÜ',
+    subtitle: 'İKİ AŞAMALI GÜVENLİK ZIRHI',
     detail: 'Geçici Pre-Auth JWT ve RFC 7807 Problem ayrıntılarıyla tavizsiz kurumsal kimlik doğrulama.',
-    image: '/images/reel-stand.jpg',
+    image: '/images/terminal-hardware.jpg',
     moduleTarget: 'optimistic-locking',
     durationSec: 6,
   },
   {
-    id: 'reel-drone',
+    id: 'reel-batch',
     tag: '05 // SPRING BATCH 5',
     badge: 'CHUNK 100',
-    caption: 'SHAPE-SHIFTING PERFORMANCE',
+    caption: 'ZERO LEAK ETL',
     title: '30 GÜNLÜK RETENTION PURGE',
     subtitle: 'OTOMATİK ARŞİVLEME BORU HATTI',
     detail: '100 kayıtlık chunk işleyicisi ve ItemReader ile bellek taşması olmadan veritabanı temizliği.',
-    image: '/images/reel-drone.jpg',
+    image: '/images/architecture-cutaway.jpg',
     moduleTarget: 'spring-batch',
     durationSec: 8,
   },
@@ -92,13 +92,13 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
   const [progress, setProgress] = useState<{ [id: string]: number }>({});
   const [isMuted, setIsMuted] = useState(true);
 
-  // Mouse drag-to-scroll state (Supports both Left Click and Right Click!)
+  // Mouse drag-to-scroll state (Supports both Left Click and Right Click)
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftPos, setScrollLeftPos] = useState(0);
   const [hasDragged, setHasDragged] = useState(false);
 
-  // Video progress animation on hover (Direct Ride Also Screenshots 1, 4, 5, 6 Look)
+  // Video progress animation on hover
   useEffect(() => {
     if (!hoveredReelId) return;
 
@@ -132,7 +132,6 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
 
   // Drag-to-scroll handlers (Left and Right Click Support)
   const handleMouseDown = (e: React.MouseEvent) => {
-    // 0 = Left click, 2 = Right click
     if (e.button !== 0 && e.button !== 2) return;
     if (!containerRef.current) return;
 
@@ -165,7 +164,7 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
   };
 
   const handleCardClick = (reel: ReelItem) => {
-    if (hasDragged) return; // Prevent click while dragging
+    if (hasDragged) return;
     if (onOpenArchitectureConsole) {
       onOpenArchitectureConsole(reel.moduleTarget);
     } else {
@@ -179,11 +178,11 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
   return (
     <section className="bg-black text-white py-14 sm:py-20 border-b border-white/[0.08] select-none overflow-hidden transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header: @RIDEALSO / @NOVABLOG on Left, Circular Arrows on Right (Direct Ride Also Screenshots 4 & 5) */}
+        {/* Section Header: @NOVA // ARCHITECTURE REELS */}
         <div className="flex items-center justify-between pb-6 sm:pb-8">
           <div className="flex items-center gap-3">
             <span className="font-mono text-sm sm:text-base font-black tracking-widest uppercase text-white hover:underline cursor-pointer">
-              @RIDEALSO // FIELD REELS
+              @NOVA // ARCHITECTURE REELS
             </span>
             <span className="w-2.5 h-2.5 rounded-full bg-[#bef264] shadow-[0_0_10px_#bef264] animate-pulse" />
             <span className="text-[11px] font-mono text-zinc-400 hidden sm:inline tracking-wider">
@@ -196,16 +195,16 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
             <button
               onClick={() => scroll('left')}
               className="w-10 h-10 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-white/15 flex items-center justify-center text-white transition-all cursor-pointer hover:scale-105 active:scale-95 btn-tactile shadow-md"
-              title="Önceki Videolar"
-              aria-label="Önceki Videolar"
+              title="Önceki Modüller"
+              aria-label="Önceki Modüller"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => scroll('right')}
               className="w-10 h-10 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-white/15 flex items-center justify-center text-white transition-all cursor-pointer hover:scale-105 active:scale-95 btn-tactile shadow-md"
-              title="Sonraki Videolar"
-              aria-label="Sonraki Videolar"
+              title="Sonraki Modüller"
+              aria-label="Sonraki Modüller"
             >
               <ArrowRight className="w-4 h-4" />
             </button>
@@ -220,7 +219,6 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
           onContextMenu={(e) => {
-            // Prevent context menu when user drags with right-click
             if (hasDragged) {
               e.preventDefault();
             }
@@ -241,12 +239,12 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
                 onClick={() => handleCardClick(reel)}
                 className="relative min-w-[250px] sm:min-w-[280px] max-w-[300px] aspect-[9/16] flex-shrink-0 snap-start rounded-3xl overflow-hidden bg-zinc-950 border border-white/10 shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:border-[#bef264]/60 group cursor-pointer"
               >
-                {/* Visual / Simulated Reel Video Background */}
+                {/* Visual Architecture Background */}
                 <Image
                   src={reel.image}
                   alt={reel.title}
                   fill
-                  priority={reel.id === 'reel-rider'}
+                  priority={reel.id === 'reel-loom'}
                   sizes="(max-width: 768px) 250px, 300px"
                   className={`object-cover object-center transition-transform duration-700 ease-out ${
                     isHovered ? 'scale-110 brightness-100' : 'scale-100 brightness-80'
@@ -254,15 +252,14 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
                 />
 
                 {/* Ambient Dark Gradient Vignette for Legibility */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/40 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-black/40 pointer-events-none" />
 
-                {/* Top Badge & Sound Toggle Icon (Matching Screenshots 4 & 6) */}
+                {/* Top Badge & Sound Toggle Icon */}
                 <div className="absolute top-4 inset-x-4 flex items-center justify-between z-10">
                   <span className="px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-[10px] font-mono font-bold tracking-wider uppercase text-zinc-200">
                     {reel.badge}
                   </span>
 
-                  {/* Audio Mute/Unmute Round Button on Top Right (Screenshot 4 & 6) */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -280,9 +277,9 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
                   </button>
                 </div>
 
-                {/* Iconic Center Subtitle Caption (Direct Ride Also Screenshots 4 & 6 Look: "AHH !", "HERE WE GO", "ONE OF MY FAVORITE THINGS ABOUT THIS BIKE") */}
+                {/* Architectural Subtitle Caption */}
                 <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 text-center pointer-events-none z-10 space-y-2">
-                  <div className="font-mono text-sm sm:text-base font-black tracking-widest text-white uppercase drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
+                  <div className="font-mono text-base sm:text-lg font-black tracking-widest text-white uppercase drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
                     {reel.caption}
                   </div>
                   <div className="text-[10px] font-mono font-bold tracking-wider text-[#bef264] uppercase drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
@@ -308,7 +305,7 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
                   </div>
                 )}
 
-                {/* The Signature Ride Also Lime-Green Video Progress Bar at Bottom (Direct Screenshot 4, 5 & 6) */}
+                {/* Volt Green Video Progress Bar */}
                 <div className="absolute bottom-3 inset-x-4 h-1.5 rounded-full bg-white/20 overflow-hidden z-20">
                   <div
                     className="h-full bg-[#bef264] shadow-[0_0_10px_#bef264] transition-all duration-75"

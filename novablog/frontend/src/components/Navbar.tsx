@@ -205,7 +205,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     isMegaOpen ? 'text-white/70' : 'text-zinc-500'
                   }`}
                 >
-                  TM-B SPEC
+                  V4.1.1 SPEC
                 </span>
               </div>
             </div>
@@ -619,7 +619,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onClick={handleTestDrive}
                       className="flex-1 px-4 py-2 rounded-full bg-black dark:bg-[#d4f933] text-white dark:text-black text-xs font-mono font-bold uppercase hover:opacity-90 transition-all cursor-pointer btn-tactile text-center"
                     >
-                      REZERVE ET
+                      TEST DRIVE
                     </button>
                   </div>
                 </div>

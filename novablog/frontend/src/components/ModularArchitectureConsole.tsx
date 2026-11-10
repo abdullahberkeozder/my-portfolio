@@ -289,11 +289,11 @@ export const ModularArchitectureConsole: React.FC = () => {
 
         <div className="flex items-center gap-2 font-mono text-xs text-zinc-400">
           <span>SPEC_STATUS //</span>
-          <span className="text-emerald-500 font-bold">ALL 5 MODULES TESTED (195 PASS)</span>
+          <span className="text-emerald-500 font-bold">ALL 5 MODULES TESTED (201 PASS)</span>
         </div>
       </div>
 
-      {/* Modular Switcher Tabs (Ride Also TM-B Modular Frame Selector) */}
+      {/* Modular Switcher Tabs (System Architecture Core Selector) */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none font-mono">
         {MODULES.map((m) => {
           const isActive = m.id === activeModuleId;

@@ -20,18 +20,18 @@ const STORIES: StoryItem[] = [
   {
     id: 'time-inventions',
     badgeType: 'time',
-    title: 'ALSO TM-B e-bike named to TIME’s Best Inventions of 2026.',
-    subtitle: 'Java 22 Project Loom & Donanımsal Mimari Atılımı',
-    description: 'Tomcat carrier OS thread darboğazına son: 10.000 sanal thread ile sub-milisaniye gecikme ve sıfır blokeleme sağlayan endüstriyel e-bike mimarisi.',
-    image: '/images/terminal-hardware.jpg',
+    title: 'Java 22 Loom & Virtual Threads Named to Enterprise Breakthroughs of 2026.',
+    subtitle: 'Java 22 Project Loom & Yüksek Başarımlı Çekirdek Atılımı',
+    description: 'Tomcat carrier OS thread darboğazına son: 10.000 sanal thread ile sub-milisaniye gecikme ve sıfır blokeleme sağlayan yüksek başarımlı dağıtık sistem mimarisi.',
+    image: '/images/architecture-cutaway.jpg',
     actionModule: 'loom',
   },
   {
     id: 'fast-company',
     badgeType: 'fast-company',
-    title: 'TM-B wins two 2026 Fast Company Design Awards.',
-    subtitle: 'İnovatif Donanım ve Yazılım Entegrasyonu',
-    description: 'pgvector 128 boyutlu kosinüs vektör uzayında anlamsal semantik eşleşme ve dokunsal Dieter Rams konsol ergonomisi ile çifte ödül.',
+    title: 'Nova Core Wins Innovation by Design 2026 for Semantic Vector Engine.',
+    subtitle: '128 Boyutlu Kosinüs Vektör Uzayı ve RRF Hibrit Arama',
+    description: 'pgvector 128 boyutlu kosinüs vektör uzayında anlamsal semantik eşleşme ve dokunsal Dieter Rams konsol ergonomisi ile çifte mimari ödül.',
     image: '/images/lifestyle-hero.jpg',
     customVisual: 'geometric',
     actionModule: 'spring-ai',
@@ -39,19 +39,19 @@ const STORIES: StoryItem[] = [
   {
     id: 'red-dot-award',
     badgeType: 'red-dot',
-    title: 'ALSO wins the Red Dot Award for Product Design 2026.',
-    subtitle: 'Modüler Şasi ve Yüksek Verimli Enerji Yönetimi',
+    title: 'Nova Core Wins Red Dot Award for Distributed Systems Engineering 2026.',
+    subtitle: 'Row-Locksuz Sayaç Yönetimi ve Eventual Consistency',
     description: 'HINCRBY ile Redis Hash üzerinde row-locksuz sayaç yönetimi ve 30 saniyede bir toplu DB flush mimarisiyle Red Dot jürisinden tam not.',
-    image: '/images/hardware-core.jpg',
+    image: '/images/terminal-hardware.jpg',
     actionModule: 'write-behind',
   },
   {
     id: 'series-d-finance',
     badgeType: 'series-d',
-    title: 'ALSO announces $150 million Series D financing.',
-    subtitle: 'Küresel Ölçeklenme ve Kurumsal Güvenilirlik Aşaması',
-    description: 'RFC 7807 standartları, 2FA TOTP state machine protokolü ve Spring Batch 5 veri boru hattı ile desteklenen Seri D yatırım turu.',
-    image: '/images/architecture-cutaway.jpg',
+    title: 'Nova Core Releases Enterprise State Machine & Zero-Trust 2FA Spec.',
+    subtitle: 'RFC 7807 Problem Details ve Pre-Auth State Machine Protokolü',
+    description: '201/201 otomatik test güvencesi, geçici Pre-Auth JWT doğrulaması ve Spring Batch 5 veri boru hattı ile desteklenen kurumsal güvenlik mimarisi.',
+    image: '/images/hardware-core.jpg',
     customVisual: 'sky-brand',
     actionModule: 'optimistic-locking',
   },
@@ -71,7 +71,7 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [selectedStory, setSelectedStory] = useState<StoryItem | null>(null);
 
-  // Mouse drag-to-scroll state (Supports Left and Right Click!)
+  // Mouse drag-to-scroll state (Supports Left and Right Click)
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftPos, setScrollLeftPos] = useState(0);
@@ -130,11 +130,15 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
   return (
     <section className="bg-[#18181b] dark:bg-[#090a0d] text-white py-14 sm:py-20 border-b border-white/[0.08] transition-colors select-none overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header: Stories Title on Left, Circular Arrows on Right (Direct Ride Also Screenshots 1 & 8) */}
+        {/* Section Header: Stories Title on Left, Circular Arrows on Right */}
         <div className="flex items-center justify-between pb-6 sm:pb-8">
           <div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-              Stories
+            <div className="text-[10px] font-mono font-bold tracking-widest text-[#a855f7] uppercase mb-1">
+              SYSTEM EDITORIAL // ARCHITECTURAL BREAKTHROUGHS
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
+              <span>Mimarî Hikayeler</span>
+              <span className="text-zinc-500 font-normal text-xl sm:text-2xl">{'//'} Stories</span>
             </h2>
           </div>
 
@@ -185,7 +189,6 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
                   {/* Geometric graphic for Fast Company */}
                   {story.customVisual === 'geometric' ? (
                     <div className="w-full h-full bg-[#0066ff] flex items-center justify-between p-6 relative overflow-hidden">
-                      {/* Geometric semi-circles matching Fast Company Screenshot */}
                       <div className="w-24 h-24 rounded-full bg-[#00e5ff] relative overflow-hidden shadow-lg">
                         <div className="absolute top-0 right-0 w-12 h-24 bg-white" />
                         <div className="absolute bottom-0 left-0 w-12 h-12 bg-black" />
@@ -200,23 +203,23 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
                       </div>
                     </div>
                   ) : story.customVisual === 'sky-brand' ? (
-                    /* Sky Blue Gradient with ALSO. logo for Series D Financing matching Screenshot */
+                    /* Sky Blue Gradient with NOVA. logo */
                     <div className="w-full h-full bg-gradient-to-b from-[#90c5f9] to-[#bfdbfe] flex flex-col items-center justify-center p-4 relative text-center">
                       <div className="font-sans font-black text-3xl sm:text-4xl tracking-tighter text-black uppercase mb-2">
-                        ALSO.
+                        NOVA.
                       </div>
                       <div className="flex items-center gap-2 text-[9px] font-mono font-bold text-zinc-800 tracking-wider">
-                        <span>PRYSM</span>
+                        <span>SPRING BOOT</span>
                         <span>&bull;</span>
-                        <span>ECLIPSE</span>
+                        <span>LOOM</span>
                         <span>&bull;</span>
-                        <span>GREENOAKS</span>
+                        <span>REDIS</span>
                         <span>&bull;</span>
-                        <span>MVP</span>
+                        <span>pgvector</span>
                       </div>
                     </div>
                   ) : (
-                    /* Product Hardware / E-Bike Photo with Award Badge */
+                    /* Product Hardware Photo with Award Badge */
                     <>
                       <Image
                         src={story.image}
@@ -227,7 +230,7 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
 
-                      {/* TIME Red Ribbon Badge overlay (Direct Screenshot 1 & 8) */}
+                      {/* TIME Red Ribbon Badge overlay */}
                       {story.badgeType === 'time' && (
                         <div className="absolute top-3 right-3 bg-red-600 text-white p-1.5 rounded-sm shadow-lg text-center font-serif leading-none border border-white/20">
                           <div className="text-[9px] font-bold tracking-tight">TIME</div>
@@ -244,20 +247,20 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
                             <span className="w-2.5 h-2.5 rounded-full bg-red-600" />
                             <span className="text-[8px] font-bold">reddot winner 2026</span>
                           </div>
-                          <div className="text-[7px] text-zinc-500 font-mono">bicycle design</div>
+                          <div className="text-[7px] text-zinc-500 font-mono">systems engineering</div>
                         </div>
                       )}
                     </>
                   )}
                 </div>
 
-                {/* Headline Text: Clean sans-serif matching Screenshot */}
+                {/* Headline Text: Clean sans-serif */}
                 <h3 className="text-sm sm:text-[15px] font-semibold text-zinc-950 leading-snug tracking-tight">
                   {story.title}
                 </h3>
               </div>
 
-              {/* Ride Also Signature Bottom Black Pill Button: [READ MORE] (Direct Screenshot 1 & 8) */}
+              {/* Black Pill Button: [READ MORE // MİMARİYİ İNCELE] */}
               <div className="pt-6">
                 <button
                   type="button"
@@ -283,7 +286,7 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <span className="px-3 py-1 rounded-full bg-black text-white dark:bg-white dark:text-black text-[10px] font-mono font-bold uppercase tracking-wider">
-                  EDITORIAL SPECIFICATION // 2026
+                  MİMARÎ RAPOR // 2026
                 </span>
                 <h3 className="text-xl sm:text-2xl font-black tracking-tight leading-snug">
                   {selectedStory.title}

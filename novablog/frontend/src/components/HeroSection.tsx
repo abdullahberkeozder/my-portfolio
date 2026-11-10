@@ -39,7 +39,7 @@ interface SlideContent {
 const SLIDES: SlideContent[] = [
   {
     tag: 'SYSTEM ARCHITECTURE // V4.1.1',
-    badge: 'TRANSPARENT CORE // TM-B',
+    badge: 'TRANSPARENT CORE // V4.1.1',
     title1: 'YÜKSEK HACİMLİ MİMARİ.',
     title2: 'SIFIR DARBOĞAZ.',
     description:
@@ -53,31 +53,31 @@ const SLIDES: SlideContent[] = [
     metric3: { label: 'EVENTUAL SYNC', value: 'Write-Behind 30s' },
   },
   {
-    tag: 'TACTILE DATA CONSOLE // TM-B FIELD SPEC',
+    tag: 'TACTILE DATA CONSOLE // HARDWARE HUD SPEC',
     badge: 'TACTILE DATA SLATE // V4.1',
     title1: 'HASSAS DONANIM TELEMETRİSİ.',
     title2: 'DOKUNSAL KONSOL.',
     description:
-      'Teenage Engineering ve Dieter Rams endüstriyel çizgileriyle tasarlanmış dokunsal saha terminali. CNC döner kadranlar, silikon çift-hap butonlar ve mikrosaniye IOPS monitörü.',
+      'Teenage Engineering ve Dieter Rams endüstriyel çizgileriyle tasarlanmış dokunsal mimari konsol. Donanım seviyesinde hafif sanal thread’ler ve mikrosaniye IOPS telemetrisi.',
     image: '/images/terminal-hardware.jpg',
     primaryCta: 'Mimari Konsolu Aç',
     primaryIcon: 'terminal',
     secondaryCta: 'Telemetriyi İncele',
     metric1: { label: 'THROUGHPUT', value: '12.4K req/s' },
     metric2: { label: 'INPUT LATENCY', value: '0.4ms Sub-Tick' },
-    metric3: { label: 'DIAL RESOLUTION', value: '1024 Pulses/Rev' },
+    metric3: { label: 'TELEMETRY JITTER', value: '< 0.1ms Jitter' },
   },
   {
-    tag: 'CALIFORNIA SUNLIGHT // ARCHITECTURAL LIFESTYLE',
-    badge: 'COMMUNITY & TEST DRIVE',
+    tag: 'ENTERPRISE SECURITY // ZERO-TRUST ARCHITECTURE',
+    badge: 'ZERO-TRUST & 201 TESTS',
     title1: 'MÜHENDİSLİK İÇİN TASARLANDI.',
     title2: 'GÜVENLİ & HIZLI.',
     description:
       '201/201 otomatik test güvenilirliği, RFC 7807 problem detayları, 2FA TOTP güvenlik katmanı ve sıfır çakışmalı JPA @Version kilitleme mekanizması.',
     image: '/images/lifestyle-hero.jpg',
-    primaryCta: 'Test Drive Başlat',
+    primaryCta: 'Simülatörü Başlat',
     primaryIcon: 'zap',
-    secondaryCta: 'Şartnameyi İndir',
+    secondaryCta: 'Şartnameyi İncele',
     metric1: { label: 'TEST COVERAGE', value: '201/201 (%100)' },
     metric2: { label: 'AUTH PROTOCOL', value: '2FA TOTP + PreAuth' },
     metric3: { label: 'ERROR FORMAT', value: 'RFC 7807 Problem' },

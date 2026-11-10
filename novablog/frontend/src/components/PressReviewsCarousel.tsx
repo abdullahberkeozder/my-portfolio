@@ -33,7 +33,7 @@ const PRESS_ITEMS: PressQuoteItem[] = [
   },
   {
     id: 'press-wapo',
-    quote: '"FUN TO RIDE AND SURPRISINGLY DIFFICULT TO BREAK"',
+    quote: '"ASTONISHINGLY FAST AND SURPRISINGLY DIFFICULT TO CRASH"',
     outlet: 'washington-post',
     outletName: 'The Washington Post',
     subContext: 'RFC 7807 & 2FA State Machine Dayanıklılık Testi',

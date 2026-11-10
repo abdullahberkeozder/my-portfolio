@@ -132,10 +132,10 @@ export default function Home() {
               }}
             />
 
-            {/* Modular Architecture Console (Inspired by Ride Also TM-B Modular Frames) */}
+            {/* Modular Architecture Console (System Architecture Core Selector) */}
             <ModularArchitectureConsole />
 
-            {/* 2. Full-Width Architectural Spotlight Banner (Direct Ride Also TM-Q Screenshot 2) */}
+            {/* 2. Full-Width Architectural Spotlight Banner (Nova Core 4.1 Distributed Engine) */}
             <SpotlightBanner
               onExploreAI={() => setActiveTab('ai-search')}
               onOpenArchitectureConsole={() => {

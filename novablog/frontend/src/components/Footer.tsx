@@ -71,7 +71,7 @@ export const Footer: React.FC<FooterProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Grid: Split Layout (Direct Ride Also Footer Clone) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
-          {/* Left Column: Monumental Category Links (Matching Bike, Quad, Helmet, Gear) */}
+          {/* Left Column: Monumental Category Links (Articles, Core, Vector AI, Batch ETL) */}
           <div className="lg:col-span-5 space-y-4 font-sans">
             <button
               onClick={handleNavFeed}
