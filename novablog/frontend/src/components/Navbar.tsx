@@ -11,6 +11,7 @@ import {
   ChevronDown,
   Menu,
   Lock,
+  Sparkles,
 } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
 import { LiquidThemeToggle } from './LiquidThemeToggle';
@@ -23,6 +24,7 @@ interface NavbarProps {
   onOpenTelemetry?: () => void;
   onOpenArchitectureConsole?: () => void;
   onOpenTwoFactor?: () => void;
+  onOpenAbout?: () => void;
 }
 
 type MegaDrawerCategory = 'articles' | 'system' | 'ai' | 'batch' | null;
@@ -35,6 +37,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenTelemetry,
   onOpenArchitectureConsole,
   onOpenTwoFactor,
+  onOpenAbout,
 }) => {
   const [megaMenu, setMegaMenu] = useState<MegaDrawerCategory>(null);
 
@@ -293,6 +296,23 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {isMegaOpen ? <ChevronDown className="w-3.5 h-3.5 rotate-180" /> : <Menu className="w-3.5 h-3.5" />}
                 <span>{isMegaOpen ? 'KAPAT' : 'MENÜ'}</span>
               </button>
+
+              {/* Manifesto Button */}
+              {onOpenAbout && (
+                <button
+                  type="button"
+                  onClick={onOpenAbout}
+                  className={`hidden lg:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-mono font-bold tracking-wider uppercase transition-all duration-300 shadow-sm cursor-pointer ${
+                    isMegaOpen
+                      ? 'text-white/90 hover:text-white hover:bg-black/10'
+                      : 'text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                  }`}
+                  title="Mimar Abdullah Berke Özder & Mühendislik Manifestosu"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+                  <span>MANİFESTO</span>
+                </button>
+              )}
 
               {/* Ride Also "TEST DRIVE" Pill Button (Screenshots 1, 2, 3, 4) */}
               <button

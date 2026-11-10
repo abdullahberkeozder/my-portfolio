@@ -90,7 +90,7 @@ export const AdminBatchStudio: React.FC = () => {
 
             <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 font-mono leading-relaxed">
               Büyük ölçekli veri temizliği (Chunk-based Soft-Delete Cleanup), yazar etkileşim analitiği raporlama işleri
-              ve Spring AI 128D vektör veritabanı indeksleme boru hatlarını donanım kararlılığında yönetin.
+              ve Spring AI anlamsal vektör veritabanı indeksleme boru hatlarını yüksek sistem kararlılığıyla yönetin.
             </p>
           </div>
 

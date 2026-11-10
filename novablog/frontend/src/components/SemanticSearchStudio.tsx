@@ -88,16 +88,12 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
             </div>
 
             <h2 className="text-3xl sm:text-5xl font-black text-zinc-950 dark:text-white uppercase tracking-tight">
-              SPRING AI 128D VEKTÖR STÜDYOSU
+              YAPAY ZEKA ANLAMSAL ARAMA STÜDYOSU
             </h2>
 
             <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 font-mono leading-relaxed">
-              Klasik sözcük filtrelemesinin ötesinde yüksek boyutlu latent semantik uzay. Doğal dil girdisi 128 boyutlu
-              yoğun vektöre (Dense Embedding) projekte edilir ve çok boyutlu uzayda Kosinüs Benzerliği{' '}
-              <code className="text-[11px] bg-zinc-100 dark:bg-zinc-900 px-2 py-0.5 rounded text-zinc-900 dark:text-[#d4f933] font-bold border border-black/10 dark:border-white/10">
-                cos(θ) = (A · B) / (||A|| · ||B||)
-              </code>{' '}
-              ile anında taranır.
+              Klasik anahtar kelime eşleşmesinin ötesine geçen akıllı anlamsal arama motoru. Yazım hatası yapsanız veya
+              farklı kelimeler kullansanız bile, aradığınız konunun gerçek bağlamını anlayarak en alakalı makaleleri milisaniyeler içinde bulur.
             </p>
           </div>
 

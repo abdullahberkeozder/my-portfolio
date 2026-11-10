@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Terminal,
   Code2,
+  Sparkles,
 } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
 
@@ -17,12 +18,14 @@ interface FooterProps {
   setActiveTab?: (tab: 'feed' | 'ai-search' | 'ai-lab' | 'admin-batch') => void;
   onOpenTelemetry?: () => void;
   onOpenArchitectureConsole?: () => void;
+  onOpenAbout?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
   setActiveTab,
   onOpenTelemetry,
   onOpenArchitectureConsole,
+  onOpenAbout,
 }) => {
   const handleNavFeed = () => {
     if (setActiveTab) setActiveTab('feed');
@@ -108,15 +111,19 @@ export const Footer: React.FC<FooterProps> = ({
               </span>
               <ul className="space-y-2.5 text-[11px] tracking-wider uppercase font-semibold">
                 <li>
-                  <a
-                    href="https://github.com/abdullahberkeozder"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors flex items-center gap-1.5"
+                  <button
+                    onClick={() => {
+                      if (onOpenAbout) {
+                        onOpenAbout();
+                      } else {
+                        window.open('https://github.com/abdullahberkeozder', '_blank');
+                      }
+                    }}
+                    className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer uppercase font-semibold"
                   >
-                    <span>HAKKINDA</span>
-                    <ExternalLink className="w-3 h-3 opacity-60" />
-                  </a>
+                    <span>HAKKINDA &amp; MANİFESTO</span>
+                    <Sparkles className="w-3 h-3 text-[#d4f933]" />
+                  </button>
                 </li>
                 <li>
                   <button

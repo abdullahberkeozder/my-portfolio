@@ -19,6 +19,7 @@ import { AiPlayground } from '@/components/AiPlayground';
 import { AdminBatchStudio } from '@/components/AdminBatchStudio';
 import { SystemBlueprintSection } from '@/components/SystemBlueprintSection';
 import { Footer } from '@/components/Footer';
+import { AboutManifestoModal } from '@/components/AboutManifestoModal';
 import { FloatingCopilotWidget } from '@/components/FloatingCopilotWidget';
 import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
@@ -40,6 +41,7 @@ export default function Home() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isTelemetryModalOpen, setIsTelemetryModalOpen] = useState(false);
   const [isTwoFactorModalOpen, setIsTwoFactorModalOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -106,6 +108,7 @@ export default function Home() {
           }, 50);
         }}
         onOpenTwoFactor={() => setIsTwoFactorModalOpen(true)}
+        onOpenAbout={() => setIsAboutModalOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -368,9 +371,16 @@ export default function Home() {
         onClose={() => setIsTwoFactorModalOpen(false)}
       />
 
+      {/* Architect & Engineering Manifesto Modal */}
+      <AboutManifestoModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
+      />
+
       {/* Footer (Ride Also Architecture Manifest & Monumental Brandmark) */}
       <Footer
         setActiveTab={setActiveTab}
+        onOpenAbout={() => setIsAboutModalOpen(true)}
         onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
         onOpenArchitectureConsole={() => {
           setActiveTab('feed');
