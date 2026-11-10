@@ -2,87 +2,58 @@
 
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
-import { ArrowLeft, ArrowRight, Award } from 'lucide-react';
+import { ArrowLeft, ArrowRight, X, ExternalLink, CheckCircle } from 'lucide-react';
 
 interface StoryItem {
   id: string;
-  badgeType: string;
-  badgeLabel: string;
-  badgeSub: string;
-  badgeBg: string;
-  badgeText: string;
+  badgeType: 'time' | 'fast-company' | 'red-dot' | 'series-d' | 'enterprise';
   title: string;
+  subtitle: string;
   description: string;
   image: string;
-  ctaText: string;
-  actionType: 'console-loom' | 'console-writebehind' | 'tab-ai' | 'tab-batch' | 'telemetry';
+  customVisual?: 'geometric' | 'sky-brand';
+  detailHtml?: string;
+  actionModule?: string;
 }
 
 const STORIES: StoryItem[] = [
   {
-    id: 'loom-breakthrough',
-    badgeType: 'TIME INVENTIONS',
-    badgeLabel: 'JAVA 22 LOOM',
-    badgeSub: 'BEST INVENTIONS 2026',
-    badgeBg: 'bg-rose-600',
-    badgeText: 'text-white',
-    title: 'Tomcat OS thread havuzu darboğazına son: 10.000 sanal thread ile sıfır blokeleme.',
-    description: 'Project Loom sanal thread’leri Carrier Thread üzerinde koşturulur; I/O anında OS thread bloke edilmez.',
-    image: '/images/architecture-cutaway.jpg',
-    ctaText: 'MİMARİYİ İNCELE',
-    actionType: 'console-loom',
-  },
-  {
-    id: 'spring-ai-innovation',
-    badgeType: 'FAST COMPANY',
-    badgeLabel: 'SPRING AI 1.0 M6',
-    badgeSub: 'INNOVATION BY DESIGN',
-    badgeBg: 'bg-blue-600',
-    badgeText: 'text-white',
-    title: 'Geleneksel SQL LIKE aramasına son: 128 boyutlu kosinüs vektör uzayında anlamsal eşleşme.',
-    description: 'pgvector eklentisiyle makalelerin kavramsal bağlamı yakalanarak mikrosaniyede semantik arama yapılır.',
-    image: '/images/lifestyle-hero.jpg',
-    ctaText: 'VEKTÖR LAB’I AÇ',
-    actionType: 'tab-ai',
-  },
-  {
-    id: 'redis-writebehind',
-    badgeType: 'RED DOT AWARD',
-    badgeLabel: 'RED DOT WINNER',
-    badgeSub: 'ENGINEERING 2026',
-    badgeBg: 'bg-zinc-900',
-    badgeText: 'text-white',
-    title: 'Row-locksuz sayaç yönetimi: Saniyede 12.400 işlemde sıfır PostgreSQL satır kilitlemesi.',
-    description: 'HINCRBY ile Redis Hash üzerinde atomik sayaç biriktirme ve 30 saniyede bir toplu veritabanı flush.',
+    id: 'time-inventions',
+    badgeType: 'time',
+    title: 'ALSO TM-B e-bike named to TIME’s Best Inventions of 2026.',
+    subtitle: 'Java 22 Project Loom & Donanımsal Mimari Atılımı',
+    description: 'Tomcat carrier OS thread darboğazına son: 10.000 sanal thread ile sub-milisaniye gecikme ve sıfır blokeleme sağlayan endüstriyel e-bike mimarisi.',
     image: '/images/terminal-hardware.jpg',
-    ctaText: 'TAMPONU TEST ET',
-    actionType: 'console-writebehind',
+    actionModule: 'loom',
   },
   {
-    id: 'enterprise-reliability',
-    badgeType: 'ENTERPRISE AUDIT',
-    badgeLabel: '201/201 AUTOMATED',
-    badgeSub: '100% PASS RATE',
-    badgeBg: 'bg-gradient-to-r from-purple-700 to-indigo-700',
-    badgeText: 'text-white',
-    title: 'RFC 7807 Problem ayrıntıları ve 2FA TOTP geçici Pre-Auth token state machine güvenliği.',
-    description: 'Şifresi doğrulanmış istemciye geçici token verilir; Google Authenticator onayından sonra JWT tahsis edilir.',
+    id: 'fast-company',
+    badgeType: 'fast-company',
+    title: 'TM-B wins two 2026 Fast Company Design Awards.',
+    subtitle: 'İnovatif Donanım ve Yazılım Entegrasyonu',
+    description: 'pgvector 128 boyutlu kosinüs vektör uzayında anlamsal semantik eşleşme ve dokunsal Dieter Rams konsol ergonomisi ile çifte ödül.',
+    image: '/images/lifestyle-hero.jpg',
+    customVisual: 'geometric',
+    actionModule: 'spring-ai',
+  },
+  {
+    id: 'red-dot-award',
+    badgeType: 'red-dot',
+    title: 'ALSO wins the Red Dot Award for Product Design 2026.',
+    subtitle: 'Modüler Şasi ve Yüksek Verimli Enerji Yönetimi',
+    description: 'HINCRBY ile Redis Hash üzerinde row-locksuz sayaç yönetimi ve 30 saniyede bir toplu DB flush mimarisiyle Red Dot jürisinden tam not.',
     image: '/images/hardware-core.jpg',
-    ctaText: 'TELEMETRİYİ AÇ',
-    actionType: 'telemetry',
+    actionModule: 'write-behind',
   },
   {
-    id: 'batch-retention',
-    badgeType: 'CHUNK SPEC',
-    badgeLabel: 'SPRING BATCH 5',
-    badgeSub: 'CHUNK ARCHITECTURE',
-    badgeBg: 'bg-emerald-600',
-    badgeText: 'text-white',
-    title: '30 günlük soft-delete retention purge ve yazar performans analitiği otomasyonu.',
-    description: '100 kayıtlık chunk işleyicisi ve ItemReader ile bellek taşması olmadan veritabanı arşiv temizliği.',
+    id: 'series-d-finance',
+    badgeType: 'series-d',
+    title: 'ALSO announces $150 million Series D financing.',
+    subtitle: 'Küresel Ölçeklenme ve Kurumsal Güvenilirlik Aşaması',
+    description: 'RFC 7807 standartları, 2FA TOTP state machine protokolü ve Spring Batch 5 veri boru hattı ile desteklenen Seri D yatırım turu.',
     image: '/images/architecture-cutaway.jpg',
-    ctaText: 'BATCH KONSOLU',
-    actionType: 'tab-batch',
+    customVisual: 'sky-brand',
+    actionModule: 'optimistic-locking',
   },
 ];
 
@@ -98,14 +69,16 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
   onOpenArchitectureConsole,
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [selectedStory, setSelectedStory] = useState<StoryItem | null>(null);
 
-  // Mouse drag-to-scroll state (User requested drag capability!)
+  // Mouse drag-to-scroll state (Supports Left and Right Click!)
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftPos, setScrollLeftPos] = useState(0);
   const [hasDragged, setHasDragged] = useState(false);
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0 && e.button !== 2) return;
     if (!scrollContainerRef.current) return;
     setIsMouseDown(true);
     setHasDragged(false);
@@ -128,53 +101,40 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
-      const scrollAmount = direction === 'left' ? -340 : 340;
+      const scrollAmount = direction === 'left' ? -350 : 350;
       scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
-  const handleAction = (item: StoryItem) => {
-    if (hasDragged) return; // Ignore click while dragging
-    if (item.actionType === 'console-loom') {
+  const handleReadMore = (story: StoryItem) => {
+    if (hasDragged) return;
+    setSelectedStory(story);
+  };
+
+  const handleLaunchModule = (story: StoryItem) => {
+    setSelectedStory(null);
+    if (story.actionModule) {
       if (onSelectTab) onSelectTab('feed');
       if (onOpenArchitectureConsole) onOpenArchitectureConsole();
       setTimeout(() => {
         const el = document.getElementById('modular-architecture-console');
         if (el) el.scrollIntoView({ behavior: 'smooth' });
-        window.dispatchEvent(new CustomEvent('select-console-module', { detail: 'loom' }));
+        window.dispatchEvent(
+          new CustomEvent('select-console-module', { detail: story.actionModule })
+        );
         window.dispatchEvent(new CustomEvent('run-console-simulation'));
       }, 100);
-    } else if (item.actionType === 'console-writebehind') {
-      if (onSelectTab) onSelectTab('feed');
-      if (onOpenArchitectureConsole) onOpenArchitectureConsole();
-      setTimeout(() => {
-        const el = document.getElementById('modular-architecture-console');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-        window.dispatchEvent(new CustomEvent('select-console-module', { detail: 'write-behind' }));
-      }, 100);
-    } else if (item.actionType === 'tab-ai') {
-      if (onSelectTab) onSelectTab('ai-search');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (item.actionType === 'tab-batch') {
-      if (onSelectTab) onSelectTab('admin-batch');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (item.actionType === 'telemetry') {
-      if (onOpenTelemetry) onOpenTelemetry();
     }
   };
 
   return (
-    <section className="bg-zinc-950 dark:bg-[#07080a] text-white py-14 sm:py-18 border-b border-white/[0.08] transition-colors select-none overflow-hidden">
+    <section className="bg-[#18181b] dark:bg-[#090a0d] text-white py-14 sm:py-20 border-b border-white/[0.08] transition-colors select-none overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header: Stories Title on Left, Circular Arrows on Right */}
+        {/* Section Header: Stories Title on Left, Circular Arrows on Right (Direct Ride Also Screenshots 1 & 8) */}
         <div className="flex items-center justify-between pb-6 sm:pb-8">
           <div>
-            <div className="text-[10px] font-mono font-bold tracking-widest text-[#a855f7] uppercase mb-1">
-              RIDE ALSO INDUSTRIAL EDITORIAL // SPRING BOOT 4.1 SPEC
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white flex items-center gap-2.5">
-              <span>Mimarî Hikayeler</span>
-              <span className="text-zinc-500 font-normal text-xl sm:text-2xl">{'//'} Breakthroughs</span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+              Stories
             </h2>
           </div>
 
@@ -182,19 +142,19 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={() => scroll('left')}
-              className="w-10 h-10 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-white/10 flex items-center justify-center text-white transition-all cursor-pointer hover:scale-105 active:scale-95 btn-tactile shadow-md"
+              className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/10 flex items-center justify-center text-white transition-all cursor-pointer hover:scale-105 active:scale-95 btn-tactile shadow-md"
               title="Önceki Hikayeler"
               aria-label="Önceki Hikayeler"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
             </button>
             <button
               onClick={() => scroll('right')}
-              className="w-10 h-10 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-white/10 flex items-center justify-center text-white transition-all cursor-pointer hover:scale-105 active:scale-95 btn-tactile shadow-md"
+              className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/10 flex items-center justify-center text-white transition-all cursor-pointer hover:scale-105 active:scale-95 btn-tactile shadow-md"
               title="Sonraki Hikayeler"
               aria-label="Sonraki Hikayeler"
             >
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 stroke-[2.5]" />
             </button>
           </div>
         </div>
@@ -206,6 +166,9 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onContextMenu={(e) => {
+            if (hasDragged) e.preventDefault();
+          }}
           className={`flex gap-5 overflow-x-auto scrollbar-none snap-x snap-mandatory py-2 -mx-4 px-4 sm:mx-0 sm:px-0 ${
             isMouseDown ? 'cursor-grabbing select-none' : 'cursor-grab'
           }`}
@@ -213,61 +176,189 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
           {STORIES.map((story) => (
             <div
               key={story.id}
-              className="min-w-[290px] sm:min-w-[330px] max-w-[350px] flex-shrink-0 snap-start rounded-3xl bg-white text-zinc-950 p-5 flex flex-col justify-between shadow-2xl border border-black/5 hover:-translate-y-1 transition-transform duration-300 group"
+              className="min-w-[280px] sm:min-w-[320px] max-w-[340px] flex-shrink-0 snap-start rounded-3xl bg-white text-zinc-950 p-5 flex flex-col justify-between shadow-2xl border border-black/5 hover:-translate-y-1 transition-transform duration-300 group cursor-pointer"
+              onClick={() => handleReadMore(story)}
             >
               <div className="space-y-4">
-                {/* Story Image / Graphic Area with Award Badge Overlay */}
-                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-zinc-900 border border-black/10">
-                  {story.image && (
-                    <Image
-                      src={story.image}
-                      alt={story.title}
-                      fill
-                      sizes="(max-width: 768px) 290px, 350px"
-                      className="object-cover transition-transform group-hover:scale-105 duration-700 ease-out"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 pointer-events-none" />
-
-                  {/* Award / Brand Badge (Direct Ride Also Screenshot 1 Look) */}
-                  <div className="absolute top-3 right-3 flex flex-col items-end">
-                    <div
-                      className={`px-2.5 py-1 rounded-md text-[9px] font-mono font-bold tracking-wider uppercase shadow-md flex items-center gap-1 ${story.badgeBg} ${story.badgeText}`}
-                    >
-                      <Award className="w-3 h-3" />
-                      <span>{story.badgeLabel}</span>
+                {/* Visual Area (Aspect ~16:10 / 4:3 with Rounded Frame) */}
+                <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-zinc-100 border border-black/10">
+                  {/* Geometric graphic for Fast Company */}
+                  {story.customVisual === 'geometric' ? (
+                    <div className="w-full h-full bg-[#0066ff] flex items-center justify-between p-6 relative overflow-hidden">
+                      {/* Geometric semi-circles matching Fast Company Screenshot */}
+                      <div className="w-24 h-24 rounded-full bg-[#00e5ff] relative overflow-hidden shadow-lg">
+                        <div className="absolute top-0 right-0 w-12 h-24 bg-white" />
+                        <div className="absolute bottom-0 left-0 w-12 h-12 bg-black" />
+                      </div>
+                      <div className="text-right text-white space-y-0.5">
+                        <div className="font-sans font-black text-xs sm:text-sm tracking-wider uppercase">
+                          FAST COMPANY
+                        </div>
+                        <div className="font-mono text-[9px] text-white/80 uppercase">
+                          INNOVATION BY DESIGN 2026
+                        </div>
+                      </div>
                     </div>
-                    <span className="text-[8px] font-mono text-white/90 bg-black/60 px-1.5 py-0.5 rounded mt-0.5">
-                      {story.badgeSub}
-                    </span>
-                  </div>
+                  ) : story.customVisual === 'sky-brand' ? (
+                    /* Sky Blue Gradient with ALSO. logo for Series D Financing matching Screenshot */
+                    <div className="w-full h-full bg-gradient-to-b from-[#90c5f9] to-[#bfdbfe] flex flex-col items-center justify-center p-4 relative text-center">
+                      <div className="font-sans font-black text-3xl sm:text-4xl tracking-tighter text-black uppercase mb-2">
+                        ALSO.
+                      </div>
+                      <div className="flex items-center gap-2 text-[9px] font-mono font-bold text-zinc-800 tracking-wider">
+                        <span>PRYSM</span>
+                        <span>&bull;</span>
+                        <span>ECLIPSE</span>
+                        <span>&bull;</span>
+                        <span>GREENOAKS</span>
+                        <span>&bull;</span>
+                        <span>MVP</span>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Product Hardware / E-Bike Photo with Award Badge */
+                    <>
+                      <Image
+                        src={story.image}
+                        alt={story.title}
+                        fill
+                        sizes="(max-width: 768px) 280px, 340px"
+                        className="object-cover transition-transform group-hover:scale-105 duration-700 ease-out"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+
+                      {/* TIME Red Ribbon Badge overlay (Direct Screenshot 1 & 8) */}
+                      {story.badgeType === 'time' && (
+                        <div className="absolute top-3 right-3 bg-red-600 text-white p-1.5 rounded-sm shadow-lg text-center font-serif leading-none border border-white/20">
+                          <div className="text-[9px] font-bold tracking-tight">TIME</div>
+                          <div className="text-[7px] font-black uppercase tracking-tighter mt-0.5">BEST</div>
+                          <div className="text-[6px] font-sans tracking-tight">INVENTIONS</div>
+                          <div className="text-[7px] font-mono font-bold">2026</div>
+                        </div>
+                      )}
+
+                      {/* Red Dot Award Badge overlay */}
+                      {story.badgeType === 'red-dot' && (
+                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-xs text-black px-2 py-1 rounded-md shadow-md text-right font-sans leading-tight border border-black/10">
+                          <div className="flex items-center gap-1 justify-end">
+                            <span className="w-2.5 h-2.5 rounded-full bg-red-600" />
+                            <span className="text-[8px] font-bold">reddot winner 2026</span>
+                          </div>
+                          <div className="text-[7px] text-zinc-500 font-mono">bicycle design</div>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
 
-                {/* Story Headline & Description */}
-                <div className="space-y-1.5">
-                  <h3 className="text-sm sm:text-base font-black text-zinc-950 leading-snug tracking-tight">
-                    {story.title}
-                  </h3>
-                  <p className="text-xs text-zinc-600 font-sans line-clamp-2 leading-relaxed">
-                    {story.description}
-                  </p>
-                </div>
+                {/* Headline Text: Clean sans-serif matching Screenshot */}
+                <h3 className="text-sm sm:text-[15px] font-semibold text-zinc-950 leading-snug tracking-tight">
+                  {story.title}
+                </h3>
               </div>
 
-              {/* Ride Also Iconic Black Pill Button: [READ MORE / MİMARİYİ İNCELE] */}
-              <div className="pt-5 border-t border-black/[0.06] mt-4">
+              {/* Ride Also Signature Bottom Black Pill Button: [READ MORE] (Direct Screenshot 1 & 8) */}
+              <div className="pt-6">
                 <button
-                  onClick={() => handleAction(story)}
-                  className="w-full py-2.5 px-4 rounded-full bg-black text-white hover:bg-zinc-800 text-[11px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer btn-tactile shadow-sm flex items-center justify-center gap-1.5"
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleReadMore(story);
+                  }}
+                  className="px-5 py-2 rounded-full bg-black text-white hover:bg-neutral-800 text-[11px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer btn-tactile shadow-sm active:scale-95"
                 >
-                  <span>{story.ctaText}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  READ MORE
                 </button>
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Story Detail Modal / Editorial Drawer */}
+      {selectedStory && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+          <div className="relative w-full max-w-xl bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-black/10 dark:border-white/10 space-y-6 max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between">
+              <div className="space-y-1">
+                <span className="px-3 py-1 rounded-full bg-black text-white dark:bg-white dark:text-black text-[10px] font-mono font-bold uppercase tracking-wider">
+                  EDITORIAL SPECIFICATION // 2026
+                </span>
+                <h3 className="text-xl sm:text-2xl font-black tracking-tight leading-snug">
+                  {selectedStory.title}
+                </h3>
+                <p className="text-xs font-mono text-purple-600 dark:text-purple-400 font-bold">
+                  {selectedStory.subtitle}
+                </p>
+              </div>
+
+              <button
+                onClick={() => setSelectedStory(null)}
+                className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 flex items-center justify-center transition-colors cursor-pointer"
+                title="Kapat"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Hero Graphic */}
+            <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-zinc-900 border border-black/10">
+              <Image
+                src={selectedStory.image}
+                alt={selectedStory.title}
+                fill
+                className="object-cover"
+              />
+            </div>
+
+            {/* Modal Body Content */}
+            <div className="space-y-4 text-sm font-sans text-zinc-600 dark:text-zinc-300 leading-relaxed">
+              <p>{selectedStory.description}</p>
+              <div className="p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-black/5 dark:border-white/5 space-y-2 text-xs font-mono">
+                <div className="flex items-center gap-2 font-bold text-zinc-900 dark:text-white">
+                  <CheckCircle className="w-4 h-4 text-emerald-500" />
+                  <span>DOĞRULANMIŞ MİMARİ KRİTERLER:</span>
+                </div>
+                <ul className="space-y-1 text-zinc-500 dark:text-zinc-400 pl-6 list-disc">
+                  <li>201/201 otomatik birim ve entegrasyon testi doğrulaması</li>
+                  <li>Saniyede 12.400 sayaç işleminde sıfır satır kilitleme</li>
+                  <li>RFC 7807 problem ayrıntıları ile hata şeffaflığı</li>
+                  <li>2FA TOTP ve geçici Pre-Auth token state machine koruması</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="pt-2 flex items-center justify-end gap-3 border-t border-black/10 dark:border-white/10">
+              {onOpenTelemetry && (
+                <button
+                  onClick={() => {
+                    setSelectedStory(null);
+                    onOpenTelemetry();
+                  }}
+                  className="px-4 py-2.5 rounded-full text-xs font-mono font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 uppercase transition-colors"
+                >
+                  TELEMETRİ PANELİ
+                </button>
+              )}
+              <button
+                onClick={() => setSelectedStory(null)}
+                className="px-5 py-2.5 rounded-full text-xs font-mono font-bold text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white uppercase transition-colors"
+              >
+                KAPAT
+              </button>
+              <button
+                onClick={() => handleLaunchModule(selectedStory)}
+                className="px-6 py-2.5 rounded-full bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer shadow-md flex items-center gap-1.5"
+              >
+                <span>MİMARİYİ CANLI DENE</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
