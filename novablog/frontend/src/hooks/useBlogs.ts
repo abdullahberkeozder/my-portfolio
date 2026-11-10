@@ -285,3 +285,13 @@ export function useSoftDeleteBlogMutation() {
   });
 }
 
+// 13. Two-Factor Authentication (TOTP) State Machine Query
+export function useTwoFactorStatusQuery(enabled: boolean) {
+  return useQuery({
+    queryKey: ['twoFactorStatus'],
+    queryFn: () => ApiClient.get2faStatus(),
+    enabled,
+    staleTime: 30 * 1000,
+  });
+}
+

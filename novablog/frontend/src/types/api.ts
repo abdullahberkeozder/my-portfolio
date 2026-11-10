@@ -156,6 +156,18 @@ export interface TwoFactorStatusDto {
   remainingBackupCodes: number;
 }
 
+export interface TwoFactorSetupResponseDto {
+  secret: string;
+  qrCodeDataUri: string;
+  manualEntryKey: string;
+  otpAuthUrl: string;
+}
+
+export interface TwoFactorRecoveryCodesDto {
+  recoveryCodes: string[];
+  message: string;
+}
+
 export interface JwtResponseDto {
   token: string;
   refreshToken?: string;

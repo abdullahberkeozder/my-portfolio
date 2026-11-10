@@ -13,6 +13,7 @@ import { BlogCard } from '@/components/BlogCard';
 import { BlogDetailModal } from '@/components/BlogDetailModal';
 import { CreateBlogModal } from '@/components/CreateBlogModal';
 import { SystemTelemetryModal } from '@/components/SystemTelemetryModal';
+import { TwoFactorModal } from '@/components/TwoFactorModal';
 import { SemanticSearchStudio } from '@/components/SemanticSearchStudio';
 import { AiPlayground } from '@/components/AiPlayground';
 import { AdminBatchStudio } from '@/components/AdminBatchStudio';
@@ -38,6 +39,7 @@ export default function Home() {
   const [selectedBlog, setSelectedBlog] = useState<BlogDto | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isTelemetryModalOpen, setIsTelemetryModalOpen] = useState(false);
+  const [isTwoFactorModalOpen, setIsTwoFactorModalOpen] = useState(false);
   const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -103,6 +105,7 @@ export default function Home() {
             if (el) el.scrollIntoView({ behavior: 'smooth' });
           }, 50);
         }}
+        onOpenTwoFactor={() => setIsTwoFactorModalOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -357,6 +360,12 @@ export default function Home() {
         onClose={() => setIsTelemetryModalOpen(false)}
         isBackendOnline={isBackendOnline}
         onMetricsFlushed={() => refetchBlogs()}
+      />
+
+      {/* Two-Factor Authentication (2FA / TOTP) Security Center Modal */}
+      <TwoFactorModal
+        isOpen={isTwoFactorModalOpen}
+        onClose={() => setIsTwoFactorModalOpen(false)}
       />
 
       {/* Footer (Ride Also Architecture Manifest & Monumental Brandmark) */}

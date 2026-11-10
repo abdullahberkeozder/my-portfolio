@@ -10,6 +10,7 @@ import {
   Zap,
   ChevronDown,
   Menu,
+  Lock,
 } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
 import { LiquidThemeToggle } from './LiquidThemeToggle';
@@ -21,6 +22,7 @@ interface NavbarProps {
   onRefreshHealth: () => void;
   onOpenTelemetry?: () => void;
   onOpenArchitectureConsole?: () => void;
+  onOpenTwoFactor?: () => void;
 }
 
 type MegaDrawerCategory = 'articles' | 'system' | 'ai' | 'batch' | null;
@@ -32,6 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onRefreshHealth,
   onOpenTelemetry,
   onOpenArchitectureConsole,
+  onOpenTwoFactor,
 }) => {
   const [megaMenu, setMegaMenu] = useState<MegaDrawerCategory>(null);
 
@@ -310,6 +313,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>TEST DRIVE</span>
               </button>
 
+              {/* 2FA / TOTP Security Center Button */}
+              <button
+                type="button"
+                onClick={onOpenTwoFactor}
+                className={`flex items-center gap-1.5 p-2 rounded-full transition-all cursor-pointer btn-tactile ${
+                  isMegaOpen
+                    ? 'bg-black/20 text-white hover:bg-black/40'
+                    : 'glass-liquid hover:border-black/20 dark:hover:border-white/20 text-zinc-800 dark:text-zinc-200'
+                }`}
+                title="2FA / TOTP Güvenlik Protokolü"
+              >
+                <Lock className="w-4 h-4" />
+              </button>
+
               {/* Kaolti Liquid Glass Theme Switcher */}
               <LiquidThemeToggle />
 
@@ -465,7 +482,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <li>
                       <button
                         onClick={() => {
-                          if (onOpenTelemetry) onOpenTelemetry();
+                          if (onOpenTwoFactor) onOpenTwoFactor();
+                          else if (onOpenTelemetry) onOpenTelemetry();
                           closeMegaMenu();
                         }}
                         className="text-left text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer block tracking-wider"
