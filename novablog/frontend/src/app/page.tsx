@@ -394,6 +394,7 @@ export default function Home() {
       {/* Ride Also Signature Floating Lavender Copilot Widget (Screenshots 1-6) */}
       <FloatingCopilotWidget
         onSelectTab={setActiveTab}
+        onOpenAbout={() => setIsAboutModalOpen(true)}
         onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
         onMetricsFlushed={() => refetchBlogs()}
         onOpenArchitectureConsole={() => {

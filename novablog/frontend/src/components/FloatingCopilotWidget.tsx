@@ -17,6 +17,7 @@ interface FloatingCopilotWidgetProps {
   onOpenTelemetry?: () => void;
   onSelectTab?: (tab: 'feed' | 'ai-search' | 'ai-lab' | 'admin-batch') => void;
   onMetricsFlushed?: () => void;
+  onOpenAbout?: () => void;
 }
 
 interface QnA {
@@ -26,57 +27,67 @@ interface QnA {
   answer: string;
   tag: string;
   actionText?: string;
-  actionType?: 'console-loom' | 'console-writebehind' | 'telemetry' | 'tab-ai' | 'tab-batch';
+  actionType?: 'console-loom' | 'console-writebehind' | 'telemetry' | 'tab-ai' | 'tab-batch' | 'manifesto';
 }
 
 const KNOWLEDGE_BASE: QnA[] = [
   {
-    id: 'loom',
-    chip: '⚡ Java 22 Loom Threads',
-    title: 'Java 22 Project Loom Sanal Thread Mimarisi',
-    tag: 'CONCURRENCY // ZERO BLOCKING',
+    id: 'manifesto',
+    chip: '💡 Mimari Felsefesi',
+    title: 'Neden Endüstriyel Dokunsallık ve Java 22?',
+    tag: 'FELSEFE // DIETER RAMS',
     answer:
-      'Geleneksel Tomcat 200 OS platform thread havuzu yerine, Java 22 sanal thread’leri (Virtual Threads) Carrier Thread üzerinde yürütülür. I/O blokajı anında OS thread bloke edilmez, mikrosaniyede unpin edilir. Bu sayede 10.000+ eşzamanlı istek 0ms taşıyıcı gecikmesiyle işlenir.',
+      'Dieter Rams’ın "İyi tasarım dürüsttür ve olabildiğince az tasarımdır" ilkesiyle inşa edildi. Şişirilmiş gereksiz mikroservisler yerine, tek bir modern JVM üzerinde donanım sınırlarını zorlayan, kilitlenmeyen ve veri kaybetmeyen saf mühendislik disiplinini benimsiyoruz.',
+    actionText: 'Mühendislik Manifestosunu Oku',
+    actionType: 'manifesto',
+  },
+  {
+    id: 'loom',
+    chip: '⚡ Java 22 Loom',
+    title: 'Sanal İş Parçacıkları ve Eşzamanlılık',
+    tag: 'EŞZAMANLILIK // KİLİTLENMESİZ',
+    answer:
+      'Tomcat’in geleneksel 200 iş parçacığı havuzu yüksek trafikte tükenip sunucunun kilitlenmesine yol açar. Java 22 Loom sanal iş parçacıkları ise işletim sistemini bloke etmeden çalışır; bellek tüketimini megabaytlardan kilobaytlara düşürerek 10.000+ eşzamanlı isteği takılmadan karşılar.',
     actionText: 'Loom Simülatörünü Başlat',
     actionType: 'console-loom',
   },
   {
     id: 'write-behind',
-    chip: '🗄️ Redis Write-Behind Buffer',
+    chip: '🗄️ Redis Önbellek',
     title: 'Redis Write-Behind Asenkron Sayaç Mimarisi',
-    tag: 'CACHE // ROW-LOCK FREE',
+    tag: 'ÖNBELLEK // SIFIR KİLİTLEME',
     answer:
-      'Her görüntülenme ve beğenide PostgreSQL satır kilidi (Row Lock) almak yerine Redis Hash üzerinde HINCRBY ile atomik O(1) sayım yapılır. Arka plandaki Scheduled flusher her 30 saniyede bir birikmiş deltaları tek bir batch sorgusuyla veritabanına aktarır.',
+      'Her makale okunduğunda veya beğenildiğinde veritabanına doğrudan yazmak sunucu diskini kilitler. Redis Write-Behind mimarisinde sayaçlar önce ultra-hızlı bellekte toplanır ve her 30 saniyede bir topluca veritabanına güvenle aktarılır (%98 I/O tasarrufu).',
     actionText: 'Write-Behind Tamponunu İncele',
     actionType: 'console-writebehind',
   },
   {
     id: 'spring-ai',
-    chip: '🧠 Spring AI 128D Vektör Arama',
-    title: '128 Boyutlu Kosinüs Semantik Arama Uzayı',
-    tag: 'AI VECTOR // COSINE PROJECTION',
+    chip: '🧠 Yapay Zeka Arama',
+    title: 'Yapay Zeka Destekli Anlamsal Arama',
+    tag: 'YAPAY ZEKA // KOSİNÜS BENZERLİĞİ',
     answer:
-      'Klasik SQL LIKE veya anahtar kelime eşleşmesi bağlamı yakalayamaz. Spring AI pgvector eklentisi ile makale içerikleri 128 boyutlu yoğun vektör uzayına projekte edilir. Arama sorgusu ile makale arasındaki kosinüs mesafesi mikrosaniyede hesaplanarak semantik benzerlik bulunur.',
+      'Klasik arama sadece yazdığınız aynı harfleri arar. Yapay zeka arama motorumuz ise girdiğiniz cümlenin gerçek anlamını kavrar. Örneğin "bellek yönetimi" aradığınızda içinde bu kelime geçmese bile "garbage collector" makalelerini bularak en alakalı içeriği getirir.',
     actionText: 'Vektör Arama Modülünü Aç',
     actionType: 'tab-ai',
   },
   {
     id: '2fa',
-    chip: '🔐 2FA TOTP & Pre-Auth State Machine',
-    title: 'İki Aşamalı Güvenlik ve Pre-Auth JWT',
-    tag: 'SECURITY // STATE MACHINE',
+    chip: '🔐 2FA Güvenlik Zırhı',
+    title: 'İki Aşamalı Güvenlik ve Pre-Auth Doğrulama',
+    tag: 'GÜVENLİK // İKİ ADIMLI',
     answer:
-      'Kullanıcı şifresini doğruladığında doğrudan tam yetkili JWT verilmez; "PRE_AUTH" kapsamlı geçici token verilir. Bu token yalnızca TOTP doğrulama uç noktasına erişebilir. Başarılı Google Authenticator kodundan sonra asıl JWT tahsis edilir.',
+      'Kullanıcı şifresini doğruladığında doğrudan tam yetki verilmez; geçici "PRE_AUTH" güvenlik kapsamı tanımlanır. Bu token yalnızca TOTP doğrulama uç noktasına erişebilir. Başarılı Google Authenticator kodundan sonra asıl kurumsal oturum açılır.',
     actionText: 'Telemetri Konsolunu Aç',
     actionType: 'telemetry',
   },
   {
     id: 'batch',
-    chip: '📦 Spring Batch 5 & Soft-Delete',
-    title: 'Chunk-Oriented ETL ve Retention Purge',
-    tag: 'BATCH AUTOMATION // 100 CHUNKS',
+    chip: '📦 Spring Batch 5',
+    title: 'Büyük Veri Temizliği ve Analitik Boru Hattı',
+    tag: 'ARKA PLAN // ETKİLEŞİM ETL',
     answer:
-      'Soft-deleted olarak işaretlenen kayıtlar sistemde kalıcı çöp oluşturmaz. Spring Batch 5 ile her gece çalışan 100 kayıtlık chunk işleyicisi, 30 günü aşan kayıtları güvenli şekilde siler ve yazar analitik raporunu üretir.',
+      'Silinmiş makaleler sistemde kalıcı çöp oluşturmaz. Spring Batch 5 ile arka planda çalışan 50 kayıtlık paket işleyicisi, 30 günü aşan kayıtları sunucuyu yormadan güvenli şekilde siler ve yazar analitik raporunu üretir.',
     actionText: 'Batch Stüdyosuna Git',
     actionType: 'tab-batch',
   },
@@ -87,6 +98,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
   onOpenTelemetry,
   onSelectTab,
   onMetricsFlushed,
+  onOpenAbout,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedQnA, setSelectedQnA] = useState<QnA>(KNOWLEDGE_BASE[0]);
@@ -137,6 +149,8 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
     } else if (type === 'tab-batch') {
       if (onSelectTab) onSelectTab('admin-batch');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (type === 'manifesto') {
+      if (onOpenAbout) onOpenAbout();
     }
   };
 
