@@ -32,7 +32,7 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
 
   const sampleQueries = [
     'Yüksek eşzamanlı isteklerde thread performansı ve sanal iş parçacıkları',
-    'Vektör gömme ve kosinüs benzerliği ile akıllı arama motoru',
+    'Yapay zeka ile anlamsal makale arama ve akıllı sıralama',
     'Google Authenticator ile iki aşamalı güvenlik ve kurtarma kodları',
     'Büyük veri kümelerinde toplu chunk ETL ve veri temizliği',
   ];
@@ -100,15 +100,15 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
           {/* Quick Hardware Spec Cluster */}
           <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
             <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-center min-w-[110px]">
-              <div className="text-[10px] text-zinc-400 uppercase">EMBEDDING</div>
-              <div className="text-sm font-bold text-zinc-950 dark:text-white mt-0.5">128D DENSE</div>
+              <div className="text-[10px] text-zinc-400 uppercase">VEKTÖR BOYUTU</div>
+              <div className="text-sm font-bold text-zinc-950 dark:text-white mt-0.5">128D YOĞUN</div>
             </div>
             <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-center min-w-[110px]">
-              <div className="text-[10px] text-zinc-400 uppercase">METRIC</div>
-              <div className="text-sm font-bold text-zinc-950 dark:text-[#d4f933] mt-0.5">COSINE SIM</div>
+              <div className="text-[10px] text-zinc-400 uppercase">HESAPLAMA METRİĞİ</div>
+              <div className="text-sm font-bold text-zinc-950 dark:text-[#d4f933] mt-0.5">KOSİNÜS AÇISI</div>
             </div>
             <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-center min-w-[110px]">
-              <div className="text-[10px] text-zinc-400 uppercase">LATENCY</div>
+              <div className="text-[10px] text-zinc-400 uppercase">ORTALAMA GECİKME</div>
               <div className="text-sm font-bold text-emerald-500 mt-0.5">~1.8MS P99</div>
             </div>
           </div>
@@ -199,7 +199,7 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
             className="absolute right-2 px-6 py-2.5 rounded-full bg-zinc-950 dark:bg-[#d4f933] hover:opacity-90 disabled:opacity-50 text-white dark:text-black text-xs font-mono font-black uppercase tracking-wider shadow-md flex items-center gap-2 transition-transform active:scale-95 cursor-pointer"
           >
             {isSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-            <span>ARA // RUN</span>
+            <span>ANLAMSAL ARA</span>
           </button>
         </div>
 
@@ -236,7 +236,7 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
           {latencyMs !== null && (
             <div className="flex items-center gap-1.5 text-emerald-500 font-bold">
               <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>BORU HATTI GECİKMESİ: {latencyMs} ms (128D VECTOR COSINE)</span>
+              <span>BORU HATTI GECİKMESİ: {latencyMs} ms (128D ANLAMSAL VEKTÖR)</span>
             </div>
           )}
         </div>
