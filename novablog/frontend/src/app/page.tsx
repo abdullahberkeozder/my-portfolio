@@ -346,6 +346,7 @@ export default function Home() {
         blog={selectedBlog}
         onClose={() => setSelectedBlog(null)}
         onTagClick={(tag) => setSearchTerm(tag)}
+        onOpenAbout={() => setIsAboutModalOpen(true)}
       />
 
       {/* Create Modal */}

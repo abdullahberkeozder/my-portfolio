@@ -35,6 +35,7 @@ interface BlogDetailModalProps {
   blog: BlogDto | null;
   onClose: () => void;
   onTagClick?: (tag: string) => void;
+  onOpenAbout?: () => void;
 }
 
 const CodeSnippet: React.FC<{ code: string; language: string }> = ({ code, language }) => {
@@ -79,7 +80,7 @@ const CodeSnippet: React.FC<{ code: string; language: string }> = ({ code, langu
   );
 };
 
-export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose, onTagClick }) => {
+export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose, onTagClick, onOpenAbout }) => {
   const blogId = blog?.id ?? blog?.blogId;
   const { data: liveBlog } = useBlogDetailQuery(blogId);
   const currentBlog = liveBlog || blog;
@@ -94,11 +95,37 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
   const [newComment, setNewComment] = useState('');
   const [authorName, setAuthorName] = useState('');
   const [isCopiedLink, setIsCopiedLink] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [moderationPreview, setModerationPreview] = useState<{
     toxic: boolean;
     sentiment: string;
     score: number;
   } | null>(null);
+
+  const handleBodyScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    const maxScroll = el.scrollHeight - el.clientHeight;
+    if (maxScroll > 0) {
+      setScrollProgress((el.scrollTop / maxScroll) * 100);
+    }
+  };
+
+  const renderInlineCode = (text: string) => {
+    const parts = text.split(/(`[^`]+`)/g);
+    return parts.map((seg, i) => {
+      if (seg.startsWith('`') && seg.endsWith('`')) {
+        return (
+          <code
+            key={i}
+            className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-purple-600 dark:text-purple-400 font-mono text-[12px] font-bold border border-black/5 dark:border-white/10"
+          >
+            {seg.slice(1, -1)}
+          </code>
+        );
+      }
+      return seg;
+    });
+  };
 
   // Görüntülenme Sayacı (Write-Behind Redis Buffer): Modal açıldığında bir kez tetiklenir
   const hasRecordedView = useRef<number | null>(null);
@@ -212,14 +239,14 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
             if (trimmed.startsWith('### ')) {
               return (
                 <h4 key={pIdx} className="text-base font-bold text-zinc-950 dark:text-white pt-2 border-b border-black/[0.08] dark:border-white/[0.08] pb-1.5 font-mono">
-                  {trimmed.replace(/^###\s+/, '')}
+                  {renderInlineCode(trimmed.replace(/^###\s+/, ''))}
                 </h4>
               );
             }
             if (trimmed.startsWith('## ')) {
               return (
                 <h3 key={pIdx} className="text-lg font-bold text-zinc-950 dark:text-white pt-3 border-b border-black/[0.08] dark:border-white/[0.08] pb-1.5 font-mono">
-                  {trimmed.replace(/^##\s+/, '')}
+                  {renderInlineCode(trimmed.replace(/^##\s+/, ''))}
                 </h3>
               );
             }
@@ -229,7 +256,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
                 <ul key={pIdx} className="list-disc list-inside space-y-2 pl-2 text-zinc-600 dark:text-zinc-300 text-sm">
                   {items.map((item, iIdx) => (
                     <li key={iIdx} className="leading-relaxed">
-                      {item.replace(/^[-*]\s+/, '')}
+                      {renderInlineCode(item.replace(/^[-*]\s+/, ''))}
                     </li>
                   ))}
                 </ul>
@@ -237,7 +264,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
             }
             return (
               <p key={pIdx} className="text-zinc-700 dark:text-zinc-300 leading-relaxed text-sm">
-                {trimmed}
+                {renderInlineCode(trimmed)}
               </p>
             );
           })}
@@ -281,8 +308,16 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
           </button>
         </div>
 
+        {/* Reading Progress Indicator */}
+        <div className="w-full h-1 bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-purple-500 via-[#d4f933] to-emerald-400 transition-all duration-150"
+            style={{ width: `${scrollProgress}%` }}
+          />
+        </div>
+
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-6">
+        <div onScroll={handleBodyScroll} className="p-6 overflow-y-auto space-y-6">
           {/* Metadata Row */}
           <div className="flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-zinc-500 pb-4 border-b border-black/[0.08] dark:border-white/[0.08]">
             <div className="flex flex-wrap items-center gap-4">
@@ -290,7 +325,20 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
                 <div className="w-7 h-7 rounded-full bg-zinc-950 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-xs uppercase">
                   {currentBlog.author ? currentBlog.author.charAt(0) : 'A'}
                 </div>
-                <span className="font-semibold text-zinc-900 dark:text-zinc-200">{currentBlog.author || 'Abdullah Berke Özder'}</span>
+                {onOpenAbout ? (
+                  <button
+                    onClick={onOpenAbout}
+                    className="font-semibold text-zinc-900 dark:text-zinc-200 hover:text-purple-600 dark:hover:text-[#d4f933] transition-colors cursor-pointer flex items-center gap-1.5 group"
+                    title="Mimar & Mühendislik Manifestosunu Görüntüle"
+                  >
+                    <span>{currentBlog.author || 'Abdullah Berke Özder'}</span>
+                    <span className="text-[10px] font-mono font-bold text-zinc-700 dark:text-[#d4f933] bg-zinc-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded-full border border-black/10 dark:border-white/10 group-hover:bg-[#d4f933] group-hover:text-black transition-colors">
+                      MİMAR
+                    </span>
+                  </button>
+                ) : (
+                  <span className="font-semibold text-zinc-900 dark:text-zinc-200">{currentBlog.author || 'Abdullah Berke Özder'}</span>
+                )}
               </div>
               <span className="flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5 text-zinc-400" />
