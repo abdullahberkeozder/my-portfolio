@@ -433,11 +433,37 @@ export class ApiClient {
         authorName: dto.authorName || 'Ziyaretçi Mühendis',
         createdAt: new Date().toISOString(),
         isApproved: !mod.toxic,
+        moderationStatus: mod.toxic ? 'FLAGGED_TOXIC' : 'APPROVED',
         sentiment: mod.sentiment,
         moderationReason: mod.reason,
       };
       return newComment;
     }
+  }
+
+  public static async approveComment(commentId: number): Promise<CommentResponseDto> {
+    const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/comments/${commentId}/approve`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+    const data: ApiResult<CommentResponseDto> = await res.json();
+    return data.data;
+  }
+
+  public static async flagComment(commentId: number, reason: string = 'Sakıncalı İçerik'): Promise<CommentResponseDto> {
+    const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/comments/${commentId}/flag?reason=${encodeURIComponent(reason)}`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+    const data: ApiResult<CommentResponseDto> = await res.json();
+    return data.data;
+  }
+
+  public static async restoreComment(commentId: number): Promise<void> {
+    await fetch(`${API_BASE_URL}/blog/api/v1.0.0/comments/${commentId}/restore`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
   }
 
   // --- CATEGORIES ---

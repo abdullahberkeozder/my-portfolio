@@ -225,3 +225,28 @@ export function useAddCommentMutation() {
     },
   });
 }
+
+// 8. Admin Moderation State Machine: Approve Comment Mutation
+export function useApproveCommentMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation<CommentResponseDto, Error, { commentId: number; blogId: number }>({
+    mutationFn: ({ commentId }) => ApiClient.approveComment(commentId),
+    onSuccess: (_res, { blogId }) => {
+      queryClient.invalidateQueries({ queryKey: ['comments', blogId] });
+    },
+  });
+}
+
+// 9. Admin Moderation State Machine: Quarantine / Flag Comment Mutation
+export function useFlagCommentMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation<CommentResponseDto, Error, { commentId: number; blogId: number; reason?: string }>({
+    mutationFn: ({ commentId, reason }) => ApiClient.flagComment(commentId, reason),
+    onSuccess: (_res, { blogId }) => {
+      queryClient.invalidateQueries({ queryKey: ['comments', blogId] });
+    },
+  });
+}
+

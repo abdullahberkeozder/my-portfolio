@@ -9,6 +9,8 @@ import {
   useToggleLikeMutation,
   useRecordViewMutation,
   useBlogDetailQuery,
+  useApproveCommentMutation,
+  useFlagCommentMutation,
 } from '@/hooks/useBlogs';
 import {
   X,
@@ -86,6 +88,8 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
   const addCommentMutation = useAddCommentMutation();
   const toggleLikeMutation = useToggleLikeMutation();
   const recordViewMutation = useRecordViewMutation();
+  const approveCommentMutation = useApproveCommentMutation();
+  const flagCommentMutation = useFlagCommentMutation();
 
   const [newComment, setNewComment] = useState('');
   const [authorName, setAuthorName] = useState('');
@@ -469,22 +473,69 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      {c.isApproved ? (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/25">
-                          ONAYLI
+                    <div className="flex flex-wrap items-center gap-2">
+                      {/* State Machine Status Badge */}
+                      {c.moderationStatus === 'FLAGGED_TOXIC' || (!c.isApproved && c.sentiment === 'NEGATIVE') ? (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] bg-rose-500/15 text-rose-600 dark:text-rose-400 font-bold border border-rose-500/30 flex items-center gap-1">
+                          <AlertTriangle className="w-2.5 h-2.5" /> KARANTİNA (TOKSİK)
+                        </span>
+                      ) : !c.isApproved || c.moderationStatus === 'PENDING_MODERATION' ? (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold border border-amber-500/25 flex items-center gap-1">
+                          <Clock className="w-2.5 h-2.5" /> ONAY BEKLİYOR
                         </span>
                       ) : (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold border border-amber-500/25">
-                          ONAY BEKLİYOR
+                        <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/25 flex items-center gap-1">
+                          <CheckCircle2 className="w-2.5 h-2.5" /> ONAYLI
                         </span>
                       )}
+
+                      {/* AI Sentiment Badge */}
+                      {c.sentiment && (
+                        <span
+                          className={`px-1.5 py-0.5 rounded text-[9px] uppercase font-mono tracking-wider border ${
+                            c.sentiment === 'POSITIVE'
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                              : c.sentiment === 'NEGATIVE'
+                              ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
+                              : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-300 dark:border-zinc-700'
+                          }`}
+                        >
+                          {c.sentiment}
+                        </span>
+                      )}
+
                       <span className="text-zinc-400 text-[11px]">
                         {new Date(c.createdAt).toLocaleDateString('tr-TR')}
                       </span>
                     </div>
                   </div>
                   <p className="text-zinc-700 dark:text-zinc-300 leading-relaxed font-sans">{c.content}</p>
+
+                  {/* State Machine Transition Actions (Interactive Test & Admin Control) */}
+                  {blogId && c.id && !c.isOptimistic && (
+                    <div className="pt-1.5 flex items-center justify-end gap-2 border-t border-black/[0.04] dark:border-white/[0.04] font-mono text-[10px]">
+                      <span className="text-zinc-400">Durum Geçişi:</span>
+                      {!c.isApproved ? (
+                        <button
+                          type="button"
+                          onClick={() => approveCommentMutation.mutate({ commentId: c.id, blogId })}
+                          disabled={approveCommentMutation.isPending}
+                          className="px-2 py-0.5 rounded bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30 transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1"
+                        >
+                          {approveCommentMutation.isPending ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : '✓ Onayla'}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => flagCommentMutation.mutate({ commentId: c.id, blogId, reason: 'Kullanıcı/Admin tarafından karantinaya alındı' })}
+                          disabled={flagCommentMutation.isPending}
+                          className="px-2 py-0.5 rounded bg-rose-500/15 hover:bg-rose-500/25 text-rose-600 dark:text-rose-400 font-bold border border-rose-500/30 transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1"
+                        >
+                          {flagCommentMutation.isPending ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : '⚠️ Karantinaya Al'}
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
