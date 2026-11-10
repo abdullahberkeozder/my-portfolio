@@ -7,9 +7,11 @@ import { ArrowLeft, ArrowRight, X, ExternalLink, CheckCircle } from 'lucide-reac
 interface StoryItem {
   id: string;
   badgeType: 'time' | 'fast-company' | 'red-dot' | 'series-d' | 'enterprise';
+  category: string;
   title: string;
   subtitle: string;
   description: string;
+  keyBenefit: string;
   image: string;
   customVisual?: 'geometric' | 'sky-brand';
   detailHtml?: string;
@@ -20,18 +22,22 @@ const STORIES: StoryItem[] = [
   {
     id: 'time-inventions',
     badgeType: 'time',
-    title: 'Java 22 Loom & Virtual Threads Named to Enterprise Breakthroughs of 2026.',
+    category: '01 // EŞZAMANLILIK & LOOM',
+    title: 'Java 22 Loom: 10.000 Eşzamanlı İstekte Sıfır Sunucu Darboğazı',
     subtitle: 'Java 22 Project Loom & Yüksek Eşzamanlılık Atılımı',
-    description: 'Sunucu kilitlenmesine son: 10.000 sanal iş parçacığıyla gecikmesiz ve kesintisiz çalışan yüksek başarımlı dağıtık sistem mimarisi.',
+    description: 'Tomcat iş parçacığı havuzu tükenmelerine son: 10.000 hafif sanal thread ile her isteğe anında kaynak tahsis eden kesintisiz dağıtık mimari.',
+    keyBenefit: '~1KB RAM / Thread',
     image: '/images/architecture-cutaway.jpg',
     actionModule: 'loom',
   },
   {
     id: 'fast-company',
     badgeType: 'fast-company',
-    title: 'Nova Core Wins Innovation by Design 2026 for Semantic Vector Engine.',
+    category: '02 // YAPAY ZEKA & VEKTÖR',
+    title: 'Spring AI: Kelimelerin Ötesinde Derin Anlamsal Arama',
     subtitle: 'Yapay Zeka Destekli Anlamsal Arama ve Akıllı Sıralama',
-    description: 'Yapay zeka vektör eşleştirmesiyle kelimelerin gerçek anlamını kavrayan ve dokunsal Dieter Rams konsol ergonomisi sunan çift ödüllü mimari.',
+    description: 'Yapay zeka vektör eşleştirmesiyle kullanıcının niyetini kavrayan, yazım hatası olsa dahi doğru makaleyi milisaniyeler içinde bulan bilişsel arama motoru.',
+    keyBenefit: '%94.2 Doğruluk',
     image: '/images/lifestyle-hero.jpg',
     customVisual: 'geometric',
     actionModule: 'spring-ai',
@@ -39,18 +45,22 @@ const STORIES: StoryItem[] = [
   {
     id: 'red-dot-award',
     badgeType: 'red-dot',
-    title: 'Nova Core Wins Red Dot Award for Distributed Systems Engineering 2026.',
+    category: '03 // ÖNBELLEK & HIGH-IOPS',
+    title: 'Redis Tamponu: Veritabanı Kilidi Olmadan Milyonluk Trafik',
     subtitle: 'Veritabanı Kilitlemesi Olmadan Milyonlarca Sayaç Yönetimi',
-    description: 'Redis önbellek tamponunda kilitlenmesiz sayaç toplama ve 30 saniyede bir güvenli veritabanı senkronizasyonu mimarisi.',
+    description: 'Her beğeni ve görüntülenmede satır kilitleme çekişmesini önleyen, sayaçları bellekte O(1) hızla toplayıp 30 saniyede bir diske yazan tampon mimarisi.',
+    keyBenefit: '%98 Disk Tasarrufu',
     image: '/images/terminal-hardware.jpg',
     actionModule: 'write-behind',
   },
   {
     id: 'series-d-finance',
     badgeType: 'series-d',
-    title: 'Nova Core Releases Enterprise State Machine & Zero-Trust 2FA Spec.',
+    category: '04 // KURUMSAL GÜVENLİK',
+    title: 'Sıfır Güven (Zero-Trust) & 2FA: 201 Testle Doğrulanmış Mimari',
     subtitle: 'İki Faktörlü Doğrulama (2FA) ve Kurumsal Güvenlik Protokolü',
-    description: '201/201 otomatik test güvencesi, geçici Pre-Auth iki adımlı doğrulama ve veri kaybını önleyen kilitlenme-karşıtı mimari.',
+    description: '201 birim ve entegrasyon testiyle %100 doğrulanmış, geçici Pre-Auth token durum makinesi ve veri çakışmalarını önleyen iyimser kilitleme altyapısı.',
+    keyBenefit: '201/201 Test Geçti',
     image: '/images/hardware-core.jpg',
     customVisual: 'sky-brand',
     actionModule: 'optimistic-locking',
@@ -254,24 +264,39 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
                   )}
                 </div>
 
+                {/* Category & Key Benefit Row */}
+                <div className="flex items-center justify-between text-[10px] font-mono font-bold pt-1">
+                  <span className="text-purple-600 uppercase tracking-wider">{story.category}</span>
+                  <span className="px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-700 border border-black/5 font-semibold">
+                    {story.keyBenefit}
+                  </span>
+                </div>
+
                 {/* Headline Text: Clean sans-serif */}
-                <h3 className="text-sm sm:text-[15px] font-semibold text-zinc-950 leading-snug tracking-tight">
+                <h3 className="text-sm sm:text-[15px] font-bold text-zinc-950 leading-snug tracking-tight group-hover:text-purple-600 transition-colors">
                   {story.title}
                 </h3>
+
+                {/* Subtitle / Pedagogical Summary */}
+                <p className="text-xs text-zinc-600 font-sans leading-relaxed line-clamp-2">
+                  {story.description}
+                </p>
               </div>
 
-              {/* Black Pill Button: [READ MORE // MİMARİYİ İNCELE] */}
-              <div className="pt-6">
+              {/* Black Pill Button: [MİMARİYİ İNCELE] */}
+              <div className="pt-4 flex items-center justify-between border-t border-black/[0.06]">
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleReadMore(story);
                   }}
-                  className="px-5 py-2 rounded-full bg-black text-white hover:bg-neutral-800 text-[11px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer btn-tactile shadow-sm active:scale-95"
+                  className="px-4 py-2 rounded-full bg-black text-white hover:bg-neutral-800 text-[11px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer btn-tactile shadow-sm active:scale-95 flex items-center gap-1.5"
                 >
-                  MİMARİYİ İNCELE
+                  <span>MİMARİYİ İNCELE</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                 </button>
+                <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase">MİMARİ RAPOR</span>
               </div>
             </div>
           ))}
@@ -327,7 +352,7 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
                   <li>201/201 otomatik birim ve entegrasyon testi doğrulaması</li>
                   <li>Saniyede 12.400 sayaç işleminde sıfır satır kilitleme</li>
                   <li>RFC 7807 problem ayrıntıları ile hata şeffaflığı</li>
-                  <li>2FA TOTP ve geçici Pre-Auth token state machine koruması</li>
+                  <li>2FA TOTP ve geçici Pre-Auth token durum makinesi koruması</li>
                 </ul>
               </div>
             </div>
