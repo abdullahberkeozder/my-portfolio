@@ -23,7 +23,7 @@ export const AiPlayground: React.FC = () => {
 
   // Summarize state
   const [sumText, setSumText] = useState(
-    'Spring Boot 4.1.1 ve Java 22 Virtual Threads ile yüksek trafikli mikroservis mimarilerinde thread havuzu bloklanmaları tamamen ortadan kalkmaktadır. Spring AI entegrasyonu ile 128 boyutlu yoğun vektör gömmeleri oluşturulup veritabanında saklanmakta ve kosinüs benzerliği formülü ile milisaniyeler seviyesinde anlamsal sorgulama yapılabilmektedir. Sistem ayrıca RFC 6238 uyumlu TOTP iki faktörlü kimlik doğrulama, MinIO S3 nesne depolama ve Spring Batch ETL boru hatları ile güçlendirilmiştir.'
+    'Spring Boot 4.1.1 ve Java 22 Virtual Threads mimarisi, yüksek trafik anında sunucu kilitlenmelerini ortadan kaldırır. Spring AI entegrasyonu, kelimelerin ötesinde derin anlamsal ilişkileri kavrayarak en alakalı makaleleri milisaniyeler içinde kullanıcıya sunar. Sistem ayrıca Redis önbellek tamponu, iki faktörlü (2FA TOTP) kimlik doğrulama ve veri kaybını önleyen lock-free kilitlenme korumasıyla güçlendirilmiştir.'
   );
   const [sumResult, setSumResult] = useState<AiSummaryResponseDto | null>(null);
   const [isSummarizing, setIsSummarizing] = useState(false);
@@ -107,12 +107,12 @@ export const AiPlayground: React.FC = () => {
 
           <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
             <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-center min-w-[110px]">
-              <div className="text-[10px] text-zinc-400 uppercase">INFERENCE</div>
+              <div className="text-[10px] text-zinc-400 uppercase">MODEL ÇIKARIMI</div>
               <div className="text-sm font-bold text-zinc-950 dark:text-white mt-0.5">LOCAL + API</div>
             </div>
             <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-center min-w-[110px]">
-              <div className="text-[10px] text-zinc-400 uppercase">PIPELINE</div>
-              <div className="text-sm font-bold text-zinc-950 dark:text-[#d4f933] mt-0.5">ZERO-LEAK</div>
+              <div className="text-[10px] text-zinc-400 uppercase">BORU HATTI</div>
+              <div className="text-sm font-bold text-zinc-950 dark:text-[#d4f933] mt-0.5">SIFIR SIZINTI</div>
             </div>
           </div>
         </div>
@@ -184,7 +184,7 @@ export const AiPlayground: React.FC = () => {
                 className="px-6 py-3 rounded-full bg-zinc-950 dark:bg-[#d4f933] hover:opacity-90 disabled:opacity-50 text-white dark:text-black text-xs font-mono font-black uppercase tracking-wider shadow-md flex items-center gap-2 transition-transform active:scale-95 cursor-pointer"
               >
                 {isSummarizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                <span>INFERENCE // ÇALIŞTIR</span>
+                <span>ÖZETİ ÇIKAR // ÇALIŞTIR</span>
               </button>
 
               <span className="text-[11px] font-mono text-zinc-400 hidden sm:inline">
@@ -245,9 +245,9 @@ export const AiPlayground: React.FC = () => {
             <div className="pt-3 border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-zinc-400">
               <span className="flex items-center gap-1.5">
                 <Cpu className="w-3.5 h-3.5 text-[#a3c900] dark:text-[#d4f933]" />
-                SPRING AI CHAT ENGINE
+                SPRING AI ÇIKARIM SERVİSİ
               </span>
-              <span className="text-emerald-500 font-bold">READY</span>
+              <span className="text-emerald-500 font-bold">HAZIR</span>
             </div>
           </div>
         </div>
@@ -337,8 +337,8 @@ export const AiPlayground: React.FC = () => {
             </div>
 
             <div className="pt-3 border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-zinc-400">
-              <span>ZERO-SHOT CLASSIFICATION</span>
-              <span className="text-emerald-500 font-bold">ACCURATE</span>
+              <span>SIFIR ÖRNEKLİ SINIFLANDIRMA</span>
+              <span className="text-emerald-500 font-bold">DOĞRULANDI</span>
             </div>
           </div>
         </div>
@@ -417,13 +417,13 @@ export const AiPlayground: React.FC = () => {
 
                   <div className="grid grid-cols-2 gap-3 text-xs">
                     <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.06] dark:border-white/[0.06]">
-                      <div className="text-[10px] text-zinc-400 uppercase">SENTIMENT</div>
+                      <div className="text-[10px] text-zinc-400 uppercase">DUYGU DURUMU</div>
                       <div className="font-bold text-zinc-950 dark:text-white mt-0.5">
                         {modResult.sentiment}
                       </div>
                     </div>
                     <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.06] dark:border-white/[0.06]">
-                      <div className="text-[10px] text-zinc-400 uppercase">SENTIMENT SCORE</div>
+                      <div className="text-[10px] text-zinc-400 uppercase">DUYGU SKORU</div>
                       <div className="font-bold text-zinc-950 dark:text-[#d4f933] mt-0.5">
                         {modResult.sentimentScore > 0 ? `+${modResult.sentimentScore.toFixed(2)}` : modResult.sentimentScore.toFixed(2)}
                       </div>
@@ -444,8 +444,8 @@ export const AiPlayground: React.FC = () => {
             </div>
 
             <div className="pt-3 border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-zinc-400">
-              <span>SAFETY GUARDRAIL</span>
-              <span className="text-emerald-500 font-bold">ONLINE</span>
+              <span>GÜVENLİK FİLTRESİ</span>
+              <span className="text-emerald-500 font-bold">AKTİF</span>
             </div>
           </div>
         </div>
