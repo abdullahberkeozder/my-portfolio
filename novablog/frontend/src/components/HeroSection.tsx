@@ -44,7 +44,7 @@ const SLIDES: SlideContent[] = [
     title1: 'YÜKSEK HACİMLİ MİMARİ.',
     title2: 'SIFIR DARBOĞAZ.',
     description:
-      'Java 22 Project Loom ile hafif sanal thread havuzu, 128 boyutlu Spring AI vektör arama motoru, Redis Write-Behind tamponu ve Spring Batch 5 ile inşa edilmiş endüstriyel blog ekosistemi.',
+      'Aynı anda binlerce istek gelse dahi kilitlenmeyen Java 22 Loom sanal iş parçacıkları, anlam ilişkisini kavrayan yapay zeka arama motoru ve yüksek başarımlı Spring Boot 4 mimarisiyle inşa edilmiş teknik mühendislik platformu.',
     image: '/images/architecture-cutaway.jpg',
     primaryCta: 'Vektör Aramayı Başlat',
     primaryIcon: 'cpu',
@@ -59,7 +59,7 @@ const SLIDES: SlideContent[] = [
     title1: 'MİKROSANİYE TELEMETRİSİ.',
     title2: '12.4K REQ/S THROUGHPUT.',
     description:
-      'Teenage Engineering ve Dieter Rams endüstriyel çizgileriyle tasarlanmış dokunsal mimari konsol. Mikrosaniye seviyesinde telemetri hassasiyeti ve 12.4K req/s throughput ile sıfır satır kilitleme garantisi.',
+      'Dieter Rams ve Teenage Engineering dokunsal tasarım felsefesini canlı sistem telemetrisiyle buluşturan mimari konsol. Gerçek zamanlı istek akışını, önbellek senkronizasyonunu ve eşzamanlılık simülasyonlarını interaktif olarak keşfedin.',
     image: '/images/terminal-hardware.jpg',
     primaryCta: 'Mimari Konsolu Aç',
     primaryIcon: 'terminal',
@@ -74,7 +74,7 @@ const SLIDES: SlideContent[] = [
     title1: 'MÜHENDİSLİK İÇİN TASARLANDI.',
     title2: 'GÜVENLİ & HIZLI.',
     description:
-      '201/201 otomatik test güvenilirliği, RFC 7807 problem detayları, 2FA TOTP güvenlik katmanı ve sıfır çakışmalı JPA @Version kilitleme mekanizması.',
+      '201 birim ve entegrasyon testiyle %100 doğrulanmış, iki faktörlü (2FA TOTP) kimlik doğrulama ve veri kaybını önleyen kilitlenme-karşıtı mimariyle donatılmış kurumsal dayanıklılık altyapısı.',
     image: '/images/lifestyle-hero.jpg',
     primaryCta: 'Simülatörü Başlat',
     primaryIcon: 'zap',
@@ -158,7 +158,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <span className="text-zinc-500 dark:text-zinc-400">201/201 TESTS (%100 PASS)</span>
               </div>
               <p className="text-[11px] font-mono font-medium text-purple-600 dark:text-purple-400 tracking-wide uppercase">
-                Endüstriyel Donanım Tasarım Felsefesiyle İnşa Edilmiş Yüksek Başarımlı Spring Boot 4 &amp; Java 22 Dağıtık Sistem Mimarisi
+                Büyük Veri ve Yoğun Trafik Altında Dahi Milisaniyeler İçinde Yanıt Veren Modern Java 22 &amp; Spring Boot 4 Dağıtık Sistem Mimarisi
               </p>
             </div>
 

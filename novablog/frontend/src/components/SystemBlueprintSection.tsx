@@ -22,143 +22,143 @@ interface BlueprintCategory {
 const BLUEPRINT_DATA: BlueprintCategory[] = [
   {
     index: '01',
-    title: 'ÇEKİRDEK & EŞZAMANLILIK (CORE RUNTIME)',
-    tag: 'PROJECT LOOM',
+    title: 'YÜKSEK TRAFİK & EŞZAMANLILIK (CONCURRENCY)',
+    tag: 'JAVA 22 LOOM',
     icon: Zap,
     specs: [
       {
-        key: 'JVM RUNTIME',
-        value: 'OpenJDK 22.0.2 (64-Bit)',
-        desc: 'Java 22 LTS donanım tabanlı M:N sanal iş parçacığı yönetimi',
-      },
-      {
-        key: 'CONCURRENCY MODEL',
+        key: 'İŞ PARÇACIĞI MİMARİSİ',
         value: 'Virtual Threads (Loom)',
-        desc: 'Lightweight sanal iş parçacıkları; OS thread bloklaması sıfır',
+        desc: 'Geleneksel ağır işletim sistemi threadleri yerine hafif sanal iş parçacıkları; sunucu kilitlenmesi sıfıra iner.',
       },
       {
-        key: 'IOPS THROUGHPUT',
-        value: '11,400+ Req/s Sustained',
-        desc: 'Tomcat 10.1 sanal iş parçacığı havuzuyla thread-per-request',
+        key: 'EŞZAMANLI İSTEK KAPASİTESİ',
+        value: '11,400+ İstek/sn',
+        desc: 'Tomcat üzerinde her istek için anında sanal thread tahsis edilir; yüksek trafikte yanıt süreleri uzamaz.',
       },
       {
-        key: 'CARRIER PINNING',
-        value: 'Zero Synchronized Blocking',
-        desc: 'ReentrantLock ve Lock-Free yapılarıyla taşıyıcı thread korunur',
+        key: 'ÇALIŞMA ZAMANI (RUNTIME)',
+        value: 'OpenJDK 22.0.2 LTS',
+        desc: 'Java 22 sanal makine optimizasyonlarıyla bellek tüketimi minimum seviyede tutulur.',
       },
       {
-        key: 'CONTAINER EXECUTOR',
-        value: 'Embedded Tomcat 10.1',
-        desc: 'Virtual thread per-task executor ile tam asenkron HTTP I/O',
+        key: 'KİLİTLENME DİRENCİ',
+        value: 'Zero Blocking Locks',
+        desc: 'Gereksiz beklemeler ve darboğazlar kaldırıldı; işlemler birbirini engellemeden paralel işlenir.',
+      },
+      {
+        key: 'SUNUCU YÜRÜTÜCÜSÜ',
+        value: 'Tomcat 10.1 Virtual Exec',
+        desc: 'Tam asenkron HTTP I/O yönetimiyle sunucu kaynakları yalnızca aktif işlem anında tüketilir.',
       },
     ],
   },
   {
     index: '02',
-    title: 'BİLİŞSEL VEKTÖR MOTORU (AI & COGNITIVE RETRIEVAL)',
-    tag: 'SPRING AI 128D',
+    title: 'ANLAMSAL ARAMA & YAPAY ZEKA (VECTOR SEARCH)',
+    tag: 'SPRING AI + PGVECTOR',
     icon: Cpu,
     specs: [
       {
-        key: 'EMBEDDING DIMENSION',
-        value: '128-Dimensional Dense',
-        desc: 'Yüksek yoğunluklu normalize latent uzay vektör gömmeleri',
+        key: 'ANLAMSAL VEKTÖR TEMSİLİ',
+        value: '128-Boyutlu Yoğun Vektör',
+        desc: 'Makaleler yalnızca kelime benzerliğiyle değil, yapay zekanın çıkardığı derin anlam ilişkisine göre eşleştirilir.',
       },
       {
-        key: 'SIMILARITY METRIC',
-        value: 'Cosine Distance cos(θ)',
-        desc: 'Çok boyutlu kosinüs açısı: cos(θ) = (A · B) / (||A|| · ||B||)',
+        key: 'BENZERLİK ALGORİTMASI',
+        value: 'Kosinüs Benzerliği (Cosine)',
+        desc: 'Arama kutusuna farklı kelimeler veya yazım hataları girseniz dahi en yakın anlamlı içeriği bulan açısal yakınlık hesabı.',
       },
       {
-        key: 'INDEX TOPOLOGY',
+        key: 'HIZLI İNDEKSLEME GRAFİĞİ',
         value: 'pgvector HNSW Graph',
-        desc: 'Hierarchical Navigable Small World ile logaritmik arama',
+        desc: 'Veri tabanındaki binlerce makale arasında milisaniyenin altında gecikmeyle sonuç getiren modern grafik arama indeksi.',
       },
       {
-        key: 'HYBRID FUSION',
-        value: 'RRF (Reciprocal Rank)',
-        desc: 'Sözcüksel SQL LIKE ve vektörel kosinüs skorlarının birleşimi',
+        key: 'HİBRİT ARAMA HARMANLAMA',
+        value: 'Hibrit Sıralama (RRF)',
+        desc: 'Klasik anahtar kelime araması ile yapay zeka anlamsal skorunu birleştirerek en isabetli sıralamayı sunar.',
       },
       {
-        key: 'QUERY LATENCY',
-        value: '< 1.8ms P99 Latency',
-        desc: 'Milisaniyeler içinde semantik alaka düzeyi hesaplama',
+        key: 'ARAMA YANIT SÜRESİ',
+        value: '< 1.8ms P99 Gecikme',
+        desc: 'Kullanıcı henüz tuşlara basarken arama sonuçları gecikmesiz olarak ekrana gelir.',
       },
     ],
   },
   {
     index: '03',
-    title: 'VERİ, ÖNBELLEK & WRITE-BEHIND (DATA & STORAGE MATRIX)',
+    title: 'VERİTABANI, ÖNBELLEK & DEPOLAMA (STORAGE)',
     tag: 'DUAL-TIER CACHE',
     icon: Database,
     specs: [
       {
-        key: 'PRIMARY DATABASE',
+        key: 'ANA VERİTABANI',
         value: 'PostgreSQL 16.2',
-        desc: 'Flyway V7 otomatik versiyonlanmış DDL ve şema geçişleri',
+        desc: 'Flyway ile otomatik versiyonlanan, tam ilişkisel ve ACID garantili güvenli veri tabanı.',
       },
       {
-        key: 'CONNECTION POOL',
-        value: 'HikariCP (10/10 Pool)',
-        desc: '10 maksimum, 10 minimum boşta bağlantı; sıfır connection leak',
+        key: 'BAĞLANTI HAVUZU',
+        value: 'HikariCP (10/10 Havuz)',
+        desc: 'Bağlantı sızıntısını önleyen, anında hazır bekleyen optimize veritabanı bağlantı havuzu.',
       },
       {
-        key: 'L1 IN-MEMORY CACHE',
-        value: 'Caffeine Cache (Local)',
-        desc: 'Sıfır ağ gecikmeli yerel L1 önbellek; 5 dakika TTL',
+        key: 'YEREL L1 ÖNBELLEK',
+        value: 'Caffeine Cache',
+        desc: 'Sıfır ağ gecikmesiyle doğrudan bellekten okunan, sık erişilen veriler için mikro-önbellek.',
       },
       {
-        key: 'L2 DISTRIBUTED CACHE',
-        value: 'Redis 7.2 Alpine',
-        desc: 'Dağıtık oturum ve çok katmanlı sorgu önbelleği; 10 dakika TTL',
+        key: 'DAĞITIK L2 ÖNBELLEK',
+        value: 'Redis 7.2 Cache',
+        desc: 'Sunucular arasında paylaşılan, kullanıcı oturumlarını ve makale listelerini hızlandıran dağıtık katman.',
       },
       {
-        key: 'WRITE-BEHIND BUFFER',
-        value: 'Redis Hash HINCRBY',
-        desc: 'Görüntülenme ve beğeni sayaçları O(1); 30s Scheduled DB Flush',
+        key: 'ARKA PLAN TAMPONLAMA',
+        value: 'Redis Write-Behind',
+        desc: 'Okunma ve beğeni sayaçları veritabanını yormadan bellekte toplanır, 30 saniyede bir toplu yazılır.',
       },
       {
-        key: 'OBJECT STORAGE',
-        value: 'MinIO S3 Presigned URLs',
-        desc: 'Doğrudan istemciye imzalanmış güvenli medya yükleme protokolü',
+        key: 'MEDYA DEPOLAMA',
+        value: 'MinIO S3 Presigned',
+        desc: 'Görseller sunucuyu meşgul etmeden doğrudan güvenli depolama alanına şifreli URL ile aktarılır.',
       },
     ],
   },
   {
     index: '04',
-    title: 'DAYANIKLILIK, BATCH & GÜVENLİK (RESILIENCE & INTEGRITY)',
-    tag: 'ENTERPRISE ARMOR',
+    title: 'GÜVENLİK, HATA YÖNETİMİ & DAYANIKLILIK',
+    tag: 'ENTERPRISE RESILIENCE',
     icon: ShieldCheck,
     specs: [
       {
-        key: 'CONCURRENCY LOCKING',
-        value: 'JPA @Version Optimistic',
-        desc: 'Satır kilidi tutulmaz (Lock-Free); kayıp güncellemeler önlenir',
+        key: 'VERİ ÇAKIŞMA KORUMASI',
+        value: 'İyimser Kilitleme (Optimistic)',
+        desc: 'Aynı anda iki kişi makale güncellediğinde veri kaybı yaşanmaz; son değişiklikler güvenle korunur.',
       },
       {
-        key: 'CONFLICT STANDARD',
+        key: 'STANDART HATA FORMATI',
         value: 'RFC 7807 Problem Details',
-        desc: 'HTTP 409 Conflict durumunda otomatik istemci geri alması',
+        desc: 'Hatalar anlaşılmaz teknik kodlar yerine standart, açık ve istemcinin anlayacağı JSON formatında iletilir.',
       },
       {
-        key: 'CIRCUIT BREAKER',
-        value: 'Resilience4j (Sliding: 10)',
-        desc: '%50 hata oranında OPEN devre; otomatik fallback devrede',
+        key: 'DEVRE KESİCİ (CIRCUIT BREAKER)',
+        value: 'Resilience4j Fail-Safe',
+        desc: 'Bağlı servislerde kesinti olduğunda tüm sistem çökmez; otomatik alternatif akış devreye girer.',
       },
       {
-        key: 'IDEMPOTENCY ARMOR',
+        key: 'YİNELENEN İSTEK KORUMASI',
         value: 'X-Idempotency-Key',
-        desc: '120 saniye mutasyon kilidi, 24 saat sonuç önbellekleme',
+        desc: 'Ağ kopması nedeniyle butona iki kez basılsa dahi aynı makale iki kez oluşturulmaz.',
       },
       {
-        key: 'RATE LIMITER',
-        value: 'Token Bucket (100 req/min)',
-        desc: 'İstemci IP başına kayan pencereli atomik istek regülatörü',
+        key: 'İSTEK SINIRLAYICI (RATE LIMIT)',
+        value: 'Token Bucket (100 istek/dk)',
+        desc: 'Kötü niyetli bot saldırılarını ve sunucuyu yormayı engelleyen akıllı trafik regülatörü.',
       },
       {
-        key: 'BATCH ETL PIPELINE',
-        value: 'Spring Batch 5 (Chunk: 50)',
-        desc: 'İzole transaction commit ile 30 günlük soft-delete temizliği',
+        key: 'TOPLU VERİ TEMİZLİĞİ',
+        value: 'Spring Batch 5 ETL',
+        desc: 'Eski ve silinmiş veriler arka planda sistem performansını düşürmeden otomatik temizlenir.',
       },
     ],
   },
@@ -197,8 +197,8 @@ export const SystemBlueprintSection: React.FC = () => {
           </h2>
 
           <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 max-w-2xl font-mono leading-relaxed">
-            Ride Also donanım şartnamesinden esinlenen tam teknik matris. Dağıtık mikroservis çekirdekleri,
-            eşzamanlılık parametreleri, bellek kapasiteleri ve kurumsal dayanıklılık standartları.
+            Yüksek hacimli veri akışını, sub-milisaniye yapay zeka aramasını ve sıfır veri kaybını garanti eden
+            modern dağıtık sistem mimarisinin tam teknik parametreleri.
           </p>
         </div>
 
@@ -309,10 +309,10 @@ export const SystemBlueprintSection: React.FC = () => {
               {/* Spec Footer */}
               <div className="p-4 bg-zinc-50 dark:bg-zinc-950/60 border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-zinc-400">
                 <span className="flex items-center gap-1.5">
-                  <Terminal className="w-3.5 h-3.5 text-zinc-500" />
-                  <span>SLA VERIFICATION: PASSED</span>
+                  <Terminal className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className="text-zinc-700 dark:text-zinc-300 font-semibold">201/201 OTOMATİK TEST: %100 GEÇTİ</span>
                 </span>
-                <span className="text-emerald-500 font-bold">STANDARDS 100% COMPLIANT</span>
+                <span className="text-emerald-500 font-bold">RFC 7807 &amp; REST STANDARDI</span>
               </div>
             </div>
           );

@@ -35,19 +35,19 @@ const MODULES: ModuleSpec[] = [
   {
     id: 'spring-ai',
     tag: 'MODULE // 01',
-    title: 'Spring AI & 128D Vektör Anlamsal Uzayı',
-    category: 'YAPAY ZEKA & EMBEDDINGS',
+    title: 'Spring AI & Anlamsal Vektör Arama Motoru',
+    category: 'YAPAY ZEKA & İÇERİK ANLAMA',
     description:
-      'Geleneksel SQL aramasının ötesinde, kullanıcı sorgularını 128 boyutlu yoğun vektör gömmelerine projekte ederek pgvector ve Kosinüs Benzerliği formülü ile milisaniyeler içinde hibrit RRF sıralaması gerçekleştirir.',
+      'Klasik kelime aramasının ötesine geçerek, kullanıcı sorgularını anlam ilişkisine göre analiz eder; farklı kelimeler veya yazım hataları kullanılsa dahi en alakalı makaleleri milisaniyeler içinde bulup sıralar.',
     specs: [
       { label: 'EMBEDDING DIM', value: '128D Dense' },
-      { label: 'SIMILARITY METRIC', value: 'Cosine cos(θ)' },
-      { label: 'HYBRID FUSION', value: 'RRF (Reciprocal Rank)' },
+      { label: 'SIMILARITY METRIC', value: 'Kosinüs Benzerliği' },
+      { label: 'HYBRID FUSION', value: 'Hibrit Arama (RRF)' },
       { label: 'QUERY LATENCY', value: '~1.8ms P99' },
     ],
     whyExists: {
       bottleneck: "Geleneksel SQL 'LIKE %query%' araması semantik bağlamı yakalayamaz ('bellek yönetimi' arandığında 'garbage collector' bulunamaz).",
-      solution: '128 boyutlu normalize vektör gömmeleri ve pgvector HNSW kosinüs benzerliği ile anlamsal mesafe hesaplanır.',
+      solution: 'Yapay zeka vektör eşleştirmesi ile kelimeler arasındaki anlamsal yakınlık hesaplanır.',
       gain: '%94.2 kavramsal doğruluk ve 1.4ms P99 sorgu gecikmesi.',
     },
     language: 'java',

@@ -117,15 +117,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               CANLI MİMARİYİ TEST EDİN
             </span>
             <span className="opacity-40">|</span>
-            <span>JAVA 22 LOOM VIRTUAL THREADS</span>
+            <span>JAVA 22 LOOM SANAL İŞ PARÇACIKLARI</span>
             <span className="opacity-40">&bull;</span>
-            <span>REDIS WRITE-BEHIND ACTIVE (30S DB FLUSH)</span>
+            <span>REDIS WRITE-BEHIND ÖNBELLEK</span>
             <span className="opacity-40">&bull;</span>
-            <span>SPRING AI 128D COSINE VECTOR SEARCH</span>
+            <span>YAPAY ZEKA ANLAMSAL ARAMA</span>
             <span className="opacity-40">&bull;</span>
-            <span className="text-[#d4f933] font-bold">201/201 AUTOMATED TESTS PASSING (100%)</span>
+            <span className="text-[#d4f933] font-bold">201/201 OTOMATİK TEST (%100 BAŞARILI)</span>
             <span className="opacity-40">|</span>
-            <span>ENTERPRISE SPEC V4.1.1</span>
+            <span>KURUMSAL ŞARTNAME V4.1.1</span>
           </div>
           {/* Second duplicate track for seamless continuous loop */}
           <div className="flex items-center gap-6 px-4" aria-hidden="true">
@@ -134,15 +134,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               CANLI MİMARİYİ TEST EDİN
             </span>
             <span className="opacity-40">|</span>
-            <span>JAVA 22 LOOM VIRTUAL THREADS</span>
+            <span>JAVA 22 LOOM SANAL İŞ PARÇACIKLARI</span>
             <span className="opacity-40">&bull;</span>
-            <span>REDIS WRITE-BEHIND ACTIVE (30S DB FLUSH)</span>
+            <span>REDIS WRITE-BEHIND ÖNBELLEK</span>
             <span className="opacity-40">&bull;</span>
-            <span>SPRING AI 128D COSINE VECTOR SEARCH</span>
+            <span>YAPAY ZEKA ANLAMSAL ARAMA</span>
             <span className="opacity-40">&bull;</span>
-            <span className="text-[#d4f933] font-bold">201/201 AUTOMATED TESTS PASSING (100%)</span>
+            <span className="text-[#d4f933] font-bold">201/201 OTOMATİK TEST (%100 BAŞARILI)</span>
             <span className="opacity-40">|</span>
-            <span>ENTERPRISE SPEC V4.1.1</span>
+            <span>KURUMSAL ŞARTNAME V4.1.1</span>
           </div>
         </div>
       </div>

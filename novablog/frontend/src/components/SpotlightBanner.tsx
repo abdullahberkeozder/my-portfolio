@@ -64,7 +64,7 @@ export const SpotlightBanner: React.FC<SpotlightBannerProps> = ({
           </div>
 
           <p className="text-xs sm:text-sm text-zinc-200 font-sans leading-relaxed max-w-xl drop-shadow-sm">
-            Milyonlarca eşzamanlı isteği sub-milisaniye gecikmeyle işleyen, Java 22 Loom sanal iş parçacıkları, pgvector 128D anlamsal kosinüs arama motoru, Redis Write-Behind tamponlama ve RFC 7807 kurumsal hata standartlarıyla inşa edilmiş yüksek başarımlı sistem mimarisi.
+            Aynı anda binlerce ziyaretçiyi gecikmesiz karşılayan, kelimelerin anlamsal ilişkisini kavrayan yapay zeka arama motoru ve veri kaybını önleyen önbellek mimarisiyle inşa edilmiş modern dağıtık mühendislik platformu.
           </p>
 
           {/* Action Buttons */}
