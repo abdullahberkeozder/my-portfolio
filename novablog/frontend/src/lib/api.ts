@@ -311,7 +311,7 @@ export class ApiClient {
           similarityScore: Math.min(0.985, score),
           matchedKeywords: b.tags?.slice(0, 3),
           searchMode: 'SEMANTIC' as const,
-          explanation: `Sorgu ile "${b.title}" başlığı arasında 128D vektör uzayında anlamsal örtüşme yakalandı.`,
+          explanation: `Sorgu ile "${b.title}" başlığı arasında anlamsal uzayda yüksek alaka düzeyi yakalandı.`,
         };
       }).sort((a, b) => b.similarityScore - a.similarityScore);
       return scored.slice(0, limit);
@@ -334,7 +334,7 @@ export class ApiClient {
       return semanticResults.map((r) => ({
         ...r,
         searchMode: 'HYBRID' as const,
-        explanation: `RRF Füzyonu: SQL anahtar kelime eşleşmesi + Kosinüs Benzerliği birleşik skoru (%${(r.similarityScore * 100).toFixed(1)}).`,
+        explanation: `Hibrit Arama: SQL anahtar kelime eşleşmesi + Anlamsal benzerlik birleşik skoru (%${(r.similarityScore * 100).toFixed(1)}).`,
       }));
     }
   }
@@ -429,7 +429,7 @@ export class ApiClient {
       const data: ApiResult<string> = await res.json();
       return data.data;
     } catch {
-      return 'Toplam 6 blog yazısı başarıyla 128D vektör indeksine kaydedildi (Demo Modu).';
+      return 'Toplam 6 blog yazısı başarıyla anlamsal vektör indeksine kaydedildi (Demo Modu).';
     }
   }
 

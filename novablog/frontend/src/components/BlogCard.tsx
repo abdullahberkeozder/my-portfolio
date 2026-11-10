@@ -94,38 +94,39 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
   const liveViews = blog.viewsCount ?? blog.views ?? 0;
   const liveLikes = blog.likesCount ?? blog.likes ?? 0;
 
+  // Clean, markdown-free excerpt for card preview
+  const rawExcerpt = (blog.content || '')
+    .replace(/^#+\s+[^\n]+/gm, '')
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/[`*#_]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
   return (
     <article
       onClick={() => onSelect(blog)}
-      className="group relative flex flex-col rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/[0.08] dark:border-white/[0.08] hover:border-[#d4f933]/50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#d4f933]/10 cursor-pointer overflow-hidden"
+      className="group relative flex flex-col rounded-3xl bg-white dark:bg-[#0c0e12] border border-zinc-200/90 dark:border-zinc-800/90 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-black/50 cursor-pointer overflow-hidden"
     >
       {/* Top Banner & Spec Header */}
-      <div className="p-6 pb-3">
-        <div className="flex items-center justify-between gap-2 mb-4">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold text-zinc-400 dark:text-zinc-500">
+      <div className="p-6 pb-2">
+        {/* Tier 1: Category Pill & Interaction Toolbar */}
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="shrink-0 text-[11px] font-mono font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-2 py-0.5 rounded-md border border-zinc-200/80 dark:border-zinc-700/60">
               #{String(blogId || 1).padStart(3, '0')}
             </span>
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-zinc-900/5 dark:bg-white/10 text-zinc-900 dark:text-zinc-200 border border-black/10 dark:border-white/10">
+            <span className="shrink-0 whitespace-nowrap inline-flex items-center px-3 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 shadow-sm">
               {blog.category?.categoryName || 'SİSTEM // GENEL'}
-            </span>
-            <span className="flex items-center gap-1 text-[11px] font-mono text-zinc-500">
-              <Clock className="w-3 h-3 text-zinc-400" />
-              {readingTime} DK
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-500">
-            <span className="flex items-center gap-1 px-1.5 py-0.5" title="Canlı İzlenme (Redis Write-Behind)">
-              <Eye className="w-3.5 h-3.5 text-zinc-400" />
-              {liveViews}
-            </span>
+          <div className="flex items-center gap-1.5 shrink-0 text-xs font-mono text-zinc-500">
             <button
               onClick={handleToggleLike}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer ${
                 blog.isLiked
-                  ? 'text-pink-600 dark:text-pink-400 bg-pink-500/15 border border-pink-500/30 font-bold'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-pink-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent'
+                  ? 'text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-950/40 border border-pink-300 dark:border-pink-800 font-bold'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-pink-600 dark:hover:text-pink-400 bg-zinc-100/80 dark:bg-zinc-800/60 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/60'
               }`}
               title={blog.isLiked ? 'Beğeniyi geri al' : 'Beğen (Optimistic UI)'}
             >
@@ -139,7 +140,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
             <button
               onClick={handleCopyLink}
               title={isCopied ? 'Bağlantı Kopyalandı' : 'Yazı Bağlantısını Kopyala'}
-              className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
+              className="p-1.5 rounded-full bg-zinc-100/80 dark:bg-zinc-800/60 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-white border border-zinc-200/80 dark:border-zinc-700/60 transition-colors"
             >
               {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
             </button>
@@ -147,7 +148,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
               onClick={handleSoftDelete}
               disabled={softDeleteMutation.isPending}
               title="Arşive Taşı (Soft Delete & 30G Saklama)"
-              className="p-1 rounded-full hover:bg-rose-500/15 text-zinc-400 hover:text-rose-500 transition-colors cursor-pointer disabled:opacity-50"
+              className="p-1.5 rounded-full bg-zinc-100/80 dark:bg-zinc-800/60 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-zinc-500 hover:text-rose-600 border border-zinc-200/80 dark:border-zinc-700/60 transition-colors cursor-pointer disabled:opacity-50"
             >
               {softDeleteMutation.isPending ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -158,47 +159,62 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
           </div>
         </div>
 
-        <h3 className="text-xl font-black text-zinc-950 dark:text-white group-hover:text-[#a3c900] dark:group-hover:text-[#d4f933] transition-colors line-clamp-2 leading-snug tracking-tight">
+        {/* Tier 2: Spec Meta Bar (Reading Time & Live Views) */}
+        <div className="flex items-center gap-3 text-[11px] font-mono text-zinc-500 dark:text-zinc-400 mb-2.5">
+          <span className="flex items-center gap-1 font-medium">
+            <Clock className="w-3.5 h-3.5 text-zinc-400" />
+            {readingTime} dk okuma
+          </span>
+          <span className="text-zinc-300 dark:text-zinc-700">&bull;</span>
+          <span className="flex items-center gap-1" title="Canlı İzlenme (Redis Write-Behind)">
+            <Eye className="w-3.5 h-3.5 text-zinc-400" />
+            {liveViews.toLocaleString('tr-TR')} görüntülenme
+          </span>
+        </div>
+
+        {/* Title & Architectural Header */}
+        <h3 className="text-lg md:text-xl font-black text-zinc-950 dark:text-white group-hover:text-zinc-700 dark:group-hover:text-[#d4f933] transition-colors line-clamp-2 leading-snug tracking-tight">
           {blog.title}
         </h3>
-        <p className="text-xs font-mono text-zinc-500 dark:text-zinc-400 mt-1 uppercase tracking-wider">
+        <p className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 mt-1 uppercase tracking-wider font-semibold">
           {blog.header}
         </p>
 
-        <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3 leading-relaxed">
-          {blog.content}
+        {/* Excerpt */}
+        <p className="mt-2.5 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+          {rawExcerpt}
         </p>
       </div>
 
       {/* AI TL;DR Section */}
       <div className="px-6 py-2">
         {showSummary && summary ? (
-          <div className="rounded-2xl p-4 bg-zinc-100 dark:bg-zinc-900/90 border border-black/10 dark:border-white/10 text-xs text-zinc-800 dark:text-zinc-300">
+          <div className="rounded-2xl p-4 bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800 text-xs text-zinc-800 dark:text-zinc-300">
             <div className="flex items-center justify-between gap-2 mb-2 font-mono font-semibold text-zinc-900 dark:text-white">
-              <span className="flex items-center gap-1.5">
-                <Bot className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
-                SPRING AI // TL;DR
+              <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wide">
+                <Bot className="w-4 h-4 text-emerald-600 dark:text-[#d4f933]" />
+                SPRING AI // TL;DR ÖZETİ
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#d4f933]/20 text-zinc-900 dark:text-[#d4f933] font-bold font-mono">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 dark:bg-[#d4f933]/15 text-emerald-700 dark:text-[#d4f933] font-bold font-mono border border-emerald-500/20 dark:border-[#d4f933]/30">
                 -%65 SIKIŞTIRMA
               </span>
             </div>
-            <p className="leading-relaxed font-sans">{summary}</p>
+            <p className="leading-relaxed font-sans text-zinc-700 dark:text-zinc-300 text-xs">{summary}</p>
           </div>
         ) : (
           <button
             onClick={handleFetchSummary}
             disabled={isLoadingSummary}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-full text-xs font-mono font-semibold bg-zinc-100 dark:bg-zinc-900/90 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-black/[0.08] dark:border-white/[0.08] hover:border-[#d4f933]/50 transition-all cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-full text-xs font-mono font-semibold bg-zinc-50 dark:bg-zinc-900/90 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all cursor-pointer"
           >
             {isLoadingSummary ? (
               <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#a3c900] dark:text-[#d4f933]" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600 dark:text-[#d4f933]" />
                 SPRING AI ANALİZİ ÇIKARILIYOR...
               </>
             ) : (
               <>
-                <Sparkles className="w-3.5 h-3.5 text-[#a3c900] dark:text-[#d4f933]" />
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-[#d4f933]" />
                 SPRING AI İLE TL;DR ÖZETİ GÖR
               </>
             )}
@@ -208,7 +224,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
 
       {/* Tags */}
       {blog.tags && blog.tags.length > 0 && (
-        <div className="px-6 pt-2 flex flex-wrap gap-1.5">
+        <div className="px-6 pt-2 pb-1 flex flex-wrap gap-1.5">
           {blog.tags.slice(0, 4).map((tag, idx) => (
             <button
               key={idx}
@@ -216,7 +232,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
                 e.stopPropagation();
                 if (onTagClick) onTagClick(tag);
               }}
-              className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 hover:bg-[#d4f933] hover:text-black dark:hover:bg-[#d4f933] dark:hover:text-black text-zinc-600 dark:text-zinc-400 border border-black/10 dark:border-white/10 transition-colors cursor-pointer uppercase"
+              className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-md bg-zinc-100/80 dark:bg-zinc-900/80 hover:bg-zinc-900 hover:text-white dark:hover:bg-[#d4f933] dark:hover:text-black text-zinc-600 dark:text-zinc-400 border border-zinc-200/80 dark:border-zinc-800 transition-all cursor-pointer uppercase"
             >
               #{tag}
             </button>
@@ -225,24 +241,24 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
       )}
 
       {/* Footer Info */}
-      <div className="mt-auto p-6 pt-4 border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-xs font-mono text-zinc-500">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center text-[10px] font-bold uppercase">
+      <div className="mt-auto p-6 pt-4 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs font-mono text-zinc-500">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-6 h-6 shrink-0 rounded-full bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center text-[10px] font-bold uppercase shadow-sm">
             {blog.author ? blog.author.charAt(0) : 'A'}
           </div>
-          <span className="font-semibold text-zinc-900 dark:text-zinc-300 truncate max-w-[130px]">
-            {blog.author || 'Berke Özder'}
+          <span className="font-semibold text-zinc-900 dark:text-zinc-200 whitespace-nowrap">
+            {blog.author || 'Abdullah Berke Özder'}
           </span>
-          <span className="text-zinc-400">&bull;</span>
-          <span className="flex items-center gap-1 text-zinc-500">
-            <Calendar className="w-3 h-3" />
+          <span className="text-zinc-300 dark:text-zinc-700">&bull;</span>
+          <span className="flex items-center gap-1 text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
+            <Calendar className="w-3 h-3 text-zinc-400" />
             {formattedDate}
           </span>
         </div>
 
-        <div className="flex items-center gap-1 font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-[#a3c900] dark:group-hover:text-[#d4f933] group-hover:translate-x-1 transition-all">
+        <div className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800/80 group-hover:bg-zinc-900 group-hover:text-white dark:group-hover:bg-[#d4f933] dark:group-hover:text-black font-mono font-bold text-[11px] text-zinc-900 dark:text-zinc-100 transition-all">
           <span>İNCELE</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
         </div>
       </div>
     </article>

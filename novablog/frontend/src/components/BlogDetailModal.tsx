@@ -285,7 +285,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose,
               </span>
               <span className="flex items-center gap-1 text-xs font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-bold">
                 <CheckCircle2 className="w-3 h-3" />
-                128D VEKTÖR İNDEKSİ
+                ANLAMSAL VEKTÖR İNDEKSİ
               </span>
               <span className="flex items-center gap-1 text-xs font-mono text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-2.5 py-0.5 rounded-full">
                 <Clock className="w-3 h-3 text-zinc-400" />

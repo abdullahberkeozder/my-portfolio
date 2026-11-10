@@ -13,12 +13,12 @@ export const MOCK_CATEGORIES: BlogCategoryDto[] = [
 export const MOCK_BLOGS: BlogDto[] = [
   {
     id: 1,
-    header: 'Spring AI & Vektör Arama',
-    title: 'Spring AI ve 128D Vektör Veritabanı Mimarisi',
-    content: `Enterprise seviyedeki modern bilgi yönetim platformlarında geleneksel SQL \`LIKE '%sorgu%'\` veya trigram indekslemeleri kullanıcıların doğal dil bağlamını yakalamakta yetersiz kalmaktadır.
+    header: 'Spring AI & Anlamsal Arama',
+    title: 'Spring AI ve Akıllı Vektör Veritabanı Mimarisi',
+    content: `Kurumsal bilgi sistemlerinde geleneksel kelime bazlı aramalar, kullanıcıların aramak istediği kavramın niyetini ve bağlamını yakalamakta yetersiz kalmaktadır.
 
-## 1. Neden Vektör Gömmeleri (Embeddings)?
-Doğal dil metinleri çok boyutlu bir vektör uzayına projekte edildiğinde (örneğin 128 boyutlu yoğun vektörler), eş anlamlı sözcükler veya kavramsal akrabalıklar uzaysal olarak birbirine yakın konumlanır.
+## 1. Neden Anlamsal Vektör Araması?
+Doğal dil metinleri çok boyutlu matematiksel anlam uzayına aktarıldığında, eş anlamlı sözcükler veya kavramsal akrabalıklar uzaysal olarak birbirine yakın konumlanır. Örneğin "bellek optimizasyonu" araması, içeriğinde bu tam tabir geçmese bile "JVM Garbage Collector ayarları" ile anlamsal olarak eşleşir.
 
 \`\`\`java
 @Component
@@ -26,19 +26,19 @@ public class VectorEmbeddingService {
     private final EmbeddingClient embeddingClient;
 
     public float[] generateEmbedding(String documentText) {
-        // Metni 128 boyutlu normalize vektöre dönüştürür
+        // Metni anlamsal koordinat vektörüne dönüştürür
         return embeddingClient.embed(documentText);
     }
 }
 \`\`\`
 
-## 2. Kosinüs Benzerliği ile Hibrit Skorlama
+## 2. Hibrit Arama ve Akıllı Skorlama
 Arama motorumuzda Reciprocal Rank Fusion (RRF) prensibi uygulanmaktadır:
-- Klasik anahtar kelime skoru (TF-IDF / BM25)
-- Vektör kosinüs benzerliği skoru (Cosine Similarity)
-- Birleştirilmiş hibrit benzerlik metriği
+- Klasik anahtar kelime eşleşmesi
+- Anlamsal vektör benzerliği
+- Birleştirilmiş hibrit alaka skoru
 
-Bu mimari sayesinde kullanıcı "bellek yönetimi ve performans" araması yaptığında "JVM Garbage Collector tuning" konulu makale de üst sıralarda listelenmektedir.`,
+Bu mimari sayesinde kullanıcı doğal bir dille arama yaptığında dahi en doğru teknik dokümantasyon milisaniyeler içinde sunulmaktadır.`,
     author: 'Abdullah Berke Özder',
     views: 1420,
     likes: 189,
@@ -46,19 +46,19 @@ Bu mimari sayesinde kullanıcı "bellek yönetimi ve performans" araması yaptı
     publishedAt: '2026-11-05T10:00:00Z',
     createdDate: '2026-11-05T09:30:00Z',
     category: MOCK_CATEGORIES[0],
-    tags: ['spring-ai', 'vector-search', 'embeddings', 'cosine-similarity', 'nlp'],
-    aiSummary: 'Spring AI ve 128D yoğun vektör gömmeleri ile enterprise seviyede anlamsal ve hibrit arama motoru mimarisi kuruldu. Kosinüs benzerliği sayesinde semantik eşleşmeler milisaniyeler mertebesinde sunulmaktadır.',
+    tags: ['yapay-zeka', 'anlamsal-arama', 'vektor-veritabani', 'spring-ai', 'akilli-filtre'],
+    aiSummary: 'Kullanıcı niyetini anlayan Spring AI ve vektör veritabanı mimarisi. Geleneksel SQL aramalarını aşan anlamsal eşleşme motoruyla %94 doğruluk ve milisaniyelik yanıt süresi sağlanmaktadır.',
     hasVectorEmbedding: true,
     version: 1,
   },
   {
     id: 2,
-    header: 'Java 22 & Concurrency',
-    title: 'Java 22 Virtual Threads Devrimi ve Throughput Mimarisi',
-    content: `Java platformunun en köklü dönüşümlerinden biri olan Project Loom (Virtual Threads), geleneksel 1:1 işletim sistemi thread modelini geride bırakarak kullanıcı seviyesinde (user-mode) hafif iş parçacıkları sunmaktadır.
+    header: 'Java 22 & Eşzamanlılık',
+    title: 'Java 22 Virtual Threads ve Yüksek İşlem Kapasitesi',
+    content: `Java platformunun en köklü dönüşümlerinden biri olan Project Loom (Sanal İş Parçacıkları), geleneksel 1:1 işletim sistemi iş parçacığı modelini hafif kullanıcı seviyesi iş parçacıklarıyla değiştirmiştir.
 
-## 1. Platform Thread vs Sanal Thread Darboğazı
-Geleneksel Spring Boot uygulamalarında Tomcat thread havuzu varsayılan olarak 200 iş parçacığıyla sınırlandırılır. Bir veritabanı sorgusu veya HTTP REST çağrısı sırasında işletim sistemi thread'i bloke olur.
+## 1. Sanal Thread Devrimi
+Geleneksel Spring Boot uygulamalarında Tomcat thread havuzu 200 iş parçacığıyla sınırlandırılırken, veritabanı veya REST çağrısı sırasında işletim sistemi thread'i bloke olur. Sanal iş parçacıkları ise bloke olduğunda işletim sistemi thread'ini serbest bırakır.
 
 \`\`\`java
 // Virtual Thread ile hafif iş parçacığı oluşturma
@@ -72,8 +72,8 @@ Thread.ofVirtual()
 
 ## 2. Spring Boot 4 Entegrasyonu
 Spring Boot 4 üzerinde \`spring.threads.virtual.enabled=true\` parametresi ile:
-- Tüm HTTP istekleri otomatik olarak sanal thread'lere devredilir.
-- Thread context switching maliyeti %90 düşürülür.
+- Tüm HTTP istekleri otomatik olarak sanal iş parçacıklarına devredilir.
+- Thread geçiş (context-switch) maliyeti %90 düşürülür.
 - 10.000 eşzamanlı bağlantıda dahi bellek tüketimi minimum seviyede kalır.`,
     author: 'Abdullah Berke Özder',
     views: 2840,
@@ -82,19 +82,19 @@ Spring Boot 4 üzerinde \`spring.threads.virtual.enabled=true\` parametresi ile:
     publishedAt: '2026-11-04T14:15:00Z',
     createdDate: '2026-11-04T13:00:00Z',
     category: MOCK_CATEGORIES[1],
-    tags: ['java-22', 'virtual-threads', 'loom', 'concurrency', 'spring-boot-4'],
-    aiSummary: 'Java 22 Virtual Threads entegrasyonu ile Spring Boot platformunda thread havuzu darboğazları giderildi. Eşzamanlı istek işleme kapasitesi 10 katına çıkarıldı.',
+    tags: ['java-22', 'sanal-threadler', 'yuksek-trafik', 'spring-boot-4', 'performans'],
+    aiSummary: 'Java 22 Virtual Threads ile thread havuzu darboğazları ortadan kaldırıldı. Eşzamanlı istek işleme kapasitesi 10 katına çıkarılırken bellek kullanımı %90 oranında düşürüldü.',
     hasVectorEmbedding: true,
     version: 2,
   },
   {
     id: 3,
     header: 'Redis & Yüksek Trafik',
-    title: 'Redis Write-Behind Buffer ile Yüksek Hacimli Sayaç Mimarisi',
-    content: `Yüksek trafik alan blog ve medya sistemlerinde her görüntülenme ve beğeni tıklamasında PostgreSQL'e \`UPDATE blogs SET views_count = views_count + 1\` sorgusu atmak veritabanını felç edebilir.
+    title: 'Redis Write-Behind Tamponlama ile Veritabanı Yükünü Sıfırlama',
+    content: `Yoğun trafik alan blog platformlarında her sayfa görüntülenmesi ve beğeni işleminde PostgreSQL'e anlık yazma sorgusu göndermek veritabanında disk darboğazlarına yol açar.
 
-## 1. Write-Behind (Write-Back) Deseni
-NovaBlog üzerinde görüntülenme ve beğeni metrikleri Redis Hash tamponunda atomik \`HINCRBY\` komutlarıyla toplanır.
+## 1. Write-Behind (Gecikmeli Yazma) Prensibi
+NovaBlog üzerinde sayaçlar doğrudan diske yazılmaz; Redis RAM belleğinde atomik işlemlerle toplanır ve belirli aralıklarla veritabanına toplu aktarılır.
 
 \`\`\`java
 @Service
@@ -103,18 +103,17 @@ public class RedisMetricBufferService {
     private StringRedisTemplate redisTemplate;
 
     public void recordView(Long blogId) {
-        // Redis Hash içinde tamponlanır (O(1) kompleksite)
+        // Redis RAM belleğinde milisaniyenin altında tamponlanır
         redisTemplate.opsForHash().increment("novablog:metrics:views:buffer", blogId.toString(), 1L);
     }
 }
 \`\`\`
 
-## 2. Scheduled Batch Flush & Eventual Consistency
-Her 30 saniyede bir çalışan arka plan görevi Redis'teki deltaları toplu olarak çeker ve tek bir transaction içinde veritabanına yazar:
-
+## 2. Toplu Senkronizasyon (Scheduled Batch Flush)
+Her 30 saniyede bir çalışan arka plan görevi Redis'teki sayaçları topluca çeker ve tek bir işlemle veritabanına yazar:
 - Veritabanı disk I/O yükü %98 oranında azaltılır.
-- Ani trafik dalgalanmalarında (spikes) sistem sıfır gecikmeyle yanıt verir.
-- Graceful shutdown mekanizması ile sunucu kapanırken bekleyen tüm sayaçlar güvenle DB'ye kaydedilir.`,
+- Ani trafik dalgalanmalarında sunucu sıfır gecikmeyle yanıt verir.
+- Güvenli kapanma (graceful shutdown) mekanizmasıyla bekleyen tüm sayaçlar korunur.`,
     author: 'Abdullah Berke Özder',
     views: 1890,
     likes: 165,
@@ -122,19 +121,19 @@ Her 30 saniyede bir çalışan arka plan görevi Redis'teki deltaları toplu ola
     publishedAt: '2026-11-03T16:20:00Z',
     createdDate: '2026-11-03T15:00:00Z',
     category: MOCK_CATEGORIES[1],
-    tags: ['redis', 'write-behind', 'performance', 'batching', 'caching'],
-    aiSummary: 'Write-Behind Redis önbellekleme deseni sayesinde anlık veritabanı UPDATE yükü engellenerek sayaçlar atomik toplanıp periyodik flush mekanizmasıyla kalıcı hale getirilmektedir.',
+    tags: ['redis', 'asenkron-tampon', 'performans', 'onbellek', 'toplu-islem'],
+    aiSummary: 'Sayaç güncellemeleri doğrudan veritabanına yazılmak yerine Redis RAM üzerinde toplanır. 30 saniyelik toplu aktarım döngüsü ile veritabanı disk yükü %98 oranında azaltılmıştır.',
     hasVectorEmbedding: true,
     version: 1,
   },
   {
     id: 4,
-    header: 'JPA & Concurrency',
-    title: 'JPA @Version ile Optimistic Locking ve Race Condition Koruması',
-    content: `Çok kullanıcılı kurumsal sistemlerde iki farklı yöneticinin aynı anda aynı makaleyi güncellemeye çalışması durumunda "Kayıp Güncelleme" (Lost Update) problemi ortaya çıkar.
+    header: 'Veritabanı & Eşzamanlılık',
+    title: 'JPA İyimser Kilitleme ile Eşzamanlı Veri Bütünlüğü',
+    content: `Çok kullanıcılı kurumsal platformlarda birden fazla yöneticinin aynı anda aynı kaydı düzenlemesi durumunda veri kaybını (Lost Update) önlemek kritik önem taşır.
 
-## 1. Neden Kötümser Kilit (Pessimistic) Değil?
-Kötümser kilit veritabanı satırını \`SELECT FOR UPDATE\` ile bloke eder ve diğer tüm okuma/yazma işlemlerini kuyruğa sokar. Bu durum yüksek eşzamanlılıkta kilitlenmelere (deadlock) yol açar.
+## 1. Neden İyimser Kilitleme (Optimistic Locking)?
+Kötümser kilit satırları bloke ederek diğer kullanıcıları bekletirken, iyimser kilitleme versiyon kontrolü sayesinde kilit koymadan çalışır ve performansı düşürmez.
 
 \`\`\`java
 @Entity
@@ -151,10 +150,10 @@ public class BlogEntity {
 \`\`\`
 
 ## 2. Çakışma Yönetimi (409 Conflict)
-Eğer istemci eski bir versiyon numarası ile güncelleme isteği gönderirse:
-- Hibernate \`OptimisticLockingFailureException\` fırlatır.
-- REST API standart \`409 Conflict\` yanıtı üretir.
-- Frontend TanStack Query katmanı kullanıcının verisini ezmeden uyarır.`,
+Eski bir versiyon ile güncelleme isteği geldiğinde:
+- Hibernate çakışmayı tespit eder ve işlemi güvenle reddeder.
+- Sistem 409 Conflict yanıtı ile kullanıcıyı bilgilendirir.
+- Veri kaybı veya üzerine yazma riski tamamen ortadan kalkar.`,
     author: 'Abdullah Berke Özder',
     views: 1250,
     likes: 98,
@@ -162,19 +161,19 @@ Eğer istemci eski bir versiyon numarası ile güncelleme isteği gönderirse:
     publishedAt: '2026-11-02T11:45:00Z',
     createdDate: '2026-11-02T11:00:00Z',
     category: MOCK_CATEGORIES[1],
-    tags: ['jpa', 'optimistic-locking', 'concurrency', 'hibernate', 'spring-data'],
-    aiSummary: 'JPA @Version Optimistic Locking ile lock-free eşzamanlılık sağlanarak çakışmalar 409 Conflict olarak yakalanmakta ve veri bütünlüğü korunmaktadır.',
+    tags: ['jpa', 'iyimser-kilitleme', 'veri-butunlugu', 'eszamanlilik', 'hibernate'],
+    aiSummary: 'JPA @Version iyimser kilitleme mimarisi ile veri çakışmaları sistem bloke edilmeden yakalanır. Çok kullanıcılı operasyonlarda tam veri bütünlüğü sağlanmaktadır.',
     hasVectorEmbedding: true,
     version: 3,
   },
   {
     id: 5,
-    header: 'Spring Batch ETL',
-    title: 'Milyonluk Verilerde Spring Batch 5 ve Chunk Tabanlı ETL',
-    content: `Büyük veri kümelerinde bellek yetersizliği (OutOfMemoryError) yaşamadan veri temizliği ve analitik raporlama gerçekleştirmek için chunk tabanlı Spring Batch mimarisi kullanılmaktadır.
+    header: 'Büyük Veri & Asenkron ETL',
+    title: 'Spring Batch 5 ile Milyonluk Kayıtlarda Bellek Dostu Veri İşleme',
+    content: `Büyük veri kümelerinde bellek yetersizliği (OutOfMemoryError) yaşamadan veri temizliği ve analitik raporlama gerçekleştirmek için parçalı (chunk-based) işlem mimarisi kullanılmaktadır.
 
-## 1. Chunk Odaklı İşlem Deseni
-İşlemler \`Reader -> Processor -> Writer\` hattında küçük parçalar halinde (örneğin 50'şerli) yürütülür:
+## 1. Parçalı (Chunk) İşlem Deseni
+İşlemler Okuma -> İşleme -> Yazma hattında küçük parçalar halinde (örneğin 50'şerli paketlerle) yürütülür:
 
 \`\`\`java
 @Bean
@@ -190,10 +189,10 @@ public Step softDeleteCleanupStep(JobRepository jobRepository, PlatformTransacti
 }
 \`\`\`
 
-## 2. Hataya Dayanıklılık (Fault Tolerance)
-- Geçici ağ veya veritabanı hatalarında otomatik tekrar deneme (Retry) politikası.
-- Bozuk kayıtların atlanması (Skip) ve loglanması.
-- Job execution durumunun PostgreSQL üzerinde transaction bazlı kaydedilmesi.`,
+## 2. Hataya Dayanıklılık ve Yeniden Deneme
+- Geçici bağlantı aksamalarında otomatik tekrar deneme (Retry) politikası.
+- Hatalı kayıtların loglanarak sağlam verilerin kesintisiz işlenmesi.
+- İş akışının durumunun veritabanında adım adım saklanması.`,
     author: 'Abdullah Berke Özder',
     views: 1190,
     likes: 95,
@@ -201,19 +200,19 @@ public Step softDeleteCleanupStep(JobRepository jobRepository, PlatformTransacti
     publishedAt: '2026-11-01T14:00:00Z',
     createdDate: '2026-11-01T13:30:00Z',
     category: MOCK_CATEGORIES[3],
-    tags: ['spring-batch', 'etl', 'chunk-processing', 'postgresql', 'cron'],
-    aiSummary: 'Chunk tabanlı Spring Batch ETL mimarisi ile yüksek hacimli veri temizliği ve analitik raporlama sıfır kesintiyle asenkron olarak tamamlanmaktadır.',
+    tags: ['spring-batch', 'buyuk-veri', 'etl-mimarisi', 'postgresql', 'otomasyon'],
+    aiSummary: 'Chunk tabanlı Spring Batch mimarisi ile milyonlarca satırlık veri RAM şişmesi olmadan işlenir. Otomatik hata yakalama ve tekrar deneme mekanizmaları devrededir.',
     hasVectorEmbedding: true,
     version: 1,
   },
   {
     id: 6,
     header: 'Siber Güvenlik & 2FA',
-    title: 'RFC 6238 TOTP Multi-Factor Authentication & Zero-Trust Güvenlik',
-    content: `Kullanıcı şifrelerinin sızdırılması riskine karşı kurumsal hesaplarda iki faktörlü doğrulama (2FA) zorunlu güvenlik standardıdır.
+    title: 'RFC 6238 TOTP ile Güvenli İki Adımlı Kimlik Doğrulama',
+    content: `Şifre sızıntılarına karşı kurumsal hesaplarda zaman tabanlı iki adımlı kimlik doğrulama (2FA) vazgeçilmez bir güvenlik standardıdır.
 
 ## 1. RFC 6238 Zaman Tabanlı Tek Kullanımlık Şifre (TOTP)
-TOTP mekanizması paylaşılan gizli anahtar (Base32 secret) ve 30 saniyelik zaman pencerelerini HMAC-SHA1 fonksiyonu ile birleştirerek 6 haneli kodlar üretir.
+TOTP mekanizması gizli bir anahtar ile 30 saniyelik zaman pencerelerini kriptografik olarak harmanlayarak 6 haneli doğrulama kodları üretir.
 
 \`\`\`java
 public boolean verifyTotpCode(String base32Secret, int userCode) {
@@ -228,11 +227,11 @@ public boolean verifyTotpCode(String base32Secret, int userCode) {
 }
 \`\`\`
 
-## 2. Kurtarma Kodları (Scratch Codes)
+## 2. Tek Kullanımlık Acil Kurtarma Kodları
 Cihaz kaybı durumunda hesabın kilitlenmesini önlemek için:
-- 8 haneli rastgele 5 adet tek kullanımlık kurtarma kodu üretilir.
-- Kodlar veritabanında BCrypt hash'lenmiş olarak saklanır.
-- Kullanılan kod anında silinir.`,
+- 8 haneli tek kullanımlık 5 adet acil kurtarma kodu oluşturulur.
+- Kodlar veritabanında güvenli hash algoritmalarıyla korunur.
+- Kullanılan kod güvenlik nedeniyle otomatik olarak geçersiz kılınır.`,
     author: 'Abdullah Berke Özder',
     views: 1750,
     likes: 144,
@@ -240,8 +239,8 @@ Cihaz kaybı durumunda hesabın kilitlenmesini önlemek için:
     publishedAt: '2026-10-31T09:15:00Z',
     createdDate: '2026-10-31T08:45:00Z',
     category: MOCK_CATEGORIES[4],
-    tags: ['2fa', 'totp', 'security', 'zero-trust', 'cryptography'],
-    aiSummary: 'RFC 6238 standardına uygun TOTP 2FA sistemi ile kullanıcı hesapları iki adımlı doğrulama ve kurtarma kodlarıyla koruma altına alınmıştır.',
+    tags: ['siber-guvenlik', 'totp-2fa', 'zero-trust', 'kriptografi', 'hesap-guvenligi'],
+    aiSummary: 'RFC 6238 standardına uygun zaman tabanlı iki adımlı doğrulama (TOTP). Authenticator uygulamalarıyla uyumlu çalışan ve acil kurtarma kodlarıyla korunan sıfır güven mimarisi.',
     hasVectorEmbedding: true,
     version: 1,
   },
@@ -285,9 +284,9 @@ export const MOCK_SEMANTIC_RESULTS: BlogSemanticSearchResultDto[] = [
   {
     blog: MOCK_BLOGS[0],
     similarityScore: 0.942,
-    matchedKeywords: ['spring-ai', 'vector', 'embeddings', 'cosine'],
+    matchedKeywords: ['spring-ai', 'vektor-arama', 'anlamsal-arama', 'yapay-zeka'],
     searchMode: 'SEMANTIC',
-    explanation: 'Sorgudaki yapay zeka ve anlamsal arama konsepti 128D uzayda %94.2 kosinüs benzerliği yakaladı.',
+    explanation: 'Sorgudaki yapay zeka ve anlamsal arama konsepti ile içerik arasında %94.2 anlamsal örtüşme yakalandı.',
   },
   {
     blog: MOCK_BLOGS[1],
