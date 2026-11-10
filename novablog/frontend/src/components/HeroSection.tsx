@@ -283,16 +283,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
               {/* Gauge 1: Loom Virtual Threads RPM */}
               <div
-                title="NEDEN VAR? Tomcat'in sınırlı 200 OS thread havuzu yerine Project Loom sanal thread'leri ile 10.000+ eşzamanlı istek sıfır blokeleme ile işlenir."
-                className="space-y-1.5 cursor-help"
+                title="NEDEN VAR? Tomcat'in geleneksel 200 iş parçacığı sınırı yerine Project Loom sanal iş parçacıkları ile 10.000+ eşzamanlı istek kilitlenmeden işlenir."
+                className="space-y-1.5 cursor-help group"
               >
                 <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                     <Zap className="w-3.5 h-3.5 text-amber-400" />
-                    Loom Virtual Thread Throughput
+                    Eşzamanlı İstek Akışı (Loom)
                   </span>
                   <span className="font-bold text-zinc-900 dark:text-white">
-                    {simulatedIops.toLocaleString()} req/s
+                    {simulatedIops.toLocaleString()} istek/sn
                   </span>
                 </div>
                 <div className="w-full h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
@@ -302,20 +302,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   />
                 </div>
                 <div className="flex justify-between text-[10px] font-mono text-zinc-400">
-                  <span>OS Thread: Unpinned</span>
-                  <span>Carrier Block: 0.0ms</span>
+                  <span>Hafif Sanal Thread: Aktif</span>
+                  <span>Sunucu Kilitlenmesi: 0.0ms (Sıfır)</span>
                 </div>
               </div>
 
               {/* Gauge 2: Redis Write-Behind Buffer Pressure */}
               <div
-                title="NEDEN VAR? Her beğeni ve görüntülenmede PostgreSQL satır kilidi (Row Lock) almak yerine Redis Hash'te atomik O(1) toplanır ve 30 saniyede bir topluca DB'ye yazılır."
-                className="space-y-1.5 cursor-help"
+                title="NEDEN VAR? Her beğeni ve görüntülenmede veritabanı satır kilidi almak yerine sayaçlar Redis Hash'te toplanır ve 30 saniyede bir topluca veritabanına yazılır."
+                className="space-y-1.5 cursor-help group"
               >
                 <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                     <Database className="w-3.5 h-3.5 text-rose-400" />
-                    Redis Write-Behind Delta Buffer
+                    Önbellek Tampon Sayaçları
                   </span>
                   <span className="font-bold text-zinc-900 dark:text-white">
                     +{bufferDelta} Sayaç Beklemede
@@ -328,31 +328,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   />
                 </div>
                 <div className="flex justify-between text-[10px] font-mono text-zinc-400">
-                  <span>HINCRBY: Atomik O(1)</span>
-                  <span>Batch Flush: 30s Otomatik</span>
+                  <span>Bellekte Toplama: Anlık O(1)</span>
+                  <span>Veritabanı Senkronizasyonu: 30sn</span>
                 </div>
               </div>
 
               {/* Gauge 3: Vector Embedding 128D Radar */}
               <div
-                title="NEDEN VAR? Geleneksel SQL LIKE araması 'performans' arandığında 'garbage collector' makalesini bulamaz; 128 boyutlu kosinüs mesafesi kavramsal bağlamı yakalar."
-                className="space-y-1.5 cursor-help"
+                title="NEDEN VAR? Klasik arama sadece aynı kelimeleri bulurken, yapay zeka vektör eşleştirmesi aranan konunun gerçek anlamını kavrayarak en alakalı makaleyi getirir."
+                className="space-y-1.5 cursor-help group"
               >
                 <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                     <Layers className="w-3.5 h-3.5 text-purple-400" />
-                    Spring AI 128D Vektör Uzayı
+                    Yapay Zeka Anlamsal İsabeti
                   </span>
                   <span className="font-bold text-emerald-500 dark:text-emerald-400">
-                    %94.2 Benzerlik
+                    %94.2 Doğruluk
                   </span>
                 </div>
                 <div className="w-full h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 w-[94.2%]" />
                 </div>
                 <div className="flex justify-between text-[10px] font-mono text-zinc-400">
-                  <span>pgvector Kosinüs Metriği</span>
-                  <span>RRF Hibrit Füzyon</span>
+                  <span>pgvector Anlam Analizi</span>
+                  <span>Akıllı Hibrit Sıralama</span>
                 </div>
               </div>
 
@@ -360,10 +360,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <div className="p-3 rounded-2xl bg-black/5 dark:bg-zinc-950/60 border border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-xs font-mono">
                 <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  JPA @Version Locking:
+                  Veri Çakışma Koruması:
                 </span>
                 <span className="font-semibold text-zinc-900 dark:text-zinc-200">
-                  Lock-Free Aktif (v3.0)
+                  İyimser Kilitleme (%100 Güvenli)
                 </span>
               </div>
             </div>

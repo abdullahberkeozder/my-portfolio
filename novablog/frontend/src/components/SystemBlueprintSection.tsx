@@ -9,6 +9,8 @@ import {
   Copy,
   Terminal,
   Zap,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 
 interface BlueprintCategory {
@@ -167,6 +169,14 @@ const BLUEPRINT_DATA: BlueprintCategory[] = [
 export const SystemBlueprintSection: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [activeCategoryIndex, setActiveCategoryIndex] = useState<string>('all');
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+
+  const toggleCategory = (idx: string) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [idx]: !prev[idx],
+    }));
+  };
 
   const handleCopySpecManifest = () => {
     if (typeof window !== 'undefined') {
@@ -255,6 +265,10 @@ export const SystemBlueprintSection: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {filteredData.map((category) => {
           const IconComponent = category.icon;
+          const isExpanded = activeCategoryIndex !== 'all' || Boolean(expandedCategories[category.index]);
+          const visibleSpecs = isExpanded ? category.specs : category.specs.slice(0, 3);
+          const hasMore = category.specs.length > 3 && activeCategoryIndex === 'all';
+
           return (
             <div
               key={category.index}
@@ -283,7 +297,7 @@ export const SystemBlueprintSection: React.FC = () => {
 
               {/* Spec Rows (Ride Also Technical Table) */}
               <div className="divide-y divide-black/[0.06] dark:divide-white/[0.06] text-xs font-mono">
-                {category.specs.map((spec, sIdx) => (
+                {visibleSpecs.map((spec, sIdx) => (
                   <div
                     key={sIdx}
                     className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/40 transition-colors"
@@ -305,6 +319,19 @@ export const SystemBlueprintSection: React.FC = () => {
                   </div>
                 ))}
               </div>
+
+              {/* Progressive Disclosure Toggle Button */}
+              {hasMore && (
+                <div className="p-2.5 bg-zinc-50/60 dark:bg-zinc-950/40 text-center border-t border-black/[0.05] dark:border-white/[0.05]">
+                  <button
+                    onClick={() => toggleCategory(category.index)}
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-mono text-[11px] font-bold uppercase transition-colors cursor-pointer"
+                  >
+                    <span>{isExpanded ? 'Daha Az Parametre Göster' : `+ ${category.specs.length - 3} Diğer Parametreyi Aç`}</span>
+                    {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              )}
 
               {/* Spec Footer */}
               <div className="p-4 bg-zinc-50 dark:bg-zinc-950/60 border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-zinc-400">
