@@ -108,7 +108,20 @@ export class ApiClient {
       if (!res.ok) throw new Error('Backend HTTP error');
       const data: ApiResult<BlogDto[]> = await res.json();
       this.isBackendAvailable = true;
-      const rawList = data.data && data.data.length > 0 ? data.data : MOCK_BLOGS;
+
+      // Filter out test dummy placeholders (Title-1, Header-1, Content-1)
+      const isPlaceholder = (b: BlogDto) => {
+        const t = (b.title || '').trim();
+        const h = (b.header || '').trim();
+        return (t.startsWith('Title-') && h.startsWith('Header-')) || t.toLowerCase() === 'test title';
+      };
+
+      const realUserBlogs = (data.data || []).filter((b) => !isPlaceholder(b));
+      // Merge active user-created blogs with masterclass architectural articles
+      const rawList = realUserBlogs.length > 0
+        ? [...realUserBlogs, ...MOCK_BLOGS]
+        : MOCK_BLOGS;
+
       return rawList.map((b) => this.normalizeBlog(b));
     } catch {
       this.isBackendAvailable = false;
@@ -117,6 +130,9 @@ export class ApiClient {
   }
 
   public static async getBlogById(id: number): Promise<BlogDto> {
+    const mockFound = MOCK_BLOGS.find((b) => (b.id ?? b.blogId) === id);
+    if (mockFound) return this.normalizeBlog(mockFound);
+
     try {
       const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/find/${id}`, {
         method: 'GET',
@@ -127,8 +143,7 @@ export class ApiClient {
       const data: ApiResult<BlogDto> = await res.json();
       return this.normalizeBlog(data.data);
     } catch {
-      const found = MOCK_BLOGS.find((b) => (b.id ?? b.blogId) === id);
-      return this.normalizeBlog(found || MOCK_BLOGS[0]);
+      return this.normalizeBlog(mockFound || MOCK_BLOGS[0]);
     }
   }
 
@@ -508,7 +523,19 @@ export class ApiClient {
         headers: this.getHeaders(),
       });
       const data: ApiResult<BlogCategoryDto[]> = await res.json();
-      return data.data && data.data.length > 0 ? data.data : MOCK_CATEGORIES;
+      if (!data.data || data.data.length === 0) return MOCK_CATEGORIES;
+
+      // Filter out test UUID categories and return clean taxonomy
+      const cleanList = data.data
+        .filter((c) => !/\b[a-f0-9]{8}\b/.test(c.categoryName || ''))
+        .map((c) => ({
+          ...c,
+          categoryName: (c.categoryName || '')
+            .replace(/YazÄ±lÄ±m/g, 'Yazılım')
+            .replace(/GÃ¼venlik/g, 'Güvenlik'),
+        }));
+
+      return cleanList.length >= 3 ? cleanList : MOCK_CATEGORIES;
     } catch {
       return MOCK_CATEGORIES;
     }
