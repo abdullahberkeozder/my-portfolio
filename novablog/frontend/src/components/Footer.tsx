@@ -104,7 +104,7 @@ export const Footer: React.FC<FooterProps> = ({
             {/* Column 1: Company / Platform */}
             <div className="space-y-4">
               <span className="text-[#e9d5ff] font-bold text-sm tracking-wide block font-sans">
-                Company
+                Kurumsal
               </span>
               <ul className="space-y-2.5 text-[11px] tracking-wider uppercase font-semibold">
                 <li>
@@ -114,7 +114,7 @@ export const Footer: React.FC<FooterProps> = ({
                     rel="noopener noreferrer"
                     className="hover:text-white transition-colors flex items-center gap-1.5"
                   >
-                    <span>ABOUT US</span>
+                    <span>HAKKINDA</span>
                     <ExternalLink className="w-3 h-3 opacity-60" />
                   </a>
                 </li>
@@ -123,7 +123,7 @@ export const Footer: React.FC<FooterProps> = ({
                     onClick={handleNavFeed}
                     className="hover:text-white transition-colors text-left cursor-pointer"
                   >
-                    BLOG
+                    MAKALELER
                   </button>
                 </li>
                 <li>
@@ -133,7 +133,7 @@ export const Footer: React.FC<FooterProps> = ({
                     rel="noopener noreferrer"
                     className="hover:text-white transition-colors flex items-center gap-1.5"
                   >
-                    <span>CAREERS</span>
+                    <span>KARİYER</span>
                     <ExternalLink className="w-3 h-3 opacity-60" />
                   </a>
                 </li>
@@ -142,7 +142,7 @@ export const Footer: React.FC<FooterProps> = ({
                     onClick={handleNavBlueprint}
                     className="hover:text-white transition-colors text-left cursor-pointer"
                   >
-                    SPEC // V4.1.1
+                    ŞARTNAME // V4.1.1
                   </button>
                 </li>
               </ul>
@@ -151,7 +151,7 @@ export const Footer: React.FC<FooterProps> = ({
             {/* Column 2: Resources / Specifications */}
             <div className="space-y-4">
               <span className="text-[#e9d5ff] font-bold text-sm tracking-wide block font-sans">
-                Resources
+                Mimari Kaynaklar
               </span>
               <ul className="space-y-2.5 text-[11px] tracking-wider uppercase font-semibold">
                 <li>
@@ -205,7 +205,7 @@ export const Footer: React.FC<FooterProps> = ({
             {/* Column 3: Account & Access */}
             <div className="space-y-4">
               <span className="text-[#e9d5ff] font-bold text-sm tracking-wide block font-sans">
-                Account
+                Erişim & Doğrulama
               </span>
               <ul className="space-y-2.5 text-[11px] tracking-wider uppercase font-semibold">
                 <li>
@@ -216,7 +216,7 @@ export const Footer: React.FC<FooterProps> = ({
                     className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1.5"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-[#d4f933] animate-pulse" />
-                    <span>LOG-IN (2FA)</span>
+                    <span>GİRİŞ & 2FA DOĞRULAMA</span>
                   </button>
                 </li>
                 <li>
@@ -290,16 +290,16 @@ export const Footer: React.FC<FooterProps> = ({
             </a>
           </div>
 
-          {/* Secondary Legal & Protocol Badges (Direct Ride Also Alignment) */}
+          {/* Secondary Legal & Protocol Badges */}
           <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-[11px] text-[#c084fc]/80 tracking-widest uppercase">
             <span className="hover:text-white transition-colors cursor-default">
-              MEDIA INQUIRIES
+              BASIN & İLETİŞİM
             </span>
             <span className="hover:text-white transition-colors cursor-default">
-              TERMS
+              KULLANIM ŞARTLARI
             </span>
             <span className="hover:text-white transition-colors cursor-default">
-              PRIVACY
+              GİZLİLİK POLİTİKASI
             </span>
             <span className="text-[#d4f933] font-bold">
               201/201 AUTOMATED TESTS (100% PASS)

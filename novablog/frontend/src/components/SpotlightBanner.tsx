@@ -73,7 +73,7 @@ export const SpotlightBanner: React.FC<SpotlightBannerProps> = ({
               onClick={handleDiscover}
               className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-[#bef264] hover:bg-[#aee64c] text-black text-xs font-mono font-bold uppercase tracking-wider transition-all duration-300 shadow-xl shadow-[#bef264]/25 hover:scale-105 active:scale-95 cursor-pointer btn-tactile"
             >
-              <span>MİMARİYİ KEŞFET</span>
+              <span>KEŞFET // CANLI DENE</span>
               <ArrowRight className="w-4 h-4 stroke-[2.5]" />
             </button>
 

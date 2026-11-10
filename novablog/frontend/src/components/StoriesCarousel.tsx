@@ -137,8 +137,8 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
               SYSTEM EDITORIAL // ARCHITECTURAL BREAKTHROUGHS
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
-              <span>Mimarî Hikayeler</span>
-              <span className="text-zinc-500 font-normal text-xl sm:text-2xl">{'//'} Stories</span>
+              <span>MİMARÎ HİKAYELER</span>
+              <span className="text-[#bef264] font-mono font-bold text-xl sm:text-2xl">{'//'} BREAKTHROUGHS</span>
             </h2>
           </div>
 
@@ -270,7 +270,7 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
                   }}
                   className="px-5 py-2 rounded-full bg-black text-white hover:bg-neutral-800 text-[11px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer btn-tactile shadow-sm active:scale-95"
                 >
-                  READ MORE
+                  MİMARİYİ İNCELE
                 </button>
               </div>
             </div>

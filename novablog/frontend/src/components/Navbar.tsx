@@ -114,7 +114,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center gap-6 px-4">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#d4f933] shadow-[0_0_6px_#d4f933] animate-pulse" />
-              BOOK A TEST DRIVE
+              CANLI MİMARİYİ TEST EDİN
             </span>
             <span className="opacity-40">|</span>
             <span>JAVA 22 LOOM VIRTUAL THREADS</span>
@@ -131,7 +131,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center gap-6 px-4" aria-hidden="true">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#d4f933] shadow-[0_0_6px_#d4f933] animate-pulse" />
-              BOOK A TEST DRIVE
+              CANLI MİMARİYİ TEST EDİN
             </span>
             <span className="opacity-40">|</span>
             <span>JAVA 22 LOOM VIRTUAL THREADS</span>
@@ -619,7 +619,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onClick={handleTestDrive}
                       className="flex-1 px-4 py-2 rounded-full bg-black dark:bg-[#d4f933] text-white dark:text-black text-xs font-mono font-bold uppercase hover:opacity-90 transition-all cursor-pointer btn-tactile text-center"
                     >
-                      TEST DRIVE
+                      MİMARİYİ İNCELE
                     </button>
                   </div>
                 </div>
