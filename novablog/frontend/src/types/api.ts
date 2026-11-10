@@ -40,6 +40,7 @@ export interface BlogDto {
   isPublished?: boolean;
   isDeleted?: boolean;
   publishedAt?: string;
+  deletedAt?: string;
   createdDate?: string;
   updatedDate?: string;
   category?: BlogCategoryDto;
