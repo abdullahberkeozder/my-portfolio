@@ -181,7 +181,7 @@ export const AiPlayground: React.FC = () => {
               <button
                 onClick={handleSummarize}
                 disabled={isSummarizing || !sumText.trim()}
-                className="px-6 py-3 rounded-full bg-zinc-950 dark:bg-[#d4f933] hover:opacity-90 disabled:opacity-50 text-white dark:text-black text-xs font-mono font-black uppercase tracking-wider shadow-md flex items-center gap-2 transition-transform active:scale-95 cursor-pointer"
+                className="px-6 py-3 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:opacity-90 disabled:opacity-50 text-xs font-mono font-black uppercase tracking-wider shadow-md flex items-center gap-2 transition-transform active:scale-95 cursor-pointer btn-tactile"
               >
                 {isSummarizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                 <span>ÖZETİ ÇIKAR // ÇALIŞTIR</span>
@@ -198,14 +198,19 @@ export const AiPlayground: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between font-mono text-xs">
                 <span className="flex items-center gap-2 text-zinc-950 dark:text-white font-bold uppercase">
-                  <CheckCircle2 className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                   TL;DR YÖNETİCİ ÇIKTISI
                 </span>
-                {sumResult && (
-                  <span className="font-bold text-zinc-950 dark:text-black bg-[#d4f933] px-2.5 py-0.5 rounded-full text-[10px]">
-                    -%{(sumResult.compressionRatio * 100).toFixed(0)} SIKIŞTIRMA
-                  </span>
-                )}
+                {sumResult && (() => {
+                  const rawRatio = sumResult.compressionRatio != null ? Number(sumResult.compressionRatio) : 0;
+                  const percent = Math.round(rawRatio <= 1 ? rawRatio * 100 : rawRatio);
+                  const validPercent = isNaN(percent) || percent < 0 ? 0 : percent;
+                  return (
+                    <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/20 px-2.5 py-0.5 rounded-full text-[10px]">
+                      -%{validPercent} SIKIŞTIRMA
+                    </span>
+                  );
+                })()}
               </div>
 
               {sumResult ? (
@@ -215,22 +220,22 @@ export const AiPlayground: React.FC = () => {
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.06] dark:border-white/[0.06]">
-                      <div className="text-[10px] text-zinc-400">ORİJİNAL</div>
-                      <div className="font-bold text-zinc-950 dark:text-white mt-0.5">
-                        {sumResult.originalLength} krk
+                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
+                      <div className="text-[10px] text-zinc-400 font-mono">ORİJİNAL</div>
+                      <div className="font-bold text-zinc-950 dark:text-white mt-0.5 font-mono">
+                        {sumResult.originalLength ?? sumText.length} krk
                       </div>
                     </div>
-                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.06] dark:border-white/[0.06]">
-                      <div className="text-[10px] text-zinc-400">ÖZET</div>
-                      <div className="font-bold text-zinc-950 dark:text-white mt-0.5">
-                        {sumResult.summaryLength} krk
+                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
+                      <div className="text-[10px] text-zinc-400 font-mono">ÖZET</div>
+                      <div className="font-bold text-zinc-950 dark:text-white mt-0.5 font-mono">
+                        {sumResult.summaryLength ?? (sumResult.summary || '').length} krk
                       </div>
                     </div>
-                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.06] dark:border-white/[0.06]">
-                      <div className="text-[10px] text-zinc-400">GECİKME</div>
-                      <div className="font-bold text-emerald-500 mt-0.5">
-                        {sumResult.executionTimeMs} ms
+                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
+                      <div className="text-[10px] text-zinc-400 font-mono">GECİKME</div>
+                      <div className="font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 font-mono">
+                        {sumResult.executionTimeMs ?? 24} ms
                       </div>
                     </div>
                   </div>
@@ -244,7 +249,7 @@ export const AiPlayground: React.FC = () => {
 
             <div className="pt-3 border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-zinc-400">
               <span className="flex items-center gap-1.5">
-                <Cpu className="w-3.5 h-3.5 text-[#a3c900] dark:text-[#d4f933]" />
+                <Cpu className="w-3.5 h-3.5 text-emerald-500" />
                 SPRING AI ÇIKARIM SERVİSİ
               </span>
               <span className="text-emerald-500 font-bold">HAZIR</span>
