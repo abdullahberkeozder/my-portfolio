@@ -159,21 +159,26 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
           </div>
         </div>
 
-        {/* Tier 2: Spec Meta Bar (Reading Time & Live Views) */}
-        <div className="flex items-center gap-3 text-[11px] font-mono text-zinc-500 dark:text-zinc-400 mb-2.5">
-          <span className="flex items-center gap-1 font-medium">
+        {/* Tier 2: Spec Meta Bar (Date, Reading Time & Live Views) */}
+        <div className="flex items-center gap-2.5 text-[11px] font-mono text-zinc-500 dark:text-zinc-400 mb-3">
+          <span className="flex items-center gap-1 whitespace-nowrap">
+            <Calendar className="w-3 h-3 text-zinc-400" />
+            {formattedDate}
+          </span>
+          <span className="text-zinc-300 dark:text-zinc-700">&bull;</span>
+          <span className="flex items-center gap-1 font-medium whitespace-nowrap">
             <Clock className="w-3.5 h-3.5 text-zinc-400" />
             {readingTime} dk okuma
           </span>
           <span className="text-zinc-300 dark:text-zinc-700">&bull;</span>
-          <span className="flex items-center gap-1" title="Canlı İzlenme (Redis Write-Behind)">
+          <span className="flex items-center gap-1 whitespace-nowrap" title="Canlı İzlenme (Redis Write-Behind)">
             <Eye className="w-3.5 h-3.5 text-zinc-400" />
-            {liveViews.toLocaleString('tr-TR')} görüntülenme
+            {liveViews.toLocaleString('tr-TR')}
           </span>
         </div>
 
         {/* Title & Architectural Header */}
-        <h3 className="text-lg md:text-xl font-black text-zinc-950 dark:text-white group-hover:text-zinc-700 dark:group-hover:text-[#d4f933] transition-colors line-clamp-2 leading-snug tracking-tight">
+        <h3 className="text-lg md:text-xl font-black text-zinc-950 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors line-clamp-2 leading-snug tracking-tight">
           {blog.title}
         </h3>
         <p className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 mt-1 uppercase tracking-wider font-semibold">
@@ -189,13 +194,13 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
       {/* AI TL;DR Section */}
       <div className="px-6 py-2">
         {showSummary && summary ? (
-          <div className="rounded-2xl p-4 bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800 text-xs text-zinc-800 dark:text-zinc-300">
+          <div className="rounded-2xl p-4 bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 text-xs text-zinc-800 dark:text-zinc-300">
             <div className="flex items-center justify-between gap-2 mb-2 font-mono font-semibold text-zinc-900 dark:text-white">
               <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-wide">
-                <Bot className="w-4 h-4 text-emerald-600 dark:text-[#d4f933]" />
-                SPRING AI // TL;DR ÖZETİ
+                <Bot className="w-4 h-4 text-zinc-700 dark:text-zinc-300" />
+                YAPAY ZEKA ÖZETİ
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 dark:bg-[#d4f933]/15 text-emerald-700 dark:text-[#d4f933] font-bold font-mono border border-emerald-500/20 dark:border-[#d4f933]/30">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-200/70 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold font-mono border border-zinc-300/60 dark:border-zinc-700">
                 -%65 SIKIŞTIRMA
               </span>
             </div>
@@ -205,17 +210,17 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
           <button
             onClick={handleFetchSummary}
             disabled={isLoadingSummary}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-full text-xs font-mono font-semibold bg-zinc-50 dark:bg-zinc-900/90 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-mono font-semibold bg-zinc-50 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all cursor-pointer"
           >
             {isLoadingSummary ? (
               <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600 dark:text-[#d4f933]" />
-                SPRING AI ANALİZİ ÇIKARILIYOR...
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-700 dark:text-zinc-300" />
+                YAPAY ZEKA ANALİZİ ÇIKARILIYOR...
               </>
             ) : (
               <>
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-[#d4f933]" />
-                SPRING AI İLE TL;DR ÖZETİ GÖR
+                <Sparkles className="w-3.5 h-3.5 text-zinc-700 dark:text-zinc-300" />
+                YAPAY ZEKA ÖZETİNİ GÖR
               </>
             )}
           </button>
@@ -232,7 +237,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
                 e.stopPropagation();
                 if (onTagClick) onTagClick(tag);
               }}
-              className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-md bg-zinc-100/80 dark:bg-zinc-900/80 hover:bg-zinc-900 hover:text-white dark:hover:bg-[#d4f933] dark:hover:text-black text-zinc-600 dark:text-zinc-400 border border-zinc-200/80 dark:border-zinc-800 transition-all cursor-pointer uppercase"
+              className="text-[10px] font-mono font-medium px-2.5 py-1 rounded-md bg-zinc-100/80 dark:bg-zinc-900/80 hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-black text-zinc-600 dark:text-zinc-400 border border-zinc-200/80 dark:border-zinc-800 transition-all cursor-pointer uppercase"
             >
               #{tag}
             </button>
@@ -249,14 +254,9 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
           <span className="font-semibold text-zinc-900 dark:text-zinc-200 whitespace-nowrap">
             {blog.author || 'Abdullah Berke Özder'}
           </span>
-          <span className="text-zinc-300 dark:text-zinc-700">&bull;</span>
-          <span className="flex items-center gap-1 text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
-            <Calendar className="w-3 h-3 text-zinc-400" />
-            {formattedDate}
-          </span>
         </div>
 
-        <div className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800/80 group-hover:bg-zinc-900 group-hover:text-white dark:group-hover:bg-[#d4f933] dark:group-hover:text-black font-mono font-bold text-[11px] text-zinc-900 dark:text-zinc-100 transition-all">
+        <div className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800/80 group-hover:bg-zinc-950 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black font-mono font-bold text-[11px] text-zinc-900 dark:text-zinc-100 transition-all">
           <span>İNCELE</span>
           <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
         </div>
