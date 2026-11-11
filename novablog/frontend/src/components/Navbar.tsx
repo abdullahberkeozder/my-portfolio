@@ -126,24 +126,25 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header
-      className="sticky top-0 z-50 transition-all duration-300"
+      className="sticky top-0 z-50"
       onMouseLeave={handleMouseLeave}
     >
-      {/* Subtle backdrop overlay when mega menu is open */}
+      {/* Subtle backdrop overlay when mega menu is open - pure opacity scrim, no expensive fullscreen blur */}
       {isMegaOpen && (
         <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-30 transition-opacity duration-300"
+          className="fixed inset-0 bg-black/30 dark:bg-black/50 z-30 transition-opacity duration-200 pointer-events-auto"
           onClick={closeMegaMenu}
         />
       )}
 
-      {/* Unified Apple-grade Frosted Glass Header Container */}
+      {/* Unified Apple-grade Frosted Glass Header Container - Static blur radius, GPU-accelerated layer */}
       <div
-        className={`relative z-40 transition-all duration-300 ${
+        className={`relative z-40 backdrop-blur-xl transition-colors duration-200 ${
           isMegaOpen
-            ? 'backdrop-blur-2xl bg-white/95 dark:bg-[#090b0e]/95 text-zinc-950 dark:text-white shadow-2xl rounded-b-[32px] border-b border-zinc-200 dark:border-zinc-800 pb-6'
-            : 'backdrop-blur-xl bg-white/80 dark:bg-[#07080a]/85 border-b border-zinc-200/80 dark:border-zinc-800/80'
+            ? 'bg-white/95 dark:bg-[#090b0e]/95 text-zinc-950 dark:text-white shadow-2xl rounded-b-[28px] border-b border-zinc-200 dark:border-zinc-800 pb-5'
+            : 'bg-white/80 dark:bg-[#07080a]/85 border-b border-zinc-200/80 dark:border-zinc-800/80'
         }`}
+        style={{ transform: 'translate3d(0,0,0)' }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top Bar Row */}
@@ -304,11 +305,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          {/* 4. Elegant Frosted Glass Mega-Menu Dropdown */}
+          {/* 4. Elegant Frosted Glass Mega-Menu Dropdown (Hardware-Accelerated Single Surface) */}
           {isMegaOpen && (
             <div
               onMouseEnter={handleDrawerMouseEnter}
-              className="mt-2 bg-white/95 dark:bg-[#0c0e12]/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-7 lg:p-8 shadow-2xl border border-zinc-200/90 dark:border-zinc-800/90 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start ride-also-drawer-anim text-zinc-900 dark:text-white"
+              className="mt-2 bg-white/98 dark:bg-[#0c0e12]/98 rounded-3xl p-6 sm:p-7 lg:p-8 shadow-2xl border border-zinc-200/90 dark:border-zinc-800/90 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start ride-also-drawer-anim text-zinc-900 dark:text-white"
             >
               {/* Mobile Category Switcher (md:hidden) */}
               <div className="md:hidden col-span-1 flex items-center gap-2 overflow-x-auto pb-2 border-b border-zinc-200 dark:border-zinc-800 scrollbar-none font-mono text-xs">

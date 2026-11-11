@@ -145,20 +145,39 @@ html {
   animation-play-state: paused;
 }
 
-/* Smooth Drawer Unfold */
+/* Hardware-Accelerated 120/240 FPS Smooth Drawer Unfold */
 @keyframes drawerExpand {
   0% {
     opacity: 0;
-    transform: translateY(-8px) scale(0.99);
+    transform: translate3d(0, -6px, 0) scale(0.995);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 .ride-also-drawer-anim {
-  animation: drawerExpand 0.38s var(--ease-out-expo) forwards;
+  will-change: transform, opacity;
+  animation: drawerExpand 0.22s var(--ease-out-expo) forwards;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* GPU-Composited Slide Progress Animation (Zero React Re-Renders) */
+@keyframes slideProgressBar {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.animate-slide-progress {
+  transform-origin: left;
+  animation: slideProgressBar 6s linear forwards;
+  will-change: transform;
 }
 
 /* Tactile Button Press */

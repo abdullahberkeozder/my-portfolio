@@ -95,7 +95,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 }) => {
   const [activeSlide, setActiveSlide] = useState<0 | 1 | 2>(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [slideProgress, setSlideProgress] = useState(0);
   const [telemetryTick, setTelemetryTick] = useState(0);
   const [activeExplainer, setActiveExplainer] = useState<'loom' | 'redis' | 'ai' | 'locking' | null>(null);
   const [burstIopsBonus, setBurstIopsBonus] = useState(0);
@@ -110,29 +109,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  // Automatic 6-second rotation timer with smooth progress and hover pause
+  // Automatic 6-second rotation timer (GPU-composited CSS progress, zero micro-stutters)
   useEffect(() => {
     if (isPaused) return;
-    const intervalMs = 60;
-    const totalMs = 6000;
-    const step = 100 / (totalMs / intervalMs);
-
     const timer = setInterval(() => {
-      setSlideProgress((prev) => {
-        if (prev >= 100) {
-          setActiveSlide((s) => ((s + 1) % 3) as 0 | 1 | 2);
-          return 0;
-        }
-        return prev + step;
-      });
-    }, intervalMs);
-
+      setActiveSlide((s) => ((s + 1) % 3) as 0 | 1 | 2);
+    }, 6000);
     return () => clearInterval(timer);
-  }, [isPaused, activeSlide]);
+  }, [isPaused]);
 
   const handleSelectSlide = (idx: 0 | 1 | 2) => {
     setActiveSlide(idx);
-    setSlideProgress(0);
   };
 
   const slide = SLIDES[activeSlide];
@@ -582,10 +569,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   title={`Slayt 0${idx + 1}`}
                 >
                   {isActive ? (
-                    <div className="w-8 h-2.5 rounded-full bg-zinc-800 overflow-hidden relative shadow-[0_0_10px_#d4f933]/50">
+                    <div className="w-8 h-2.5 rounded-full bg-zinc-800 overflow-hidden relative shadow-[0_0_10px_#10b981]/30">
                       <div
-                        className="h-full bg-[#d4f933] transition-all duration-75"
-                        style={{ width: `${slideProgress}%` }}
+                        key={activeSlide}
+                        className="h-full bg-emerald-500 rounded-full animate-slide-progress"
+                        style={{
+                          animationDuration: '6000ms',
+                          animationPlayState: isPaused ? 'paused' : 'running',
+                        }}
                       />
                     </div>
                   ) : (

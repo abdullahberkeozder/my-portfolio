@@ -66,15 +66,19 @@ export function createRenderer(canvas: HTMLCanvasElement, world: World) {
     if (gl) gl.viewport(0, 0, G.cw, G.ch);
   }
 
-  function draw(G: Layout, B: LensFrame, L: number) {
+  let hasUploadedTextures = false;
+  function draw(G: Layout, B: LensFrame, L: number, needsUpload = true) {
     const keyLerp: (set: RGB[]) => RGB = world.keyLerp;
     if (gl) {
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, texWorld);
-      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, world.img8);
-      gl.activeTexture(gl.TEXTURE1);
-      gl.bindTexture(gl.TEXTURE_2D, texGlow);
-      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, world.g8);
+      if (needsUpload || !hasUploadedTextures) {
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, texWorld);
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, world.img8);
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, texGlow);
+        gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, world.g8);
+        hasUploadedTextures = true;
+      }
       gl.uniform2f(U.uRes, G.cw, G.ch);
       gl.uniform2f(U.uO, G.ox, G.oy);
       gl.uniform1f(U.uK, G.k);
@@ -123,3 +127,4 @@ export function createRenderer(canvas: HTMLCanvasElement, world: World) {
 
   return { resize, draw, dispose };
 }
+

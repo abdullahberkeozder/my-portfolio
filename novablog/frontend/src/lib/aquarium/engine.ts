@@ -44,9 +44,9 @@ export function createEngine(parts: Parts, { demo, now0, initialTheme, onThemeCh
   const { canvas, hit, status: statusEl, tank: tankEl, wrap: wrapEl, cursor } = parts;
   const off = new AbortController();
   const on = <K extends keyof WindowEventMap>(target: Window, type: K, fn: (e: WindowEventMap[K]) => void) =>
-    target.addEventListener(type, fn, { signal: off.signal });
+    target.addEventListener(type, fn, { signal: off.signal, passive: true });
   const onHit = <K extends keyof HTMLElementEventMap>(type: K, fn: (e: HTMLElementEventMap[K]) => void) =>
-    hit.addEventListener(type, fn, { signal: off.signal });
+    hit.addEventListener(type, fn, { signal: off.signal, passive: true });
 
   const world = createWorld();
   const { S, GL } = world;
@@ -301,12 +301,14 @@ export function createEngine(parts: Parts, { demo, now0, initialTheme, onThemeCh
     S.iy = calm ? 0 : TILT.iy + 0.2 * Math.cos(0.4 * ts);
     const { bx, by } = stepBubble(dt);
     worldAcc += dt;
+    let didSimulate = false;
     if (worldAcc >= 1 / 30) {
       world.simulate(calm ? 0 : Math.min(worldAcc, 0.1));
       world.drawWorld();
       worldAcc = 0;
+      didSimulate = true;
     }
-    renderer.draw(G, { bx, by, x: B.x, scale: B.scale, wa: B.wa, wb: B.wb, w3: B.w3, ph3: B.ph3, press: B.press }, S.L);
+    renderer.draw(G, { bx, by, x: B.x, scale: B.scale, wa: B.wa, wb: B.wb, w3: B.w3, ph3: B.ph3, press: B.press }, S.L, didSimulate);
     updatePage(S.L);
   }
 
@@ -334,3 +336,4 @@ export function createEngine(parts: Parts, { demo, now0, initialTheme, onThemeCh
 }
 
 export type Engine = ReturnType<typeof createEngine>;
+

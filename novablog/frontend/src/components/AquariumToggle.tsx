@@ -22,11 +22,11 @@ export interface AquariumToggleProps {
   className?: string;
 }
 
-export const AquariumToggle: React.FC<AquariumToggleProps> = ({
+export const AquariumToggle = React.memo<AquariumToggleProps>(function AquariumToggle({
   compact = false,
   compactWidth = 72,
   className = '',
-}) => {
+}) {
   const { isDark, setTheme } = useTheme();
   const setThemeRef = useRef(setTheme);
   useEffect(() => {
@@ -136,4 +136,4 @@ export const AquariumToggle: React.FC<AquariumToggleProps> = ({
       </svg>
     </div>
   );
-};
+});
