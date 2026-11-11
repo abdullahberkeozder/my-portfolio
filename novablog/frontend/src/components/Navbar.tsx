@@ -12,7 +12,7 @@ import {
   Menu,
 } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
-import { LiquidThemeToggle } from './LiquidThemeToggle';
+import { AquariumToggle } from './AquariumToggle';
 
 export type NavTab = 'feed' | 'system' | 'ai-search' | 'admin-batch';
 
@@ -288,8 +288,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>MİMARİYİ TEST ET</span>
               </button>
 
-              {/* Liquid Theme Switcher */}
-              <LiquidThemeToggle />
+              {/* Living Pixel Aquarium Theme Toggle (Sean Galt / Fable Specification) */}
+              <AquariumToggle compact compactWidth={72} className="shrink-0" />
 
               {/* GitHub Repo Link */}
               <a
