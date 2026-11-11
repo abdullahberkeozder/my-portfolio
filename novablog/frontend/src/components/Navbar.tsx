@@ -10,8 +10,6 @@ import {
   Zap,
   ChevronDown,
   Menu,
-  Lock,
-  Sparkles,
 } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
 import { LiquidThemeToggle } from './LiquidThemeToggle';
@@ -39,7 +37,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenTelemetry,
   onOpenArchitectureConsole,
   onOpenTwoFactor,
-  onOpenAbout,
 }) => {
   const [megaMenu, setMegaMenu] = useState<MegaDrawerCategory>(null);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -132,126 +129,76 @@ export const Navbar: React.FC<NavbarProps> = ({
       className="sticky top-0 z-50 transition-all duration-300"
       onMouseLeave={handleMouseLeave}
     >
-      {/* 1. Ride Also Top Marquee Ticker (Interactive Infinite Loop Lavender / Violet Band) */}
-      <div
-        onClick={handleTestDrive}
-        title="Mimarî Test Drive konsoluna gitmek ve sanal thread simülasyonunu başlatmak için tıklayınız"
-        className="bg-[#8c52ff] dark:bg-[#7232e8] text-white py-1.5 text-[11px] font-mono tracking-widest font-semibold uppercase border-b border-black/10 select-none overflow-hidden relative cursor-pointer hover:bg-[#783cf5] transition-colors group"
-      >
-        <div className="flex animate-marquee whitespace-nowrap">
-          {/* First loop track */}
-          <div className="flex items-center gap-6 px-4">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#d4f933] shadow-[0_0_6px_#d4f933] animate-pulse" />
-              CANLI MİMARİYİ TEST EDİN
-            </span>
-            <span className="opacity-40">|</span>
-            <span>JAVA 22 LOOM SANAL İŞ PARÇACIKLARI</span>
-            <span className="opacity-40">&bull;</span>
-            <span>REDIS WRITE-BEHIND ÖNBELLEK</span>
-            <span className="opacity-40">&bull;</span>
-            <span>YAPAY ZEKA ANLAMSAL ARAMA</span>
-            <span className="opacity-40">&bull;</span>
-            <span className="text-[#d4f933] font-bold">201/201 OTOMATİK TEST (%100 BAŞARILI)</span>
-            <span className="opacity-40">|</span>
-            <span>KURUMSAL ŞARTNAME V4.1.1</span>
-          </div>
-          {/* Second duplicate track for seamless continuous loop */}
-          <div className="flex items-center gap-6 px-4" aria-hidden="true">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#d4f933] shadow-[0_0_6px_#d4f933] animate-pulse" />
-              CANLI MİMARİYİ TEST EDİN
-            </span>
-            <span className="opacity-40">|</span>
-            <span>JAVA 22 LOOM SANAL İŞ PARÇACIKLARI</span>
-            <span className="opacity-40">&bull;</span>
-            <span>REDIS WRITE-BEHIND ÖNBELLEK</span>
-            <span className="opacity-40">&bull;</span>
-            <span>YAPAY ZEKA ANLAMSAL ARAMA</span>
-            <span className="opacity-40">&bull;</span>
-            <span className="text-[#d4f933] font-bold">201/201 OTOMATİK TEST (%100 BAŞARILI)</span>
-            <span className="opacity-40">|</span>
-            <span>KURUMSAL ŞARTNAME V4.1.1</span>
-          </div>
-        </div>
-      </div>
-
       {/* Subtle backdrop overlay when mega menu is open */}
       {isMegaOpen && (
         <div
-          className="fixed inset-0 bg-black/45 backdrop-blur-xs z-30 transition-opacity duration-300"
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-30 transition-opacity duration-300"
           onClick={closeMegaMenu}
         />
       )}
 
-      {/* 2. Unified Header Container (Seamlessly morphs into Ride Also Lavender Frame when open) */}
+      {/* Unified Apple-grade Frosted Glass Header Container */}
       <div
         className={`relative z-40 transition-all duration-300 ${
           isMegaOpen
-            ? 'bg-[#8c52ff] dark:bg-[#7232e8] text-white shadow-2xl rounded-b-[28px] sm:rounded-b-[36px] border-b border-black/10 pb-6'
-            : 'backdrop-blur-xl bg-white/85 dark:bg-[#07080a]/90 border-b border-black/[0.08] dark:border-white/[0.08]'
+            ? 'backdrop-blur-2xl bg-white/95 dark:bg-[#090b0e]/95 text-zinc-950 dark:text-white shadow-2xl rounded-b-[32px] border-b border-zinc-200 dark:border-zinc-800 pb-6'
+            : 'backdrop-blur-xl bg-white/80 dark:bg-[#07080a]/85 border-b border-zinc-200/80 dark:border-zinc-800/80'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top Bar Row */}
-          <div className="flex items-center justify-between h-16">
-            {/* Brand Logo */}
+          <div className="flex items-center justify-between h-18 sm:h-20">
+            {/* 1. Premium Apple-Grade Brand Logo */}
             <div
-              className="flex items-center gap-3 cursor-pointer group select-none"
+              className="flex items-center gap-3.5 cursor-pointer group select-none py-2"
               onClick={() => {
                 closeMegaMenu();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 if (onRefreshHealth) onRefreshHealth();
               }}
             >
-              <div
-                className={`w-9 h-9 rounded-xl border flex items-center justify-center p-[2px] transition-transform group-hover:scale-105 shadow-sm ${
-                  isMegaOpen
-                    ? 'bg-black/30 border-white/20'
-                    : 'bg-zinc-900 dark:bg-zinc-800 border-black/10 dark:border-white/15'
-                }`}
+              {/* Bespoke Geometric Nova Star Aperture Emblem */}
+              <svg
+                viewBox="0 0 40 40"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 text-zinc-950 dark:text-white transition-transform group-hover:scale-105 duration-300"
+                aria-label="Nova Logo"
               >
-                <div className="w-full h-full rounded-[9px] bg-black dark:bg-[#07080a] flex items-center justify-center">
-                  <span
-                    title={isBackendOnline === false ? 'Sistem: Mock Modu' : 'Sistem: Canlı Spring Boot Motoru Aktif'}
-                    className={`w-2.5 h-2.5 rounded-full ${
-                      isBackendOnline === false
-                        ? 'bg-amber-400 shadow-[0_0_8px_#f59e0b]'
-                        : 'bg-[#d4f933] shadow-[0_0_8px_#d4f933]'
-                    } transition-colors`}
-                  />
-                </div>
-              </div>
-              <div className="flex items-baseline gap-1.5">
-                <span
-                  className={`font-sans font-black text-xl tracking-tight uppercase ${
-                    isMegaOpen ? 'text-white' : 'text-zinc-950 dark:text-white'
-                  }`}
-                >
-                  NOVA<span className={isMegaOpen ? 'text-[#d4f933]' : 'text-[#8c52ff] dark:text-[#a259ff]'}>.</span>
+                {/* 4-Cusped Precision Astroid Geometry */}
+                <path
+                  d="M20 2C20 11.9411 28.0589 20 38 20C28.0589 20 20 28.0589 20 38C20 28.0589 11.9411 20 2 20C11.9411 20 20 11.9411 20 2Z"
+                  fill="currentColor"
+                />
+                {/* Inner Optical Lens Core with Dynamic Health State */}
+                <circle cx="20" cy="20" r="3.6" className="fill-white dark:fill-[#07080a]" />
+                <circle
+                  cx="20"
+                  cy="20"
+                  r="1.8"
+                  className={isBackendOnline === false ? 'fill-amber-400' : 'fill-emerald-500 dark:fill-[#d4f933]'}
+                />
+              </svg>
+
+              {/* Prominent Bold Wordmark */}
+              <div className="flex items-baseline">
+                <span className="font-sans font-black text-2xl sm:text-[26px] tracking-[-0.04em] text-zinc-950 dark:text-white uppercase leading-none">
+                  NOVA
                 </span>
-                <span
-                  className={`text-[10px] font-mono tracking-widest uppercase ${
-                    isMegaOpen ? 'text-white/70' : 'text-zinc-500'
-                  }`}
-                >
-                  V4.1.1 SPEC
-                </span>
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#d4f933] ml-0.5" />
               </div>
             </div>
 
-            {/* Desktop Navigation Tabs */}
-            <nav className="hidden md:flex items-center gap-1.5 font-mono text-xs">
+            {/* 2. Desktop Navigation Tabs (Single-Line, High-Contrast Ergonomics) */}
+            <nav className="hidden md:flex items-center gap-1 sm:gap-1.5 font-mono text-xs">
               {/* Category 1: MAKALELER */}
               <button
                 type="button"
                 onMouseEnter={() => handleMouseEnter('articles')}
                 onClick={() => scrollToSection('articles-feed', 'feed')}
-                className={`px-5 py-2 rounded-full font-bold transition-all cursor-pointer ${
+                className={`whitespace-nowrap shrink-0 px-4 py-2 rounded-full font-bold transition-all cursor-pointer ${
                   megaMenu === 'articles'
-                    ? 'bg-[#200e38] text-white shadow-md'
-                    : isMegaOpen
-                    ? 'text-white/85 hover:text-white hover:bg-black/10'
+                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-black shadow-md'
                     : activeTab === 'feed'
                     ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
@@ -265,11 +212,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 type="button"
                 onMouseEnter={() => handleMouseEnter('system')}
                 onClick={() => scrollToSection('modular-architecture-console', 'system')}
-                className={`flex items-center gap-1.5 px-5 py-2 rounded-full font-bold transition-all cursor-pointer ${
+                className={`whitespace-nowrap shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full font-bold transition-all cursor-pointer ${
                   megaMenu === 'system'
-                    ? 'bg-[#200e38] text-white shadow-md'
-                    : isMegaOpen
-                    ? 'text-white/85 hover:text-white hover:bg-black/10'
+                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-black shadow-md'
                     : activeTab === 'system'
                     ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
@@ -284,11 +229,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 type="button"
                 onMouseEnter={() => handleMouseEnter('ai')}
                 onClick={() => scrollToSection('ai-vector-studio', 'ai-search')}
-                className={`flex items-center gap-1.5 px-5 py-2 rounded-full font-bold transition-all cursor-pointer ${
+                className={`whitespace-nowrap shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full font-bold transition-all cursor-pointer ${
                   megaMenu === 'ai'
-                    ? 'bg-[#200e38] text-white shadow-md'
-                    : isMegaOpen
-                    ? 'text-white/85 hover:text-white hover:bg-black/10'
+                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-black shadow-md'
                     : activeTab === 'ai-search'
                     ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
@@ -303,11 +246,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 type="button"
                 onMouseEnter={() => handleMouseEnter('batch')}
                 onClick={() => scrollToSection('batch-etl-studio', 'admin-batch')}
-                className={`flex items-center gap-1.5 px-5 py-2 rounded-full font-bold transition-all cursor-pointer ${
+                className={`whitespace-nowrap shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full font-bold transition-all cursor-pointer ${
                   megaMenu === 'batch'
-                    ? 'bg-[#200e38] text-white shadow-md'
-                    : isMegaOpen
-                    ? 'text-white/85 hover:text-white hover:bg-black/10'
+                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-black shadow-md'
                     : activeTab === 'admin-batch'
                     ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
@@ -318,39 +259,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             </nav>
 
-            {/* Right Status & Controls */}
-            <div className="flex items-center gap-2.5 sm:gap-3">
+            {/* 3. Right Status & Controls */}
+            <div className="flex items-center gap-2 sm:gap-3">
               {/* Mobile Menu Trigger Pill */}
               <button
                 type="button"
                 onClick={() => setMegaMenu(isMegaOpen ? null : 'articles')}
-                className={`md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer ${
-                  isMegaOpen
-                    ? 'bg-black/30 text-white'
-                    : 'bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-zinc-800 dark:text-zinc-200'
-                }`}
+                className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 transition-colors cursor-pointer"
                 aria-label="Menüyü Aç / Kapat"
               >
                 {isMegaOpen ? <ChevronDown className="w-3.5 h-3.5 rotate-180" /> : <Menu className="w-3.5 h-3.5" />}
                 <span>{isMegaOpen ? 'KAPAT' : 'MENÜ'}</span>
               </button>
-
-              {/* Manifesto Button */}
-              {onOpenAbout && (
-                <button
-                  type="button"
-                  onClick={onOpenAbout}
-                  className={`hidden lg:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-mono font-bold tracking-wider uppercase transition-all duration-300 shadow-sm cursor-pointer ${
-                    isMegaOpen
-                      ? 'text-white/90 hover:text-white hover:bg-black/10'
-                      : 'text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
-                  }`}
-                  title="Mimar Abdullah Berke Özder & Mühendislik Manifestosu"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-purple-500" />
-                  <span>MANİFESTO</span>
-                </button>
-              )}
 
               {/* Architecture Test Pill Button */}
               <button
@@ -362,31 +282,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                     onOpenTelemetry();
                   }
                 }}
-                className={`hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-mono font-bold tracking-wider uppercase transition-all duration-300 shadow-sm cursor-pointer btn-tactile ${
-                  isMegaOpen
-                    ? 'bg-white text-zinc-950 hover:bg-[#d4f933] hover:text-black border-transparent'
-                    : 'bg-white dark:bg-zinc-900 border border-black/15 dark:border-white/20 hover:bg-[#d4f933] hover:text-black hover:border-transparent text-zinc-900 dark:text-white'
-                }`}
+                className="hidden sm:inline-flex items-center gap-2 px-4.5 py-2 rounded-full text-xs font-mono font-bold tracking-wider uppercase transition-all duration-300 shadow-sm cursor-pointer whitespace-nowrap bg-zinc-950 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 active:scale-95 btn-tactile"
               >
-                <Zap className={`w-3.5 h-3.5 ${isMegaOpen ? 'text-[#8c52ff]' : 'text-[#8c52ff] dark:text-[#a259ff]'}`} />
+                <Zap className="w-3.5 h-3.5 text-emerald-400 dark:text-zinc-950 fill-current" />
                 <span>MİMARİYİ TEST ET</span>
               </button>
 
-              {/* 2FA / TOTP Security Center Button */}
-              <button
-                type="button"
-                onClick={onOpenTwoFactor}
-                className={`flex items-center gap-1.5 p-2 rounded-full transition-all cursor-pointer btn-tactile ${
-                  isMegaOpen
-                    ? 'bg-black/20 text-white hover:bg-black/40'
-                    : 'glass-liquid hover:border-black/20 dark:hover:border-white/20 text-zinc-800 dark:text-zinc-200'
-                }`}
-                title="2FA / TOTP Güvenlik Protokolü"
-              >
-                <Lock className="w-4 h-4" />
-              </button>
-
-              {/* Theme Switcher */}
+              {/* Liquid Theme Switcher */}
               <LiquidThemeToggle />
 
               {/* GitHub Repo Link */}
@@ -394,11 +296,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 href="https://github.com/abdullahberkeozder/my-portfolio"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`flex items-center gap-1.5 p-2 rounded-full transition-all cursor-pointer btn-tactile ${
-                  isMegaOpen
-                    ? 'bg-black/20 text-white hover:bg-black/40'
-                    : 'glass-liquid hover:border-black/20 dark:hover:border-white/20 text-zinc-800 dark:text-zinc-200'
-                }`}
+                className="flex items-center gap-1.5 p-2 rounded-full transition-all cursor-pointer glass-liquid hover:border-black/20 dark:hover:border-white/20 text-zinc-800 dark:text-zinc-200 btn-tactile"
                 title="GitHub Repository"
               >
                 <GithubIcon className="w-4 h-4" />
@@ -406,20 +304,20 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          {/* 3. The Iconic Ride Also Inner White Card (Dropdown Mega-Menu) */}
+          {/* 4. Elegant Frosted Glass Mega-Menu Dropdown */}
           {isMegaOpen && (
             <div
               onMouseEnter={handleDrawerMouseEnter}
-              className="mt-2 bg-white dark:bg-[#090b0e] rounded-3xl p-5 sm:p-6 lg:p-8 shadow-2xl border border-black/5 dark:border-white/10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start ride-also-drawer-anim text-zinc-900 dark:text-white"
+              className="mt-2 bg-white/95 dark:bg-[#0c0e12]/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-7 lg:p-8 shadow-2xl border border-zinc-200/90 dark:border-zinc-800/90 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start ride-also-drawer-anim text-zinc-900 dark:text-white"
             >
               {/* Mobile Category Switcher (md:hidden) */}
-              <div className="md:hidden col-span-1 flex items-center gap-2 overflow-x-auto pb-2 border-b border-black/[0.08] dark:border-white/[0.08] scrollbar-none font-mono text-xs">
+              <div className="md:hidden col-span-1 flex items-center gap-2 overflow-x-auto pb-2 border-b border-zinc-200 dark:border-zinc-800 scrollbar-none font-mono text-xs">
                 <button
                   type="button"
                   onClick={() => setMegaMenu('articles')}
                   className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition-colors cursor-pointer ${
                     megaMenu === 'articles'
-                      ? 'bg-[#200e38] text-white shadow-sm'
+                      ? 'bg-zinc-900 text-white dark:bg-white dark:text-black shadow-sm'
                       : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
                   }`}
                 >
@@ -430,7 +328,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => setMegaMenu('system')}
                   className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition-colors cursor-pointer ${
                     megaMenu === 'system'
-                      ? 'bg-[#200e38] text-white shadow-sm'
+                      ? 'bg-zinc-900 text-white dark:bg-white dark:text-black shadow-sm'
                       : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
                   }`}
                 >
@@ -441,7 +339,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => setMegaMenu('ai')}
                   className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition-colors cursor-pointer ${
                     megaMenu === 'ai'
-                      ? 'bg-[#200e38] text-white shadow-sm'
+                      ? 'bg-zinc-900 text-white dark:bg-white dark:text-black shadow-sm'
                       : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
                   }`}
                 >
@@ -452,7 +350,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => setMegaMenu('batch')}
                   className={`px-3 py-1.5 rounded-full font-bold whitespace-nowrap transition-colors cursor-pointer ${
                     megaMenu === 'batch'
-                      ? 'bg-[#200e38] text-white shadow-sm'
+                      ? 'bg-zinc-900 text-white dark:bg-white dark:text-black shadow-sm'
                       : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
                   }`}
                 >
@@ -461,7 +359,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
 
               {/* Left Sub-Navigation Menu */}
-              <div className="lg:col-span-3 space-y-4 border-b lg:border-b-0 lg:border-r border-black/[0.08] dark:border-white/[0.08] pb-6 lg:pb-0 lg:pr-6 font-mono text-xs">
+              <div className="lg:col-span-3 space-y-4 border-b lg:border-b-0 lg:border-r border-zinc-200 dark:border-zinc-800 pb-6 lg:pb-0 lg:pr-6 font-mono text-xs">
                 <div className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold tracking-widest uppercase">
                   ALT DİZİN // SPEC
                 </div>
@@ -472,7 +370,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <button
                         type="button"
                         onClick={() => scrollToSection('articles-feed', 'feed')}
-                        className="text-left font-bold text-zinc-950 dark:text-white hover:text-[#8c52ff] dark:hover:text-[#a259ff] transition-colors cursor-pointer block tracking-wider"
+                        className="text-left font-bold text-zinc-950 dark:text-white hover:text-emerald-600 dark:hover:text-[#d4f933] transition-colors cursor-pointer block tracking-wider"
                       >
                         &rarr; TÜM MAKALELER (FEED)
                       </button>
@@ -522,7 +420,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <button
                         type="button"
                         onClick={() => scrollToSection('modular-architecture-console', 'system')}
-                        className="text-left font-bold text-[#8c52ff] dark:text-[#a259ff] transition-colors cursor-pointer block tracking-wider"
+                        className="text-left font-bold text-emerald-600 dark:text-[#d4f933] transition-colors cursor-pointer block tracking-wider"
                       >
                         &rarr; MODULAR SIMULATOR CONSOLE
                       </button>
@@ -576,7 +474,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <button
                         type="button"
                         onClick={() => scrollToSection('ai-vector-studio', 'ai-search')}
-                        className="text-left font-bold text-zinc-950 dark:text-white hover:text-[#8c52ff] dark:hover:text-[#a259ff] transition-colors cursor-pointer block tracking-wider"
+                        className="text-left font-bold text-zinc-950 dark:text-white hover:text-emerald-600 dark:hover:text-[#d4f933] transition-colors cursor-pointer block tracking-wider"
                       >
                         &rarr; SEMANTİK VEKTÖR ARAMA
                       </button>
@@ -617,7 +515,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <button
                         type="button"
                         onClick={() => scrollToSection('batch-etl-studio', 'admin-batch')}
-                        className="text-left font-bold text-zinc-950 dark:text-white hover:text-[#8c52ff] dark:hover:text-[#a259ff] transition-colors cursor-pointer block tracking-wider"
+                        className="text-left font-bold text-zinc-950 dark:text-white hover:text-emerald-600 dark:hover:text-[#d4f933] transition-colors cursor-pointer block tracking-wider"
                       >
                         &rarr; SPRING BATCH KONSOLU
                       </button>
@@ -659,10 +557,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               {/* Right Showcase Cards Grid */}
               <div className="lg:col-span-9 grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Showcase Card 1 */}
-                <div className="rounded-2xl border border-black/10 dark:border-white/10 p-5 bg-zinc-50/50 dark:bg-zinc-900/50 flex flex-col justify-between space-y-4 hover:border-[#8c52ff]/40 transition-all duration-300 group">
+                <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800/80 p-5 bg-zinc-50/70 dark:bg-zinc-900/40 flex flex-col justify-between space-y-4 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all duration-300 group">
                   <div className="space-y-3">
                     <div>
-                      <div className="text-[10px] font-mono text-[#8c52ff] dark:text-[#a259ff] font-bold uppercase tracking-wider mb-1">
+                      <div className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-1">
                         01 // TRANSPARENT CORE
                       </div>
                       <h4 className="text-xl font-black text-zinc-950 dark:text-white tracking-tight">
@@ -673,7 +571,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </h4>
                     </div>
 
-                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-zinc-900 border border-black/10 dark:border-white/10">
+                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
                       <Image
                         src="/images/architecture-cutaway.jpg"
                         alt="Transparent Core Architecture"
@@ -683,7 +581,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       />
                     </div>
 
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed font-sans">
                       {megaMenu === 'articles' && '10.000 sanal thread havuzu ile sıfır platform thread kilitlemesi.'}
                       {megaMenu === 'system' && 'Mikroişlemci seviyesinde şeffaf akrilik ve titanyum soğutma tasarımı.'}
                       {megaMenu === 'ai' && 'Anlamsal yakınlık ile milisaniyede akıllı içerik eşleştirme.'}
@@ -701,14 +599,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                         else if (megaMenu === 'system') scrollToSection('modular-architecture-console', 'system');
                         else scrollToSection('articles-feed', 'feed');
                       }}
-                      className="flex-1 px-4 py-2 rounded-full border border-black/20 dark:border-white/20 bg-white dark:bg-zinc-800 text-xs font-mono font-bold uppercase hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all cursor-pointer btn-tactile text-center"
+                      className="flex-1 px-4 py-2 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs font-mono font-bold uppercase hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all cursor-pointer btn-tactile text-center"
                     >
                       İNCELE
                     </button>
                     <button
                       type="button"
                       onClick={handleTestDrive}
-                      className="flex-1 px-4 py-2 rounded-full bg-black dark:bg-[#d4f933] text-white dark:text-black text-xs font-mono font-bold uppercase hover:opacity-90 transition-all cursor-pointer btn-tactile text-center"
+                      className="flex-1 px-4 py-2 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-black text-xs font-mono font-bold uppercase hover:opacity-90 transition-all cursor-pointer btn-tactile text-center"
                     >
                       MİMARİYİ İNCELE
                     </button>
@@ -716,10 +614,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
 
                 {/* Showcase Card 2 */}
-                <div className="rounded-2xl border border-black/10 dark:border-white/10 p-5 bg-zinc-50/50 dark:bg-zinc-900/50 flex flex-col justify-between space-y-4 hover:border-[#8c52ff]/40 transition-all duration-300 group">
+                <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800/80 p-5 bg-zinc-50/70 dark:bg-zinc-900/40 flex flex-col justify-between space-y-4 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all duration-300 group">
                   <div className="space-y-3">
                     <div>
-                      <div className="text-[10px] font-mono text-[#a3c900] dark:text-[#d4f933] font-bold uppercase tracking-wider mb-1">
+                      <div className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-1">
                         02 // HARDWARE CONSOLE
                       </div>
                       <h4 className="text-xl font-black text-zinc-950 dark:text-white tracking-tight">
@@ -730,7 +628,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </h4>
                     </div>
 
-                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-zinc-900 border border-black/10 dark:border-white/10">
+                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
                       <Image
                         src="/images/terminal-hardware.jpg"
                         alt="Tactile Hardware Terminal"
@@ -740,7 +638,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       />
                     </div>
 
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed font-sans">
                       {megaMenu === 'articles' && 'Görüntülenme ve beğeni sayaçlarında sıfır PostgreSQL satır kilitlemesi.'}
                       {megaMenu === 'system' && 'Teenage Engineering ve Dieter Rams tarzı fiziksel donanım konsolu.'}
                       {megaMenu === 'ai' && 'Kullanıcı yorumlarını yayınlanmadan önce denetleyen çok sınıflı AI.'}
@@ -757,7 +655,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         else if (megaMenu === 'articles') scrollToSection('articles-feed', 'feed');
                         else navigateToConsoleModule('write-behind');
                       }}
-                      className="w-full px-4 py-2 rounded-full border border-black/20 dark:border-white/20 bg-white dark:bg-zinc-800 text-xs font-mono font-bold uppercase hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all cursor-pointer text-center btn-tactile"
+                      className="w-full px-4 py-2 rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs font-mono font-bold uppercase hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all cursor-pointer text-center btn-tactile"
                     >
                       KEŞFET
                     </button>
@@ -765,10 +663,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
 
                 {/* Showcase Card 3 */}
-                <div className="rounded-2xl border border-black/10 dark:border-white/10 p-5 bg-zinc-50/50 dark:bg-zinc-900/50 flex flex-col justify-between space-y-4 hover:border-[#8c52ff]/40 transition-all duration-300 group">
+                <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800/80 p-5 bg-zinc-50/70 dark:bg-zinc-900/40 flex flex-col justify-between space-y-4 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all duration-300 group">
                   <div className="space-y-3">
                     <div>
-                      <div className="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 font-bold uppercase tracking-wider mb-1">
+                      <div className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-1">
                         03 // CANLI SİMÜLASYON
                       </div>
                       <h4 className="text-xl font-black text-zinc-950 dark:text-white tracking-tight">
@@ -776,7 +674,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </h4>
                     </div>
 
-                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-zinc-900 border border-black/10 dark:border-white/10">
+                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
                       <Image
                         src="/images/lifestyle-hero.jpg"
                         alt="Engineering Lifestyle"
@@ -786,7 +684,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       />
                     </div>
 
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed font-sans">
                       Gerçek zamanlı Loom sanal thread akışı ve 409 çakışma önleme simülasyonu.
                     </p>
                   </div>
@@ -795,7 +693,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <button
                       type="button"
                       onClick={handleTestDrive}
-                      className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-[#d4f933] text-black text-xs font-mono font-bold uppercase hover:bg-[#c4e82b] transition-all cursor-pointer btn-tactile shadow-sm"
+                      className="w-full flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-black text-xs font-mono font-bold uppercase hover:opacity-90 transition-all cursor-pointer btn-tactile shadow-sm"
                     >
                       <span>CANLI MİMARİYİ DENE</span>
                       <ArrowRight className="w-3.5 h-3.5" />
