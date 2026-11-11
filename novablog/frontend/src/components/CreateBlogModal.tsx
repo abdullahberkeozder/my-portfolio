@@ -11,6 +11,13 @@ interface CreateBlogModalProps {
   onBlogCreated: (blog: BlogDto) => void;
 }
 
+const getCatId = (c?: BlogCategoryDto | null, fallback = 1): number => {
+  if (!c) return fallback;
+  const raw = c.categoryId ?? c.blogCategoryId;
+  const num = Number(raw);
+  return Number.isFinite(num) ? num : fallback;
+};
+
 export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
   categories,
   onClose,
@@ -19,11 +26,17 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
   const [header, setHeader] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [selectedCatId, setSelectedCatId] = useState<number>(categories[0]?.categoryId || 1);
+  const [userSelectedCatId, setUserSelectedCatId] = useState<number | null>(null);
   const [tags, setTags] = useState<string[]>(['spring-ai', 'backend', 'java-22']);
   const [tagInput, setTagInput] = useState('');
   const [isSuggestingTags, setIsSuggestingTags] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Derived safe category ID: uses user's explicit selection if valid in current categories, otherwise first category
+  const defaultCatId = getCatId(categories[0], 1);
+  const effectiveCatId = userSelectedCatId != null && categories.some((c) => getCatId(c) === userSelectedCatId)
+    ? userSelectedCatId
+    : defaultCatId;
 
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
   const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 180));
@@ -42,8 +55,8 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
       const matched = categories.find((c) =>
         c.categoryName.toLowerCase().includes(res.suggestedCategory.toLowerCase())
       );
-      if (matched && matched.categoryId) {
-        setSelectedCatId(matched.categoryId);
+      if (matched) {
+        setUserSelectedCatId(getCatId(matched));
       }
     } catch {
       // ignore
@@ -75,7 +88,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
 
     setIsSubmitting(true);
     try {
-      const selectedCategory = categories.find((c) => c.categoryId === selectedCatId) || categories[0];
+      const selectedCategory = categories.find((c) => getCatId(c) === effectiveCatId) || categories[0];
       const created = await ApiClient.createBlog({
         header: header.trim(),
         title: title.trim(),
@@ -175,15 +188,21 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               <select
                 id="blog-create-category"
                 name="categoryId"
-                value={selectedCatId}
-                onChange={(e) => setSelectedCatId(Number(e.target.value))}
+                value={effectiveCatId}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  setUserSelectedCatId(Number.isFinite(val) ? val : defaultCatId);
+                }}
                 className="w-full px-4 py-2.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-zinc-900 dark:text-white text-xs focus:outline-none focus:border-[#d4f933]"
               >
-                {categories.map((c) => (
-                  <option key={c.categoryId} value={c.categoryId}>
-                    {c.categoryName}
-                  </option>
-                ))}
+                {categories.map((c, idx) => {
+                  const catId = getCatId(c, idx + 1);
+                  return (
+                    <option key={`create-cat-${catId}-${idx}`} value={catId}>
+                      {c.categoryName}
+                    </option>
+                  );
+                })}
               </select>
             </div>
 

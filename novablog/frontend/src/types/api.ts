@@ -16,6 +16,7 @@ export interface ApiResult<T> {
 
 export interface BlogCategoryDto {
   categoryId?: number;
+  blogCategoryId?: number;
   categoryName: string;
   categoryDescription?: string;
 }

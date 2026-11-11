@@ -208,20 +208,23 @@ export default function Home() {
                 >
                   00 {'//'} TÜM MAKALELER ({blogs.length})
                 </button>
-                {categories.map((c, idx) => (
-                  <button
-                    key={c.categoryId ?? `cat-${idx}`}
-                    type="button"
-                    onClick={() => setSelectedCategory(c.categoryId || null)}
-                    className={`px-4 py-2 rounded-full text-xs font-mono font-bold whitespace-nowrap transition-all cursor-pointer ${
-                      selectedCategory === c.categoryId
-                        ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-md'
-                        : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-black/10 dark:border-white/10'
-                    }`}
-                  >
-                    0{idx + 1} {'//'} {c.categoryName.toUpperCase()}
-                  </button>
-                ))}
+                {categories.map((c, idx) => {
+                  const catId = c.categoryId ?? c.blogCategoryId ?? (idx + 1);
+                  return (
+                    <button
+                      key={c.categoryId ?? c.blogCategoryId ?? `cat-${idx}`}
+                      type="button"
+                      onClick={() => setSelectedCategory(selectedCategory === catId ? null : catId)}
+                      className={`px-4 py-2 rounded-full text-xs font-mono font-bold whitespace-nowrap transition-all cursor-pointer ${
+                        selectedCategory === catId
+                          ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-md'
+                          : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-black/10 dark:border-white/10'
+                      }`}
+                    >
+                      0{idx + 1} {'//'} {c.categoryName.toUpperCase()}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Right Actions: Search Input & New Article Pill */}

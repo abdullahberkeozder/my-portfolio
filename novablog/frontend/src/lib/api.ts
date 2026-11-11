@@ -584,12 +584,19 @@ export class ApiClient {
       // Filter out test UUID categories and return clean taxonomy
       const cleanList = data.data
         .filter((c) => !/\b[a-f0-9]{8}\b/.test(c.categoryName || ''))
-        .map((c) => ({
-          ...c,
-          categoryName: (c.categoryName || '')
-            .replace(/YazÄ±lÄ±m/g, 'Yazılım')
-            .replace(/GÃ¼venlik/g, 'Güvenlik'),
-        }));
+        .map((c, index) => {
+          const rawId = c.categoryId ?? c.blogCategoryId ?? (index + 1);
+          const id = Number(rawId);
+          const validId = Number.isFinite(id) ? id : index + 1;
+          return {
+            ...c,
+            categoryId: validId,
+            blogCategoryId: validId,
+            categoryName: (c.categoryName || '')
+              .replace(/YazÄ±lÄ±m/g, 'Yazılım')
+              .replace(/GÃ¼venlik/g, 'Güvenlik'),
+          };
+        });
 
       return cleanList.length >= 3 ? cleanList : MOCK_CATEGORIES;
     } catch {
