@@ -53,7 +53,7 @@ const SLIDES: SlideContent[] = [
     primaryIcon: 'cpu',
     secondaryCta: 'Yeni Makale Yaz',
     metric1: { label: 'EŞZAMANLILIK', value: 'Sanal Thread (Loom)' },
-    metric2: { label: 'ANLAMSAL ARAMA', value: '128D Vektör' },
+    metric2: { label: 'ANLAMSAL ARAMA', value: 'Anlamsal Vektör' },
     metric3: { label: 'ÖNBELLEK SENKRON', value: 'Write-Behind 30sn' },
   },
   {
@@ -284,7 +284,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
 
                 <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-[10px] font-mono text-[#d4f933] font-bold">
-                  128D ANLAMSAL ÇEKİRDEK
+                  ANLAMSAL VEKTÖR ÇEKİRDEĞİ
                 </div>
               </div>
 
@@ -606,7 +606,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           >
             <div className="flex items-center justify-between text-xs font-mono">
               <span className="text-purple-600 dark:text-purple-400 font-bold uppercase group-hover:underline">01 // YAPAY ZEKA</span>
-              <span className="text-[10px] text-zinc-400">128D VEKTÖR</span>
+              <span className="text-[10px] text-zinc-400">ANLAMSAL VEKTÖR</span>
             </div>
             <div className="text-base font-bold text-zinc-950 dark:text-white">Anlamsal Arama</div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">Yapay Zeka Anlam Eşleştirmesi, TL;DR Özet & Otomatik Etiket</p>

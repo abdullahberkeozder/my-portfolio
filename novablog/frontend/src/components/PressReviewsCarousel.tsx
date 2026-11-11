@@ -84,7 +84,7 @@ const BULLETINS: BulletinItem[] = [
   },
   {
     id: 'spring-ai-vector',
-    typeBadge: 'AI VEKTÖR MOTORU // 128D',
+    typeBadge: 'AI ANLAMSAL VEKTÖR MOTORU',
     typeColor: 'bg-blue-600 text-white',
     date: '6 KAS 2026',
     headline: '"SPRING AI 128 BOYUTLU KOSİNÜS VEKTÖR UZAYI VE RRF HİBRİT ARAMA YAYINLANDI"',

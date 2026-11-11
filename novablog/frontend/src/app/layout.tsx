@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'NovaBlog Enterprise | High-Throughput Engineering & Spring AI',
   description:
-    'Industrial-grade Full-Stack Architecture - Java 22 Loom Virtual Threads, Spring Boot 4.1.1, 128D Vektör Anlamsal Arama, Redis Write-Behind Caching & Next.js 16. Geliştirici: Abdullah Berke Özder',
+    'Endüstriyel Seviye Dağıtık Sistem Mimarisi - Java 22 Loom Sanal İş Parçacıkları, Spring Boot 4.1.1, Spring AI Anlamsal Arama, Redis Write-Behind Önbellek & Next.js 16. Mimar: Abdullah Berke Özder',
 };
 
 export default function RootLayout({

@@ -101,7 +101,7 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
           <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
             <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-center min-w-[110px]">
               <div className="text-[10px] text-zinc-400 uppercase">VEKTÖR BOYUTU</div>
-              <div className="text-sm font-bold text-zinc-950 dark:text-white mt-0.5">128D YOĞUN</div>
+              <div className="text-sm font-bold text-zinc-950 dark:text-white mt-0.5">128 BOYUTLU</div>
             </div>
             <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-center min-w-[110px]">
               <div className="text-[10px] text-zinc-400 uppercase">HESAPLAMA METRİĞİ</div>
@@ -134,7 +134,7 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
                 }`}
               >
                 <Cpu className="w-3.5 h-3.5" />
-                <span>01 {'//'} VEKTÖR (128D)</span>
+                <span>01 {'//'} ANLAMSAL VEKTÖR</span>
               </button>
               <button
                 onClick={() => setSearchMode('HYBRID')}
@@ -236,7 +236,7 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
           {latencyMs !== null && (
             <div className="flex items-center gap-1.5 text-emerald-500 font-bold">
               <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>BORU HATTI GECİKMESİ: {latencyMs} ms (128D ANLAMSAL VEKTÖR)</span>
+              <span>BORU HATTI GECİKMESİ: {latencyMs} ms (ANLAMSAL VEKTÖR ANALİZİ)</span>
             </div>
           )}
         </div>

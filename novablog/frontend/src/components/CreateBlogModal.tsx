@@ -106,7 +106,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
                 YENİ TEKNİK MAKALE YAYINLA
               </h3>
               <p className="text-xs text-zinc-500 font-mono">
-                SPRING AI 128D VEKTÖR İNDEKSİ &bull; MARKDOWN SÖZDİZİMİ
+                SPRING AI ANLAMSAL VEKTÖR İNDEKSİ &bull; MARKDOWN SÖZDİZİMİ
               </p>
             </div>
           </div>

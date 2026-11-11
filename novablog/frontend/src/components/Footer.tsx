@@ -176,7 +176,7 @@ export const Footer: React.FC<FooterProps> = ({
                     className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1"
                   >
                     <Layers className="w-3 h-3 text-purple-300" />
-                    <span>SPRING AI 128D</span>
+                    <span>SPRING AI VEKTÖR</span>
                   </button>
                 </li>
                 <li>

@@ -168,7 +168,7 @@ public class BlogEntity {
     ],
     whyExists: {
       bottleneck: "Milyonlarca silinmiş makaleyi tek bir 'DELETE FROM' ile silmek tablo kilitlenmesine ve OutOfMemory bellek aşımına yol açar.",
-      solution: 'Spring Batch 5 chunk-tabanlı mimari ile kayıtlar 50&apos;şerli paketlerde okunur, doğrulanır ve izole transaction içinde silinir.',
+      solution: "Spring Batch 5 chunk-tabanlı mimari ile kayıtlar 50'şerli paketlerde okunur, doğrulanır ve izole transaction içinde silinir.",
       gain: 'Hata durumunda 3 retry toleransı, sıfır bellek sızıntısı ve kesintisiz arka plan arşivleme.',
     },
     language: 'java',

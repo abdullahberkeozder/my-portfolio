@@ -45,7 +45,7 @@ const REELS: ReelItem[] = [
   {
     id: 'reel-springai',
     tag: '03 // SPRING AI pgvector',
-    badge: '128D VECTOR',
+    badge: 'ANLAMSAL VEKTÖR',
     caption: '%94.2 ANLAMSAL İSABET',
     title: 'YAPAY ZEKA ANLAMSAL ARAMA',
     subtitle: 'AKILLI HİBRİT SIRALAMA',
