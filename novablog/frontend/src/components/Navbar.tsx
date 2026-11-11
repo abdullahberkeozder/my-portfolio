@@ -290,7 +290,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
 
               {/* Living Pixel Aquarium Theme Toggle (Sean Galt / Fable Specification) */}
-              <AquariumToggle compact compactWidth={72} className="shrink-0" />
+              <AquariumToggle compact compactWidth={80} className="shrink-0" />
 
               {/* GitHub Repo Link */}
               <a

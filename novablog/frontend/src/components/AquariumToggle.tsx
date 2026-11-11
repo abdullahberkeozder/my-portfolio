@@ -4,7 +4,6 @@ import React, { useEffect, useRef } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { createEngine, type Engine, type Parts } from '@/lib/aquarium/engine';
 import { LOOP } from '@/lib/aquarium/demo';
-import styles from './AquariumToggle.module.css';
 
 declare global {
   interface Window {
@@ -16,7 +15,7 @@ declare global {
 export interface AquariumToggleProps {
   /** If true, sizes the toggle to fit compactly in navigation bars */
   compact?: boolean;
-  /** Custom width in CSS px for compact mode (default: 72px) */
+  /** Custom width in CSS px for compact mode (default: 80px) */
   compactWidth?: number;
   /** Extra container styling */
   className?: string;
@@ -24,7 +23,7 @@ export interface AquariumToggleProps {
 
 export const AquariumToggle = React.memo<AquariumToggleProps>(function AquariumToggle({
   compact = false,
-  compactWidth = 72,
+  compactWidth = 80,
   className = '',
 }) {
   const { isDark, setTheme } = useTheme();
@@ -109,23 +108,28 @@ export const AquariumToggle = React.memo<AquariumToggleProps>(function AquariumT
   }, [isDark]);
 
   return (
-    <div className={`${styles.stage} ${className}`}>
-      <div ref={wrapRef} className={styles.wrap}>
-        <div ref={tankRef} className={styles.tank}>
-          <canvas ref={canvasRef} aria-hidden="true" />
+    <div className={`relative inline-flex items-center justify-center shrink-0 ${className}`}>
+      <div ref={wrapRef} className="w-full flex items-center justify-center">
+        <div ref={tankRef} className="relative inline-block leading-none select-none">
+          <canvas ref={canvasRef} aria-hidden="true" className="block max-w-full" />
           <button
             ref={hitRef}
-            className={styles.hit}
+            className="absolute m-0 p-0 border-0 bg-transparent cursor-grab active:cursor-grabbing select-none outline-none focus-visible:ring-2 focus-visible:ring-zinc-800 dark:focus-visible:ring-zinc-200"
             type="button"
             role="switch"
             aria-checked={isDark ? 'true' : 'false'}
             aria-label="Gece/Gündüz Modunu Değiştir"
             title={isDark ? 'Gündüz Moduna Geç' : 'Gece Moduna Geç'}
           />
-          <span ref={statusRef} className={styles.vh} role="status" aria-live="polite" />
+          <span ref={statusRef} className="sr-only" role="status" aria-live="polite" />
         </div>
       </div>
-      <svg ref={cursorRef} className={styles.cursor} viewBox="0 0 24 24" aria-hidden="true">
+      <svg
+        ref={cursorRef}
+        className="fixed left-0 top-0 w-7 h-7 pointer-events-none drop-shadow-[0_1.5px_2px_rgba(0,0,0,0.35)] origin-top-left z-[9999] hidden [&[data-on]]:block [&[data-down]_path]:scale-[0.88]"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
         <path
           d="M3 2 L3 19.2 L7.4 15 L10.5 21.8 L13.6 20.4 L10.6 13.8 L16.9 13.6 Z"
           fill="#15161a"
@@ -137,3 +141,4 @@ export const AquariumToggle = React.memo<AquariumToggleProps>(function AquariumT
     </div>
   );
 });
+
