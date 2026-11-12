@@ -7,9 +7,9 @@ import {
   Database,
   ArrowRight,
   Layers,
-  Zap,
   ChevronDown,
   Menu,
+  PenSquare,
 } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
 import { AquariumToggle } from './AquariumToggle';
@@ -24,7 +24,7 @@ interface NavbarProps {
   onOpenTelemetry?: () => void;
   onOpenArchitectureConsole?: () => void;
   onOpenTwoFactor?: () => void;
-  onOpenAbout?: () => void;
+  onOpenCreateModal?: () => void;
 }
 
 type MegaDrawerCategory = 'articles' | 'system' | 'ai' | 'batch' | null;
@@ -35,8 +35,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   isBackendOnline,
   onRefreshHealth,
   onOpenTelemetry,
-  onOpenArchitectureConsole,
   onOpenTwoFactor,
+  onOpenCreateModal,
 }) => {
   const [megaMenu, setMegaMenu] = useState<MegaDrawerCategory>(null);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -273,21 +273,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>{isMegaOpen ? 'KAPAT' : 'MENÜ'}</span>
               </button>
 
-              {/* Architecture Test Pill Button */}
-              <button
-                type="button"
-                onClick={() => {
-                  if (onOpenArchitectureConsole) {
-                    onOpenArchitectureConsole();
-                  } else if (onOpenTelemetry) {
-                    onOpenTelemetry();
-                  }
-                }}
-                className="hidden sm:inline-flex items-center gap-2 px-4.5 py-2 rounded-full text-xs font-mono font-bold tracking-wider uppercase transition-all duration-300 shadow-sm cursor-pointer whitespace-nowrap bg-zinc-950 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 active:scale-95 btn-tactile"
-              >
-                <Zap className="w-3.5 h-3.5 text-emerald-400 dark:text-zinc-950 fill-current" />
-                <span>MİMARİYİ TEST ET</span>
-              </button>
+              {/* Publication Write Story CTA Button */}
+              {onOpenCreateModal && (
+                <button
+                  type="button"
+                  onClick={onOpenCreateModal}
+                  className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide uppercase transition-all duration-300 shadow-sm cursor-pointer whitespace-nowrap bg-zinc-950 dark:bg-white text-white dark:text-black hover:opacity-90 active:scale-95 btn-tactile"
+                  title="Yeni Teknik Makale Yayınla"
+                >
+                  <PenSquare className="w-3.5 h-3.5 text-emerald-400 dark:text-zinc-950" />
+                  <span>Yaz</span>
+                </button>
+              )}
 
               {/* Living Pixel Aquarium Theme Toggle (Sean Galt / Fable Specification) */}
               <AquariumToggle compact compactWidth={80} className="shrink-0" />
