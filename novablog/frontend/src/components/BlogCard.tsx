@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
 import { useToggleLikeMutation } from '@/hooks/useBlogs';
+import { useBookmarks } from '@/hooks/useSocialStore';
 import {
   Sparkles,
   Calendar,
@@ -32,30 +33,8 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
   const toggleLikeMutation = useToggleLikeMutation();
   const blogId = blog.id ?? blog.blogId;
 
-  // Initialize bookmark state lazily from localStorage
-  const [isBookmarked, setIsBookmarked] = useState<boolean>(() => {
-    if (typeof window !== 'undefined' && blogId) {
-      try {
-        const saved = JSON.parse(localStorage.getItem('novablog_bookmarks') || '[]');
-        return saved.includes(blogId);
-      } catch {
-        return false;
-      }
-    }
-    return false;
-  });
-
-  // Listen to external bookmark updates
-  useEffect(() => {
-    const handleUpdate = (e: Event) => {
-      const custom = e as CustomEvent<number[]>;
-      if (blogId) {
-        setIsBookmarked((custom.detail || []).includes(blogId));
-      }
-    };
-    window.addEventListener('bookmarks-updated', handleUpdate);
-    return () => window.removeEventListener('bookmarks-updated', handleUpdate);
-  }, [blogId]);
+  const bookmarkedIds = useBookmarks();
+  const isBookmarked = Boolean(blogId && bookmarkedIds.includes(blogId));
 
   const handleToggleBookmark = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -65,14 +44,11 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
       let updated: number[];
       if (saved.includes(blogId)) {
         updated = saved.filter((id) => id !== blogId);
-        setIsBookmarked(false);
       } else {
         updated = [...saved, blogId];
-        setIsBookmarked(true);
       }
       localStorage.setItem('novablog_bookmarks', JSON.stringify(updated));
       window.dispatchEvent(new CustomEvent('bookmarks-updated', { detail: updated }));
-      // Sync with backend API
       ApiClient.toggleBookmark(blogId);
     } catch {
       // ignore

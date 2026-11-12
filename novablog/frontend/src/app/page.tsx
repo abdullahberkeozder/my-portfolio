@@ -23,6 +23,7 @@ import { AuthorProfileModal } from '@/components/AuthorProfileModal';
 import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
 import { useBlogsQuery, useCategoriesQuery } from '@/hooks/useBlogs';
+import { useBookmarks, useFollowedAuthors } from '@/hooks/useSocialStore';
 import {
   Search,
   RefreshCw,
@@ -107,57 +108,30 @@ export default function Home() {
   const [activeAuthorProfile, setActiveAuthorProfile] = useState<string | null>(null);
   const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
 
-  // Social Graph & Reading List state initialized lazily from localStorage
-  const [bookmarkedIds, setBookmarkedIds] = useState<number[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        return JSON.parse(localStorage.getItem('novablog_bookmarks') || '[]');
-      } catch {
-        return [];
-      }
-    }
-    return [];
-  });
-
-  const [followedAuthors, setFollowedAuthors] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        return JSON.parse(localStorage.getItem('novablog_followed_authors') || '[]');
-      } catch {
-        return [];
-      }
-    }
-    return [];
-  });
+  // Social Graph & Reading List reactive stores
+  const bookmarkedIds = useBookmarks();
+  const followedAuthors = useFollowedAuthors();
 
   useEffect(() => {
     ApiClient.checkBackendHealth().then(setIsBackendOnline);
-
-    if (typeof window !== 'undefined') {
-      const handleBookmarksUpdated = (e: Event) => {
-        const custom = e as CustomEvent<number[]>;
-        setBookmarkedIds(custom.detail || []);
-      };
-      window.addEventListener('bookmarks-updated', handleBookmarksUpdated);
-      return () => window.removeEventListener('bookmarks-updated', handleBookmarksUpdated);
-    }
   }, []);
 
   const toggleFollowAuthor = (authorName: string) => {
-    setFollowedAuthors((prev) => {
+    if (typeof window === 'undefined') return;
+    try {
+      const saved: string[] = JSON.parse(localStorage.getItem('novablog_followed_authors') || '[]');
       let updated: string[];
-      if (prev.includes(authorName)) {
-        updated = prev.filter((a) => a !== authorName);
+      if (saved.includes(authorName)) {
+        updated = saved.filter((a: string) => a !== authorName);
       } else {
-        updated = [...prev, authorName];
+        updated = [...saved, authorName];
       }
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('novablog_followed_authors', JSON.stringify(updated));
-      }
-      return updated;
-    });
-    // Optimistically sync with backend follow API
-    ApiClient.toggleFollow(authorName);
+      localStorage.setItem('novablog_followed_authors', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('followed-authors-updated', { detail: updated }));
+      ApiClient.toggleFollow(authorName);
+    } catch {
+      // ignore
+    }
   };
 
   // Track active section as user scrolls for high-end reactive nav indicator
