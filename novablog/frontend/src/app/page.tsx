@@ -53,27 +53,27 @@ interface SuggestedAuthor {
 const SUGGESTED_AUTHORS: SuggestedAuthor[] = [
   {
     name: 'Abdullah Berke Özder',
-    role: 'Staff Systems Architect & Tech Lead',
+    role: 'Senior Systems Architect & Tech Lead',
     initial: 'A',
-    bio: 'Java 22 Loom sanal iş parçacıkları, yüksek throughput dağıtık sistemler ve Spring AI araştırmacısı.',
-    articlesCount: 24,
-    topics: ['Java 22', 'Loom', 'Spring Boot 4'],
+    bio: 'Java 22 Loom sanal iş parçacıkları, yüksek throughput dağıtık sistemler ve Spring Boot mimarisi.',
+    articlesCount: 4,
+    topics: ['Java 22', 'Loom', 'Distributed Systems'],
   },
   {
-    name: 'Caner Aydın',
-    role: 'Senior AI & Data Infrastructure Lead',
-    initial: 'C',
-    bio: 'Spring AI, pgvector 128D anlamsal arama ve hibrit sıralama mimarileri.',
-    articlesCount: 12,
+    name: 'Dr. Selin Demir',
+    role: 'Principal AI & Data Systems Researcher',
+    initial: 'S',
+    bio: 'Spring AI, pgvector 128D anlamsal arama ve büyük dil modellerinde RAG optimizasyonu.',
+    articlesCount: 1,
     topics: ['Spring AI', 'Vector DB', 'Embeddings'],
   },
   {
-    name: 'Zeynep Kaya',
-    role: 'Principal Cloud & SRE Engineer',
-    initial: 'Z',
-    bio: 'Kubernetes, Redis Write-Behind önbellekleme ve sıfır-kesinti dayanıklılık altyapıları.',
-    articlesCount: 18,
-    topics: ['Redis', 'Cloud Native', 'Concurrency'],
+    name: 'Caner Aydın',
+    role: 'Staff Cloud & Kubernetes Architect',
+    initial: 'C',
+    bio: 'Cloud-native mimariler, eBPF gözlemlenebilirlik ve sıfır güven (Zero-Trust) güvenlik altyapıları.',
+    articlesCount: 1,
+    topics: ['Security', 'Cloud', 'TOTP'],
   },
 ];
 
@@ -81,11 +81,11 @@ const TOPIC_PILLS = [
   { id: 'all', label: 'TÜMÜ', tag: null },
   { id: 'java-22', label: 'JAVA 22', tag: 'java' },
   { id: 'spring-boot', label: 'SPRING BOOT', tag: 'spring' },
-  { id: 'loom', label: 'VIRTUAL THREADS', tag: 'virtual-threads' },
-  { id: 'ai', label: 'SPRING AI & VEKTÖR', tag: 'spring-ai' },
+  { id: 'loom', label: 'VIRTUAL THREADS', tag: 'loom' },
+  { id: 'ai', label: 'SPRING AI & VEKTÖR', tag: 'ai' },
   { id: 'redis', label: 'REDIS ÖNBELLEK', tag: 'redis' },
-  { id: 'architecture', label: 'SİSTEM MİMARİSİ', tag: 'concurrency' },
-  { id: 'security', label: '2FA GÜVENLİK', tag: 'siber-guvenlik' },
+  { id: 'architecture', label: 'SİSTEM MİMARİSİ', tag: 'distributed' },
+  { id: 'security', label: '2FA GÜVENLİK', tag: 'security' },
 ];
 
 export default function Home() {
@@ -205,11 +205,21 @@ export default function Home() {
   // Filtered blogs based on Feed Mode, Search, Topic, Category
   const filteredBlogs = blogs.filter((blog) => {
     const blogId = blog.blogId ?? blog.id ?? 0;
-    const authorName = blog.author || 'Abdullah Berke Özder';
+    const authorUsername = blog.authorUsername || blog.author || 'admin';
+    const authorDisplayName =
+      blog.authorUsername === 'selindemir'
+        ? 'Dr. Selin Demir'
+        : blog.authorUsername === 'caneraydin'
+        ? 'Caner Aydın'
+        : blog.author || 'Abdullah Berke Özder';
 
     // 1. Feed Mode Filter
     if (feedMode === 'following') {
-      if (followedAuthors.length > 0 && !followedAuthors.includes(authorName)) {
+      if (
+        followedAuthors.length > 0 &&
+        !followedAuthors.includes(authorUsername) &&
+        !followedAuthors.includes(authorDisplayName)
+      ) {
         return false;
       }
     } else if (feedMode === 'bookmarks') {
@@ -219,7 +229,7 @@ export default function Home() {
     }
 
     // 2. Category Filter
-    const categoryId = blog.category?.categoryId || blog.blogCategoryDto?.categoryId;
+    const categoryId = blog.category?.categoryId || blog.blogCategoryDto?.categoryId || blog.blogCategoryDto?.blogCategoryId;
     if (selectedCategory !== null && categoryId !== selectedCategory) {
       return false;
     }
@@ -239,7 +249,8 @@ export default function Home() {
       const matchesSearch =
         blog.title.toLowerCase().includes(s) ||
         blog.header.toLowerCase().includes(s) ||
-        authorName.toLowerCase().includes(s) ||
+        authorUsername.toLowerCase().includes(s) ||
+        authorDisplayName.toLowerCase().includes(s) ||
         blog.tags?.some((t) => t.toLowerCase().includes(s));
       if (!matchesSearch) return false;
     }
@@ -251,13 +262,15 @@ export default function Home() {
   const sortedBlogs = [...filteredBlogs].sort((a, b) => {
     if (feedMode === 'explore') {
       if (exploreSort === 'trending') {
-        const scoreA = (a.viewsCount ?? a.views ?? 0) * 0.2 + (a.likesCount ?? a.likes ?? 0) * 1.5;
-        const scoreB = (b.viewsCount ?? b.views ?? 0) * 0.2 + (b.likesCount ?? b.likes ?? 0) * 1.5;
+        const clapsA = a.clapsCount ?? a.likesCount ?? a.likes ?? 0;
+        const clapsB = b.clapsCount ?? b.likesCount ?? b.likes ?? 0;
+        const scoreA = clapsA * 2 + (a.viewsCount ?? a.views ?? 0) * 0.2 + (a.bookmarksCount ?? 0) * 3;
+        const scoreB = clapsB * 2 + (b.viewsCount ?? b.views ?? 0) * 0.2 + (b.bookmarksCount ?? 0) * 3;
         return scoreB - scoreA;
       }
       if (exploreSort === 'featured') {
-        const isFeaturedA = a.hasVectorEmbedding ? 1 : 0;
-        const isFeaturedB = b.hasVectorEmbedding ? 1 : 0;
+        const isFeaturedA = a.isFeatured ? 1 : 0;
+        const isFeaturedB = b.isFeatured ? 1 : 0;
         return isFeaturedB - isFeaturedA;
       }
     }
@@ -267,7 +280,7 @@ export default function Home() {
     return dateB - dateA;
   });
 
-  const activeCategoryObj = categories.find((c) => c.categoryId === selectedCategory);
+  const activeCategoryObj = categories.find((c) => (c.categoryId ?? c.blogCategoryId) === selectedCategory);
   const hasActiveFilters = Boolean(
     selectedCategory !== null || selectedTopic !== null || searchTerm.trim()
   );

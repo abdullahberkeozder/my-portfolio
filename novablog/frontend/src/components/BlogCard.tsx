@@ -6,7 +6,6 @@ import { ApiClient } from '@/lib/api';
 import { useToggleLikeMutation } from '@/hooks/useBlogs';
 import {
   Sparkles,
-  Heart,
   Calendar,
   ArrowRight,
   Loader2,
@@ -141,8 +140,26 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
     .replace(/\s+/g, ' ')
     .trim();
 
-  const authorName = blog.author || 'Abdullah Berke Özder';
-  const authorInitial = authorName.charAt(0).toUpperCase();
+  const authorUsername = blog.authorUsername || blog.author || 'admin';
+  const authorDisplayName =
+    blog.authorUsername === 'selindemir'
+      ? 'Dr. Selin Demir'
+      : blog.authorUsername === 'caneraydin'
+      ? 'Caner Aydın'
+      : blog.author || 'Abdullah Berke Özder';
+  const authorInitial = authorDisplayName.charAt(0).toUpperCase();
+  const authorTitle =
+    blog.authorTitle ||
+    (blog.authorUsername === 'selindemir'
+      ? 'Principal AI & Data Systems Researcher'
+      : blog.authorUsername === 'caneraydin'
+      ? 'Staff Cloud & Kubernetes Architect'
+      : 'Senior Systems Architect & Tech Lead');
+  const authorAvatarUrl = blog.authorImageUrl;
+
+  const categoryName = blog.blogCategoryDto?.categoryName || blog.category?.categoryName;
+  const liveClaps = (blog.clapsCount && blog.clapsCount > 0) ? blog.clapsCount : liveLikes;
+  const commentCount = blog.commentCount ?? blog.comments?.length ?? 0;
 
   return (
     <article
@@ -156,17 +173,27 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
           onClick={(e) => {
             e.stopPropagation();
             if (onAuthorClick) {
-              onAuthorClick(authorName);
+              onAuthorClick(authorUsername);
             }
           }}
           className="flex items-center gap-2.5 min-w-0 group/author cursor-pointer text-left bg-transparent border-none p-0"
-          title={`${authorName} profilini görüntüle`}
+          title={`${authorDisplayName} profilini görüntüle`}
         >
-          <div className="w-8 h-8 rounded-full bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-xs uppercase shadow-sm ring-1 ring-black/5 dark:ring-white/10 shrink-0 group-hover/author:ring-2 group-hover/author:ring-emerald-500 transition-all">
-            {authorInitial}
+          <div className="w-8 h-8 rounded-full overflow-hidden bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-xs uppercase shadow-sm ring-1 ring-black/5 dark:ring-white/10 shrink-0 group-hover/author:ring-2 group-hover/author:ring-emerald-500 transition-all">
+            {authorAvatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={authorAvatarUrl}
+                alt={authorDisplayName}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              authorInitial
+            )}
           </div>
           <div className="flex items-center gap-1.5 min-w-0 font-medium text-zinc-800 dark:text-zinc-200 truncate">
-            <span className="font-bold group-hover/author:text-emerald-500 hover:underline">{authorName}</span>
+            <span className="font-bold group-hover/author:text-emerald-500 hover:underline">{authorDisplayName}</span>
+            <span className="text-zinc-400 dark:text-zinc-500 text-[11px] truncate hidden md:inline">({authorTitle})</span>
             <span className="text-zinc-300 dark:text-zinc-700">&bull;</span>
             <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1 shrink-0">
               <Calendar className="w-3 h-3 text-zinc-400" />
@@ -239,9 +266,9 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
       <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs border-t border-zinc-100 dark:border-zinc-800/80">
         {/* Left: Tags */}
         <div className="flex flex-wrap items-center gap-1.5">
-          {blog.category?.categoryName && (
+          {categoryName && (
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
-              {blog.category.categoryName}
+              {categoryName}
             </span>
           )}
           {blog.tags &&
@@ -279,19 +306,17 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
           {/* Claps / Likes */}
           <button
             onClick={handleToggleLike}
-            className={`flex items-center gap-1 font-mono text-xs transition-colors cursor-pointer ${
-              blog.isLiked ? 'text-pink-600 font-bold' : 'hover:text-pink-600'
-            }`}
-            title={blog.isLiked ? 'Beğeniyi geri al' : 'Alkışla / Beğen'}
+            className="flex items-center gap-1 font-mono text-xs transition-colors cursor-pointer hover:text-emerald-500 group/clap"
+            title="Alkışla (Medium Clap)"
           >
-            <Heart className={`w-3.5 h-3.5 ${blog.isLiked ? 'fill-pink-500 text-pink-500' : ''}`} />
-            <span>{liveLikes}</span>
+            <span className="text-sm transition-transform group-hover/clap:scale-125">👏</span>
+            <span className="font-bold text-zinc-700 dark:text-zinc-300">{liveClaps}</span>
           </button>
 
           {/* Comments count */}
-          <span className="flex items-center gap-1 font-mono text-xs">
+          <span className="flex items-center gap-1 font-mono text-xs text-zinc-500 dark:text-zinc-400" title="Yorumlar">
             <MessageSquare className="w-3.5 h-3.5" />
-            <span>{blog.comments?.length || 0}</span>
+            <span>{commentCount}</span>
           </span>
 
           {/* Read CTA */}
