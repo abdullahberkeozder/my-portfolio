@@ -21,9 +21,10 @@ interface BlogCardProps {
   blog: BlogDto;
   onSelect: (blog: BlogDto) => void;
   onTagClick?: (tag: string) => void;
+  onAuthorClick?: (authorName: string) => void;
 }
 
-export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }) => {
+export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, onAuthorClick }) => {
   const [summary, setSummary] = useState<string | undefined>(blog.aiSummary);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
@@ -72,6 +73,8 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
       }
       localStorage.setItem('novablog_bookmarks', JSON.stringify(updated));
       window.dispatchEvent(new CustomEvent('bookmarks-updated', { detail: updated }));
+      // Sync with backend API
+      ApiClient.toggleBookmark(blogId);
     } catch {
       // ignore
     }
@@ -84,6 +87,8 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
       blogId,
       currentlyLiked: Boolean(blog.isLiked),
     });
+    // Send Medium-style clap to backend API
+    ApiClient.clapBlog(blogId, 1);
   };
 
   const handleFetchSummary = async (e: React.MouseEvent) => {
@@ -146,12 +151,22 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
     >
       {/* 1. Author Micro-Bar & Meta */}
       <div className="flex items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-full bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-xs uppercase shadow-sm ring-1 ring-black/5 dark:ring-white/10 shrink-0">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onAuthorClick) {
+              onAuthorClick(authorName);
+            }
+          }}
+          className="flex items-center gap-2.5 min-w-0 group/author cursor-pointer text-left bg-transparent border-none p-0"
+          title={`${authorName} profilini görüntüle`}
+        >
+          <div className="w-8 h-8 rounded-full bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-xs uppercase shadow-sm ring-1 ring-black/5 dark:ring-white/10 shrink-0 group-hover/author:ring-2 group-hover/author:ring-emerald-500 transition-all">
             {authorInitial}
           </div>
           <div className="flex items-center gap-1.5 min-w-0 font-medium text-zinc-800 dark:text-zinc-200 truncate">
-            <span className="font-bold hover:underline">{authorName}</span>
+            <span className="font-bold group-hover/author:text-emerald-500 hover:underline">{authorName}</span>
             <span className="text-zinc-300 dark:text-zinc-700">&bull;</span>
             <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1 shrink-0">
               <Calendar className="w-3 h-3 text-zinc-400" />
@@ -163,7 +178,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick }
               {readingTime} dk okuma
             </span>
           </div>
-        </div>
+        </button>
 
         {/* Top Actions: Bookmark & Share */}
         <div className="flex items-center gap-1 shrink-0">

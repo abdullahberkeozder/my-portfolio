@@ -52,6 +52,16 @@ export interface BlogDto {
   hasEmbedding?: boolean;
   lifecycleStatus?: BlogLifecycleStatus;
   isLiked?: boolean; // Client-side Optimistic UI state
+  clapsCount?: number;
+  bookmarksCount?: number;
+  readTimeMinutes?: number;
+  publicationStatus?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+  isFeatured?: boolean;
+  authorTitle?: string;
+  authorBio?: string;
+  authorImageUrl?: string;
+  isBookmarkedByCurrentUser?: boolean;
+  userClaps?: number;
 }
 
 export interface BlogFilterRequestDto {
@@ -192,4 +202,65 @@ export interface JobExecutionResponseDto {
   stepSummaries?: string[];
   processedCount?: number;
 }
+
+// ==========================================
+// SOCIAL PUBLISHING PLATFORM DTOs (Phase 2)
+// ==========================================
+
+export interface AuthorProfileDto {
+  userId: number;
+  username: string;
+  firstName?: string;
+  lastName?: string;
+  title?: string;
+  bio?: string;
+  imageUrl?: string;
+  websiteUrl?: string;
+  githubUrl?: string;
+  twitterUrl?: string;
+  linkedinUrl?: string;
+  followersCount: number;
+  followingCount: number;
+  articlesCount: number;
+  isFollowing: boolean;
+}
+
+export interface RecommendedAuthorDto {
+  userId: number;
+  username: string;
+  name: string;
+  title: string;
+  bio: string;
+  avatar: string;
+  followersCount: number;
+  articlesCount: number;
+  isFollowing: boolean;
+}
+
+export interface ClapRequestDto {
+  claps: number;
+}
+
+export interface ClapResponseDto {
+  blogId: number;
+  userClaps: number;
+  totalClaps: number;
+  message?: string;
+}
+
+export interface BookmarkResponseDto {
+  blogId: number;
+  bookmarked: boolean;
+  totalBookmarks: number;
+  message?: string;
+}
+
+export interface FollowResponseDto {
+  targetUserId: number;
+  targetUsername: string;
+  isFollowing: boolean;
+  followersCount: number;
+  message?: string;
+}
+
 

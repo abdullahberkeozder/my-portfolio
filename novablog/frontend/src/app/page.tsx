@@ -19,6 +19,7 @@ import { SystemBlueprintSection } from '@/components/SystemBlueprintSection';
 import { Footer } from '@/components/Footer';
 import { AboutManifestoModal } from '@/components/AboutManifestoModal';
 import { FloatingCopilotWidget } from '@/components/FloatingCopilotWidget';
+import { AuthorProfileModal } from '@/components/AuthorProfileModal';
 import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
 import { useBlogsQuery, useCategoriesQuery } from '@/hooks/useBlogs';
@@ -103,6 +104,7 @@ export default function Home() {
   const [isTelemetryModalOpen, setIsTelemetryModalOpen] = useState(false);
   const [isTwoFactorModalOpen, setIsTwoFactorModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
+  const [activeAuthorProfile, setActiveAuthorProfile] = useState<string | null>(null);
   const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
 
   // Social Graph & Reading List state initialized lazily from localStorage
@@ -154,6 +156,8 @@ export default function Home() {
       }
       return updated;
     });
+    // Optimistically sync with backend follow API
+    ApiClient.toggleFollow(authorName);
   };
 
   // Track active section as user scrolls for high-end reactive nav indicator
@@ -508,17 +512,22 @@ export default function Home() {
                       className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 flex flex-col justify-between space-y-4"
                     >
                       <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-sm uppercase shadow-sm">
+                        <button
+                          type="button"
+                          onClick={() => setActiveAuthorProfile(author.name)}
+                          className="flex items-center gap-3 cursor-pointer group/author text-left bg-transparent border-none p-0"
+                          title="Yazar profilini aç"
+                        >
+                          <div className="w-10 h-10 rounded-full bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-sm uppercase shadow-sm group-hover/author:ring-2 group-hover/author:ring-emerald-500 transition-all">
                             {author.initial}
                           </div>
                           <div className="min-w-0">
-                            <h4 className="font-bold text-zinc-950 dark:text-white text-sm truncate">
+                            <h4 className="font-bold text-zinc-950 dark:text-white text-sm truncate group-hover/author:text-emerald-500 hover:underline">
                               {author.name}
                             </h4>
                             <p className="text-[11px] text-zinc-500 truncate">{author.role}</p>
                           </div>
-                        </div>
+                        </button>
 
                         <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
                           {author.bio}
@@ -601,6 +610,7 @@ export default function Home() {
                   blog={blog}
                   onSelect={setSelectedBlog}
                   onTagClick={(tag) => setSelectedTopic(tag)}
+                  onAuthorClick={setActiveAuthorProfile}
                 />
               ))}
             </div>
@@ -702,6 +712,17 @@ export default function Home() {
       <AboutManifestoModal
         isOpen={isAboutModalOpen}
         onClose={() => setIsAboutModalOpen(false)}
+      />
+
+      {/* Author Profile Modal (Medium-Style Personal Publication & Stats) */}
+      <AuthorProfileModal
+        authorName={activeAuthorProfile}
+        isOpen={Boolean(activeAuthorProfile)}
+        onClose={() => setActiveAuthorProfile(null)}
+        onSelectBlog={(b) => setSelectedBlog(b)}
+        allBlogs={blogs}
+        followedAuthors={followedAuthors}
+        onToggleFollow={toggleFollowAuthor}
       />
 
       {/* Floating Copilot Widget */}

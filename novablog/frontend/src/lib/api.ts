@@ -14,6 +14,12 @@ import {
   TwoFactorStatusDto,
   TwoFactorSetupResponseDto,
   TwoFactorRecoveryCodesDto,
+  PagedResponseDto,
+  AuthorProfileDto,
+  RecommendedAuthorDto,
+  ClapResponseDto,
+  BookmarkResponseDto,
+  FollowResponseDto,
 } from '@/types/api';
 
 import {
@@ -89,6 +95,16 @@ export class ApiClient {
       viewsCount: (b.viewsCount ?? b.views ?? 0) as number,
       likes: (b.likesCount ?? b.likes ?? 0) as number,
       likesCount: (b.likesCount ?? b.likes ?? 0) as number,
+      clapsCount: (b.clapsCount ?? 0) as number,
+      bookmarksCount: (b.bookmarksCount ?? 0) as number,
+      readTimeMinutes: (b.readTimeMinutes ?? 3) as number,
+      publicationStatus: (b.publicationStatus ?? 'PUBLISHED') as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED',
+      isFeatured: Boolean(b.isFeatured ?? false),
+      authorTitle: (b.authorTitle ?? '') as string,
+      authorBio: (b.authorBio ?? '') as string,
+      authorImageUrl: (b.authorImageUrl ?? '') as string,
+      isBookmarkedByCurrentUser: Boolean(b.isBookmarkedByCurrentUser ?? false),
+      userClaps: (b.userClaps ?? 0) as number,
       version: (b.version ?? 0) as number,
       category: (b.category ?? b.blogCategoryDto) as BlogCategoryDto,
       blogCategoryDto: (b.blogCategoryDto ?? b.category) as BlogCategoryDto,
@@ -709,6 +725,260 @@ export class ApiClient {
     });
     const data: ApiResult<string> = await res.json();
     return data.data || '2FA devre dışı bırakıldı.';
+  }
+
+  // ==========================================
+  // SOCIAL PUBLISHING & EDITORIAL FEEDS (Phase 2)
+  // ==========================================
+
+  public static async getExploreFeed(params?: {
+    sort?: string;
+    tag?: string;
+    page?: number;
+    size?: number;
+  }): Promise<PagedResponseDto<BlogDto>> {
+    const sort = params?.sort || 'trending';
+    const tag = params?.tag || '';
+    const page = params?.page ?? 0;
+    const size = params?.size ?? 10;
+
+    const query = new URLSearchParams({
+      sort,
+      page: String(page),
+      size: String(size),
+    });
+    if (tag && tag.toLowerCase() !== 'all' && tag.toLowerCase() !== 'tumu' && tag.toLowerCase() !== '#tümü') {
+      query.set('tag', tag.replace(/^#/, ''));
+    }
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/feed/explore?${query.toString()}`, {
+        method: 'GET',
+        headers: this.getHeaders(),
+        signal: AbortSignal.timeout(4000),
+      });
+      if (!res.ok) throw new Error('Explore feed error');
+      const data: ApiResult<PagedResponseDto<BlogDto>> = await res.json();
+      this.isBackendAvailable = true;
+
+      // Filter placeholder mock blogs
+      const isPlaceholder = (b: BlogDto) => {
+        const t = (b.title || '').trim();
+        const h = (b.header || '').trim();
+        return (t.startsWith('Title-') && h.startsWith('Header-')) || t.toLowerCase() === 'test title';
+      };
+
+      const realBlogs = (data.data.content || []).filter((b) => !isPlaceholder(b));
+      // If backend has only placeholders or empty, augment with MOCK_BLOGS
+      const finalItems = realBlogs.length > 0 ? realBlogs : MOCK_BLOGS;
+
+      return {
+        ...data.data,
+        content: finalItems.map((b) => this.normalizeBlog(b)),
+      };
+    } catch {
+      this.isBackendAvailable = false;
+      let sortedMocks = [...MOCK_BLOGS];
+      if (sort === 'trending') {
+        sortedMocks.sort((a, b) => ((b.likesCount || 0) + (b.viewsCount || 0)) - ((a.likesCount || 0) + (a.viewsCount || 0)));
+      }
+      if (tag && tag !== '#TÜMÜ') {
+        const clean = tag.replace(/^#/, '').toLowerCase();
+        sortedMocks = sortedMocks.filter((b) => b.tags?.some((t) => t.toLowerCase() === clean));
+      }
+      return {
+        content: sortedMocks.map((b) => this.normalizeBlog(b)),
+        pageNumber: page,
+        pageSize: size,
+        totalElements: sortedMocks.length,
+        totalPages: 1,
+        last: true,
+      };
+    }
+  }
+
+  public static async getFollowingFeed(params?: {
+    page?: number;
+    size?: number;
+  }): Promise<PagedResponseDto<BlogDto>> {
+    const page = params?.page ?? 0;
+    const size = params?.size ?? 10;
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/feed/following?page=${page}&size=${size}`, {
+        method: 'GET',
+        headers: this.getHeaders(),
+        signal: AbortSignal.timeout(4000),
+      });
+      if (!res.ok) throw new Error('Following feed error');
+      const data: ApiResult<PagedResponseDto<BlogDto>> = await res.json();
+      return {
+        ...data.data,
+        content: (data.data.content || []).map((b) => this.normalizeBlog(b)),
+      };
+    } catch {
+      return {
+        content: [],
+        pageNumber: page,
+        pageSize: size,
+        totalElements: 0,
+        totalPages: 0,
+        last: true,
+      };
+    }
+  }
+
+  public static async getAuthorProfile(username: string): Promise<AuthorProfileDto | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/users/${encodeURIComponent(username)}`, {
+        method: 'GET',
+        headers: this.getHeaders(),
+        signal: AbortSignal.timeout(3500),
+      });
+      if (!res.ok) throw new Error('Author not found');
+      const data: ApiResult<AuthorProfileDto> = await res.json();
+      return data.data;
+    } catch {
+      return {
+        userId: 1,
+        username,
+        name: username,
+        title: 'Kıdemli Sistem & Dağıtık Sistemler Mimarı',
+        bio: 'Java 22, Virtual Threads ve yüksek verimli mimariler üzerine makaleler yazıyor.',
+        followersCount: 1420,
+        followingCount: 89,
+        articlesCount: 12,
+        isFollowing: false,
+      } as unknown as AuthorProfileDto;
+    }
+  }
+
+  public static async getRecommendedAuthors(limit = 6): Promise<RecommendedAuthorDto[]> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/users/recommended?limit=${limit}`, {
+        method: 'GET',
+        headers: this.getHeaders(),
+        signal: AbortSignal.timeout(3500),
+      });
+      if (!res.ok) throw new Error('Recommended authors fetch error');
+      const data: ApiResult<RecommendedAuthorDto[]> = await res.json();
+      if (data.data && data.data.length > 0) {
+        return data.data;
+      }
+      throw new Error('No authors from backend');
+    } catch {
+      return [
+        {
+          userId: 101,
+          username: 'berke.ozder',
+          name: 'Abdullah Berke Özder',
+          title: 'Staff Platform Engineer',
+          bio: 'Loom, Spring Boot 4 ve mikro-çekirdek reaktif mimariler.',
+          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+          followersCount: 1240,
+          articlesCount: 14,
+          isFollowing: false,
+        },
+        {
+          userId: 102,
+          username: 'alperen.kaya',
+          name: 'Alperen Kaya',
+          title: 'Distributed Systems Lead',
+          bio: 'Raft konsensüs, Redis lock-free tamponlar ve pgvector arama.',
+          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+          followersCount: 890,
+          articlesCount: 8,
+          isFollowing: false,
+        },
+        {
+          userId: 103,
+          username: 'selin.demir',
+          name: 'Dr. Selin Demir',
+          title: 'Applied AI & Search Researcher',
+          bio: 'Reciprocal Rank Fusion, 128D vektör uzayı ve anlamsal çıkarım modelleri.',
+          avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+          followersCount: 2150,
+          articlesCount: 19,
+          isFollowing: false,
+        },
+      ];
+    }
+  }
+
+  public static async toggleFollow(username: string): Promise<FollowResponseDto | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/users/${encodeURIComponent(username)}/follow`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        signal: AbortSignal.timeout(3500),
+      });
+      if (!res.ok) throw new Error('Toggle follow error');
+      const data: ApiResult<FollowResponseDto> = await res.json();
+      return data.data;
+    } catch {
+      return null;
+    }
+  }
+
+  public static async clapBlog(blogId: number, claps = 1): Promise<ClapResponseDto | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/social/blogs/${blogId}/clap`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ claps }),
+        signal: AbortSignal.timeout(3500),
+      });
+      if (!res.ok) throw new Error('Clap error');
+      const data: ApiResult<ClapResponseDto> = await res.json();
+      return data.data;
+    } catch {
+      return null;
+    }
+  }
+
+  public static async toggleBookmark(blogId: number): Promise<BookmarkResponseDto | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/social/blogs/${blogId}/bookmark`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        signal: AbortSignal.timeout(3500),
+      });
+      if (!res.ok) throw new Error('Bookmark toggle error');
+      const data: ApiResult<BookmarkResponseDto> = await res.json();
+      return data.data;
+    } catch {
+      return null;
+    }
+  }
+
+  public static async getMyBookmarks(params?: {
+    page?: number;
+    size?: number;
+  }): Promise<PagedResponseDto<BlogDto>> {
+    const page = params?.page ?? 0;
+    const size = params?.size ?? 10;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/social/me/bookmarks?page=${page}&size=${size}`, {
+        method: 'GET',
+        headers: this.getHeaders(),
+        signal: AbortSignal.timeout(3500),
+      });
+      if (!res.ok) throw new Error('Bookmarks fetch error');
+      const data: ApiResult<PagedResponseDto<BlogDto>> = await res.json();
+      return {
+        ...data.data,
+        content: (data.data.content || []).map((b) => this.normalizeBlog(b)),
+      };
+    } catch {
+      return {
+        content: [],
+        pageNumber: page,
+        pageSize: size,
+        totalElements: 0,
+        totalPages: 0,
+        last: true,
+      };
+    }
   }
 }
 
