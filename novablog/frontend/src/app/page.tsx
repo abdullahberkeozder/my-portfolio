@@ -683,6 +683,9 @@ export default function Home() {
         onClose={() => setSelectedBlog(null)}
         onTagClick={(tag) => setSelectedTopic(tag)}
         onOpenAbout={() => setIsAboutModalOpen(true)}
+        onAuthorClick={setActiveAuthorProfile}
+        followedAuthors={followedAuthors}
+        onToggleFollow={toggleFollowAuthor}
       />
 
       {/* Create Modal */}
