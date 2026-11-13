@@ -9,6 +9,7 @@ import { canonicalDiscoveryDistrictSlug, parseDiscoveryParams, serializeDiscover
 import { buildPublicTrustClaims } from '../../lib/trustClaims';
 import profileStyles from './profile.module.css';
 import { RatingStars } from '../../components/ui';
+import ProfessionalMilestoneBadge from '../../components/ProfessionalMilestoneBadge';
 import UstaServiceAreaMapClient from '../../components/map/UstaServiceAreaMapClient';
 import SurfaceCard from '../../components/ui/SurfaceCard';
 
@@ -57,6 +58,7 @@ export default async function PublicTradespersonPage({
     reviewsResult,
     metricsResult,
     verificationResult,
+    completedJobsResult,
   ] = await Promise.all([
     supabase
       .from('tradesperson_profiles')
@@ -82,6 +84,9 @@ export default async function PublicTradespersonPage({
       .eq('tradesperson_id', id)
       .order('completed_jobs', { ascending: false }),
     supabase.rpc('get_public_professional_verification', { provider_id: id }),
+    supabase.rpc('list_public_professional_completed_job_counts', {
+      p_professional_ids: [id],
+    }),
   ]);
 
   if (profileResult.error || !profileResult.data) notFound();
@@ -103,10 +108,24 @@ export default async function PublicTradespersonPage({
     item => services.find(service => service.id === item.service_id)?.name ?? item.service_id
   );
 
-  const totalCompletedJobs = (metricsResult.data ?? []).reduce(
-    (acc, m) => acc + (m.completed_jobs ?? 0),
-    0
-  );
+  let authoritativeCompletedJobs: number | null = null;
+  if (!completedJobsResult.error && Array.isArray(completedJobsResult.data)) {
+    const matchingRow = (
+      completedJobsResult.data as Array<{ user_id?: unknown; completed_jobs?: unknown }>
+    ).find((row) => row && row.user_id === id);
+
+    if (
+      matchingRow &&
+      (typeof matchingRow.completed_jobs === 'number' ||
+        (typeof matchingRow.completed_jobs === 'string' && matchingRow.completed_jobs.trim() !== ''))
+    ) {
+      const parsed = Number(matchingRow.completed_jobs);
+      if (Number.isFinite(parsed) && parsed >= 0) {
+        authoritativeCompletedJobs = parsed;
+      }
+    }
+  }
+
   const avgRating = reviewsResult.data?.length
     ? reviewsResult.data.reduce((acc, r) => acc + r.rating, 0) / reviewsResult.data.length
     : 0;
@@ -122,7 +141,7 @@ export default async function PublicTradespersonPage({
     verificationConfirmed: verificationResult.data === true,
     reviewCount: reviewsResult.data?.length,
     averageRating: avgRating,
-    completedJobs: totalCompletedJobs,
+    completedJobs: authoritativeCompletedJobs !== null && authoritativeCompletedJobs > 0 ? authoritativeCompletedJobs : undefined,
     serviceAreaCount: serviceDistricts.length,
   });
 
@@ -161,6 +180,11 @@ export default async function PublicTradespersonPage({
                 >
                   ✓
                 </span>
+                <ProfessionalMilestoneBadge
+                  count={authoritativeCompletedJobs}
+                  professionalName={profile.display_name}
+                  align="start"
+                />
                 {reviewsResult.data?.length ? (
                   <span className={profileStyles.ratingSummary}>
                     <span aria-hidden="true">★</span> {avgRating.toFixed(1)} · {reviewsResult.data.length} yorum
@@ -168,8 +192,8 @@ export default async function PublicTradespersonPage({
                 ) : (
                   <span className={profileStyles.profileTrustText}>Yeni profil</span>
                 )}
-                {totalCompletedJobs > 0 ? (
-                  <span className={profileStyles.profileTrustText}>{totalCompletedJobs} tamamlanan iş</span>
+                {authoritativeCompletedJobs !== null && authoritativeCompletedJobs > 0 ? (
+                  <span className={profileStyles.profileTrustText}>{authoritativeCompletedJobs} tamamlanan iş</span>
                 ) : null}
               </div>
 
@@ -319,7 +343,7 @@ export default async function PublicTradespersonPage({
                 <div key={metric.district}>
                   <strong>{metric.district}</strong>
                   <span>
-                    {metric.completed_jobs} tamamlanan iş ·{' '}
+                    {metric.completed_jobs} onaylı değerlendirme ·{' '}
                     {Number(metric.average_rating).toFixed(1)}/5
                   </span>
                 </div>
