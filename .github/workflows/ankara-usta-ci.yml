@@ -51,7 +51,7 @@ jobs:
         run: npm run ui-debt:check
 
       - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       - name: Lint
         run: npm run lint
@@ -128,7 +128,7 @@ jobs:
           cache-dependency-path: ankara-usta-app/package-lock.json
       - run: npm ci
         if: steps.auth-config.outputs.ready == 'true'
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install chromium
         if: steps.auth-config.outputs.ready == 'true'
       - name: Production build for authenticated journeys
         if: steps.auth-config.outputs.ready == 'true'
