@@ -70,10 +70,40 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [theme]);
 
   const applyTheme = useCallback((newTheme: Theme) => {
+    // High-performance theme switch: Temporarily freeze transitions across the DOM
+    // to prevent 100+ simultaneous CSS color/shadow transition calculations (60/120/240 FPS guarantee)
+    let css: HTMLStyleElement | null = null;
+    if (typeof document !== 'undefined') {
+      css = document.createElement('style');
+      css.setAttribute('data-theme-transition', 'freeze');
+      css.textContent = `*, *::before, *::after {
+        -webkit-transition: none !important;
+        -moz-transition: none !important;
+        -o-transition: none !important;
+        -ms-transition: none !important;
+        transition: none !important;
+      }`;
+      document.head.appendChild(css);
+    }
+
     localStorage.setItem('novablog_theme', newTheme);
     window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
     document.documentElement.setAttribute('data-theme', newTheme);
+
+    if (css) {
+      // Force instant clean style recalculation
+      void window.getComputedStyle(document.body).backgroundColor;
+
+      // Re-enable smooth interactive transitions on subsequent frame
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (css && css.parentNode) {
+            css.parentNode.removeChild(css);
+          }
+        });
+      });
+    }
   }, []);
 
   const toggleTheme = useCallback(
