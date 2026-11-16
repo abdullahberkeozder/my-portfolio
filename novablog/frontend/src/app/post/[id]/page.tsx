@@ -4,13 +4,11 @@ import React, { use, useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  ArrowLeft,
   Share2,
   Bookmark,
   Sparkles,
   Check,
   Copy,
-  List,
   RefreshCw,
   MessageSquare,
   Send,
@@ -18,13 +16,22 @@ import {
   AlertTriangle,
   Flag,
   Loader2,
-  X,
+  CheckCircle2,
+  FileCode,
+  Printer,
+  Type,
+  ListTree,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { BlogDto, CommentResponseDto, AiModerationResponseDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
-import { AquariumToggle } from '@/components/AquariumToggle';
 import { useBookmarks, useFollowedAuthors } from '@/hooks/useSocialStore';
 import { BlogCard } from '@/components/BlogCard';
+import { AppleGlobalAcrylicNavBar } from '@/components/AppleGlobalAcrylicNavBar';
+import { MacWindowChrome } from '@/components/MacWindowChrome';
+import { Footer } from '@/components/Footer';
+import { playKeyClick, playTabSelect, playSendWhoosh } from '@/lib/retroAudio';
 
 interface PostPageProps {
   params: Promise<{ id: string }>;
@@ -32,10 +39,10 @@ interface PostPageProps {
 
 function PostPageSkeleton() {
   return (
-    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center font-mono text-xs text-zinc-500">
+    <div className="min-h-screen safari-reader-backdrop flex items-center justify-center font-mono text-xs text-zinc-400">
       <div className="space-y-3 text-center">
-        <RefreshCw className="w-6 h-6 animate-spin mx-auto text-emerald-500" />
-        <p className="tracking-widest uppercase">MAKALE OKUMA TUVALİ YÜKLENİYOR...</p>
+        <RefreshCw className="w-6 h-6 animate-spin mx-auto text-blue-500" />
+        <p className="tracking-widest uppercase">SAFARI DESKTOP READER YÜKLENİYOR...</p>
       </div>
     </div>
   );
@@ -55,6 +62,7 @@ function PostContent({ params }: PostPageProps) {
   const [copiedCodeIdx, setCopiedCodeIdx] = useState<number | null>(null);
   const [isCopiedLink, setIsCopiedLink] = useState(false);
   const [isTocOpen, setIsTocOpen] = useState(false);
+  const [readerFontSize, setReaderFontSize] = useState<'normal' | 'large' | 'xlarge'>('normal');
 
   // Comment Form & AI Moderation state
   const [authorNameInput, setAuthorNameInput] = useState('');
@@ -65,7 +73,6 @@ function PostContent({ params }: PostPageProps) {
 
   // Claps local optimistic state
   const [localClaps, setLocalClaps] = useState(0);
-  const [userClaps, setUserClaps] = useState(0);
 
   const bookmarkedIds = useBookmarks();
   const followedAuthors = useFollowedAuthors();
@@ -135,29 +142,25 @@ function PostContent({ params }: PostPageProps) {
   }, [newCommentText]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center font-mono text-xs text-zinc-500">
-        <div className="space-y-3 text-center">
-          <RefreshCw className="w-6 h-6 animate-spin mx-auto text-emerald-500" />
-          <p className="tracking-widest uppercase">MAKALE OKUMA TUVALİ YÜKLENİYOR...</p>
-        </div>
-      </div>
-    );
+    return <PostPageSkeleton />;
   }
 
   if (!blog) {
     return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-4">
-        <div className="max-w-md w-full text-center space-y-4 p-8 rounded-3xl bg-white dark:bg-[#0d0f14] border border-zinc-200 dark:border-zinc-800">
-          <h2 className="text-xl font-bold text-zinc-950 dark:text-white">Makale Bulunamadı</h2>
-          <p className="text-xs text-zinc-500">İstediğiniz teknik makale yayından kaldırılmış veya taşınmış olabilir.</p>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-black text-xs font-bold"
+      <div className="min-h-screen safari-reader-backdrop flex items-center justify-center p-4">
+        <div className="max-w-md w-full text-center space-y-4 p-8 rounded-xl bg-white dark:bg-[#181a1d] border border-zinc-300 dark:border-zinc-800 shadow-2xl">
+          <h2 className="text-xl font-bold text-zinc-950 dark:text-white font-sans">Makale Bulunamadı</h2>
+          <p className="text-xs text-zinc-500 font-sans">İstediğiniz teknik makale yayından kaldırılmış veya taşınmış olabilir.</p>
+          <button
+            type="button"
+            onClick={() => {
+              playKeyClick();
+              router.push('/');
+            }}
+            className="ios6-btn ios6-btn-blue px-5 py-2 text-xs font-bold gap-1.5"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Yayın Akışına Dön</span>
-          </Link>
+            <span>&lt; Yayın Akışına Dön</span>
+          </button>
         </div>
       </div>
     );
@@ -187,6 +190,7 @@ function PostContent({ params }: PostPageProps) {
     : '5 Kasım 2026';
 
   const toggleBookmark = () => {
+    playTabSelect();
     if (typeof window === 'undefined') return;
     try {
       const saved: number[] = JSON.parse(localStorage.getItem('novablog_bookmarks') || '[]');
@@ -205,6 +209,7 @@ function PostContent({ params }: PostPageProps) {
   };
 
   const toggleFollow = () => {
+    playKeyClick();
     if (typeof window === 'undefined') return;
     try {
       const saved: string[] = JSON.parse(localStorage.getItem('novablog_followed_authors') || '[]');
@@ -223,13 +228,13 @@ function PostContent({ params }: PostPageProps) {
   };
 
   const handleClap = () => {
-    if (userClaps >= 50) return;
-    setUserClaps((prev) => prev + 1);
+    playKeyClick();
     setLocalClaps((prev) => prev + 1);
     ApiClient.recordClap(blogId, 1);
   };
 
   const handleShare = () => {
+    playKeyClick();
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(window.location.href);
       setIsCopiedLink(true);
@@ -237,9 +242,24 @@ function PostContent({ params }: PostPageProps) {
     }
   };
 
+  const handlePrint = () => {
+    playKeyClick();
+    if (typeof window !== 'undefined') {
+      window.print();
+    }
+  };
+
+  const cycleFontSize = () => {
+    playKeyClick();
+    if (readerFontSize === 'normal') setReaderFontSize('large');
+    else if (readerFontSize === 'large') setReaderFontSize('xlarge');
+    else setReaderFontSize('normal');
+  };
+
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCommentText.trim() || isSubmittingComment) return;
+    playSendWhoosh();
 
     setIsSubmittingComment(true);
     const authorName = authorNameInput.trim() || 'Ziyaretçi Mühendis';
@@ -273,6 +293,7 @@ function PostContent({ params }: PostPageProps) {
   };
 
   const handleFlagComment = async (commentId: number) => {
+    playKeyClick();
     setFlaggedCommentIds((prev) => [...prev, commentId]);
     try {
       await ApiClient.flagComment(commentId, 'Topluluk tarafından sakıncalı bulundu');
@@ -292,213 +313,228 @@ function PostContent({ params }: PostPageProps) {
       return { level, text, id };
     });
 
+  const textSizeClass =
+    readerFontSize === 'xlarge'
+      ? 'text-lg sm:text-xl leading-loose'
+      : readerFontSize === 'large'
+      ? 'text-base sm:text-lg leading-loose'
+      : 'text-sm sm:text-base leading-relaxed sm:leading-loose';
+
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col font-sans transition-colors duration-300">
-      {/* Top 3px Reading Progress Bar */}
+    <div className="min-h-screen safari-reader-backdrop flex flex-col font-sans transition-colors duration-300">
+      {/* 1. Global Apple 2010 Acrylic Bar */}
+      <AppleGlobalAcrylicNavBar
+        activeTab="feed"
+        isBackendOnline={true}
+        onSearchClick={() => router.push('/')}
+        onFeedTabChange={() => router.push('/')}
+      />
+
+      {/* 2. Mac Window Chrome */}
+      <MacWindowChrome
+        title={`${blog.title} — Safari Reader`}
+        badgeText="SAFARI DESKTOP READER"
+        onClose={() => router.push('/')}
+      />
+
+      {/* 3. Top Sticky Reading Progress Bar */}
       <div
-        className="fixed top-0 left-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 z-50 transition-all duration-100 ease-out"
+        className="fixed top-0 left-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 z-50 transition-all duration-100 ease-out"
         style={{ width: `${scrollProgress}%` }}
       />
 
-      {/* Sticky Header */}
-      <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-white/80 dark:bg-[#08090c]/80 border-b border-black/[0.06] dark:border-white/[0.06]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      {/* 4. Safari Reader Floating HUD Bar */}
+      <div className="sticky top-20 z-40 w-full flex justify-center py-2 px-4 pointer-events-none">
+        <div className="safari-floating-hud pointer-events-auto">
+          {/* < Geri Pointed Chevron */}
+          <button
+            type="button"
+            onClick={() => {
+              playKeyClick();
+              router.push('/');
+            }}
+            className="ios-back-chevron mr-1"
+            title="Yayın Akışına Dön"
+          >
+            <span>&lt; Geri</span>
+          </button>
+
+          {/* Typography 'aA' Font Scaler */}
+          <button
+            type="button"
+            onClick={cycleFontSize}
+            className="safari-hud-btn"
+            title={`Yazı Boyutu (Şu an: ${
+              readerFontSize === 'normal' ? 'Standart' : readerFontSize === 'large' ? 'Büyük' : 'Çok Büyük'
+            })`}
+          >
+            <Type className="w-3.5 h-3.5" />
+            <span className="font-serif font-bold text-xs">
+              {readerFontSize === 'normal' ? 'aA' : readerFontSize === 'large' ? 'aA+' : 'aA++'}
+            </span>
+          </button>
+
+          {/* Table of Contents Dropdown Trigger */}
+          {headings.length > 0 && (
             <button
               type="button"
-              onClick={() => router.push('/')}
-              className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
-              title="Yayına Geri Dön"
+              onClick={() => {
+                playKeyClick();
+                setIsTocOpen(!isTocOpen);
+              }}
+              className={`safari-hud-btn ${isTocOpen ? 'bg-white/20' : ''}`}
+              title="İçindekiler Tablosu"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ListTree className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">İçindekiler</span>
+              {isTocOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             </button>
-            <Link href="/" className="font-mono text-lg font-black tracking-tighter text-zinc-950 dark:text-white">
-              NOVA<span className="text-emerald-500">.</span>
-            </Link>
-          </div>
+          )}
 
-          <div className="flex items-center gap-3 relative">
-            {headings.length > 0 && (
-              <div className="relative">
+          {/* Print Article */}
+          <button
+            type="button"
+            onClick={handlePrint}
+            className="safari-hud-btn hidden md:inline-flex"
+            title="Makaleyi Yazdır"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Yazdır</span>
+          </button>
+
+          {/* Share Article */}
+          <button
+            type="button"
+            onClick={handleShare}
+            className="safari-hud-btn"
+            title="Bağlantıyı Kopyala"
+          >
+            {isCopiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
+            <span className="hidden sm:inline">{isCopiedLink ? 'Kopyalandı' : 'Paylaş'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Collapsible Table of Contents Popover HUD */}
+      {isTocOpen && headings.length > 0 && (
+        <div className="fixed top-32 z-50 left-1/2 -translate-x-1/2 max-w-lg w-full px-4 animate-in fade-in duration-200">
+          <div className="p-4 rounded-xl bg-zinc-900/95 border border-zinc-700 shadow-2xl text-xs font-mono space-y-2 text-white">
+            <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block">
+              SAFARI İÇİNDEKİLER DİZİNİ
+            </span>
+            <div className="max-h-60 overflow-y-auto space-y-1 scrollbar-thin">
+              {headings.map((item, idx) => (
                 <button
+                  key={idx}
                   type="button"
-                  onClick={() => setIsTocOpen(!isTocOpen)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-semibold transition-all cursor-pointer ${
-                    isTocOpen
-                      ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
-                      : 'bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white'
+                  onClick={() => {
+                    playKeyClick();
+                    setIsTocOpen(false);
+                    const target = document.getElementById(item.id);
+                    if (target) target.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className={`w-full text-left px-2.5 py-1.5 rounded hover:bg-white/10 transition-colors cursor-pointer truncate block ${
+                    item.level === 3 ? 'pl-5 text-zinc-400' : 'font-semibold text-zinc-200'
                   }`}
                 >
-                  <List className="w-3.5 h-3.5" />
-                  <span>İçindekiler</span>
+                  &rarr; {item.text}
                 </button>
-
-                {/* Table of Contents Popover Dropdown */}
-                {isTocOpen && (
-                  <div className="absolute right-0 top-10 w-80 max-h-[70vh] overflow-y-auto p-4 rounded-2xl bg-white/95 dark:bg-[#0c0e12]/95 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800 text-xs font-mono font-bold text-zinc-950 dark:text-white uppercase">
-                      <span className="flex items-center gap-1.5">
-                        <List className="w-3.5 h-3.5 text-emerald-500" />
-                        İçindekiler ({headings.length})
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setIsTocOpen(false)}
-                        className="p-1 rounded-md text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                    <nav className="pt-2 space-y-1">
-                      {headings.map((h, i) => (
-                        <a
-                          key={i}
-                          href={`#${h.id}`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setIsTocOpen(false);
-                            const target = document.getElementById(h.id);
-                            if (target) {
-                              target.scrollIntoView({ behavior: 'smooth' });
-                            }
-                          }}
-                          className={`block text-xs py-1.5 px-2.5 rounded-lg transition-colors truncate ${
-                            h.level === 3
-                              ? 'pl-5 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
-                              : 'font-semibold text-zinc-800 dark:text-zinc-200 hover:text-emerald-500 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
-                          }`}
-                        >
-                          {h.text}
-                        </a>
-                      ))}
-                    </nav>
-                  </div>
-                )}
-              </div>
-            )}
-            <button
-              type="button"
-              onClick={handleShare}
-              className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
-              title="Bağlantıyı Kopyala"
-            >
-              {isCopiedLink ? <Check className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4" />}
-            </button>
-            <AquariumToggle compact compactWidth={80} className="shrink-0" />
+              ))}
+            </div>
           </div>
         </div>
-      </header>
-
-      {/* Desktop Sticky Table of Contents Aside (xl:block) */}
-      {headings.length > 0 && (
-        <aside className="hidden xl:block fixed right-[max(1.5rem,calc((100vw-1180px)/2))] top-28 w-60 p-4 rounded-2xl bg-white/70 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 backdrop-blur-sm z-30 space-y-3">
-          <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-            <List className="w-3.5 h-3.5 text-emerald-500" />
-            <span>BU MAKALEDE</span>
-          </div>
-          <nav className="space-y-1 max-h-[60vh] overflow-y-auto scrollbar-none text-xs">
-            {headings.map((h, i) => (
-              <a
-                key={i}
-                href={`#${h.id}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  const target = document.getElementById(h.id);
-                  if (target) target.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className={`block py-1 px-2 rounded-lg transition-colors truncate ${
-                  h.level === 3
-                    ? 'pl-4 text-[11px] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100/60 dark:hover:bg-zinc-800/40'
-                    : 'font-semibold text-zinc-700 dark:text-zinc-300 hover:text-emerald-500 hover:bg-zinc-100/60 dark:hover:bg-zinc-800/40'
-                }`}
-              >
-                {h.text}
-              </a>
-            ))}
-          </nav>
-        </aside>
       )}
 
-      {/* Main 720px Reading Canvas */}
-      <main className="flex-1 max-w-[720px] mx-auto w-full px-4 sm:px-6 py-12 space-y-10">
+      {/* 5. Main 740px Safari Reader Warm Parchment Canvas */}
+      <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-8 py-8 my-4 safari-reader-parchment space-y-8">
         {/* Topic Tags Ribbon */}
         {blog.tags && blog.tags.length > 0 && (
           <div className="flex flex-wrap items-center gap-2">
             {blog.tags.map((tag) => (
               <span
                 key={tag}
-                className="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800"
+                className="retro-tag-pill uppercase"
               >
                 #{tag}
               </span>
             ))}
+            <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded text-[11px] font-bold border border-emerald-500/20 font-mono">
+              <CheckCircle2 className="w-3 h-3" />
+              VEKTÖR İNDEKSİ (128D)
+            </span>
           </div>
         )}
 
         {/* Title & Subheader */}
-        <div className="space-y-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-zinc-950 dark:text-white tracking-tight leading-[1.15]">
+        <div className="space-y-3 border-b border-black/10 dark:border-white/10 pb-6">
+          <h1 className="text-2xl sm:text-4xl font-serif font-bold text-zinc-950 dark:text-white tracking-tight leading-snug">
             {blog.title}
           </h1>
           {blog.header && (
-            <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 font-serif leading-relaxed">
-              {blog.header}
+            <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 font-sans italic leading-relaxed">
+              &ldquo;{blog.header}&rdquo;
             </p>
           )}
+
+          {/* Author Meta Strip with Brushed Silver Avatar */}
+          <div className="flex items-center justify-between pt-4">
+            <Link
+              href={`/author/${encodeURIComponent(authorUsername)}`}
+              onClick={() => playKeyClick()}
+              className="flex items-center gap-3 group cursor-pointer"
+            >
+              <div className="retro-avatar-silver shrink-0">
+                <div className="w-10 h-10 rounded-full bg-zinc-900 text-white flex items-center justify-center font-bold text-xs uppercase shadow-inner overflow-hidden">
+                  {blog.authorImageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={blog.authorImageUrl} alt={authorDisplayName} className="w-full h-full object-cover" />
+                  ) : (
+                    initial
+                  )}
+                </div>
+              </div>
+              <div className="min-w-0">
+                <span className="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 hover:underline block truncate">
+                  {authorDisplayName}
+                </span>
+                <span className="text-[11px] text-zinc-500 font-mono block">
+                  {formattedDate} &bull; {readingTime} dk okuma
+                </span>
+              </div>
+            </Link>
+
+            <button
+              type="button"
+              onClick={toggleFollow}
+              className={`ios6-btn px-4 py-1.5 text-xs font-bold gap-1 cursor-pointer ${
+                isAuthorFollowed ? 'ios6-btn-silver' : 'ios6-btn-blue'
+              }`}
+            >
+              {isAuthorFollowed ? 'Takip Ediliyor' : 'Takip Et'}
+            </button>
+          </div>
         </div>
 
-        {/* Author Meta Strip */}
-        <div className="flex items-center justify-between py-4 border-y border-zinc-100 dark:border-zinc-800/80">
-          <Link
-            href={`/author/${encodeURIComponent(authorUsername)}`}
-            className="flex items-center gap-3.5 group cursor-pointer"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-zinc-950 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-base uppercase shadow-md group-hover:ring-2 group-hover:ring-emerald-500 transition-all overflow-hidden shrink-0">
-              {blog.authorImageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={blog.authorImageUrl} alt={authorDisplayName} className="w-full h-full object-cover" />
-              ) : (
-                initial
-              )}
-            </div>
-            <div className="min-w-0">
-              <span className="text-sm font-bold text-zinc-950 dark:text-white group-hover:text-emerald-500 hover:underline block truncate">
-                {authorDisplayName}
-              </span>
-              <span className="text-xs text-zinc-500 font-mono block">
-                {formattedDate} &bull; {readingTime} dk okuma
-              </span>
-            </div>
-          </Link>
-
-          <button
-            type="button"
-            onClick={toggleFollow}
-            className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              isAuthorFollowed
-                ? 'bg-zinc-100 dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                : 'bg-zinc-950 dark:bg-white text-white dark:text-black hover:opacity-90'
-            }`}
-          >
-            {isAuthorFollowed ? 'Takip Ediliyor' : 'Takip Et'}
-          </button>
-        </div>
-
-        {/* AI TL;DR Abstract Box */}
+        {/* AI TL;DR Abstract Box (Skeuomorphic Recessed Tray) */}
         {blog.aiSummary && (
-          <div className="rounded-2xl p-6 bg-gradient-to-r from-emerald-500/10 via-cyan-500/5 to-transparent border border-emerald-500/20 space-y-2">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase">
-              <Sparkles className="w-4 h-4 text-emerald-500" />
-              <span>YÖNETİCİ ÖZETİ (SPRING AI TL;DR)</span>
+          <div className="rounded-xl p-5 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-teal-500/5 border border-blue-400/30 space-y-2 shadow-inner">
+            <div className="flex items-center justify-between font-mono text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wider">
+              <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
+                <Sparkles className="w-4 h-4" />
+                SPRING AI // 1 DAKİKALIK YÖNETİCİ ÖZETİ
+              </span>
+              <span className="text-[10px] text-blue-700 dark:text-blue-300 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-400/20">
+                pgvector 128D
+              </span>
             </div>
-            <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+            <p className="text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed font-sans">
               {blog.aiSummary}
             </p>
           </div>
         )}
 
         {/* Article Body */}
-        <article className="prose prose-zinc dark:prose-invert max-w-none text-zinc-800 dark:text-zinc-200 text-base sm:text-lg leading-[1.8] space-y-6">
+        <article className="prose prose-zinc dark:prose-invert max-w-none text-zinc-900 dark:text-zinc-100 space-y-6">
           {(blog.content || '').split('\n\n').map((paragraph, idx) => {
             const p = paragraph.trim();
             if (!p) return null;
@@ -508,7 +544,7 @@ function PostContent({ params }: PostPageProps) {
               const text = p.replace(/^##\s+/, '');
               const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
               return (
-                <h2 key={idx} id={id} className="text-2xl sm:text-3xl font-extrabold text-zinc-950 dark:text-white pt-6 pb-2 tracking-tight">
+                <h2 key={idx} id={id} className="text-xl sm:text-2xl font-serif font-bold text-zinc-950 dark:text-white pt-6 pb-2 tracking-tight border-b border-black/10 dark:border-white/10">
                   {text}
                 </h2>
               );
@@ -519,7 +555,7 @@ function PostContent({ params }: PostPageProps) {
               const text = p.replace(/^###\s+/, '');
               const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
               return (
-                <h3 key={idx} id={id} className="text-xl sm:text-2xl font-bold text-zinc-950 dark:text-white pt-4 pb-1">
+                <h3 key={idx} id={id} className="text-lg sm:text-xl font-serif font-bold text-zinc-950 dark:text-white pt-4 pb-1">
                   {text}
                 </h3>
               );
@@ -532,25 +568,29 @@ function PostContent({ params }: PostPageProps) {
               const codeBody = lines.slice(1, -1).join('\n');
 
               return (
-                <div key={idx} className="relative rounded-2xl bg-zinc-950 text-zinc-100 border border-zinc-800 overflow-hidden my-6">
-                  <div className="flex items-center justify-between px-4 py-2 bg-zinc-900 border-b border-zinc-800 text-[11px] font-mono text-zinc-400">
-                    <span className="uppercase">{lang}</span>
+                <div key={idx} className="my-5 rounded-lg overflow-hidden border border-zinc-700/80 bg-[#1e2024] text-zinc-100 shadow-xl">
+                  <div className="flex items-center justify-between px-4 py-2 bg-[#16171a] border-b border-zinc-800 text-[11px] font-mono text-zinc-400">
+                    <span className="flex items-center gap-1.5 uppercase font-bold text-emerald-400">
+                      <FileCode className="w-3.5 h-3.5" />
+                      {lang || 'JAVA'}
+                    </span>
                     <button
                       type="button"
                       onClick={() => {
+                        playKeyClick();
                         if (navigator.clipboard) {
                           navigator.clipboard.writeText(codeBody);
                           setCopiedCodeIdx(idx);
                           setTimeout(() => setCopiedCodeIdx(null), 2000);
                         }
                       }}
-                      className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer"
+                      className="ios6-btn ios6-btn-dark px-2.5 py-0.5 text-[10px] font-mono"
                     >
                       {copiedCodeIdx === idx ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedCodeIdx === idx ? 'Kopyalandı' : 'Kodu Kopyala'}</span>
+                      <span>{copiedCodeIdx === idx ? 'Kopyalandı' : 'Kopyala'}</span>
                     </button>
                   </div>
-                  <pre className="p-4 text-xs sm:text-sm font-mono overflow-x-auto text-emerald-400 bg-transparent m-0">
+                  <pre className="p-4 sm:p-5 overflow-x-auto text-xs font-mono text-emerald-300 leading-relaxed scrollbar-thin">
                     <code>{codeBody}</code>
                   </pre>
                 </div>
@@ -559,7 +599,7 @@ function PostContent({ params }: PostPageProps) {
 
             // Standard Paragraph
             return (
-              <p key={idx} className="text-zinc-800 dark:text-zinc-200">
+              <p key={idx} className={`${textSizeClass} text-zinc-900 dark:text-zinc-100 font-serif leading-relaxed sm:leading-loose selection:bg-emerald-500/20`}>
                 {p}
               </p>
             );
@@ -567,27 +607,31 @@ function PostContent({ params }: PostPageProps) {
         </article>
 
         {/* Author Signature Box */}
-        <section className="mt-14 p-8 rounded-3xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/90 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
+        <section className="mt-10 p-6 rounded-xl bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-300 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-3.5">
             <Link
               href={`/author/${encodeURIComponent(authorUsername)}`}
-              className="w-16 h-16 rounded-2xl bg-zinc-950 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-xl uppercase shadow-md overflow-hidden shrink-0 hover:ring-2 hover:ring-emerald-500 transition-all"
+              onClick={() => playKeyClick()}
+              className="retro-avatar-silver shrink-0"
             >
-              {blog.authorImageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={blog.authorImageUrl} alt={authorDisplayName} className="w-full h-full object-cover" />
-              ) : (
-                initial
-              )}
+              <div className="w-12 h-12 rounded-full bg-zinc-900 text-white flex items-center justify-center font-bold text-base uppercase shadow-md overflow-hidden">
+                {blog.authorImageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={blog.authorImageUrl} alt={authorDisplayName} className="w-full h-full object-cover" />
+                ) : (
+                  initial
+                )}
+              </div>
             </Link>
             <div className="space-y-1">
               <Link
                 href={`/author/${encodeURIComponent(authorUsername)}`}
-                className="font-bold text-zinc-950 dark:text-white text-base hover:text-emerald-500 hover:underline"
+                onClick={() => playKeyClick()}
+                className="font-bold text-zinc-950 dark:text-white text-base hover:text-blue-600 hover:underline block"
               >
                 {authorDisplayName}
               </Link>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-md">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-md font-sans">
                 {blog.authorBio || 'Java 22, Loom Virtual Threads ve yüksek throughput mimarileri üzerine araştırmacı mühendis.'}
               </p>
             </div>
@@ -596,42 +640,40 @@ function PostContent({ params }: PostPageProps) {
           <button
             type="button"
             onClick={toggleFollow}
-            className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
-              isAuthorFollowed
-                ? 'bg-zinc-200 dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                : 'bg-zinc-950 dark:bg-white text-white dark:text-black hover:opacity-90'
+            className={`ios6-btn px-4 py-2 text-xs font-bold gap-1.5 cursor-pointer whitespace-nowrap active:scale-95 ${
+              isAuthorFollowed ? 'ios6-btn-silver' : 'ios6-btn-blue'
             }`}
           >
             {isAuthorFollowed ? 'Takip Ediliyor' : 'Yazarı Takip Et'}
           </button>
         </section>
 
-        {/* Comments & Discussion Section */}
-        <section id="comments-discussion-section" className="pt-10 border-t border-zinc-200 dark:border-zinc-800 space-y-8 scroll-mt-20">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold text-zinc-950 dark:text-white flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-emerald-500" />
-              <span>Teknik Tartışmalar & Yorumlar ({comments.length})</span>
+        {/* 6. Masaüstü iMessage Çift Sütunlu Tartışma & Yorum İpliği */}
+        <section id="comments-discussion-section" className="pt-8 border-t border-black/10 dark:border-white/10 space-y-6 scroll-mt-20">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-zinc-950 dark:text-white flex items-center gap-2 font-mono">
+              <MessageSquare className="w-4 h-4 text-blue-500" />
+              <span> MESAJLAR &amp; TARTIŞMALAR ({comments.length})</span>
             </h3>
-            <span className="text-xs font-mono text-zinc-500 flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
-              Spring AI Moderasyon Korumalı
-            </span>
+
+            {/* Glowing Spring AI Verified Safe Seal Badge */}
+            <div className="spring-ai-shield-badge">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Spring AI Verified Safe</span>
+            </div>
           </div>
 
-          {/* New Comment Submission Form */}
-          <form onSubmit={handleAddComment} className="p-6 rounded-3xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 space-y-4">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                id="comment-author-name-input"
-                name="authorName"
-                type="text"
-                placeholder="Adınız veya unvanınız (örn. Selin Demir - Platform Architect)"
-                value={authorNameInput}
-                onChange={(e) => setAuthorNameInput(e.target.value)}
-                className="flex-1 px-4 py-2.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-base sm:text-xs font-sans text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-emerald-500 transition-colors"
-              />
-            </div>
+          {/* Skeuomorphic Comment Form */}
+          <form onSubmit={handleAddComment} className="p-4 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 space-y-3 shadow-inner">
+            <input
+              id="comment-author-name-input"
+              name="authorName"
+              type="text"
+              placeholder="Adınız veya unvanınız (örn. Selin Demir - Platform Architect)"
+              value={authorNameInput}
+              onChange={(e) => setAuthorNameInput(e.target.value)}
+              className="w-full sm:w-80 px-3 py-2 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-xs font-sans text-zinc-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors shadow-inner"
+            />
 
             <textarea
               id="comment-body-textarea"
@@ -645,23 +687,23 @@ function PostContent({ params }: PostPageProps) {
                   setModerationPreview(null);
                 }
               }}
-              className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-base sm:text-xs font-sans text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-emerald-500 transition-colors leading-relaxed"
+              className="w-full px-3 py-2 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-xs font-sans text-zinc-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors leading-relaxed shadow-inner"
             />
 
             {/* Live AI Moderation Status Badge */}
             {moderationPreview && (
               <div
-                className={`p-3 rounded-2xl text-xs font-mono flex items-center justify-between border ${
+                className={`p-2 rounded-lg text-xs font-mono flex items-center justify-between border ${
                   moderationPreview.toxic
                     ? 'bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-300'
                     : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
                 }`}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   {moderationPreview.toxic ? (
-                    <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />
+                    <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
                   ) : (
-                    <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                   )}
                   <span>
                     {moderationPreview.toxic
@@ -669,7 +711,7 @@ function PostContent({ params }: PostPageProps) {
                       : 'Spring AI Analizi: Topluluk standartlarına uygundur.'}
                   </span>
                 </div>
-                <span className="uppercase font-bold tracking-wider text-[10px]">
+                <span className="uppercase font-bold text-[10px]">
                   Duygu: {moderationPreview.sentiment}
                 </span>
               </div>
@@ -679,119 +721,86 @@ function PostContent({ params }: PostPageProps) {
               <button
                 type="submit"
                 disabled={isSubmittingComment || !newCommentText.trim()}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-black font-bold text-xs uppercase tracking-wider hover:opacity-90 disabled:opacity-50 shadow-sm transition-all cursor-pointer"
+                className="ios6-btn ios6-btn-blue px-4 py-2 text-xs font-bold gap-1.5 disabled:opacity-50 cursor-pointer shadow-md"
               >
                 {isSubmittingComment ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
                   <Send className="w-3.5 h-3.5" />
                 )}
-                <span>Yorumu Yayınla</span>
+                <span>Mesaj Gönder</span>
               </button>
             </div>
           </form>
 
-          {/* Comments List */}
-          <div className="space-y-4">
+          {/* iMessage Speech Bubbles List */}
+          <div className="space-y-4 pt-2">
             {isLoading ? (
-              <div className="py-8 text-center font-mono text-xs text-zinc-400 flex items-center justify-center gap-2">
-                <RefreshCw className="w-4 h-4 animate-spin text-emerald-500" />
+              <div className="py-6 text-center font-mono text-xs text-zinc-400 flex items-center justify-center gap-2">
+                <RefreshCw className="w-4 h-4 animate-spin text-blue-500" />
                 <span>YORUMLAR YÜKLENİYOR...</span>
               </div>
             ) : comments.length > 0 ? (
               comments.map((comm) => {
                 const isFlagged = flaggedCommentIds.includes(comm.id) || comm.moderationStatus === 'FLAGGED_TOXIC';
-                const commInitial = (comm.authorName || 'M').charAt(0).toUpperCase();
-                const commDate = comm.createdAt
-                  ? new Date(comm.createdAt).toLocaleDateString('tr-TR', {
-                      day: 'numeric',
-                      month: 'short',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })
-                  : 'Az önce';
+                const isApproved = comm.isApproved !== false && !isFlagged;
+                const bubbleClass = isApproved
+                  ? 'imessage-bubble-green'
+                  : 'imessage-bubble-gray';
 
                 return (
-                  <div
-                    key={comm.id}
-                    className={`p-5 rounded-2xl border transition-all space-y-3 ${
-                      isFlagged
-                        ? 'bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/60 opacity-60'
-                        : 'bg-white dark:bg-zinc-900 border-zinc-200/80 dark:border-zinc-800 shadow-xs'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-xs uppercase shrink-0">
-                          {comm.authorAvatar ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={comm.authorAvatar} alt={comm.authorName} className="w-full h-full object-cover rounded-full" />
-                          ) : (
-                            commInitial
-                          )}
-                        </div>
-                        <div>
-                          <h5 className="font-bold text-xs text-zinc-950 dark:text-white">
-                            {comm.authorName || 'Anonim Mühendis'}
-                          </h5>
-                          <span className="text-[10px] text-zinc-500 font-mono">
-                            {commDate}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        {comm.sentiment && (
-                          <span
-                            className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase ${
-                              comm.sentiment === 'POSITIVE'
-                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                                : comm.sentiment === 'NEGATIVE'
-                                ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
-                                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                            }`}
-                          >
-                            {comm.sentiment === 'POSITIVE' ? '✓ Pozitif' : comm.sentiment}
-                          </span>
-                        )}
-
-                        {!isFlagged ? (
-                          <button
-                            type="button"
-                            onClick={() => handleFlagComment(comm.id)}
-                            className="p-1 rounded-md text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
-                            title="Sakıncalı İçerik Olarak Karantinaya Al"
-                          >
-                            <Flag className="w-3.5 h-3.5" />
-                          </button>
-                        ) : (
-                          <span className="text-[10px] font-mono text-rose-500 font-bold uppercase">
-                            [Karantinada]
-                          </span>
-                        )}
-                      </div>
+                  <div key={comm.id} className="space-y-1">
+                    {/* Timestamp & Author Meta Header */}
+                    <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500 px-2">
+                      <span className="font-bold text-zinc-800 dark:text-zinc-300">{comm.authorName || 'Anonim Mühendis'}</span>
+                      <span>&bull;</span>
+                      <span>{new Date(comm.createdAt).toLocaleDateString('tr-TR')}</span>
+                      {isApproved && (
+                        <span className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400 font-bold text-[10px]">
+                          <CheckCircle2 className="w-3 h-3" /> ONAYLI
+                        </span>
+                      )}
+                      {!isFlagged ? (
+                        <button
+                          type="button"
+                          onClick={() => handleFlagComment(comm.id)}
+                          className="text-zinc-400 hover:text-rose-500 cursor-pointer ml-auto"
+                          title="Sakıncalı İçerik Olarak Bildir"
+                        >
+                          <Flag className="w-3 h-3" />
+                        </button>
+                      ) : (
+                        <span className="text-[10px] text-rose-500 font-bold uppercase ml-auto">
+                          [Karantinada]
+                        </span>
+                      )}
                     </div>
 
-                    <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed pl-11">
-                      {isFlagged ? 'Bu yorum topluluk denetimi veya AI analizi nedeniyle karantinaya alınmıştır.' : comm.content}
-                    </p>
+                    {/* Speech Bubble */}
+                    <div className="max-w-xl">
+                      <div className={bubbleClass}>
+                        <p className="text-xs sm:text-sm leading-relaxed font-sans">
+                          {isFlagged ? 'Bu yorum topluluk denetimi nedeniyle karantinaya alınmıştır.' : comm.content}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 );
               })
             ) : (
-              <div className="py-8 text-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800 p-6 space-y-1">
-                <p className="text-xs font-semibold text-zinc-950 dark:text-white">İlk teknik yorumu siz yapın</p>
-                <p className="text-[11px] text-zinc-500">Bu makale hakkındaki mimari görüşlerinizi paylaşabilirsiniz.</p>
+              <div className="py-6 text-center rounded-xl border border-dashed border-zinc-300 dark:border-zinc-800 p-6 space-y-1">
+                <p className="text-xs font-bold text-zinc-950 dark:text-white">İlk teknik yorumu siz yapın</p>
+                <p className="text-[11px] text-zinc-500">Bu makale hakkındaki mimari görüşlerinizi iMessage ipliğinde paylaşabilirsiniz.</p>
               </div>
             )}
           </div>
         </section>
 
-        {/* Related Articles */}
+        {/* 7. Related Articles */}
         {relatedBlogs.length > 0 && (
-          <section className="space-y-6 pt-10 border-t border-zinc-200 dark:border-zinc-800">
-            <h3 className="text-lg font-bold text-zinc-950 dark:text-white">
-              Önerilen Diğer Yayınlar
+          <section className="space-y-4 pt-8 border-t border-black/10 dark:border-white/10">
+            <h3 className="text-base font-bold text-zinc-950 dark:text-white font-mono">
+              ÖNERİLEN DİĞER YAYINLAR
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {relatedBlogs.map((b) => (
@@ -806,66 +815,64 @@ function PostContent({ params }: PostPageProps) {
         )}
       </main>
 
-      {/* Medium/Substack-Grade Floating Bottom Interaction Dock */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-white/95 dark:bg-[#0c0e12]/95 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-xl transition-all">
-        {/* Claps */}
-        <button
-          type="button"
-          onClick={handleClap}
-          className="flex items-center gap-1.5 sm:gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-emerald-500 transition-all cursor-pointer group active:scale-90 select-none"
-          title="Alkışla (1-50)"
-        >
-          <span className="text-base group-hover:scale-125 group-active:scale-150 transition-transform">👏</span>
-          <span className="font-mono">{localClaps}</span>
-          {userClaps > 0 && (
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold animate-in fade-in zoom-in-50">
-              +{userClaps}
-            </span>
-          )}
-        </button>
+      {/* 8. 49px Safari Reader Sticky Bottom Interaction Dock */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 safari-reader-dock rounded-2xl w-[90%] max-w-lg shadow-2xl">
+        <div className="flex items-center gap-3">
+          {/* Claps */}
+          <button
+            type="button"
+            onClick={handleClap}
+            className="ios6-btn ios6-btn-blue px-3 py-1.5 text-xs font-bold gap-1.5"
+            title="Alkışla (Medium Clap)"
+          >
+            <span className="text-sm leading-none">👏</span>
+            <span className="font-mono">{localClaps}</span>
+          </button>
 
-        <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-800" />
+          {/* Comments Jump Button */}
+          <button
+            type="button"
+            onClick={() => {
+              playKeyClick();
+              const el = document.getElementById('comments-discussion-section');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="ios6-btn ios6-btn-silver px-3 py-1.5 text-xs font-semibold gap-1.5"
+            title="Mesajlara Git"
+          >
+            <MessageSquare className="w-3.5 h-3.5 text-blue-600" />
+            <span className="font-mono">{comments.length}</span>
+          </button>
+        </div>
 
-        {/* Comments Jump Button */}
-        <button
-          type="button"
-          onClick={() => {
-            const el = document.getElementById('comments-discussion-section');
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
-          }}
-          className="flex items-center gap-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-emerald-500 transition-all cursor-pointer active:scale-95"
-          title="Teknik Tartışmalara Git"
-        >
-          <MessageSquare className="w-4 h-4 text-zinc-400" />
-          <span className="font-mono">{comments.length}</span>
-        </button>
+        <div className="flex items-center gap-3">
+          {/* Bookmark */}
+          <button
+            type="button"
+            onClick={toggleBookmark}
+            className={`ios6-btn px-3 py-1.5 text-xs font-bold gap-1.5 ${
+              isBookmarked ? 'ios6-btn-silver' : 'ios6-btn-dark'
+            }`}
+            title="Safari Okuma Listeme Ekle"
+          >
+            <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-400 text-amber-400' : ''}`} />
+            <span className="hidden sm:inline">{isBookmarked ? 'KAYDEDİLDİ' : 'OKUMA LİSTESİ'}</span>
+          </button>
 
-        <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-800" />
-
-        {/* Bookmark */}
-        <button
-          type="button"
-          onClick={toggleBookmark}
-          className="flex items-center gap-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-amber-500 transition-all cursor-pointer active:scale-95"
-          title="Okuma Listesine Kaydet"
-        >
-          <Bookmark className={`w-4 h-4 transition-transform ${isBookmarked ? 'fill-amber-500 text-amber-500 scale-110' : 'text-zinc-400'}`} />
-          <span className="hidden sm:inline">{isBookmarked ? 'Kaydedildi' : 'Kaydet'}</span>
-        </button>
-
-        <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-800" />
-
-        {/* Share */}
-        <button
-          type="button"
-          onClick={handleShare}
-          className="flex items-center gap-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-emerald-500 transition-all cursor-pointer active:scale-95"
-          title="Makale Bağlantısını Kopyala"
-        >
-          {isCopiedLink ? <Check className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4 text-zinc-400" />}
-          <span className="hidden sm:inline">{isCopiedLink ? 'Kopyalandı' : 'Paylaş'}</span>
-        </button>
+          {/* Share */}
+          <button
+            type="button"
+            onClick={handleShare}
+            className="ios6-btn ios6-btn-silver px-3 py-1.5 text-xs font-semibold gap-1.5"
+            title="Makale Bağlantısını Kopyala"
+          >
+            {isCopiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
+          </button>
+        </div>
       </div>
+
+      {/* 9. Apple Classic Directory Footer */}
+      <Footer />
     </div>
   );
 }
