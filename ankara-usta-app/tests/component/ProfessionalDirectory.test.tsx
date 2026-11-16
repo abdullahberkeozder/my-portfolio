@@ -57,12 +57,33 @@ test('empty results offer filter recovery', async () => {
   expect(screen.getByTestId('directory-empty-state')).toHaveAttribute('data-directory-availability','waitlist');
   expect(screen.queryByText('Usta listesi yüklenemedi')).not.toBeInTheDocument();
 });
-test('query failure is not presented as an empty result', async () => {
+test('query failure keeps the split map available and offers one truthful recovery action', async () => {
   state.error={message:'private database details'};
-  render(await Directory({searchParams:Promise.resolve({})}));
-  expect(screen.getByText('Usta listesi yüklenemedi')).toBeVisible();
+  render(await Directory({searchParams:Promise.resolve({service:'musluk-degisimi',district:'Çankaya',view:'split',sort:'rating'})}));
+  expect(screen.getByText('Usta verileri şu anda yüklenemiyor')).toBeVisible();
+  expect(screen.getByText('Ankara haritasını incelemeye devam edebilirsiniz.')).toBeVisible();
+  expect(screen.getByRole('region', {name:'Ankara Usta Arama Haritası'})).toBeVisible();
+  expect(screen.getAllByRole('button', {name:'Tekrar dene'})).toHaveLength(1);
   expect(screen.queryByText(/private database/)).not.toBeInTheDocument();
   expect(screen.queryByText(/uygun doğrulanmış usta bulunamadı/)).not.toBeInTheDocument();
+  expect(screen.queryByTestId('directory-empty-state')).not.toBeInTheDocument();
+});
+
+test('connection-error fixture bypasses Supabase and renders the same resilient state', async () => {
+  render(await Directory({searchParams:Promise.resolve({view:'split',fixture:'connection-error'})}));
+
+  expect(state.clientCalls).toBe(0);
+  expect(screen.getByText('Usta verileri şu anda yüklenemiyor')).toBeVisible();
+  expect(screen.getAllByRole('button', {name:'Tekrar dene'})).toHaveLength(1);
+  expect(screen.queryByTestId('directory-empty-state')).not.toBeInTheDocument();
+});
+
+test('unfiltered zero supply is not presented as a connection failure', async () => {
+  render(await Directory({searchParams:Promise.resolve({view:'split'})}));
+
+  expect(screen.getByTestId('directory-empty-state')).toHaveAttribute('data-directory-availability','empty');
+  expect(screen.getByText('Ankara’da henüz yayınlanmış doğrulanmış usta yok')).toBeVisible();
+  expect(screen.queryByText('Usta verileri şu anda yüklenemiyor')).not.toBeInTheDocument();
 });
 
 test('maps the authoritative completed-job RPC to desktop and mobile milestone marks', async () => {

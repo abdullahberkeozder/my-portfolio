@@ -187,6 +187,11 @@ function getAvailabilityCopy(availability?: DirectoryAvailability) {
         title: 'Bu bölge pilot kapsamımızda değil',
         description: 'Orkestra’nın mevcut hizmet alanı Ankara’daki pilot ilçelerle sınırlı.',
       };
+    case 'empty':
+      return {
+        title: 'Ankara’da henüz yayınlanmış doğrulanmış usta yok',
+        description: 'İhtiyacınızı anlatarak talep akışından başlayabilirsiniz.',
+      };
     default:
       return {
         title: 'Bu kriterlere uygun doğrulanmış usta bulunamadı',
@@ -1084,72 +1089,78 @@ export default function UstalarSplitView({
 
       {/* View Mode & Filter Controls Header */}
       <div className={styles.viewModeHeader}>
-        <div className={styles.viewModeToggle} role="group" aria-label="Görünüm Seçimi">
-          <button
-            type="button"
-            className={`${styles.viewToggleBtn} ${displayedViewMode === 'split' ? styles.viewToggleBtnActive : ''}`}
-            onClick={() => handleViewModeChange('split')}
-            aria-pressed={displayedViewMode === 'split'}
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" className={styles.toggleIcon}>
-              <rect x="1" y="1" width="6.5" height="14" rx="2" fill="currentColor" opacity="0.9"/>
-              <rect x="8.5" y="1" width="6.5" height="14" rx="2" fill="currentColor" opacity="0.45"/>
-            </svg>
-            <span className={styles.toggleLabelFull}>Bölünmüş Ekran</span>
-            <span className={styles.toggleLabelShort}>Split</span>
-          </button>
-          <button
-            type="button"
-            className={`${styles.viewToggleBtn} ${displayedViewMode === 'list' ? styles.viewToggleBtnActive : ''}`}
-            onClick={() => handleViewModeChange('list')}
-            aria-pressed={displayedViewMode === 'list'}
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" className={styles.toggleIcon}>
-              <rect x="1" y="2" width="14" height="2.5" rx="1.25" fill="currentColor"/>
-              <rect x="1" y="6.75" width="14" height="2.5" rx="1.25" fill="currentColor"/>
-              <rect x="1" y="11.5" width="14" height="2.5" rx="1.25" fill="currentColor"/>
-            </svg>
-            <span className={styles.toggleLabelFull}>Liste Görünümü</span>
-            <span className={styles.toggleLabelShort}>Liste</span>
-          </button>
-          <button
-            type="button"
-            className={`${styles.viewToggleBtn} ${displayedViewMode === 'map' ? styles.viewToggleBtnActive : ''}`}
-            onClick={() => handleViewModeChange('map')}
-            aria-pressed={displayedViewMode === 'map'}
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" className={styles.toggleIcon}>
-              <circle cx="8" cy="6.5" r="2.5" stroke="currentColor" strokeWidth="1.8"/>
-              <path d="M8 14C8 14 3 10 3 6.5a5 5 0 0 1 10 0C13 10 8 14 8 14Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
-            </svg>
-            <span className={styles.toggleLabelFull}>Tam Harita</span>
-            <span className={styles.toggleLabelShort}>Harita</span>
-          </button>
-        </div>
+        {!hasDbError && (
+          <div className={styles.viewModeToggle} role="group" aria-label="Görünüm Seçimi">
+            <button
+              type="button"
+              className={`${styles.viewToggleBtn} ${displayedViewMode === 'split' ? styles.viewToggleBtnActive : ''}`}
+              onClick={() => handleViewModeChange('split')}
+              aria-pressed={displayedViewMode === 'split'}
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" className={styles.toggleIcon}>
+                <rect x="1" y="1" width="6.5" height="14" rx="2" fill="currentColor" opacity="0.9"/>
+                <rect x="8.5" y="1" width="6.5" height="14" rx="2" fill="currentColor" opacity="0.45"/>
+              </svg>
+              <span className={styles.toggleLabelFull}>Bölünmüş Ekran</span>
+              <span className={styles.toggleLabelShort}>Split</span>
+            </button>
+            <button
+              type="button"
+              className={`${styles.viewToggleBtn} ${displayedViewMode === 'list' ? styles.viewToggleBtnActive : ''}`}
+              onClick={() => handleViewModeChange('list')}
+              aria-pressed={displayedViewMode === 'list'}
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" className={styles.toggleIcon}>
+                <rect x="1" y="2" width="14" height="2.5" rx="1.25" fill="currentColor"/>
+                <rect x="1" y="6.75" width="14" height="2.5" rx="1.25" fill="currentColor"/>
+                <rect x="1" y="11.5" width="14" height="2.5" rx="1.25" fill="currentColor"/>
+              </svg>
+              <span className={styles.toggleLabelFull}>Liste Görünümü</span>
+              <span className={styles.toggleLabelShort}>Liste</span>
+            </button>
+            <button
+              type="button"
+              className={`${styles.viewToggleBtn} ${displayedViewMode === 'map' ? styles.viewToggleBtnActive : ''}`}
+              onClick={() => handleViewModeChange('map')}
+              aria-pressed={displayedViewMode === 'map'}
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" className={styles.toggleIcon}>
+                <circle cx="8" cy="6.5" r="2.5" stroke="currentColor" strokeWidth="1.8"/>
+                <path d="M8 14C8 14 3 10 3 6.5a5 5 0 0 1 10 0C13 10 8 14 8 14Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
+              </svg>
+              <span className={styles.toggleLabelFull}>Tam Harita</span>
+              <span className={styles.toggleLabelShort}>Harita</span>
+            </button>
+          </div>
+        )}
 
         <div className={styles.splitSummaryRow}>
           <span className={styles.splitSummaryBadge}>
             <span className={styles.statusLiveDot} aria-hidden="true" />
             <span className={styles.summaryTextFull} data-testid="usta-result-summary">
-              {displayedProfiles.length} usta{visibleUstaIds !== null ? ' · Harita alanında' : ''}
+              {hasDbError
+                ? 'Harita kullanılabilir'
+                : `${displayedProfiles.length} usta${visibleUstaIds !== null ? ' · Harita alanında' : ''}`}
             </span>
             <span className={styles.summaryTextShort}>
-              {displayedProfiles.length} Usta
+              {hasDbError ? 'Harita açık' : `${displayedProfiles.length} Usta`}
             </span>
           </span>
-          <label className={styles.sortInlineControl} htmlFor="usta-sort-inline">
-            <span>Sırala</span>
-            <select
-              id="usta-sort-inline"
-              value={sortMode}
-              onChange={(e) => handleSortModeChange(e.target.value as 'recommended' | 'rating' | 'jobs')}
-            >
-              <option value="recommended">Önerilen</option>
-              <option value="rating">En yüksek puan</option>
-              <option value="jobs">En çok iş</option>
-            </select>
-          </label>
-          {visibleUstaIds !== null && (
+          {!hasDbError && (
+            <label className={styles.sortInlineControl} htmlFor="usta-sort-inline">
+              <span>Sırala</span>
+              <select
+                id="usta-sort-inline"
+                value={sortMode}
+                onChange={(e) => handleSortModeChange(e.target.value as 'recommended' | 'rating' | 'jobs')}
+              >
+                <option value="recommended">Önerilen</option>
+                <option value="rating">En yüksek puan</option>
+                <option value="jobs">En çok iş</option>
+              </select>
+            </label>
+          )}
+          {!hasDbError && visibleUstaIds !== null && (
             <button
               type="button"
               className={styles.spatialResetFilterBtn}
@@ -1166,9 +1177,14 @@ export default function UstalarSplitView({
 
       {/* DB Connection Warning Banner */}
       {hasDbError && (
-        <div className={styles.dbErrorBanner} role="alert">
-          <span className={styles.dbErrorLabel}>Uyarı</span>
-          <span>Usta veritabanına ulaşılamadı. Doğrulanmış temsilci usta ağı ile kesintisiz çalışılıyor.</span>
+        <div className={styles.dbErrorBanner} role="status" aria-live="polite" aria-atomic="true">
+          <div className={styles.dbErrorCopy}>
+            <strong>Usta verileri şu anda yüklenemiyor</strong>
+            <span>Ankara haritasını incelemeye devam edebilirsiniz.</span>
+          </div>
+          <button type="button" className={styles.dbRetryButton} onClick={() => router.refresh()}>
+            Tekrar dene
+          </button>
         </div>
       )}
 
@@ -1308,12 +1324,13 @@ export default function UstalarSplitView({
       )}
 
       {/* Content Area according to viewMode */}
-      {displayedViewMode === 'map' ? (
+      {!hasDbError && displayedViewMode === 'map' ? (
         <div>
           <div className={dirStyles.mapContainerSection}>
             <AnkaraInteractiveMap
               initialDistrict={selectedDistrict}
               tradespeopleMarkers={mapMarkers}
+              directoryDataUnavailable={hasDbError}
               activeTradespersonId={hoveredPinId ?? activeUstaId}
               onSelectTradespersonMarker={handleSelectMarker}
               onVisibleTradespeopleChange={handleVisibleTradespeopleChange}
@@ -1321,7 +1338,7 @@ export default function UstalarSplitView({
               onLocationSelect={(district) => navigateWithFilter('district', district)}
             />
           </div>
-          <div style={{ marginTop: '28px' }}>
+          {!hasDbError && <div style={{ marginTop: '28px' }}>
             <div className={dirStyles.directoryListHeading}>
               <h2>Ustalar</h2>
               <span aria-label={`${displayedProfiles.length} usta gösteriliyor`}>
@@ -1359,17 +1376,22 @@ export default function UstalarSplitView({
                 </Link>
               )}
             </nav>
-          </div>
+          </div>}
         </div>
       ) : (
-        <div className={`${displayedViewMode === 'split' ? styles.splitLayout : ''} ${isMapExpanded ? styles.splitLayoutExpanded : ''}`}>
+        <div
+          className={`${hasDbError || displayedViewMode === 'split' ? styles.splitLayout : ''} ${
+            hasDbError ? styles.splitLayoutUnavailable : ''
+          } ${isMapExpanded ? styles.splitLayoutExpanded : ''}`}
+          data-testid="directory-content-layout"
+        >
           {/* Left Column: Scrollable List of Usta Cards */}
-          <div
-            className={`${displayedViewMode === 'split' ? styles.splitListPane : ''} ${isMapExpanded ? styles.splitListPaneHidden : ''}`}
-            role="region"
-            aria-label="Usta Listesi"
-          >
-            {displayedProfiles.length === 0 ? (
+          {!hasDbError && <div
+              className={`${displayedViewMode === 'split' ? styles.splitListPane : ''} ${isMapExpanded ? styles.splitListPaneHidden : ''}`}
+              role="region"
+              aria-label="Usta Listesi"
+            >
+            {displayedProfiles.length === 0 && !hasDbError ? (
               <div
                 className={dirStyles.emptyState}
                 data-testid="directory-empty-state"
@@ -1431,6 +1453,10 @@ export default function UstalarSplitView({
                     <Link href="/#services" className={dirStyles.ctaBtn}>
                       Pilot kapsamını incele
                     </Link>
+                  ) : availability === 'empty' ? (
+                    <Link href="/#services" className={dirStyles.ctaBtn}>
+                      İhtiyacını anlat
+                    </Link>
                   ) : hasFilters ? (
                     <Link href={clearDiscoveryHref} className={dirStyles.ctaBtn}>
                       Filtreleri temizle
@@ -1482,65 +1508,67 @@ export default function UstalarSplitView({
                 )}
               </>
             )}
-          </div>
+          </div>}
 
           {/* Right Column: Sticky Synchronized Ankara Map in Split View */}
-          {displayedViewMode === 'split' && (
+          {(hasDbError || displayedViewMode === 'split') && (
             <div
               className={`${styles.splitMapPane} ${isMapExpanded ? styles.splitMapPaneExpanded : ''}`}
               role="region"
               aria-label="Ankara Usta Arama Haritası"
             >
               {/* Mini expand / contract button in the top right (Airbnb & Modern Map Benchmark - User Request) */}
-              <button
-                type="button"
-                className={styles.miniExpandBtn}
-                onClick={() => setIsMapExpanded(prev => !prev)}
-                title={isMapExpanded ? "Haritayı daralt (Bölünmüş ekrana dön)" : "Haritayı büyüt (Tam ekran harita)"}
-                aria-label={isMapExpanded ? "Haritayı daralt" : "Haritayı büyüt"}
-                aria-expanded={isMapExpanded}
-              >
-                {isMapExpanded ? (
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                    className={styles.miniExpandSvg}
-                  >
-                    <polyline points="4 14 10 14 10 20" />
-                    <polyline points="20 10 14 10 14 4" />
-                    <line x1="14" y1="10" x2="21" y2="3" />
-                    <line x1="3" y1="21" x2="10" y2="14" />
-                  </svg>
-                ) : (
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                    className={styles.miniExpandSvg}
-                  >
-                    <polyline points="15 3 21 3 21 9" />
-                    <polyline points="9 21 3 21 3 15" />
-                    <line x1="21" y1="3" x2="14" y2="10" />
-                    <line x1="3" y1="21" x2="10" y2="14" />
-                  </svg>
-                )}
-                <span>{isMapExpanded ? 'Daralt' : 'Büyüt'}</span>
-              </button>
+              {!hasDbError && (
+                <button
+                  type="button"
+                  className={styles.miniExpandBtn}
+                  onClick={() => setIsMapExpanded(prev => !prev)}
+                  title={isMapExpanded ? "Haritayı daralt (Bölünmüş ekrana dön)" : "Haritayı büyüt (Tam ekran harita)"}
+                  aria-label={isMapExpanded ? "Haritayı daralt" : "Haritayı büyüt"}
+                  aria-expanded={isMapExpanded}
+                >
+                  {isMapExpanded ? (
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                      className={styles.miniExpandSvg}
+                    >
+                      <polyline points="4 14 10 14 10 20" />
+                      <polyline points="20 10 14 10 14 4" />
+                      <line x1="14" y1="10" x2="21" y2="3" />
+                      <line x1="3" y1="21" x2="10" y2="14" />
+                    </svg>
+                  ) : (
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                      className={styles.miniExpandSvg}
+                    >
+                      <polyline points="15 3 21 3 21 9" />
+                      <polyline points="9 21 3 21 3 15" />
+                      <line x1="21" y1="3" x2="14" y2="10" />
+                      <line x1="3" y1="21" x2="10" y2="14" />
+                    </svg>
+                  )}
+                  <span>{isMapExpanded ? 'Daralt' : 'Büyüt'}</span>
+                </button>
+              )}
 
-              {(activeProfile || visibleUstaIds !== null) && (
+              {!hasDbError && (activeProfile || visibleUstaIds !== null) && (
                 <div className={styles.mapSelectionNotice} role="note" aria-live="polite" aria-atomic="true" aria-label="Harita ve liste durumu">
                   <span className={styles.mapSelectionDot} aria-hidden="true" />
                   {activeProfile ? (
@@ -1558,7 +1586,7 @@ export default function UstalarSplitView({
               )}
 
               {/* Floating restore list button when expanded */}
-              {isMapExpanded && (
+              {!hasDbError && isMapExpanded && (
                 <button
                   type="button"
                   className={styles.floatingShowListBtn}
@@ -1573,6 +1601,7 @@ export default function UstalarSplitView({
                 initialDistrict={selectedDistrict}
                 isSplitPane
                 tradespeopleMarkers={mapMarkers}
+                directoryDataUnavailable={hasDbError}
                 activeTradespersonId={hoveredPinId ?? activeUstaId}
                 onSelectTradespersonMarker={handleSelectMarker}
                 onHoverTradespersonMarker={(id) => setHoveredPinId(id)}
@@ -1583,7 +1612,7 @@ export default function UstalarSplitView({
               />
 
               {/* Mobile Bottom Sheet Drawer (Steven Hoober Thumb-Zone Standard < 768px) */}
-              <div
+              {!hasDbError && <div
                 className={`${styles.unifiedBottomSheet} ${
                   isDrawerCollapsed ? styles.unifiedBottomSheetCollapsed : ''
                 } ${
@@ -1752,10 +1781,10 @@ export default function UstalarSplitView({
                     )}
                   </div>
                 )}
-              </div>
+              </div>}
 
               {/* Mobile Thumb-Zone Floating Action Pill (Airbnb 2026 Thumb-Zone Pattern) */}
-              <div
+              {!hasDbError && <div
                 className={`${styles.floatingMobileBar} ${
                   isDrawerCollapsed ? styles.floatingMobileBarVisible : styles.floatingMobileBarHidden
                 }`}
@@ -1768,14 +1797,14 @@ export default function UstalarSplitView({
                 >
                   <span>Ustaları Göster ({displayedProfiles.length})</span>
                 </button>
-              </div>
+              </div>}
             </div>
           )}
         </div>
       )}
 
       {/* Floating Mobile Toggle, visible only in list mode */}
-      {displayedViewMode === 'list' && (
+      {!hasDbError && displayedViewMode === 'list' && (
         <div className={styles.floatingMobileBar}>
           <button
             type="button"

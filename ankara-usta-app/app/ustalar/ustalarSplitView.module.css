@@ -209,25 +209,70 @@
 .dbErrorBanner {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  background: #fef3c7;
-  border: 1px solid #f59e0b;
-  border-radius: 8px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #92400e;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  background: #f4f8f6;
+  border: 1px solid #cbded5;
+  border-radius: 10px;
+  color: #173f32;
   margin-bottom: 10px;
 }
 
-.dbErrorLabel {
-  flex: 0 0 auto;
-  padding: 2px 6px;
-  border: 1px solid currentColor;
-  border-radius: 6px;
-  font-size: 0.6875rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+.dbErrorCopy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dbErrorCopy strong {
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+
+.dbErrorCopy span {
+  color: #47675d;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.dbRetryButton {
+  min-width: 108px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid #0e6f47;
+  border-radius: 8px;
+  background: #0e6f47;
+  color: #f8fbf9;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dbRetryButton:hover {
+  background: #0a5b3b;
+  border-color: #0a5b3b;
+}
+
+.dbRetryButton:focus-visible {
+  outline: 3px solid var(--focus-ring, #9cc7ff);
+  outline-offset: 2px;
+}
+
+.dbRetryButton:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 640px) {
+  .dbErrorBanner {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dbRetryButton {
+    width: 100%;
+  }
 }
 
 /* ==========================================================================
@@ -661,6 +706,18 @@
 
 .splitLayoutExpanded {
   gap: 0;
+}
+
+.splitLayoutUnavailable {
+  gap: 0;
+  height: clamp(520px, calc(100vh - 360px), 680px);
+  min-height: 520px;
+}
+
+.splitLayoutUnavailable .splitMapPane {
+  flex: 1 1 100%;
+  width: 100%;
+  max-width: 100%;
 }
 
 .splitListPane {

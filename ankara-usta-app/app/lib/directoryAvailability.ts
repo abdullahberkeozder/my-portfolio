@@ -1,11 +1,13 @@
-export type DirectoryAvailability = 'limited' | 'waitlist' | 'unavailable';
-export type DirectoryVisualFixture = DirectoryAvailability | 'milestones';
+export type DirectoryAvailability = 'limited' | 'waitlist' | 'unavailable' | 'empty';
+export type DirectoryVisualFixture = DirectoryAvailability | 'milestones' | 'connection-error';
 
 const FIXTURES: readonly DirectoryVisualFixture[] = [
   'limited',
   'waitlist',
   'unavailable',
+  'empty',
   'milestones',
+  'connection-error',
 ];
 
 export function parseDirectoryVisualFixture(
@@ -24,9 +26,11 @@ export function resolveDirectoryAvailability(input: {
   hasFilters: boolean;
   pilotScope: boolean;
 }): DirectoryAvailability | undefined {
-  if (input.filteredCount > 0 || !input.hasFilters) return undefined;
+  if (input.filteredCount > 0) return undefined;
+  if (!input.hasFilters) return 'empty';
   if (!input.pilotScope) return 'unavailable';
   if (input.hasGlobalSupply === true) return 'limited';
-  return 'waitlist';
+  if (input.hasGlobalSupply === false) return 'waitlist';
+  return undefined;
 }
 

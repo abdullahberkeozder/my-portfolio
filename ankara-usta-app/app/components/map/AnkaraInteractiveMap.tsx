@@ -58,6 +58,7 @@ export interface AnkaraInteractiveMapProps {
   onVisibleTradespeopleChange?: (visibleIds: string[] | null) => void;
   resetTrigger?: number;
   panToTradespersonId?: string | null;
+  directoryDataUnavailable?: boolean;
 }
 
 export default function AnkaraInteractiveMap({
@@ -75,6 +76,7 @@ export default function AnkaraInteractiveMap({
   onVisibleTradespeopleChange,
   resetTrigger,
   panToTradespersonId,
+  directoryDataUnavailable = false,
 }: AnkaraInteractiveMapProps) {
   const [selectedDistrict, setSelectedDistrict] = useState<string>(
     initialDistrict ?? 'all'
@@ -144,7 +146,7 @@ export default function AnkaraInteractiveMap({
     });
 
     // 2. Match Artisan Shops
-    const shopsPool = filteredPins ?? ankaraRepresentativeShops;
+    const shopsPool = directoryDataUnavailable ? [] : filteredPins ?? ankaraRepresentativeShops;
     shopsPool.forEach(shop => {
       const sName = shop.name.toLocaleLowerCase('tr-TR');
       const sOwner = shop.ownerName.toLocaleLowerCase('tr-TR');
@@ -201,7 +203,7 @@ export default function AnkaraInteractiveMap({
     });
 
     return matches.slice(0, 6);
-  }, [searchQuery, filteredPins]);
+  }, [searchQuery, filteredPins, directoryDataUnavailable]);
 
   function handleSelectResult(item: SearchResultItem) {
     if (item.type === 'shop' && item.shopId) {
@@ -362,6 +364,7 @@ export default function AnkaraInteractiveMap({
           onVisibleTradespeopleChange={onVisibleTradespeopleChange}
           resetTrigger={resetTrigger}
           panToTradespersonId={panToTradespersonId}
+          directoryDataUnavailable={directoryDataUnavailable}
         />
       </div>
     </section>

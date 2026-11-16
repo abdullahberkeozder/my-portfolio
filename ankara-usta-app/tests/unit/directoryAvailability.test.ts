@@ -10,7 +10,12 @@ describe('directory visual fixtures', () => {
     expect(parseDirectoryVisualFixture('milestones', false)).toBeUndefined();
   });
 
-  it.each(['limited', 'waitlist', 'unavailable'] as const)(
+  it('accepts connection-error fixtures only when the visual fixture gate is enabled', () => {
+    expect(parseDirectoryVisualFixture('connection-error', true)).toBe('connection-error');
+    expect(parseDirectoryVisualFixture('connection-error', false)).toBeUndefined();
+  });
+
+  it.each(['limited', 'waitlist', 'unavailable', 'empty', 'connection-error'] as const)(
     'preserves the existing %s fixture',
     (fixture) => {
       expect(parseDirectoryVisualFixture(fixture, true)).toBe(fixture);
@@ -28,6 +33,30 @@ describe('directory availability', () => {
     expect(resolveDirectoryAvailability({
       filteredCount: 4,
       hasFilters: false,
+      pilotScope: true,
+    })).toBeUndefined();
+  });
+
+  it('distinguishes an unfiltered empty directory from a filtered empty result', () => {
+    expect(resolveDirectoryAvailability({
+      filteredCount: 0,
+      hasFilters: false,
+      pilotScope: true,
+    })).toBe('empty');
+
+    expect(resolveDirectoryAvailability({
+      filteredCount: 0,
+      hasFilters: true,
+      hasGlobalSupply: true,
+      pilotScope: true,
+    })).toBe('limited');
+  });
+
+  it('keeps an unknown global supply result neutral', () => {
+    expect(resolveDirectoryAvailability({
+      filteredCount: 0,
+      hasFilters: true,
+      hasGlobalSupply: undefined,
       pilotScope: true,
     })).toBeUndefined();
   });

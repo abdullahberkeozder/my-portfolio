@@ -78,6 +78,7 @@ export default async function UstalarIndexPage({
     process.env.ORKESTRA_DIRECTORY_VISUAL_FIXTURES === 'true' || process.env.NODE_ENV !== 'production'
   );
   const isMilestoneFixture = visualFixture === 'milestones';
+  const isConnectionErrorFixture = visualFixture === 'connection-error';
   const discovery = parseDiscoveryParams(params, {
     serviceIds: services.map((service) => service.id),
     districts: ankaraDistricts,
@@ -111,53 +112,6 @@ export default async function UstalarIndexPage({
         }
       );
 
-  if (error) {
-    return (
-      <main
-        className="account-shell ustalar-page"
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '100dvh',
-          background: 'var(--surface-page, #faf8f5)',
-          padding: '48px 16px',
-        }}
-      >
-        <div className={styles.container}>
-          <div className={styles.emptyState}>
-            <span className={styles.emptyIcon} role="img" aria-label="Hata">
-              <svg
-                width="36"
-                height="36"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="var(--action-primary, #0E6F47)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
-            </span>
-            <h2 className={styles.emptyTitle}>Usta listesi yüklenemedi</h2>
-            <p className={styles.emptyDesc}>Bir bağlantı sorunu oluştu. Lütfen daha sonra tekrar deneyin.</p>
-            <div className={styles.emptyActions}>
-              <Link className={styles.ctaBtn} href={baseHref}>
-                Tekrar dene
-              </Link>
-              <Link className={styles.secondaryBtn} href="/">
-                Ana sayfaya dön
-              </Link>
-            </div>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
   const profiles = isMilestoneFixture
     ? MILESTONE_FIXTURE_PROFILES
     : visualFixture
@@ -168,7 +122,7 @@ export default async function UstalarIndexPage({
     : visualFixture
       ? 0
       : Number(profiles[0]?.total_count ?? profiles.length);
-  const hasDbError = false;
+  const hasDbError = Boolean(error) || isConnectionErrorFixture || (!supabase && !visualFixture);
   const hasFilters = Boolean(service || district);
   let hasGlobalSupply: boolean | undefined = hasFilters ? undefined : count > 0;
 
@@ -176,7 +130,7 @@ export default async function UstalarIndexPage({
   // has no supply. Check one unfiltered row before choosing between the
   // limited-scope and true cold-start messages. A fallback error stays
   // neutral; it must never be presented as a waitlist state.
-  if (count === 0 && hasFilters && supabase) {
+  if (count === 0 && hasFilters && supabase && !hasDbError) {
     const { data: globalRows, error: globalError } = await supabase.rpc(
       'list_public_verified_professionals',
       {
@@ -193,12 +147,21 @@ export default async function UstalarIndexPage({
     }
   }
 
-  const availability = isMilestoneFixture ? undefined : visualFixture ?? resolveDirectoryAvailability({
-    filteredCount: count,
-    hasGlobalSupply,
-    hasFilters,
-    pilotScope: !district || getPilotCoverage(district, service).tier !== 'unsupported',
-  });
+  const fixtureAvailability =
+    visualFixture === 'limited' ||
+    visualFixture === 'waitlist' ||
+    visualFixture === 'unavailable' ||
+    visualFixture === 'empty'
+      ? visualFixture
+      : undefined;
+  const availability = hasDbError || isMilestoneFixture
+    ? undefined
+    : fixtureAvailability ?? resolveDirectoryAvailability({
+        filteredCount: count,
+        hasGlobalSupply,
+        hasFilters,
+        pilotScope: !district || getPilotCoverage(district, service).tier !== 'unsupported',
+      });
 
   if (isMilestoneFixture) {
     const fixtureDetails = [
