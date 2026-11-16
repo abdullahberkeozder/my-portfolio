@@ -489,3 +489,117 @@
   background: rgba(20, 24, 30, 0.82);
   border-color: rgba(255, 255, 255, 0.08);
 }
+
+/* ==============================================================================
+   5. Mac OS X Desktop Window Chrome & Traffic Lights (2010 - 2016 Desktop)
+   ============================================================================== */
+
+/* Desktop Window Frame */
+.mac-window-frame {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 22px 70px 4px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+/* Unified Brushed-Aluminum / Graphite Titlebar & Toolbar */
+.mac-titlebar {
+  height: 42px;
+  background: linear-gradient(to bottom, #ededed 0%, #dcdcdc 50%, #cecece 51%, #bcbcbc 100%);
+  border-bottom: 1px solid #999999;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 1px 2px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  user-select: none;
+}
+
+.dark .mac-titlebar {
+  background: linear-gradient(to bottom, #3f4247 0%, #303338 50%, #25282d 51%, #1e2024 100%);
+  border-bottom: 1px solid #141618;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* Classic Glossy Traffic Light Window Buttons (🔴 Close, 🟡 Minimize, 🟢 Zoom) */
+.mac-traffic-lights {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mac-traffic-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.mac-traffic-close {
+  background: linear-gradient(to bottom, #ff7b73 0%, #ff5248 100%);
+  border-color: #d8352b;
+}
+
+.mac-traffic-min {
+  background: linear-gradient(to bottom, #ffcf42 0%, #ffb717 100%);
+  border-color: #d19307;
+}
+
+.mac-traffic-max {
+  background: linear-gradient(to bottom, #39d968 0%, #1db84c 100%);
+  border-color: #178a39;
+}
+
+/* Traffic Light Hover Symbols */
+.mac-traffic-dot::after {
+  content: "";
+  opacity: 0;
+  transition: opacity 0.1s ease;
+  font-family: -apple-system, sans-serif;
+  font-size: 9px;
+  font-weight: 900;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1;
+}
+
+.mac-traffic-lights:hover .mac-traffic-close::after {
+  content: "×";
+  opacity: 1;
+  font-size: 11px;
+}
+
+.mac-traffic-lights:hover .mac-traffic-min::after {
+  content: "–";
+  opacity: 1;
+}
+
+.mac-traffic-lights:hover .mac-traffic-max::after {
+  content: "+";
+  opacity: 1;
+}
+
+/* Recessed Search Input in Desktop Toolbar */
+.mac-search-field {
+  height: 24px;
+  border-radius: 12px;
+  padding: 0 10px 0 26px;
+  background: #ffffff;
+  border: 1px solid #a6a6a6;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25), 0 1px 0 rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  color: #333333;
+}
+
+.dark .mac-search-field {
+  background: #1b1c1e;
+  border-color: #383a3e;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: #e0e0e0;
+}
+
