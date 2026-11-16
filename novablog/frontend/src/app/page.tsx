@@ -36,7 +36,6 @@ import {
   Clock,
   UserPlus,
   Check,
-  PenSquare,
   Loader2,
 } from 'lucide-react';
 
@@ -327,12 +326,12 @@ export default function Home() {
 
         {/* 2. Main Publication Feed (Keşfet / Takip Edilenler / Okuma Listem) */}
         <div id="articles-feed" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 scroll-mt-20">
-          {/* Dual-Feed Tab Switcher & Action Bar */}
-          <div className="space-y-4 p-5 sm:p-7 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/[0.08] dark:border-white/[0.08] shadow-sm">
-            {/* Top Bar: Feed Switcher & Omnibar Search */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          {/* De-Boxed Feed Header: Direct Canvas Breathing Room with Hairline Separation */}
+          <div className="space-y-4 pb-6 border-b border-zinc-200/90 dark:border-zinc-800/80">
+            {/* Top Bar: Feed Switcher & Contextual Filter Search */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               {/* Primary Dual-Feed Tabs */}
-              <div className="flex items-center gap-2 p-1 rounded-2xl bg-zinc-100 dark:bg-zinc-900/80 w-fit">
+              <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-200/70 dark:border-zinc-800/80 w-fit">
                 <button
                   type="button"
                   onClick={() => setFeedMode('explore')}
@@ -383,142 +382,147 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* Right: Search Omnibar & Write CTA */}
-              <div className="flex items-center gap-3 w-full lg:w-auto">
-                <div className="relative flex-1 sm:w-72">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
-                  <input
-                    id="blog-search-input"
-                    name="blogSearch"
-                    type="text"
-                    placeholder="Başlık, yazar veya etiket ara..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && searchTerm.trim()) {
-                        handleTriggerSemanticSearch(searchTerm);
-                      }
-                    }}
-                    className="w-full pl-10 pr-16 py-2.5 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-base sm:text-xs font-sans text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-emerald-500 transition-colors"
-                  />
-                  {searchTerm ? (
-                    <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => handleTriggerSemanticSearch(searchTerm)}
-                        disabled={isSearchingSemantic}
-                        title="Spring AI Vektör Araması (pgvector)"
-                        aria-label="Vektör Ara"
-                        className="p-1 rounded-full text-emerald-500 hover:bg-emerald-500/10 transition-colors cursor-pointer disabled:opacity-50"
-                      >
-                        {isSearchingSemantic ? (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        ) : (
-                          <Sparkles className="w-3.5 h-3.5" />
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSearchTerm('');
-                          setSemanticResults(null);
-                        }}
-                        aria-label="Aramayı Temizle"
-                        className="text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer p-0.5"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-0.5 pointer-events-none text-[10px] font-mono text-zinc-400 bg-zinc-200/60 dark:bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-300/40 dark:border-zinc-700">
-                      <span>⌘</span><span>K</span>
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-black text-xs font-bold tracking-wide uppercase transition-all shadow-sm hover:opacity-90 active:scale-95 cursor-pointer whitespace-nowrap"
-                  title="Yeni Teknik Makale Yayınla"
-                >
-                  <PenSquare className="w-3.5 h-3.5 text-emerald-400 dark:text-zinc-950" />
-                  <span className="hidden sm:inline">YENİ MAKALE YAZ</span>
-                  <span className="sm:hidden">YAZ</span>
-                </button>
+              {/* Right: Dedicated Contextual Filter Search (Single Source of Truth, No Action Duplication) */}
+              <div className="relative w-full sm:w-72 lg:w-80">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                <input
+                  id="blog-search-input"
+                  name="blogSearch"
+                  type="text"
+                  placeholder="Başlık, yazar veya etiket filtrele..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && searchTerm.trim()) {
+                      handleTriggerSemanticSearch(searchTerm);
+                    }
+                  }}
+                  className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-sm font-sans text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-emerald-500 transition-colors"
+                />
+                {searchTerm ? (
+                  <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleTriggerSemanticSearch(searchTerm)}
+                      disabled={isSearchingSemantic}
+                      title="Spring AI Vektör Araması (pgvector)"
+                      aria-label="Vektör Ara"
+                      className="p-1 rounded-lg text-emerald-500 hover:bg-emerald-500/10 transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      {isSearchingSemantic ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Sparkles className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchTerm('');
+                        setSemanticResults(null);
+                      }}
+                      aria-label="Aramayı Temizle"
+                      className="text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer p-0.5"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleTriggerSemanticSearch()}
+                    title="Spring AI Anlamsal Arama ile Tara"
+                    aria-label="Anlamsal Arama"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-lg text-zinc-400 hover:text-emerald-500 transition-colors cursor-pointer"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
 
-            {/* Sub-bar: Topic Pills & Sorting */}
-            <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-              {/* Topic Ribbon */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
-                {TOPIC_PILLS.map((topic) => {
-                  const isActive = selectedTopic === topic.tag;
-                  return (
-                    <button
-                      key={topic.id}
-                      type="button"
-                      onClick={() => setSelectedTopic(topic.tag)}
-                      className={`px-3 py-1.5 rounded-full text-[11px] font-mono font-bold whitespace-nowrap transition-all cursor-pointer ${
-                        isActive
-                          ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
-                          : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'
-                      }`}
-                    >
-                      {topic.label}
-                    </button>
-                  );
-                })}
+            {/* Sub-bar: Edge-Faded Topic Ribbon & Apple HIG Segmented Sort Control */}
+            <div className="pt-2 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+              {/* Topic Ribbon with CSS Mask Edge-Fade */}
+              <div
+                className="relative overflow-x-auto pb-1 md:pb-0 scrollbar-none flex-1 min-w-0"
+                style={{
+                  WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)',
+                  maskImage: 'linear-gradient(to right, black 85%, transparent 100%)',
+                }}
+              >
+                <div className="flex items-center gap-2 pr-6">
+                  {TOPIC_PILLS.map((topic) => {
+                    const isActive = selectedTopic === topic.tag;
+                    return (
+                      <button
+                        key={topic.id}
+                        type="button"
+                        onClick={() => setSelectedTopic(topic.tag)}
+                        className={`px-3 py-1.5 rounded-lg text-[11px] font-mono font-bold whitespace-nowrap transition-all cursor-pointer ${
+                          isActive
+                            ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
+                            : 'bg-zinc-100 dark:bg-zinc-900/80 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-200/70 dark:hover:bg-zinc-800'
+                        }`}
+                      >
+                        {topic.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
-              {/* Explore Sub-Sort */}
+              {/* Explore Sub-Sort: Apple HIG Segmented Control */}
               {feedMode === 'explore' && (
-                <div className="flex items-center gap-1.5 shrink-0 font-mono text-[11px]">
-                  <span className="text-zinc-400 font-bold uppercase mr-1">SIRALA:</span>
-                  <button
-                    type="button"
-                    onClick={() => setExploreSort('trending')}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-full cursor-pointer transition-colors ${
-                      exploreSort === 'trending'
-                        ? 'bg-zinc-900 dark:bg-zinc-800 text-white font-bold'
-                        : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
-                    }`}
-                  >
-                    <TrendingUp className="w-3 h-3 text-emerald-400" />
-                    <span>Trendler</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setExploreSort('featured')}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-full cursor-pointer transition-colors ${
-                      exploreSort === 'featured'
-                        ? 'bg-zinc-900 dark:bg-zinc-800 text-white font-bold'
-                        : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
-                    }`}
-                  >
-                    <Sparkles className="w-3 h-3 text-cyan-400" />
-                    <span>Editörün Seçimi</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setExploreSort('latest')}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-full cursor-pointer transition-colors ${
-                      exploreSort === 'latest'
-                        ? 'bg-zinc-900 dark:bg-zinc-800 text-white font-bold'
-                        : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
-                    }`}
-                  >
-                    <Clock className="w-3 h-3 text-purple-400" />
-                    <span>En Yeni</span>
-                  </button>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-wider hidden lg:inline">
+                    SIRALA:
+                  </span>
+                  <div className="inline-flex items-center p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-200/70 dark:border-zinc-800/80 font-mono text-[11px]">
+                    <button
+                      type="button"
+                      onClick={() => setExploreSort('trending')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all ${
+                        exploreSort === 'trending'
+                          ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-bold shadow-sm'
+                          : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
+                      }`}
+                    >
+                      <TrendingUp className="w-3 h-3 text-emerald-400" />
+                      <span>Trendler</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setExploreSort('featured')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all ${
+                        exploreSort === 'featured'
+                          ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-bold shadow-sm'
+                          : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
+                      }`}
+                    >
+                      <Sparkles className="w-3 h-3 text-cyan-400" />
+                      <span>Editörün Seçimi</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setExploreSort('latest')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all ${
+                        exploreSort === 'latest'
+                          ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-bold shadow-sm'
+                          : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
+                      }`}
+                    >
+                      <Clock className="w-3 h-3 text-purple-400" />
+                      <span>En Yeni</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Active Filter Pill */}
+            {/* Active Filter Pill Bar */}
             {hasActiveFilters && (
-              <div className="flex items-center gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800/80 text-xs">
+              <div className="flex items-center gap-2 pt-2 text-xs">
                 <span className="text-zinc-500">
                   {sortedBlogs.length} makale listeleniyor
                   {selectedTopic ? ` (#${selectedTopic})` : ''}
@@ -764,8 +768,30 @@ export default function Home() {
           )}
         </div>
 
+        {/* Section Landmark: Transition from Technical Publication to Interactive Architecture Consoles */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-zinc-200/80 dark:border-zinc-800/80">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>CANLI SİSTEM MİMARİSİ LABORATUVARI</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950 dark:text-white font-sans">
+                İnteraktif Çekirdek ve Telemetri Simülasyonları
+              </h2>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
+                Java 22 Loom sanal iş parçacıklarını, pgvector 128D anlamsal eşleşmelerini ve Redis önbellek mekanizmalarını canlı olarak test edin ve telemetri metriklerini gözlemleyin.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 font-mono text-xs text-zinc-500 shrink-0">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>CANLI TEST ORTAMI</span>
+            </div>
+          </div>
+        </div>
+
         {/* 3. Deep Architecture Modules (Navbar Jump Targets) */}
-        <div id="modular-architecture-console" className="scroll-mt-24 border-t border-black/[0.08] dark:border-white/[0.08] pt-12">
+        <div id="modular-architecture-console" className="scroll-mt-24 pt-4">
           <ModularArchitectureConsole />
         </div>
 
