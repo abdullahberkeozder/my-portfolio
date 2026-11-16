@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
-import { AquariumToggle } from '@/components/aquarium/AquariumToggle';
+import { AquariumToggle } from '@/components/AquariumToggle';
 import { useBookmarks, useFollowedAuthors } from '@/hooks/useSocialStore';
 import { BlogCard } from '@/components/BlogCard';
 

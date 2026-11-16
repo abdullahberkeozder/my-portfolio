@@ -9,16 +9,16 @@ import {
   Sparkles,
   Check,
   UserPlus,
-  Github,
   Globe,
   Share2,
   RefreshCw,
 } from 'lucide-react';
+import { GithubIcon } from '@/components/GithubIcon';
 import { BlogDto, AuthorProfileDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
 import { BlogCard } from '@/components/BlogCard';
 import { BlogDetailModal } from '@/components/BlogDetailModal';
-import { AquariumToggle } from '@/components/aquarium/AquariumToggle';
+import { AquariumToggle } from '@/components/AquariumToggle';
 import { useFollowedAuthors } from '@/hooks/useSocialStore';
 
 interface AuthorPageProps {
@@ -200,7 +200,7 @@ export default function AuthorPage({ params }: AuthorPageProps) {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 hover:text-black dark:hover:text-white transition-colors"
                     >
-                      <Github className="w-3.5 h-3.5" />
+                      <GithubIcon className="w-3.5 h-3.5" />
                       <span>GitHub</span>
                     </a>
                   )}
