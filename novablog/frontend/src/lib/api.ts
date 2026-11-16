@@ -133,12 +133,23 @@ export class ApiClient {
       };
 
       const realUserBlogs = (data.data || []).filter((b) => !isPlaceholder(b));
-      // Merge active user-created blogs with masterclass architectural articles
+      // Merge active backend blogs with mock blogs without ID collisions
       const rawList = realUserBlogs.length > 0
         ? [...realUserBlogs, ...MOCK_BLOGS]
         : MOCK_BLOGS;
 
-      return rawList.map((b) => this.normalizeBlog(b));
+      const seenIds = new Set<number>();
+      const uniqueList: BlogDto[] = [];
+      for (const b of rawList) {
+        const id = b.id ?? b.blogId;
+        if (id != null) {
+          if (seenIds.has(id)) continue;
+          seenIds.add(id);
+        }
+        uniqueList.push(b);
+      }
+
+      return uniqueList.map((b) => this.normalizeBlog(b));
     } catch {
       this.isBackendAvailable = false;
       return MOCK_BLOGS.map((b) => this.normalizeBlog(b));
@@ -769,8 +780,17 @@ export class ApiClient {
       };
 
       const realBlogs = (data.data.content || []).filter((b) => !isPlaceholder(b));
-      // If backend has only placeholders or empty, augment with MOCK_BLOGS
-      const finalItems = realBlogs.length > 0 ? realBlogs : MOCK_BLOGS;
+      const rawExplore = realBlogs.length > 0 ? realBlogs : MOCK_BLOGS;
+      const seenExplore = new Set<number>();
+      const finalItems: BlogDto[] = [];
+      for (const b of rawExplore) {
+        const id = b.id ?? b.blogId;
+        if (id != null) {
+          if (seenExplore.has(id)) continue;
+          seenExplore.add(id);
+        }
+        finalItems.push(b);
+      }
 
       return {
         ...data.data,
