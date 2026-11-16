@@ -839,17 +839,54 @@ export class ApiClient {
       const data: ApiResult<AuthorProfileDto> = await res.json();
       return data.data;
     } catch {
+      const target = username.toLowerCase();
+      if (target.includes('selin')) {
+        return {
+          userId: 2,
+          username: 'selindemir',
+          firstName: 'Dr. Selin',
+          lastName: 'Demir',
+          title: 'AI Research Lead & Vector Architect',
+          bio: 'Spring AI, pgvector 128D anlamsal çıkarım motorları ve büyük dil modellerinde RAG optimizasyonu araştırmacısı.',
+          imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+          websiteUrl: 'https://selindemir.ai',
+          githubUrl: 'https://github.com/selindemir',
+          followersCount: 2840,
+          followingCount: 142,
+          articlesCount: 8,
+          isFollowing: false,
+        };
+      }
+      if (target.includes('caner')) {
+        return {
+          userId: 3,
+          username: 'caneraydin',
+          firstName: 'Caner',
+          lastName: 'Aydın',
+          title: 'Principal Security Architect & Cloud Native SRE',
+          bio: 'Cloud-native mimariler, eBPF gözlemlenebilirlik ve sıfır güven (Zero-Trust) RFC 6238 2FA güvenlik altyapıları lideri.',
+          imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+          githubUrl: 'https://github.com/caneraydin',
+          followersCount: 1950,
+          followingCount: 98,
+          articlesCount: 6,
+          isFollowing: false,
+        };
+      }
       return {
         userId: 1,
-        username,
-        name: username,
-        title: 'Kıdemli Sistem & Dağıtık Sistemler Mimarı',
-        bio: 'Java 22, Virtual Threads ve yüksek verimli mimariler üzerine makaleler yazıyor.',
-        followersCount: 1420,
+        username: 'admin',
+        firstName: 'Abdullah Berke',
+        lastName: 'Özder',
+        title: 'Staff Platform Engineer & Distributed Systems Lead',
+        bio: 'Java 22 Loom Virtual Threads, Spring Boot 4 ve mikro-çekirdek reaktif sistemler üzerine teknik incelemeler paylaşıyor.',
+        imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+        githubUrl: 'https://github.com/abdullahberkeozder',
+        followersCount: 3420,
         followingCount: 89,
-        articlesCount: 12,
+        articlesCount: 14,
         isFollowing: false,
-      } as unknown as AuthorProfileDto;
+      };
     }
   }
 

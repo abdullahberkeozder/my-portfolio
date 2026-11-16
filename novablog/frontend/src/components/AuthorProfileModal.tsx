@@ -56,11 +56,31 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
   if (!isOpen || !authorName) return null;
 
   const isFollowing = followedAuthors.includes(authorName);
-  const authorBlogs = allBlogs.filter(
-    (b) => (b.author || b.authorUsername || 'Abdullah Berke Özder').toLowerCase() === authorName.toLowerCase()
-  );
+  const authorBlogs = allBlogs.filter((b) => {
+    const authorU = (b.authorUsername || '').toLowerCase();
+    const authorN = (b.author || '').toLowerCase();
+    const target = authorName.toLowerCase();
+    return (
+      authorU === target ||
+      authorN === target ||
+      (target === 'selindemir' && authorN.includes('selin')) ||
+      (target === 'caneraydin' && authorN.includes('caner')) ||
+      (target === 'admin' && authorN.includes('berke'))
+    );
+  });
 
-  const initial = authorName.charAt(0).toUpperCase();
+  const displayName =
+    profile?.firstName && profile?.lastName
+      ? `${profile.firstName} ${profile.lastName}`
+      : authorName === 'selindemir'
+      ? 'Dr. Selin Demir'
+      : authorName === 'caneraydin'
+      ? 'Caner Aydın'
+      : authorName === 'admin'
+      ? 'Abdullah Berke Özder'
+      : authorName;
+
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
@@ -87,17 +107,17 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
         <div className="px-6 sm:px-8 pb-4 -mt-12 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div className="flex items-end gap-4">
-              <div className="w-20 h-20 rounded-2xl bg-zinc-950 dark:bg-zinc-800 text-white flex items-center justify-center text-2xl font-bold uppercase shadow-lg ring-4 ring-white dark:ring-[#0d0f14]">
+              <div className="w-20 h-20 rounded-2xl bg-zinc-950 dark:bg-zinc-800 text-white flex items-center justify-center text-2xl font-bold uppercase shadow-lg ring-4 ring-white dark:ring-[#0d0f14] overflow-hidden">
                 {profile?.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={profile.imageUrl} alt={authorName} className="w-full h-full object-cover rounded-2xl" />
+                  <img src={profile.imageUrl} alt={displayName} className="w-full h-full object-cover rounded-2xl" />
                 ) : (
                   initial
                 )}
               </div>
               <div className="space-y-0.5">
                 <h2 className="text-xl sm:text-2xl font-bold text-zinc-950 dark:text-white">
-                  {authorName}
+                  {displayName}
                 </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
                   {profile?.title || 'Kıdemli Sistem & Dağıtık Sistemler Mimarı'}

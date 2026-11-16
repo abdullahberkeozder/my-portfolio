@@ -243,11 +243,10 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveTab('editor')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors cursor-pointer ${
-                  activeTab === 'editor'
-                    ? 'bg-white dark:bg-zinc-700 text-zinc-950 dark:text-white shadow-xs font-bold'
-                    : 'text-zinc-500 hover:text-black dark:hover:text-white'
-                }`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors cursor-pointer ${activeTab === 'editor'
+                  ? 'bg-white dark:bg-zinc-700 text-zinc-950 dark:text-white shadow-xs font-bold'
+                  : 'text-zinc-500 hover:text-black dark:hover:text-white'
+                  }`}
               >
                 <PenTool className="w-3.5 h-3.5" />
                 <span>YAZ</span>
@@ -255,11 +254,10 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveTab('preview')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors cursor-pointer ${
-                  activeTab === 'preview'
-                    ? 'bg-white dark:bg-zinc-700 text-zinc-950 dark:text-white shadow-xs font-bold'
-                    : 'text-zinc-500 hover:text-black dark:hover:text-white'
-                }`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors cursor-pointer ${activeTab === 'preview'
+                  ? 'bg-white dark:bg-zinc-700 text-zinc-950 dark:text-white shadow-xs font-bold'
+                  : 'text-zinc-500 hover:text-black dark:hover:text-white'
+                  }`}
               >
                 <Eye className="w-3.5 h-3.5 text-emerald-500" />
                 <span>ÖNİZLE</span>
