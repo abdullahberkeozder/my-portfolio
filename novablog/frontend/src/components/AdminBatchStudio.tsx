@@ -5,22 +5,16 @@ import { ApiClient } from '@/lib/api';
 import { JobExecutionResponseDto } from '@/types/api';
 import { useDeletedBlogsQuery, useRestoreBlogMutation } from '@/hooks/useBlogs';
 import {
-  Database,
   RefreshCw,
-  Cpu,
   Trash2,
   BarChart3,
   Loader2,
-  Activity,
-  Layers,
-  HardDrive,
-  Radio,
   Archive,
   Undo2,
-  Clock,
   CheckCircle2,
-  AlertTriangle,
+  Server,
 } from 'lucide-react';
+import { playKeyClick } from '@/lib/retroAudio';
 
 export const AdminBatchStudio: React.FC = () => {
   const [cleanupResult, setCleanupResult] = useState<JobExecutionResponseDto | null>(null);
@@ -35,367 +29,305 @@ export const AdminBatchStudio: React.FC = () => {
   const restoreBlogMutation = useRestoreBlogMutation();
 
   const handleRunCleanup = async () => {
+    playKeyClick('crisp');
     setIsLoadingCleanup(true);
     try {
       const res = await ApiClient.triggerCleanupJob(30);
       setCleanupResult(res);
       await refetchDeleted();
     } catch {
-      alert('Cleanup job tetiklenemedi.');
+      // ignore
     } finally {
       setIsLoadingCleanup(false);
     }
   };
 
   const handleRunAnalytics = async () => {
+    playKeyClick('crisp');
     setIsLoadingAnalytics(true);
     try {
       const res = await ApiClient.triggerAnalyticsJob();
       setAnalyticsResult(res);
     } catch {
-      alert('Analytics job tetiklenemedi.');
+      // ignore
     } finally {
       setIsLoadingAnalytics(false);
     }
   };
 
   const handleReindex = async () => {
+    playKeyClick('crisp');
     setIsLoadingReindex(true);
     try {
       const msg = await ApiClient.reindexEmbeddings();
       setReindexMsg(msg);
     } catch {
-      alert('Vektör indeksleme başlatılamadı.');
+      // ignore
     } finally {
       setIsLoadingReindex(false);
     }
   };
 
+  const handleRestore = async (id: number) => {
+    playKeyClick('crisp');
+    await restoreBlogMutation.mutateAsync(id);
+    await refetchDeleted();
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-      {/* Header Banner - Ride Also Industrial Spec Sheet */}
-      <div className="relative rounded-3xl p-8 sm:p-10 bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden">
-        <div className="absolute inset-0 bg-tech-grid opacity-30 dark:opacity-20 pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-          <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-xs font-mono font-bold uppercase text-[#a3c900] dark:text-[#d4f933]">
-              <span className="w-2 h-2 rounded-full bg-[#d4f933] shadow-[0_0_8px_#d4f933]" />
-              <span>04 {'//'} ENTERPRISE BATCH & ETL CONSOLE</span>
-            </div>
-
-            <h2 className="text-3xl sm:text-5xl font-black text-zinc-950 dark:text-white uppercase tracking-tight">
-              SPRING BATCH 5 & SİSTEM KONSOLU
-            </h2>
-
-            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 font-mono leading-relaxed">
-              Büyük ölçekli veri temizliği (Chunk-based Soft-Delete Cleanup), yazar etkileşim analitiği raporlama işleri
-              ve Spring AI anlamsal vektör veritabanı indeksleme boru hatlarını yüksek sistem kararlılığıyla yönetin.
-            </p>
+    <div id="batch-etl-studio" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 select-none">
+      {/* Section Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-zinc-300 dark:border-zinc-800">
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-2 font-mono text-xs uppercase font-bold text-amber-600 dark:text-amber-400">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]" />
+            <span>MİMARİ MODÜL 04 // MAC OS X SERVER BATCH & ETL ENGINE</span>
           </div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight flex items-center gap-3">
+            <span>SPRING BATCH 5 & KURUMSAL VERİ AMBARI KONSOLU</span>
+          </h2>
+          <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-3xl font-sans leading-relaxed">
+            Büyük ölçekli veri temizliği (Chunk-based Soft-Delete Cleanup), yazar etkileşim analitiği raporlama işleri
+            ve Spring AI anlamsal vektör veritabanı indeksleme boru hatlarını yüksek sistem kararlılığıyla yönetin.
+          </p>
+        </div>
 
-          <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
-            <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-center min-w-[110px]">
-              <div className="text-[10px] text-zinc-400 uppercase">CHUNK SIZE</div>
-              <div className="text-sm font-bold text-zinc-950 dark:text-white mt-0.5">50 ITEMS</div>
-            </div>
-            <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-center min-w-[110px]">
-              <div className="text-[10px] text-zinc-400 uppercase">TRANSACTION</div>
-              <div className="text-sm font-bold text-zinc-950 dark:text-[#d4f933] mt-0.5">ISOLATED</div>
-            </div>
-            <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-center min-w-[110px]">
-              <div className="text-[10px] text-zinc-400 uppercase">BATCH META</div>
-              <div className="text-sm font-bold text-emerald-500 mt-0.5">POSTGRES</div>
-            </div>
-          </div>
+        <div className="flex items-center gap-2 font-mono text-xs text-zinc-500 shrink-0">
+          <span className="mac-hardware-chip-badge">CHUNK: 50 ITEMS</span>
+          <span className="mac-hardware-chip-badge">3 RETRY TOLERANSI</span>
+          <span className="mac-hardware-chip-badge">ISOLATED TX</span>
         </div>
       </div>
 
-      {/* Architecture System Metrics Grid (4 Hardware Tiles) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 font-mono text-xs">
-        <div className="p-5 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 shadow-sm space-y-2">
-          <div className="flex items-center justify-between text-zinc-400">
-            <span className="flex items-center gap-1.5 uppercase font-bold text-[10px]">
-              <Database className="w-3.5 h-3.5 text-[#a3c900] dark:text-[#d4f933]" />
-              POSTGRESQL 16
-            </span>
-            <span className="text-emerald-500 font-bold text-[10px] bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-              ONLINE
-            </span>
-          </div>
-          <div className="text-lg font-black text-zinc-950 dark:text-white">HIKARICP 10/10</div>
-          <p className="text-[10px] text-zinc-500">Flyway V7 Migration Aktif</p>
-        </div>
-
-        <div className="p-5 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 shadow-sm space-y-2">
-          <div className="flex items-center justify-between text-zinc-400">
-            <span className="flex items-center gap-1.5 uppercase font-bold text-[10px]">
-              <Activity className="w-3.5 h-3.5 text-[#a3c900] dark:text-[#d4f933]" />
-              REDIS L2 CACHE
-            </span>
-            <span className="text-[#a3c900] dark:text-[#d4f933] font-bold text-[10px] bg-[#d4f933]/10 px-2 py-0.5 rounded-full border border-[#d4f933]/20">
-              %94 HIT
+      {/* Mac OS X Server Xserve Chassis */}
+      <div className="mac-activity-monitor-chassis">
+        {/* Title Bar with Traffic Lights */}
+        <div className="h-10 px-4 bg-gradient-to-b from-[#f2f2f2] to-[#d8d8d8] dark:from-[#2c3038] dark:to-[#1e2127] border-b border-[#a8a8a8] dark:border-[#383d47] flex items-center justify-between select-none">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
+              <span className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
+              <span className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
+            </div>
+            <span className="ml-3 font-mono text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+              <Server className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+              Mac OS X Server — Spring Batch 5 Job Scheduler &amp; ETL Manager
             </span>
           </div>
-          <div className="text-lg font-black text-zinc-950 dark:text-white">CAFFEINE + REDIS</div>
-          <p className="text-[10px] text-zinc-500">TTL: 10 Dk / Multi-Layer</p>
-        </div>
 
-        <div className="p-5 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 shadow-sm space-y-2">
-          <div className="flex items-center justify-between text-zinc-400">
-            <span className="flex items-center gap-1.5 uppercase font-bold text-[10px]">
-              <HardDrive className="w-3.5 h-3.5 text-[#a3c900] dark:text-[#d4f933]" />
-              MINIO S3 VAULT
+          <div className="hidden sm:flex items-center gap-3 text-[11px] font-mono text-zinc-600 dark:text-zinc-400">
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              JOB REPO: POSTGRESQL METADATA
             </span>
-            <span className="text-emerald-500 font-bold text-[10px] bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-              READY
-            </span>
+            <span>&bull;</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-bold">READY</span>
           </div>
-          <div className="text-lg font-black text-zinc-950 dark:text-white">AWS S3 PROTOCOL</div>
-          <p className="text-[10px] text-zinc-500">Presigned Media Storage</p>
         </div>
 
-        <div className="p-5 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 shadow-sm space-y-2">
-          <div className="flex items-center justify-between text-zinc-400">
-            <span className="flex items-center gap-1.5 uppercase font-bold text-[10px]">
-              <Radio className="w-3.5 h-3.5 text-[#a3c900] dark:text-[#d4f933]" />
-              STOMP WEBSOCKET
-            </span>
-            <span className="text-emerald-500 font-bold text-[10px] bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-              LIVE BUS
-            </span>
-          </div>
-          <div className="text-lg font-black text-zinc-950 dark:text-white">/WS ENDPOINT</div>
-          <p className="text-[10px] text-zinc-500">/topic/blogs & comments</p>
-        </div>
-      </div>
-
-      {/* Batch Job Operations Grid (3 Modular Hardware Units) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Card 1: Vector Reindex */}
-        <div className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 shadow-xl space-y-5 flex flex-col justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between font-mono text-xs">
-              <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white border border-black/10 dark:border-white/10">
-                MODULE {'//'} 01
-              </span>
-              <span className="text-zinc-400 font-mono text-[10px]">EMBEDDINGS</span>
+        {/* 3 Modular Xserve Blade Job Cards */}
+        <div className="p-5 sm:p-6 bg-[#ebebeb] dark:bg-[#1a1d22] border-b border-[#cccccc] dark:border-[#2f343e] grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Job 1: Soft-Delete Cleanup */}
+          <div className="rounded-xl border border-zinc-300 dark:border-zinc-700 p-4 space-y-3 bg-white dark:bg-[#15171c] flex flex-col justify-between shadow-xs">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-xs font-mono font-bold text-zinc-900 dark:text-white uppercase">
+                  <Trash2 className="w-4 h-4 text-rose-500" />
+                  TEMİZLİK (CLEANUP)
+                </span>
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                  CHUNK: 50
+                </span>
+              </div>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed">
+                30 günden eski silinmiş makaleleri 50&apos;şerli paketlerde izole transaction içinde kalıcı olarak temizler.
+              </p>
             </div>
 
-            <h3 className="text-xl font-black text-zinc-950 dark:text-white uppercase tracking-tight flex items-center gap-2">
-              <Cpu className="w-5 h-5 text-[#a3c900] dark:text-[#d4f933]" />
-              VEKTÖR İNDEKSLEME
-            </h3>
+            {cleanupResult && (
+              <div className="p-2 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-700 dark:text-emerald-300">
+                Durum: {cleanupResult.status} &bull; İşlenen: {cleanupResult.exitCode || 'COMPLETED'}
+              </div>
+            )}
 
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-mono">
-              Veritabanındaki tüm blog yazılarını 128 boyutlu gömmelerle baştan hesaplar ve pgvector anlamsal indeksini tazeler.
-            </p>
+            <button
+              type="button"
+              disabled={isLoadingCleanup}
+              onClick={handleRunCleanup}
+              className="ios6-btn ios6-btn-silver w-full py-2 text-xs font-bold"
+            >
+              {isLoadingCleanup ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>İŞLENİYOR...</span>
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                  <span>TEMİZLİK JOB&apos;I ÇALIŞTIR</span>
+                </>
+              )}
+            </button>
           </div>
 
-          <div className="space-y-3 font-mono">
+          {/* Job 2: Author Analytics */}
+          <div className="rounded-xl border border-zinc-300 dark:border-zinc-700 p-4 space-y-3 bg-white dark:bg-[#15171c] flex flex-col justify-between shadow-xs">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-xs font-mono font-bold text-zinc-900 dark:text-white uppercase">
+                  <BarChart3 className="w-4 h-4 text-indigo-500" />
+                  ANALİTİK (ANALYTICS)
+                </span>
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                  BATCH ETL
+                </span>
+              </div>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed">
+                Yazar performansını, görüntülenme ve alkış metriklerini periyodik aggregate tablolarına aktarır.
+              </p>
+            </div>
+
+            {analyticsResult && (
+              <div className="p-2 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-700 dark:text-emerald-300">
+                Durum: {analyticsResult.status} &bull; İşlenen: {analyticsResult.exitCode || 'COMPLETED'}
+              </div>
+            )}
+
+            <button
+              type="button"
+              disabled={isLoadingAnalytics}
+              onClick={handleRunAnalytics}
+              className="ios6-btn ios6-btn-blue w-full py-2 text-xs font-bold"
+            >
+              {isLoadingAnalytics ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>HESAPLANIYOR...</span>
+                </>
+              ) : (
+                <>
+                  <BarChart3 className="w-3.5 h-3.5" />
+                  <span>ANALİTİK JOB&apos;I ÇALIŞTIR</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Job 3: Vector Reindex */}
+          <div className="rounded-xl border border-zinc-300 dark:border-zinc-700 p-4 space-y-3 bg-white dark:bg-[#15171c] flex flex-col justify-between shadow-xs">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-xs font-mono font-bold text-zinc-900 dark:text-white uppercase">
+                  <RefreshCw className="w-4 h-4 text-emerald-500" />
+                  VEKTÖR RE-INDEX
+                </span>
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                  SPRING AI
+                </span>
+              </div>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed">
+                Tüm veritabanı makalelerinin 128 boyutlu gömme vektörlerini pgvector HNSW dizinine baştan çıkarır.
+              </p>
+            </div>
+
             {reindexMsg && (
-              <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-xs text-zinc-900 dark:text-[#d4f933]">
+              <div className="p-2 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-700 dark:text-emerald-300">
                 {reindexMsg}
               </div>
             )}
 
             <button
-              onClick={handleReindex}
+              type="button"
               disabled={isLoadingReindex}
-              className="w-full py-3 px-5 rounded-full bg-zinc-950 dark:bg-[#d4f933] hover:opacity-90 disabled:opacity-50 text-white dark:text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-transform active:scale-95 cursor-pointer shadow-md"
+              onClick={handleReindex}
+              className="ios6-btn ios6-btn-silver w-full py-2 text-xs font-bold"
             >
-              {isLoadingReindex ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-              <span>İNDEKSLERİ YENİLE</span>
+              {isLoadingReindex ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>İNDEKSLENİYOR...</span>
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>TÜM VEKTÖRLERİ YENİLE</span>
+                </>
+              )}
             </button>
           </div>
         </div>
 
-        {/* Card 2: Soft Delete Cleanup Job */}
-        <div className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 shadow-xl space-y-5 flex flex-col justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between font-mono text-xs">
-              <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white border border-black/10 dark:border-white/10">
-                MODULE {'//'} 02
-              </span>
-              <span className="text-zinc-400 font-mono text-[10px]">MAINTENANCE</span>
+        {/* Soft-Deleted Articles Mac Aqua Table */}
+        <div className="p-5 sm:p-6 bg-white dark:bg-[#121417] space-y-3">
+          <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800">
+            <div className="flex items-center gap-2">
+              <Archive className="w-4 h-4 text-zinc-500" />
+              <h3 className="text-sm font-bold text-zinc-900 dark:text-white font-mono uppercase">
+                SOFT-DELETE ARŞİVİ &bull; KURTARILABİLİR MAKALELER ({deletedBlogs.length})
+              </h3>
             </div>
-
-            <h3 className="text-xl font-black text-zinc-950 dark:text-white uppercase tracking-tight flex items-center gap-2">
-              <Trash2 className="w-5 h-5 text-rose-500" />
-              CLEANUP JOB
-            </h3>
-
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-mono">
-              30 günden eski soft-deleted (silinmiş olarak işaretlenmiş) blog kayıtlarını 50&apos;şerli chunk bloklarında güvenli biçimde kalıcı siler.
-            </p>
+            <span className="text-[11px] font-mono text-zinc-500">
+              RETENTION: 30 GÜN &bull; GÜVENLİ GERİ ALMA
+            </span>
           </div>
 
-          <div className="space-y-3 font-mono">
-            {cleanupResult && (
-              <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-xs space-y-1">
-                <div className="flex justify-between">
-                  <span className="text-zinc-400">JOB_ID: #{cleanupResult.jobExecutionId}</span>
-                  <span className="text-emerald-500 font-bold">{cleanupResult.status}</span>
-                </div>
-                <div className="text-zinc-600 dark:text-zinc-300 text-[11px] truncate">
-                  {cleanupResult.stepSummaries?.[0]}
-                </div>
-              </div>
-            )}
-
-            <button
-              onClick={handleRunCleanup}
-              disabled={isLoadingCleanup}
-              className="w-full py-3 px-5 rounded-full bg-zinc-100 dark:bg-zinc-900 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black disabled:opacity-50 text-zinc-900 dark:text-white border border-black/10 dark:border-white/10 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-transform active:scale-95 cursor-pointer shadow-sm"
-            >
-              {isLoadingCleanup ? <Loader2 className="w-4 h-4 animate-spin" /> : <Database className="w-4 h-4" />}
-              <span>TEMİZLEME JOB&apos;I ÇALIŞTIR</span>
-            </button>
-          </div>
+          {isLoadingDeleted ? (
+            <div className="py-8 text-center text-zinc-400">
+              <Loader2 className="w-6 h-6 animate-spin mx-auto text-amber-500" />
+              <p className="text-xs font-mono mt-2">Arşiv taranıyor...</p>
+            </div>
+          ) : deletedBlogs.length === 0 ? (
+            <div className="py-8 text-center text-zinc-500 text-xs font-mono">
+              <CheckCircle2 className="w-6 h-6 text-emerald-500 mx-auto mb-1.5" />
+              <span>Soft-Delete çöp kutusu boş. Silinmiş makale bulunmuyor.</span>
+            </div>
+          ) : (
+            <div className="overflow-x-auto border border-zinc-200 dark:border-zinc-800 rounded-lg">
+              <table className="mac-aqua-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '60px' }}>ID</th>
+                    <th>BAŞLIK &amp; KAPSAM</th>
+                    <th>YAZAR</th>
+                    <th>SİLİNME TARİHİ</th>
+                    <th style={{ width: '120px' }}>EYLEM</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {deletedBlogs.map((b) => (
+                    <tr key={b.blogId}>
+                      <td className="font-mono text-zinc-500 font-bold">{b.blogId}</td>
+                      <td>
+                        <div className="font-bold text-zinc-900 dark:text-white">{b.title}</div>
+                        <div className="text-[10px] text-zinc-500">{b.header}</div>
+                      </td>
+                      <td className="font-mono">{b.author || 'Mühendis'}</td>
+                      <td className="font-mono text-zinc-500 text-[10px]">
+                        {b.publishedAt ? new Date(b.publishedAt).toLocaleDateString('tr-TR') : '-'}
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() => handleRestore(b.blogId)}
+                          className="ios6-btn ios6-btn-silver px-2.5 py-1 text-[11px] font-bold flex items-center gap-1"
+                        >
+                          <Undo2 className="w-3 h-3 text-emerald-600" />
+                          <span>Geri Yükle</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
-        {/* Card 3: Author Analytics Job */}
-        <div className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 shadow-xl space-y-5 flex flex-col justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between font-mono text-xs">
-              <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white border border-black/10 dark:border-white/10">
-                MODULE {'//'} 03
-              </span>
-              <span className="text-zinc-400 font-mono text-[10px]">ANALYTICS</span>
-            </div>
-
-            <h3 className="text-xl font-black text-zinc-950 dark:text-white uppercase tracking-tight flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-[#a3c900] dark:text-[#d4f933]" />
-              ANALYTICS JOB
-            </h3>
-
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-mono">
-              Yazarların makale görüntülenme, beğeni ve yorum etkileşim sayaçlarını toplu olarak işler, analitik özet tablosuna basar.
-            </p>
-          </div>
-
-          <div className="space-y-3 font-mono">
-            {analyticsResult && (
-              <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-xs space-y-1">
-                <div className="flex justify-between">
-                  <span className="text-zinc-400">JOB_ID: #{analyticsResult.jobExecutionId}</span>
-                  <span className="text-emerald-500 font-bold">{analyticsResult.status}</span>
-                </div>
-                <div className="text-zinc-600 dark:text-zinc-300 text-[11px] truncate">
-                  {analyticsResult.stepSummaries?.[0]}
-                </div>
-              </div>
-            )}
-
-            <button
-              onClick={handleRunAnalytics}
-              disabled={isLoadingAnalytics}
-              className="w-full py-3 px-5 rounded-full bg-zinc-950 dark:bg-[#d4f933] hover:opacity-90 disabled:opacity-50 text-white dark:text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-transform active:scale-95 cursor-pointer shadow-md"
-            >
-              {isLoadingAnalytics ? <Loader2 className="w-4 h-4 animate-spin" /> : <Layers className="w-4 h-4" />}
-              <span>ANALİTİK JOB&apos;I ÇALIŞTIR</span>
-            </button>
-          </div>
+        {/* Footer */}
+        <div className="h-8 px-4 bg-[#e8e8e8] dark:bg-[#1a1c22] border-t border-[#c0c0c0] dark:border-[#2c3038] flex items-center justify-between text-[10px] font-mono text-zinc-500 select-none">
+          <span>SPRING BATCH 5 &bull; CHUNK COMMIT (50 ITEMS / TX)</span>
+          <span>FAULT-TOLERANT RETRY LIMIT: 3 &bull; POSTGRESQL METADATA</span>
         </div>
-      </div>
-
-      {/* Module 04: Blog Lifecycle & Soft-Deleted Retention Console (State Machine #1) */}
-      <div className="rounded-3xl p-6 sm:p-8 bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 shadow-2xl space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-black/[0.08] dark:border-white/[0.08]">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase text-amber-600 dark:text-amber-400">
-              <Archive className="w-4 h-4" />
-              <span>MODULE {'//'} 04 &middot; YAŞAM DÖNGÜSÜ &amp; SAKLAMA PENCERESİ</span>
-            </div>
-            <h3 className="text-2xl font-black text-zinc-950 dark:text-white uppercase tracking-tight">
-              SOFT-DELETED BLOG ARŞİVİ ({deletedBlogs.length})
-            </h3>
-            <p className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
-              Silinmiş makaleler 30 günlük yasal saklama süresi boyunca burada tutulur; admin tarafından geri yüklenebilir veya Spring Batch Cleanup Job tarafından kalıcı silinir.
-            </p>
-          </div>
-
-          <button
-            onClick={() => refetchDeleted()}
-            disabled={isLoadingDeleted}
-            className="self-start sm:self-auto px-4 py-2 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-xs font-mono font-bold text-zinc-900 dark:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all cursor-pointer flex items-center gap-2"
-          >
-            {isLoadingDeleted ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
-            <span>LİSTEYİ TAZELER</span>
-          </button>
-        </div>
-
-        {/* Deleted Blogs List */}
-        {isLoadingDeleted ? (
-          <div className="flex items-center justify-center py-12 gap-3 font-mono text-xs text-zinc-500">
-            <Loader2 className="w-5 h-5 animate-spin text-[#d4f933]" />
-            <span>Arşiv kayıtları sorgulanıyor...</span>
-          </div>
-        ) : deletedBlogs.length === 0 ? (
-          <div className="p-8 rounded-2xl bg-zinc-50 dark:bg-zinc-950/40 border border-dashed border-black/15 dark:border-white/15 text-center space-y-2">
-            <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-5 h-5" />
-            </div>
-            <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200">Arşiv Temiz &middot; Bekleyen Silinmiş Makale Yok</p>
-            <p className="text-xs font-mono text-zinc-500">Tüm blog yazıları aktif yayında veya saklama süresi dolup chunk cleanup tarafından temizlenmiştir.</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {deletedBlogs.map((b) => {
-              const bId = b.id ?? b.blogId;
-              const isPurgeEligible = b.lifecycleStatus === 'PURGE_ELIGIBLE';
-              return (
-                <div
-                  key={bId}
-                  className="p-4 sm:p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-950/50 border border-black/[0.08] dark:border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-4 font-mono text-xs transition-all hover:border-black/20 dark:hover:border-white/20"
-                >
-                  <div className="space-y-1.5 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
-                        {b.category?.categoryName || 'GENEL'}
-                      </span>
-                      {isPurgeEligible ? (
-                        <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 flex items-center gap-1">
-                          <AlertTriangle className="w-2.5 h-2.5" /> PURGE_ELIGIBLE (&gt;30 GÜN)
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1">
-                          <Clock className="w-2.5 h-2.5" /> SOFT_DELETED (SAKLAMADA)
-                        </span>
-                      )}
-                      <span className="text-zinc-400 text-[11px]">
-                        ID: #{bId} &middot; v{b.version ?? 0}
-                      </span>
-                    </div>
-
-                    <h4 className="text-sm font-black text-zinc-900 dark:text-white truncate">
-                      {b.title || b.header}
-                    </h4>
-                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-1">
-                      {b.content}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-3 shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => bId && restoreBlogMutation.mutate(bId)}
-                      disabled={restoreBlogMutation.isPending}
-                      className="px-4 py-2 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30 transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
-                    >
-                      {restoreBlogMutation.isPending ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <Undo2 className="w-3.5 h-3.5" />
-                      )}
-                      <span>GERİ YÜKLE (RESTORE)</span>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
       </div>
     </div>
   );
