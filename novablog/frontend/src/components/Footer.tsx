@@ -17,6 +17,7 @@ interface FooterProps {
   onOpenTelemetry?: () => void;
   onOpenArchitectureConsole?: () => void;
   onOpenAbout?: () => void;
+  onOpenTwoFactor?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({

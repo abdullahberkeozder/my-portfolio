@@ -6,6 +6,7 @@ import { playKeyClick, playSwitchToggle } from '@/lib/retroAudio';
 interface MacWindowChromeProps {
   title?: string;
   subtitle?: string;
+  badgeText?: string;
   onClose?: () => void;
   onMinimize?: () => void;
   onMaximize?: () => void;

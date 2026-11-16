@@ -8,12 +8,14 @@ import { NavTab } from './Navbar';
 
 interface AppleGlobalAcrylicNavBarProps {
   activeTab: NavTab;
-  setActiveTab: (tab: NavTab) => void;
+  setActiveTab?: (tab: NavTab) => void;
   isBackendOnline: boolean | null;
   onRefreshHealth?: () => void;
   onOpenTelemetry?: () => void;
   onOpenTwoFactor?: () => void;
   onFocusSearch?: () => void;
+  onSearchClick?: () => void;
+  onFeedTabChange?: () => void;
   scrollToSection?: (sectionId: string, targetTab?: NavTab) => void;
 }
 
@@ -25,11 +27,13 @@ export const AppleGlobalAcrylicNavBar: React.FC<AppleGlobalAcrylicNavBarProps> =
   onOpenTelemetry,
   onOpenTwoFactor,
   onFocusSearch,
+  onSearchClick,
+  onFeedTabChange,
   scrollToSection,
 }) => {
   const handleNavClick = (tab: NavTab, sectionId?: string) => {
     playTabSelect();
-    setActiveTab(tab);
+    if (setActiveTab) setActiveTab(tab);
     if (sectionId && scrollToSection) {
       scrollToSection(sectionId, tab);
     }

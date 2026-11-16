@@ -23,6 +23,8 @@ interface FloatingCopilotWidgetProps {
   onSelectTab?: (tab: 'feed' | 'ai-search' | 'ai-lab' | 'admin-batch') => void;
   onMetricsFlushed?: () => void;
   onOpenAbout?: () => void;
+  onOpenArticle?: (blogId: number) => void;
+  onOpenTwoFactor?: () => void;
 }
 
 interface QnA {

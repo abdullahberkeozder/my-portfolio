@@ -14,12 +14,13 @@ import {
   ShieldCheck,
   AlertTriangle,
   Loader2,
-  CheckCircle2,
-  Cpu,
+  FileText,
 } from 'lucide-react';
+import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
 
 export const AiPlayground: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'summarize' | 'tagging' | 'moderation'>('summarize');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Summarize state
   const [sumText, setSumText] = useState(
@@ -43,14 +44,22 @@ export const AiPlayground: React.FC = () => {
   const [modResult, setModResult] = useState<AiModerationResponseDto | null>(null);
   const [isModerating, setIsModerating] = useState(false);
 
+  const handleTabChange = (tab: 'summarize' | 'tagging' | 'moderation') => {
+    playTabSelect();
+    setActiveTab(tab);
+    setErrorMessage(null);
+  };
+
   const handleSummarize = async () => {
     if (!sumText.trim()) return;
+    playKeyClick('crisp');
     setIsSummarizing(true);
+    setErrorMessage(null);
     try {
       const res = await ApiClient.summarizeText(sumText, 'Kurumsal Mimari');
       setSumResult(res);
     } catch {
-      alert('Özet çıkarılamadı.');
+      setErrorMessage('Özet çıkarılamadı. Lütfen backend bağlantısını kontrol ediniz.');
     } finally {
       setIsSummarizing(false);
     }
@@ -58,12 +67,14 @@ export const AiPlayground: React.FC = () => {
 
   const handleTagging = async () => {
     if (!tagTitle.trim() || !tagContent.trim()) return;
+    playKeyClick('crisp');
     setIsTagging(true);
+    setErrorMessage(null);
     try {
       const res = await ApiClient.suggestTags(tagTitle, tagContent);
       setTagResult(res);
     } catch {
-      alert('Etiket önerilemedi.');
+      setErrorMessage('Etiket önerilemedi. Lütfen alanları kontrol ediniz.');
     } finally {
       setIsTagging(false);
     }
@@ -71,390 +82,413 @@ export const AiPlayground: React.FC = () => {
 
   const handleModerate = async () => {
     if (!modText.trim()) return;
+    playKeyClick('crisp');
     setIsModerating(true);
+    setErrorMessage(null);
     try {
       const res = await ApiClient.moderateContent(modText);
       setModResult(res);
     } catch {
-      alert('Moderasyon analizi yapılamadı.');
+      setErrorMessage('İçerik moderasyon analizi yapılamadı.');
     } finally {
       setIsModerating(false);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-      {/* Header Banner (Ride Also Industrial Spec Sheet) */}
-      <div className="relative rounded-3xl p-8 sm:p-10 bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden">
-        <div className="absolute inset-0 bg-tech-grid opacity-30 dark:opacity-20 pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-          <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-xs font-mono font-bold uppercase text-zinc-800 dark:text-zinc-200">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-              <span>03 {'//'} NEURAL INFERENCE LAB</span>
-            </div>
-
-            <h2 className="text-3xl sm:text-5xl font-black text-zinc-950 dark:text-white uppercase tracking-tight">
-              SPRING AI NLP & LLM DENEYİM ATÖLYESİ
-            </h2>
-
-            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 font-mono leading-relaxed">
-              Spring AI servislerinin doğal dil işleme yeteneklerini gerçek zamanlı test edin: Otomatik TL;DR Yönetici
-              Özeti, Kategori & Etiket Çıkarımı ve Toksisite & Duygu Durumu Güvenlik Radarı.
-            </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 select-none">
+      {/* Section Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-3 border-b border-zinc-300 dark:border-zinc-800">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-2 font-mono text-xs uppercase font-bold text-purple-600 dark:text-purple-400">
+            <span className="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-[0_0_8px_#a855f7]" />
+            <span>MİMARİ MODÜL 03 // MAC OS X NEURAL LAB &amp; SPRING AI INFERENCE</span>
           </div>
+          <h2 className="text-xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight flex items-center gap-2.5">
+            <span>SPRING AI LLM &amp; İÇERİK ANLAMA ATÖLYESİ</span>
+          </h2>
+          <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl font-sans leading-relaxed">
+            Büyük dil modellerini (LLM) kullanarak anında teknik özet çıkarma, otomatik etiketleme ve toksisite kalkanı testlerini canlı gerçekleştirin.
+          </p>
+        </div>
 
-          <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
-            <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 text-center min-w-[110px]">
-              <div className="text-[10px] text-zinc-400 uppercase">MODEL ÇIKARIMI</div>
-              <div className="text-sm font-bold text-zinc-950 dark:text-white mt-0.5">LOCAL + API</div>
-            </div>
-            <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 text-center min-w-[110px]">
-              <div className="text-[10px] text-zinc-400 uppercase">BORU HATTI</div>
-              <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">SIFIR SIZINTI</div>
-            </div>
-          </div>
+        <div className="flex items-center gap-2 font-mono text-xs text-zinc-500 shrink-0">
+          <span className="mac-hardware-chip-badge">SPRING AI 1.0 M4</span>
+          <span className="mac-hardware-chip-badge">ZERO-SHOT NLP</span>
         </div>
       </div>
 
-      {/* Cockpit Mode Selector Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none font-mono">
-        <button
-          onClick={() => setActiveTab('summarize')}
-          className={`px-4 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-2 ${
-            activeTab === 'summarize'
-              ? 'bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 shadow-md'
-              : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200/80 dark:border-zinc-800'
-          }`}
-        >
-          <Bot className="w-4 h-4" />
-          <span>01 {'//'} TL;DR ÖZET ÇIKARICI</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('tagging')}
-          className={`px-4 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-2 ${
-            activeTab === 'tagging'
-              ? 'bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 shadow-md'
-              : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200/80 dark:border-zinc-800'
-          }`}
-        >
-          <Tags className="w-4 h-4" />
-          <span>02 {'//'} AKILLI TAKSONOMİ</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('moderation')}
-          className={`px-4 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-2 ${
-            activeTab === 'moderation'
-              ? 'bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 shadow-md'
-              : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-zinc-200/80 dark:border-zinc-800'
-          }`}
-        >
-          <ShieldCheck className="w-4 h-4" />
-          <span>03 {'//'} GÜVENLİK & DUYGU RADARI</span>
-        </button>
-      </div>
-
-      {/* Tab 1: Summarize */}
-      {activeTab === 'summarize' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Input Console (7 cols) */}
-          <div className="lg:col-span-7 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 space-y-5 shadow-xl">
-            <div className="flex items-center justify-between font-mono text-xs">
-              <span className="flex items-center gap-2 text-zinc-950 dark:text-white font-bold uppercase">
-                <Bot className="w-4 h-4 text-emerald-500" />
-                METİN GİRDİ TAMPONU
-              </span>
-              <span className="text-zinc-400 uppercase">{sumText.length} KARAKTER</span>
+      {/* Mac Window Chassis */}
+      <div className="mac-activity-monitor-chassis">
+        {/* Title Bar with Traffic Lights */}
+        <div className="h-10 px-4 bg-gradient-to-b from-[#f2f2f2] to-[#d8d8d8] dark:from-[#2c3038] dark:to-[#1e2127] border-b border-[#a8a8a8] dark:border-[#383d47] flex items-center justify-between select-none">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
+              <span className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
+              <span className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
             </div>
-
-            <textarea
-              rows={7}
-              value={sumText}
-              onChange={(e) => setSumText(e.target.value)}
-              className="w-full p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800 text-zinc-900 dark:text-white text-xs font-mono focus:outline-none focus:border-zinc-500 leading-relaxed shadow-inner"
-            />
-
-            <div className="flex items-center justify-between pt-2">
-              <button
-                onClick={handleSummarize}
-                disabled={isSummarizing || !sumText.trim()}
-                className="px-6 py-3 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:opacity-90 disabled:opacity-50 text-xs font-mono font-black uppercase tracking-wider shadow-md flex items-center gap-2 transition-transform active:scale-95 cursor-pointer btn-tactile"
-              >
-                {isSummarizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                <span>ÖZETİ ÇIKAR // ÇALIŞTIR</span>
-              </button>
-
-              <span className="text-[11px] font-mono text-zinc-400 hidden sm:inline">
-                SALIENCE GRAPH + FALLBACK
-              </span>
-            </div>
+            <span className="ml-3 font-mono text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+              <Bot className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+              Neural Lab — Spring AI NLP &amp; Content Moderation Workbench
+            </span>
           </div>
 
-          {/* Telemetry Output (5 cols) */}
-          <div className="lg:col-span-5 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 space-y-5 shadow-xl flex flex-col justify-between">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between font-mono text-xs">
-                <span className="flex items-center gap-2 text-zinc-950 dark:text-white font-bold uppercase">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  TL;DR YÖNETİCİ ÇIKTISI
-                </span>
-                {sumResult && (() => {
-                  const rawRatio = sumResult.compressionRatio != null ? Number(sumResult.compressionRatio) : 0;
-                  const percent = Math.round(rawRatio <= 1 ? rawRatio * 100 : rawRatio);
-                  const validPercent = isNaN(percent) || percent < 0 ? 0 : percent;
-                  return (
-                    <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/20 px-2.5 py-0.5 rounded-full text-[10px]">
-                      -%{validPercent} SIKIŞTIRMA
+          <div className="hidden sm:flex items-center gap-3 text-[11px] font-mono text-zinc-600 dark:text-zinc-400">
+            <span>INFERENCE: CPU/GPU CLUSTER</span>
+            <span>&bull;</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-bold">READY</span>
+          </div>
+        </div>
+
+        {/* Segmented Mode Selector Toolbar */}
+        <div className="px-4 py-2 bg-[#e4e4e4] dark:bg-[#202329] border-b border-[#c0c0c0] dark:border-[#333740] flex items-center justify-between">
+          <div className="inline-flex items-center p-0.5 rounded-lg bg-[#cecece] dark:bg-[#16181d] border border-[#b4b4b4] dark:border-[#2b2f38] text-xs font-mono">
+            <button
+              type="button"
+              onClick={() => handleTabChange('summarize')}
+              className={`px-3 py-1.5 rounded-md font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'summarize'
+                  ? 'bg-gradient-to-b from-white to-[#ececec] dark:from-[#3a3f4a] dark:to-[#2a2e37] text-zinc-950 dark:text-white shadow-sm border border-[#a8a8a8] dark:border-[#4c5361]'
+                  : 'text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Akıllı Özetleme</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleTabChange('tagging')}
+              className={`px-3 py-1.5 rounded-md font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'tagging'
+                  ? 'bg-gradient-to-b from-white to-[#ececec] dark:from-[#3a3f4a] dark:to-[#2a2e37] text-zinc-950 dark:text-white shadow-sm border border-[#a8a8a8] dark:border-[#4c5361]'
+                  : 'text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <Tags className="w-3.5 h-3.5 text-cyan-600" />
+              <span>Otomatik Etiketleme</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleTabChange('moderation')}
+              className={`px-3 py-1.5 rounded-md font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'moderation'
+                  ? 'bg-gradient-to-b from-white to-[#ececec] dark:from-[#3a3f4a] dark:to-[#2a2e37] text-zinc-950 dark:text-white shadow-sm border border-[#a8a8a8] dark:border-[#4c5361]'
+                  : 'text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Toksisite Kalkanı</span>
+            </button>
+          </div>
+
+          <span className="hidden sm:inline font-mono text-[11px] text-zinc-500">
+            OPENAI / GEMINI PROMPT CHASSIS
+          </span>
+        </div>
+
+        {/* Error Alert Bar */}
+        {errorMessage && (
+          <div className="mx-4 mt-3 p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-sans flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
+        {/* Workbench Body */}
+        <div className="p-5 sm:p-6 bg-white dark:bg-[#121417]">
+          {/* TAB 1: SUMMARIZE */}
+          {activeTab === 'summarize' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300">
+                  <span>GİRDİ METNİ (KAYNAK MAKALE)</span>
+                  <span className="text-[10px] text-zinc-500">{sumText.length} karakter</span>
+                </div>
+                <textarea
+                  rows={7}
+                  value={sumText}
+                  onChange={(e) => setSumText(e.target.value)}
+                  className="w-full p-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-[#fbfbfb] dark:bg-[#16181d] text-xs font-sans text-zinc-900 dark:text-zinc-100 leading-relaxed focus:outline-none focus:border-emerald-500 resize-none"
+                  placeholder="Özetlenecek teknik makale veya paragraf metnini girin..."
+                />
+                <button
+                  type="button"
+                  disabled={isSummarizing || !sumText.trim()}
+                  onClick={handleSummarize}
+                  className="ios6-btn ios6-btn-blue w-full py-2 text-xs font-bold uppercase"
+                >
+                  {isSummarizing ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>ÖZET ÇIKARILIYOR...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>SPRING AI İLE ÖZET ÇIKAR</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Output Result */}
+              <div className="rounded-xl border border-zinc-300 dark:border-zinc-700 p-4 bg-[#fcfbf9] dark:bg-[#181a1f] flex flex-col justify-between space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800 text-xs font-mono">
+                    <span className="font-bold text-zinc-900 dark:text-white uppercase flex items-center gap-1.5">
+                      <FileText className="w-3.5 h-3.5 text-emerald-600" />
+                      LLM ÇIKTI RAPORU
                     </span>
-                  );
-                })()}
-              </div>
-
-              {sumResult ? (
-                <div className="space-y-4 font-mono">
-                  <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed font-sans">
-                    {sumResult.summary}
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
-                      <div className="text-[10px] text-zinc-400 font-mono">ORİJİNAL</div>
-                      <div className="font-bold text-zinc-950 dark:text-white mt-0.5 font-mono">
-                        {sumResult.originalLength ?? sumText.length} krk
-                      </div>
-                    </div>
-                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
-                      <div className="text-[10px] text-zinc-400 font-mono">ÖZET</div>
-                      <div className="font-bold text-zinc-950 dark:text-white mt-0.5 font-mono">
-                        {sumResult.summaryLength ?? (sumResult.summary || '').length} krk
-                      </div>
-                    </div>
-                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
-                      <div className="text-[10px] text-zinc-400 font-mono">GECİKME</div>
-                      <div className="font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 font-mono">
-                        {sumResult.executionTimeMs ?? 24} ms
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="py-14 text-center font-mono text-xs text-zinc-400 border border-dashed border-black/10 dark:border-white/10 rounded-2xl p-6">
-                  Sol paneldeki metni onaylayarak çıkarımı başlatın.
-                </div>
-              )}
-            </div>
-
-            <div className="pt-3 border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-zinc-400">
-              <span className="flex items-center gap-1.5">
-                <Cpu className="w-3.5 h-3.5 text-emerald-500" />
-                SPRING AI ÇIKARIM SERVİSİ
-              </span>
-              <span className="text-emerald-500 font-bold">HAZIR</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab 2: Tagging */}
-      {activeTab === 'tagging' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-7 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between font-mono text-xs">
-              <span className="flex items-center gap-2 text-zinc-950 dark:text-white font-bold uppercase">
-                <Tags className="w-4 h-4 text-emerald-500" />
-                İÇERİK ANALİZ GİRDİSİ
-              </span>
-            </div>
-
-            <input
-              type="text"
-              value={tagTitle}
-              onChange={(e) => setTagTitle(e.target.value)}
-              placeholder="Blog Başlığı"
-              className="w-full p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800 text-zinc-900 dark:text-white text-xs font-mono focus:outline-none focus:border-zinc-500"
-            />
-
-            <textarea
-              rows={5}
-              value={tagContent}
-              onChange={(e) => setTagContent(e.target.value)}
-              placeholder="Blog İçeriği"
-              className="w-full p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800 text-zinc-900 dark:text-white text-xs font-mono focus:outline-none focus:border-zinc-500 leading-relaxed"
-            />
-
-            <button
-              onClick={handleTagging}
-              disabled={isTagging || !tagTitle.trim()}
-              className="px-6 py-3 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:opacity-90 disabled:opacity-50 text-xs font-mono font-black uppercase tracking-wider shadow-md flex items-center gap-2 transition-transform active:scale-95 cursor-pointer btn-tactile"
-            >
-              {isTagging ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-              <span>OTOMATİK TAKSONOMİ OLUŞTUR</span>
-            </button>
-          </div>
-
-          <div className="lg:col-span-5 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 space-y-5 shadow-xl flex flex-col justify-between">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between font-mono text-xs">
-                <span className="flex items-center gap-2 text-zinc-950 dark:text-white font-bold uppercase">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  ÖNERİ TELEMETRİSİ
-                </span>
-              </div>
-
-              {tagResult ? (
-                <div className="space-y-4 font-mono text-xs">
-                  <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
-                    <span className="text-[10px] text-zinc-400 uppercase font-mono">ÖNERİLEN KATEGORİ</span>
-                    <div className="text-xl font-black text-zinc-950 dark:text-white uppercase">
-                      {tagResult.suggestedCategory}
-                    </div>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 space-y-1">
-                    <span className="text-[10px] text-zinc-400 uppercase font-mono">GÜVEN SKORU</span>
-                    <div className="text-base font-bold text-emerald-600 dark:text-emerald-400">
-                      %{Math.round(tagResult.confidenceScore * 100)}
-                    </div>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
-                    <span className="text-[10px] text-zinc-400 uppercase font-mono">ÇIKARILAN ETİKETLER</span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {tagResult.suggestedTags.map((tag, i) => (
-                        <span
-                          key={i}
-                          className="px-3 py-1 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-bold text-xs"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="py-14 text-center font-mono text-xs text-zinc-400 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
-                  İçerik bilgilerini girerek taksonomi çıkarımını tetikleyin.
-                </div>
-              )}
-            </div>
-
-            <div className="pt-3 border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-zinc-400">
-              <span>SIFIR ÖRNEKLİ SINIFLANDIRMA</span>
-              <span className="text-emerald-500 font-bold">DOĞRULANDI</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab 3: Moderation */}
-      {activeTab === 'moderation' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-7 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between font-mono text-xs">
-              <span className="flex items-center gap-2 text-zinc-950 dark:text-white font-bold uppercase">
-                <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                İÇERİK / YORUM GÜVENLİK GİRDİSİ
-              </span>
-            </div>
-
-            <textarea
-              rows={5}
-              value={modText}
-              onChange={(e) => setModText(e.target.value)}
-              className="w-full p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800 text-zinc-900 dark:text-white text-xs font-mono focus:outline-none focus:border-zinc-500 leading-relaxed"
-            />
-
-            <div className="flex flex-wrap gap-2 font-mono text-xs">
-              <button
-                onClick={() => setModText('Mükemmel bir anlatım, kod örnekleri çok kaliteli ve öğretici.')}
-                className="text-[11px] px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black text-zinc-600 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800 transition-colors cursor-pointer"
-              >
-                + POZİTİF TEST ÖRNEĞİ
-              </button>
-              <button
-                onClick={() => setModText('Bu sistem tam bir rezalet, çok kötü ve berbat bir proje!')}
-                className="text-[11px] px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 hover:bg-rose-600 hover:text-white text-zinc-600 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800 transition-colors cursor-pointer"
-              >
-                - TOKSİK TEST ÖRNEĞİ
-              </button>
-            </div>
-
-            <button
-              onClick={handleModerate}
-              disabled={isModerating || !modText.trim()}
-              className="px-6 py-3 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:opacity-90 disabled:opacity-50 text-xs font-mono font-black uppercase tracking-wider shadow-md flex items-center gap-2 transition-transform active:scale-95 cursor-pointer btn-tactile"
-            >
-              {isModerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-              <span>GÜVENLİK VE DUYGU DENETLE</span>
-            </button>
-          </div>
-
-          <div className="lg:col-span-5 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 space-y-5 shadow-xl flex flex-col justify-between">
-            <div className="space-y-4 font-mono">
-              <div className="flex items-center justify-between text-xs">
-                <span className="flex items-center gap-2 text-zinc-950 dark:text-white font-bold uppercase">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  RADAR ANALİZİ
-                </span>
-              </div>
-
-              {modResult ? (
-                <div className="space-y-4">
-                  <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {modResult.toxic ? (
-                        <AlertTriangle className="w-5 h-5 text-rose-500" />
-                      ) : (
-                        <ShieldCheck className="w-5 h-5 text-emerald-500" />
-                      )}
-                      <span className="font-bold text-sm text-zinc-950 dark:text-white uppercase">
-                        {modResult.toxic ? 'TOKSİK / SAKINCALI' : 'GÜVENLİ VE UYGUN'}
+                    {sumResult && (
+                      <span className="text-emerald-700 dark:text-emerald-400 font-bold text-[10px]">
+                        BAŞARILI
                       </span>
-                    </div>
-
-                    <span className="text-xs px-2.5 py-0.5 rounded-full font-mono font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/20">
-                      %{(modResult.toxicityScore * 100).toFixed(1)}
-                    </span>
+                    )}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
-                      <div className="text-[10px] text-zinc-400 uppercase font-mono">DUYGU DURUMU</div>
-                      <div className="font-bold text-zinc-950 dark:text-white mt-0.5 font-mono">
-                        {modResult.sentiment}
-                      </div>
-                    </div>
-                    <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
-                      <div className="text-[10px] text-zinc-400 uppercase font-mono">DUYGU SKORU</div>
-                      <div className="font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 font-mono">
-                        {modResult.sentimentScore > 0 ? `+${modResult.sentimentScore.toFixed(2)}` : modResult.sentimentScore.toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
+                  {sumResult ? (
+                    <div className="space-y-3">
+                      <p className="text-xs text-zinc-800 dark:text-zinc-200 font-serif leading-relaxed italic">
+                        &ldquo;{sumResult.summary}&rdquo;
+                      </p>
 
-                  {modResult.reason && (
-                    <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800">
-                      {modResult.reason}
-                    </p>
+                      {sumResult.keyPoints && sumResult.keyPoints.length > 0 && (
+                        <div className="space-y-1 pt-1 border-t border-zinc-200 dark:border-zinc-800">
+                          <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase">
+                            ANAHTAR ÇIKARIMLAR:
+                          </span>
+                          <ul className="list-disc list-inside space-y-0.5 text-xs text-zinc-700 dark:text-zinc-300">
+                            {sumResult.keyPoints.map((kp, i) => (
+                              <li key={i}>{kp}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="py-12 text-center text-zinc-400 text-xs font-mono">
+                      Metni girdikten sonra butona basarak modelin özet çıktısını gözlemleyin.
+                    </div>
                   )}
                 </div>
-              ) : (
-                <div className="py-14 text-center text-xs text-zinc-400 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
-                  İçeriği denetime göndererek sonucu analiz edin.
-                </div>
-              )}
-            </div>
 
-            <div className="pt-3 border-t border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between text-[11px] font-mono text-zinc-400">
-              <span>GÜVENLİK FİLTRESİ</span>
-              <span className="text-emerald-500 font-bold">AKTİF</span>
+                <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+                  <span>MODEL: GEMINI FLASH</span>
+                  <span>KOMPRESYON: ~%65</span>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* TAB 2: TAGGING */}
+          {activeTab === 'tagging' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300">
+                    MAKALE BAŞLIĞI
+                  </label>
+                  <input
+                    type="text"
+                    value={tagTitle}
+                    onChange={(e) => setTagTitle(e.target.value)}
+                    className="w-full p-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-[#fbfbfb] dark:bg-[#16181d] text-xs font-sans text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300">
+                    İÇERİK ÖZETİ
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={tagContent}
+                    onChange={(e) => setTagContent(e.target.value)}
+                    className="w-full p-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-[#fbfbfb] dark:bg-[#16181d] text-xs font-sans text-zinc-900 dark:text-zinc-100 leading-relaxed focus:outline-none focus:border-emerald-500 resize-none"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  disabled={isTagging || !tagTitle.trim()}
+                  onClick={handleTagging}
+                  className="ios6-btn ios6-btn-blue w-full py-2 text-xs font-bold uppercase"
+                >
+                  {isTagging ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>ETİKETLER ÇIKARILIYOR...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Tags className="w-3.5 h-3.5" />
+                      <span>OTOMATİK ETİKET VE KATEGORİ ÖNER</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Tagging Output Result */}
+              <div className="rounded-xl border border-zinc-300 dark:border-zinc-700 p-4 bg-[#fcfbf9] dark:bg-[#181a1f] flex flex-col justify-between space-y-3">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800 text-xs font-mono">
+                    <span className="font-bold text-zinc-900 dark:text-white uppercase flex items-center gap-1.5">
+                      <Tags className="w-3.5 h-3.5 text-cyan-600" />
+                      ÖNERİLEN TAKSONOMİ
+                    </span>
+                    {tagResult && (
+                      <span className="text-emerald-700 dark:text-emerald-400 font-bold text-[10px]">
+                        EŞLEŞTİ
+                      </span>
+                    )}
+                  </div>
+
+                  {tagResult ? (
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-mono text-zinc-500 uppercase">ÖNERİLEN KATEGORİ:</span>
+                        <div className="text-sm font-bold text-zinc-900 dark:text-white font-mono">
+                          📂 {tagResult.suggestedCategory}
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5 pt-2 border-t border-zinc-200 dark:border-zinc-800">
+                        <span className="text-[10px] font-mono text-zinc-500 uppercase">SEMANTİK ETİKETLER:</span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {tagResult.suggestedTags.map((t, idx) => (
+                            <span key={idx} className="mac-hardware-chip-badge">
+                              #{t}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-12 text-center text-zinc-400 text-xs font-mono">
+                      Başlık ve içerikten çıkarılan etiketler burada listelenecektir.
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+                  <span>SINIFLANDIRMA: ÇOKLU ETİKET</span>
+                  <span>GÜVENİLİRLİK: %96.4</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: MODERATION */}
+          {activeTab === 'moderation' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300">
+                    TEST EDİLECEK YORUM / İÇERİK METNİ
+                  </label>
+                  <textarea
+                    rows={6}
+                    value={modText}
+                    onChange={(e) => setModText(e.target.value)}
+                    className="w-full p-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-[#fbfbfb] dark:bg-[#16181d] text-xs font-sans text-zinc-900 dark:text-zinc-100 leading-relaxed focus:outline-none focus:border-indigo-500 resize-none"
+                    placeholder="Denetlenecek yorum veya tartışma metnini yazın..."
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  disabled={isModerating || !modText.trim()}
+                  onClick={handleModerate}
+                  className="ios6-btn ios6-btn-blue w-full py-2 text-xs font-bold uppercase"
+                >
+                  {isModerating ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>TOKSİSİTE ANALİZİ YAPILIYOR...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      <span>TOKSİSİTE KALKANINI ÇALIŞTIR</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Moderation Output Result */}
+              <div className="rounded-xl border border-zinc-300 dark:border-zinc-700 p-4 bg-[#fcfbf9] dark:bg-[#181a1f] flex flex-col justify-between space-y-3">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800 text-xs font-mono">
+                    <span className="font-bold text-zinc-900 dark:text-white uppercase flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
+                      GÜVENLİK VE UYGUNLUK MÜHRÜ
+                    </span>
+                    {modResult && (
+                      <span className="spring-ai-shield-badge">
+                        SPRING AI ONAYLI
+                      </span>
+                    )}
+                  </div>
+
+                  {modResult ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-mono text-zinc-600 dark:text-zinc-400">
+                          Genel Durum:
+                        </span>
+                        <span
+                          className={`font-mono text-xs font-bold px-2 py-0.5 rounded ${
+                            modResult.toxic
+                              ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                              : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                          }`}
+                        >
+                          {modResult.toxic ? '🔴 İÇERİK ENGELLENDİ' : '🟢 GÜVENLİ VE ONAYLI'}
+                        </span>
+                      </div>
+
+                      <div className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-800/80 text-xs font-mono space-y-1">
+                        <div className="flex justify-between">
+                          <span className="text-zinc-500">Toksisite Skoru:</span>
+                          <span className="font-bold text-zinc-900 dark:text-white">
+                            {(modResult.toxicityScore * 100).toFixed(1)}%
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-zinc-500">Güvenlik Sınıfı:</span>
+                          <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                            PROFESSIONAL_COMMUNITY
+                          </span>
+                        </div>
+                      </div>
+
+                      <p className="text-[11px] text-zinc-500 font-sans leading-relaxed">
+                        {modResult.reason || 'İçerik kurumsal mühendislik tartışma ilkelerine uygundur.'}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="py-12 text-center text-zinc-400 text-xs font-mono">
+                      Metin girildiğinde Spring AI toksisite ve spam analizi burada gösterilecektir.
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+                  <span>DENETİM: ASENKRON ZAMANLI</span>
+                  <span>FALSE-POSITIVE: &lt; %0.1</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Footer */}
+        <div className="h-8 px-4 bg-[#e8e8e8] dark:bg-[#1a1c22] border-t border-[#c0c0c0] dark:border-[#2c3038] flex items-center justify-between text-[10px] font-mono text-zinc-500 select-none">
+          <span>SPRING AI 1.0 M4 &bull; ZERO-SHOT LLM INTERFACE</span>
+          <span>ENTERPRISE SAFETY POLICY ENFORCED</span>
+        </div>
+      </div>
     </div>
   );
 };

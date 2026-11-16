@@ -901,7 +901,7 @@ export default function Home() {
 
       {/* Floating Copilot Widget */}
       <FloatingCopilotWidget
-        onOpenArticle={(blogId) => {
+        onOpenArticle={(blogId: number) => {
           const matched = blogs.find((b) => (b.id ?? b.blogId) === blogId);
           if (matched) setSelectedBlog(matched);
         }}

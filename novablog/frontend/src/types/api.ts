@@ -104,6 +104,7 @@ export interface AiSummaryResponseDto {
   compressionRatio: number; // e.g. 0.65 (65% reduction)
   executionTimeMs: number;
   model: string;
+  keyPoints?: string[];
 }
 
 export interface AiTagSuggestionRequestDto {
@@ -210,6 +211,7 @@ export interface JobExecutionResponseDto {
 export interface AuthorProfileDto {
   userId: number;
   username: string;
+  name?: string;
   firstName?: string;
   lastName?: string;
   title?: string;

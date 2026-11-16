@@ -308,7 +308,7 @@ export const AdminBatchStudio: React.FC = () => {
                       <td>
                         <button
                           type="button"
-                          onClick={() => handleRestore(b.blogId)}
+                          onClick={() => handleRestore(b.blogId || b.id || 0)}
                           className="ios6-btn ios6-btn-silver px-2.5 py-1 text-[11px] font-bold flex items-center gap-1"
                         >
                           <Undo2 className="w-3 h-3 text-emerald-600" />

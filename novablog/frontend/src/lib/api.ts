@@ -993,6 +993,10 @@ export class ApiClient {
     }
   }
 
+  public static recordClap(blogId: number, claps = 1) {
+    return ApiClient.clapBlog(blogId, claps);
+  }
+
   public static async toggleBookmark(blogId: number): Promise<BookmarkResponseDto | null> {
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/social/blogs/${blogId}/bookmark`, {

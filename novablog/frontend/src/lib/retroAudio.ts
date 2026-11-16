@@ -165,7 +165,39 @@ class RetroAudioEngine {
   }
 
   /**
-   * 4. iOS Mail / Post Published "Whoosh"
+   * 4. Mac OS X Window Sheet Open Chime
+   * Soft resonant harmonic pop simulating an Aqua sheet sliding down.
+   */
+  playWindowOpen() {
+    if (this.isMuted) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+
+      gain.gain.setValueAtTime(0.01, now);
+      gain.gain.linearRampToValueAtTime(0.18, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.11);
+    } catch {
+      // ignore
+    }
+  }
+
+  /**
+   * 5. iOS Mail / Post Published "Whoosh"
    * Filtered airy noise ramp simulating a sent message.
    */
   playSendWhoosh() {
@@ -214,3 +246,4 @@ export const playKeyClick = (tone: 'crisp' | 'soft' = 'crisp') => retroAudio.pla
 export const playTabSelect = () => retroAudio.playTabSelect();
 export const playSwitchToggle = (state?: boolean) => retroAudio.playSwitchToggle(state);
 export const playSendWhoosh = () => retroAudio.playSendWhoosh();
+export const playWindowOpen = () => retroAudio.playWindowOpen();

@@ -139,7 +139,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
 
   const categoryName = blog.blogCategoryDto?.categoryName || blog.category?.categoryName;
   const liveClaps = (blog.clapsCount && blog.clapsCount > 0) ? blog.clapsCount : liveLikes;
-  const commentCount = blog.commentCount ?? blog.comments?.length ?? 0;
+  const commentCount = blog.commentCount ?? (blog as unknown as { comments?: unknown[] }).comments?.length ?? 0;
 
   return (
     <article
