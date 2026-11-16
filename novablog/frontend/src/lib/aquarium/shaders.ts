@@ -132,3 +132,4 @@ void main(){
   acc.rgb += nz / 255.0 * acc.a;
   outColor = vec4(clamp(acc.rgb, 0.0, 1.0), clamp(acc.a, 0.0, 1.0));
 }`;
+

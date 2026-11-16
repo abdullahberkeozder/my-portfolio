@@ -297,7 +297,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
                   placeholder="Örn: Java 22 Virtual Threads ve Loom ile Yüksek Throughput Mimarisi"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800 text-zinc-900 dark:text-white text-xs font-sans focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800 text-zinc-900 dark:text-white text-base sm:text-xs font-sans focus:outline-none focus:border-emerald-500 transition-colors"
                 />
               </div>
 
@@ -318,7 +318,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
                   placeholder="Örn: Concurrency, Thread Pool Darboğazı ve Non-blocking I/O"
                   value={header}
                   onChange={(e) => setHeader(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800 text-zinc-900 dark:text-white text-xs font-sans focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800 text-zinc-900 dark:text-white text-base sm:text-xs font-sans focus:outline-none focus:border-emerald-500 transition-colors"
                 />
               </div>
 
@@ -336,7 +336,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
                       const val = Number(e.target.value);
                       setUserSelectedCatId(Number.isFinite(val) ? val : defaultCatId);
                     }}
-                    className="w-full px-4 py-2.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800 text-zinc-900 dark:text-white text-xs focus:outline-none focus:border-emerald-500"
+                    className="w-full px-4 py-2.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800 text-zinc-900 dark:text-white text-base sm:text-xs focus:outline-none focus:border-emerald-500"
                   >
                     {categories.map((c, idx) => {
                       const catId = getCatId(c, idx + 1);
@@ -389,7 +389,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
                   placeholder="Makalenizi buraya yazın... Başlıklar için ##, listeler için -, kod blokları için ```java formatını kullanabilirsiniz."
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800 text-zinc-900 dark:text-white text-xs leading-relaxed focus:outline-none focus:border-emerald-500 font-mono"
+                  className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800 text-zinc-900 dark:text-white text-base sm:text-xs leading-relaxed focus:outline-none focus:border-emerald-500 font-mono"
                 />
               </div>
 
@@ -425,7 +425,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
                     value={tagInput}
                     onChange={(e) => setTagInput(e.target.value)}
                     onKeyDown={handleAddTag}
-                    className="flex-1 px-4 py-2 rounded-full bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800 text-zinc-900 dark:text-white text-xs focus:outline-none focus:border-emerald-500"
+                    className="flex-1 px-4 py-2 rounded-full bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800 text-zinc-900 dark:text-white text-base sm:text-xs focus:outline-none focus:border-emerald-500"
                   />
                   <button
                     type="button"

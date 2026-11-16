@@ -45,3 +45,4 @@ export function demoAt(t: number): DemoPointer {
   const down = PRESSES.some(([a, b]) => t >= a && t < b);
   return { u: u0 + (u1 - u0) * e, v: v0 + (v1 - v0) * e, down };
 }
+

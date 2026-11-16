@@ -202,3 +202,4 @@ export const AboutManifestoModal: React.FC<AboutManifestoModalProps> = ({
     </div>
   );
 };
+

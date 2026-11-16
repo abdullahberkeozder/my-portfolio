@@ -10,6 +10,7 @@ import {
   ChevronDown,
   Menu,
   PenSquare,
+  Search,
 } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
 import { AquariumToggle } from './AquariumToggle';
@@ -25,6 +26,7 @@ interface NavbarProps {
   onOpenArchitectureConsole?: () => void;
   onOpenTwoFactor?: () => void;
   onOpenCreateModal?: () => void;
+  onFocusSearch?: () => void;
 }
 
 type MegaDrawerCategory = 'articles' | 'system' | 'ai' | 'batch' | null;
@@ -37,6 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenTelemetry,
   onOpenTwoFactor,
   onOpenCreateModal,
+  onFocusSearch,
 }) => {
   const [megaMenu, setMegaMenu] = useState<MegaDrawerCategory>(null);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -262,6 +265,22 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* 3. Right Status & Controls */}
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* Desktop Fast Search Trigger */}
+              {onFocusSearch && (
+                <button
+                  type="button"
+                  onClick={onFocusSearch}
+                  className="hidden lg:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer text-xs font-mono"
+                  title="Makale, yazar veya etiket ara (⌘K)"
+                >
+                  <Search className="w-3.5 h-3.5 text-zinc-400" />
+                  <span>Ara...</span>
+                  <kbd className="px-1.5 py-0.5 rounded bg-zinc-200/70 dark:bg-zinc-800 text-[10px] text-zinc-600 dark:text-zinc-400 font-bold border border-zinc-300 dark:border-zinc-700">
+                    ⌘K
+                  </kbd>
+                </button>
+              )}
+
               {/* Mobile Menu Trigger Pill */}
               <button
                 type="button"

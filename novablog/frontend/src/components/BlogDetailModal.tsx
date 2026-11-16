@@ -197,9 +197,17 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
 
   const wordCount = (currentBlog.content || '').split(/\s+/).filter(Boolean).length;
   const readingTime = currentBlog.readTimeMinutes || Math.max(1, Math.ceil(wordCount / 180));
-  const authorName = currentBlog.author || currentBlog.authorUsername || 'Abdullah Berke Özder';
-  const authorInitial = authorName.charAt(0).toUpperCase();
-  const isAuthorFollowed = followedAuthors.includes(authorName);
+  const authorUsername = currentBlog.authorUsername || 'admin';
+  const authorDisplayName =
+    currentBlog.author ||
+    (currentBlog.authorUsername === 'selindemir'
+      ? 'Dr. Selin Demir'
+      : currentBlog.authorUsername === 'caneraydin'
+      ? 'Caner Aydın'
+      : 'Abdullah Berke Özder');
+  const authorInitial = authorDisplayName.charAt(0).toUpperCase();
+  const authorAvatarUrl = currentBlog.authorImageUrl;
+  const isAuthorFollowed = followedAuthors.includes(authorUsername) || followedAuthors.includes(authorDisplayName);
 
   const formattedDate = currentBlog.publishedAt || currentBlog.createdDate
     ? new Date(currentBlog.publishedAt || currentBlog.createdDate!).toLocaleDateString('tr-TR', {
@@ -408,20 +416,29 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
               type="button"
               onClick={() => {
                 if (onAuthorClick) {
-                  onAuthorClick(authorName);
+                  onAuthorClick(authorUsername);
                 }
               }}
               className="flex items-center gap-2.5 group cursor-pointer text-left"
-              title={`${authorName} profilini aç`}
+              title={`${authorDisplayName} profilini aç`}
             >
-              <div className="w-8 h-8 rounded-full bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs group-hover:ring-2 group-hover:ring-emerald-500 transition-all">
-                {authorInitial}
+              <div className="w-8 h-8 rounded-full overflow-hidden bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-xs uppercase shadow-xs group-hover:ring-2 group-hover:ring-emerald-500 transition-all shrink-0">
+                {authorAvatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={authorAvatarUrl}
+                    alt={authorDisplayName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  authorInitial
+                )}
               </div>
               <div className="min-w-0">
                 <span className="text-xs font-bold text-zinc-950 dark:text-white group-hover:text-emerald-500 hover:underline truncate block">
-                  {authorName}
+                  {authorDisplayName}
                 </span>
-                <span className="text-[10px] text-zinc-500 font-mono block">
+                <span className="text-[10px] text-zinc-500 font-mono block truncate">
                   {formattedDate} &bull; {readingTime} dk okuma
                 </span>
               </div>
@@ -583,24 +600,33 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
               <div
                 onClick={() => {
                   if (onAuthorClick) {
-                    onAuthorClick(authorName);
+                    onAuthorClick(authorUsername);
                   }
                 }}
-                className="w-14 h-14 rounded-2xl bg-zinc-950 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-xl uppercase shadow-md cursor-pointer hover:ring-2 hover:ring-emerald-500 transition-all shrink-0"
+                className="w-14 h-14 rounded-2xl overflow-hidden bg-zinc-950 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-xl uppercase shadow-md cursor-pointer hover:ring-2 hover:ring-emerald-500 transition-all shrink-0"
               >
-                {authorInitial}
+                {authorAvatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={authorAvatarUrl}
+                    alt={authorDisplayName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  authorInitial
+                )}
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <h4
                     onClick={() => {
                       if (onAuthorClick) {
-                        onAuthorClick(authorName);
+                        onAuthorClick(authorUsername);
                       }
                     }}
                     className="font-bold text-zinc-950 dark:text-white text-base hover:text-emerald-500 cursor-pointer hover:underline"
                   >
-                    {authorName}
+                    {authorDisplayName}
                   </h4>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold uppercase">
                     YAZAR
@@ -608,7 +634,11 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                 </div>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-md leading-relaxed">
                   {currentBlog.authorBio ||
-                    'Java 22 Loom, Spring Boot 4 ve mikro-çekirdek reaktif sistemler üzerine teknik incelemeler paylaşıyor.'}
+                    (authorUsername === 'selindemir'
+                      ? 'Spring AI, pgvector 128D anlamsal çıkarım motorları ve büyük dil modellerinde RAG optimizasyonu araştırmacısı.'
+                      : authorUsername === 'caneraydin'
+                      ? 'Cloud-native mimariler, eBPF gözlemlenebilirlik ve sıfır güven (Zero-Trust) güvenlik altyapıları lideri.'
+                      : 'Distributed systems, Java 22 Loom, Spring Boot ve yüksek throughput mimarileri üzerine araştırmacı mühendis.')}
                 </p>
               </div>
             </div>
@@ -616,7 +646,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
             {onToggleFollow && (
               <button
                 type="button"
-                onClick={() => onToggleFollow(authorName)}
+                onClick={() => onToggleFollow(authorUsername)}
                 className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
                   isAuthorFollowed
                     ? 'bg-zinc-200 dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'

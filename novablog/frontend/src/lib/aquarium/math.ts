@@ -45,3 +45,4 @@ export const pack = ([r, g, b]: RGB) => ((255 << 24) | (b << 16) | (g << 8) | r)
 /** 4 × 4 Bayer matrix: every blend between two light keys is an ordered dither, so the pixels stay pixels. */
 export const BAY = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => (v + 0.5) / 16);
 export const bay = (x: number, y: number) => BAY[((y & 3) << 2) | (x & 3)];
+
