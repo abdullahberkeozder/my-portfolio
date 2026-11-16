@@ -19,6 +19,7 @@ import { SystemBlueprintSection } from '@/components/SystemBlueprintSection';
 import { Footer } from '@/components/Footer';
 import { AboutManifestoModal } from '@/components/AboutManifestoModal';
 import { FloatingCopilotWidget } from '@/components/FloatingCopilotWidget';
+import { PortalCockpitDock } from '@/components/PortalCockpitDock';
 import { AuthorProfileModal } from '@/components/AuthorProfileModal';
 import { OmnibarModal } from '@/components/OmnibarModal';
 import { SkeuomorphicLeatherBookmarksBinder } from '@/components/SkeuomorphicLeatherBookmarksBinder';
@@ -908,6 +909,17 @@ export default function Home() {
         onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
         onOpenTwoFactor={() => setIsTwoFactorModalOpen(true)}
         onOpenAbout={() => setIsAboutModalOpen(true)}
+      />
+
+      {/*  Mac OS X 3D Glass Desktop Dock */}
+      <PortalCockpitDock
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onOpenCreateModal={() => setIsCreateModalOpen(true)}
+        onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
+        onOpenSpotlight={() => setIsOmnibarOpen(true)}
+        onOpenAbout={() => setIsAboutModalOpen(true)}
+        onMetricsFlushed={() => refetchBlogs()}
       />
 
       {/* Footer */}

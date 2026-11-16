@@ -3,20 +3,26 @@
 import React, { useState } from 'react';
 import { ApiClient } from '@/lib/api';
 import {
-  Sparkles,
-  Database,
-  ArrowDownToLine,
-  RefreshCw,
-  Plus,
+  Compass,
   Cpu,
-  LayoutGrid,
+  Database,
+  PenSquare,
+  Search,
+  RefreshCw,
+  Sparkles,
+  Info,
+  Activity,
 } from 'lucide-react';
+import { playKeyClick, playTabSelect, playWindowOpen } from '@/lib/retroAudio';
+import { NavTab } from '@/components/Navbar';
 
 interface PortalCockpitDockProps {
-  activeTab: 'feed' | 'ai-search' | 'ai-lab' | 'admin-batch';
-  setActiveTab: (tab: 'feed' | 'ai-search' | 'ai-lab' | 'admin-batch') => void;
+  activeTab: NavTab;
+  setActiveTab: (tab: NavTab) => void;
   onOpenCreateModal: () => void;
   onOpenTelemetry: () => void;
+  onOpenSpotlight?: () => void;
+  onOpenAbout?: () => void;
   onMetricsFlushed?: () => void;
 }
 
@@ -25,12 +31,15 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
   setActiveTab,
   onOpenCreateModal,
   onOpenTelemetry,
+  onOpenSpotlight,
+  onOpenAbout,
   onMetricsFlushed,
 }) => {
   const [isFlushing, setIsFlushing] = useState(false);
   const [flushSuccess, setFlushSuccess] = useState(false);
 
   const handleFlushBuffer = async () => {
+    playKeyClick('crisp');
     setIsFlushing(true);
     setFlushSuccess(false);
     try {
@@ -45,101 +54,148 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
     }
   };
 
+  const handleNavTab = (tab: NavTab, targetId?: string) => {
+    playTabSelect();
+    setActiveTab(tab);
+    if (targetId) {
+      const el = document.getElementById(targetId);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleOpenCompose = () => {
+    playWindowOpen();
+    onOpenCreateModal();
+  };
+
+  const handleOpenSpotlightClick = () => {
+    playWindowOpen();
+    if (onOpenSpotlight) {
+      onOpenSpotlight();
+    } else {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
+    }
+  };
+
+  const handleOpenAboutClick = () => {
+    playWindowOpen();
+    if (onOpenAbout) onOpenAbout();
+  };
+
   return (
     <aside
-      aria-label="Portal Cockpit Dock"
-      className="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 max-w-[94vw] sm:max-w-fit"
+      aria-label="Mac OS X 3D Glass Desktop Dock"
+      className="mac-3d-glass-dock-wrapper select-none"
     >
-      <div className="relative flex items-center gap-1.5 sm:gap-2.5 p-1.5 sm:p-2 rounded-full glass-liquid shadow-2xl border border-black/10 dark:border-white/15 backdrop-blur-2xl transition-all duration-300">
-        {/* Specular Edge Line */}
-        <span className="absolute inset-x-6 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
-
-        {/* Engine Status Tag (Ride Also Cockpit Style) */}
-        <button
-          onClick={onOpenTelemetry}
-          title="Telemetri HUD Konsolunu Aç"
-          className="hidden md:flex items-center gap-2 pl-3 pr-2.5 py-1.5 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors font-mono text-[11px] font-bold text-zinc-900 dark:text-white cursor-pointer select-none"
+      <div className="mac-3d-glass-dock">
+        {/* 1. Finder / Feed (Vitrin) */}
+        <div
+          onClick={() => handleNavTab('feed', 'articles-feed')}
+          className="mac-dock-item"
+          title="Yayın Akışı (Finder / Vitrin)"
         >
-          <span className="w-2 h-2 rounded-full bg-[#d4f933] shadow-[0_0_8px_#d4f933] animate-pulse" />
-          <span>PORTAL // HUD</span>
-        </button>
-
-        <span className="hidden md:block w-[1px] h-5 bg-black/10 dark:bg-white/10" />
-
-        {/* Modular View Selectors */}
-        <div className="flex items-center gap-1 font-mono text-xs">
-          <button
-            onClick={() => setActiveTab('feed')}
-            className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'feed'
-                ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
-            }`}
-          >
-            <LayoutGrid className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">VİTRİN</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('ai-search')}
-            className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'ai-search'
-                ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
-            }`}
-          >
-            <Cpu className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">VEKTÖR</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('admin-batch')}
-            className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'admin-batch'
-                ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
-            }`}
-          >
-            <Database className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">BATCH</span>
-          </button>
+          <div className="mac-dock-icon-btn">
+            <Compass className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          </div>
+          <div className={`mac-dock-indicator-dot ${activeTab === 'feed' ? 'active' : ''}`} />
         </div>
 
-        <span className="w-[1px] h-5 bg-black/10 dark:bg-white/10" />
+        {/* 2. Activity Monitor (Telemetri Konsolu) */}
+        <div
+          onClick={() => {
+            playKeyClick('crisp');
+            onOpenTelemetry();
+          }}
+          className="mac-dock-item"
+          title="Activity Monitor & CRT Telemetri"
+        >
+          <div className="mac-dock-icon-btn">
+            <Activity className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <div className="mac-dock-indicator-dot" />
+        </div>
 
-        {/* Quick Flush Buffer Action Button */}
-        <button
+        {/* 3. Vector Lab (Spring AI pgvector 128D) */}
+        <div
+          onClick={() => handleNavTab('ai-search', 'ai-vector-studio')}
+          className="mac-dock-item"
+          title="Spring AI & pgvector Vektör Stüdyosu"
+        >
+          <div className="mac-dock-icon-btn">
+            <Cpu className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+          </div>
+          <div className={`mac-dock-indicator-dot ${activeTab === 'ai-search' ? 'active' : ''}`} />
+        </div>
+
+        {/* 4. Xserve Batch Studio (Spring Batch 5) */}
+        <div
+          onClick={() => handleNavTab('admin-batch', 'batch-etl-studio')}
+          className="mac-dock-item"
+          title="Spring Batch 5 & Xserve Veri Ambarı"
+        >
+          <div className="mac-dock-icon-btn">
+            <Database className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          </div>
+          <div className={`mac-dock-indicator-dot ${activeTab === 'admin-batch' ? 'active' : ''}`} />
+        </div>
+
+        {/* Dock Separator Line */}
+        <div className="mac-dock-separator" />
+
+        {/* 5. Mac Mail (Yeni Makale Yaz) */}
+        <div
+          onClick={handleOpenCompose}
+          className="mac-dock-item"
+          title="Mac Mail — Yeni Makale Yaz"
+        >
+          <div className="mac-dock-icon-btn !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-400/40 text-white shadow-md">
+            <PenSquare className="w-5 h-5" />
+          </div>
+          <div className="mac-dock-indicator-dot" />
+        </div>
+
+        {/* 6. Spotlight Search (⌘K) */}
+        <div
+          onClick={handleOpenSpotlightClick}
+          className="mac-dock-item"
+          title="Spotlight Arama (⌘K)"
+        >
+          <div className="mac-dock-icon-btn">
+            <Search className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
+          </div>
+          <div className="mac-dock-indicator-dot" />
+        </div>
+
+        {/* 7. Redis Write-Behind Flush Trigger */}
+        <div
           onClick={handleFlushBuffer}
-          disabled={isFlushing}
-          title="Redis Write-Behind Tamponunu Veritabanına Flush Et"
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-mono text-[11px] font-bold transition-all cursor-pointer ${
-            flushSuccess
-              ? 'bg-emerald-500 text-white'
-              : 'hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300'
-          }`}
+          className="mac-dock-item"
+          title="Redis Write-Behind Tamponunu Veritabanına Aktar"
         >
-          {isFlushing ? (
-            <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#d4f933]" />
-          ) : flushSuccess ? (
-            <Sparkles className="w-3.5 h-3.5 animate-bounce" />
-          ) : (
-            <ArrowDownToLine className="w-3.5 h-3.5 text-[#a3c900] dark:text-[#d4f933]" />
-          )}
-          <span className="hidden sm:inline">
-            {isFlushing ? 'YAZILIYOR' : flushSuccess ? 'FLUSH EDİLDİ' : 'FLUSH'}
-          </span>
-        </button>
+          <div className={`mac-dock-icon-btn ${flushSuccess ? '!bg-emerald-500 text-white' : ''}`}>
+            {isFlushing ? (
+              <RefreshCw className="w-5 h-5 animate-spin text-blue-500" />
+            ) : flushSuccess ? (
+              <Sparkles className="w-5 h-5 animate-bounce text-white" />
+            ) : (
+              <RefreshCw className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            )}
+          </div>
+          <div className={`mac-dock-indicator-dot ${flushSuccess ? 'active' : ''}`} />
+        </div>
 
-        {/* Primary Ride Also Volt Action Pill: + YAYINLA */}
-        <button
-          onClick={onOpenCreateModal}
-          className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#d4f933] hover:bg-[#c4e82b] text-black font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-[#d4f933]/25 active:scale-95 cursor-pointer"
+        {/* 8. About This Mac ( Manifesto) */}
+        <div
+          onClick={handleOpenAboutClick}
+          className="mac-dock-item"
+          title=" Bu Mac Hakkında (Mimari Manifesto)"
         >
-          <Plus className="w-3.5 h-3.5 stroke-[3]" />
-          <span>YAZ</span>
-        </button>
+          <div className="mac-dock-icon-btn">
+            <Info className="w-5 h-5 text-zinc-800 dark:text-zinc-200" />
+          </div>
+          <div className="mac-dock-indicator-dot" />
+        </div>
       </div>
     </aside>
   );
 };
-
