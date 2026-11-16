@@ -5,10 +5,10 @@ import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
 import { useToggleLikeMutation } from '@/hooks/useBlogs';
 import { useBookmarks } from '@/hooks/useSocialStore';
+import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
 import {
   Sparkles,
   Calendar,
-  ArrowRight,
   Loader2,
   Clock,
   Share2,
@@ -38,6 +38,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
 
   const handleToggleBookmark = (e: React.MouseEvent) => {
     e.stopPropagation();
+    playTabSelect();
     if (!blogId || typeof window === 'undefined') return;
     try {
       const saved: number[] = JSON.parse(localStorage.getItem('novablog_bookmarks') || '[]');
@@ -57,6 +58,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
 
   const handleToggleLike = (e: React.MouseEvent) => {
     e.stopPropagation();
+    playKeyClick();
     if (!blogId) return;
     toggleLikeMutation.mutate({
       blogId,
@@ -68,6 +70,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
 
   const handleFetchSummary = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    playKeyClick();
     if (summary) {
       setShowSummary(!showSummary);
       return;
@@ -88,6 +91,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
 
   const handleCopyLink = (e: React.MouseEvent) => {
     e.stopPropagation();
+    playKeyClick();
     if (typeof window !== 'undefined') {
       navigator.clipboard.writeText(`${window.location.origin}/#blog-${blogId}`);
       setIsCopied(true);
@@ -127,10 +131,10 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
   const authorTitle =
     blog.authorTitle ||
     (blog.authorUsername === 'selindemir'
-      ? 'Principal AI & Data Systems Researcher'
+      ? 'Principal AI Researcher'
       : blog.authorUsername === 'caneraydin'
-      ? 'Staff Cloud & Kubernetes Architect'
-      : 'Senior Systems Architect & Tech Lead');
+      ? 'Staff Cloud Architect'
+      : 'Senior Systems Architect');
   const authorAvatarUrl = blog.authorImageUrl;
 
   const categoryName = blog.blogCategoryDto?.categoryName || blog.category?.categoryName;
@@ -139,111 +143,126 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
 
   return (
     <article
-      onClick={() => onSelect(blog)}
-      className="group relative flex flex-col rounded-3xl bg-white dark:bg-[#0c0e12] border border-zinc-200/90 dark:border-zinc-800/90 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-black/50 cursor-pointer overflow-hidden p-6 sm:p-7 space-y-4"
+      onClick={() => {
+        playKeyClick();
+        onSelect(blog);
+      }}
+      className="group mac-blog-card p-5 sm:p-6 flex flex-col justify-between space-y-4 cursor-pointer"
     >
-      {/* 1. Author Micro-Bar & Meta */}
-      <div className="flex items-center justify-between gap-3 text-xs">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (onAuthorClick) {
-              onAuthorClick(authorUsername);
-            }
-          }}
-          className="flex items-center gap-2.5 min-w-0 group/author cursor-pointer text-left bg-transparent border-none p-0"
-          title={`${authorDisplayName} profilini görüntüle`}
-        >
-          <div className="w-8 h-8 rounded-full overflow-hidden bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-xs uppercase shadow-sm ring-1 ring-black/5 dark:ring-white/10 shrink-0 group-hover/author:ring-2 group-hover/author:ring-emerald-500 transition-all">
-            {authorAvatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={authorAvatarUrl}
-                alt={authorDisplayName}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              authorInitial
-            )}
-          </div>
-          <div className="flex items-center gap-1.5 min-w-0 font-medium text-zinc-800 dark:text-zinc-200 truncate">
-            <span className="font-bold group-hover/author:text-emerald-500 hover:underline">{authorDisplayName}</span>
-            <span className="text-zinc-400 dark:text-zinc-500 text-[11px] truncate hidden md:inline">({authorTitle})</span>
-            <span className="text-zinc-300 dark:text-zinc-700">&bull;</span>
-            <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1 shrink-0">
-              <Calendar className="w-3 h-3 text-zinc-400" />
-              {formattedDate}
-            </span>
-            <span className="text-zinc-300 dark:text-zinc-700 hidden sm:inline">&bull;</span>
-            <span className="text-zinc-500 dark:text-zinc-400 hidden sm:flex items-center gap-1 shrink-0">
-              <Clock className="w-3 h-3 text-zinc-400" />
-              {readingTime} dk okuma
-            </span>
-          </div>
-        </button>
-
-        {/* Top Actions: Bookmark & Share */}
-        <div className="flex items-center gap-1 shrink-0">
+      <div className="space-y-3.5">
+        {/* 1. Mac Mail / Contacts Header: Brushed Silver Coin Avatar & Author Info */}
+        <div className="flex items-center justify-between gap-3 text-xs border-b border-zinc-100 dark:border-zinc-800/70 pb-3">
           <button
-            onClick={handleCopyLink}
-            title={isCopied ? 'Bağlantı Kopyalandı' : 'Yazı Bağlantısını Kopyala'}
-            className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              playKeyClick();
+              if (onAuthorClick) {
+                onAuthorClick(authorUsername);
+              }
+            }}
+            className="flex items-center gap-2.5 min-w-0 group/author cursor-pointer text-left bg-transparent border-none p-0"
+            title={`${authorDisplayName} profilini görüntüle`}
           >
-            {isCopied ? <Check className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4" />}
-          </button>
-          <button
-            onClick={handleToggleBookmark}
-            title={isBookmarked ? 'Okuma listesinden kaldır' : 'Daha sonra oku (Kaydet)'}
-            className={`p-1.5 rounded-full transition-colors ${
-              isBookmarked
-                ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40'
-                : 'text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800'
-            }`}
-          >
-            <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
-          </button>
-        </div>
-      </div>
+            {/* Brushed-silver coin avatar ring */}
+            <div className="retro-avatar-silver shrink-0">
+              <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-b from-zinc-800 to-zinc-950 text-white flex items-center justify-center font-bold text-xs uppercase shadow-inner">
+                {authorAvatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={authorAvatarUrl}
+                    alt={authorDisplayName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  authorInitial
+                )}
+              </div>
+            </div>
 
-      {/* 2. Article Title & Excerpt */}
-      <div className="space-y-2">
-        <h3 className="text-lg sm:text-xl font-bold text-zinc-950 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug tracking-tight">
-          {blog.title}
-        </h3>
-        <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
-          {rawExcerpt}
-        </p>
-      </div>
+            <div className="flex items-center gap-1.5 min-w-0 font-medium text-zinc-800 dark:text-zinc-200 truncate">
+              <span className="font-bold group-hover/author:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                {authorDisplayName}
+              </span>
+              <span className="text-zinc-400 dark:text-zinc-500 text-[11px] truncate hidden md:inline">
+                ({authorTitle})
+              </span>
+              <span className="text-zinc-300 dark:text-zinc-700">&bull;</span>
+              <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1 shrink-0 text-[11px]">
+                <Calendar className="w-3 h-3 text-zinc-400" />
+                {formattedDate}
+              </span>
+              <span className="text-zinc-300 dark:text-zinc-700 hidden sm:inline">&bull;</span>
+              <span className="text-zinc-500 dark:text-zinc-400 hidden sm:flex items-center gap-1 shrink-0 text-[11px]">
+                <Clock className="w-3 h-3 text-zinc-400" />
+                {readingTime} dk
+              </span>
+            </div>
+          </button>
 
-      {/* 3. Expandable Discreet AI TL;DR (Accordion) */}
-      {showSummary && summary && (
-        <div className="rounded-2xl p-4 bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 text-xs text-zinc-800 dark:text-zinc-200 space-y-2 animate-in fade-in duration-200">
-          <div className="flex items-center justify-between text-[11px] font-mono font-bold uppercase text-zinc-500 dark:text-zinc-400">
-            <span className="flex items-center gap-1.5 text-zinc-900 dark:text-white">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
-              1 DAKİKALIK YÖNETİCİ ÖZETİ (TL;DR)
-            </span>
+          {/* Top Actions: Copy Link & Bookmark */}
+          <div className="flex items-center gap-1 shrink-0">
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowSummary(false);
-              }}
-              className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+              onClick={handleCopyLink}
+              title={isCopied ? 'Bağlantı Kopyalandı' : 'Yazı Bağlantısını Kopyala'}
+              className="p-1.5 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
             >
-              Gizle
+              {isCopied ? <Check className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4" />}
+            </button>
+            <button
+              onClick={handleToggleBookmark}
+              title={isBookmarked ? 'Okuma listesinden kaldır' : 'Daha sonra oku (Safari Reading List)'}
+              className={`p-1.5 rounded-md transition-all ${
+                isBookmarked
+                  ? 'text-amber-500 bg-amber-50 dark:bg-amber-950/40 border border-amber-300/50 dark:border-amber-700/50'
+                  : 'text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+              }`}
+            >
+              <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
             </button>
           </div>
-          <p className="leading-relaxed font-sans">{summary}</p>
         </div>
-      )}
 
-      {/* 4. Bottom Footer: Topic Tags, TL;DR Trigger & Social Engagement */}
-      <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs border-t border-zinc-100 dark:border-zinc-800/80">
+        {/* 2. Article Title & Excerpt */}
+        <div className="space-y-1.5">
+          <h3 className="text-base sm:text-lg font-bold text-zinc-950 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug tracking-tight font-sans">
+            {blog.title}
+          </h3>
+          <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+            {rawExcerpt}
+          </p>
+        </div>
+
+        {/* 3. Expandable Recessed AI TL;DR (Accordion) */}
+        {showSummary && summary && (
+          <div className="rounded-lg p-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-inner text-xs text-zinc-800 dark:text-zinc-200 space-y-1.5 animate-in fade-in duration-200">
+            <div className="flex items-center justify-between text-[11px] font-mono font-bold uppercase text-zinc-500 dark:text-zinc-400">
+              <span className="flex items-center gap-1.5 text-zinc-900 dark:text-white">
+                <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+                1 DAKİKALIK YÖNETİCİ ÖZETİ (SPRING AI)
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playKeyClick();
+                  setShowSummary(false);
+                }}
+                className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+              >
+                Gizle
+              </button>
+            </div>
+            <p className="leading-relaxed font-sans">{summary}</p>
+          </div>
+        )}
+      </div>
+
+      {/* 4. Bottom Footer: Topic Tags, Skeuomorphic Action Buttons & Disclosure */}
+      <div className="pt-3 flex flex-wrap items-center justify-between gap-2 text-xs border-t border-zinc-100 dark:border-zinc-800/80">
         {/* Left: Tags */}
         <div className="flex flex-wrap items-center gap-1.5">
           {categoryName && (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
+            <span className="retro-tag-pill uppercase">
               {categoryName}
             </span>
           )}
@@ -253,9 +272,10 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
                 key={idx}
                 onClick={(e) => {
                   e.stopPropagation();
+                  playKeyClick();
                   if (onTagClick) onTagClick(tag);
                 }}
-                className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-zinc-50 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-800 transition-colors uppercase cursor-pointer"
+                className="retro-tag-pill uppercase cursor-pointer hover:border-zinc-400 dark:hover:border-zinc-500 transition-colors"
               >
                 #{tag}
               </button>
@@ -263,46 +283,44 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
         </div>
 
         {/* Right: Interaction Buttons */}
-        <div className="flex items-center gap-3 text-zinc-500 dark:text-zinc-400">
-          {/* Quick AI Summary Accordion Trigger */}
+        <div className="flex items-center gap-2">
+          {/* Quick AI Summary Button (Silver Skeuomorphic Button) */}
           <button
             onClick={handleFetchSummary}
             disabled={isLoadingSummary}
-            className="flex items-center gap-1 font-mono text-[11px] font-semibold text-zinc-600 dark:text-zinc-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer"
-            title="Yapay Zeka ile Hızlı Özet Çıkar"
+            className="ios6-btn ios6-btn-silver px-2.5 py-1 text-[11px] font-semibold"
+            title="Spring AI ile Yönetici Özeti"
           >
             {isLoadingSummary ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <Loader2 className="w-3 h-3 animate-spin text-blue-500" />
             ) : (
-              <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+              <Sparkles className="w-3 h-3 text-blue-500" />
             )}
-            <span>{showSummary ? 'Özeti Gizle' : 'Özet'}</span>
+            <span>{showSummary ? 'Gizle' : 'Özet'}</span>
           </button>
 
-          {/* Claps / Likes */}
+          {/* Claps / Likes (Blue Cylindrical Gloss Button) */}
           <button
             onClick={handleToggleLike}
-            className="flex items-center gap-1 font-mono text-xs transition-colors cursor-pointer hover:text-emerald-500 group/clap"
+            className="ios6-btn ios6-btn-blue px-2.5 py-1 text-[11px] font-bold"
             title="Alkışla (Medium Clap)"
           >
-            <span className="text-sm transition-transform group-hover/clap:scale-125">👏</span>
-            <span className="font-bold text-zinc-700 dark:text-zinc-300">{liveClaps}</span>
+            <span className="text-xs">👏</span>
+            <span>{liveClaps}</span>
           </button>
 
-          {/* Comments count */}
-          <span className="flex items-center gap-1 font-mono text-xs text-zinc-500 dark:text-zinc-400" title="Yorumlar">
-            <MessageSquare className="w-3.5 h-3.5" />
+          {/* Comments count (Mac Aqua Notification Badge) */}
+          <span className="mac-aqua-comment-badge" title={`${commentCount} Yorum`}>
+            <MessageSquare className="w-3 h-3" />
             <span>{commentCount}</span>
           </span>
 
-          {/* Read CTA */}
-          <span className="flex items-center gap-1 font-bold text-zinc-900 dark:text-white group-hover:translate-x-0.5 transition-transform">
-            <span>Oku</span>
-            <ArrowRight className="w-3 h-3" />
-          </span>
+          {/* Classic iOS / Mac Right Disclosure Arrow */}
+          <div className="pl-1 flex items-center justify-center">
+            <span className="ios-disclosure-arrow group-hover:translate-x-0.5 transition-transform" />
+          </div>
         </div>
       </div>
     </article>
   );
 };
-

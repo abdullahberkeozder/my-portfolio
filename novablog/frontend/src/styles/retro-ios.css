@@ -729,4 +729,223 @@
   border-right: 1px solid #2f3135;
 }
 
+/* ==============================================================================
+   8. UITableViewGroupedBlogCard & Mac OS X Desktop Grouped Cards (Faz 3)
+   ============================================================================== */
+
+/* Mac OS X Desktop Grouped Blog Card */
+.mac-blog-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #b2b8c2;
+  border-radius: 10px;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.07),
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  user-select: none;
+}
+
+.dark .mac-blog-card {
+  background: #1c1e22;
+  border-color: #353942;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.45),
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.mac-blog-card:hover {
+  transform: translateY(-2px);
+  border-color: #8a93a0;
+  box-shadow:
+    0 8px 26px rgba(0, 0, 0, 0.12),
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.dark .mac-blog-card:hover {
+  border-color: #555b66;
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.65),
+    0 2px 8px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* Brushed Silver Circular Author Avatar Badge */
+.retro-avatar-silver {
+  border-radius: 50%;
+  padding: 1.5px;
+  background: linear-gradient(135deg, #ffffff 0%, #d8d8d8 40%, #afafaf 70%, #888888 100%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dark .retro-avatar-silver {
+  background: linear-gradient(135deg, #666a73 0%, #474b52 50%, #2f3238 100%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Debossed Category / Topic Badge */
+.retro-tag-pill {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Lucida Grande", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: linear-gradient(to bottom, #f2f3f5 0%, #e1e3e7 100%);
+  border: 1px solid #b8bec8;
+  color: #3f4754;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.dark .retro-tag-pill {
+  background: linear-gradient(to bottom, #2d3138 0%, #1f2227 100%);
+  border-color: #424750;
+  color: #abb2bf;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Mac OS X Aqua Pill Notification Badge for Comments */
+.mac-aqua-comment-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Lucida Grande", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  background: linear-gradient(to bottom, #8fa3b8 0%, #687e96 50%, #576d85 51%, #455a71 100%);
+  border: 1px solid #334354;
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.65);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* ==============================================================================
+   9. Skeuomorphic Leather Bookmarks Binder & Satin Silk Ribbon (Faz 3)
+   ============================================================================== */
+
+.retro-leather-binder {
+  position: relative;
+  border-radius: 12px;
+  background: radial-gradient(ellipse at 50% 10%, #4a2712 0%, #2e160a 60%, #1c0c05 100%);
+  border: 3px dashed rgba(245, 195, 100, 0.45);
+  box-shadow:
+    inset 0 3px 12px rgba(0, 0, 0, 0.85),
+    inset 0 0 40px rgba(0, 0, 0, 0.65),
+    0 12px 35px rgba(0, 0, 0, 0.3);
+  overflow: visible;
+}
+
+.silk-ribbon-bookmark {
+  position: absolute;
+  top: -8px;
+  right: 48px;
+  width: 32px;
+  height: 96px;
+  background: linear-gradient(90deg, #990000 0%, #e52d27 50%, #7f0000 100%);
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% calc(100% - 16px), 0% 100%);
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.65));
+  z-index: 10;
+}
+
+.silk-ribbon-bookmark::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 20%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+}
+
+.leather-embossed-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Lucida Grande", sans-serif;
+  color: #f7e6c4;
+  text-shadow: 0 1px 0 #fff3d6, 0 -1px 2px #000000;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.leather-embossed-subtitle {
+  color: #dfcaa2;
+  text-shadow: 0 -1px 1px #000000;
+}
+
+/* ==============================================================================
+   10. Apple Classic 2010-2014 Directory Footer (Faz 3)
+   ============================================================================== */
+
+.apple-classic-footer {
+  background-color: #f2f2f2;
+  border-top: 1px solid #e0e0e0;
+  color: #666666;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Lucida Grande", sans-serif;
+  user-select: none;
+}
+
+.dark .apple-classic-footer {
+  background-color: #17181a;
+  border-top: 1px solid #2a2c30;
+  color: #9c9c9c;
+}
+
+.apple-footer-col-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #333333;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+  margin-bottom: 10px;
+}
+
+.dark .apple-footer-col-title {
+  color: #d1d5db;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7);
+}
+
+.apple-footer-link {
+  font-size: 11px;
+  color: #666666;
+  transition: color 0.12s ease;
+  cursor: pointer;
+  display: block;
+}
+
+.apple-footer-link:hover {
+  color: #000000;
+  text-decoration: underline;
+}
+
+.dark .apple-footer-link {
+  color: #9ca3af;
+}
+
+.dark .apple-footer-link:hover {
+  color: #ffffff;
+}
+
+.apple-footer-legal-bar {
+  border-top: 1px solid #dfdfdf;
+  font-size: 11px;
+  color: #888888;
+}
+
+.dark .apple-footer-legal-bar {
+  border-top: 1px solid #282a2e;
+  color: #71717a;
+}
+
+
 

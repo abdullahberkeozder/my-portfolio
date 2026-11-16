@@ -3,16 +3,14 @@
 import React from 'react';
 import {
   ExternalLink,
-  Zap,
-  Cpu,
-  Database,
+  Globe,
+  Activity,
   Layers,
-  ShieldCheck,
-  Terminal,
-  Code2,
   Sparkles,
+  Terminal,
 } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
+import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
 
 interface FooterProps {
   setActiveTab?: (tab: 'feed' | 'ai-search' | 'ai-lab' | 'admin-batch') => void;
@@ -28,11 +26,13 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenAbout,
 }) => {
   const handleNavFeed = () => {
+    playTabSelect();
     if (setActiveTab) setActiveTab('feed');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleNavModule = (moduleId: string) => {
+    playKeyClick();
     if (setActiveTab) setActiveTab('feed');
     if (onOpenArchitectureConsole) {
       onOpenArchitectureConsole();
@@ -48,16 +48,25 @@ export const Footer: React.FC<FooterProps> = ({
   };
 
   const handleNavAi = () => {
+    playTabSelect();
     if (setActiveTab) setActiveTab('ai-search');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleNavAiLab = () => {
+    playTabSelect();
+    if (setActiveTab) setActiveTab('ai-lab');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleNavBatch = () => {
+    playTabSelect();
     if (setActiveTab) setActiveTab('admin-batch');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleNavBlueprint = () => {
+    playKeyClick();
     if (setActiveTab) setActiveTab('feed');
     setTimeout(() => {
       const el = document.getElementById('system-blueprint-section');
@@ -66,264 +75,236 @@ export const Footer: React.FC<FooterProps> = ({
   };
 
   return (
-    <footer className="relative bg-[#200e38] text-[#c084fc] overflow-hidden pt-16 sm:pt-20 lg:pt-24 border-t border-[#3b1d63] select-none">
-      {/* Ambient Radial Lighting matching Ride Also Aubergine Tone */}
-      <div className="absolute top-0 right-1/4 w-[600px] h-[300px] bg-[#8c52ff]/10 blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/3 w-[500px] h-[250px] bg-[#d4f933]/5 blur-[160px] pointer-events-none" />
-
+    <footer className="apple-classic-footer pt-12 pb-8 border-t select-none transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Main Grid: Split Layout (Direct Ride Also Footer Clone) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
-          {/* Left Column: Monumental Category Links (Articles, Core, Vector AI, Batch ETL) */}
-          <div className="lg:col-span-5 space-y-4 font-sans">
-            <button
-              onClick={handleNavFeed}
-              className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#c084fc] hover:text-white transition-colors duration-200 cursor-pointer block text-left tracking-tight leading-tight"
-            >
-              Makaleler
-            </button>
-            <button
-              onClick={() => handleNavModule('loom')}
-              className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#c084fc] hover:text-white transition-colors duration-200 cursor-pointer block text-left tracking-tight leading-tight"
-            >
-              Çekirdek
-            </button>
-            <button
-              onClick={handleNavAi}
-              className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#c084fc] hover:text-white transition-colors duration-200 cursor-pointer block text-left tracking-tight leading-tight"
-            >
-              Vektör AI
-            </button>
-            <button
-              onClick={handleNavBatch}
-              className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#c084fc] hover:text-white transition-colors duration-200 cursor-pointer block text-left tracking-tight leading-tight"
-            >
-              Batch ETL
-            </button>
+        {/* Apple 2010 Classic 5-Column Sitemap Directory */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 pb-10">
+          {/* Column 1: Makaleler & Yayın */}
+          <div className="space-y-2.5">
+            <h4 className="apple-footer-col-title flex items-center gap-1.5">
+              <span> Nova Makaleler</span>
+            </h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <button onClick={handleNavFeed} className="apple-footer-link text-left">
+                  En Çok Okunanlar
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNavModule('loom')} className="apple-footer-link text-left">
+                  Java 22 Loom & Sanal İş Parçacıkları
+                </button>
+              </li>
+              <li>
+                <button onClick={handleNavAi} className="apple-footer-link text-left">
+                  Spring AI & Vektör Uzayı
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNavModule('db')} className="apple-footer-link text-left">
+                  PostgreSQL & pgvector 128D
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNavModule('redis')} className="apple-footer-link text-left">
+                  Redis Write-Behind Önbellek
+                </button>
+              </li>
+            </ul>
           </div>
 
-          {/* Right Columns: Technical Directory (Company, Resources, Account) */}
-          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8 font-mono text-xs">
-            {/* Column 1: Company / Platform */}
-            <div className="space-y-4">
-              <span className="text-[#e9d5ff] font-bold text-sm tracking-wide block font-sans">
-                Kurumsal
-              </span>
-              <ul className="space-y-2.5 text-[11px] tracking-wider uppercase font-semibold">
-                <li>
-                  <button
-                    onClick={() => {
-                      if (onOpenAbout) {
-                        onOpenAbout();
-                      } else {
-                        window.open('https://github.com/abdullahberkeozder', '_blank');
-                      }
-                    }}
-                    className="hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer uppercase font-semibold"
-                  >
-                    <span>HAKKINDA &amp; MANİFESTO</span>
-                    <Sparkles className="w-3 h-3 text-[#d4f933]" />
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={handleNavFeed}
-                    className="hover:text-white transition-colors text-left cursor-pointer"
-                  >
-                    MAKALELER
-                  </button>
-                </li>
-                <li>
-                  <a
-                    href="https://abdullahberkeozder.vercel.app/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors flex items-center gap-1.5"
-                  >
-                    <span>KARİYER</span>
-                    <ExternalLink className="w-3 h-3 opacity-60" />
-                  </a>
-                </li>
-                <li>
-                  <button
-                    onClick={handleNavBlueprint}
-                    className="hover:text-white transition-colors text-left cursor-pointer"
-                  >
-                    ŞARTNAME // V4.1.1
-                  </button>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 2: Resources / Specifications */}
-            <div className="space-y-4">
-              <span className="text-[#e9d5ff] font-bold text-sm tracking-wide block font-sans">
-                Mimari Kaynaklar
-              </span>
-              <ul className="space-y-2.5 text-[11px] tracking-wider uppercase font-semibold">
-                <li>
-                  <button
-                    onClick={() => handleNavModule('loom')}
-                    className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1"
-                  >
-                    <Zap className="w-3 h-3 text-[#d4f933]" />
-                    <span>JAVA 22 LOOM</span>
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleNavModule('spring-ai')}
-                    className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1"
-                  >
-                    <Layers className="w-3 h-3 text-purple-300" />
-                    <span>SPRING AI VEKTÖR</span>
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleNavModule('write-behind')}
-                    className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1"
-                  >
-                    <Database className="w-3 h-3 text-rose-300" />
-                    <span>WRITE-BEHIND</span>
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleNavModule('optimistic-locking')}
-                    className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1"
-                  >
-                    <ShieldCheck className="w-3 h-3 text-emerald-300" />
-                    <span>JPA @VERSION</span>
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleNavModule('spring-batch')}
-                    className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1"
-                  >
-                    <Cpu className="w-3 h-3 text-amber-300" />
-                    <span>SPRING BATCH 5</span>
-                  </button>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 3: Account & Access */}
-            <div className="space-y-4">
-              <span className="text-[#e9d5ff] font-bold text-sm tracking-wide block font-sans">
-                Erişim & Doğrulama
-              </span>
-              <ul className="space-y-2.5 text-[11px] tracking-wider uppercase font-semibold">
-                <li>
-                  <button
-                    onClick={() => {
-                      if (onOpenTelemetry) onOpenTelemetry();
-                    }}
-                    className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1.5"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#d4f933] animate-pulse" />
-                    <span>GİRİŞ & 2FA DOĞRULAMA</span>
-                  </button>
-                </li>
-                <li>
-                  <a
-                    href="http://localhost:5555/swagger-ui.html"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors flex items-center gap-1.5"
-                  >
-                    <span>SWAGGER UI</span>
-                    <ExternalLink className="w-3 h-3 opacity-60" />
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="http://localhost:5555/h2-console"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors flex items-center gap-1.5"
-                  >
-                    <span>H2 CONSOLE</span>
-                    <ExternalLink className="w-3 h-3 opacity-60" />
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="http://localhost:5555/actuator/health"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors flex items-center gap-1.5"
-                  >
-                    <span>ACTUATOR</span>
-                    <ExternalLink className="w-3 h-3 opacity-60" />
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* Sub-Footer Row: Social Icons on Left & Legal Specifications on Right */}
-        <div className="mt-16 pt-8 border-t border-[#3b1d63] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 font-mono text-xs">
-          {/* Social Icons (Directly below Company Column as in Ride Also) */}
-          <div className="flex items-center gap-4 text-[#c084fc]">
-            <a
-              href="https://github.com/abdullahberkeozder"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 rounded-full bg-white/5 hover:bg-white/15 hover:text-white transition-all cursor-pointer"
-              title="GitHub Profile"
-            >
-              <GithubIcon className="w-4 h-4" />
-            </a>
-            <a
-              href="https://github.com/abdullahberkeozder/my-portfolio"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 rounded-full bg-white/5 hover:bg-white/15 hover:text-white transition-all cursor-pointer"
-              title="Portfolio Monorepo"
-            >
-              <Code2 className="w-4 h-4" />
-            </a>
-            <a
-              href="https://abdullahberkeozder.vercel.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 rounded-full bg-white/5 hover:bg-white/15 hover:text-white transition-all cursor-pointer"
-              title="Architect Portfolio"
-            >
-              <Terminal className="w-4 h-4" />
-            </a>
+          {/* Column 2: Nova Çekirdek & Altyapı */}
+          <div className="space-y-2.5">
+            <h4 className="apple-footer-col-title flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-blue-500" />
+              <span>Çekirdek & Mimari</span>
+            </h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <button onClick={() => handleNavModule('loom')} className="apple-footer-link text-left">
+                  Virtual Thread Executor
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNavModule('redis')} className="apple-footer-link text-left">
+                  Redis L2 Cache Mekanizması
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNavModule('db')} className="apple-footer-link text-left">
+                  HikariCP Bağlantı Havuzu
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNavModule('stream')} className="apple-footer-link text-left">
+                  Kafka Asenkron Olay Kuyruğu
+                </button>
+              </li>
+              <li>
+                <button onClick={handleNavBlueprint} className="apple-footer-link text-left">
+                  Sistem Mimarisi Şeması
+                </button>
+              </li>
+            </ul>
           </div>
 
-          {/* Secondary Legal & Protocol Badges */}
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-[11px] text-[#c084fc]/80 tracking-widest uppercase">
-            <span className="hover:text-white transition-colors cursor-default">
-              BASIN & İLETİŞİM
-            </span>
-            <span className="hover:text-white transition-colors cursor-default">
-              KULLANIM ŞARTLARI
-            </span>
-            <span className="hover:text-white transition-colors cursor-default">
-              GİZLİLİK POLİTİKASI
-            </span>
-            <span className="text-[#d4f933] font-bold">
-              201/201 AUTOMATED TESTS (100% PASS)
-            </span>
+          {/* Column 3: Yapay Zeka & Semantik Arama */}
+          <div className="space-y-2.5">
+            <h4 className="apple-footer-col-title flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Yapay Zeka Laboratuvarı</span>
+            </h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <button onClick={handleNavAi} className="apple-footer-link text-left">
+                  Spring AI Semantik Arama
+                </button>
+              </li>
+              <li>
+                <button onClick={handleNavAi} className="apple-footer-link text-left">
+                  pgvector HNSW İndeksleme
+                </button>
+              </li>
+              <li>
+                <button onClick={handleNavAiLab} className="apple-footer-link text-left">
+                  Kosinüs Benzerliği Matrisi
+                </button>
+              </li>
+              <li>
+                <button onClick={handleNavAiLab} className="apple-footer-link text-left">
+                  1 Dakikalık AI TL;DR Motoru
+                </button>
+              </li>
+              <li>
+                <button onClick={handleNavAiLab} className="apple-footer-link text-left">
+                  LLM Çoklu Ajan Konsolu
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Topluluk & Yazarlar */}
+          <div className="space-y-2.5">
+            <h4 className="apple-footer-col-title flex items-center gap-1.5">
+              <Terminal className="w-3.5 h-3.5 text-purple-500" />
+              <span>Topluluk & Yazarlar</span>
+            </h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <button
+                  onClick={() => {
+                    playKeyClick();
+                    if (onOpenAbout) onOpenAbout();
+                  }}
+                  className="apple-footer-link text-left"
+                >
+                  Nova Manifestosu
+                </button>
+              </li>
+              <li>
+                <button onClick={handleNavFeed} className="apple-footer-link text-left">
+                  Kıdemli Yazar Profilleri
+                </button>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/abdullahberkeozder"
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => playKeyClick()}
+                  className="apple-footer-link flex items-center gap-1"
+                >
+                  <span>Mühendislik Katkıları</span>
+                  <ExternalLink className="w-2.5 h-2.5" />
+                </a>
+              </li>
+              <li>
+                <button onClick={handleNavBatch} className="apple-footer-link text-left">
+                  Batch & ETL Görev Yöneticisi
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 5: Sistem & Geliştirici */}
+          <div className="space-y-2.5">
+            <h4 className="apple-footer-col-title flex items-center gap-1.5">
+              <Activity className="w-3.5 h-3.5 text-amber-500" />
+              <span>Sistem & Tanılama</span>
+            </h4>
+            <ul className="space-y-2 text-xs">
+              <li>
+                <button
+                  onClick={() => {
+                    playKeyClick();
+                    if (onOpenTelemetry) onOpenTelemetry();
+                  }}
+                  className="apple-footer-link text-left"
+                >
+                  Activity Monitor Telemetri
+                </button>
+              </li>
+              <li>
+                <a
+                  href="http://localhost:5555/actuator/health"
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => playKeyClick()}
+                  className="apple-footer-link flex items-center gap-1"
+                >
+                  <span>Spring Boot Actuator Health</span>
+                  <ExternalLink className="w-2.5 h-2.5" />
+                </a>
+              </li>
+              <li>
+                <a
+                  href="http://localhost:5555/swagger-ui/index.html"
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => playKeyClick()}
+                  className="apple-footer-link flex items-center gap-1"
+                >
+                  <span>OpenAPI Swagger Dokümantasyonu</span>
+                  <ExternalLink className="w-2.5 h-2.5" />
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/abdullahberkeozder"
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => playKeyClick()}
+                  className="apple-footer-link flex items-center gap-1.5"
+                >
+                  <GithubIcon className="w-3 h-3" />
+                  <span>GitHub Repository</span>
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
-      </div>
 
-      {/* The Iconic Ride Also Monumental Giant Brandmark ("NOVA.") */}
-      <div className="mt-12 sm:mt-16 lg:mt-20 w-full overflow-hidden select-none group cursor-pointer pb-0 mb-0">
-        <h1
-          onClick={handleNavFeed}
-          title="Sayfa Başına Dön"
-          className="text-[22vw] font-black tracking-tight text-[#a78bfa] group-hover:text-white transition-colors duration-500 ease-out leading-[0.78] uppercase text-left pl-3 sm:pl-6 lg:pl-10 -mb-2 sm:-mb-6 lg:-mb-10 cursor-pointer select-none"
-        >
-          NOVA<span className="text-[#d4f933] group-hover:text-white transition-colors duration-500">.</span>
-        </h1>
+        {/* Global Bottom Bar: Copyright, Legal Links, and Country Selector */}
+        <div className="apple-footer-legal-bar pt-4 flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-center md:text-left">
+            <span>Copyright © 2026 Nova Tech Publication Inc. Tüm hakları saklıdır.</span>
+            <span className="hidden md:inline">&bull;</span>
+            <span className="text-[11px] opacity-80">
+              Mac OS X (10.6–10.11) & iOS 6 Retro Skeuomorphic Experience
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4 text-[11px]">
+            <button
+              type="button"
+              onClick={() => playKeyClick()}
+              className="apple-footer-link flex items-center gap-1 text-[11px] font-medium"
+            >
+              <Globe className="w-3 h-3 text-zinc-500" />
+              <span>🇹🇷 Türkiye (Türkçe)</span>
+            </button>
+          </div>
+        </div>
       </div>
     </footer>
   );

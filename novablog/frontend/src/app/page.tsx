@@ -21,6 +21,8 @@ import { AboutManifestoModal } from '@/components/AboutManifestoModal';
 import { FloatingCopilotWidget } from '@/components/FloatingCopilotWidget';
 import { AuthorProfileModal } from '@/components/AuthorProfileModal';
 import { OmnibarModal } from '@/components/OmnibarModal';
+import { SkeuomorphicLeatherBookmarksBinder } from '@/components/SkeuomorphicLeatherBookmarksBinder';
+import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
 import { BlogDto, BlogSemanticSearchResultDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
 import { useBlogsQuery, useCategoriesQuery } from '@/hooks/useBlogs';
@@ -308,7 +310,7 @@ export default function Home() {
         onFocusSearch={focusSearchInput}
       />
 
-      <main className="flex-1">
+      <main className="flex-1 ios-pinstripe min-h-screen">
         {/* 1. Publication Hero Header */}
         <HeroSection
           onExploreAI={() => {
@@ -324,15 +326,16 @@ export default function Home() {
           <div className="space-y-4 pb-6 border-b border-zinc-200/90 dark:border-zinc-800/80">
             {/* Top Bar: Feed Switcher & Contextual Filter Search */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              {/* Primary Dual-Feed Tabs */}
-              <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-200/70 dark:border-zinc-800/80 w-fit">
+              {/* Primary Dual-Feed Tabs with Mac OS X Segmented Styling */}
+              <div className="ios-segmented-track w-fit">
                 <button
                   type="button"
-                  onClick={() => setFeedMode('explore')}
-                  className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    feedMode === 'explore'
-                      ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-sm'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'
+                  onClick={() => {
+                    playTabSelect();
+                    setFeedMode('explore');
+                  }}
+                  className={`ios-segment-btn flex items-center gap-2 ${
+                    feedMode === 'explore' ? 'active' : ''
                   }`}
                 >
                   <Compass className="w-4 h-4 text-emerald-500" />
@@ -341,17 +344,18 @@ export default function Home() {
 
                 <button
                   type="button"
-                  onClick={() => setFeedMode('following')}
-                  className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    feedMode === 'following'
-                      ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-sm'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'
+                  onClick={() => {
+                    playTabSelect();
+                    setFeedMode('following');
+                  }}
+                  className={`ios-segment-btn flex items-center gap-2 ${
+                    feedMode === 'following' ? 'active' : ''
                   }`}
                 >
                   <Users className="w-4 h-4 text-cyan-500" />
                   <span>TAKİP EDİLENLER</span>
                   {followedAuthors.length > 0 && (
-                    <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 text-[10px] font-mono flex items-center justify-center font-bold">
+                    <span className="w-5 h-5 rounded-full bg-cyan-500 text-white text-[10px] font-mono flex items-center justify-center font-bold shadow-sm">
                       {followedAuthors.length}
                     </span>
                   )}
@@ -359,17 +363,18 @@ export default function Home() {
 
                 <button
                   type="button"
-                  onClick={() => setFeedMode('bookmarks')}
-                  className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    feedMode === 'bookmarks'
-                      ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-sm'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'
+                  onClick={() => {
+                    playTabSelect();
+                    setFeedMode('bookmarks');
+                  }}
+                  className={`ios-segment-btn flex items-center gap-2 ${
+                    feedMode === 'bookmarks' ? 'active' : ''
                   }`}
                 >
                   <Bookmark className="w-4 h-4 text-amber-500" />
                   <span>OKUMA LİSTEM</span>
                   {bookmarkedIds.length > 0 && (
-                    <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[10px] font-mono flex items-center justify-center font-bold">
+                    <span className="w-5 h-5 rounded-full bg-amber-500 text-white text-[10px] font-mono flex items-center justify-center font-bold shadow-sm">
                       {bookmarkedIds.length}
                     </span>
                   )}
@@ -452,7 +457,10 @@ export default function Home() {
                       <button
                         key={topic.id}
                         type="button"
-                        onClick={() => setSelectedTopic(topic.tag)}
+                        onClick={() => {
+                          playKeyClick();
+                          setSelectedTopic(topic.tag);
+                        }}
                         className={`px-3 py-1.5 rounded-lg text-[11px] font-mono font-bold whitespace-nowrap transition-all cursor-pointer ${
                           isActive
                             ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
@@ -475,7 +483,10 @@ export default function Home() {
                   <div className="inline-flex items-center p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-200/70 dark:border-zinc-800/80 font-mono text-[11px]">
                     <button
                       type="button"
-                      onClick={() => setExploreSort('trending')}
+                      onClick={() => {
+                        playKeyClick();
+                        setExploreSort('trending');
+                      }}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all ${
                         exploreSort === 'trending'
                           ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-bold shadow-sm'
@@ -487,7 +498,10 @@ export default function Home() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setExploreSort('featured')}
+                      onClick={() => {
+                        playKeyClick();
+                        setExploreSort('featured');
+                      }}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all ${
                         exploreSort === 'featured'
                           ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-bold shadow-sm'
@@ -499,7 +513,10 @@ export default function Home() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setExploreSort('latest')}
+                      onClick={() => {
+                        playKeyClick();
+                        setExploreSort('latest');
+                      }}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all ${
                         exploreSort === 'latest'
                           ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-bold shadow-sm'
@@ -697,27 +714,17 @@ export default function Home() {
             </div>
           )}
 
-          {/* Bookmarks Empty State */}
+          {/* Bookmarks Empty State: Skeuomorphic Stitched Saddle-Leather Binder */}
           {feedMode === 'bookmarks' && bookmarkedIds.length === 0 && (
-            <div className="py-20 text-center space-y-4 rounded-3xl border border-dashed border-zinc-300 dark:border-zinc-800 p-8">
-              <Bookmark className="w-8 h-8 text-amber-500 mx-auto" />
-              <div className="space-y-1">
-                <h4 className="font-bold text-zinc-950 dark:text-white text-base">
-                  Okuma Listeniz Henüz Boş
-                </h4>
-                <p className="text-xs sm:text-sm text-zinc-500 max-w-md mx-auto">
-                  Makalelerin üzerindeki yer imi (bookmark) simgesine tıklayarak daha sonra okumak istediğiniz teknik yazıları buraya kaydedebilirsiniz.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setFeedMode('explore')}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-black text-xs font-bold transition-transform active:scale-95 cursor-pointer"
-              >
-                <Compass className="w-4 h-4" />
-                <span>Makaleleri Keşfet</span>
-              </button>
-            </div>
+            <SkeuomorphicLeatherBookmarksBinder
+              title="Okuma Listeniz Henüz Boş"
+              subtitle="Makalelerin üzerindeki yer imi (bookmark) simgesine tıklayarak daha sonra çevrimdışı incelemek istediğiniz teknik yazıları bu arşive ekleyebilirsiniz."
+              badgeText="MAC OS X SAFARI READING LIST"
+              actionText="Makaleleri Keşfet"
+              onAction={() => {
+                setFeedMode('explore');
+              }}
+            />
           )}
 
           {/* Blog Cards Grid */}
