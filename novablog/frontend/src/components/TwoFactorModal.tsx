@@ -17,12 +17,26 @@ import {
   Lock,
   ShieldOff,
   AlertTriangle,
+  Delete,
 } from 'lucide-react';
+import { playKeyClick } from '@/lib/retroAudio';
 
 interface TwoFactorModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const KEYPAD_BUTTONS = [
+  { num: '1', sub: '' },
+  { num: '2', sub: 'ABC' },
+  { num: '3', sub: 'DEF' },
+  { num: '4', sub: 'GHI' },
+  { num: '5', sub: 'JKL' },
+  { num: '6', sub: 'MNO' },
+  { num: '7', sub: 'PQRS' },
+  { num: '8', sub: 'TUV' },
+  { num: '9', sub: 'WXYZ' },
+];
 
 export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpen, onClose }) => {
   const { data: status, refetch: refetchStatus } = useTwoFactorStatusQuery(isOpen);
@@ -48,7 +62,20 @@ export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpen, onClose 
 
   if (!isOpen) return null;
 
+  const handleKeypadPress = (digit: string) => {
+    playKeyClick('crisp');
+    if (verifyCode.length < 6) {
+      setVerifyCode((prev) => prev + digit);
+    }
+  };
+
+  const handleKeypadDelete = () => {
+    playKeyClick('soft');
+    setVerifyCode((prev) => prev.slice(0, -1));
+  };
+
   const handleStartSetup = async () => {
+    playKeyClick('crisp');
     setIsLoading(true);
     setErrorMessage(null);
     try {
@@ -61,12 +88,13 @@ export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpen, onClose 
     }
   };
 
-  const handleVerifyAndEnable = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleVerifyAndEnable = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!verifyCode.trim() || verifyCode.length < 6) {
       setErrorMessage('Lütfen 6 haneli doğrulama kodunu giriniz.');
       return;
     }
+    playKeyClick('crisp');
     setIsLoading(true);
     setErrorMessage(null);
     try {
@@ -87,6 +115,7 @@ export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpen, onClose 
       setErrorMessage('Kapatmak için lütfen 6 haneli kodunuzu giriniz.');
       return;
     }
+    playKeyClick('crisp');
     setIsLoading(true);
     setErrorMessage(null);
     try {
@@ -103,6 +132,7 @@ export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpen, onClose 
 
   const handleCopyKey = () => {
     if (!setupData?.manualEntryKey) return;
+    playKeyClick('crisp');
     navigator.clipboard.writeText(setupData.manualEntryKey.replace(/\s+/g, ''));
     setCopiedKey(true);
     setTimeout(() => setCopiedKey(false), 2000);
@@ -111,176 +141,221 @@ export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpen, onClose 
   const isEnabled = status?.is2faEnabled ?? false;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-xl rounded-3xl bg-white dark:bg-[#0d0f14] border border-black/10 dark:border-white/10 text-zinc-900 dark:text-zinc-100 shadow-2xl overflow-hidden my-auto animate-in fade-in duration-200">
-        {/* Modal Header */}
-        <div className="p-6 border-b border-black/[0.08] dark:border-white/[0.08] flex items-center justify-between bg-zinc-50 dark:bg-zinc-950/60 font-mono">
-          <div className="flex items-center gap-3">
-            <div
-              className={`w-10 h-10 rounded-2xl flex items-center justify-center border shadow-sm ${
-                isEnabled
-                  ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-500'
-                  : 'bg-zinc-900 dark:bg-zinc-800 border-black/10 dark:border-white/10 text-[#d4f933]'
-              }`}
-            >
-              {isEnabled ? <ShieldCheck className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 backdrop-blur-md overflow-y-auto"
+      onClick={handleClose}
+    >
+      <div
+        className="relative mac-security-dialog shadow-2xl overflow-hidden my-auto animate-in zoom-in-95 duration-150"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Mac OS X Window Title Bar with Traffic Lights */}
+        <div className="h-10 px-4 bg-gradient-to-b from-[#f2f2f2] to-[#d8d8d8] dark:from-[#2c3038] dark:to-[#1e2127] border-b border-[#a8a8a8] dark:border-[#383d47] flex items-center justify-between select-none">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handleClose}
+                className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] hover:opacity-80 cursor-pointer"
+                title="Kapat"
+              />
+              <span className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
+              <span className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-zinc-950 dark:text-white text-base uppercase">
-                  2FA // TOTP GÜVENLİK MERKEZİ
-                </h3>
-                <span
-                  className={`text-[10px] uppercase px-2 py-0.5 rounded-full font-bold border ${
-                    isEnabled
-                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
-                      : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-black/10 dark:border-white/10'
-                  }`}
-                >
-                  {isEnabled ? 'AKTİF (ENABLED)' : 'KAPALI (DISABLED)'}
-                </span>
-              </div>
-              <p className="text-xs text-zinc-500 mt-0.5">
-                RFC 6238 TOTP &bull; GOOGLE AUTHENTICATOR &bull; BACKUP CODES
-              </p>
-            </div>
+            <span className="ml-3 font-mono text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
+              Mac OS X Keychain — 2FA Yetkilendirmesi
+            </span>
           </div>
 
-          <button
-            onClick={handleClose}
-            className="p-2 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-500 hover:text-black dark:hover:text-white transition-all cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-[9px] font-mono uppercase px-2 py-0.5 rounded font-bold border ${
+                isEnabled
+                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
+                  : 'bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700'
+              }`}
+            >
+              {isEnabled ? 'KORUMA: AKTİF' : 'KORUMA: KAPALI'}
+            </span>
+            <button
+              type="button"
+              onClick={handleClose}
+              className="p-1 rounded text-zinc-500 hover:text-black dark:hover:text-white cursor-pointer ml-1"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-6 text-xs font-mono">
+        <div className="p-6 space-y-5 bg-[#f6f6f6] dark:bg-[#16181d]">
           {/* Alerts */}
           {errorMessage && (
-            <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 shrink-0" />
+            <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-sans flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-rose-500" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           {successMessage && (
-            <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-sans flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
               <span>{successMessage}</span>
             </div>
           )}
 
-          {/* STATE 1: 2FA IS NOT ENABLED AND NO SETUP IN PROGRESS */}
+          {/* STATE 1: 2FA NOT ENABLED & NO SETUP YET */}
           {!isEnabled && !setupData && (
-            <div className="space-y-4">
-              <div className="p-5 rounded-3xl bg-zinc-50 dark:bg-zinc-900/50 border border-black/[0.08] dark:border-white/[0.08] space-y-3">
-                <div className="flex items-center gap-2 text-zinc-900 dark:text-white font-bold text-sm">
-                  <ShieldAlert className="w-4 h-4 text-amber-500" />
-                  <span>Hesabınızda İki Faktörlü Doğrulama Aktif Değil</span>
-                </div>
-                <p className="text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed text-xs">
-                  Hesabınızı parola sızıntılarına ve brute-force saldırılarına karşı korumak için Google Authenticator,
-                  1Password veya Authy ile zaman tabanlı tek kullanımlık şifre (TOTP) korumasını açabilirsiniz.
+            <div className="space-y-4 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-b from-white to-[#dedede] dark:from-[#2e333d] dark:to-[#1e2128] border border-zinc-300 dark:border-zinc-700 shadow-md flex items-center justify-center mx-auto text-amber-500">
+                <ShieldAlert className="w-8 h-8" />
+              </div>
+
+              <div className="space-y-1">
+                <h4 className="text-sm font-bold text-zinc-900 dark:text-white">
+                  İki Faktörlü Kimlik Doğrulama Kapalı
+                </h4>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed max-w-sm mx-auto">
+                  Hesabınızı ve mimari ayarlarınızı korumak için Google Authenticator veya 1Password ile RFC 6238 TOTP şifre korumasını etkinleştirin.
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={handleStartSetup}
-                disabled={isLoading}
-                className="w-full py-3.5 px-5 rounded-full bg-zinc-950 dark:bg-[#d4f933] text-white dark:text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-transform active:scale-95 cursor-pointer shadow-md disabled:opacity-50"
-              >
-                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <QrCode className="w-4 h-4" />}
-                <span>2FA KURULUMUNU BAŞLAT (QR KOD AL)</span>
-              </button>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={handleStartSetup}
+                  disabled={isLoading}
+                  className="ios6-btn ios6-btn-blue w-full py-2.5 text-xs font-bold uppercase"
+                >
+                  {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <QrCode className="w-4 h-4" />}
+                  <span>2FA Kurulumunu Başlat</span>
+                </button>
+              </div>
             </div>
           )}
 
-          {/* STATE 2: SETUP IN PROGRESS (PENDING_VERIFICATION) */}
+          {/* STATE 2: SETUP IN PROGRESS WITH PASSCODE KEYPAD */}
           {!isEnabled && setupData && !recoveryData && (
-            <div className="space-y-5">
-              <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-black/[0.08] dark:border-white/[0.08] space-y-4">
-                <div className="text-center space-y-1">
-                  <span className="text-[10px] text-zinc-400 font-bold uppercase">ADIM 1 / 2</span>
-                  <h4 className="text-sm font-bold text-zinc-900 dark:text-white">QR Kodu Authenticator ile Tarayın</h4>
-                </div>
-
-                {/* QR Code Container */}
-                <div className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-black/10 mx-auto max-w-[200px]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={setupData.qrCodeDataUri}
-                    alt="2FA TOTP QR Kodu"
-                    className="w-40 h-40 object-contain"
-                  />
-                </div>
-
-                {/* Manual Entry Key */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-[11px] text-zinc-500">
-                    <span>Manuel Giriş Anahtarı:</span>
+            <div className="space-y-4">
+              {/* QR Code Container */}
+              <div className="p-3 bg-white rounded-xl border border-zinc-300 dark:border-zinc-700 flex items-center gap-4">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={setupData.qrCodeDataUri}
+                  alt="2FA TOTP QR Kodu"
+                  className="w-24 h-24 object-contain shrink-0"
+                />
+                <div className="space-y-1 text-xs">
+                  <div className="font-bold text-zinc-900 dark:text-zinc-100">
+                    Authenticator ile Tarayın
+                  </div>
+                  <p className="text-[11px] text-zinc-500 font-sans">
+                    Veya aşağıdaki anahtarı manuel girin:
+                  </p>
+                  <div className="flex items-center gap-1.5 pt-1">
+                    <span className="font-mono font-bold text-[10px] text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded border border-zinc-200 dark:border-zinc-700">
+                      {setupData.manualEntryKey.substring(0, 14)}...
+                    </span>
                     <button
                       type="button"
                       onClick={handleCopyKey}
-                      className="text-zinc-900 dark:text-[#d4f933] hover:underline flex items-center gap-1 cursor-pointer font-bold"
+                      className="ios6-btn ios6-btn-silver px-2 py-0.5 text-[9px]"
                     >
-                      {copiedKey ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                      <span>{copiedKey ? 'Kopyalandı' : 'Kopyala'}</span>
+                      {copiedKey ? <Check className="w-2.5 h-2.5" /> : <Copy className="w-2.5 h-2.5" />}
+                      <span>{copiedKey ? 'Kopyalandı' : 'Kopya'}</span>
                     </button>
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200 text-center font-bold tracking-widest text-xs select-all">
-                    {setupData.manualEntryKey}
                   </div>
                 </div>
               </div>
 
-              {/* Verification Form */}
-              <form onSubmit={handleVerifyAndEnable} className="space-y-3">
-                <div className="space-y-1.5">
-                  <label htmlFor="totp-code" className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300">
-                    ADIM 2 / 2: Uygulamadaki 6 Haneli Kodu Girin
-                  </label>
-                  <input
-                    id="totp-code"
-                    type="text"
-                    maxLength={6}
-                    placeholder="000000"
-                    value={verifyCode}
-                    onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, ''))}
-                    className="w-full text-center tracking-[0.5em] text-xl font-bold py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-zinc-950 dark:text-white focus:outline-none focus:border-[#d4f933]"
-                  />
+              {/* Passcode Indicator Dots */}
+              <div className="text-center space-y-2 pt-1">
+                <div className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                  6 Haneli TOTP Şifresini Tuşlayın:
                 </div>
+                <div className="flex items-center justify-center gap-3">
+                  {[0, 1, 2, 3, 4, 5].map((idx) => (
+                    <div
+                      key={idx}
+                      className={`mac-passcode-dot ${idx < verifyCode.length ? 'filled' : ''}`}
+                    />
+                  ))}
+                </div>
+              </div>
 
+              {/* Apple Circular Passcode Keypad */}
+              <div className="grid grid-cols-3 gap-3 justify-items-center max-w-[240px] mx-auto py-1">
+                {KEYPAD_BUTTONS.map((b) => (
+                  <button
+                    key={b.num}
+                    type="button"
+                    onClick={() => handleKeypadPress(b.num)}
+                    className="mac-passcode-btn"
+                  >
+                    <span className="num">{b.num}</span>
+                    {b.sub && <span className="sub">{b.sub}</span>}
+                  </button>
+                ))}
+                {/* Blank space */}
+                <div />
+                {/* 0 Key */}
                 <button
-                  type="submit"
-                  disabled={isLoading || verifyCode.length < 6}
-                  className="w-full py-3.5 px-5 rounded-full bg-zinc-950 dark:bg-[#d4f933] text-white dark:text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-transform active:scale-95 cursor-pointer shadow-md disabled:opacity-50"
+                  type="button"
+                  onClick={() => handleKeypadPress('0')}
+                  className="mac-passcode-btn"
                 >
-                  {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                  <span>DOĞRULA VE 2FA&apos;YI AKTİF ET</span>
+                  <span className="num">0</span>
                 </button>
-              </form>
+                {/* Backspace Key */}
+                <button
+                  type="button"
+                  onClick={handleKeypadDelete}
+                  className="mac-passcode-btn"
+                  title="Sil"
+                >
+                  <Delete className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+                </button>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex items-center justify-between gap-3 border-t border-zinc-200 dark:border-zinc-800">
+                <button
+                  type="button"
+                  onClick={() => setSetupData(null)}
+                  className="ios6-btn ios6-btn-silver px-4 py-2 text-xs"
+                >
+                  Geri Dön
+                </button>
+                <button
+                  type="button"
+                  disabled={isLoading || verifyCode.length < 6}
+                  onClick={() => handleVerifyAndEnable()}
+                  className="ios6-btn ios6-btn-blue px-5 py-2 text-xs font-bold uppercase"
+                >
+                  {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                  <span>Doğrula & Aktif Et</span>
+                </button>
+              </div>
             </div>
           )}
 
-          {/* STATE 3: JUST ENABLED WITH RECOVERY CODES */}
+          {/* STATE 3: RECOVERY CODES VOUCHER */}
           {recoveryData && (
             <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-200 space-y-2">
-                <div className="flex items-center gap-2 font-bold text-sm">
-                  <KeyRound className="w-4 h-4 text-emerald-500" />
+              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 space-y-2">
+                <div className="flex items-center gap-2 font-bold text-xs uppercase">
+                  <KeyRound className="w-4 h-4 text-emerald-600" />
                   <span>Acil Durum Kurtarma Kodlarınız</span>
                 </div>
                 <p className="text-[11px] font-sans leading-relaxed">
-                  Telefonunuza erişiminizi kaybederseniz hesabınıza girmek için bu kodları kullanabilirsiniz. Lütfen
-                  güvenli bir yere kaydediniz:
+                  Cihazınızı kaybederseniz hesabınıza erişmek için bu kodları kullanabilirsiniz:
                 </p>
-                <div className="grid grid-cols-2 gap-2 pt-2">
+                <div className="grid grid-cols-2 gap-2 pt-1 font-mono">
                   {recoveryData.recoveryCodes.map((c, i) => (
                     <div
                       key={i}
-                      className="p-2 rounded-xl bg-white/70 dark:bg-black/40 border border-emerald-500/20 text-center font-bold tracking-wider text-xs select-all"
+                      className="p-1.5 rounded bg-white dark:bg-black/40 border border-emerald-500/20 text-center font-bold text-xs"
                     >
                       {c}
                     </div>
@@ -290,42 +365,41 @@ export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpen, onClose 
 
               <button
                 type="button"
-                onClick={() => setRecoveryData(null)}
-                className="w-full py-3 px-5 rounded-full bg-zinc-900 dark:bg-zinc-800 text-white font-bold text-xs uppercase cursor-pointer"
+                onClick={() => {
+                  playKeyClick('crisp');
+                  setRecoveryData(null);
+                }}
+                className="ios6-btn ios6-btn-blue w-full py-2.5 text-xs font-bold uppercase"
               >
-                <span>ANLADIM, GÜVENLİ BİR YERE KAYDETTİM</span>
+                <span>Güvenli Bir Yere Kaydettim</span>
               </button>
             </div>
           )}
 
-          {/* STATE 4: 2FA IS ACTIVELY ENABLED */}
+          {/* STATE 4: 2FA ACTIVELY ENABLED */}
           {isEnabled && !recoveryData && (
-            <div className="space-y-5">
-              <div className="p-5 rounded-3xl bg-emerald-500/10 border border-emerald-500/25 space-y-3">
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/25 space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold text-sm">
-                    <ShieldCheck className="w-5 h-5 text-emerald-500" />
+                  <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-400 font-bold text-xs uppercase">
+                    <ShieldCheck className="w-4 h-4 text-emerald-500" />
                     <span>2FA Koruması Tam Olarak Aktif</span>
                   </div>
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
                     GÜVENLİ
                   </span>
                 </div>
-                <p className="text-zinc-600 dark:text-zinc-300 font-sans leading-relaxed text-xs">
-                  Hesabınız Google Authenticator / TOTP ile korunmaktadır. Her oturum açışta parola doğrulandıktan sonra
-                  hesabınıza 6 haneli kod sorulur.
+                <p className="text-zinc-600 dark:text-zinc-300 font-sans text-xs leading-relaxed">
+                  Hesabınız Google Authenticator / TOTP ile korunmaktadır. Kalan acil durum kodları: {status?.remainingBackupCodes ?? 8} adet.
                 </p>
-                <div className="flex items-center gap-4 pt-2 text-[11px] text-zinc-500">
-                  <span>Kalan Kurtarma Kodları: {status?.remainingBackupCodes ?? 8} adet</span>
-                </div>
               </div>
 
-              {/* Disable Form */}
-              <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/40 border border-black/[0.08] dark:border-white/[0.08] space-y-3">
-                <h5 className="font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                  <ShieldOff className="w-4 h-4 text-rose-500" />
-                  <span>2FA Korumasını Kapat</span>
-                </h5>
+              {/* Disable 2FA Form */}
+              <div className="p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
+                <div className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                  <ShieldOff className="w-3.5 h-3.5 text-rose-500" />
+                  <span>Korumayı Devre Dışı Bırak</span>
+                </div>
                 <form onSubmit={handleDisable2fa} className="flex gap-2">
                   <input
                     type="text"
@@ -333,19 +407,25 @@ export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpen, onClose 
                     placeholder="6 haneli kod"
                     value={disableCode}
                     onChange={(e) => setDisableCode(e.target.value.replace(/\D/g, ''))}
-                    className="flex-1 px-3 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-xs font-mono text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-rose-500"
+                    className="flex-1 px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-mono text-zinc-900 dark:text-zinc-100 focus:outline-none"
                   />
                   <button
                     type="submit"
                     disabled={isLoading || disableCode.length < 6}
-                    className="px-4 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-600 dark:text-rose-400 font-bold border border-rose-500/30 transition-all cursor-pointer disabled:opacity-50 shrink-0"
+                    className="ios6-btn ios6-btn-red px-3 py-1.5 text-xs font-bold"
                   >
-                    {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'KAPAT'}
+                    {isLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Kapat'}
                   </button>
                 </form>
               </div>
             </div>
           )}
+        </div>
+
+        {/* Footer */}
+        <div className="h-8 px-4 bg-[#e8e8e8] dark:bg-[#1a1c22] border-t border-[#c0c0c0] dark:border-[#2c3038] flex items-center justify-between text-[10px] font-mono text-zinc-500 select-none">
+          <span>MAC OS X KEYCHAIN ACCESS</span>
+          <span>RFC 6238 TOTP ENGINE</span>
         </div>
       </div>
     </div>
