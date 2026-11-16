@@ -13,35 +13,6 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-// Web Audio API Synthesizer - Kaolti tactile mechanical click
-const playTactileClick = (targetTheme: Theme) => {
-  try {
-    const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = targetTheme === 'dark' ? 'sine' : 'triangle';
-    const startFreq = targetTheme === 'dark' ? 380 : 560;
-    const endFreq = targetTheme === 'dark' ? 140 : 260;
-
-    osc.frequency.setValueAtTime(startFreq, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + 0.045);
-
-    gain.gain.setValueAtTime(0.06, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.045);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start();
-    osc.stop(ctx.currentTime + 0.05);
-  } catch {
-    // Ignore audio permission or context errors
-  }
-};
-
 const THEME_CHANGE_EVENT = 'novablog-theme-change';
 
 const subscribe = (callback: () => void) => {
@@ -70,46 +41,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [theme]);
 
   const applyTheme = useCallback((newTheme: Theme) => {
-    // High-performance theme switch: Temporarily freeze transitions across the DOM
-    // to prevent 100+ simultaneous CSS color/shadow transition calculations (60/120/240 FPS guarantee)
-    let css: HTMLStyleElement | null = null;
-    if (typeof document !== 'undefined') {
-      css = document.createElement('style');
-      css.setAttribute('data-theme-transition', 'freeze');
-      css.textContent = `*, *::before, *::after {
-        -webkit-transition: none !important;
-        -moz-transition: none !important;
-        -o-transition: none !important;
-        -ms-transition: none !important;
-        transition: none !important;
-      }`;
-      document.head.appendChild(css);
-    }
-
     localStorage.setItem('novablog_theme', newTheme);
     window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
     document.documentElement.setAttribute('data-theme', newTheme);
-
-    if (css) {
-      // Force instant clean style recalculation
-      void window.getComputedStyle(document.body).backgroundColor;
-
-      // Re-enable smooth interactive transitions on subsequent frame
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (css && css.parentNode) {
-            css.parentNode.removeChild(css);
-          }
-        });
-      });
-    }
   }, []);
 
   const toggleTheme = useCallback(
     (event?: React.MouseEvent) => {
       const nextTheme: Theme = theme === 'dark' ? 'light' : 'dark';
-      playTactileClick(nextTheme);
 
       const hasViewTransition =
         typeof document !== 'undefined' &&

@@ -3,6 +3,7 @@
 import React from 'react';
 import { Search, ShieldAlert } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
+import { MacThemeToggle } from './MacThemeToggle';
 import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
 import { NavTab } from './Navbar';
 
@@ -173,6 +174,11 @@ export const AppleGlobalAcrylicNavBar: React.FC<AppleGlobalAcrylicNavBarProps> =
             <ShieldAlert className="w-3.5 h-3.5" />
           </button>
         )}
+
+        {/* Mac OS X Skeuomorphic Day/Night Celestial Switch */}
+        <div className="flex items-center">
+          <MacThemeToggle size="compact" className="scale-90" />
+        </div>
 
         {/* GitHub Link */}
         <a

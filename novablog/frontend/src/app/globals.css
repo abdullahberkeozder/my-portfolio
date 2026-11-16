@@ -53,7 +53,43 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Global Smooth Theme Transition across Structural Shell Containers */
+header,
+nav,
+footer,
+main,
+section,
+article,
+aside,
+.ios6-card,
+.ios-grouped-table,
+.mac-window-frame,
+.apple-global-nav,
+.apple-toolbar-44,
+.mac-dock-shelf,
+.mac-hud-surface {
+  transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Global Skeuomorphic Button Smooth Physics */
+button,
+[role="button"],
+input[type="button"],
+input[type="submit"] {
+  transition: background 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.12s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Ride Also Structural Grid Pattern */

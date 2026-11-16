@@ -45,198 +45,24 @@ class RetroAudioEngine {
    * 1. Classic Mechanical Plastic Key Click
    * Simulates the iconic iPhone keyboard / button tap.
    */
-  playKeyClick(tone: 'crisp' | 'soft' = 'crisp') {
-    if (this.isMuted) return;
-    const ctx = this.getContext();
-    if (!ctx) return;
-
-    try {
-      const now = ctx.currentTime;
-
-      // Component A: Short white noise pop
-      const bufferSize = Math.floor(ctx.sampleRate * 0.018);
-      const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const output = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        output[i] = Math.random() * 2 - 1;
-      }
-
-      const noise = ctx.createBufferSource();
-      noise.buffer = noiseBuffer;
-
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(tone === 'crisp' ? 3600 : 2200, now);
-      filter.Q.setValueAtTime(3.0, now);
-
-      const noiseGain = ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.35, now);
-      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
-
-      noise.connect(filter);
-      filter.connect(noiseGain);
-      noiseGain.connect(ctx.destination);
-
-      // Component B: Pitched resonant decay
-      const osc = ctx.createOscillator();
-      const oscGain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(tone === 'crisp' ? 340 : 200, now);
-      osc.frequency.exponentialRampToValueAtTime(45, now + 0.022);
-
-      oscGain.gain.setValueAtTime(0.25, now);
-      oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.022);
-
-      osc.connect(oscGain);
-      oscGain.connect(ctx.destination);
-
-      noise.start(now);
-      noise.stop(now + 0.02);
-      osc.start(now);
-      osc.stop(now + 0.025);
-    } catch {
-      // Graceful fallback if Web Audio is unsupported or restricted
-    }
+  playKeyClick(_tone: 'crisp' | 'soft' = 'crisp') {
+    // Meaningless click sounds removed per user specification
   }
 
-  /**
-   * 2. Mechanical Relay / Rocker Switch Sound (UISwitch Toggle)
-   * Simulates the physical slider latching into place.
-   */
-  playSwitchToggle(state?: boolean) {
-    if (this.isMuted) return;
-    const ctx = this.getContext();
-    if (!ctx) return;
-
-    try {
-      const now = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = 'triangle';
-      const startFreq = state ? 220 : 160;
-      const endFreq = state ? 90 : 60;
-
-      osc.frequency.setValueAtTime(startFreq, now);
-      osc.frequency.exponentialRampToValueAtTime(endFreq, now + 0.035);
-
-      gain.gain.setValueAtTime(0.4, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.04);
-    } catch {
-      // ignore
-    }
+  playSwitchToggle(_state?: boolean) {
+    // Meaningless switch sounds removed per user specification
   }
 
-  /**
-   * 3. Segmented Control & Tab Switch Sound
-   * Metallic subtle click when switching between tabs.
-   */
   playTabSelect() {
-    if (this.isMuted) return;
-    const ctx = this.getContext();
-    if (!ctx) return;
-
-    try {
-      const now = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(540, now);
-      osc.frequency.exponentialRampToValueAtTime(110, now + 0.025);
-
-      gain.gain.setValueAtTime(0.2, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.03);
-    } catch {
-      // ignore
-    }
+    // Meaningless tab select sounds removed per user specification
   }
 
-  /**
-   * 4. Mac OS X Window Sheet Open Chime
-   * Soft resonant harmonic pop simulating an Aqua sheet sliding down.
-   */
   playWindowOpen() {
-    if (this.isMuted) return;
-    const ctx = this.getContext();
-    if (!ctx) return;
-
-    try {
-      const now = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(440, now);
-      osc.frequency.exponentialRampToValueAtTime(880, now + 0.08);
-
-      gain.gain.setValueAtTime(0.01, now);
-      gain.gain.linearRampToValueAtTime(0.18, now + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.11);
-    } catch {
-      // ignore
-    }
+    // Meaningless window open chime removed per user specification
   }
 
-  /**
-   * 5. iOS Mail / Post Published "Whoosh"
-   * Filtered airy noise ramp simulating a sent message.
-   */
   playSendWhoosh() {
-    if (this.isMuted) return;
-    const ctx = this.getContext();
-    if (!ctx) return;
-
-    try {
-      const now = ctx.currentTime;
-      const bufferSize = Math.floor(ctx.sampleRate * 0.18);
-      const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const output = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        output[i] = Math.random() * 2 - 1;
-      }
-
-      const noise = ctx.createBufferSource();
-      noise.buffer = noiseBuffer;
-
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(800, now);
-      filter.frequency.exponentialRampToValueAtTime(3200, now + 0.15);
-      filter.Q.setValueAtTime(2.0, now);
-
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0.01, now);
-      gain.gain.linearRampToValueAtTime(0.3, now + 0.06);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-
-      noise.connect(filter);
-      filter.connect(gain);
-      gain.connect(ctx.destination);
-
-      noise.start(now);
-      noise.stop(now + 0.19);
-    } catch {
-      // ignore
-    }
+    // Meaningless whoosh sounds removed per user specification
   }
 }
 

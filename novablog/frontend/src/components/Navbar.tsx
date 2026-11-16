@@ -15,7 +15,7 @@ import {
   Search,
 } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
-import { AquariumToggle } from './AquariumToggle';
+import { MacThemeToggle } from './MacThemeToggle';
 import { AppleGlobalAcrylicNavBar } from './AppleGlobalAcrylicNavBar';
 import { MacWindowChrome } from './MacWindowChrome';
 import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
@@ -363,9 +363,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {/* Living Pixel Aquarium Theme Toggle */}
-            <div className="p-0.5 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5">
-              <AquariumToggle compact compactWidth={76} className="shrink-0" />
+            {/* Apple Mac OS X Skeuomorphic Day/Night Celestial Switch */}
+            <div className="flex items-center shrink-0">
+              <MacThemeToggle />
             </div>
 
             {/* GitHub Icon Link */}
