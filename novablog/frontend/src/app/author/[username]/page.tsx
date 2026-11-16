@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use, useState, useEffect } from 'react';
+import React, { use, useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -25,7 +25,18 @@ interface AuthorPageProps {
   params: Promise<{ username: string }>;
 }
 
-export default function AuthorPage({ params }: AuthorPageProps) {
+function AuthorPageSkeleton() {
+  return (
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center font-mono text-xs text-zinc-500">
+      <div className="space-y-3 text-center">
+        <RefreshCw className="w-6 h-6 animate-spin mx-auto text-emerald-500" />
+        <p className="tracking-widest uppercase">YAZAR PROFİLİ YÜKLENİYOR...</p>
+      </div>
+    </div>
+  );
+}
+
+function AuthorContent({ params }: AuthorPageProps) {
   const resolvedParams = use(params);
   const username = decodeURIComponent(resolvedParams.username || '');
   const router = useRouter();
@@ -317,5 +328,13 @@ export default function AuthorPage({ params }: AuthorPageProps) {
         />
       )}
     </div>
+  );
+}
+
+export default function AuthorPage(props: AuthorPageProps) {
+  return (
+    <Suspense fallback={<AuthorPageSkeleton />}>
+      <AuthorContent {...props} />
+    </Suspense>
   );
 }

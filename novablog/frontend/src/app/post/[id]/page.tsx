@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use, useState, useEffect } from 'react';
+import React, { use, useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -29,7 +29,18 @@ interface PostPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default function PostPage({ params }: PostPageProps) {
+function PostPageSkeleton() {
+  return (
+    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center font-mono text-xs text-zinc-500">
+      <div className="space-y-3 text-center">
+        <RefreshCw className="w-6 h-6 animate-spin mx-auto text-emerald-500" />
+        <p className="tracking-widest uppercase">MAKALE OKUMA TUVALİ YÜKLENİYOR...</p>
+      </div>
+    </div>
+  );
+}
+
+function PostContent({ params }: PostPageProps) {
   const resolvedParams = use(params);
   const rawId = resolvedParams.id;
   const blogId = Number(rawId);
@@ -777,5 +788,13 @@ export default function PostPage({ params }: PostPageProps) {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function PostPage(props: PostPageProps) {
+  return (
+    <Suspense fallback={<PostPageSkeleton />}>
+      <PostContent {...props} />
+    </Suspense>
   );
 }
