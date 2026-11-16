@@ -35,9 +35,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleOpenCreate = () => {
-    playWindowOpen();
-    onOpenCreateModal();
+  const handleExploreAI = () => {
+    playKeyClick('crisp');
+    if (onExploreAI) {
+      onExploreAI();
+    } else {
+      const el = document.getElementById('ai-vector-studio');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const handleOpenConsole = () => {
@@ -89,9 +94,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </p>
             </div>
 
-            {/* Tactile Action Buttons: Aqua Glass + Brushed Silver */}
+            {/* Tactile Action Buttons: Aqua Glass + Brushed Silver Controls */}
             <div className="flex flex-wrap items-center gap-3 pt-1">
-              {/* Primary: Apple Aqua Button */}
+              {/* Primary: Apple Aqua Button (Feed Exploration) */}
               <button
                 onClick={scrollToFeed}
                 className="mac-aqua-btn flex items-center gap-2 !px-5 !py-2.5 !text-xs font-bold"
@@ -102,24 +107,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <ArrowDown className="w-3.5 h-3.5 opacity-80" />
               </button>
 
-              {/* Secondary: Brushed Silver Button */}
-              <button
-                onClick={handleOpenCreate}
-                className="ios6-btn ios6-btn-silver flex items-center gap-2 !px-5 !py-2.5 !text-xs font-bold"
-                title="Mac Mail tarzı makale yazma penceresini aç"
-              >
-                <PenSquare className="w-4 h-4 text-zinc-800 dark:text-zinc-200" />
-                <span>Yeni Makale Yaz</span>
-              </button>
-
-              {/* Tertiary: Telemetry Console Direct Jump */}
+              {/* Secondary: Architecture & Telemetry Console */}
               <button
                 onClick={handleOpenConsole}
-                className="ios6-btn ios6-btn-silver flex items-center gap-1.5 !px-3.5 !py-2.5 !text-xs text-zinc-600 dark:text-zinc-300 font-semibold"
-                title="Activity Monitor telemetri konsoluna git"
+                className="ios6-btn ios6-btn-silver flex items-center gap-2 !px-4 !py-2.5 !text-xs font-bold"
+                title="Activity Monitor & Donanım Telemetrisi konsoluna git"
               >
-                <Activity className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                <span className="hidden sm:inline">Telemetri</span>
+                <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span>Mimari & Telemetri</span>
+              </button>
+
+              {/* Tertiary: Spring AI pgvector Neural Lab */}
+              <button
+                onClick={handleExploreAI}
+                className="ios6-btn ios6-btn-silver flex items-center gap-2 !px-4 !py-2.5 !text-xs text-zinc-700 dark:text-zinc-200 font-bold"
+                title="Spring AI ve pgvector 128D anlamsal arama laboratuvarına git"
+              >
+                <Cpu className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <span>pgvector Vektör Lab</span>
               </button>
             </div>
 

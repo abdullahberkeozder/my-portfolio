@@ -14,8 +14,6 @@ import {
   PenSquare,
   Search,
 } from 'lucide-react';
-import { GithubIcon } from './GithubIcon';
-import { MacThemeToggle } from './MacThemeToggle';
 import { AppleGlobalAcrylicNavBar } from './AppleGlobalAcrylicNavBar';
 import { MacWindowChrome } from './MacWindowChrome';
 import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
@@ -347,7 +345,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span>{isMegaOpen ? 'Kapat' : 'Menü'}</span>
             </button>
 
-            {/* Cylindrical Glossy Blue +Yaz Button */}
+            {/* Apple Aqua Blue +Yaz Action Button */}
             {onOpenCreateModal && (
               <button
                 type="button"
@@ -355,30 +353,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   playKeyClick();
                   onOpenCreateModal();
                 }}
-                className="retro-btn retro-btn-blue text-xs font-bold px-3 py-1 flex items-center gap-1 cursor-pointer select-none shadow-sm"
-                title="Yeni Teknik Makale Yayınla"
+                className="mac-aqua-btn flex items-center gap-1.5 !px-3.5 !py-1.5 !text-xs font-bold cursor-pointer select-none"
+                title="Yeni Teknik Makale Yayınla (Mac Mail)"
               >
-                <PenSquare className="w-3 h-3" />
+                <PenSquare className="w-3.5 h-3.5" />
                 <span>+ Yaz</span>
               </button>
             )}
-
-            {/* Apple Mac OS X Skeuomorphic Day/Night Celestial Switch */}
-            <div className="flex items-center shrink-0">
-              <MacThemeToggle />
-            </div>
-
-            {/* GitHub Icon Link */}
-            <a
-              href="https://github.com/abdullahberkeozder/my-portfolio"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => playKeyClick()}
-              className="flex items-center justify-center w-7 h-7 rounded border border-zinc-300 dark:border-zinc-700 bg-white/60 dark:bg-zinc-800/60 hover:bg-white dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 shadow-sm transition-colors cursor-pointer"
-              title="GitHub Repository"
-            >
-              <GithubIcon className="w-3.5 h-3.5" />
-            </a>
           </div>
         </div>
       </div>

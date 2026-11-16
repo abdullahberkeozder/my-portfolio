@@ -118,24 +118,8 @@ export const AppleGlobalAcrylicNavBar: React.FC<AppleGlobalAcrylicNavBarProps> =
         )}
       </nav>
 
-      {/* 3. Right: Spotlight Trigger, Health LED, 2FA & GitHub */}
+      {/* 3. Right: System Health LED, Keychain 2FA, Celestial Theme Toggle & GitHub */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Spotlight Trigger */}
-        {onFocusSearch && (
-          <button
-            type="button"
-            onClick={handleSearchClick}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#2a2a2a] hover:bg-[#333333] border border-[#1a1a1a] shadow-inner text-zinc-300 hover:text-white transition-all text-[11px] font-mono cursor-pointer"
-            title="Spotlight Evrensel Arama (⌘K)"
-          >
-            <Search className="w-3 h-3 text-zinc-400" />
-            <span className="hidden sm:inline">Ara</span>
-            <kbd className="px-1 py-0.2 rounded bg-black/60 text-[9px] text-zinc-400 font-bold border border-zinc-700">
-              ⌘K
-            </kbd>
-          </button>
-        )}
-
         {/* Backend Online Status LED */}
         <button
           type="button"

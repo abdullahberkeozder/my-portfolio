@@ -319,12 +319,16 @@ export default function Home() {
             if (el) el.scrollIntoView({ behavior: 'smooth' });
           }}
           onOpenCreateModal={() => setIsCreateModalOpen(true)}
+          onOpenArchitectureConsole={() => {
+            const el = document.getElementById('modular-architecture-console');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
         />
 
         {/* 2. Main Publication Feed (Keşfet / Takip Edilenler / Okuma Listem) */}
-        <div id="articles-feed" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 scroll-mt-20">
-          {/* De-Boxed Feed Header: Direct Canvas Breathing Room with Hairline Separation */}
-          <div className="space-y-4 pb-6 border-b border-zinc-200/90 dark:border-zinc-800/80">
+        <div id="articles-feed" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-32 space-y-8 scroll-mt-20">
+          {/* Mac OS X Unified Finder Scope Bar & Discovery Panel */}
+          <div className="mac-scope-bar p-3.5 sm:p-4 rounded-2xl border border-black/10 dark:border-white/10 bg-gradient-to-b from-white/80 via-zinc-50/70 to-zinc-100/80 dark:from-[#1b1d24]/90 dark:via-[#14151b]/85 dark:to-[#0f1014]/90 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)] space-y-3.5">
             {/* Top Bar: Feed Switcher & Contextual Filter Search */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               {/* Primary Dual-Feed Tabs with Mac OS X Segmented Styling */}

@@ -148,8 +148,8 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           className="mac-dock-item"
           title="Mac Mail — Yeni Makale Yaz"
         >
-          <div className="mac-dock-icon-btn !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-400/40 text-white shadow-md">
-            <PenSquare className="w-5 h-5" />
+          <div className="mac-dock-icon-btn">
+            <PenSquare className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
           <div className="mac-dock-indicator-dot" />
         </div>
