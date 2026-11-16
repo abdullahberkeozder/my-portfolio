@@ -1,0 +1,491 @@
+/**
+ * ==============================================================================
+ * Retro Apple iOS (2010 - 2016) Design System & Skeuomorphic CSS Specification
+ * iOS 4-6 Scott Forstall Skeuomorphism + iOS 7-9 Jony Ive Layered Vibrancy
+ * ==============================================================================
+ */
+
+:root {
+  /* --- iOS 6 Skeuomorphic Color Tokens --- */
+  --ios-blue-top: #7abcff;
+  --ios-blue-mid-1: #4096ee;
+  --ios-blue-mid-2: #1e65b4;
+  --ios-blue-bottom: #104085;
+  --ios-blue-border: #13427d;
+
+  --ios-silver-top: #ffffff;
+  --ios-silver-mid-1: #ececec;
+  --ios-silver-mid-2: #dfdfdf;
+  --ios-silver-bottom: #c4c4c4;
+  --ios-silver-border: #999999;
+
+  --ios-red-top: #ff6b6b;
+  --ios-red-mid-1: #e02424;
+  --ios-red-mid-2: #c81e1e;
+  --ios-red-bottom: #9b1c1c;
+  --ios-red-border: #801313;
+
+  --ios-dark-top: #454545;
+  --ios-dark-mid-1: #2a2a2a;
+  --ios-dark-mid-2: #1c1c1c;
+  --ios-dark-bottom: #101010;
+  --ios-dark-border: #080808;
+
+  --ios-green-top: #52d68a;
+  --ios-green-mid-1: #2ec46e;
+  --ios-green-mid-2: #1a9e52;
+  --ios-green-bottom: #12753b;
+  --ios-green-border: #0e5e2f;
+
+  /* --- Textures & Canvas Surfaces --- */
+  --ios-canvas-pinstripe: #d4d8dc;
+  --ios-canvas-pinstripe-stripe: rgba(0, 0, 0, 0.038);
+  --ios-linen-bg: #383c42;
+  --ios-parchment-bg: #fcfbf9;
+  --ios-notes-yellow: #fefce8;
+
+  /* --- Cards & Grouped Table --- */
+  --ios-card-bg: #ffffff;
+  --ios-card-border: #b2b8c2;
+  --ios-cell-divider: #e0e0e0;
+  --ios-header-text: #4c566c;
+}
+
+.dark {
+  --ios-canvas-pinstripe: #16181b;
+  --ios-canvas-pinstripe-stripe: rgba(255, 255, 255, 0.025);
+  --ios-linen-bg: #202226;
+  --ios-parchment-bg: #141517;
+  --ios-notes-yellow: #1c1d21;
+
+  --ios-card-bg: #1f2329;
+  --ios-card-border: #323740;
+  --ios-cell-divider: #2b3038;
+  --ios-header-text: #8e9bb0;
+}
+
+/* ==============================================================================
+   1. Procedural Textures & Canvases
+   ============================================================================== */
+
+/* Classic iOS 6 Pinstripe Canvas Pattern (Vertical 4px repeating lines) */
+.ios-pinstripe {
+  background-color: var(--ios-canvas-pinstripe);
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent,
+    transparent 3px,
+    var(--ios-canvas-pinstripe-stripe) 3px,
+    var(--ios-canvas-pinstripe-stripe) 4px
+  );
+}
+
+/* Classic iOS 6 Dark Linen Cross-hatch Texture */
+.ios-linen {
+  background-color: var(--ios-linen-bg);
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.09) 2px, rgba(0, 0, 0, 0.09) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 0, 0, 0.09) 2px, rgba(0, 0, 0, 0.09) 4px),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03) 2px, transparent 2px, transparent 4px);
+}
+
+/* iBooks & Safari Reader Warm Parchment Cream Canvas */
+.ios-parchment {
+  background-color: var(--ios-parchment-bg);
+  background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.5) 0%, transparent 80%);
+}
+
+/* iOS 6 Notes App Yellow Legal-Pad Paper */
+.ios-notes-paper {
+  background-color: var(--ios-notes-yellow);
+  background-image:
+    /* Red left vertical margin line at 52px */
+    linear-gradient(to right, transparent 52px, rgba(239, 68, 68, 0.35) 52px, rgba(239, 68, 68, 0.35) 54px, transparent 54px),
+    /* Light blue horizontal ruling lines every 28px */
+    repeating-linear-gradient(to bottom, transparent, transparent 27px, rgba(165, 180, 252, 0.3) 27px, rgba(165, 180, 252, 0.3) 28px);
+  background-attachment: local;
+}
+
+/* Apple Hardware Brushed Metal Texture */
+.ios-brushed-metal {
+  background: linear-gradient(135deg, #2f343b 0%, #22262b 50%, #1a1c20 100%);
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.015),
+    rgba(255, 255, 255, 0.015) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+}
+
+/* ==============================================================================
+   2. Letterpress & Typography Utilities
+   ============================================================================== */
+
+/* Embossed / Raised text on dark glossy buttons and nav bars */
+.ios-text-embossed {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #ffffff;
+  font-weight: 700;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7);
+}
+
+/* Debossed / Carved text on light surfaces and table headers */
+.ios-text-debossed {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: var(--ios-header-text);
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+/* All-caps Table Section Header */
+.ios-section-header {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--ios-header-text);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+  padding: 14px 16px 6px 16px;
+}
+
+.dark .ios-text-debossed,
+.dark .ios-section-header {
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.8);
+}
+
+/* ==============================================================================
+   3. Glossy Cylindrical Skeuomorphic Buttons (50% Hard Color Stop)
+   ============================================================================== */
+
+/* Base Button Foundation */
+.ios6-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 16px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: filter 0.1s ease, transform 0.05s ease;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.ios6-btn:active {
+  transform: translateY(1px);
+}
+
+/* Blue (Classic Sapphire Navigation & Primary Action) */
+.ios6-btn-blue {
+  color: #ffffff;
+  border: 1px solid var(--ios-blue-border);
+  background: linear-gradient(
+    to bottom,
+    var(--ios-blue-top) 0%,
+    var(--ios-blue-mid-1) 50%,
+    var(--ios-blue-mid-2) 50%,
+    var(--ios-blue-bottom) 100%
+  );
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6);
+}
+
+.ios6-btn-blue:active {
+  background: linear-gradient(
+    to bottom,
+    var(--ios-blue-bottom) 0%,
+    var(--ios-blue-mid-2) 50%,
+    var(--ios-blue-mid-1) 50%,
+    var(--ios-blue-top) 100%
+  );
+  box-shadow:
+    inset 0 1px 4px rgba(0, 0, 0, 0.7),
+    0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+/* Silver / Aluminum (Matte Secondary Action) */
+.ios6-btn-silver {
+  color: #333333;
+  border: 1px solid var(--ios-silver-border);
+  background: linear-gradient(
+    to bottom,
+    var(--ios-silver-top) 0%,
+    var(--ios-silver-mid-1) 50%,
+    var(--ios-silver-mid-2) 50%,
+    var(--ios-silver-bottom) 100%
+  );
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.ios6-btn-silver:active {
+  background: linear-gradient(
+    to bottom,
+    var(--ios-silver-bottom) 0%,
+    var(--ios-silver-mid-2) 50%,
+    var(--ios-silver-mid-1) 50%,
+    var(--ios-silver-top) 100%
+  );
+  box-shadow:
+    inset 0 1px 4px rgba(0, 0, 0, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+/* Red (Danger / Alert / Remove Action) */
+.ios6-btn-red {
+  color: #ffffff;
+  border: 1px solid var(--ios-red-border);
+  background: linear-gradient(
+    to bottom,
+    var(--ios-red-top) 0%,
+    var(--ios-red-mid-1) 50%,
+    var(--ios-red-mid-2) 50%,
+    var(--ios-red-bottom) 100%
+  );
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7);
+}
+
+.ios6-btn-red:active {
+  background: linear-gradient(
+    to bottom,
+    var(--ios-red-bottom) 0%,
+    var(--ios-red-mid-2) 50%,
+    var(--ios-red-mid-1) 50%,
+    var(--ios-red-top) 100%
+  );
+  box-shadow:
+    inset 0 1px 4px rgba(0, 0, 0, 0.7),
+    0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+/* Dark / Obsidian (Bar & Header Tool Buttons) */
+.ios6-btn-dark {
+  color: #ffffff;
+  border: 1px solid var(--ios-dark-border);
+  background: linear-gradient(
+    to bottom,
+    var(--ios-dark-top) 0%,
+    var(--ios-dark-mid-1) 50%,
+    var(--ios-dark-mid-2) 50%,
+    var(--ios-dark-bottom) 100%
+  );
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.8);
+}
+
+.ios6-btn-dark:active {
+  background: linear-gradient(
+    to bottom,
+    var(--ios-dark-bottom) 0%,
+    var(--ios-dark-mid-2) 50%,
+    var(--ios-dark-mid-1) 50%,
+    var(--ios-dark-top) 100%
+  );
+  box-shadow:
+    inset 0 1px 4px rgba(0, 0, 0, 0.8),
+    0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+/* ==============================================================================
+   4. UIKit Structural Components (Chevron, Segmented Control, Grouped Table)
+   ============================================================================== */
+
+/* Pointed Left Chevron Back Button (< Geri) */
+.ios-back-chevron {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 12px 0 18px;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6);
+  background: linear-gradient(to bottom, #739acb 0%, #3b6ea9 50%, #2055a8 50%, #174591 100%);
+  clip-path: polygon(11px 0%, 100% 0%, 100% 100%, 11px 100%, 0% 50%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  user-select: none;
+  transition: filter 0.1s ease;
+}
+
+.ios-back-chevron:active {
+  background: linear-gradient(to bottom, #174591 0%, #2055a8 50%, #3b6ea9 50%, #739acb 100%);
+  transform: translateY(1px);
+}
+
+/* Metallic Segmented Control Track */
+.ios-segmented-track {
+  display: inline-flex;
+  background: linear-gradient(to bottom, #7d8b94, #9ba7af);
+  padding: 2px;
+  border-radius: 6px;
+  box-shadow:
+    inset 0 1px 3px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid #5a666e;
+}
+
+.ios-segment-btn {
+  padding: 6px 14px;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #333333;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.12s ease;
+}
+
+.ios-segment-btn:last-child {
+  border-right: none;
+}
+
+.ios-segment-btn.active {
+  background: linear-gradient(to bottom, #395273 0%, #24354c 100%);
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+}
+
+/* Grouped Table View Card (UITableViewStyleGrouped) */
+.ios-grouped-table {
+  background: var(--ios-card-bg);
+  border: 1px solid var(--ios-card-border);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.ios-grouped-cell {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ios-cell-divider);
+  background: var(--ios-card-bg);
+  transition: background-color 0.12s ease;
+}
+
+.ios-grouped-cell:last-child {
+  border-bottom: none;
+}
+
+/* Right Disclosure Indicator (>) */
+.ios-disclosure-arrow {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-top: 2px solid #8c96a3;
+  border-right: 2px solid #8c96a3;
+  transform: rotate(45deg);
+}
+
+/* Sliding Mechanical Switch (UISwitch) */
+.ios-switch {
+  width: 76px;
+  height: 28px;
+  border-radius: 14px;
+  background: linear-gradient(to bottom, #14498c 0%, #2062b8 100%);
+  border: 1px solid #0d3261;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 9px;
+  font-family: -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6);
+  user-select: none;
+}
+
+.ios-switch-off {
+  background: linear-gradient(to bottom, #595959 0%, #7d7d7d 100%);
+  border-color: #404040;
+}
+
+.ios-switch-knob {
+  width: 38px;
+  height: 26px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  border-radius: 13px;
+  background: linear-gradient(to bottom, #ffffff 0%, #e2e2e2 50%, #bcbcbc 100%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 #fff;
+  border: 1px solid #8e8e8e;
+  transition: transform 0.18s ease;
+}
+
+.ios-switch-off .ios-switch-knob {
+  transform: translateX(-36px);
+}
+
+/* Glossy Red Notification Badge Pill */
+.ios-badge-red {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 7px;
+  font-family: -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffffff;
+  border-radius: 12px;
+  border: 1.5px solid #ffffff;
+  background: linear-gradient(
+    to bottom,
+    #ff6b6b 0%,
+    #e02424 50%,
+    #c81e1e 50%,
+    #9b1c1c 100%
+  );
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7);
+}
+
+/* 44px Navigation Bar Standard Chrome */
+.ios-nav-bar {
+  height: 44px;
+  background: linear-gradient(
+    to bottom,
+    #739acb 0%,
+    #3b6ea9 50%,
+    #2055a8 50%,
+    #174591 100%
+  );
+  border-bottom: 1px solid #0f2c60;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* 49px Bottom Interaction Tab Bar Chrome */
+.ios-tab-bar {
+  height: 49px;
+  background: linear-gradient(to bottom, #2d2d2d 0%, #161616 100%);
+  border-top: 1px solid #000000;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* iOS 7-9 Layered Frosted Glass Blur Overlay (Spotlight & Modals) */
+.ios-frosted-glass {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.dark .ios-frosted-glass {
+  background: rgba(20, 24, 30, 0.82);
+  border-color: rgba(255, 255, 255, 0.08);
+}
