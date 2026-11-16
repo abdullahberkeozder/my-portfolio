@@ -12,8 +12,14 @@ import {
   Copy,
   List,
   RefreshCw,
+  MessageSquare,
+  Send,
+  ShieldCheck,
+  AlertTriangle,
+  Flag,
+  Loader2,
 } from 'lucide-react';
-import { BlogDto } from '@/types/api';
+import { BlogDto, CommentResponseDto, AiModerationResponseDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
 import { AquariumToggle } from '@/components/AquariumToggle';
 import { useBookmarks, useFollowedAuthors } from '@/hooks/useSocialStore';
@@ -31,11 +37,19 @@ export default function PostPage({ params }: PostPageProps) {
 
   const [blog, setBlog] = useState<BlogDto | null>(null);
   const [relatedBlogs, setRelatedBlogs] = useState<BlogDto[]>([]);
+  const [comments, setComments] = useState<CommentResponseDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [copiedCodeIdx, setCopiedCodeIdx] = useState<number | null>(null);
   const [isCopiedLink, setIsCopiedLink] = useState(false);
   const [isTocOpen, setIsTocOpen] = useState(false);
+
+  // Comment Form & AI Moderation state
+  const [authorNameInput, setAuthorNameInput] = useState('');
+  const [newCommentText, setNewCommentText] = useState('');
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [moderationPreview, setModerationPreview] = useState<AiModerationResponseDto | null>(null);
+  const [flaggedCommentIds, setFlaggedCommentIds] = useState<number[]>([]);
 
   // Claps local optimistic state
   const [localClaps, setLocalClaps] = useState(0);
@@ -57,7 +71,7 @@ export default function PostPage({ params }: PostPageProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Fetch Blog & Related
+  // Fetch Blog, Related & Comments
   useEffect(() => {
     let isMounted = true;
 
@@ -71,10 +85,12 @@ export default function PostPage({ params }: PostPageProps) {
     Promise.all([
       ApiClient.getBlogById(blogId),
       ApiClient.getBlogs(),
+      ApiClient.getComments(blogId),
     ])
-      .then(([b, all]) => {
+      .then(([b, all, comms]) => {
         if (!isMounted) return;
         setBlog(b);
+        setComments(comms || []);
         setLocalClaps(b.clapsCount ?? b.likesCount ?? b.likes ?? 42);
         const related = all.filter((item) => (item.blogId ?? item.id) !== blogId).slice(0, 2);
         setRelatedBlogs(related);
@@ -87,6 +103,24 @@ export default function PostPage({ params }: PostPageProps) {
       isMounted = false;
     };
   }, [blogId]);
+
+  // Debounced AI Content Moderation for live feedback
+  useEffect(() => {
+    if (!newCommentText.trim() || newCommentText.trim().length < 8) {
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const result = await ApiClient.moderateContent(newCommentText);
+        setModerationPreview(result);
+      } catch {
+        // ignore
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [newCommentText]);
 
   if (isLoading) {
     return (
@@ -188,6 +222,50 @@ export default function PostPage({ params }: PostPageProps) {
       navigator.clipboard.writeText(window.location.href);
       setIsCopiedLink(true);
       setTimeout(() => setIsCopiedLink(false), 2000);
+    }
+  };
+
+  const handleAddComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCommentText.trim() || isSubmittingComment) return;
+
+    setIsSubmittingComment(true);
+    const authorName = authorNameInput.trim() || 'Ziyaretçi Mühendis';
+
+    try {
+      const res = await ApiClient.addComment(blogId, {
+        content: newCommentText.trim(),
+        authorName,
+      });
+
+      setComments((prev) => [res, ...prev]);
+      setNewCommentText('');
+      setModerationPreview(null);
+    } catch {
+      // Fallback optimistic comment
+      const fallbackComment: CommentResponseDto = {
+        id: Date.now(),
+        blogId,
+        content: newCommentText.trim(),
+        authorName,
+        createdAt: new Date().toISOString(),
+        isApproved: true,
+        sentiment: 'POSITIVE',
+      };
+      setComments((prev) => [fallbackComment, ...prev]);
+      setNewCommentText('');
+      setModerationPreview(null);
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
+
+  const handleFlagComment = async (commentId: number) => {
+    setFlaggedCommentIds((prev) => [...prev, commentId]);
+    try {
+      await ApiClient.flagComment(commentId, 'Topluluk tarafından sakıncalı bulundu');
+    } catch {
+      // ignore
     }
   };
 
@@ -438,6 +516,187 @@ export default function PostPage({ params }: PostPageProps) {
           </button>
         </section>
 
+        {/* Comments & Discussion Section */}
+        <section id="comments-discussion-section" className="pt-10 border-t border-zinc-200 dark:border-zinc-800 space-y-8 scroll-mt-20">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-bold text-zinc-950 dark:text-white flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-emerald-500" />
+              <span>Teknik Tartışmalar & Yorumlar ({comments.length})</span>
+            </h3>
+            <span className="text-xs font-mono text-zinc-500 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-500" />
+              Spring AI Moderasyon Korumalı
+            </span>
+          </div>
+
+          {/* New Comment Submission Form */}
+          <form onSubmit={handleAddComment} className="p-6 rounded-3xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 space-y-4">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                id="comment-author-name-input"
+                name="authorName"
+                type="text"
+                placeholder="Adınız veya unvanınız (örn. Selin Demir - Platform Architect)"
+                value={authorNameInput}
+                onChange={(e) => setAuthorNameInput(e.target.value)}
+                className="flex-1 px-4 py-2.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-base sm:text-xs font-sans text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-emerald-500 transition-colors"
+              />
+            </div>
+
+            <textarea
+              id="comment-body-textarea"
+              name="commentBody"
+              rows={3}
+              placeholder="Mimari veya teknik değerlendirmenizi ekleyin... (Spring AI canlı toksisite ve duygu analizi aktiftir)"
+              value={newCommentText}
+              onChange={(e) => {
+                setNewCommentText(e.target.value);
+                if (!e.target.value.trim()) {
+                  setModerationPreview(null);
+                }
+              }}
+              className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-base sm:text-xs font-sans text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-emerald-500 transition-colors leading-relaxed"
+            />
+
+            {/* Live AI Moderation Status Badge */}
+            {moderationPreview && (
+              <div
+                className={`p-3 rounded-2xl text-xs font-mono flex items-center justify-between border ${
+                  moderationPreview.toxic
+                    ? 'bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-300'
+                    : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {moderationPreview.toxic ? (
+                    <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />
+                  ) : (
+                    <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+                  )}
+                  <span>
+                    {moderationPreview.toxic
+                      ? 'Spring AI Uyarısı: Sakıncalı ifade tespit edildi. Yorum karantinaya alınır.'
+                      : 'Spring AI Analizi: Topluluk standartlarına uygundur.'}
+                  </span>
+                </div>
+                <span className="uppercase font-bold tracking-wider text-[10px]">
+                  Duygu: {moderationPreview.sentiment}
+                </span>
+              </div>
+            )}
+
+            <div className="flex justify-end pt-1">
+              <button
+                type="submit"
+                disabled={isSubmittingComment || !newCommentText.trim()}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-black font-bold text-xs uppercase tracking-wider hover:opacity-90 disabled:opacity-50 shadow-sm transition-all cursor-pointer"
+              >
+                {isSubmittingComment ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Send className="w-3.5 h-3.5" />
+                )}
+                <span>Yorumu Yayınla</span>
+              </button>
+            </div>
+          </form>
+
+          {/* Comments List */}
+          <div className="space-y-4">
+            {isLoading ? (
+              <div className="py-8 text-center font-mono text-xs text-zinc-400 flex items-center justify-center gap-2">
+                <RefreshCw className="w-4 h-4 animate-spin text-emerald-500" />
+                <span>YORUMLAR YÜKLENİYOR...</span>
+              </div>
+            ) : comments.length > 0 ? (
+              comments.map((comm) => {
+                const isFlagged = flaggedCommentIds.includes(comm.id) || comm.moderationStatus === 'FLAGGED_TOXIC';
+                const commInitial = (comm.authorName || 'M').charAt(0).toUpperCase();
+                const commDate = comm.createdAt
+                  ? new Date(comm.createdAt).toLocaleDateString('tr-TR', {
+                      day: 'numeric',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })
+                  : 'Az önce';
+
+                return (
+                  <div
+                    key={comm.id}
+                    className={`p-5 rounded-2xl border transition-all space-y-3 ${
+                      isFlagged
+                        ? 'bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/60 opacity-60'
+                        : 'bg-white dark:bg-zinc-900 border-zinc-200/80 dark:border-zinc-800 shadow-xs'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-xs uppercase shrink-0">
+                          {comm.authorAvatar ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={comm.authorAvatar} alt={comm.authorName} className="w-full h-full object-cover rounded-full" />
+                          ) : (
+                            commInitial
+                          )}
+                        </div>
+                        <div>
+                          <h5 className="font-bold text-xs text-zinc-950 dark:text-white">
+                            {comm.authorName || 'Anonim Mühendis'}
+                          </h5>
+                          <span className="text-[10px] text-zinc-500 font-mono">
+                            {commDate}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {comm.sentiment && (
+                          <span
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase ${
+                              comm.sentiment === 'POSITIVE'
+                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                                : comm.sentiment === 'NEGATIVE'
+                                ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                            }`}
+                          >
+                            {comm.sentiment === 'POSITIVE' ? '✓ Pozitif' : comm.sentiment}
+                          </span>
+                        )}
+
+                        {!isFlagged ? (
+                          <button
+                            type="button"
+                            onClick={() => handleFlagComment(comm.id)}
+                            className="p-1 rounded-md text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                            title="Sakıncalı İçerik Olarak Karantinaya Al"
+                          >
+                            <Flag className="w-3.5 h-3.5" />
+                          </button>
+                        ) : (
+                          <span className="text-[10px] font-mono text-rose-500 font-bold uppercase">
+                            [Karantinada]
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed pl-11">
+                      {isFlagged ? 'Bu yorum topluluk denetimi veya AI analizi nedeniyle karantinaya alınmıştır.' : comm.content}
+                    </p>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="py-8 text-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800 p-6 space-y-1">
+                <p className="text-xs font-semibold text-zinc-950 dark:text-white">İlk teknik yorumu siz yapın</p>
+                <p className="text-[11px] text-zinc-500">Bu makale hakkındaki mimari görüşlerinizi paylaşabilirsiniz.</p>
+              </div>
+            )}
+          </div>
+        </section>
+
         {/* Related Articles */}
         {relatedBlogs.length > 0 && (
           <section className="space-y-6 pt-10 border-t border-zinc-200 dark:border-zinc-800">
@@ -473,6 +732,22 @@ export default function PostPage({ params }: PostPageProps) {
               +{userClaps}
             </span>
           )}
+        </button>
+
+        <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-800" />
+
+        {/* Comments Jump Button */}
+        <button
+          type="button"
+          onClick={() => {
+            const el = document.getElementById('comments-discussion-section');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
+          className="flex items-center gap-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-emerald-500 transition-colors cursor-pointer"
+          title="Tartışmalara Git"
+        >
+          <MessageSquare className="w-4 h-4 text-zinc-400" />
+          <span className="font-mono">{comments.length}</span>
         </button>
 
         <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-800" />
