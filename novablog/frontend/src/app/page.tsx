@@ -20,6 +20,7 @@ import { Footer } from '@/components/Footer';
 import { AboutManifestoModal } from '@/components/AboutManifestoModal';
 import { FloatingCopilotWidget } from '@/components/FloatingCopilotWidget';
 import { AuthorProfileModal } from '@/components/AuthorProfileModal';
+import { OmnibarModal } from '@/components/OmnibarModal';
 import { BlogDto, BlogSemanticSearchResultDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
 import { useBlogsQuery, useCategoriesQuery } from '@/hooks/useBlogs';
@@ -105,6 +106,7 @@ export default function Home() {
   const [isTelemetryModalOpen, setIsTelemetryModalOpen] = useState(false);
   const [isTwoFactorModalOpen, setIsTwoFactorModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
+  const [isOmnibarOpen, setIsOmnibarOpen] = useState(false);
   const [activeAuthorProfile, setActiveAuthorProfile] = useState<string | null>(null);
   const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
   const [semanticResults, setSemanticResults] = useState<BlogSemanticSearchResultDto[] | null>(null);
@@ -115,15 +117,7 @@ export default function Home() {
   const followedAuthors = useFollowedAuthors();
 
   const focusSearchInput = () => {
-    const el = document.getElementById('articles-feed');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-    setTimeout(() => {
-      const input = document.getElementById('blog-search-input') as HTMLInputElement | null;
-      if (input) {
-        input.focus();
-        input.select();
-      }
-    }, 150);
+    setIsOmnibarOpen(true);
   };
 
   const handleTriggerSemanticSearch = async (queryText?: string) => {
@@ -146,7 +140,7 @@ export default function Home() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        focusSearchInput();
+        setIsOmnibarOpen((prev) => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -878,6 +872,24 @@ export default function Home() {
         allBlogs={blogs}
         followedAuthors={followedAuthors}
         onToggleFollow={toggleFollowAuthor}
+      />
+
+      {/* Raycast / Linear-grade Command Palette Omnibar Modal (Cmd+K) */}
+      <OmnibarModal
+        isOpen={isOmnibarOpen}
+        onClose={() => setIsOmnibarOpen(false)}
+        blogs={blogs}
+        onSelectBlog={(b) => setSelectedBlog(b)}
+        onSelectAuthor={(auth) => setActiveAuthorProfile(auth)}
+        onOpenCreateModal={() => setIsCreateModalOpen(true)}
+        onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
+        onOpenTwoFactor={() => setIsTwoFactorModalOpen(true)}
+        onTriggerSemanticSearch={(q) => {
+          setSearchTerm(q);
+          handleTriggerSemanticSearch(q);
+          const el = document.getElementById('articles-feed');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }}
       />
 
       {/* Floating Copilot Widget */}
