@@ -93,10 +93,10 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
             <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] space-y-2">
               <div className="flex items-center justify-between font-mono font-semibold">
                 <span className="flex items-center gap-1.5 text-zinc-900 dark:text-white">
-                  <Cpu className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
+                  <Cpu className="w-4 h-4 text-emerald-600 dark:text-[#d4f933]" />
                   Java 22 Virtual Threads
                 </span>
-                <span className="text-[#a3c900] dark:text-[#d4f933] text-[11px] font-bold">PROJECT LOOM</span>
+                <span className="text-emerald-700 dark:text-[#d4f933] text-[11px] font-bold">PROJECT LOOM</span>
               </div>
               <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
                 Platform OS thread havuzu yerine lightweight sanal thread&apos;ler devrede. Her gelen I/O isteği
@@ -173,10 +173,10 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
             <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-black/[0.08] dark:border-white/[0.08] space-y-2">
               <div className="flex items-center justify-between font-mono font-semibold">
                 <span className="flex items-center gap-1.5 text-zinc-900 dark:text-white">
-                  <Gauge className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
+                  <Gauge className="w-4 h-4 text-emerald-600 dark:text-[#d4f933]" />
                   Token Bucket Rate Limiter
                 </span>
-                <span className="text-[#a3c900] dark:text-[#d4f933] text-[11px] font-bold">BURSTABLE</span>
+                <span className="text-emerald-700 dark:text-[#d4f933] text-[11px] font-bold">BURSTABLE</span>
               </div>
               <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
                 Sabit kapasiteli token havuzu ve nanosaniye hesaplamalı sürekli dolum. Kategori bazlı DoS koruması
@@ -230,7 +230,7 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
                   <Clock className="w-3.5 h-3.5" />
                   Schedule: 30s
                 </span>
-                <span className="text-[#a3c900] dark:text-[#d4f933] flex items-center gap-1 font-bold">
+                <span className="text-emerald-700 dark:text-[#d4f933] flex items-center gap-1 font-bold">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   Buffer: Canlı
                 </span>

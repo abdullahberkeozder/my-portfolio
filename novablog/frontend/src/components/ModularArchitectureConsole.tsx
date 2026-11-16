@@ -274,8 +274,8 @@ export const ModularArchitectureConsole: React.FC = () => {
       {/* Section Header (Ride Also Style) */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-black/[0.08] dark:border-white/[0.08]">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 font-mono text-xs uppercase font-bold text-[#a3c900] dark:text-[#d4f933]">
-            <span className="w-2 h-2 rounded-full bg-[#d4f933] shadow-[0_0_8px_#d4f933]" />
+          <div className="inline-flex items-center gap-2 font-mono text-xs uppercase font-bold text-emerald-600 dark:text-[#d4f933]">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-[#d4f933] shadow-[0_0_8px_#10b981] dark:shadow-[0_0_8px_#d4f933]" />
             <span>02 // MODULAR ARCHITECTURE CONSOLE</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-zinc-950 dark:text-white uppercase tracking-tight">
@@ -293,33 +293,41 @@ export const ModularArchitectureConsole: React.FC = () => {
         </div>
       </div>
 
-      {/* Modular Switcher Tabs (System Architecture Core Selector) */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none font-mono">
-        {MODULES.map((m) => {
-          const isActive = m.id === activeModuleId;
-          return (
-            <button
-              key={m.id}
-              onClick={() => {
-                setActiveModuleId(m.id);
-                setSimStep(0);
-                setSimConflictStatus('IDLE');
-              }}
-              className={`px-4 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-300 cursor-pointer flex items-center gap-2 ${
-                isActive
-                  ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-lg shadow-black/10 dark:shadow-white/5'
-                  : 'bg-zinc-100 dark:bg-zinc-900/90 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border border-black/10 dark:border-white/10'
-              }`}
-            >
-              <span className={`text-[10px] ${isActive ? 'text-[#d4f933] dark:text-black font-black' : 'text-zinc-400'}`}>
-                {m.tag}
-              </span>
-              <span>
-                {m.title.split(' ')[0]} {m.title.split(' ')[1] || ''}
-              </span>
-            </button>
-          );
-        })}
+      {/* Modular Switcher Tabs (Apple HIG Segmented Track with Edge-Fade) */}
+      <div
+        className="relative overflow-x-auto pb-2 scrollbar-none font-mono"
+        style={{
+          WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)',
+          maskImage: 'linear-gradient(to right, black 85%, transparent 100%)',
+        }}
+      >
+        <div className="inline-flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800/80">
+          {MODULES.map((m) => {
+            const isActive = m.id === activeModuleId;
+            return (
+              <button
+                key={m.id}
+                onClick={() => {
+                  setActiveModuleId(m.id);
+                  setSimStep(0);
+                  setSimConflictStatus('IDLE');
+                }}
+                className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-2 ${
+                  isActive
+                    ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-sm font-black'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50'
+                }`}
+              >
+                <span className={`text-[10px] font-mono ${isActive ? 'text-emerald-600 dark:text-[#d4f933] font-black' : 'text-zinc-400'}`}>
+                  {m.tag}
+                </span>
+                <span>
+                  {m.title.split(' ')[0]} {m.title.split(' ')[1] || ''}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Main Spec Card: Split Screen */}
@@ -394,13 +402,13 @@ export const ModularArchitectureConsole: React.FC = () => {
           <div className="p-5 rounded-3xl bg-zinc-50 dark:bg-zinc-950 border border-black/10 dark:border-white/10 space-y-4 font-mono text-xs mt-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 font-bold text-zinc-950 dark:text-white uppercase text-[11px]">
-                <Activity className="w-4 h-4 text-[#a3c900] dark:text-[#d4f933]" />
+                <Activity className="w-4 h-4 text-emerald-600 dark:text-[#d4f933]" />
                 <span>CANLI DONANIM VE MİMARİ SİMÜLATÖRÜ //</span>
               </div>
               <button
                 onClick={handleRunSimulation}
                 disabled={isSimulating}
-                className="px-4 py-2 rounded-full bg-zinc-950 dark:bg-[#d4f933] hover:opacity-90 disabled:opacity-50 text-white dark:text-black font-black uppercase tracking-wider text-[11px] flex items-center gap-1.5 transition-transform active:scale-95 cursor-pointer shadow-sm"
+                className="px-4 py-2 rounded-full bg-zinc-950 dark:bg-[#d4f933] hover:opacity-90 disabled:opacity-50 text-white dark:text-black font-black uppercase tracking-wider text-[11px] flex items-center gap-1.5 transition-transform active:scale-95 cursor-pointer shadow-sm btn-tactile"
               >
                 {isSimulating ? <RotateCcw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5 fill-current" />}
                 <span>{isSimulating ? 'İŞLENİYOR...' : 'SİMÜLE ET'}</span>
