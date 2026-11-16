@@ -3,23 +3,23 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  X,
   Users,
   BookOpen,
   Globe,
   Check,
-  Plus,
   Clock,
-  Sparkles,
   ArrowRight,
   ExternalLink,
-  Terminal,
   Cpu,
   Layers,
   Flame,
+  FileText,
+  UserPlus,
 } from 'lucide-react';
+import { GithubIcon } from './GithubIcon';
 import { BlogDto, AuthorProfileDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
+import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
 
 interface AuthorProfileModalProps {
   authorName: string | null;
@@ -97,18 +97,18 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
     ? [
         {
           id: 'm-n1',
-          date: '2 gün önce',
+          date: '14 Kas 2026',
           topic: 'Virtual Threads & JDBC Pools',
           content:
-            'HikariCP havuz boyutunu sanal thread sayısına göre değil, veritabanı CPU çekirdek sayısına göre boyutlandırın. Sanal iş parçacıkları bağlantı havuzunu şişirmek için bahane değildir.',
+            'HikariCP havuz boyutunu sanal iş parçacığı sayısına göre değil, PostgreSQL CPU çekirdek sayısına göre boyutlandırın. Sanal threadler I/O bloklamalarını sıfıra indirir fakat veritabanı bağlantı havuzunu şişirmek için bahane değildir.',
           claps: 48,
         },
         {
           id: 'm-n2',
-          date: '4 gün önce',
+          date: '12 Kas 2026',
           topic: 'Redis Write-Behind Buffer',
           content:
-            'Redis HINCRBY tamponu ile alkış ve görüntülenme sayımlarını toplamak satır kilitlemelerini %99.2 düşürdü.',
+            'Redis HINCRBY tamponu ile alkış ve görüntülenme telemetrilerini asenkron flush etmek, PostgreSQL üzerindeki satır kilitlemelerini %99.2 oranında düşürdü.',
           claps: 64,
         },
       ]
@@ -116,10 +116,10 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
     ? [
         {
           id: 'm-s1',
-          date: '3 gün önce',
+          date: '13 Kas 2026',
           topic: 'Dimension Reduction & Memory',
           content:
-            '128D vs 1536D embedding karşılaştırması: Düşük boyutlu optimize edilmiş gömmeler kurumsal aramada %80 bellek tasarrufu sağlıyor.',
+            '128D vs 1536D embedding karşılaştırması: Düşük boyutlu optimize edilmiş gömmeler kurumsal vektör aramasında %80 bellek tasarrufu sağlarken doğruluğu koruyor.',
           claps: 57,
         },
       ]
@@ -127,108 +127,120 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
     ? [
         {
           id: 'm-c1',
-          date: '1 gün önce',
+          date: '15 Kas 2026',
           topic: 'Kubernetes CFS Quota',
           content:
-            'Kubernetes pod limitlerinde CFS throttling gecikmeyi 300ms fırlatabiliyor. Sadece CPU request belirleyip limitleri esnetmek gecikmeyi anında düşürdü.',
+            'Kubernetes pod limitlerinde CFS throttling gecikmeyi 300ms fırlatabiliyor. Sadece CPU request belirleyip limitleri esnetmek tail latency değerini derhal düşürdü.',
           claps: 73,
         },
       ]
     : [
         {
           id: 'm-gen',
-          date: '3 gün önce',
+          date: '10 Kas 2026',
           topic: 'Mühendislik Notları',
-          content: 'Nova platformunda yüksek ölçekli sistem incelemeleri ve optimizasyonlar paylaşıyorum.',
+          content: 'Nova platformunda yüksek ölçekli sistem incelemeleri ve optimizasyon mimarileri paylaşıyorum.',
           claps: 12,
         },
       ];
 
   const techStack = isStaffBerke
-    ? ['Java 22', 'Spring Boot 3.4', 'Project Loom', 'PostgreSQL', 'pgvector 128D', 'Redis', 'Next.js 16']
+    ? ['Java 22 Loom', 'Spring Boot 3.4', 'PostgreSQL pgvector', 'Redis Write-Behind', 'HikariCP Pool', 'Kafka Streams', 'Next.js 16']
     : isStaffSelin
-    ? ['Spring AI', 'pgvector', 'PyTorch', 'Embeddings', 'Vector Search', 'Semantic Cache']
+    ? ['Spring AI', 'pgvector 128D', 'HNSW Indexing', 'Cosine Similarity', 'Embeddings RAG', 'Semantic Cache']
     : isStaffCaner
-    ? ['Kubernetes', 'Docker', 'eBPF', 'Prometheus', 'Grafana', 'Kafka', 'CI/CD']
-    : ['Teknoloji', 'Sistem Mimarisi'];
+    ? ['Kubernetes', 'eBPF Telemetry', 'Docker Containers', 'Prometheus', 'Zero-Trust 2FA', 'CI/CD Pipelines']
+    : ['Java & Spring Boot', 'Sistem Mimarisi', 'Dağıtık Sistemler'];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 safari-reader-backdrop overflow-hidden animate-fade-in"
+      onClick={onClose}
+    >
       <div
-        className="relative w-full max-w-2xl bg-white dark:bg-[#0d0f14] rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+        className="relative w-full max-w-2xl mac-addressbook-card shadow-2xl overflow-hidden max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header Ribbon */}
-        <div className="relative h-28 bg-gradient-to-r from-emerald-500/20 via-cyan-500/10 to-purple-500/20 p-6 flex items-start justify-between shrink-0">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-md text-[11px] font-mono font-bold tracking-wider uppercase text-zinc-900 dark:text-zinc-100">
-            <Sparkles className="w-3 h-3 text-emerald-500" />
-            <span>YAZAR PROFİLİ</span>
+        {/* 1. Saddle-Stitched Leather Top Header Banner */}
+        <div className="leather-stitched-header shrink-0">
+          <div className="inline-flex items-center gap-2 text-amber-200 text-xs font-mono font-bold tracking-wider uppercase">
+            <span> MAC OS X ADDRESS BOOK // KİŞİ KARTI</span>
           </div>
 
           <div className="flex items-center gap-2">
             <Link
               href={`/author/${encodeURIComponent(authorName)}`}
-              onClick={onClose}
-              className="p-1.5 rounded-full bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 text-zinc-700 dark:text-zinc-300 transition-colors flex items-center gap-1 text-[11px] font-mono font-semibold px-2.5"
+              onClick={() => {
+                playKeyClick();
+                onClose();
+              }}
+              className="safari-hud-btn text-[11px] font-mono"
               title="Müstakil Profil Sayfasında Aç"
             >
               <span>Ayrı Sayfa</span>
-              <ExternalLink className="w-3.5 h-3.5" />
+              <ExternalLink className="w-3 h-3" />
             </Link>
 
             <button
               type="button"
-              onClick={onClose}
-              className="w-8 h-8 rounded-full bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer"
+              onClick={() => {
+                playKeyClick();
+                onClose();
+              }}
+              className="w-5 h-5 rounded-full bg-red-500/80 hover:bg-red-500 text-white flex items-center justify-center font-bold text-xs shadow-inner cursor-pointer"
+              title="Kapat"
             >
-              <X className="w-4 h-4" />
+              &times;
             </button>
           </div>
         </div>
 
-        {/* Profile Card Info */}
-        <div className="px-6 sm:px-8 pb-4 -mt-12 space-y-4 shrink-0">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div className="flex items-end gap-4">
-              <div className="w-20 h-20 rounded-2xl bg-zinc-950 dark:bg-zinc-800 text-white flex items-center justify-center text-2xl font-bold uppercase shadow-lg ring-4 ring-white dark:ring-[#0d0f14] overflow-hidden shrink-0">
-                {profile?.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={profile.imageUrl} alt={displayName} className="w-full h-full object-cover rounded-2xl" />
-                ) : (
-                  initial
-                )}
+        {/* 2. Mac Address Book Profile Info Section */}
+        <div className="p-6 sm:p-7 space-y-4 shrink-0 bg-white dark:bg-[#181a1d] border-b border-zinc-200 dark:border-zinc-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              {/* Brushed Silver Coin Avatar */}
+              <div className="retro-avatar-silver shrink-0">
+                <div className="w-16 h-16 rounded-full bg-zinc-900 text-white flex items-center justify-center text-xl font-bold uppercase shadow-inner overflow-hidden">
+                  {profile?.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={profile.imageUrl} alt={displayName} className="w-full h-full object-cover" />
+                  ) : (
+                    initial
+                  )}
+                </div>
               </div>
-              <div className="space-y-0.5">
-                <h2 className="text-xl sm:text-2xl font-bold text-zinc-950 dark:text-white">
+
+              <div className="space-y-1">
+                <h2 className="text-xl sm:text-2xl font-bold text-zinc-950 dark:text-white font-sans tracking-tight">
                   {displayName}
                 </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-                  {profile?.title || (isStaffSelin ? 'Principal AI & Data Systems Researcher' : isStaffCaner ? 'Staff Cloud & Kubernetes Architect' : 'Staff Backend & Systems Architect @ Nova')}
+                  {profile?.title || (isStaffSelin ? 'Principal AI & Data Systems Researcher' : isStaffCaner ? 'Staff Cloud & Kubernetes Architect' : 'Staff Systems Architect & Tech Lead @ Nova')}
                 </p>
               </div>
             </div>
 
-            {/* Follow Action Button */}
+            {/* Skeuomorphic Follow Action Button */}
             <button
               type="button"
               onClick={() => {
+                playKeyClick();
                 onToggleFollow(authorName);
                 ApiClient.toggleFollow(authorName);
               }}
-              className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold tracking-wide transition-all shadow-sm cursor-pointer whitespace-nowrap active:scale-95 ${
-                isFollowing
-                  ? 'bg-zinc-100 dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                  : 'bg-zinc-950 dark:bg-white text-white dark:text-black hover:opacity-90'
+              className={`ios6-btn px-5 py-2 text-xs font-bold gap-1.5 cursor-pointer whitespace-nowrap active:scale-95 ${
+                isFollowing ? 'ios6-btn-silver' : 'ios6-btn-blue'
               }`}
             >
               {isFollowing ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
                   <span>TAKİP EDİLİYOR</span>
                 </>
               ) : (
                 <>
-                  <Plus className="w-3.5 h-3.5" />
+                  <UserPlus className="w-3.5 h-3.5" />
                   <span>TAKİP ET</span>
                 </>
               )}
@@ -236,20 +248,20 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
           </div>
 
           {/* Bio */}
-          <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
+          <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-sans">
             {profile?.bio ||
               (isStaffSelin
-                ? 'LLM entegrasyonları, pgvector gömmeleri ve yüksek boyutlu vektör uzaylarında anlamsal bilgi getirme (RAG) mimarileri üzerinde araştırmalar yapıyor.'
+                ? 'Spring AI entegrasyonları, pgvector gömmeleri ve yüksek boyutlu vektör uzaylarında anlamsal bilgi getirme (RAG) mimarileri üzerinde araştırmalar yapıyor.'
                 : isStaffCaner
                 ? 'Cloud-Native mimariler, eBPF gözlemlenebilirlik, sıfır kesintili dağıtımlar ve yüksek erişilebilirlikli mikroservis altyapıları tasarlıyor.'
-                : 'Java 22 Loom, Spring Boot 4 ve mikro-çekirdek reaktif sistemler üzerine derinlemesine teknik incelemeler ve üretim mimarileri yayınlıyor.')}
+                : 'Java 22 Loom, Spring Boot 3.4 ve mikro-çekirdek sistemler üzerine derinlemesine teknik incelemeler ve üretim mimarileri yayınlıyor.')}
           </p>
 
           {/* Social Stats & Links */}
-          <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-zinc-100 dark:border-zinc-800/80 text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-zinc-100 dark:border-zinc-800 text-xs">
             <div className="flex items-center gap-5 text-zinc-600 dark:text-zinc-400 font-mono">
               <span className="flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5 text-cyan-500" />
+                <Users className="w-3.5 h-3.5 text-blue-500" />
                 <strong className="text-zinc-950 dark:text-white font-bold">
                   {(profile?.followersCount || 1240) + (isFollowing ? 1 : 0)}
                 </strong>{' '}
@@ -258,172 +270,193 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
               <span className="flex items-center gap-1.5">
                 <BookOpen className="w-3.5 h-3.5 text-emerald-500" />
                 <strong className="text-zinc-950 dark:text-white font-bold">
-                  {authorBlogs.length > 0 ? authorBlogs.length : profile?.articlesCount || 6}
+                  {authorBlogs.length > 0 ? authorBlogs.length : profile?.articlesCount || 4}
                 </strong>{' '}
                 makale
               </span>
             </div>
 
             <div className="flex items-center gap-2 text-zinc-400">
-              <span className="hover:text-black dark:hover:text-white transition-colors cursor-pointer p-1" title="GitHub">
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-                </svg>
-              </span>
+              <a
+                href="https://github.com/abdullahberkeozder"
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => playKeyClick()}
+                className="hover:text-black dark:hover:text-white transition-colors cursor-pointer p-1"
+                title="GitHub"
+              >
+                <GithubIcon className="w-4 h-4" />
+              </a>
               <span className="hover:text-black dark:hover:text-white transition-colors cursor-pointer p-1" title="X (Twitter)">
                 <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
               </span>
               <span className="hover:text-black dark:hover:text-white transition-colors cursor-pointer p-1" title="Web Sitesi">
-                <Globe className="w-4 h-4" />
+                <Globe className="w-3.5 h-3.5" />
               </span>
             </div>
           </div>
         </div>
 
-        {/* Apple Segmented Control Tabs */}
-        <div className="px-6 sm:px-8 py-2 border-t border-zinc-100 dark:border-zinc-800 shrink-0">
-          <div className="inline-flex p-1 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 text-xs font-semibold">
+        {/* 3. Mac Finder Style Segmented Control Track */}
+        <div className="px-6 sm:px-8 py-3 bg-zinc-100 dark:bg-[#121417] border-b border-zinc-200 dark:border-zinc-800 shrink-0">
+          <div className="ios-segmented-track">
             <button
               type="button"
-              onClick={() => setActiveTab('articles')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                activeTab === 'articles'
-                  ? 'bg-white dark:bg-zinc-700 text-zinc-950 dark:text-white shadow-xs font-bold'
-                  : 'text-zinc-500 hover:text-black dark:hover:text-white'
+              onClick={() => {
+                playTabSelect();
+                setActiveTab('articles');
+              }}
+              className={`ios-segment-btn flex items-center gap-1.5 ${
+                activeTab === 'articles' ? 'active' : ''
               }`}
             >
-              <BookOpen className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Makaleler ({authorBlogs.length})</span>
+              <BookOpen className="w-3 h-3" />
+              <span>MAKALELER ({authorBlogs.length})</span>
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab('notes')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                activeTab === 'notes'
-                  ? 'bg-white dark:bg-zinc-700 text-zinc-950 dark:text-white shadow-xs font-bold'
-                  : 'text-zinc-500 hover:text-black dark:hover:text-white'
+              onClick={() => {
+                playTabSelect();
+                setActiveTab('notes');
+              }}
+              className={`ios-segment-btn flex items-center gap-1.5 ${
+                activeTab === 'notes' ? 'active' : ''
               }`}
             >
-              <Terminal className="w-3.5 h-3.5 text-cyan-500" />
-              <span>Notlar ({authorNotes.length})</span>
+              <FileText className="w-3 h-3 text-amber-500" />
+              <span>SARI NOTLAR ({authorNotes.length})</span>
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab('about')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
-                activeTab === 'about'
-                  ? 'bg-white dark:bg-zinc-700 text-zinc-950 dark:text-white shadow-xs font-bold'
-                  : 'text-zinc-500 hover:text-black dark:hover:text-white'
+              onClick={() => {
+                playTabSelect();
+                setActiveTab('about');
+              }}
+              className={`ios-segment-btn flex items-center gap-1.5 ${
+                activeTab === 'about' ? 'active' : ''
               }`}
             >
-              <Cpu className="w-3.5 h-3.5 text-amber-500" />
-              <span>Yetkinlikler</span>
+              <Cpu className="w-3 h-3 text-cyan-400" />
+              <span>ÇİP ROZETLERİ</span>
             </button>
           </div>
         </div>
 
-        {/* Tab Contents */}
-        <div className="flex-1 overflow-y-auto px-6 sm:px-8 py-4 space-y-3 bg-zinc-50/50 dark:bg-black/20 scrollbar-thin">
+        {/* 4. Tab Content Body */}
+        <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-4">
+          {/* Tab 1: Articles List */}
           {activeTab === 'articles' && (
-            <>
+            <div className="space-y-3">
               {authorBlogs.length > 0 ? (
                 authorBlogs.map((b) => (
                   <div
                     key={b.blogId ?? b.id}
                     onClick={() => {
+                      playKeyClick();
                       if (onSelectBlog) {
                         onSelectBlog(b);
                         onClose();
                       }
                     }}
-                    className="group p-4 rounded-2xl bg-white dark:bg-[#12141a] border border-zinc-200/80 dark:border-zinc-800/80 hover:border-emerald-500/50 transition-all cursor-pointer space-y-2 shadow-xs"
+                    className="group mac-blog-card p-4 flex flex-col justify-between space-y-2 cursor-pointer"
                   >
-                    <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
-                      <span>{b.header}</span>
+                    <div className="flex items-center justify-between text-[11px] text-zinc-500 font-mono">
+                      <span className="retro-tag-pill uppercase">{b.category?.categoryName || 'YAYIN'}</span>
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3 text-zinc-400" />
                         {b.readTimeMinutes || 4} dk okuma
                       </span>
                     </div>
-                    <h4 className="font-bold text-zinc-950 dark:text-white text-sm group-hover:text-emerald-500 transition-colors">
+                    <h4 className="font-bold text-zinc-950 dark:text-white text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors font-sans">
                       {b.title}
                     </h4>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
                       {b.content.slice(0, 140)}...
                     </p>
                     <div className="flex items-center justify-between pt-1 text-[11px]">
-                      <div className="flex items-center gap-1.5 text-zinc-400 font-mono">
+                      <div className="flex items-center gap-2 text-zinc-500 font-mono">
                         <span>👏 {b.clapsCount ?? b.likesCount ?? 0}</span>
-                        <span>·</span>
+                        <span>&bull;</span>
                         <span>💬 {b.commentCount ?? 0}</span>
                       </div>
-                      <span className="text-emerald-500 font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        Oku <ArrowRight className="w-3 h-3" />
+                      <span className="text-blue-600 dark:text-blue-400 font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span>Oku</span> <ArrowRight className="w-3 h-3" />
                       </span>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="py-8 text-center text-xs text-zinc-400">
+                <div className="py-8 text-center text-xs text-zinc-400 font-mono">
                   Bu yazar henüz başka bir makale yayınlamamış.
                 </div>
               )}
-            </>
+            </div>
           )}
 
+          {/* Tab 2: Mac OS X Mountain Lion Yellow Legal-Pad Notes */}
           {activeTab === 'notes' && (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {authorNotes.map((note) => (
                 <div
                   key={note.id}
-                  className="p-4 rounded-2xl bg-white dark:bg-[#12141a] border border-zinc-200/80 dark:border-zinc-800/80 space-y-2 shadow-xs"
+                  className="ios-notes-paper p-6 pl-16 rounded-xl border border-amber-300 dark:border-amber-900/60 shadow-md space-y-2 relative"
                 >
                   <div className="flex items-center justify-between text-xs font-mono">
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 font-bold uppercase">
+                    <span className="retro-tag-pill uppercase">
                       #{note.topic}
                     </span>
-                    <span className="text-zinc-400 text-[11px]">{note.date}</span>
+                    <span className="text-zinc-500 text-[11px] font-bold">{note.date}</span>
                   </div>
-                  <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed font-sans">
+                  <p className="text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 leading-relaxed font-sans">
                     {note.content}
                   </p>
-                  <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-mono pt-1">
-                    <span>👏 {note.claps} alkış</span>
+                  <div className="flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400 font-mono pt-2 border-t border-amber-200/50 dark:border-amber-900/30">
+                    <button
+                      type="button"
+                      onClick={() => playKeyClick()}
+                      className="cursor-pointer hover:text-blue-600 font-bold"
+                    >
+                      👏 {note.claps} alkış
+                    </button>
+                    <span className="text-[10px] text-zinc-400 uppercase tracking-widest">
+                      MAC OS X MOUNTAIN LION NOTE
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
           )}
 
+          {/* Tab 3: Hardware IC Chip Metallic Badges */}
           {activeTab === 'about' && (
             <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-white dark:bg-[#12141a] border border-zinc-200/80 dark:border-zinc-800/80 space-y-2">
-                <span className="text-xs font-bold text-zinc-950 dark:text-white flex items-center gap-1.5">
-                  <Cpu className="w-3.5 h-3.5 text-emerald-500" />
-                  Uzmanlık Alanları
+              <div className="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3">
+                <span className="text-xs font-bold text-zinc-950 dark:text-white flex items-center gap-1.5 uppercase font-mono">
+                  <Cpu className="w-3.5 h-3.5 text-blue-500" />
+                  <span>DONANIM &amp; MİMARİ ÇİP ROZETLERİ</span>
                 </span>
-                <div className="flex flex-wrap gap-1.5 pt-1">
+                <div className="flex flex-wrap gap-2 pt-1">
                   {techStack.map((tech) => (
                     <span
                       key={tech}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200/80 dark:border-zinc-700/80"
+                      className="mac-hardware-chip-badge"
                     >
-                      <Layers className="w-3 h-3 text-emerald-500" />
+                      <Layers className="w-3 h-3 text-blue-400" />
                       <span>{tech}</span>
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white dark:bg-[#12141a] border border-zinc-200/80 dark:border-zinc-800/80 space-y-1.5 text-xs text-zinc-600 dark:text-zinc-300">
-                <span className="font-bold text-zinc-950 dark:text-white flex items-center gap-1.5">
+              <div className="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2 text-xs text-zinc-700 dark:text-zinc-300">
+                <span className="font-bold text-zinc-950 dark:text-white flex items-center gap-1.5 font-mono">
                   <Flame className="w-3.5 h-3.5 text-amber-500" />
-                  Mimari Vizyon
+                  <span>MİMARİ VİZYON &amp; MANİFESTO</span>
                 </span>
-                <p className="leading-relaxed">
-                  Sentetik telemetri ve yapay zeka illüzyonlarından arındırılmış; yüksek eşzamanlı, güvenilir ve sürdürülebilir kurumsal yazılım mimarileri.
+                <p className="leading-relaxed font-sans">
+                  Sentetik telemetri ve yapay zeka illüzyonlarından arındırılmış; yüksek eşzamanlı, güvenilir ve sürdürülebilir kurumsal yazılım mimarileri. Java 22 Loom sanal iş parçacıkları ve pgvector 128D uzayında deterministic mühendislik.
                 </p>
               </div>
             </div>

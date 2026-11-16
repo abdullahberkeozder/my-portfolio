@@ -1107,6 +1107,77 @@
   letter-spacing: 0.3px;
 }
 
+/* ==============================================================================
+   12. Mac OS X Address Book & Mountain Lion Notes App (Faz 5)
+   ============================================================================== */
+
+/* Mac Address Book Leather Bifold Card */
+.mac-addressbook-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #c4bdae;
+  box-shadow:
+    0 16px 45px rgba(0, 0, 0, 0.25),
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 #ffffff;
+  overflow: hidden;
+}
+
+.dark .mac-addressbook-card {
+  background: #181a1d;
+  border-color: #383c44;
+  box-shadow:
+    0 16px 50px rgba(0, 0, 0, 0.6),
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Saddle-Stitched Leather Top Header Banner */
+.leather-stitched-header {
+  height: 48px;
+  background: linear-gradient(180deg, #4d2612 0%, #361a0d 50%, #251108 100%);
+  border-bottom: 2px dashed rgba(245, 195, 100, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  user-select: none;
+}
+
+/* Hardware IC Chip Metallic Badge */
+.mac-hardware-chip-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #2b2f36 0%, #1e2126 50%, #14161a 100%);
+  border: 1px solid #484d56;
+  color: #e2e8f0;
+  font-family: -apple-system, BlinkMacSystemFont, "Lucida Grande", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.9);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+  transition: all 0.12s ease;
+  user-select: none;
+}
+
+.mac-hardware-chip-badge:hover {
+  border-color: #64748b;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+
 
 
 
