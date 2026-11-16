@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   Flag,
   Loader2,
+  X,
 } from 'lucide-react';
 import { BlogDto, CommentResponseDto, AiModerationResponseDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
@@ -316,16 +317,64 @@ function PostContent({ params }: PostPageProps) {
             </Link>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 relative">
             {headings.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setIsTocOpen(!isTocOpen)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-semibold bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
-              >
-                <List className="w-3.5 h-3.5 text-zinc-400" />
-                <span>İçindekiler</span>
-              </button>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsTocOpen(!isTocOpen)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-semibold transition-all cursor-pointer ${
+                    isTocOpen
+                      ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
+                      : 'bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  <List className="w-3.5 h-3.5" />
+                  <span>İçindekiler</span>
+                </button>
+
+                {/* Table of Contents Popover Dropdown */}
+                {isTocOpen && (
+                  <div className="absolute right-0 top-10 w-80 max-h-[70vh] overflow-y-auto p-4 rounded-2xl bg-white/95 dark:bg-[#0c0e12]/95 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800 text-xs font-mono font-bold text-zinc-950 dark:text-white uppercase">
+                      <span className="flex items-center gap-1.5">
+                        <List className="w-3.5 h-3.5 text-emerald-500" />
+                        İçindekiler ({headings.length})
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setIsTocOpen(false)}
+                        className="p-1 rounded-md text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <nav className="pt-2 space-y-1">
+                      {headings.map((h, i) => (
+                        <a
+                          key={i}
+                          href={`#${h.id}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setIsTocOpen(false);
+                            const target = document.getElementById(h.id);
+                            if (target) {
+                              target.scrollIntoView({ behavior: 'smooth' });
+                            }
+                          }}
+                          className={`block text-xs py-1.5 px-2.5 rounded-lg transition-colors truncate ${
+                            h.level === 3
+                              ? 'pl-5 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
+                              : 'font-semibold text-zinc-800 dark:text-zinc-200 hover:text-emerald-500 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
+                          }`}
+                        >
+                          {h.text}
+                        </a>
+                      ))}
+                    </nav>
+                  </div>
+                )}
+              </div>
             )}
             <button
               type="button"
@@ -339,6 +388,36 @@ function PostContent({ params }: PostPageProps) {
           </div>
         </div>
       </header>
+
+      {/* Desktop Sticky Table of Contents Aside (xl:block) */}
+      {headings.length > 0 && (
+        <aside className="hidden xl:block fixed right-[max(1.5rem,calc((100vw-1180px)/2))] top-28 w-60 p-4 rounded-2xl bg-white/70 dark:bg-zinc-900/40 border border-zinc-200/60 dark:border-zinc-800/60 backdrop-blur-sm z-30 space-y-3">
+          <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+            <List className="w-3.5 h-3.5 text-emerald-500" />
+            <span>BU MAKALEDE</span>
+          </div>
+          <nav className="space-y-1 max-h-[60vh] overflow-y-auto scrollbar-none text-xs">
+            {headings.map((h, i) => (
+              <a
+                key={i}
+                href={`#${h.id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const target = document.getElementById(h.id);
+                  if (target) target.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className={`block py-1 px-2 rounded-lg transition-colors truncate ${
+                  h.level === 3
+                    ? 'pl-4 text-[11px] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100/60 dark:hover:bg-zinc-800/40'
+                    : 'font-semibold text-zinc-700 dark:text-zinc-300 hover:text-emerald-500 hover:bg-zinc-100/60 dark:hover:bg-zinc-800/40'
+                }`}
+              >
+                {h.text}
+              </a>
+            ))}
+          </nav>
+        </aside>
+      )}
 
       {/* Main 720px Reading Canvas */}
       <main className="flex-1 max-w-[720px] mx-auto w-full px-4 sm:px-6 py-12 space-y-10">
@@ -727,19 +806,19 @@ function PostContent({ params }: PostPageProps) {
         )}
       </main>
 
-      {/* Medium-Grade Floating Bottom Interaction Dock */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-6 py-3 rounded-full bg-white/95 dark:bg-[#0f1117]/95 border border-zinc-200 dark:border-zinc-800 shadow-2xl backdrop-blur-xl">
+      {/* Medium/Substack-Grade Floating Bottom Interaction Dock */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-white/95 dark:bg-[#0c0e12]/95 border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl backdrop-blur-xl transition-all">
         {/* Claps */}
         <button
           type="button"
           onClick={handleClap}
-          className="flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-emerald-500 transition-colors cursor-pointer group"
+          className="flex items-center gap-1.5 sm:gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-emerald-500 transition-all cursor-pointer group active:scale-90 select-none"
           title="Alkışla (1-50)"
         >
-          <span className="text-base group-hover:scale-125 transition-transform">👏</span>
+          <span className="text-base group-hover:scale-125 group-active:scale-150 transition-transform">👏</span>
           <span className="font-mono">{localClaps}</span>
           {userClaps > 0 && (
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold animate-in fade-in zoom-in-50">
               +{userClaps}
             </span>
           )}
@@ -754,8 +833,8 @@ function PostContent({ params }: PostPageProps) {
             const el = document.getElementById('comments-discussion-section');
             if (el) el.scrollIntoView({ behavior: 'smooth' });
           }}
-          className="flex items-center gap-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-emerald-500 transition-colors cursor-pointer"
-          title="Tartışmalara Git"
+          className="flex items-center gap-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-emerald-500 transition-all cursor-pointer active:scale-95"
+          title="Teknik Tartışmalara Git"
         >
           <MessageSquare className="w-4 h-4 text-zinc-400" />
           <span className="font-mono">{comments.length}</span>
@@ -767,10 +846,10 @@ function PostContent({ params }: PostPageProps) {
         <button
           type="button"
           onClick={toggleBookmark}
-          className="flex items-center gap-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-amber-500 transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-amber-500 transition-all cursor-pointer active:scale-95"
           title="Okuma Listesine Kaydet"
         >
-          <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-amber-500 text-amber-500' : 'text-zinc-400'}`} />
+          <Bookmark className={`w-4 h-4 transition-transform ${isBookmarked ? 'fill-amber-500 text-amber-500 scale-110' : 'text-zinc-400'}`} />
           <span className="hidden sm:inline">{isBookmarked ? 'Kaydedildi' : 'Kaydet'}</span>
         </button>
 
@@ -780,10 +859,10 @@ function PostContent({ params }: PostPageProps) {
         <button
           type="button"
           onClick={handleShare}
-          className="flex items-center gap-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-emerald-500 transition-colors cursor-pointer"
-          title="Makaleyi Paylaş"
+          className="flex items-center gap-1.5 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-emerald-500 transition-all cursor-pointer active:scale-95"
+          title="Makale Bağlantısını Kopyala"
         >
-          <Share2 className="w-4 h-4 text-zinc-400" />
+          {isCopiedLink ? <Check className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4 text-zinc-400" />}
           <span className="hidden sm:inline">{isCopiedLink ? 'Kopyalandı' : 'Paylaş'}</span>
         </button>
       </div>
