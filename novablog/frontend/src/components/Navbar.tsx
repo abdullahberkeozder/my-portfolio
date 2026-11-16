@@ -8,12 +8,17 @@ import {
   ArrowRight,
   Layers,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Menu,
   PenSquare,
   Search,
 } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
 import { AquariumToggle } from './AquariumToggle';
+import { AppleGlobalAcrylicNavBar } from './AppleGlobalAcrylicNavBar';
+import { MacWindowChrome } from './MacWindowChrome';
+import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
 
 export type NavTab = 'feed' | 'system' | 'ai-search' | 'admin-batch';
 
@@ -115,6 +120,32 @@ export const Navbar: React.FC<NavbarProps> = ({
     }, 50);
   };
 
+  const TAB_ORDER: NavTab[] = ['feed', 'system', 'ai-search', 'admin-batch'];
+
+  const handlePrevTab = () => {
+    playKeyClick();
+    const currentIndex = TAB_ORDER.indexOf(activeTab);
+    const prevIndex = (currentIndex - 1 + TAB_ORDER.length) % TAB_ORDER.length;
+    const targetTab = TAB_ORDER[prevIndex];
+    setActiveTab(targetTab);
+    if (targetTab === 'feed') scrollToSection('articles-feed', targetTab);
+    else if (targetTab === 'system') scrollToSection('modular-architecture-console', targetTab);
+    else if (targetTab === 'ai-search') scrollToSection('ai-vector-studio', targetTab);
+    else if (targetTab === 'admin-batch') scrollToSection('batch-etl-studio', targetTab);
+  };
+
+  const handleNextTab = () => {
+    playKeyClick();
+    const currentIndex = TAB_ORDER.indexOf(activeTab);
+    const nextIndex = (currentIndex + 1) % TAB_ORDER.length;
+    const targetTab = TAB_ORDER[nextIndex];
+    setActiveTab(targetTab);
+    if (targetTab === 'feed') scrollToSection('articles-feed', targetTab);
+    else if (targetTab === 'system') scrollToSection('modular-architecture-console', targetTab);
+    else if (targetTab === 'ai-search') scrollToSection('ai-vector-studio', targetTab);
+    else if (targetTab === 'admin-batch') scrollToSection('batch-etl-studio', targetTab);
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -129,52 +160,84 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header
-      className="sticky top-0 z-50"
+      className="sticky top-0 z-50 select-none shadow-md"
       onMouseLeave={handleMouseLeave}
     >
-      {/* Subtle backdrop overlay when mega menu is open - pure opacity scrim, no expensive fullscreen blur */}
+      {/* 1. Top Tier: Apple 2010 Global Acrylic Nav Bar (40px) */}
+      <AppleGlobalAcrylicNavBar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isBackendOnline={isBackendOnline}
+        onRefreshHealth={onRefreshHealth}
+        onOpenTelemetry={onOpenTelemetry}
+        onOpenTwoFactor={onOpenTwoFactor}
+        onFocusSearch={onFocusSearch}
+        scrollToSection={scrollToSection}
+      />
+
+      {/* 2. Middle Tier: Mac OS X Window Titlebar & Traffic Lights */}
+      <MacWindowChrome
+        title="NOVA — Dağıtık Sistemler ve Yapay Zeka Yayını (Mac OS X Edition)"
+        subtitle="Java 22 Loom · Spring AI · PostgreSQL pgvector 128D"
+        onClose={() => playKeyClick()}
+        onMinimize={() => playKeyClick()}
+        onMaximize={() => playKeyClick()}
+      />
+
+      {/* Subtle backdrop overlay when mega menu is open */}
       {isMegaOpen && (
         <div
-          className="fixed inset-0 bg-black/30 dark:bg-black/50 z-30 transition-opacity duration-200 pointer-events-auto"
+          className="fixed inset-0 bg-black/40 z-30 transition-opacity duration-200 pointer-events-auto"
           onClick={closeMegaMenu}
         />
       )}
 
-      {/* Unified Apple-grade Frosted Glass Header Container - Static blur radius, GPU-accelerated layer */}
-      <div
-        className={`relative z-40 backdrop-blur-xl transition-colors duration-200 ${
-          isMegaOpen
-            ? 'bg-white/95 dark:bg-[#090b0e]/95 text-zinc-950 dark:text-white shadow-2xl rounded-b-[28px] border-b border-zinc-200 dark:border-zinc-800 pb-5'
-            : 'bg-white/80 dark:bg-[#07080a]/85 border-b border-zinc-200/80 dark:border-zinc-800/80'
-        }`}
-        style={{ transform: 'translate3d(0,0,0)' }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Top Bar Row */}
-          <div className="flex items-center justify-between h-18 sm:h-20">
-            {/* 1. Premium Apple-Grade Brand Logo */}
+      {/* 3. Bottom Tier: Mac OS X 44px Unified Brushed-Platinum Toolbar */}
+      <div className="mac-unified-toolbar relative z-40">
+        <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4 py-1">
+          {/* Left Controls: Finder Nav Chevrons [<] [>] + Wordmark */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className="mac-nav-chevron-group" title="Finder Tarihsel Pencereler Arası Gezinme">
+              <button
+                type="button"
+                onClick={handlePrevTab}
+                className="mac-nav-chevron-btn"
+                title="Önceki Sekme"
+                aria-label="Önceki"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={handleNextTab}
+                className="mac-nav-chevron-btn"
+                title="Sonraki Sekme"
+                aria-label="Sonraki"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Brand Logo & Wordmark */}
             <div
-              className="flex items-center gap-3.5 cursor-pointer group select-none py-2"
+              className="flex items-center gap-2 cursor-pointer group py-1"
               onClick={() => {
                 closeMegaMenu();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 if (onRefreshHealth) onRefreshHealth();
               }}
             >
-              {/* Bespoke Geometric Nova Star Aperture Emblem */}
               <svg
                 viewBox="0 0 40 40"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 text-zinc-950 dark:text-white transition-transform group-hover:scale-105 duration-300"
+                className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 text-zinc-900 dark:text-zinc-100 transition-transform group-hover:scale-105 duration-200"
                 aria-label="Nova Logo"
               >
-                {/* 4-Cusped Precision Astroid Geometry */}
                 <path
                   d="M20 2C20 11.9411 28.0589 20 38 20C28.0589 20 20 28.0589 20 38C20 28.0589 11.9411 20 2 20C11.9411 20 20 11.9411 20 2Z"
                   fill="currentColor"
                 />
-                {/* Inner Optical Lens Core with Dynamic Health State */}
                 <circle cx="20" cy="20" r="3.6" className="fill-white dark:fill-[#07080a]" />
                 <circle
                   cx="20"
@@ -184,142 +247,141 @@ export const Navbar: React.FC<NavbarProps> = ({
                 />
               </svg>
 
-              {/* Prominent Bold Wordmark */}
-              <div className="flex items-baseline">
-                <span className="font-sans font-black text-2xl sm:text-[26px] tracking-[-0.04em] text-zinc-950 dark:text-white uppercase leading-none">
-                  NOVA
-                </span>
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#d4f933] ml-0.5" />
-              </div>
-            </div>
-
-            {/* 2. Desktop Navigation Tabs (Single-Line, High-Contrast Ergonomics) */}
-            <nav className="hidden md:flex items-center gap-1 sm:gap-1.5 font-mono text-xs">
-              {/* Category 1: MAKALELER */}
-              <button
-                type="button"
-                onMouseEnter={() => handleMouseEnter('articles')}
-                onClick={() => scrollToSection('articles-feed', 'feed')}
-                className={`whitespace-nowrap shrink-0 px-4 py-2 rounded-full font-bold transition-all cursor-pointer ${
-                  megaMenu === 'articles'
-                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-black shadow-md'
-                    : activeTab === 'feed'
-                    ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
-                }`}
-              >
-                MAKALELER
-              </button>
-
-              {/* Category 2: ÇEKİRDEK */}
-              <button
-                type="button"
-                onMouseEnter={() => handleMouseEnter('system')}
-                onClick={() => scrollToSection('modular-architecture-console', 'system')}
-                className={`whitespace-nowrap shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full font-bold transition-all cursor-pointer ${
-                  megaMenu === 'system'
-                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-black shadow-md'
-                    : activeTab === 'system'
-                    ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
-                }`}
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span>ÇEKİRDEK</span>
-              </button>
-
-              {/* Category 3: AI & VEKTÖR */}
-              <button
-                type="button"
-                onMouseEnter={() => handleMouseEnter('ai')}
-                onClick={() => scrollToSection('ai-vector-studio', 'ai-search')}
-                className={`whitespace-nowrap shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full font-bold transition-all cursor-pointer ${
-                  megaMenu === 'ai'
-                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-black shadow-md'
-                    : activeTab === 'ai-search'
-                    ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
-                }`}
-              >
-                <Cpu className="w-3.5 h-3.5" />
-                <span>AI & VEKTÖR</span>
-              </button>
-
-              {/* Category 4: BATCH & ETL */}
-              <button
-                type="button"
-                onMouseEnter={() => handleMouseEnter('batch')}
-                onClick={() => scrollToSection('batch-etl-studio', 'admin-batch')}
-                className={`whitespace-nowrap shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full font-bold transition-all cursor-pointer ${
-                  megaMenu === 'batch'
-                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-black shadow-md'
-                    : activeTab === 'admin-batch'
-                    ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
-                }`}
-              >
-                <Database className="w-3.5 h-3.5" />
-                <span>BATCH & ETL</span>
-              </button>
-            </nav>
-
-            {/* 3. Right Status & Controls */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Desktop Fast Search Trigger */}
-              {onFocusSearch && (
-                <button
-                  type="button"
-                  onClick={onFocusSearch}
-                  className="hidden lg:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors cursor-pointer text-xs font-mono"
-                  title="Makale, yazar veya etiket ara (⌘K)"
-                >
-                  <Search className="w-3.5 h-3.5 text-zinc-400" />
-                  <span>Ara...</span>
-                  <kbd className="px-1.5 py-0.5 rounded bg-zinc-200/70 dark:bg-zinc-800 text-[10px] text-zinc-600 dark:text-zinc-400 font-bold border border-zinc-300 dark:border-zinc-700">
-                    ⌘K
-                  </kbd>
-                </button>
-              )}
-
-              {/* Mobile Menu Trigger Pill */}
-              <button
-                type="button"
-                onClick={() => setMegaMenu(isMegaOpen ? null : 'articles')}
-                className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 transition-colors cursor-pointer"
-                aria-label="Menüyü Aç / Kapat"
-              >
-                {isMegaOpen ? <ChevronDown className="w-3.5 h-3.5 rotate-180" /> : <Menu className="w-3.5 h-3.5" />}
-                <span>{isMegaOpen ? 'KAPAT' : 'MENÜ'}</span>
-              </button>
-
-              {/* Publication Write Story CTA Button */}
-              {onOpenCreateModal && (
-                <button
-                  type="button"
-                  onClick={onOpenCreateModal}
-                  className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold tracking-wide uppercase transition-all duration-300 shadow-sm cursor-pointer whitespace-nowrap bg-zinc-950 dark:bg-white text-white dark:text-black hover:opacity-90 active:scale-95 btn-tactile"
-                  title="Yeni Teknik Makale Yayınla"
-                >
-                  <PenSquare className="w-3.5 h-3.5 text-emerald-400 dark:text-zinc-950" />
-                  <span>Yaz</span>
-                </button>
-              )}
-
-              {/* Living Pixel Aquarium Theme Toggle (Sean Galt / Fable Specification) */}
-              <AquariumToggle compact compactWidth={80} className="shrink-0" />
-
-              {/* GitHub Repo Link */}
-              <a
-                href="https://github.com/abdullahberkeozder/my-portfolio"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 p-2 rounded-full transition-all cursor-pointer glass-liquid hover:border-black/20 dark:hover:border-white/20 text-zinc-800 dark:text-zinc-200 btn-tactile"
-                title="GitHub Repository"
-              >
-                <GithubIcon className="w-4 h-4" />
-              </a>
+              <span className="font-black text-base sm:text-lg tracking-tight uppercase leading-none text-zinc-900 dark:text-zinc-100 drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] dark:drop-shadow-[0_-1px_0_rgba(0,0,0,0.8)]">
+                NOVA.
+              </span>
             </div>
           </div>
+
+          {/* Center Controls: Finder Metallic 4-Segmented Switcher */}
+          <nav className="hidden md:inline-flex items-center retro-segmented-track shadow-inner">
+            <button
+              type="button"
+              onMouseEnter={() => handleMouseEnter('articles')}
+              onClick={() => {
+                playTabSelect();
+                scrollToSection('articles-feed', 'feed');
+              }}
+              className={`retro-segmented-item flex items-center gap-1.5 text-xs font-bold ${
+                activeTab === 'feed' ? 'active' : ''
+              }`}
+            >
+              <span>MAKALELER</span>
+            </button>
+
+            <button
+              type="button"
+              onMouseEnter={() => handleMouseEnter('system')}
+              onClick={() => {
+                playTabSelect();
+                scrollToSection('modular-architecture-console', 'system');
+              }}
+              className={`retro-segmented-item flex items-center gap-1.5 text-xs font-bold ${
+                activeTab === 'system' ? 'active' : ''
+              }`}
+            >
+              <Layers className="w-3 h-3" />
+              <span>ÇEKİRDEK</span>
+            </button>
+
+            <button
+              type="button"
+              onMouseEnter={() => handleMouseEnter('ai')}
+              onClick={() => {
+                playTabSelect();
+                scrollToSection('ai-vector-studio', 'ai-search');
+              }}
+              className={`retro-segmented-item flex items-center gap-1.5 text-xs font-bold ${
+                activeTab === 'ai-search' ? 'active' : ''
+              }`}
+            >
+              <Cpu className="w-3 h-3" />
+              <span>AI & VEKTÖR</span>
+            </button>
+
+            <button
+              type="button"
+              onMouseEnter={() => handleMouseEnter('batch')}
+              onClick={() => {
+                playTabSelect();
+                scrollToSection('batch-etl-studio', 'admin-batch');
+              }}
+              className={`retro-segmented-item flex items-center gap-1.5 text-xs font-bold ${
+                activeTab === 'admin-batch' ? 'active' : ''
+              }`}
+            >
+              <Database className="w-3 h-3" />
+              <span>BATCH & ETL</span>
+            </button>
+          </nav>
+
+          {/* Right Controls: Recessed Search, Blue Write Button, Aquarium Toggle & Mobile Menu */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Mac Recessed Search Field */}
+            {onFocusSearch && (
+              <button
+                type="button"
+                onClick={() => {
+                  playKeyClick();
+                  onFocusSearch();
+                }}
+                className="mac-search-field hidden lg:flex items-center gap-1.5 cursor-pointer select-none text-[11px]"
+                title="Spotlight Arama (⌘K)"
+              >
+                <Search className="w-3 h-3 text-zinc-400" />
+                <span>⌘K Ara...</span>
+              </button>
+            )}
+
+            {/* Mobile Menu Trigger */}
+            <button
+              type="button"
+              onClick={() => {
+                playKeyClick();
+                setMegaMenu(isMegaOpen ? null : 'articles');
+              }}
+              className="md:hidden flex items-center gap-1 px-2.5 py-1 rounded border border-zinc-400 dark:border-zinc-700 bg-white/70 dark:bg-black/40 text-xs font-bold uppercase shadow-sm cursor-pointer"
+              aria-label="Menüyü Aç / Kapat"
+            >
+              {isMegaOpen ? <ChevronDown className="w-3 h-3 rotate-180" /> : <Menu className="w-3 h-3" />}
+              <span>{isMegaOpen ? 'Kapat' : 'Menü'}</span>
+            </button>
+
+            {/* Cylindrical Glossy Blue +Yaz Button */}
+            {onOpenCreateModal && (
+              <button
+                type="button"
+                onClick={() => {
+                  playKeyClick();
+                  onOpenCreateModal();
+                }}
+                className="retro-btn retro-btn-blue text-xs font-bold px-3 py-1 flex items-center gap-1 cursor-pointer select-none shadow-sm"
+                title="Yeni Teknik Makale Yayınla"
+              >
+                <PenSquare className="w-3 h-3" />
+                <span>+ Yaz</span>
+              </button>
+            )}
+
+            {/* Living Pixel Aquarium Theme Toggle */}
+            <div className="p-0.5 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5">
+              <AquariumToggle compact compactWidth={76} className="shrink-0" />
+            </div>
+
+            {/* GitHub Icon Link */}
+            <a
+              href="https://github.com/abdullahberkeozder/my-portfolio"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => playKeyClick()}
+              className="flex items-center justify-center w-7 h-7 rounded border border-zinc-300 dark:border-zinc-700 bg-white/60 dark:bg-zinc-800/60 hover:bg-white dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 shadow-sm transition-colors cursor-pointer"
+              title="GitHub Repository"
+            >
+              <GithubIcon className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
+      </div>
 
           {/* 4. Elegant Frosted Glass Mega-Menu Dropdown (Hardware-Accelerated Single Surface) */}
           {isMegaOpen && (
@@ -720,8 +782,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             </div>
           )}
-        </div>
-      </div>
     </header>
   );
 };

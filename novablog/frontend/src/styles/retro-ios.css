@@ -603,3 +603,130 @@
   color: #e0e0e0;
 }
 
+/* ==============================================================================
+   7. Apple 2010 Global Acrylic Navigation Bar & Mac Unified Toolbar Tokens
+   ============================================================================== */
+
+/* Apple 2010-2012 Global 40px Acrylic Gloss Bar */
+.apple-global-nav {
+  height: 40px;
+  background: linear-gradient(180deg, #454545 0%, #292929 50%, #1a1a1a 51%, #222222 100%);
+  border-bottom: 1px solid #111111;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 2px 5px rgba(0, 0, 0, 0.45);
+  user-select: none;
+  z-index: 50;
+}
+
+.apple-global-nav-brand {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Lucida Grande", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.9);
+}
+
+.apple-global-nav-link {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Lucida Grande", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #d2d2d2;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.85);
+  padding: 4px 10px;
+  border-radius: 3px;
+  transition: all 0.12s ease;
+  cursor: pointer;
+}
+
+.apple-global-nav-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.4), 0 -1px 0 rgba(0, 0, 0, 0.9);
+}
+
+.apple-global-nav-link.active {
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Mac OS X 44px Unified Brushed-Platinum Toolbar */
+.mac-unified-toolbar {
+  min-height: 44px;
+  background: linear-gradient(180deg, #f7f7f7 0%, #e3e3e3 45%, #d1d1d1 50%, #dcdcdc 100%);
+  border-bottom: 1px solid #9c9c9c;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 3px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  user-select: none;
+}
+
+.dark .mac-unified-toolbar {
+  background: linear-gradient(180deg, #3a3d42 0%, #2b2e33 45%, #202327 50%, #26292d 100%);
+  border-bottom: 1px solid #141618;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Mac Finder Style Back/Forward Chevrons */
+.mac-nav-chevron-group {
+  display: inline-flex;
+  border-radius: 4px;
+  border: 1px solid #999999;
+  background: linear-gradient(to bottom, #ffffff 0%, #e8e8e8 100%);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+}
+
+.dark .mac-nav-chevron-group {
+  border-color: #2a2c30;
+  background: linear-gradient(to bottom, #383b40 0%, #26282c 100%);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.mac-nav-chevron-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  color: #444444;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  user-select: none;
+}
+
+.dark .mac-nav-chevron-btn {
+  color: #cccccc;
+}
+
+.mac-nav-chevron-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #000000;
+}
+
+.dark .mac-nav-chevron-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.mac-nav-chevron-btn:active {
+  background: rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.dark .mac-nav-chevron-btn:active {
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.mac-nav-chevron-btn:first-child {
+  border-right: 1px solid #c0c0c0;
+}
+
+.dark .mac-nav-chevron-btn:first-child {
+  border-right: 1px solid #2f3135;
+}
+
+

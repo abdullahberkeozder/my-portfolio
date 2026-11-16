@@ -209,3 +209,8 @@ class RetroAudioEngine {
 }
 
 export const retroAudio = new RetroAudioEngine();
+
+export const playKeyClick = (tone: 'crisp' | 'soft' = 'crisp') => retroAudio.playKeyClick(tone);
+export const playTabSelect = () => retroAudio.playTabSelect();
+export const playSwitchToggle = (state?: boolean) => retroAudio.playSwitchToggle(state);
+export const playSendWhoosh = () => retroAudio.playSendWhoosh();
