@@ -16,6 +16,7 @@ import {
   Layers,
   Sparkles,
 } from 'lucide-react';
+import { playKeyClick, playTabSelect, playWindowOpen } from '@/lib/retroAudio';
 
 interface FloatingCopilotWidgetProps {
   onOpenArchitectureConsole?: () => void;
@@ -119,7 +120,13 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
   const [isFlushing, setIsFlushing] = useState(false);
   const [flushSuccess, setFlushSuccess] = useState(false);
 
+  const handleToggleOpen = () => {
+    playWindowOpen();
+    setIsOpen((prev) => !prev);
+  };
+
   const handleManualFlush = async () => {
+    playKeyClick('crisp');
     setIsFlushing(true);
     setFlushSuccess(false);
     try {
@@ -135,6 +142,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
   };
 
   const handleAction = (type?: QnA['actionType']) => {
+    playKeyClick('crisp');
     setIsOpen(false);
     if (!type) return;
 
@@ -154,115 +162,103 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
         const el = document.getElementById('modular-architecture-console');
         if (el) el.scrollIntoView({ behavior: 'smooth' });
         window.dispatchEvent(new CustomEvent('select-console-module', { detail: 'write-behind' }));
+        window.dispatchEvent(new CustomEvent('run-console-simulation'));
       }, 100);
     } else if (type === 'telemetry') {
       if (onOpenTelemetry) onOpenTelemetry();
     } else if (type === 'tab-ai') {
       if (onSelectTab) onSelectTab('ai-search');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => {
+        const el = document.getElementById('ai-vector-studio');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     } else if (type === 'tab-batch') {
       if (onSelectTab) onSelectTab('admin-batch');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => {
+        const el = document.getElementById('batch-etl-studio');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     } else if (type === 'manifesto') {
       if (onOpenAbout) onOpenAbout();
     }
   };
 
+  const handleSelectSubject = (item: QnA) => {
+    playTabSelect();
+    setSelectedQnA(item);
+  };
+
   return (
     <>
-      {/* 1. Apple-Grade Monolithic Floating Trigger Button (FAB) */}
-      <button
-        onClick={() => setIsOpen((prev) => !prev)}
-        className="fixed bottom-6 right-6 z-50 w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 shadow-2xl border border-white/20 dark:border-zinc-800/20 flex items-center justify-center transition-all duration-300 hover:scale-108 active:scale-95 cursor-pointer group select-none btn-tactile"
-        title="Nova Mimari Danışmanını Aç"
-        aria-label="Nova Mimari Copilot"
-      >
-        {/* Live Status Indicator Dot */}
-        <span className="w-3 h-3 rounded-full bg-emerald-500 absolute top-0.5 right-0.5 ring-2 ring-zinc-950 dark:ring-white shadow-[0_0_8px_#10b981] animate-pulse" />
+      {/* Floating Trigger Button: Apple Translucent Dark Glass Pill */}
+      {!isOpen && (
+        <button
+          onClick={handleToggleOpen}
+          className="fixed bottom-6 right-6 z-40 group flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-gradient-to-b from-[#2a2a2e] to-[#141416] text-white border border-white/20 shadow-[0_8px_24px_rgba(0,0,0,0.6)] hover:border-blue-400/60 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer backdrop-blur-md select-none"
+          title=" Nova Sistem Mimarı & Copilot Danışmanını Aç"
+        >
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" />
+          <Bot className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
+          <span className="font-mono text-xs font-bold tracking-wider">
+             MİMARİ ASİSTAN
+          </span>
+        </button>
+      )}
 
-        {isOpen ? (
-          <X className="w-6 h-6 transition-transform duration-200 group-hover:rotate-90" />
-        ) : (
-          <div className="relative flex items-center justify-center">
-            {/* Precision Nova Geometric Astroid Star Glyphs */}
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-6 transition-transform group-hover:scale-110"
-            >
-              <path
-                d="M12 2C12 7.52285 16.4772 12 22 12C16.4772 12 12 16.4772 12 22C12 16.4772 7.52285 12 2 12C7.52285 12 12 7.52285 12 2Z"
-                fill="currentColor"
-              />
-              <circle cx="12" cy="12" r="2.2" className="fill-zinc-950 dark:fill-white" />
-              <circle cx="12" cy="12" r="1.1" className="fill-emerald-400" />
-            </svg>
-          </div>
-        )}
-      </button>
-
-      {/* 2. Interactive Frosted Glass Architecture Assistant Drawer */}
+      {/* Expanded HUD:  Mac OS X Translucent Dark Window */}
       {isOpen && (
-        <div className="fixed bottom-22 right-6 z-50 w-[390px] sm:w-[450px] max-w-[92vw] backdrop-blur-2xl bg-white/95 dark:bg-[#0c0e14]/95 rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] border border-zinc-200/90 dark:border-zinc-800/90 p-5 sm:p-6 space-y-4 font-sans ride-also-drawer-anim text-zinc-950 dark:text-white">
-          {/* Drawer Header with Bespoke Nova Insignia */}
-          <div className="flex items-center justify-between pb-3.5 border-b border-zinc-200/80 dark:border-zinc-800/80">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 flex items-center justify-center shadow-md border border-zinc-800 dark:border-zinc-200 shrink-0">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5"
-                >
-                  <path
-                    d="M12 2C12 7.52285 16.4772 12 22 12C16.4772 12 12 16.4772 12 22C12 16.4772 7.52285 12 2 12C7.52285 12 12 7.52285 12 2Z"
-                    fill="currentColor"
-                  />
-                  <circle cx="12" cy="12" r="2.2" className="fill-zinc-950 dark:fill-white" />
-                  <circle cx="12" cy="12" r="1.1" className="fill-emerald-400 dark:fill-emerald-600" />
-                </svg>
+        <div className="fixed bottom-6 right-4 sm:right-6 z-50 w-[95vw] sm:w-[440px] max-w-[460px] rounded-2xl bg-gradient-to-b from-[#222226]/95 via-[#1a1a1e]/95 to-[#121215]/95 backdrop-blur-xl border border-white/20 shadow-[0_24px_60px_rgba(0,0,0,0.85)] text-white p-5 space-y-4 animate-in fade-in zoom-in-95 duration-200 select-none">
+          
+          {/* Mac Window Titlebar */}
+          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={handleToggleOpen}
+                  className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e] shadow-inner cursor-pointer"
+                  title="Pencereyi Kapat"
+                />
+                <span className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d89e24] shadow-inner" />
+                <span className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29] shadow-inner" />
               </div>
-              <div>
-                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-950 dark:text-white flex items-center gap-1.5">
-                  NOVA ARCHITECTURE COPILOT
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+
+              <div className="ml-2 flex items-center gap-1.5">
+                <Bot className="w-4 h-4 text-blue-400" />
+                <h3 className="font-sans text-xs font-bold text-white tracking-tight">
+                   Nova Sistem Mimarı &amp; Copilot
                 </h3>
-                <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 tracking-wider">
-                  CANLI MİMARİ & DANIŞMANLIK SİSTEMİ
-                </span>
               </div>
             </div>
 
             <button
-              onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-full text-zinc-400 hover:text-zinc-950 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              onClick={handleToggleOpen}
+              className="text-zinc-400 hover:text-white p-1 rounded hover:bg-white/10 transition-colors cursor-pointer"
               title="Kapat"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Quick Subject Chip Carousel */}
-          <div className="space-y-2">
-            <span className="text-[10px] font-mono font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest block">
-              MİMARİ SORU SEÇİNİZ //
+          {/* Quick Subject Chip Carousel (Apple Aqua Segmented Tabs) */}
+          <div className="space-y-1.5">
+            <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">
+              MİMARİ KONU BAŞLIĞI //
             </span>
-            <div className="flex items-center gap-2 overflow-x-auto pb-1.5 scrollbar-none">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
               {KNOWLEDGE_BASE.map((item) => {
                 const Icon = item.icon;
                 const isSelected = selectedQnA.id === item.id;
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setSelectedQnA(item)}
-                    className={`shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold transition-all cursor-pointer ${
+                    onClick={() => handleSelectSubject(item)}
+                    className={`shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-mono font-bold transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-md font-bold'
-                        : 'bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200/80 dark:border-zinc-700/60'
+                        ? 'bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-sm border border-blue-400/40'
+                        : 'bg-white/10 hover:bg-white/15 text-zinc-300 border border-white/10'
                     }`}
                   >
-                    <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-emerald-400 dark:text-emerald-600' : 'text-zinc-400'}`} />
+                    <Icon className="w-3 h-3" />
                     <span>{item.chipText}</span>
                   </button>
                 );
@@ -270,49 +266,50 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
             </div>
           </div>
 
-          {/* Active Knowledge Card */}
-          <div className="p-4.5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/90 dark:border-zinc-800/90 space-y-3">
-            <div className="flex items-center justify-between text-[11px] font-mono">
-              <span className="text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider">
+          {/* Active Knowledge Card (Translucent Brushed Plinth) */}
+          <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-2.5">
+            <div className="flex items-center justify-between text-[10px] font-mono">
+              <span className="text-blue-400 font-bold uppercase tracking-wider">
                 {selectedQnA.tag}
               </span>
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/15 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                <Check className="w-3 h-3 stroke-[3]" />
+              <span className="inline-flex items-center gap-1 text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                <Check className="w-2.5 h-2.5 stroke-[3]" />
                 <span>DOĞRULANMIŞ SPEC</span>
               </span>
             </div>
-            <h4 className="text-base sm:text-[17px] font-black text-zinc-950 dark:text-white leading-snug tracking-tight">
+
+            <h4 className="text-xs sm:text-sm font-bold text-white tracking-tight leading-snug">
               {selectedQnA.title}
             </h4>
-            <p className="text-xs sm:text-[13px] text-zinc-600 dark:text-zinc-300 leading-relaxed font-sans">
+
+            <p className="text-xs text-zinc-300 leading-relaxed font-sans">
               {selectedQnA.answer}
             </p>
 
+            {/* Action Bar */}
             {selectedQnA.id === 'write-behind' ? (
               <div className="pt-2 flex items-center gap-2">
                 <button
                   onClick={() => handleAction(selectedQnA.actionType)}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:opacity-90 text-xs font-mono font-bold uppercase transition-all cursor-pointer shadow-sm btn-tactile"
+                  className="mac-aqua-btn flex-1 flex items-center justify-center gap-1.5 !py-2 !text-xs font-bold"
                 >
-                  <span>İncele</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <span>Konsolda İncele</span>
+                  <ArrowRight className="w-3 h-3" />
                 </button>
                 <button
                   onClick={handleManualFlush}
                   disabled={isFlushing}
-                  className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-mono font-bold uppercase transition-all cursor-pointer shadow-sm ${
-                    flushSuccess
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700'
+                  className={`ios6-btn ios6-btn-silver flex-1 flex items-center justify-center gap-1.5 !py-2 !text-xs font-bold ${
+                    flushSuccess ? '!text-emerald-400' : ''
                   }`}
-                  title="Redis Write-Behind tamponundaki tüm birikmiş sayaçları tek seferde veritabanına aktarır"
+                  title="Redis Write-Behind tamponunu veritabanına aktarır"
                 >
                   {isFlushing ? (
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin text-zinc-900 dark:text-white" />
+                    <RefreshCw className="w-3 h-3 animate-spin" />
                   ) : flushSuccess ? (
-                    <Check className="w-3.5 h-3.5 text-white" />
+                    <Check className="w-3 h-3 text-emerald-400" />
                   ) : (
-                    <Sparkles className="w-3.5 h-3.5" />
+                    <Sparkles className="w-3 h-3 text-amber-400" />
                   )}
                   <span>{isFlushing ? 'YAZILIYOR' : flushSuccess ? 'BAŞARILI ✓' : 'TEST FLUSH ET'}</span>
                 </button>
@@ -321,34 +318,34 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
               <div className="pt-2">
                 <button
                   onClick={() => handleAction(selectedQnA.actionType)}
-                  className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:opacity-90 text-xs font-mono font-bold uppercase transition-all cursor-pointer shadow-sm btn-tactile"
+                  className="mac-aqua-btn w-full flex items-center justify-center gap-2 !py-2 !text-xs font-bold"
                 >
                   <span>{selectedQnA.actionText}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
             ) : null}
           </div>
 
           {/* Quick Engine Links Footer */}
-          <div className="pt-2 border-t border-zinc-200/80 dark:border-zinc-800/80 grid grid-cols-2 gap-2 text-[11px] font-mono">
+          <div className="pt-2 border-t border-white/10 grid grid-cols-2 gap-2 text-[10px] font-mono">
             <a
               href="http://localhost:5555/swagger-ui.html"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700/60 transition-colors font-semibold"
+              className="flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 transition-colors font-semibold"
             >
               <span>SWAGGER UI</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-60" />
+              <ExternalLink className="w-3 h-3 opacity-60" />
             </a>
             <a
               href="http://localhost:5555/h2-console"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700/60 transition-colors font-semibold"
+              className="flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/10 transition-colors font-semibold"
             >
               <span>H2 CONSOLE</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-60" />
+              <ExternalLink className="w-3 h-3 opacity-60" />
             </a>
           </div>
         </div>

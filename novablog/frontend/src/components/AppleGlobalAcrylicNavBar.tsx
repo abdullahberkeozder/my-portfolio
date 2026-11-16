@@ -34,6 +34,7 @@ export const AppleGlobalAcrylicNavBar: React.FC<AppleGlobalAcrylicNavBarProps> =
   const handleNavClick = (tab: NavTab, sectionId?: string) => {
     playTabSelect();
     if (setActiveTab) setActiveTab(tab);
+    if (tab === 'feed' && onFeedTabChange) onFeedTabChange();
     if (sectionId && scrollToSection) {
       scrollToSection(sectionId, tab);
     }
@@ -43,6 +44,8 @@ export const AppleGlobalAcrylicNavBar: React.FC<AppleGlobalAcrylicNavBarProps> =
     playKeyClick();
     if (onFocusSearch) {
       onFocusSearch();
+    } else if (onSearchClick) {
+      onSearchClick();
     }
   };
 
