@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import Link from 'next/link';
 import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
 import {
@@ -31,6 +32,7 @@ import {
   UserPlus,
   ChevronDown,
   ChevronUp,
+  ExternalLink,
 } from 'lucide-react';
 
 interface BlogDetailModalProps {
@@ -139,6 +141,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
     sentiment: string;
     score: number;
   } | null>(null);
+  const [commentErrorMessage, setCommentErrorMessage] = useState<string | null>(null);
 
   const contentScrollRef = useRef<HTMLDivElement>(null);
   const hasRecordedView = useRef<number | null>(null);
@@ -295,9 +298,11 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
         onSuccess: () => {
           setNewComment('');
           setModerationPreview(null);
+          setCommentErrorMessage(null);
         },
         onError: () => {
-          alert('Yorum kaydedilemedi. Otomatik geri alma uygulandı.');
+          setCommentErrorMessage('Yorum kaydedilemedi. Lütfen bağlantınızı kontrol edip tekrar deneyin.');
+          setTimeout(() => setCommentErrorMessage(null), 5000);
         },
       }
     );
@@ -485,6 +490,14 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
             >
               {isCopiedLink ? <Check className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4" />}
             </button>
+
+            <Link
+              href={`/post/${blogId}`}
+              className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
+              title="Müstakil Okuma Sayfasında Aç"
+            >
+              <ExternalLink className="w-4 h-4" />
+            </Link>
 
             <button
               type="button"
@@ -700,6 +713,14 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                 }}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-sans text-zinc-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors leading-relaxed"
               />
+
+              {/* Inline Form Error Alert */}
+              {commentErrorMessage && (
+                <div className="p-2.5 rounded-xl text-xs font-mono flex items-center gap-2 bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-300 animate-in fade-in duration-200">
+                  <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />
+                  <span>{commentErrorMessage}</span>
+                </div>
+              )}
 
               {/* Moderation Banner */}
               {moderationPreview && (

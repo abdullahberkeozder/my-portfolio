@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   X,
   Users,
@@ -11,6 +12,11 @@ import {
   Clock,
   Sparkles,
   ArrowRight,
+  ExternalLink,
+  Terminal,
+  Cpu,
+  Layers,
+  Flame,
 } from 'lucide-react';
 import { BlogDto, AuthorProfileDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
@@ -35,6 +41,7 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
   onToggleFollow,
 }) => {
   const [profile, setProfile] = useState<AuthorProfileDto | null>(null);
+  const [activeTab, setActiveTab] = useState<'articles' | 'notes' | 'about'>('articles');
 
   useEffect(() => {
     if (!isOpen || !authorName) return;
@@ -69,18 +76,81 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
     );
   });
 
+  const isStaffBerke = authorName.toLowerCase().includes('admin') || authorName.toLowerCase().includes('berke');
+  const isStaffSelin = authorName.toLowerCase().includes('selin');
+  const isStaffCaner = authorName.toLowerCase().includes('caner');
+
   const displayName =
     profile?.firstName && profile?.lastName
       ? `${profile.firstName} ${profile.lastName}`
-      : authorName === 'selindemir'
+      : isStaffSelin
       ? 'Dr. Selin Demir'
-      : authorName === 'caneraydin'
+      : isStaffCaner
       ? 'Caner Aydın'
-      : authorName === 'admin'
+      : isStaffBerke
       ? 'Abdullah Berke Özder'
       : authorName;
 
   const initial = displayName.charAt(0).toUpperCase();
+
+  const authorNotes = isStaffBerke
+    ? [
+        {
+          id: 'm-n1',
+          date: '2 gün önce',
+          topic: 'Virtual Threads & JDBC Pools',
+          content:
+            'HikariCP havuz boyutunu sanal thread sayısına göre değil, veritabanı CPU çekirdek sayısına göre boyutlandırın. Sanal iş parçacıkları bağlantı havuzunu şişirmek için bahane değildir.',
+          claps: 48,
+        },
+        {
+          id: 'm-n2',
+          date: '4 gün önce',
+          topic: 'Redis Write-Behind Buffer',
+          content:
+            'Redis HINCRBY tamponu ile alkış ve görüntülenme sayımlarını toplamak satır kilitlemelerini %99.2 düşürdü.',
+          claps: 64,
+        },
+      ]
+    : isStaffSelin
+    ? [
+        {
+          id: 'm-s1',
+          date: '3 gün önce',
+          topic: 'Dimension Reduction & Memory',
+          content:
+            '128D vs 1536D embedding karşılaştırması: Düşük boyutlu optimize edilmiş gömmeler kurumsal aramada %80 bellek tasarrufu sağlıyor.',
+          claps: 57,
+        },
+      ]
+    : isStaffCaner
+    ? [
+        {
+          id: 'm-c1',
+          date: '1 gün önce',
+          topic: 'Kubernetes CFS Quota',
+          content:
+            'Kubernetes pod limitlerinde CFS throttling gecikmeyi 300ms fırlatabiliyor. Sadece CPU request belirleyip limitleri esnetmek gecikmeyi anında düşürdü.',
+          claps: 73,
+        },
+      ]
+    : [
+        {
+          id: 'm-gen',
+          date: '3 gün önce',
+          topic: 'Mühendislik Notları',
+          content: 'Nova platformunda yüksek ölçekli sistem incelemeleri ve optimizasyonlar paylaşıyorum.',
+          claps: 12,
+        },
+      ];
+
+  const techStack = isStaffBerke
+    ? ['Java 22', 'Spring Boot 3.4', 'Project Loom', 'PostgreSQL', 'pgvector 128D', 'Redis', 'Next.js 16']
+    : isStaffSelin
+    ? ['Spring AI', 'pgvector', 'PyTorch', 'Embeddings', 'Vector Search', 'Semantic Cache']
+    : isStaffCaner
+    ? ['Kubernetes', 'Docker', 'eBPF', 'Prometheus', 'Grafana', 'Kafka', 'CI/CD']
+    : ['Teknoloji', 'Sistem Mimarisi'];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
@@ -89,25 +159,38 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Ribbon */}
-        <div className="relative h-28 bg-gradient-to-r from-emerald-500/20 via-cyan-500/10 to-purple-500/20 p-6 flex items-start justify-between">
+        <div className="relative h-28 bg-gradient-to-r from-emerald-500/20 via-cyan-500/10 to-purple-500/20 p-6 flex items-start justify-between shrink-0">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-md text-[11px] font-mono font-bold tracking-wider uppercase text-zinc-900 dark:text-zinc-100">
             <Sparkles className="w-3 h-3 text-emerald-500" />
             <span>YAZAR PROFİLİ</span>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer"
-          >
-            <X className="w-4 h-4" />
-          </button>
+
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/author/${encodeURIComponent(authorName)}`}
+              onClick={onClose}
+              className="p-1.5 rounded-full bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 text-zinc-700 dark:text-zinc-300 transition-colors flex items-center gap-1 text-[11px] font-mono font-semibold px-2.5"
+              title="Müstakil Profil Sayfasında Aç"
+            >
+              <span>Ayrı Sayfa</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Profile Card Info */}
-        <div className="px-6 sm:px-8 pb-4 -mt-12 space-y-4">
+        <div className="px-6 sm:px-8 pb-4 -mt-12 space-y-4 shrink-0">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div className="flex items-end gap-4">
-              <div className="w-20 h-20 rounded-2xl bg-zinc-950 dark:bg-zinc-800 text-white flex items-center justify-center text-2xl font-bold uppercase shadow-lg ring-4 ring-white dark:ring-[#0d0f14] overflow-hidden">
+              <div className="w-20 h-20 rounded-2xl bg-zinc-950 dark:bg-zinc-800 text-white flex items-center justify-center text-2xl font-bold uppercase shadow-lg ring-4 ring-white dark:ring-[#0d0f14] overflow-hidden shrink-0">
                 {profile?.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={profile.imageUrl} alt={displayName} className="w-full h-full object-cover rounded-2xl" />
@@ -120,7 +203,7 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
                   {displayName}
                 </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-                  {profile?.title || 'Kıdemli Sistem & Dağıtık Sistemler Mimarı'}
+                  {profile?.title || (isStaffSelin ? 'Principal AI & Data Systems Researcher' : isStaffCaner ? 'Staff Cloud & Kubernetes Architect' : 'Staff Backend & Systems Architect @ Nova')}
                 </p>
               </div>
             </div>
@@ -155,7 +238,11 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
           {/* Bio */}
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
             {profile?.bio ||
-              'Java 22 Loom, Spring Boot 4 ve mikro-çekirdek reaktif sistemler üzerine derinlemesine teknik incelemeler ve üretim mimarileri yayınlıyor.'}
+              (isStaffSelin
+                ? 'LLM entegrasyonları, pgvector gömmeleri ve yüksek boyutlu vektör uzaylarında anlamsal bilgi getirme (RAG) mimarileri üzerinde araştırmalar yapıyor.'
+                : isStaffCaner
+                ? 'Cloud-Native mimariler, eBPF gözlemlenebilirlik, sıfır kesintili dağıtımlar ve yüksek erişilebilirlikli mikroservis altyapıları tasarlıyor.'
+                : 'Java 22 Loom, Spring Boot 4 ve mikro-çekirdek reaktif sistemler üzerine derinlemesine teknik incelemeler ve üretim mimarileri yayınlıyor.')}
           </p>
 
           {/* Social Stats & Links */}
@@ -188,11 +275,6 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
               </span>
-              <span className="hover:text-black dark:hover:text-white transition-colors cursor-pointer p-1" title="LinkedIn">
-                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                </svg>
-              </span>
               <span className="hover:text-black dark:hover:text-white transition-colors cursor-pointer p-1" title="Web Sitesi">
                 <Globe className="w-4 h-4" />
               </span>
@@ -200,57 +282,150 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
           </div>
         </div>
 
-        {/* Author Articles Feed List */}
-        <div className="flex-1 overflow-y-auto px-6 sm:px-8 py-4 border-t border-zinc-100 dark:border-zinc-800 space-y-3 bg-zinc-50/50 dark:bg-black/20">
-          <div className="flex items-center justify-between pb-1">
-            <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
-              YAYINLANAN MAKALELER
-            </span>
-            <span className="text-[11px] font-mono text-zinc-400">
-              {authorBlogs.length} makale
-            </span>
+        {/* Apple Segmented Control Tabs */}
+        <div className="px-6 sm:px-8 py-2 border-t border-zinc-100 dark:border-zinc-800 shrink-0">
+          <div className="inline-flex p-1 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => setActiveTab('articles')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                activeTab === 'articles'
+                  ? 'bg-white dark:bg-zinc-700 text-zinc-950 dark:text-white shadow-xs font-bold'
+                  : 'text-zinc-500 hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Makaleler ({authorBlogs.length})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('notes')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                activeTab === 'notes'
+                  ? 'bg-white dark:bg-zinc-700 text-zinc-950 dark:text-white shadow-xs font-bold'
+                  : 'text-zinc-500 hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <Terminal className="w-3.5 h-3.5 text-cyan-500" />
+              <span>Notlar ({authorNotes.length})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('about')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                activeTab === 'about'
+                  ? 'bg-white dark:bg-zinc-700 text-zinc-950 dark:text-white shadow-xs font-bold'
+                  : 'text-zinc-500 hover:text-black dark:hover:text-white'
+              }`}
+            >
+              <Cpu className="w-3.5 h-3.5 text-amber-500" />
+              <span>Yetkinlikler</span>
+            </button>
           </div>
+        </div>
 
-          {authorBlogs.length > 0 ? (
-            authorBlogs.map((b) => (
-              <div
-                key={b.blogId ?? b.id}
-                onClick={() => {
-                  if (onSelectBlog) {
-                    onSelectBlog(b);
-                    onClose();
-                  }
-                }}
-                className="group p-4 rounded-2xl bg-white dark:bg-[#12141a] border border-zinc-200/80 dark:border-zinc-800/80 hover:border-emerald-500/50 transition-all cursor-pointer space-y-2 shadow-xs"
-              >
-                <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
-                  <span>{b.header}</span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-zinc-400" />
-                    {b.readTimeMinutes || 4} dk okuma
-                  </span>
-                </div>
-                <h4 className="font-bold text-zinc-950 dark:text-white text-sm group-hover:text-emerald-500 transition-colors">
-                  {b.title}
-                </h4>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
-                  {b.content.slice(0, 140)}...
-                </p>
-                <div className="flex items-center justify-between pt-1 text-[11px]">
-                  <div className="flex items-center gap-1.5 text-zinc-400 font-mono">
-                    <span>👏 {b.clapsCount ?? b.likesCount ?? 0}</span>
-                    <span>·</span>
-                    <span>💬 {b.commentCount ?? 0}</span>
+        {/* Tab Contents */}
+        <div className="flex-1 overflow-y-auto px-6 sm:px-8 py-4 space-y-3 bg-zinc-50/50 dark:bg-black/20 scrollbar-thin">
+          {activeTab === 'articles' && (
+            <>
+              {authorBlogs.length > 0 ? (
+                authorBlogs.map((b) => (
+                  <div
+                    key={b.blogId ?? b.id}
+                    onClick={() => {
+                      if (onSelectBlog) {
+                        onSelectBlog(b);
+                        onClose();
+                      }
+                    }}
+                    className="group p-4 rounded-2xl bg-white dark:bg-[#12141a] border border-zinc-200/80 dark:border-zinc-800/80 hover:border-emerald-500/50 transition-all cursor-pointer space-y-2 shadow-xs"
+                  >
+                    <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
+                      <span>{b.header}</span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-zinc-400" />
+                        {b.readTimeMinutes || 4} dk okuma
+                      </span>
+                    </div>
+                    <h4 className="font-bold text-zinc-950 dark:text-white text-sm group-hover:text-emerald-500 transition-colors">
+                      {b.title}
+                    </h4>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+                      {b.content.slice(0, 140)}...
+                    </p>
+                    <div className="flex items-center justify-between pt-1 text-[11px]">
+                      <div className="flex items-center gap-1.5 text-zinc-400 font-mono">
+                        <span>👏 {b.clapsCount ?? b.likesCount ?? 0}</span>
+                        <span>·</span>
+                        <span>💬 {b.commentCount ?? 0}</span>
+                      </div>
+                      <span className="text-emerald-500 font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        Oku <ArrowRight className="w-3 h-3" />
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-emerald-500 font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    Oku <ArrowRight className="w-3 h-3" />
-                  </span>
+                ))
+              ) : (
+                <div className="py-8 text-center text-xs text-zinc-400">
+                  Bu yazar henüz başka bir makale yayınlamamış.
+                </div>
+              )}
+            </>
+          )}
+
+          {activeTab === 'notes' && (
+            <div className="space-y-3">
+              {authorNotes.map((note) => (
+                <div
+                  key={note.id}
+                  className="p-4 rounded-2xl bg-white dark:bg-[#12141a] border border-zinc-200/80 dark:border-zinc-800/80 space-y-2 shadow-xs"
+                >
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 font-bold uppercase">
+                      #{note.topic}
+                    </span>
+                    <span className="text-zinc-400 text-[11px]">{note.date}</span>
+                  </div>
+                  <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed font-sans">
+                    {note.content}
+                  </p>
+                  <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-mono pt-1">
+                    <span>👏 {note.claps} alkış</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'about' && (
+            <div className="space-y-4">
+              <div className="p-4 rounded-2xl bg-white dark:bg-[#12141a] border border-zinc-200/80 dark:border-zinc-800/80 space-y-2">
+                <span className="text-xs font-bold text-zinc-950 dark:text-white flex items-center gap-1.5">
+                  <Cpu className="w-3.5 h-3.5 text-emerald-500" />
+                  Uzmanlık Alanları
+                </span>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {techStack.map((tech) => (
+                    <span
+                      key={tech}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200/80 dark:border-zinc-700/80"
+                    >
+                      <Layers className="w-3 h-3 text-emerald-500" />
+                      <span>{tech}</span>
+                    </span>
+                  ))}
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="py-8 text-center text-xs text-zinc-400">
-              Bu yazar henüz başka bir makale yayınlamamış.
+
+              <div className="p-4 rounded-2xl bg-white dark:bg-[#12141a] border border-zinc-200/80 dark:border-zinc-800/80 space-y-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+                <span className="font-bold text-zinc-950 dark:text-white flex items-center gap-1.5">
+                  <Flame className="w-3.5 h-3.5 text-amber-500" />
+                  Mimari Vizyon
+                </span>
+                <p className="leading-relaxed">
+                  Sentetik telemetri ve yapay zeka illüzyonlarından arındırılmış; yüksek eşzamanlı, güvenilir ve sürdürülebilir kurumsal yazılım mimarileri.
+                </p>
+              </div>
             </div>
           )}
         </div>
