@@ -15,6 +15,12 @@ import {
   PenTool,
   FileCode,
   Bookmark,
+  AlertCircle,
+  Heading,
+  Code,
+  List,
+  Quote,
+  Bold,
 } from 'lucide-react';
 
 interface CreateBlogModalProps {
@@ -43,6 +49,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
   const [tagInput, setTagInput] = useState('');
   const [isSuggestingTags, setIsSuggestingTags] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'editor' | 'preview'>('editor');
   const [publicationMode, setPublicationMode] = useState<'PUBLISHED' | 'DRAFT'>('PUBLISHED');
 
@@ -55,11 +62,34 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
   const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 180));
 
+  const insertMarkdown = (prefix: string, suffix = '', placeholder = '') => {
+    const textarea = document.getElementById('blog-create-content') as HTMLTextAreaElement | null;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = content.substring(start, end) || placeholder;
+    const before = content.substring(0, start);
+    const after = content.substring(end);
+
+    const replacement = `${prefix}${selectedText}${suffix}`;
+    const newContent = `${before}${replacement}${after}`;
+    setContent(newContent);
+    setFormError(null);
+
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + prefix.length + selectedText.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 15);
+  };
+
   const handleAutoSuggest = async () => {
     if (!title.trim()) {
-      alert('Lütfen önce bir makale başlığı giriniz.');
+      setFormError('Lütfen önce bir makale başlığı giriniz.');
       return;
     }
+    setFormError(null);
     setIsSuggestingTags(true);
     try {
       const res = await ApiClient.suggestTags(title, content || title);
@@ -95,9 +125,10 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
 
   const handleSubmit = async (targetStatus: 'PUBLISHED' | 'DRAFT') => {
     if (!header.trim() || !title.trim() || !content.trim()) {
-      alert('Lütfen başlık, alt başlık ve makale içeriğini doldurunuz.');
+      setFormError('Lütfen başlık, alt başlık ve makale içeriğini eksiksiz doldurunuz.');
       return;
     }
+    setFormError(null);
 
     setPublicationMode(targetStatus);
     setIsSubmitting(true);
@@ -121,7 +152,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
       onBlogCreated(created);
       onClose();
     } catch {
-      alert('Makale kaydedilemedi. Lütfen bağlantınızı ve alanları kontrol ediniz.');
+      setFormError('Makale kaydedilemedi. Lütfen bağlantınızı ve alanları kontrol ediniz.');
     } finally {
       setIsSubmitting(false);
     }
@@ -238,15 +269,16 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Editor vs Preview Mode Switcher */}
-            <div className="flex items-center gap-1 p-1 rounded-full bg-zinc-100 dark:bg-zinc-800/80 text-xs font-mono">
+            {/* Editor vs Preview Apple HIG Segmented Control */}
+            <div className="inline-flex items-center p-1 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/60 dark:border-zinc-700/60 text-xs font-mono">
               <button
                 type="button"
                 onClick={() => setActiveTab('editor')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors cursor-pointer ${activeTab === 'editor'
-                  ? 'bg-white dark:bg-zinc-700 text-zinc-950 dark:text-white shadow-xs font-bold'
-                  : 'text-zinc-500 hover:text-black dark:hover:text-white'
-                  }`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  activeTab === 'editor'
+                    ? 'bg-white dark:bg-zinc-700 text-zinc-950 dark:text-white shadow-xs font-bold'
+                    : 'text-zinc-500 hover:text-black dark:hover:text-white'
+                }`}
               >
                 <PenTool className="w-3.5 h-3.5" />
                 <span>YAZ</span>
@@ -254,10 +286,11 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveTab('preview')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors cursor-pointer ${activeTab === 'preview'
-                  ? 'bg-white dark:bg-zinc-700 text-zinc-950 dark:text-white shadow-xs font-bold'
-                  : 'text-zinc-500 hover:text-black dark:hover:text-white'
-                  }`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                  activeTab === 'preview'
+                    ? 'bg-white dark:bg-zinc-700 text-zinc-950 dark:text-white shadow-xs font-bold'
+                    : 'text-zinc-500 hover:text-black dark:hover:text-white'
+                }`}
               >
                 <Eye className="w-3.5 h-3.5 text-emerald-500" />
                 <span>ÖNİZLE</span>
@@ -273,6 +306,23 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
             </button>
           </div>
         </div>
+
+        {/* Inline Form Error Alert (Eliminates Browser alert() Anti-pattern) */}
+        {formError && (
+          <div className="mx-6 sm:mx-8 mt-4 p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-sans flex items-center justify-between animate-in fade-in duration-200">
+            <div className="flex items-center gap-2.5">
+              <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />
+              <span>{formError}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setFormError(null)}
+              className="p-1 rounded-md hover:bg-rose-500/20 text-rose-500 cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
 
         {/* Modal Scrollable Body */}
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-5">
@@ -364,11 +414,11 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
                 </div>
               </div>
 
-              {/* Content Body Textarea */}
-              <div className="space-y-1.5">
+              {/* Content Body Textarea & Quick Toolbar */}
+              <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label htmlFor="blog-create-content" className="font-bold text-zinc-900 dark:text-white uppercase">
-                    Teknik İçerik (Markdown & Kod Blokları)
+                    Teknik İçerik (Markdown &amp; Kod Blokları)
                   </label>
                   <div className="flex items-center gap-2 text-[10px] text-zinc-400">
                     <span className="flex items-center gap-1">
@@ -379,14 +429,76 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
                     <span>{wordCount} kelime</span>
                   </div>
                 </div>
+
+                {/* Markdown Formatting Quick Toolbar */}
+                <div className="flex flex-wrap items-center gap-1 p-1 rounded-xl bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-800 text-[11px] font-mono">
+                  <button
+                    type="button"
+                    onClick={() => insertMarkdown('\n## ', '\n', 'Bölüm Başlığı')}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:text-emerald-500 font-bold shadow-xs cursor-pointer transition-colors"
+                    title="Bölüm Başlığı (H2)"
+                  >
+                    <Heading className="w-3.5 h-3.5 text-emerald-500" />
+                    <span>H2</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => insertMarkdown('\n### ', '\n', 'Alt Başlık')}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:text-cyan-500 font-bold shadow-xs cursor-pointer transition-colors"
+                    title="Alt Başlık (H3)"
+                  >
+                    <Heading className="w-3.5 h-3.5 text-cyan-500" />
+                    <span>H3</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => insertMarkdown('**', '**', 'vurgulanan metin')}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:text-emerald-500 font-bold shadow-xs cursor-pointer transition-colors"
+                    title="Kalın Metin (Bold)"
+                  >
+                    <Bold className="w-3.5 h-3.5" />
+                    <span>Kalın</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => insertMarkdown('\n```java\n', '\n```\n', '// Java 22 Loom veya Spring Boot kodu')}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:text-amber-500 font-bold shadow-xs cursor-pointer transition-colors"
+                    title="Kod Bloğu Ekle"
+                  >
+                    <Code className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Kod Bloğu</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => insertMarkdown('\n- ', '', 'Madde')}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:text-emerald-500 font-bold shadow-xs cursor-pointer transition-colors"
+                    title="Madde Listesi"
+                  >
+                    <List className="w-3.5 h-3.5" />
+                    <span>Liste</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => insertMarkdown('\n> ', '', 'Mimari not veya alıntı')}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:text-purple-400 font-bold shadow-xs cursor-pointer transition-colors"
+                    title="Alıntı / Mimari Not"
+                  >
+                    <Quote className="w-3.5 h-3.5 text-purple-400" />
+                    <span>Alıntı</span>
+                  </button>
+                </div>
+
                 <textarea
                   id="blog-create-content"
                   name="content"
                   rows={8}
                   required
-                  placeholder="Makalenizi buraya yazın... Başlıklar için ##, listeler için -, kod blokları için ```java formatını kullanabilirsiniz."
+                  placeholder="Makalenizi buraya yazın... Başlıklar için ##, listeler için -, kod blokları için ```java formatını veya yukarıdaki hızlı araç çubuğunu kullanabilirsiniz."
                   value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  onChange={(e) => {
+                    setContent(e.target.value);
+                    if (formError) setFormError(null);
+                  }}
                   className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200/90 dark:border-zinc-800 text-zinc-900 dark:text-white text-base sm:text-xs leading-relaxed focus:outline-none focus:border-emerald-500 font-mono"
                 />
               </div>
