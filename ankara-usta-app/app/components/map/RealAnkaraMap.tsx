@@ -66,6 +66,7 @@ export interface RealAnkaraMapProps {
   onVisibleTradespeopleChange?: (visibleIds: string[] | null) => void;
   resetTrigger?: number;
   panToTradespersonId?: string | null;
+  directoryDataUnavailable?: boolean;
 }
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -118,6 +119,7 @@ export default function RealAnkaraMap({
   onVisibleTradespeopleChange,
   resetTrigger,
   panToTradespersonId,
+  directoryDataUnavailable = false,
 }: RealAnkaraMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -610,6 +612,7 @@ export default function RealAnkaraMap({
 
     ustaGroup.clearLayers();
     ustaMarkersMapRef.current = {};
+    if (directoryDataUnavailable) return;
     if (!tradespeopleMarkers || tradespeopleMarkers.length === 0) return;
 
     // Faz 5: 60 FPS Viewport Windowing & Density Control for 500+ markers
@@ -801,7 +804,7 @@ export default function RealAnkaraMap({
     }
 
     return () => cancelAnimationFrame(frame);
-  }, [tradespeopleMarkers, mapMoveCounter, activeTradespersonId, adjustMarkerPill]);
+  }, [tradespeopleMarkers, mapMoveCounter, activeTradespersonId, adjustMarkerPill, directoryDataUnavailable]);
 
   // 3.5b Real-Time Active Marker Highlight & Halo without re-creating layer (60 FPS & Persistent Popups)
   useEffect(() => {
@@ -844,7 +847,7 @@ export default function RealAnkaraMap({
     shopGroup.clearLayers();
 
     // Determine pins to render
-    const pinsToRender = mode === 'picker' ? [] :
+    const pinsToRender = mode === 'picker' || directoryDataUnavailable ? [] :
       filteredPins ??
       (tradespeopleMarkers && tradespeopleMarkers.length > 0 ? [] : ankaraRepresentativeShops);
 
@@ -969,6 +972,7 @@ export default function RealAnkaraMap({
     onSelectShopPin,
     onShopSelected,
     adjustMarkerPill,
+    directoryDataUnavailable,
   ]);
 
   // 3.7 Handle Map Click for Natural Location Picking (Uber / Bolt Benchmark - Only in Full Canvas Mode)
@@ -1195,7 +1199,8 @@ export default function RealAnkaraMap({
       }`}
     >
       {/* Airbnb Benchmark: "Bu bölgede ara" Floating Toggle Pill (Top-Center) */}
-      {mode !== 'picker' && <div className={styles.airbnbSearchAreaPill} aria-label="Harita bölge araması">
+      {mode !== 'picker' && !directoryDataUnavailable && (
+        <div className={styles.airbnbSearchAreaPill} aria-label="Harita bölge araması">
         <label className={styles.airbnbSearchAreaLabel}>
           <input
             type="checkbox"
@@ -1218,7 +1223,8 @@ export default function RealAnkaraMap({
             ✕ Tümünü Göster
           </button>
         )}
-      </div>}
+      </div>
+      )}
 
       {tileLoadError && (
         <div className={styles.mapStatusBanner} role="alert">
@@ -1236,7 +1242,7 @@ export default function RealAnkaraMap({
         </div>
       )}
 
-      {mode === 'picker' ? null : tradespeopleMarkers?.length === 0 ? (
+      {mode === 'picker' || directoryDataUnavailable ? null : tradespeopleMarkers?.length === 0 ? (
         <div className={`${styles.mapEmptyState}${isSplitPane ? ` ${styles.mapEmptyStateSplitPane}` : ''}`} aria-live="polite" aria-atomic="true">
           <strong>Bu bölgede doğrulanmış usta bulunamadı.</strong>
           <span>Haritayı taşıyın veya “Bu bölgede ara” seçimini kapatın.</span>

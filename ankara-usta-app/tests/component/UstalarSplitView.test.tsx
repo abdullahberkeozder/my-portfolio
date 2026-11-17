@@ -3,10 +3,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import UstalarSplitView, { getServiceAreaSummary } from '../../app/ustalar/UstalarSplitView';
 import resultStyles from '../../app/ustalar/professionalResult.module.css';
 
+const mockRefresh = vi.fn();
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    refresh: mockRefresh,
+  }),
+  usePathname: () => '/ustalar',
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 // Mock Leaflet and AnkaraInteractiveMap to avoid canvas/DOM issues in jsdom
 vi.mock('../../app/components/map/AnkaraInteractiveMap', () => ({
-  default: vi.fn(({ onVisibleTradespeopleChange, resetTrigger, onSelectTradespersonMarker, onHoverTradespersonMarker, activeTradespersonId }) => (
-    <div data-testid="mock-interactive-map">
+  default: vi.fn(({ onVisibleTradespeopleChange, resetTrigger, onSelectTradespersonMarker, onHoverTradespersonMarker, activeTradespersonId, directoryDataUnavailable }) => (
+    <div data-testid="mock-interactive-map" data-directory-unavailable={directoryDataUnavailable ? 'true' : 'false'}>
       <span data-testid="mock-active-marker-id">{activeTradespersonId ?? 'none'}</span>
       <button
         data-testid="simulate-spatial-filter"
@@ -85,6 +97,61 @@ describe('UstalarSplitView (Spatial Bounding-Box Filtering)', () => {
       ok: true,
       json: async () => ({ ok: true, leadRef: 'ANK-3004' }),
     });
+  });
+
+  it('keeps the map shell and exposes one retry action during a directory connection error', () => {
+    render(
+      <UstalarSplitView
+        {...defaultProps}
+        profiles={[]}
+        count={0}
+        hasDbError
+      />
+    );
+
+    expect(screen.getByText('Usta verileri şu anda yüklenemiyor')).toBeVisible();
+    expect(screen.getAllByRole('button', { name: 'Tekrar dene' })).toHaveLength(1);
+    expect(screen.getByTestId('usta-result-summary')).toHaveTextContent('Harita kullanılabilir');
+    expect(screen.getByTestId('usta-result-summary')).not.toHaveTextContent('0 usta');
+    expect(screen.getByTestId('mock-interactive-map')).toHaveAttribute('data-directory-unavailable', 'true');
+    expect(screen.queryByRole('group', { name: 'Görünüm Seçimi' })).not.toBeInTheDocument();
+    expect(screen.queryByTestId('directory-empty-state')).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Usta Listesi' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Sayfa 1')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Usta Kartları Kaydırıcı')).not.toBeInTheDocument();
+    expect(screen.getByTestId('directory-content-layout').className).toContain('splitLayoutUnavailable');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Tekrar dene' }));
+    expect(mockRefresh).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders map recovery surface and suppresses unavailable controls when hasDbError is true with view=list', () => {
+    render(
+      <UstalarSplitView
+        {...defaultProps}
+        profiles={[]}
+        count={0}
+        hasDbError
+        initialView="list"
+      />
+    );
+
+    expect(screen.getByText('Usta verileri şu anda yüklenemiyor')).toBeVisible();
+    expect(screen.getAllByRole('button', { name: 'Tekrar dene' })).toHaveLength(1);
+    expect(screen.getByTestId('usta-result-summary')).toHaveTextContent('Harita kullanılabilir');
+    expect(screen.getByTestId('usta-result-summary')).not.toHaveTextContent('0 usta');
+    expect(screen.getByTestId('mock-interactive-map')).toHaveAttribute('data-directory-unavailable', 'true');
+    expect(screen.queryByRole('group', { name: 'Görünüm Seçimi' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Usta Listesi' })).not.toBeInTheDocument();
+    expect(screen.queryByTestId('directory-empty-state')).not.toBeInTheDocument();
+    expect(screen.queryByText('Sayfa 1')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Usta Kartları Kaydırıcı')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Haritada Gör' })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Sırala')).not.toBeInTheDocument();
+    expect(screen.getByTestId('directory-content-layout').className).toContain('splitLayoutUnavailable');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Tekrar dene' }));
+    expect(mockRefresh).toHaveBeenCalledTimes(1);
   });
 
   it('renders all usta cards initially in split view (both desktop and mobile carousel)', () => {
