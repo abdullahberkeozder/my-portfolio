@@ -37,12 +37,15 @@ export const MacThemeToggle: React.FC<MacThemeToggleProps> = ({
           ? 'Gündüz Moduna Geç (Mac OS X Day Horizon)'
           : 'Gece Moduna Geç (Mac OS X Night Sky)'
       }
-      className={`group relative inline-flex items-center ${trackWidth} ${trackHeight} rounded-full cursor-pointer select-none overflow-hidden transition-shadow duration-300 ${
-        isDark
-          ? 'border border-white/20 shadow-[inset_0_2px_5px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.15)] hover:shadow-[inset_0_2px_6px_rgba(0,0,0,0.9),0_0_8px_rgba(255,255,255,0.2)]'
-          : 'border border-black/20 shadow-[inset_0_2px_4px_rgba(0,0,0,0.35),0_1px_0_rgba(255,255,255,0.6)] hover:shadow-[inset_0_2px_5px_rgba(0,0,0,0.4),0_0_8px_rgba(59,130,246,0.3)]'
-      } ${className}`}
+      className={`group relative inline-flex items-center justify-center p-1 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-900 rounded-full transition-transform active:scale-95 ${className}`}
     >
+      <div
+        className={`relative inline-flex items-center ${trackWidth} ${trackHeight} rounded-full overflow-hidden transition-shadow duration-300 ${
+          isDark
+            ? 'border border-white/20 shadow-[inset_0_2px_5px_rgba(0,0,0,0.8),0_1px_0_rgba(255,255,255,0.15)] hover:shadow-[inset_0_2px_6px_rgba(0,0,0,0.9),0_0_8px_rgba(255,255,255,0.2)]'
+            : 'border border-black/20 shadow-[inset_0_2px_4px_rgba(0,0,0,0.35),0_1px_0_rgba(255,255,255,0.6)] hover:shadow-[inset_0_2px_5px_rgba(0,0,0,0.4),0_0_8px_rgba(59,130,246,0.3)]'
+        }`}
+      >
       {/* 1. Daylight Horizon Layer (Smooth Cross-fade) */}
       <div
         className={`absolute inset-0 bg-gradient-to-b from-[#4a97f8] via-[#63a7fb] to-[#99c8fc] transition-opacity duration-500 ease-in-out ${
@@ -98,6 +101,7 @@ export const MacThemeToggle: React.FC<MacThemeToggleProps> = ({
               : 'opacity-0 scale-50 -rotate-90'
           }`}
         />
+      </div>
       </div>
     </button>
   );

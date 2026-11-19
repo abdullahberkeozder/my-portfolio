@@ -466,7 +466,8 @@ export default function Home() {
                           playKeyClick();
                           setSelectedTopic(topic.tag);
                         }}
-                        className={`px-3 py-1.5 rounded-lg text-[11px] font-mono font-bold whitespace-nowrap transition-all cursor-pointer ${
+                        aria-pressed={isActive}
+                        className={`px-3 py-1.5 rounded-lg text-[11px] font-mono font-bold whitespace-nowrap transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                           isActive
                             ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
                             : 'bg-zinc-100 dark:bg-zinc-900/80 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-200/70 dark:hover:bg-zinc-800'
@@ -492,7 +493,8 @@ export default function Home() {
                         playKeyClick();
                         setExploreSort('trending');
                       }}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all ${
+                      aria-pressed={exploreSort === 'trending'}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                         exploreSort === 'trending'
                           ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-bold shadow-sm'
                           : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -507,7 +509,8 @@ export default function Home() {
                         playKeyClick();
                         setExploreSort('featured');
                       }}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all ${
+                      aria-pressed={exploreSort === 'featured'}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                         exploreSort === 'featured'
                           ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-bold shadow-sm'
                           : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -522,7 +525,8 @@ export default function Home() {
                         playKeyClick();
                         setExploreSort('latest');
                       }}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all ${
+                      aria-pressed={exploreSort === 'latest'}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                         exploreSort === 'latest'
                           ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-bold shadow-sm'
                           : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'

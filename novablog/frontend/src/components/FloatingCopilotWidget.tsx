@@ -193,8 +193,11 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
       {/* Floating Trigger Button: Apple High-Gloss Frosted Glass Capsule */}
       {!isOpen && (
         <button
+          type="button"
           onClick={handleToggleOpen}
-          className="fixed bottom-6 right-6 z-40 group flex items-center gap-2.5 px-4 py-2 rounded-full bg-gradient-to-b from-[#2c2f36]/90 via-[#1e2025]/90 to-[#121316]/95 text-white border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.25)] hover:border-cyan-400/60 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(56,189,248,0.25)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer backdrop-blur-xl select-none"
+          aria-expanded={isOpen}
+          aria-label="Nova Sistem Mimarı & Copilot Danışmanını Aç"
+          className="fixed bottom-6 right-6 z-40 group flex items-center gap-2.5 px-4 py-2.5 min-h-[44px] rounded-full bg-gradient-to-b from-[#2c2f36]/90 via-[#1e2025]/90 to-[#121316]/95 text-white border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.25)] hover:border-cyan-400/60 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(56,189,248,0.25)] hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-all duration-200 cursor-pointer backdrop-blur-xl select-none"
           title="Nova Sistem Mimarı & Copilot Danışmanını Aç"
         >
           <span className="relative flex h-2 w-2">

@@ -282,7 +282,7 @@ function AuthorContent({ params }: AuthorPageProps) {
           {/* Saddle-Stitched Leather Top Header Banner */}
           <div className="leather-stitched-header">
             <div className="inline-flex items-center gap-2 text-amber-200 text-xs font-mono font-bold tracking-wider uppercase">
-              <span> MAC ADDRESS BOOK // YAZAR MASASI</span>
+              <span>MAC ADDRESS BOOK // YAZAR MASASI</span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -497,7 +497,7 @@ function AuthorContent({ params }: AuthorPageProps) {
             {activeTab === 'notes' && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between pb-2 border-b border-black/10 dark:border-white/10 text-xs font-mono text-zinc-500">
-                  <span> MAC OS X MOUNTAIN LION NOTLAR DEFTERİ</span>
+                  <span>MAC OS X MOUNTAIN LION NOTLAR DEFTERİ</span>
                   <span>{authorNotes.length} TEKNİK MİKRO NOT</span>
                 </div>
 

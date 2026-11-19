@@ -406,8 +406,11 @@ export const ModularArchitectureConsole: React.FC = () => {
               return (
                 <button
                   key={m.id}
+                  type="button"
                   onClick={() => handleSelectModule(m.id)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
+                  aria-selected={isActive}
+                  role="tab"
+                  className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                     isActive
                       ? 'bg-gradient-to-b from-white to-[#ececec] dark:from-[#3a3f4a] dark:to-[#2a2e37] text-zinc-950 dark:text-white shadow-sm border border-[#a8a8a8] dark:border-[#4c5361]'
                       : 'text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
@@ -646,11 +649,18 @@ export const ModularArchitectureConsole: React.FC = () => {
                   <span>CANLI TELEMETRİ SİMÜLATÖRÜ //</span>
                 </div>
                 <button
+                  type="button"
                   onClick={handleRunSimulation}
                   disabled={isSimulating}
-                  className="ios6-btn ios6-btn-blue px-4 py-1.5 text-xs uppercase"
+                  aria-disabled={isSimulating}
+                  title={
+                    isSimulating
+                      ? 'Simülasyon çalışıyor, lütfen bekleyin...'
+                      : 'Aktif mimari modül için gerçek zamanlı yük simülasyonunu başlat'
+                  }
+                  className="mac-aqua-btn !px-4 !py-1.5 !text-xs uppercase font-mono font-bold"
                 >
-                  {isSimulating ? <RotateCcw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5 fill-current" />}
+                  {isSimulating ? <RotateCcw className="w-3.5 h-3.5 animate-spin text-white" /> : <Play className="w-3.5 h-3.5 fill-current text-white" />}
                   <span>{isSimulating ? 'İŞLENİYOR...' : 'SİMÜLE ET'}</span>
                 </button>
               </div>
