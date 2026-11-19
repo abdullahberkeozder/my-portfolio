@@ -137,8 +137,8 @@ export const AboutManifestoModal: React.FC<AboutManifestoModalProps> = ({
             <div className="space-y-5">
               {/* Top Hero: Apple Logo & OS X Typography */}
               <div className="flex flex-col items-center justify-center text-center space-y-1 pb-2 border-b border-zinc-200 dark:border-zinc-800">
-                <div className="text-5xl font-extrabold text-zinc-700 dark:text-zinc-300 drop-shadow-sm select-none">
-                  
+                <div className="text-4xl font-extrabold text-zinc-700 dark:text-zinc-300 drop-shadow-sm select-none">
+                  ❖
                 </div>
                 <h2 className="text-xl font-black text-zinc-900 dark:text-white tracking-tight">
                   NovaBlog Enterprise OS

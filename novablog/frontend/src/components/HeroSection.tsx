@@ -72,7 +72,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-gradient-to-b from-white to-zinc-100 dark:from-zinc-800 dark:to-zinc-900 border border-black/15 dark:border-white/15 shadow-sm text-xs font-mono">
               <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
               <span className="text-zinc-800 dark:text-zinc-200 font-bold uppercase tracking-wider text-[11px]">
-                 NOVA ENTERPRISE // MAC OS X DESKTOP EDITION
+                NOVA ENTERPRISE // MAC OS X DESKTOP EDITION
               </span>
               <span className="text-zinc-400 font-normal hidden sm:inline">|</span>
               <span className="text-blue-600 dark:text-blue-400 font-semibold text-[10px] hidden sm:inline">

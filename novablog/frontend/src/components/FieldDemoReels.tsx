@@ -233,7 +233,7 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
                 <Film className="w-3.5 h-3.5 text-white" />
               </span>
               <h2 className="font-sans text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                <span> QuickTime X Mimari Telemetri Kayıtları</span>
+                <span>QuickTime X Mimari Telemetri Kayıtları</span>
                 <span className="text-xs font-mono font-normal text-zinc-400 bg-white/5 px-2 py-0.5 rounded border border-white/10 hidden md:inline">
                   PRORES 422 HQ // 1080P DESKTOP REEL
                 </span>

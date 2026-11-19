@@ -188,7 +188,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
         <div
           onClick={handleOpenAboutClick}
           className="mac-dock-item"
-          title=" Bu Mac Hakkında (Mimari Manifesto)"
+          title="Bu Mac Hakkında (Mimari Manifesto)"
         >
           <div className="mac-dock-icon-btn">
             <Info className="w-5 h-5 text-zinc-800 dark:text-zinc-200" />

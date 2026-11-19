@@ -266,7 +266,7 @@ export const SystemBlueprintSection: React.FC<SystemBlueprintSectionProps> = ({
 
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 font-sans tracking-tight drop-shadow-xs">
-               Mac Pro (2010 Architecture) — System Hardware &amp; Logic Board Spec Sheet
+              Mac Pro Workstation Architecture — System Hardware &amp; Logic Board Spec Sheet
             </span>
           </div>
 

@@ -239,7 +239,7 @@ export const PressReviewsCarousel: React.FC = () => {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="w-6 h-6 rounded-md bg-gradient-to-b from-zinc-700 to-zinc-900 flex items-center justify-center text-white shadow-sm border border-zinc-500/30 font-semibold text-xs">
-                
+                ❖
               </span>
               <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-950 dark:text-white flex items-center gap-2">
                 <span>Apple Basın Odası ve Mühendislik İncelemeleri</span>

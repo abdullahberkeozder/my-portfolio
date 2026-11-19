@@ -753,7 +753,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="text-base sm:text-lg font-bold text-zinc-950 dark:text-white flex items-center gap-2 font-mono">
                 <MessageSquare className="w-4 h-4 text-blue-500" />
-                <span> MESAJLAR &amp; TARTIŞMALAR ({comments.length})</span>
+                <span>MESAJLAR &amp; TARTIŞMALAR ({comments.length})</span>
               </h4>
 
               {/* Glowing Spring AI Verified Safe Seal Badge */}

@@ -83,7 +83,7 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Column 1: Makaleler & Yayın */}
           <div className="space-y-2.5">
             <h4 className="apple-footer-col-title flex items-center gap-1.5">
-              <span> Nova Makaleler</span>
+              <span>Nova Makaleler</span>
             </h4>
             <ul className="space-y-2 text-xs">
               <li>

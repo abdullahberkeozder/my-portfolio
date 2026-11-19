@@ -190,22 +190,25 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
 
   return (
     <>
-      {/* Floating Trigger Button: Apple Translucent Dark Glass Pill */}
+      {/* Floating Trigger Button: Apple High-Gloss Frosted Glass Capsule */}
       {!isOpen && (
         <button
           onClick={handleToggleOpen}
-          className="fixed bottom-6 right-6 z-40 group flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-gradient-to-b from-[#2a2a2e] to-[#141416] text-white border border-white/20 shadow-[0_8px_24px_rgba(0,0,0,0.6)] hover:border-blue-400/60 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer backdrop-blur-md select-none"
-          title=" Nova Sistem Mimarı & Copilot Danışmanını Aç"
+          className="fixed bottom-6 right-6 z-40 group flex items-center gap-2.5 px-4 py-2 rounded-full bg-gradient-to-b from-[#2c2f36]/90 via-[#1e2025]/90 to-[#121316]/95 text-white border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.25)] hover:border-cyan-400/60 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(56,189,248,0.25)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer backdrop-blur-xl select-none"
+          title="Nova Sistem Mimarı & Copilot Danışmanını Aç"
         >
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" />
-          <Bot className="w-4 h-4 text-blue-400 group-hover:scale-110 transition-transform" />
-          <span className="font-mono text-xs font-bold tracking-wider">
-             MİMARİ ASİSTAN
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_6px_#34d399]" />
+          </span>
+          <Bot className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
+          <span className="font-sans text-xs font-bold tracking-wide text-zinc-100">
+            MİMARİ ASİSTAN
           </span>
         </button>
       )}
 
-      {/* Expanded HUD:  Mac OS X Translucent Dark Window */}
+      {/* Expanded HUD: Mac OS X Translucent Dark Window */}
       {isOpen && (
         <div className="fixed bottom-6 right-4 sm:right-6 z-50 w-[95vw] sm:w-[440px] max-w-[460px] rounded-2xl bg-gradient-to-b from-[#222226]/95 via-[#1a1a1e]/95 to-[#121215]/95 backdrop-blur-xl border border-white/20 shadow-[0_24px_60px_rgba(0,0,0,0.85)] text-white p-5 space-y-4 animate-in fade-in zoom-in-95 duration-200 select-none">
           
@@ -223,9 +226,9 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
               </div>
 
               <div className="ml-2 flex items-center gap-1.5">
-                <Bot className="w-4 h-4 text-blue-400" />
+                <Bot className="w-4 h-4 text-cyan-400" />
                 <h3 className="font-sans text-xs font-bold text-white tracking-tight">
-                   Nova Sistem Mimarı &amp; Copilot
+                  Nova Sistem Mimarı &amp; Copilot
                 </h3>
               </div>
             </div>

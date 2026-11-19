@@ -31,54 +31,83 @@ export const CrtOscilloscope: React.FC<CrtOscilloscopeProps> = ({
       const height = canvas.height;
       const centerY = height / 2;
 
-      // Phosphor persistence decay fade
-      ctx.fillStyle = 'rgba(6, 20, 8, 0.22)';
+      // 1. Phosphor Persistence Decay Fade (leaves a subtle tail)
+      ctx.fillStyle = 'rgba(3, 15, 6, 0.2)';
       ctx.fillRect(0, 0, width, height);
 
-      // Center reference zero-voltage line
-      ctx.strokeStyle = 'rgba(34, 197, 94, 0.18)';
+      // 2. Graticule Grid (Subtle luminous green coordinate mesh)
+      ctx.lineWidth = 0.5;
+      ctx.strokeStyle = 'rgba(34, 197, 94, 0.14)';
+      const stepX = width / 10;
+      const stepY = height / 6;
+
+      ctx.beginPath();
+      for (let x = stepX; x < width; x += stepX) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+      }
+      for (let y = stepY; y < height; y += stepY) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+      }
+      ctx.stroke();
+
+      // Center Reference Axes (Dashed)
       ctx.lineWidth = 1;
-      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = 'rgba(34, 197, 94, 0.3)';
+      ctx.setLineDash([3, 3]);
       ctx.beginPath();
       ctx.moveTo(0, centerY);
       ctx.lineTo(width, centerY);
+      ctx.moveTo(width / 2, 0);
+      ctx.lineTo(width / 2, height);
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Oscilloscope beam
-      ctx.lineWidth = isSimulating ? 2.5 : 1.8;
-      ctx.strokeStyle = '#33ff33';
-      ctx.shadowColor = '#33ff33';
-      ctx.shadowBlur = isSimulating ? 12 : 6;
-
-      ctx.beginPath();
-
-      const speed = isSimulating ? 0.08 : 0.03;
+      // 3. Compute Complex Simulated Signal Waveform
+      const speed = isSimulating ? 0.08 : 0.035;
       phase += speed * frequency;
+      const baseAmp = isSimulating ? height * 0.34 : height * 0.18;
 
-      const baseAmp = isSimulating ? height * 0.36 : height * 0.18;
-
+      const points: { x: number; y: number }[] = [];
       for (let x = 0; x < width; x++) {
         const normX = x / width;
-        // Superposition of fundamental + 3rd harmonic + simulated I/O jitter
-        const jitter = isSimulating ? Math.sin(normX * 40 + phase * 2) * (height * 0.04) : 0;
+        // Superposition: Fundamental + 3rd Harmonic + Simulated I/O Jitter
+        const jitter = isSimulating ? Math.sin(normX * 48 + phase * 2.5) * (height * 0.04) : 0;
         const wave =
-          Math.sin(normX * Math.PI * 4 * frequency + phase) * baseAmp * 0.8 +
-          Math.sin(normX * Math.PI * 10 - phase * 1.5) * (baseAmp * 0.2) +
+          Math.sin(normX * Math.PI * 4 * frequency + phase) * (baseAmp * 0.85) +
+          Math.sin(normX * Math.PI * 12 - phase * 1.8) * (baseAmp * 0.18) +
           jitter;
 
-        const y = centerY + wave;
-
-        if (x === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
+        points.push({ x, y: centerY + wave });
       }
 
+      // 4. Pass 1: Broad Phosphor Halo Bloom
+      ctx.beginPath();
+      ctx.lineWidth = isSimulating ? 5 : 3.5;
+      ctx.strokeStyle = 'rgba(34, 197, 94, 0.35)';
+      ctx.shadowColor = '#22c55e';
+      ctx.shadowBlur = isSimulating ? 16 : 8;
+
+      for (let i = 0; i < points.length; i++) {
+        if (i === 0) ctx.moveTo(points[i].x, points[i].y);
+        else ctx.lineTo(points[i].x, points[i].y);
+      }
       ctx.stroke();
 
-      // Reset shadow blur for other drawings
+      // 5. Pass 2: Intense Phosphor White-Green Core
+      ctx.beginPath();
+      ctx.lineWidth = isSimulating ? 2 : 1.4;
+      ctx.strokeStyle = '#dcfce7';
+      ctx.shadowColor = '#4ade80';
+      ctx.shadowBlur = isSimulating ? 8 : 4;
+
+      for (let i = 0; i < points.length; i++) {
+        if (i === 0) ctx.moveTo(points[i].x, points[i].y);
+        else ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.stroke();
+
       ctx.shadowBlur = 0;
 
       animId = requestAnimationFrame(render);
@@ -92,22 +121,38 @@ export const CrtOscilloscope: React.FC<CrtOscilloscopeProps> = ({
   }, [isSimulating, frequency]);
 
   return (
-    <div className={`crt-oscilloscope-screen p-2.5 ${className}`}>
-      <div className="flex items-center justify-between text-[10px] font-mono font-bold text-emerald-400 mb-1 z-10 relative">
-        <span className="flex items-center gap-1.5">
-          <span className={`w-1.5 h-1.5 rounded-full ${isSimulating ? 'bg-emerald-400 animate-ping' : 'bg-emerald-600'}`} />
+    <div className={`crt-oscilloscope-screen p-2.5 flex flex-col justify-between relative select-none ${className}`}>
+      {/* 4 Machined Corner Screws */}
+      <div className="absolute top-1 left-1 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-zinc-400 to-zinc-800 shadow border border-black/50 z-20" />
+      <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-zinc-400 to-zinc-800 shadow border border-black/50 z-20" />
+      <div className="absolute bottom-1 left-1 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-zinc-400 to-zinc-800 shadow border border-black/50 z-20" />
+      <div className="absolute bottom-1 right-1 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-zinc-400 to-zinc-800 shadow border border-black/50 z-20" />
+
+      {/* Top Telemetry Header */}
+      <div className="flex items-center justify-between text-[10px] font-mono font-bold text-emerald-400 mb-1 z-10 relative px-1">
+        <span className="flex items-center gap-1.5 tracking-wider">
+          <span className={`w-1.5 h-1.5 rounded-full ${isSimulating ? 'bg-emerald-400 animate-ping' : 'bg-emerald-500 shadow-[0_0_6px_#10b981]'}`} />
           {label}
         </span>
-        <span className="text-[9px] opacity-75">
-          {isSimulating ? 'TRIGGER: AUTO (RUNNING)' : 'TRIGGER: READY'}
+        <span className="text-[9px] font-mono text-emerald-300/80 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-500/30">
+          {isSimulating ? 'TRIG: AUTO (RUNNING)' : 'TRIG: READY (NORMAL)'}
         </span>
       </div>
+
+      {/* The CRT Canvas Screen */}
       <canvas
         ref={canvasRef}
-        width={360}
-        height={90}
-        className="w-full h-[90px] block rounded"
+        width={380}
+        height={92}
+        className="w-full h-[92px] block rounded z-10"
       />
+
+      {/* Bottom CRT Hardware Scale Readout */}
+      <div className="flex items-center justify-between text-[8.5px] font-mono text-emerald-500/70 pt-1 z-10 px-1">
+        <span>CH1: 50mV / DIV</span>
+        <span className="tracking-widest">COUPLING: DC 1MΩ</span>
+        <span>TB: 10µs / DIV</span>
+      </div>
     </div>
   );
 };

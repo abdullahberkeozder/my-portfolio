@@ -14,8 +14,8 @@ interface MacWindowChromeProps {
 }
 
 export const MacWindowChrome: React.FC<MacWindowChromeProps> = ({
-  title = 'NOVA — Dağıtık Sistemler ve Yapay Zeka Yayını (Mac OS X Edition)',
-  subtitle = 'Java 22 Loom · Spring AI · PostgreSQL pgvector 128D',
+  title = 'Nova — Dağıtık Sistemler & Yapay Zeka',
+  subtitle = 'Java 22 Loom · Spring AI · pgvector',
   onClose,
   onMinimize,
   onMaximize,

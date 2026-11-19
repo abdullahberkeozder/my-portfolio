@@ -170,8 +170,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* 2. Middle Tier: Mac OS X Window Titlebar & Traffic Lights */}
       <MacWindowChrome
-        title="NOVA — Dağıtık Sistemler ve Yapay Zeka Yayını (Mac OS X Edition)"
-        subtitle="Java 22 Loom · Spring AI · PostgreSQL pgvector 128D"
+        title="Nova — Dağıtık Sistemler & Yapay Zeka"
+        subtitle="Java 22 Loom · Spring AI · pgvector"
         onClose={() => playKeyClick()}
         onMinimize={() => playKeyClick()}
         onMaximize={() => playKeyClick()}
@@ -247,7 +247,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Center Controls: Finder Metallic 4-Segmented Switcher */}
-          <nav className="hidden md:inline-flex items-center retro-segmented-track shadow-inner">
+          <nav className="hidden md:inline-flex items-center ios-segmented-track !py-0.5 !px-0.5">
             <button
               type="button"
               onMouseEnter={() => handleMouseEnter('articles')}
@@ -255,7 +255,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 playTabSelect();
                 scrollToSection('articles-feed', 'feed');
               }}
-              className={`retro-segmented-item flex items-center gap-1.5 text-xs font-bold ${
+              className={`ios-segment-btn !py-1 !px-3.5 !text-xs font-bold ${
                 activeTab === 'feed' ? 'active' : ''
               }`}
             >
@@ -269,11 +269,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 playTabSelect();
                 scrollToSection('modular-architecture-console', 'system');
               }}
-              className={`retro-segmented-item flex items-center gap-1.5 text-xs font-bold ${
+              className={`ios-segment-btn !py-1 !px-3.5 !text-xs font-bold ${
                 activeTab === 'system' ? 'active' : ''
               }`}
             >
-              <Layers className="w-3 h-3" />
               <span>ÇEKİRDEK</span>
             </button>
 
@@ -284,12 +283,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 playTabSelect();
                 scrollToSection('ai-vector-studio', 'ai-search');
               }}
-              className={`retro-segmented-item flex items-center gap-1.5 text-xs font-bold ${
+              className={`ios-segment-btn !py-1 !px-3.5 !text-xs font-bold ${
                 activeTab === 'ai-search' ? 'active' : ''
               }`}
             >
-              <Cpu className="w-3 h-3" />
-              <span>AI & VEKTÖR</span>
+              <span>AI &amp; VEKTÖR</span>
             </button>
 
             <button
@@ -299,12 +297,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 playTabSelect();
                 scrollToSection('batch-etl-studio', 'admin-batch');
               }}
-              className={`retro-segmented-item flex items-center gap-1.5 text-xs font-bold ${
+              className={`ios-segment-btn !py-1 !px-3.5 !text-xs font-bold ${
                 activeTab === 'admin-batch' ? 'active' : ''
               }`}
             >
-              <Database className="w-3 h-3" />
-              <span>BATCH & ETL</span>
+              <span>BATCH &amp; ETL</span>
             </button>
           </nav>
 

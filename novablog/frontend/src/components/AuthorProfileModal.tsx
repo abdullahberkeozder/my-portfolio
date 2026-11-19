@@ -164,7 +164,7 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
         {/* 1. Saddle-Stitched Leather Top Header Banner */}
         <div className="leather-stitched-header shrink-0">
           <div className="inline-flex items-center gap-2 text-amber-200 text-xs font-mono font-bold tracking-wider uppercase">
-            <span> MAC OS X ADDRESS BOOK // KİŞİ KARTI</span>
+            <span>❖ NOVA ADDRESS BOOK // KİŞİ KARTI</span>
           </div>
 
           <div className="flex items-center gap-2">
