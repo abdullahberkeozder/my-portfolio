@@ -11,6 +11,30 @@ interface AnalogVuMeterProps {
   className?: string;
 }
 
+interface VuTick {
+  deg: number;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  color: string;
+  strokeWidth: string;
+  strokeOpacity: string;
+}
+
+// Precomputed static tick mark constants (Guarantees zero SSR/Client floating-point hydration mismatch)
+const STATIC_TICKS: VuTick[] = [
+  { deg: -44, x1: 57.21, y1: 45.33, x2: 48.87, y2: 36.7, color: '#94a3b8', strokeWidth: '2', strokeOpacity: '0.95' },
+  { deg: -33, x1: 66.43, y1: 32.91, x2: 62.07, y2: 26.2, color: '#94a3b8', strokeWidth: '1', strokeOpacity: '0.6' },
+  { deg: -22, x1: 81.53, y1: 29.53, x2: 77.03, y2: 18.41, color: '#94a3b8', strokeWidth: '2', strokeOpacity: '0.95' },
+  { deg: -11, x1: 94.74, y1: 21.47, x2: 93.21, y2: 13.62, color: '#94a3b8', strokeWidth: '1', strokeOpacity: '0.6' },
+  { deg: 0, x1: 110.0, y1: 24.0, x2: 110.0, y2: 12.0, color: '#94a3b8', strokeWidth: '2', strokeOpacity: '0.95' },
+  { deg: 11, x1: 125.26, y1: 21.47, x2: 126.79, y2: 13.62, color: '#f59e0b', strokeWidth: '1', strokeOpacity: '0.6' },
+  { deg: 22, x1: 138.47, y1: 29.53, x2: 142.97, y2: 18.41, color: '#ef4444', strokeWidth: '2', strokeOpacity: '0.95' },
+  { deg: 33, x1: 153.57, y1: 32.91, x2: 157.93, y2: 26.2, color: '#ef4444', strokeWidth: '1', strokeOpacity: '0.6' },
+  { deg: 44, x1: 162.79, y1: 45.33, x2: 171.13, y2: 36.7, color: '#ef4444', strokeWidth: '2', strokeOpacity: '0.95' },
+];
+
 export const AnalogVuMeter: React.FC<AnalogVuMeterProps> = ({
   label,
   sublabel = 'CALIBRATED VU',
@@ -21,8 +45,8 @@ export const AnalogVuMeter: React.FC<AnalogVuMeterProps> = ({
 }) => {
   // Clamp value between 0 and 100
   const clamped = Math.max(0, Math.min(100, value));
-  // Needle swings from -46deg to +46deg
-  const angle = -46 + (clamped / 100) * 92;
+  // Needle swings from -46deg to +46deg, rounded to 2 decimal places to prevent SSR jitter
+  const angle = Number((-46 + (clamped / 100) * 92).toFixed(2));
   const isPeak = clamped >= 80;
 
   return (
@@ -134,32 +158,19 @@ export const AnalogVuMeter: React.FC<AnalogVuMeterProps> = ({
             strokeOpacity="0.95"
           />
 
-          {/* Calibrated Tick Marks with Authentic Angles */}
-          {[-44, -33, -22, -11, 0, 11, 22, 33, 44].map((deg, idx) => {
-            const rad = ((deg - 90) * Math.PI) / 180;
-            const isMajor = deg % 22 === 0;
-            const rInner = isMajor ? 76 : 80;
-            const rOuter = 88;
-            const x1 = 110 + rInner * Math.cos(rad);
-            const y1 = 100 + rInner * Math.sin(rad);
-            const x2 = 110 + rOuter * Math.cos(rad);
-            const y2 = 100 + rOuter * Math.sin(rad);
-            const isRedZone = deg >= 22;
-            const isAmberZone = deg >= 11 && deg < 22;
-
-            return (
-              <line
-                key={idx}
-                x1={x1}
-                y1={y1}
-                x2={x2}
-                y2={y2}
-                stroke={isRedZone ? '#ef4444' : isAmberZone ? '#f59e0b' : '#94a3b8'}
-                strokeWidth={isMajor ? '2' : '1'}
-                strokeOpacity={isMajor ? '0.95' : '0.6'}
-              />
-            );
-          })}
+          {/* Calibrated Tick Marks with Authentic Angles (Deterministic Precomputed Constants) */}
+          {STATIC_TICKS.map((tick, idx) => (
+            <line
+              key={idx}
+              x1={tick.x1}
+              y1={tick.y1}
+              x2={tick.x2}
+              y2={tick.y2}
+              stroke={tick.color}
+              strokeWidth={tick.strokeWidth}
+              strokeOpacity={tick.strokeOpacity}
+            />
+          ))}
 
           {/* Scale Labels */}
           <text x="32" y="88" fill="#64748b" fontSize="6.5" fontFamily="monospace" fontWeight="bold">-20</text>
