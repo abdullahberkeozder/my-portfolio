@@ -197,16 +197,17 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
           onClick={handleToggleOpen}
           aria-expanded={isOpen}
           aria-label="Nova Sistem Mimarı & Copilot Danışmanını Aç"
-          className="fixed bottom-6 right-6 z-40 group flex items-center gap-2.5 px-4 min-h-[44px] h-[44px] rounded-full bg-gradient-to-b from-[#2e333d]/90 via-[#1f2229]/95 to-[#13151a]/95 text-white border border-white/25 shadow-[0_10px_30px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-1px_0_rgba(0,0,0,0.6)] hover:border-cyan-400/60 hover:shadow-[0_14px_36px_rgba(0,0,0,0.7),0_0_20px_rgba(6,182,212,0.35)] hover:scale-[1.03] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-all duration-200 cursor-pointer backdrop-blur-2xl select-none"
+          className="fixed bottom-6 right-6 z-40 mac-copilot-pill-master group"
           title="Nova Sistem Mimarı & Copilot Danışmanını Aç"
         >
           {/* Neon Green Heartbeat Beacon */}
-          <span className="relative flex h-2.5 w-2.5">
+          <span className="relative flex h-2.5 w-2.5 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400 shadow-[0_0_8px_#10b981,0_0_16px_rgba(16,185,129,0.5)]" />
           </span>
-          <Bot className="w-4 h-4 text-cyan-400 group-hover:scale-110 drop-shadow-[0_0_8px_rgba(34,211,238,0.7)] transition-transform" />
-          <span className="font-sans text-xs font-black tracking-wider text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+          <Bot className="w-4 h-4 text-emerald-400 group-hover:scale-110 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)] transition-transform shrink-0" />
+          <div className="mac-copilot-pill-divider shrink-0" />
+          <span className="font-sans text-xs font-black tracking-wider text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] whitespace-nowrap">
             MİMARİ ASİSTAN
           </span>
         </button>

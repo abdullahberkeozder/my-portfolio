@@ -50,7 +50,7 @@ export const AnalogVuMeter: React.FC<AnalogVuMeterProps> = ({
   const isPeak = clamped >= 80;
 
   return (
-    <div className={`analog-vu-meter-dial p-3 flex flex-col justify-between select-none relative ${className}`}>
+    <div className={`analog-vu-meter-dial-master p-3 flex flex-col justify-between select-none relative ${className}`}>
       {/* 4 Machined Corner Screw Rivets */}
       <div className="absolute top-1.5 left-1.5 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-zinc-300 via-zinc-500 to-zinc-800 shadow-[0_1px_1px_rgba(0,0,0,0.8)] border border-black/40 flex items-center justify-center pointer-events-none opacity-80 z-10">
         <div className="w-1 h-[0.5px] bg-zinc-900 rotate-45" />

@@ -121,7 +121,7 @@ export const CrtOscilloscope: React.FC<CrtOscilloscopeProps> = ({
   }, [isSimulating, frequency]);
 
   return (
-    <div className={`crt-oscilloscope-screen p-2.5 flex flex-col justify-between relative select-none ${className}`}>
+    <div className={`crt-oscilloscope-screen-master p-2.5 flex flex-col justify-between relative select-none ${className}`}>
       {/* 4 Machined Corner Screws */}
       <div className="absolute top-1 left-1 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-zinc-400 to-zinc-800 shadow border border-black/50 z-20" />
       <div className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-zinc-400 to-zinc-800 shadow border border-black/50 z-20" />

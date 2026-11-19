@@ -3020,6 +3020,231 @@
   box-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05);
 }
 
+/* ==============================================================================
+   18. MASTERPIECE SKEUOMORPHIC SHADERS (5-SUBAGENT ORCHESTRATION 2026)
+   Mac OS X Snow Leopard & Yosemite + Braun/Dieter Rams Industrial Precision
+   ============================================================================== */
+
+/* --- FORMULA 1: MAC OS X SNOW LEOPARD COPILOT HUD GLASS PILL --- */
+.mac-copilot-pill-master {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 18px 0 14px;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, rgba(50, 56, 68, 0.94) 0%, rgba(24, 28, 36, 0.97) 50%, rgba(10, 12, 16, 0.99) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.85);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.65),
+    0 2px 6px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  color: #ffffff;
+  cursor: pointer;
+  user-select: none;
+  overflow: hidden;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Multi-stop Caustic Top Hilal Glare */
+.mac-copilot-pill-master::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 6px;
+  right: 6px;
+  height: 45%;
+  border-radius: 9999px 9999px 40px 40px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.08) 65%, transparent 100%);
+  pointer-events: none;
+}
+
+.mac-copilot-pill-master:hover {
+  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(52, 211, 153, 0.6);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.75),
+    0 0 20px rgba(16, 185, 129, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.8);
+}
+
+.mac-copilot-pill-master:active {
+  transform: translateY(1.5px) scale(0.98);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.8),
+    inset 0 3px 6px rgba(0, 0, 0, 0.85);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+/* Debossed Aluminum Separator Bar in Copilot Pill */
+.mac-copilot-pill-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 1px 0 0 rgba(0, 0, 0, 0.85);
+}
+
+/* --- FORMULA 2: BRAUN / DIETER RAMS STUDIO MECHANICAL ROCKER SWITCH --- */
+.mac-mechanical-rocker-pro {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 86px;
+  height: 32px;
+  border-radius: 8px;
+  padding: 2px 3px;
+  background: linear-gradient(180deg, #0e1115 0%, #181c24 100%);
+  border: 1px solid #363e4d;
+  box-shadow:
+    inset 0 3px 8px rgba(0, 0, 0, 0.95),
+    inset 0 0 0 1px #06080a,
+    0 1px 0 rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.mac-mechanical-rocker-pro:focus-visible {
+  box-shadow:
+    inset 0 3px 8px rgba(0, 0, 0, 0.95),
+    0 0 0 2px #10b981,
+    0 0 12px rgba(16, 185, 129, 0.5);
+}
+
+/* Tactile 3D Rocker Knob */
+.mac-mechanical-rocker-pro .rocker-knob {
+  width: 38px;
+  height: 26px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #fbfcfd 0%, #e3e6ea 48%, #c5c9d0 52%, #b0b5be 100%);
+  border: 1px solid #77808f;
+  border-bottom: 2px solid #555c68;
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 #ffffff,
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Mono", "Segoe UI Mono", monospace;
+  font-size: 9.5px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #334155;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: transform 0.22s cubic-bezier(0.34, 1.35, 0.64, 1), background 0.2s ease, border-color 0.2s ease;
+  position: relative;
+}
+
+/* 3 Tactile Grip Ribs (Fiziksel Taktil Parmak Tırtıkları) */
+.mac-mechanical-rocker-pro .rocker-knob::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  width: 14px;
+  height: 5px;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.35),
+    rgba(0, 0, 0, 0.35) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+}
+
+/* Rocker Switch ON Durumu (Canlı Neon Zümrüt Arkadan Aydınlatma) */
+.mac-mechanical-rocker-pro.active {
+  background: linear-gradient(180deg, #05160b 0%, #0c2b16 100%);
+  border-color: #176634;
+  box-shadow:
+    inset 0 3px 8px rgba(0, 0, 0, 0.98),
+    0 0 12px rgba(16, 185, 129, 0.3),
+    0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.mac-mechanical-rocker-pro.active .rocker-knob {
+  transform: translateX(41px);
+  background: linear-gradient(180deg, #34d399 0%, #10b981 48%, #059669 52%, #047857 100%);
+  border-color: #065f46;
+  border-bottom: 2px solid #022c22;
+  color: #ffffff;
+  text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.8);
+  box-shadow:
+    0 3px 8px rgba(16, 185, 129, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* --- FORMULA 3: STUDIO ANALOG VU METER DIAL MASTERPIECE --- */
+.analog-vu-meter-dial-master {
+  background: radial-gradient(circle at 50% 120%, #222731 0%, #111317 80%);
+  border: 1.5px solid #64748b;
+  border-radius: 10px;
+  box-shadow:
+    inset 0 0 0 1px #1a1e26,
+    inset 0 3px 12px rgba(0, 0, 0, 0.95),
+    0 3px 8px rgba(0, 0, 0, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dışbükey Cam Mercek Yansıması (Convex Glass Lens Highlight) */
+.analog-vu-meter-dial-master::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.03) 40%, transparent 60%);
+  pointer-events: none;
+  z-index: 15;
+}
+
+/* --- FORMULA 4: CRT OSCILLOSCOPE SCREEN MASTERPIECE --- */
+.crt-oscilloscope-screen-master {
+  background-color: #051408;
+  border: 2px solid #1a331f;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    inset 0 4px 18px rgba(0, 0, 0, 0.98),
+    inset 0 0 25px rgba(34, 197, 94, 0.18),
+    0 3px 8px rgba(0, 0, 0, 0.45);
+}
+
+.crt-oscilloscope-screen-master::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(34, 197, 94, 0.14) 19px, rgba(34, 197, 94, 0.14) 20px),
+    repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(34, 197, 94, 0.14) 19px, rgba(34, 197, 94, 0.14) 20px);
+  z-index: 5;
+}
+
+/* CRT Dışbükey Küresel Yansıma Vignette */
+.crt-oscilloscope-screen-master::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.7) 100%),
+              linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, transparent 35%);
+  z-index: 15;
+}
+
 
 
 

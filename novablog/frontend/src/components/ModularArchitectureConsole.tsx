@@ -472,9 +472,19 @@ export const ModularArchitectureConsole: React.FC = () => {
                 Loom V-Threads
               </span>
               <div
+                role="switch"
+                aria-checked={virtualThreadsEnabled}
+                aria-label="Loom Sanal İş Parçacıkları Donanım Şalteri"
+                tabIndex={0}
                 onClick={() => handleToggleRocker('loom')}
-                className={`mac-mechanical-rocker ${virtualThreadsEnabled ? 'active' : ''}`}
-                title="Loom Virtual Threads Toggle"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleToggleRocker('loom');
+                  }
+                }}
+                className={`mac-mechanical-rocker-pro ${virtualThreadsEnabled ? 'active' : ''}`}
+                title="Loom Virtual Threads Toggle (Boşluk/Enter veya Tıkla)"
               >
                 <span className="text-[8px] font-mono text-zinc-400 pl-1">0</span>
                 <div className="rocker-knob">{virtualThreadsEnabled ? 'ON' : 'OFF'}</div>
@@ -488,9 +498,19 @@ export const ModularArchitectureConsole: React.FC = () => {
                 Write-Behind
               </span>
               <div
+                role="switch"
+                aria-checked={redisBufferEnabled}
+                aria-label="Redis Write-Behind Tampon Donanım Şalteri"
+                tabIndex={0}
                 onClick={() => handleToggleRocker('redis')}
-                className={`mac-mechanical-rocker ${redisBufferEnabled ? 'active' : ''}`}
-                title="Redis Write-Behind Buffer Toggle"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleToggleRocker('redis');
+                  }
+                }}
+                className={`mac-mechanical-rocker-pro ${redisBufferEnabled ? 'active' : ''}`}
+                title="Redis Write-Behind Buffer Toggle (Boşluk/Enter veya Tıkla)"
               >
                 <span className="text-[8px] font-mono text-zinc-400 pl-1">0</span>
                 <div className="rocker-knob">{redisBufferEnabled ? 'ON' : 'OFF'}</div>
@@ -504,9 +524,19 @@ export const ModularArchitectureConsole: React.FC = () => {
                 Lock-Free OCC
               </span>
               <div
+                role="switch"
+                aria-checked={occLockFreeEnabled}
+                aria-label="JPA İyimser Kilitleme Donanım Şalteri"
+                tabIndex={0}
                 onClick={() => handleToggleRocker('occ')}
-                className={`mac-mechanical-rocker ${occLockFreeEnabled ? 'active' : ''}`}
-                title="Optimistic Concurrency Control Toggle"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleToggleRocker('occ');
+                  }
+                }}
+                className={`mac-mechanical-rocker-pro ${occLockFreeEnabled ? 'active' : ''}`}
+                title="Optimistic Concurrency Control Toggle (Boşluk/Enter veya Tıkla)"
               >
                 <span className="text-[8px] font-mono text-zinc-400 pl-1">0</span>
                 <div className="rocker-knob">{occLockFreeEnabled ? 'ON' : 'OFF'}</div>
