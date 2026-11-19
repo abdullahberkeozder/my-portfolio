@@ -389,7 +389,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   playKeyClick();
                   onOpenCreateModal();
                 }}
-                className="mac-aqua-btn flex items-center gap-1.5 !px-3.5 !py-1.5 !text-xs font-bold cursor-pointer select-none"
+                className="mac-aqua-btn-primary flex items-center gap-1.5 !px-3.5 !py-1.5 !text-xs font-bold cursor-pointer select-none"
                 title="Yeni Teknik Makale Yayınla (Mac Mail)"
               >
                 <PenSquare className="w-3.5 h-3.5" />

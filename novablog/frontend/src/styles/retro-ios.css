@@ -2482,6 +2482,545 @@
   box-shadow: 1px 0 0 rgba(0, 0, 0, 0.6);
 }
 
+/* ==============================================================================
+   17. 5-Subagent Canonical Shaders: Mac OS X Snow Leopard & iOS 6 Optics
+   ============================================================================== */
+
+/* --- FORMULA 1: MAC OS X SNOW LEOPARD AQUA GEL PRIMARY BUTTON --- */
+.mac-aqua-btn-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-family: -apple-system, BlinkMacSystemFont, "Lucida Grande", "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #ffffff !important;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  border: 1px solid #093c7d;
+  
+  /* Dual Layer: Base split Aqua gradient + bottom radial caustic bloom */
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 125%, rgba(135, 215, 255, 0.85) 0%, rgba(30, 130, 240, 0) 70%),
+    linear-gradient(180deg,
+      #8cc3ff 0%,
+      #4ca0ff 32%,
+      #2284f5 49.9%,
+      #0a65db 50%,
+      #084fb0 82%,
+      #053d88 100%
+    );
+
+  box-shadow:
+    0 1px 2px rgba(8, 24, 52, 0.4),
+    0 3px 10px rgba(18, 100, 215, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 1px 0 0 rgba(255, 255, 255, 0.35),
+    inset -1px 0 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1.5px 3px rgba(130, 205, 255, 0.6),
+    inset 0 -3px 6px rgba(0, 30, 80, 0.4);
+
+  text-shadow: 0 -1px 1px rgba(6, 30, 70, 0.9);
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Specular Convex Lens Highlight Dome */
+.mac-aqua-btn-primary::before {
+  content: "";
+  position: absolute;
+  top: 1.5px;
+  left: 3px;
+  right: 3px;
+  height: 48%;
+  border-radius: 9999px 9999px 14px 14px;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.6) 35%,
+    rgba(255, 255, 255, 0.12) 80%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.mac-aqua-btn-primary > * {
+  position: relative;
+  z-index: 2;
+}
+
+.mac-aqua-btn-primary:hover {
+  filter: brightness(1.06) saturate(1.05);
+  box-shadow:
+    0 2px 6px rgba(8, 24, 52, 0.45),
+    0 5px 18px rgba(30, 120, 240, 0.45),
+    inset 0 1px 0 #ffffff;
+}
+
+.mac-aqua-btn-primary:active {
+  transform: translateY(1.5px) scale(0.985);
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(80, 160, 255, 0.35) 0%, transparent 60%),
+    linear-gradient(180deg,
+      #073b7d 0%,
+      #0c4ea1 49.9%,
+      #1664cd 50%,
+      #2f83e6 85%,
+      #59aaff 100%
+    );
+  box-shadow:
+    inset 0 3px 8px rgba(0, 12, 38, 0.9),
+    inset 0 1px 2px rgba(0, 0, 0, 0.9),
+    0 1px 2px rgba(255, 255, 255, 0.35);
+}
+
+.mac-aqua-btn-primary:active::before {
+  opacity: 0.3;
+  height: 38%;
+}
+
+.mac-aqua-btn-primary:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.65),
+    0 0 16px rgba(37, 99, 235, 0.8),
+    inset 0 1px 0 #ffffff !important;
+}
+
+/* --- FORMULA 2: BRUSHED SATIN ALUMINUM BUTTON (SECONDARY ACTION) --- */
+.mac-btn-aluminum {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-family: -apple-system, BlinkMacSystemFont, "Lucida Grande", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #26282e;
+  border: 1px solid #9196a0;
+  border-bottom-color: #6d727b;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  
+  background: linear-gradient(180deg,
+    #ffffff 0%,
+    #f4f4f7 22%,
+    #e4e4ea 49.9%,
+    #d1d1d8 50%,
+    #c0c0c9 85%,
+    #adaeb8 100%
+  );
+  
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 2px 5px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 #ffffff,
+    inset 0 -1px 1px rgba(0, 0, 0, 0.15);
+    
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.95);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.1s ease;
+}
+
+.mac-btn-aluminum::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  right: 2px;
+  height: 48%;
+  border-radius: 9999px 9999px 12px 12px;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.85) 0%,
+    rgba(255, 255, 255, 0.25) 60%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.mac-btn-aluminum > * {
+  position: relative;
+  z-index: 2;
+}
+
+.mac-btn-aluminum:hover {
+  filter: brightness(1.04);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22), inset 0 1px 0 #ffffff;
+}
+
+.mac-btn-aluminum:active {
+  transform: translateY(1.5px) scale(0.985);
+  background: linear-gradient(180deg,
+    #adaeb8 0%,
+    #c0c0c9 49.9%,
+    #d1d1d8 50%,
+    #f4f4f7 85%,
+    #ffffff 100%
+  );
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.35),
+    0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.mac-btn-aluminum:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(100, 116, 139, 0.5),
+    inset 0 1px 0 #ffffff !important;
+}
+
+.dark .mac-btn-aluminum {
+  color: #edf0f5;
+  border: 1px solid #454a54;
+  border-bottom-color: #1a1b1e;
+  background: linear-gradient(180deg,
+    #3b3f47 0%,
+    #2c2f37 20%,
+    #23262d 49.9%,
+    #1b1d22 50%,
+    #141518 85%,
+    #0d0e10 100%
+  );
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.9);
+}
+
+/* --- FORMULA 3: IOS 6 GROUPED-TABLE CARD & 1PX ETCHED DIVIDER --- */
+.ios-grouped-table-card {
+  background: #ffffff;
+  border: 1px solid #b2b8c2;
+  border-radius: 12px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    0 4px 16px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.ios-grouped-table-card:hover {
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.12),
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  border-color: #9aa2ae;
+}
+
+.dark .ios-grouped-table-card {
+  background: #181a1f;
+  border-color: #2e333d;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.dark .ios-grouped-table-card:hover {
+  border-color: #424956;
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.ios-etched-divider {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.dark .ios-etched-divider {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.85);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* --- FORMULA 4: FINDER SCOPE BAR SEGMENTED CHANNEL & TACTILE PILLS --- */
+.mac-scope-track {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #b0b4be 0%, #c5c9d2 100%);
+  border: 1px solid #949aa6;
+  box-shadow:
+    inset 0 1.5px 3px rgba(0, 0, 0, 0.35),
+    0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.dark .mac-scope-track {
+  background: linear-gradient(180deg, #101215 0%, #17191e 100%);
+  border: 1px solid #262930;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.85),
+    0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.mac-scope-segment {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  min-height: 32px;
+  font-family: -apple-system, BlinkMacSystemFont, "Lucida Grande", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #454d59;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+  border-radius: 7px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.16s ease;
+}
+
+.mac-scope-segment:hover:not(.active) {
+  color: #1a1c20;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.dark .mac-scope-segment {
+  color: #949aab;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.85);
+}
+
+.dark .mac-scope-segment:hover:not(.active) {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mac-scope-segment.active {
+  background: linear-gradient(180deg, #ffffff 0%, #ededf2 50%, #dadce3 100%);
+  color: #111418;
+  border: 1px solid #9da3b0;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 #ffffff;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.dark .mac-scope-segment.active {
+  background: linear-gradient(180deg, #383c48 0%, #282b33 50%, #1e2026 100%);
+  color: #ffffff;
+  border: 1px solid #4a505e;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.9);
+}
+
+/* 44px Fitts's Law Hit-Box & Tactile Topic Pill */
+.mac-scope-pill-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 12px;
+  min-height: 28px;
+  border-radius: 9999px;
+  font-family: -apple-system, BlinkMacSystemFont, "Lucida Grande", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  border: 1px solid #adb2bc;
+  background: linear-gradient(180deg, #ffffff 0%, #e6e7eb 100%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), inset 0 1px 0 #ffffff;
+  color: #3b424e;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+/* 44px touch hitbox expansion */
+.mac-scope-pill-btn::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  left: -2px;
+  right: -2px;
+}
+
+.mac-scope-pill-btn:hover:not(.active) {
+  border-color: #8c93a0;
+  background: linear-gradient(180deg, #ffffff 0%, #dcdfe6 100%);
+  color: #111418;
+}
+
+.mac-scope-pill-btn.active {
+  background: linear-gradient(180deg, #3d88e0 0%, #1a62bf 100%);
+  border-color: #124b96;
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7);
+  box-shadow: inset 0 1.5px 3px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.dark .mac-scope-pill-btn {
+  border-color: #383e4a;
+  background: linear-gradient(180deg, #2a2e37 0%, #1c1f26 100%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  color: #b0b7c3;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.8);
+}
+
+.dark .mac-scope-pill-btn:hover:not(.active) {
+  border-color: #4f5767;
+  color: #ffffff;
+  background: linear-gradient(180deg, #353a45 0%, #22262f 100%);
+}
+
+.dark .mac-scope-pill-btn.active {
+  background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+  border-color: #1e40af;
+  color: #ffffff;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(37, 99, 235, 0.4);
+}
+
+/* --- FORMULA 5: RECESSED SEARCH INPUT --- */
+.mac-search-recessed {
+  height: 32px;
+  border-radius: 16px;
+  padding: 0 14px 0 34px;
+  background: #ffffff;
+  border: 1px solid #999ea8;
+  border-bottom-color: #7b808a;
+  box-shadow:
+    inset 0 1.5px 3px rgba(0, 0, 0, 0.25),
+    0 1px 0 rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, "Lucida Grande", sans-serif;
+  color: #22252a;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+}
+
+.mac-search-recessed:focus {
+  border-color: #3880e0;
+  box-shadow:
+    inset 0 1.5px 2px rgba(0, 0, 0, 0.2),
+    0 0 0 3px rgba(66, 148, 245, 0.45);
+}
+
+.dark .mac-search-recessed {
+  background: #14161a;
+  border-color: #383c44;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.8),
+    0 1px 0 rgba(255, 255, 255, 0.08);
+  color: #e5e7eb;
+}
+
+/* --- FORMULA 6: 3D SKEUOMORPHIC DOCK ICON TILE & MIRROR REFLECTION --- */
+.mac-dock-tile-3d {
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  
+  background: linear-gradient(180deg,
+    #ffffff 0%,
+    #e8ebf2 48%,
+    #d2d6e3 50%,
+    #b8bece 100%
+  );
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  border-bottom-color: rgba(0, 0, 0, 0.45);
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+    
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-box-reflect: below 2px linear-gradient(transparent 55%, rgba(0, 0, 0, 0.28) 100%);
+}
+
+.mac-dock-tile-3d::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  right: 2px;
+  height: 45%;
+  border-radius: 9px 9px 6px 6px;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.2) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.mac-dock-tile-3d > * {
+  position: relative;
+  z-index: 2;
+}
+
+.dark .mac-dock-tile-3d {
+  background: linear-gradient(180deg,
+    #3c414c 0%,
+    #2a2e37 48%,
+    #20232b 50%,
+    #171920 100%
+  );
+  border-color: rgba(255, 255, 255, 0.15);
+  border-bottom-color: rgba(0, 0, 0, 0.85);
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  -webkit-box-reflect: below 2px linear-gradient(transparent 55%, rgba(255, 255, 255, 0.14) 100%);
+}
+
+.mac-dock-tile-3d:hover {
+  transform: translateY(-8px) scale(1.15);
+}
+
+.mac-dock-tile-3d:active {
+  transform: translateY(-2px) scale(0.96);
+  filter: brightness(0.92);
+}
+
+/* --- HARDWARE ARCHITECTURE SPEC STRIP --- */
+.mac-hardware-spec-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.08) 100%);
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1), 0 1px 0 rgba(255,255,255,0.6);
+}
+
+.dark .mac-hardware-spec-strip {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.3) 100%);
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05);
+}
+
+
 
 
 

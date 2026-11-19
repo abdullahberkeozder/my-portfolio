@@ -94,7 +94,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           className="mac-dock-item"
           title="Yayın Akışı (Finder / Vitrin)"
         >
-          <div className="mac-dock-icon-btn">
+          <div className="mac-dock-tile-3d">
             <Compass className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
           <div className={`mac-dock-indicator-dot ${activeTab === 'feed' ? 'active' : ''}`} />
@@ -109,7 +109,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           className="mac-dock-item"
           title="Activity Monitor & CRT Telemetri"
         >
-          <div className="mac-dock-icon-btn">
+          <div className="mac-dock-tile-3d">
             <Activity className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div className="mac-dock-indicator-dot" />
@@ -121,7 +121,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           className="mac-dock-item"
           title="Spring AI & pgvector Vektör Stüdyosu"
         >
-          <div className="mac-dock-icon-btn">
+          <div className="mac-dock-tile-3d">
             <Cpu className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           </div>
           <div className={`mac-dock-indicator-dot ${activeTab === 'ai-search' ? 'active' : ''}`} />
@@ -133,7 +133,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           className="mac-dock-item"
           title="Spring Batch 5 & Xserve Veri Ambarı"
         >
-          <div className="mac-dock-icon-btn">
+          <div className="mac-dock-tile-3d">
             <Database className="w-5 h-5 text-amber-600 dark:text-amber-400" />
           </div>
           <div className={`mac-dock-indicator-dot ${activeTab === 'admin-batch' ? 'active' : ''}`} />
@@ -148,7 +148,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           className="mac-dock-item"
           title="Mac Mail — Yeni Makale Yaz"
         >
-          <div className="mac-dock-icon-btn">
+          <div className="mac-dock-tile-3d">
             <PenSquare className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
           <div className="mac-dock-indicator-dot" />
@@ -160,7 +160,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           className="mac-dock-item"
           title="Spotlight Arama (⌘K)"
         >
-          <div className="mac-dock-icon-btn">
+          <div className="mac-dock-tile-3d">
             <Search className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
           </div>
           <div className="mac-dock-indicator-dot" />
@@ -172,7 +172,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           className="mac-dock-item"
           title="Redis Write-Behind Tamponunu Veritabanına Aktar"
         >
-          <div className={`mac-dock-icon-btn ${flushSuccess ? '!bg-emerald-500 text-white' : ''}`}>
+          <div className={`mac-dock-tile-3d ${flushSuccess ? '!bg-emerald-500 text-white' : ''}`}>
             {isFlushing ? (
               <RefreshCw className="w-5 h-5 animate-spin text-blue-500" />
             ) : flushSuccess ? (
@@ -190,7 +190,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           className="mac-dock-item"
           title="Bu Mac Hakkında (Mimari Manifesto)"
         >
-          <div className="mac-dock-icon-btn">
+          <div className="mac-dock-tile-3d">
             <Info className="w-5 h-5 text-zinc-800 dark:text-zinc-200" />
           </div>
           <div className="mac-dock-indicator-dot" />

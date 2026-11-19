@@ -369,20 +369,20 @@ export default function Home() {
         />
 
         {/* 2. Main Publication Feed (Keşfet / Takip Edilenler / Okuma Listem) */}
-        <div id="articles-feed" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-32 space-y-8 scroll-mt-20">
+        <div id="articles-feed" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 space-y-6 scroll-mt-14">
           {/* Mac OS X Unified Finder Scope Bar & Discovery Panel */}
           <div className="mac-scope-bar p-3.5 sm:p-4 rounded-2xl border border-black/10 dark:border-white/10 bg-gradient-to-b from-white/80 via-zinc-50/70 to-zinc-100/80 dark:from-[#1b1d24]/90 dark:via-[#14151b]/85 dark:to-[#0f1014]/90 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)] space-y-3.5">
             {/* Top Bar: Feed Switcher & Contextual Filter Search */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               {/* Primary Dual-Feed Tabs with Mac OS X Segmented Styling */}
-              <div className="ios-segmented-track w-fit">
+              <div className="mac-scope-track w-fit">
                 <button
                   type="button"
                   onClick={() => {
                     playTabSelect();
                     setFeedMode('explore');
                   }}
-                  className={`ios-segment-btn flex items-center gap-2 ${
+                  className={`mac-scope-segment ${
                     feedMode === 'explore' ? 'active' : ''
                   }`}
                 >
@@ -396,14 +396,14 @@ export default function Home() {
                     playTabSelect();
                     setFeedMode('following');
                   }}
-                  className={`ios-segment-btn flex items-center gap-2 ${
+                  className={`mac-scope-segment ${
                     feedMode === 'following' ? 'active' : ''
                   }`}
                 >
                   <Users className="w-4 h-4 text-cyan-500" />
                   <span>TAKİP EDİLENLER</span>
                   {followedAuthors.length > 0 && (
-                    <span className="w-5 h-5 rounded-full bg-cyan-500 text-white text-[10px] font-mono flex items-center justify-center font-bold shadow-sm">
+                    <span className="w-4 h-4 rounded-full bg-cyan-500 text-white text-[9px] font-mono flex items-center justify-center font-bold shadow-sm">
                       {followedAuthors.length}
                     </span>
                   )}
@@ -415,14 +415,14 @@ export default function Home() {
                     playTabSelect();
                     setFeedMode('bookmarks');
                   }}
-                  className={`ios-segment-btn flex items-center gap-2 ${
+                  className={`mac-scope-segment ${
                     feedMode === 'bookmarks' ? 'active' : ''
                   }`}
                 >
                   <Bookmark className="w-4 h-4 text-amber-500" />
                   <span>OKUMA LİSTEM</span>
                   {bookmarkedIds.length > 0 && (
-                    <span className="w-5 h-5 rounded-full bg-amber-500 text-white text-[10px] font-mono flex items-center justify-center font-bold shadow-sm">
+                    <span className="w-4 h-4 rounded-full bg-amber-500 text-white text-[9px] font-mono flex items-center justify-center font-bold shadow-sm">
                       {bookmarkedIds.length}
                     </span>
                   )}
@@ -444,7 +444,7 @@ export default function Home() {
                       handleTriggerSemanticSearch(searchTerm);
                     }
                   }}
-                  className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-sm font-sans text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="mac-search-recessed"
                 />
                 {searchTerm ? (
                   <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -510,11 +510,7 @@ export default function Home() {
                           setSelectedTopic(topic.tag);
                         }}
                         aria-pressed={isActive}
-                        className={`px-3 py-1.5 rounded-lg text-[11px] font-mono font-bold whitespace-nowrap transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-                          isActive
-                            ? 'bg-zinc-950 dark:bg-white text-white dark:text-black shadow-sm'
-                            : 'bg-zinc-100 dark:bg-zinc-900/80 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-200/70 dark:hover:bg-zinc-800'
-                        }`}
+                        className={`mac-scope-pill-btn ${isActive ? 'active' : ''}`}
                       >
                         {topic.label}
                       </button>
@@ -529,7 +525,7 @@ export default function Home() {
                   <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-wider hidden lg:inline">
                     SIRALA:
                   </span>
-                  <div className="inline-flex items-center p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-200/70 dark:border-zinc-800/80 font-mono text-[11px]">
+                  <div className="mac-scope-track font-mono text-[11px]">
                     <button
                       type="button"
                       onClick={() => {
@@ -537,10 +533,8 @@ export default function Home() {
                         setExploreSort('trending');
                       }}
                       aria-pressed={exploreSort === 'trending'}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-                        exploreSort === 'trending'
-                          ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-bold shadow-sm'
-                          : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
+                      className={`mac-scope-segment !py-1 !px-2.5 !text-[11px] ${
+                        exploreSort === 'trending' ? 'active' : ''
                       }`}
                     >
                       <TrendingUp className="w-3 h-3 text-emerald-400" />
@@ -553,10 +547,8 @@ export default function Home() {
                         setExploreSort('featured');
                       }}
                       aria-pressed={exploreSort === 'featured'}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-                        exploreSort === 'featured'
-                          ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-bold shadow-sm'
-                          : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
+                      className={`mac-scope-segment !py-1 !px-2.5 !text-[11px] ${
+                        exploreSort === 'featured' ? 'active' : ''
                       }`}
                     >
                       <Sparkles className="w-3 h-3 text-cyan-400" />
@@ -569,10 +561,8 @@ export default function Home() {
                         setExploreSort('latest');
                       }}
                       aria-pressed={exploreSort === 'latest'}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-                        exploreSort === 'latest'
-                          ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white font-bold shadow-sm'
-                          : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
+                      className={`mac-scope-segment !py-1 !px-2.5 !text-[11px] ${
+                        exploreSort === 'latest' ? 'active' : ''
                       }`}
                     >
                       <Clock className="w-3 h-3 text-purple-400" />

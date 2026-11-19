@@ -63,11 +63,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       {/* Subtle Studio Glow */}
       <div className="absolute top-0 right-1/4 w-[500px] h-[300px] bg-blue-500/5 blur-[120px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-12 lg:pt-14 lg:pb-16 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8 lg:pt-8 lg:pb-10 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
           
           {/* Left Column: Mac OS X Editorial Presentation (7 cols) */}
-          <div className="lg:col-span-7 space-y-5">
+          <div className="lg:col-span-7 space-y-4">
             {/* Apple Hardware Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-gradient-to-b from-white to-zinc-100 dark:from-zinc-800 dark:to-zinc-900 border border-black/15 dark:border-white/15 shadow-sm text-xs font-mono">
               <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
@@ -81,7 +81,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
 
             {/* Headline with Letterpress Aesthetic */}
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-zinc-950 dark:text-white leading-[1.15] font-sans drop-shadow-xs">
                 Sistem Mimarisi, Dağıtık Ağlar ve{' '}
                 <span className="text-blue-600 dark:text-blue-400 underline decoration-blue-500/30 underline-offset-4">
@@ -95,12 +95,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
 
             {/* Tactile Action Buttons: Aqua Glass + Brushed Silver Controls */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="flex flex-wrap items-center gap-3 pt-1">
               {/* Primary: Apple Aqua Button (Feed Exploration) - High Converting Main CTA */}
               <button
                 type="button"
                 onClick={scrollToFeed}
-                className="mac-aqua-btn mac-aqua-btn-lg flex items-center gap-2.5 !text-xs font-black shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                className="mac-aqua-btn-primary mac-aqua-btn-lg flex items-center gap-2.5 !text-xs font-black shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-transform"
                 title="Yayın akışına kaydır (Makaleleri Keşfet)"
               >
                 <Compass className="w-4 h-4 text-white" />
@@ -112,7 +112,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <button
                 type="button"
                 onClick={handleOpenConsole}
-                className="mac-aqua-btn mac-aqua-btn-silver mac-aqua-btn-lg flex items-center gap-2 !text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                className="mac-btn-aluminum mac-aqua-btn-lg flex items-center gap-2 !text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-transform"
                 title="Activity Monitor & Donanım Telemetrisi konsoluna git"
               >
                 <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
@@ -123,7 +123,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <button
                 type="button"
                 onClick={handleExploreAI}
-                className="mac-aqua-btn mac-aqua-btn-silver mac-aqua-btn-lg flex items-center gap-2 !text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                className="mac-btn-aluminum mac-aqua-btn-lg flex items-center gap-2 !text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-transform"
                 title="Spring AI ve pgvector 128D anlamsal arama laboratuvarına git"
               >
                 <Cpu className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
@@ -131,24 +131,29 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </button>
             </div>
 
-            {/* Hardware IC Chip Badges Strip */}
-            <div className="pt-3 border-t border-black/10 dark:border-white/10 flex flex-wrap items-center gap-2">
-              <span className="mac-hardware-chip-badge !text-[9px] flex items-center gap-1">
-                <Cpu className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                <span>LOOM 10K V-THREADS</span>
-              </span>
-              <span className="mac-hardware-chip-badge !text-[9px] flex items-center gap-1">
-                <Layers className="w-3 h-3 text-blue-600 dark:text-blue-400" />
-                <span>pgvector 128D COSINE</span>
-              </span>
-              <span className="mac-hardware-chip-badge !text-[9px] flex items-center gap-1">
-                <Database className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                <span>REDIS WRITE-BEHIND</span>
-              </span>
-              <span className="mac-hardware-chip-badge !text-[9px] flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3 text-purple-600 dark:text-purple-400" />
-                <span>RFC 7807 2FA</span>
-              </span>
+            {/* Hardware Architecture Specification Strip */}
+            <div className="pt-2">
+              <div className="mac-hardware-spec-strip">
+                <span className="text-[10px] font-mono font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mr-1">
+                  DONANIM MİMARİSİ:
+                </span>
+                <span className="mac-hardware-chip-badge !text-[9px] flex items-center gap-1">
+                  <Cpu className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                  <span>LOOM 10K V-THREADS</span>
+                </span>
+                <span className="mac-hardware-chip-badge !text-[9px] flex items-center gap-1">
+                  <Layers className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                  <span>pgvector 128D COSINE</span>
+                </span>
+                <span className="mac-hardware-chip-badge !text-[9px] flex items-center gap-1">
+                  <Database className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                  <span>REDIS WRITE-BEHIND</span>
+                </span>
+                <span className="mac-hardware-chip-badge !text-[9px] flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                  <span>RFC 7807 2FA</span>
+                </span>
+              </div>
             </div>
           </div>
 

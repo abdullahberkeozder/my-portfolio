@@ -147,11 +147,11 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
         playKeyClick();
         onSelect(blog);
       }}
-      className="group mac-blog-card p-5 sm:p-6 flex flex-col justify-between space-y-4 cursor-pointer"
+      className="group ios-grouped-table-card p-5 sm:p-6 flex flex-col justify-between space-y-4 cursor-pointer"
     >
       <div className="space-y-3.5">
         {/* 1. Mac Mail / Contacts Header: Brushed Silver Coin Avatar & Author Info */}
-        <div className="flex items-center justify-between gap-3 text-xs border-b border-zinc-100 dark:border-zinc-800/70 pb-3">
+        <div className="flex items-center justify-between gap-3 text-xs ios-etched-divider pb-3">
           <button
             type="button"
             onClick={(e) => {
@@ -258,7 +258,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
       </div>
 
       {/* 4. Bottom Footer: Topic Tags, Skeuomorphic Action Buttons & Disclosure */}
-      <div className="pt-3 flex flex-wrap items-center justify-between gap-2 text-xs border-t border-zinc-100 dark:border-zinc-800/80">
+      <div className="pt-3 flex flex-wrap items-center justify-between gap-2 text-xs border-t border-black/10 dark:border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
         {/* Left: Tags */}
         <div className="flex flex-wrap items-center gap-1.5">
           {categoryName && (
@@ -288,7 +288,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
           <button
             onClick={handleFetchSummary}
             disabled={isLoadingSummary}
-            className="ios6-btn ios6-btn-silver px-2.5 py-1 text-[11px] font-semibold"
+            className="mac-btn-aluminum !min-h-[28px] !px-2.5 !py-1 text-[11px] font-semibold"
             title="Spring AI ile Yönetici Özeti"
           >
             {isLoadingSummary ? (
@@ -299,10 +299,10 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
             <span>{showSummary ? 'Gizle' : 'Özet'}</span>
           </button>
 
-          {/* Claps / Likes (Blue Cylindrical Gloss Button) */}
+          {/* Claps / Likes (Aqua Primary Gloss Button) */}
           <button
             onClick={handleToggleLike}
-            className="ios6-btn ios6-btn-blue px-2.5 py-1 text-[11px] font-bold"
+            className="mac-aqua-btn-primary !min-h-[28px] !px-2.5 !py-1 text-[11px] font-bold"
             title="Alkışla (Medium Clap)"
           >
             <span className="text-xs">👏</span>
