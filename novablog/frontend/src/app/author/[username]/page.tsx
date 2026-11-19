@@ -377,9 +377,9 @@ function AuthorContent({ params }: AuthorPageProps) {
               <button
                 type="button"
                 onClick={toggleFollow}
-                className={`ios6-btn px-6 py-2.5 text-xs font-bold gap-2 cursor-pointer whitespace-nowrap active:scale-95 ${
-                  isFollowing ? 'ios6-btn-silver' : 'ios6-btn-blue'
-                }`}
+                className={`mac-aqua-btn ${
+                  isFollowing ? 'mac-aqua-btn-silver' : 'mac-aqua-btn-primary'
+                } !px-6 !py-2.5 !text-xs font-bold gap-2 cursor-pointer whitespace-nowrap active:scale-95`}
               >
                 {isFollowing ? (
                   <>

@@ -156,7 +156,7 @@ function PostContent({ params }: PostPageProps) {
               playKeyClick();
               router.push('/');
             }}
-            className="ios6-btn ios6-btn-blue px-5 py-2 text-xs font-bold gap-1.5"
+            className="mac-aqua-btn mac-aqua-btn-primary px-5 py-2 text-xs font-bold gap-1.5"
           >
             <span>&lt; Yayın Akışına Dön</span>
           </button>
@@ -496,9 +496,9 @@ function PostContent({ params }: PostPageProps) {
             <button
               type="button"
               onClick={toggleFollow}
-              className={`ios6-btn px-4 py-1.5 text-xs font-bold gap-1 cursor-pointer ${
-                isAuthorFollowed ? 'ios6-btn-silver' : 'ios6-btn-blue'
-              }`}
+              className={`mac-aqua-btn ${
+                isAuthorFollowed ? 'mac-aqua-btn-silver' : 'mac-aqua-btn-primary'
+              } !px-4 !py-1.5 !text-xs font-bold gap-1 cursor-pointer`}
             >
               {isAuthorFollowed ? 'Takip Ediliyor' : 'Takip Et'}
             </button>
@@ -630,9 +630,9 @@ function PostContent({ params }: PostPageProps) {
           <button
             type="button"
             onClick={toggleFollow}
-            className={`ios6-btn px-4 py-2 text-xs font-bold gap-1.5 cursor-pointer whitespace-nowrap active:scale-95 ${
-              isAuthorFollowed ? 'ios6-btn-silver' : 'ios6-btn-blue'
-            }`}
+            className={`mac-aqua-btn ${
+              isAuthorFollowed ? 'mac-aqua-btn-silver' : 'mac-aqua-btn-primary'
+            } !px-4 !py-2 !text-xs font-bold gap-1.5 cursor-pointer whitespace-nowrap`}
           >
             {isAuthorFollowed ? 'Takip Ediliyor' : 'Yazarı Takip Et'}
           </button>
@@ -711,12 +711,12 @@ function PostContent({ params }: PostPageProps) {
               <button
                 type="submit"
                 disabled={isSubmittingComment || !newCommentText.trim()}
-                className="ios6-btn ios6-btn-blue px-4 py-2 text-xs font-bold gap-1.5 disabled:opacity-50 cursor-pointer shadow-md"
+                className="mac-aqua-btn mac-aqua-btn-primary !px-4 !py-2 !text-xs font-bold gap-1.5 disabled:opacity-50 cursor-pointer shadow-md"
               >
                 {isSubmittingComment ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
                 ) : (
-                  <Send className="w-3.5 h-3.5" />
+                  <Send className="w-3.5 h-3.5 text-white" />
                 )}
                 <span>Mesaj Gönder</span>
               </button>
@@ -812,7 +812,7 @@ function PostContent({ params }: PostPageProps) {
           <button
             type="button"
             onClick={handleClap}
-            className="ios6-btn ios6-btn-blue px-3 py-1.5 text-xs font-bold gap-1.5"
+            className="mac-aqua-btn mac-aqua-btn-primary !px-3.5 !py-1.5 !text-xs font-bold gap-1.5"
             title="Alkışla (Medium Clap)"
           >
             <span className="text-sm leading-none">👏</span>
@@ -827,10 +827,10 @@ function PostContent({ params }: PostPageProps) {
               const el = document.getElementById('comments-discussion-section');
               if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="ios6-btn ios6-btn-silver px-3 py-1.5 text-xs font-semibold gap-1.5"
+            className="mac-aqua-btn mac-aqua-btn-silver !px-3.5 !py-1.5 !text-xs font-semibold gap-1.5"
             title="Mesajlara Git"
           >
-            <MessageSquare className="w-3.5 h-3.5 text-blue-600" />
+            <MessageSquare className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             <span className="font-mono">{comments.length}</span>
           </button>
         </div>
@@ -840,9 +840,9 @@ function PostContent({ params }: PostPageProps) {
           <button
             type="button"
             onClick={toggleBookmark}
-            className={`ios6-btn px-3 py-1.5 text-xs font-bold gap-1.5 ${
-              isBookmarked ? 'ios6-btn-silver' : 'ios6-btn-dark'
-            }`}
+            className={`mac-aqua-btn ${
+              isBookmarked ? 'mac-aqua-btn-silver' : '!bg-[#1e222a] border border-white/20 text-white'
+            } !px-3.5 !py-1.5 !text-xs font-bold gap-1.5`}
             title="Safari Okuma Listeme Ekle"
           >
             <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-400 text-amber-400' : ''}`} />
@@ -853,7 +853,7 @@ function PostContent({ params }: PostPageProps) {
           <button
             type="button"
             onClick={handleShare}
-            className="ios6-btn ios6-btn-silver px-3 py-1.5 text-xs font-semibold gap-1.5"
+            className="mac-aqua-btn mac-aqua-btn-silver !px-3.5 !py-1.5 !text-xs font-semibold gap-1.5"
             title="Makale Bağlantısını Kopyala"
           >
             {isCopiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
