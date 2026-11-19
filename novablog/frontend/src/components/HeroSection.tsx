@@ -95,12 +95,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
 
             {/* Tactile Action Buttons: Aqua Glass + Brushed Silver Controls */}
-            <div className="flex flex-wrap items-center gap-3 pt-1">
+            <div className="flex flex-wrap items-center gap-3 pt-2">
               {/* Primary: Apple Aqua Button (Feed Exploration) - High Converting Main CTA */}
               <button
                 type="button"
                 onClick={scrollToFeed}
-                className="mac-aqua-btn mac-aqua-btn-lg flex items-center gap-2 !text-xs font-bold shadow-md hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                className="mac-aqua-btn mac-aqua-btn-lg flex items-center gap-2.5 !text-xs font-black shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-transform"
                 title="Yayın akışına kaydır (Makaleleri Keşfet)"
               >
                 <Compass className="w-4 h-4 text-white" />
@@ -112,18 +112,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <button
                 type="button"
                 onClick={handleOpenConsole}
-                className="mac-aqua-btn mac-aqua-btn-silver flex items-center gap-2 !px-4 !py-2.5 !text-xs font-bold"
+                className="mac-aqua-btn mac-aqua-btn-silver mac-aqua-btn-lg flex items-center gap-2 !text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-transform"
                 title="Activity Monitor & Donanım Telemetrisi konsoluna git"
               >
                 <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                <span>Mimari & Telemetri</span>
+                <span>Mimari &amp; Telemetri</span>
               </button>
 
               {/* Tertiary: Spring AI pgvector Neural Lab */}
               <button
                 type="button"
                 onClick={handleExploreAI}
-                className="mac-aqua-btn mac-aqua-btn-silver flex items-center gap-2 !px-4 !py-2.5 !text-xs text-zinc-800 dark:text-zinc-200 font-bold"
+                className="mac-aqua-btn mac-aqua-btn-silver mac-aqua-btn-lg flex items-center gap-2 !text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-transform"
                 title="Spring AI ve pgvector 128D anlamsal arama laboratuvarına git"
               >
                 <Cpu className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />

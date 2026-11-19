@@ -13,9 +13,10 @@ import {
   Menu,
   PenSquare,
   Search,
+  ShieldAlert,
 } from 'lucide-react';
-import { AppleGlobalAcrylicNavBar } from './AppleGlobalAcrylicNavBar';
-import { MacWindowChrome } from './MacWindowChrome';
+import { MacThemeToggle } from './MacThemeToggle';
+import { GithubIcon } from './GithubIcon';
 import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
 
 export type NavTab = 'feed' | 'system' | 'ai-search' | 'admin-batch';
@@ -161,22 +162,6 @@ export const Navbar: React.FC<NavbarProps> = ({
       className="sticky top-0 z-50 select-none shadow-md"
       onMouseLeave={handleMouseLeave}
     >
-      {/* 1. Top Tier: Apple 2010 Global Acrylic Nav Bar (26px) */}
-      <AppleGlobalAcrylicNavBar
-        isBackendOnline={isBackendOnline}
-        onRefreshHealth={onRefreshHealth}
-        onOpenTwoFactor={onOpenTwoFactor}
-      />
-
-      {/* 2. Middle Tier: Mac OS X Window Titlebar & Traffic Lights */}
-      <MacWindowChrome
-        title="Nova — Dağıtık Sistemler & Yapay Zeka"
-        subtitle="Java 22 Loom · Spring AI · pgvector"
-        onClose={() => playKeyClick()}
-        onMinimize={() => playKeyClick()}
-        onMaximize={() => playKeyClick()}
-      />
-
       {/* Subtle backdrop overlay when mega menu is open */}
       {isMegaOpen && (
         <div
@@ -185,12 +170,41 @@ export const Navbar: React.FC<NavbarProps> = ({
         />
       )}
 
-      {/* 3. Bottom Tier: Mac OS X 44px Unified Brushed-Platinum Toolbar */}
-      <div className="mac-unified-toolbar relative z-40">
-        <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4 py-1">
-          {/* Left Controls: Finder Nav Chevrons [<] [>] + Wordmark */}
+      {/* Mac OS X Yosemite / Snow Leopard Single Unified Window Header (44px) */}
+      <div className="mac-unified-desktop-header relative z-40">
+        <div className="w-full max-w-7xl mx-auto h-[44px] px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-4">
+          
+          {/* Sol Bölge: Trafik Işıkları (🔴 🟡 🟢) + Nav Chevrons [<][>] + NOVA Wordmark */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <div className="mac-nav-chevron-group" title="Finder Tarihsel Pencereler Arası Gezinme">
+            {/* Mac OS X Traffic Lights */}
+            <div className="mac-traffic-lights" title="Mac OS X Pencere Yönetimi">
+              <button
+                type="button"
+                onClick={() => playKeyClick()}
+                className="mac-traffic-dot mac-traffic-close focus:outline-none"
+                title="Kapat (Close)"
+                aria-label="Kapat"
+              />
+              <button
+                type="button"
+                onClick={() => playKeyClick()}
+                className="mac-traffic-dot mac-traffic-min focus:outline-none"
+                title="Simge Durumuna Küçült (Minimize)"
+                aria-label="Küçült"
+              />
+              <button
+                type="button"
+                onClick={() => playKeyClick()}
+                className="mac-traffic-dot mac-traffic-max focus:outline-none"
+                title="Büyüt (Zoom)"
+                aria-label="Büyüt"
+              />
+            </div>
+
+            <div className="h-4 w-[1px] bg-black/15 dark:bg-white/15 hidden sm:block mx-0.5" />
+
+            {/* Finder Nav Chevrons [<] [>] */}
+            <div className="mac-nav-chevron-group hidden sm:inline-flex" title="Finder Tarihsel Pencereler Arası Gezinme">
               <button
                 type="button"
                 onClick={handlePrevTab}
@@ -211,20 +225,21 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             </div>
 
-            {/* Brand Logo & Wordmark */}
+            {/* Brand Logo & Wordmark (Single Source of Truth) */}
             <div
-              className="flex items-center gap-2 cursor-pointer group py-1"
+              className="flex items-center gap-1.5 cursor-pointer group py-1"
               onClick={() => {
                 closeMegaMenu();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 if (onRefreshHealth) onRefreshHealth();
               }}
+              title="Nova Ana Sayfaya Dön"
             >
               <svg
                 viewBox="0 0 40 40"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 text-zinc-900 dark:text-zinc-100 transition-transform group-hover:scale-105 duration-200"
+                className="w-5 h-5 shrink-0 text-zinc-900 dark:text-zinc-100 transition-transform group-hover:scale-105 duration-200"
                 aria-label="Nova Logo"
               >
                 <path
@@ -240,13 +255,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                 />
               </svg>
 
-              <span className="font-black text-base sm:text-lg tracking-tight uppercase leading-none text-zinc-900 dark:text-zinc-100 drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] dark:drop-shadow-[0_-1px_0_rgba(0,0,0,0.8)]">
-                NOVA.
+              <span className="font-black text-sm tracking-tight uppercase leading-none text-zinc-900 dark:text-zinc-100 drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] dark:drop-shadow-[0_-1px_0_rgba(0,0,0,0.8)]">
+                NOVA
               </span>
             </div>
           </div>
 
-          {/* Center Controls: Finder Metallic 4-Segmented Switcher */}
+          {/* Orta Bölge: Finder 4-Segmented View Switcher (Ana Görünüm Çıpası) */}
           <nav className="hidden md:inline-flex items-center ios-segmented-track !py-0.5 !px-0.5">
             <button
               type="button"
@@ -305,7 +320,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </nav>
 
-          {/* Right Controls: Recessed Search, Blue Write Button, Aquarium Toggle & Mobile Menu */}
+          {/* Sağ Bölge: Spotlight Search + Aqua +Yaz + Utility Kümesi (Status, 2FA, Theme, Github) */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Mac Recessed Search Field */}
             {onFocusSearch && (
@@ -323,20 +338,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {/* Mobile Menu Trigger */}
-            <button
-              type="button"
-              onClick={() => {
-                playKeyClick();
-                setMegaMenu(isMegaOpen ? null : 'articles');
-              }}
-              className="md:hidden flex items-center gap-1 px-2.5 py-1 rounded border border-zinc-400 dark:border-zinc-700 bg-white/70 dark:bg-black/40 text-xs font-bold uppercase shadow-sm cursor-pointer"
-              aria-label="Menüyü Aç / Kapat"
-            >
-              {isMegaOpen ? <ChevronDown className="w-3 h-3 rotate-180" /> : <Menu className="w-3 h-3" />}
-              <span>{isMegaOpen ? 'Kapat' : 'Menü'}</span>
-            </button>
-
             {/* Apple Aqua Blue +Yaz Action Button */}
             {onOpenCreateModal && (
               <button
@@ -352,6 +353,71 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>+ Yaz</span>
               </button>
             )}
+
+            <div className="h-4 w-[1px] bg-black/15 dark:bg-white/15 hidden sm:block mx-0.5" />
+
+            {/* Tekil Minimalist Durum LED'i */}
+            <button
+              type="button"
+              onClick={() => {
+                playKeyClick();
+                if (onRefreshHealth) onRefreshHealth();
+              }}
+              className="p-1 rounded cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+              title={isBackendOnline ? 'Spring Boot 5555: Online (Tıkla Yenile)' : 'Backend Çevrimdışı (Tıkla Yenile)'}
+            >
+              <span className={`inline-block w-2 h-2 rounded-full ${
+                isBackendOnline === true
+                  ? 'bg-emerald-500 shadow-[0_0_6px_#10b981]'
+                  : isBackendOnline === false
+                  ? 'bg-amber-400'
+                  : 'bg-zinc-400 animate-pulse'
+              }`} />
+            </button>
+
+            {/* 2FA Güvenlik */}
+            {onOpenTwoFactor && (
+              <button
+                type="button"
+                onClick={() => {
+                  playKeyClick();
+                  onOpenTwoFactor();
+                }}
+                className="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 p-1 cursor-pointer"
+                title="Mac OS X Keychain Güvenlik & 2FA"
+              >
+                <ShieldAlert className="w-3.5 h-3.5" />
+              </button>
+            )}
+
+            {/* Gece/Gündüz Göksel Geçiş */}
+            <MacThemeToggle size="compact" className="scale-85" />
+
+            {/* GitHub Repo */}
+            <a
+              href="https://github.com/abdullahberkeozder/my-portfolio"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => playKeyClick()}
+              className="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white p-1"
+              title="GitHub Kaynak Kodu"
+            >
+              <GithubIcon className="w-3.5 h-3.5" />
+            </a>
+
+            {/* Mobile Menu Trigger */}
+            <button
+              type="button"
+              onClick={() => {
+                playKeyClick();
+                setMegaMenu(isMegaOpen ? null : 'articles');
+              }}
+              className="md:hidden flex items-center gap-1 px-2.5 py-1 rounded border border-zinc-400 dark:border-zinc-700 bg-white/70 dark:bg-black/40 text-xs font-bold uppercase shadow-sm cursor-pointer"
+              aria-label="Menüyü Aç / Kapat"
+            >
+              {isMegaOpen ? <ChevronDown className="w-3 h-3 rotate-180" /> : <Menu className="w-3 h-3" />}
+              <span>{isMegaOpen ? 'Kapat' : 'Menü'}</span>
+            </button>
           </div>
         </div>
       </div>

@@ -335,92 +335,173 @@
 }
 
 /* ==============================================================================
-   Mac OS X Aqua Gel Buttons (Authentic 2010-2012 Snow Leopard & Lion UI)
-   Refined according to Plerdy UX & Usability 230+ Points Checklist:
-   - 4-State Lifecycle (Idle, Hover, Active Tactile Depression, Focus-Visible)
-   - Minimum 40-44px touch ergonomics on primary CTAs
-   - Specular Gel highlight sheen (curved glass optics)
-   - Contrast ratio >= 4.5:1 against desktop chrome backgrounds
-   - Explicit Disabled & Loading feedback states
+   Mac OS X Yosemite & Snow Leopard Single Unified Window Header (44px)
+   Eliminates the 3-bar vertical tax, reducing height from 100px to 44px (56% space gain).
    ============================================================================== */
+.mac-unified-desktop-header {
+  height: 44px;
+  min-height: 44px;
+  background: linear-gradient(180deg, #f7f7f8 0%, #e8e8eb 45%, #d8d8de 50%, #dcdce2 100%);
+  border-bottom: 1px solid #9c9ca2;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 1px 4px rgba(0, 0, 0, 0.12);
+  user-select: none;
+}
+
+.dark .mac-unified-desktop-header {
+  background: linear-gradient(180deg, #32353c 0%, #25282e 45%, #1c1e23 50%, #222429 100%);
+  border-bottom: 1px solid #141619;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+/* Traffic Lights Touch Hit-box Expander (WCAG 2.2 SC 2.5.8) */
+.mac-traffic-dot {
+  position: relative;
+}
+.mac-traffic-dot::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 26px;
+  min-height: 26px;
+}
+
+/* ==============================================================================
+   Mac OS X Snow Leopard / Lion Aqua Gel Glass Optics (2010 - 2012)
+   Masterpiece Tactile Physics & High-Gloss Convex Lens Architecture
+   ============================================================================== */
+
 .mac-aqua-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 8px;
   position: relative;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Lucida Grande", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  padding: 7px 16px;
-  min-height: 34px;
+  letter-spacing: 0.025em;
+  padding: 8px 18px;
+  min-height: 36px;
   border-radius: 9999px;
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
   color: #ffffff;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6);
-  border: 1px solid #104382;
-  background: linear-gradient(180deg,
-    #7bb9f9 0%,
-    #3c8df4 49%,
-    #176de0 50%,
-    #0f5bc4 100%);
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    inset 0 -1px 1px rgba(0, 0, 0, 0.25);
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.12s cubic-bezier(0.16, 1, 0.3, 1);
-  overflow: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Yüksek kontrastlı derin safir sınır */
+  border: 1px solid #093c7d;
+  
+  /* Katman 1: Radyal iç ışık huzmesi (Alt merkezden çıkan kostik parlama)
+     Katman 2: Gerçek 2010 Mac Aqua jel bölünmüş renk gradyanı */
+  background:
+    radial-gradient(ellipse 75% 55% at 50% 120%, rgba(120, 210, 255, 0.9) 0%, rgba(30, 130, 240, 0) 70%),
+    linear-gradient(180deg,
+      #90c6ff 0%,
+      #56a7ff 32%,
+      #278af6 49.9%,
+      #0e6de6 50%,
+      #0957be 82%,
+      #064496 100%
+    );
+
+  box-shadow:
+    0 1px 2px rgba(8, 24, 52, 0.45),
+    0 4px 14px rgba(22, 108, 224, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 1px 0 0 rgba(255, 255, 255, 0.35),
+    inset -1px 0 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1.5px 3px rgba(130, 205, 255, 0.6),
+    inset 0 -3px 6px rgba(0, 30, 80, 0.35);
+
+  text-shadow: 0 -1px 1px rgba(6, 30, 70, 0.9);
+  
+  transition:
+    transform 0.12s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
+  overflow: hidden;
 }
 
-.mac-aqua-btn::after {
+/* Üst Konveks Lens Kubbe Yansıması (Specular Gel Sheen) */
+.mac-aqua-btn::before {
   content: "";
   position: absolute;
-  top: 1px;
+  top: 1.5px;
   left: 3px;
   right: 3px;
   height: 48%;
-  border-radius: 9999px 9999px 6px 6px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.1) 100%);
+  border-radius: 9999px 9999px 14px 14px;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.6) 35%,
+    rgba(255, 255, 255, 0.12) 80%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 1);
   pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.15s ease, height 0.15s ease;
+}
+
+/* İkon ve metinlerin speküler katmanın üstünde net kalması */
+.mac-aqua-btn > * {
+  position: relative;
+  z-index: 2;
 }
 
 .mac-aqua-btn:hover {
-  filter: brightness(1.08);
+  filter: brightness(1.08) saturate(1.05);
   box-shadow:
-    0 0 14px rgba(59, 130, 246, 0.6),
-    0 2px 8px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    0 2px 8px rgba(8, 24, 52, 0.45),
+    0 6px 20px rgba(37, 131, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1.5px 3px rgba(150, 220, 255, 0.8),
+    inset 0 -3px 6px rgba(0, 30, 80, 0.4);
 }
 
+/* Dokunsal Çökme Hissi: 1.5px Fiziksel İçeri Gömülme & Ters Gradyan Kırılması */
 .mac-aqua-btn:active {
   transform: translateY(1.5px) scale(0.985);
-  background: linear-gradient(180deg,
-    #0d52b3 0%,
-    #145fc7 49%,
-    #317ee0 50%,
-    #6eaef5 100%);
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(80, 160, 255, 0.35) 0%, transparent 60%),
+    linear-gradient(180deg,
+      #073b7d 0%,
+      #0c4ea1 49.9%,
+      #1664cd 50%,
+      #2f83e6 85%,
+      #59aaff 100%
+    );
   box-shadow:
-    inset 0 2px 6px rgba(0, 0, 0, 0.65),
-    0 1px 1px rgba(255, 255, 255, 0.25);
+    inset 0 3px 8px rgba(0, 12, 38, 0.9),
+    inset 0 1px 2px rgba(0, 0, 0, 0.9),
+    0 1px 2px rgba(255, 255, 255, 0.35);
 }
 
-/* WCAG 2.2 & Plerdy: Visible keyboard focus ring */
+.mac-aqua-btn:active::before {
+  opacity: 0.35;
+  height: 38%;
+}
+
 .mac-aqua-btn:focus-visible {
   outline: none;
   box-shadow:
-    0 0 0 3px rgba(66, 153, 225, 0.7),
-    0 0 12px rgba(66, 153, 225, 0.8),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    0 0 0 3px rgba(59, 130, 246, 0.65),
+    0 0 16px rgba(37, 99, 235, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
 }
 
 .mac-aqua-btn:disabled,
 .mac-aqua-btn[disabled],
 .mac-aqua-btn[aria-disabled="true"] {
-  opacity: 0.55;
+  opacity: 0.52;
   cursor: not-allowed;
   filter: grayscale(0.5);
   transform: none !important;
@@ -428,10 +509,10 @@
   pointer-events: none;
 }
 
-/* Large Aqua Hero CTA Variant (WCAG 2.2 44px Touch Target) */
+/* Hero CTA İçin Apple HIG 44px Dokunma Ergonomisi */
 .mac-aqua-btn-lg {
-  min-height: 42px;
-  padding: 9px 22px;
+  min-height: 44px;
+  padding: 11px 24px;
   font-size: 13px;
   letter-spacing: 0.03em;
 }
@@ -443,68 +524,101 @@
   font-size: 11px;
 }
 
-/* Mac Silver Aqua (Brushed Aluminum Secondary Control) */
-.mac-aqua-btn-silver {
-  color: #222222;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
-  border: 1px solid #929292;
+/* ==============================================================================
+   Mac OS X Fırçalanmış Saten Alüminyum & Mikro Pah (Chamfer) Düğmeler
+   (.mac-aqua-btn-silver & .ios6-btn-silver)
+   ============================================================================== */
+
+.mac-aqua-btn-silver,
+.ios6-btn-silver {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, "Lucida Grande", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 7px 16px;
+  min-height: 36px;
+  border-radius: 9999px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  color: #21242c;
+  border: 1px solid #9498a2;
+  border-bottom-color: #6d717b;
+  background:
+    linear-gradient(180deg,
+      #ffffff 0%,
+      #f6f6f8 22%,
+      #e7e7ec 49.9%,
+      #d4d4da 50%,
+      #c3c3cb 85%,
+      #b0b0ba 100%
+    );
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 3px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 #ffffff,
+    inset 0 -1px 1px rgba(0, 0, 0, 0.18);
+  /* Letterpress Oyma Harf */
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.95);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.mac-aqua-btn-silver::before,
+.ios6-btn-silver::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  right: 2px;
+  height: 48%;
+  border-radius: 9999px 9999px 12px 12px;
   background: linear-gradient(180deg,
-    #ffffff 0%,
-    #eeeeee 49%,
-    #dadada 50%,
-    #c0c0c0 100%);
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 -1px 1px rgba(0, 0, 0, 0.15);
-  min-height: 34px;
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.35) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 
-.dark .mac-aqua-btn-silver {
-  color: #f3f3f3;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.8);
-  border: 1px solid #4a4a4a;
-  background: linear-gradient(180deg,
-    #3c3c3c 0%,
-    #2e2e2e 49%,
-    #222222 50%,
-    #1a1a1a 100%);
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+.mac-aqua-btn-silver > *,
+.ios6-btn-silver > * {
+  position: relative;
+  z-index: 2;
 }
 
-.mac-aqua-btn-silver:hover {
-  filter: brightness(1.06);
+.mac-aqua-btn-silver:hover,
+.ios6-btn-silver:hover {
+  filter: brightness(1.04);
   box-shadow:
-    0 2px 7px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
+    0 2px 7px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 #ffffff;
 }
 
-.mac-aqua-btn-silver:active {
+.mac-aqua-btn-silver:active,
+.ios6-btn-silver:active {
   transform: translateY(1.5px) scale(0.985);
-  background: linear-gradient(180deg,
-    #c0c0c0 0%,
-    #dadada 49%,
-    #eeeeee 50%,
-    #ffffff 100%);
+  background:
+    linear-gradient(180deg,
+      #b0b0ba 0%,
+      #c3c3cb 49.9%,
+      #d4d4da 50%,
+      #f6f6f8 85%,
+      #ffffff 100%
+    );
   box-shadow:
-    inset 0 2px 5px rgba(0, 0, 0, 0.4),
-    0 1px 1px rgba(255, 255, 255, 0.4);
+    inset 0 2px 6px rgba(0, 0, 0, 0.35),
+    0 1px 1px rgba(255, 255, 255, 0.5);
 }
 
-.dark .mac-aqua-btn-silver:active {
-  background: linear-gradient(180deg,
-    #1a1a1a 0%,
-    #222222 49%,
-    #2e2e2e 50%,
-    #3c3c3c 100%);
-  box-shadow:
-    inset 0 2px 5px rgba(0, 0, 0, 0.8),
-    0 1px 1px rgba(255, 255, 255, 0.1);
-}
-
-.mac-aqua-btn-silver:focus-visible {
+.mac-aqua-btn-silver:focus-visible,
+.ios6-btn-silver:focus-visible {
   outline: none;
   box-shadow:
     0 0 0 3px rgba(66, 153, 225, 0.7),
@@ -513,12 +627,220 @@
 
 .mac-aqua-btn-silver:disabled,
 .mac-aqua-btn-silver[disabled],
-.mac-aqua-btn-silver[aria-disabled="true"] {
+.mac-aqua-btn-silver[aria-disabled="true"],
+.ios6-btn-silver:disabled,
+.ios6-btn-silver[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
   filter: grayscale(0.5);
   transform: none !important;
   pointer-events: none;
+}
+
+/* Dark Mode: Anodize Grafit Uzay Alüminyumu */
+.dark .mac-aqua-btn-silver,
+.dark .ios6-btn-silver {
+  color: #f1f3f7;
+  border: 1px solid #4a4f5c;
+  border-bottom-color: #17181c;
+  background:
+    linear-gradient(180deg,
+      #3d414a 0%,
+      #2f323a 20%,
+      #25282e 49.9%,
+      #1c1e23 50%,
+      #15171a 85%,
+      #0f1012 100%
+    );
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.65),
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.65);
+  text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.95);
+}
+
+.dark .mac-aqua-btn-silver::before,
+.dark .ios6-btn-silver::before {
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.05) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.dark .mac-aqua-btn-silver:active,
+.dark .ios6-btn-silver:active {
+  background:
+    linear-gradient(180deg,
+      #0f1012 0%,
+      #1c1e23 49.9%,
+      #25282e 50%,
+      #3d414a 100%
+    );
+  box-shadow:
+    inset 0 3px 8px rgba(0, 0, 0, 0.85),
+    0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+/* ==============================================================================
+   Activity Monitor Taktil Donanım Şalteri (See-Saw Mechanical Rocker)
+   ============================================================================== */
+
+.mac-mechanical-rocker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 82px;
+  height: 30px;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #0b0d10 0%, #15181f 100%);
+  border: 1.5px solid #2e3440;
+  box-shadow:
+    inset 0 2px 7px rgba(0, 0, 0, 0.98),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.9),
+    0 1px 0 rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  user-select: none;
+  padding: 2px 4px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mac-mechanical-rocker .rocker-knob {
+  width: 36px;
+  height: 24px;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #f5f5f7 0%, #dcdce0 50%, #bcbcc2 100%);
+  border: 1px solid #7c828e;
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 #ffffff,
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Mono", monospace;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #374151;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: transform 0.2s cubic-bezier(0.34, 1.35, 0.64, 1), background 0.2s ease, border-color 0.2s ease;
+  position: relative;
+}
+
+/* Şalterin Üzerindeki 3 Taktil Parmak Tırtığı (Tactile Ribbed Grips) */
+.mac-mechanical-rocker .rocker-knob::before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 5px;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.25),
+    rgba(0, 0, 0, 0.25) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+}
+
+/* Şalter Açık Durumu (ON / 1): Canlı Neon Zümrüt Arka Aydınlatma */
+.mac-mechanical-rocker.active {
+  background: linear-gradient(180deg, #05160b 0%, #0a2613 100%);
+  border-color: #176634;
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.98),
+    0 0 10px rgba(16, 185, 129, 0.25),
+    0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.mac-mechanical-rocker.active .rocker-knob {
+  transform: translateX(38px);
+  background: linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%);
+  border-color: #047857;
+  color: #ffffff;
+  text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.7);
+  box-shadow:
+    0 3px 8px rgba(16, 185, 129, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* ==============================================================================
+   Activity Monitor Modül Sekmeleri İçin Metalik Yiv (Segmented Channel)
+   ============================================================================== */
+
+.mac-segmented-channel {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #b8bcc4 0%, #cbcfd7 100%);
+  border: 1px solid #9aa0ac;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.dark .mac-segmented-channel {
+  background: linear-gradient(180deg, #111317 0%, #191c22 100%);
+  border: 1px solid #282c35;
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.85),
+    0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.mac-segmented-tab {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #4b5563;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.dark .mac-segmented-tab {
+  color: #9ca3af;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.8);
+}
+
+.mac-segmented-tab:hover:not(.active) {
+  color: #111827;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.dark .mac-segmented-tab:hover:not(.active) {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Yivden Yukarı Yükselen 3D Taktil Blok */
+.mac-segmented-tab.active {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f2f5 50%, #e1e3e8 100%);
+  color: #111827;
+  border: 1px solid #a1a7b4;
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 #ffffff;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.dark .mac-segmented-tab.active {
+  background: linear-gradient(180deg, #3a3f4c 0%, #2c303a 50%, #20232a 100%);
+  color: #ffffff;
+  border: 1px solid #4a5060;
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.9);
 }
 
 /* ==============================================================================

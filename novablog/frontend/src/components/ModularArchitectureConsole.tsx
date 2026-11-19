@@ -399,8 +399,8 @@ export const ModularArchitectureConsole: React.FC = () => {
         </div>
 
         {/* Mac OS X Segmented Toolbar Selector Tabs */}
-        <div className="px-3 py-2 bg-[#e4e4e4] dark:bg-[#202329] border-b border-[#c0c0c0] dark:border-[#333740] flex items-center justify-between overflow-x-auto scrollbar-none gap-2">
-          <div className="inline-flex items-center p-1 rounded-lg bg-[#cecece] dark:bg-[#16181d] border border-[#b4b4b4] dark:border-[#2b2f38] shadow-inner">
+        <div className="px-4 py-2.5 bg-[#e4e4e7] dark:bg-[#1a1d23] border-b border-[#c4c4c8] dark:border-[#2d323b] flex items-center justify-between overflow-x-auto scrollbar-none gap-2 select-none">
+          <div className="mac-segmented-channel">
             {MODULES.map((m) => {
               const isActive = m.id === activeModuleId;
               return (
@@ -410,13 +410,12 @@ export const ModularArchitectureConsole: React.FC = () => {
                   onClick={() => handleSelectModule(m.id)}
                   aria-selected={isActive}
                   role="tab"
-                  className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-                    isActive
-                      ? 'bg-gradient-to-b from-white to-[#ececec] dark:from-[#3a3f4a] dark:to-[#2a2e37] text-zinc-950 dark:text-white shadow-sm border border-[#a8a8a8] dark:border-[#4c5361]'
-                      : 'text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
-                  }`}
+                  className={`mac-segmented-tab ${isActive ? 'active' : ''}`}
                 >
-                  <span className={`text-[10px] font-mono ${isActive ? 'text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-zinc-500'}`}>
+                  {isActive && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_#10b981]" />
+                  )}
+                  <span className={`text-[10px] font-mono ${isActive ? 'font-black text-emerald-600 dark:text-emerald-400' : 'opacity-70'}`}>
                     {m.tag.replace('MODULE // ', '#')}
                   </span>
                   <span>{m.title.split(' ')[0]} {m.title.split(' ')[1] || ''}</span>

@@ -190,22 +190,23 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
 
   return (
     <>
-      {/* Floating Trigger Button: Apple High-Gloss Frosted Glass Capsule */}
+      {/* 1. Floating Trigger Capsule (Mac OS X Snow Leopard Acrylic Glass) */}
       {!isOpen && (
         <button
           type="button"
           onClick={handleToggleOpen}
           aria-expanded={isOpen}
           aria-label="Nova Sistem Mimarı & Copilot Danışmanını Aç"
-          className="fixed bottom-6 right-6 z-40 group flex items-center gap-2.5 px-4 py-2.5 min-h-[44px] rounded-full bg-gradient-to-b from-[#2c2f36]/90 via-[#1e2025]/90 to-[#121316]/95 text-white border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.25)] hover:border-cyan-400/60 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(56,189,248,0.25)] hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-all duration-200 cursor-pointer backdrop-blur-xl select-none"
+          className="fixed bottom-6 right-6 z-40 group flex items-center gap-2.5 px-4 min-h-[44px] h-[44px] rounded-full bg-gradient-to-b from-[#2e333d]/90 via-[#1f2229]/95 to-[#13151a]/95 text-white border border-white/25 shadow-[0_10px_30px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-1px_0_rgba(0,0,0,0.6)] hover:border-cyan-400/60 hover:shadow-[0_14px_36px_rgba(0,0,0,0.7),0_0_20px_rgba(6,182,212,0.35)] hover:scale-[1.03] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-all duration-200 cursor-pointer backdrop-blur-2xl select-none"
           title="Nova Sistem Mimarı & Copilot Danışmanını Aç"
         >
-          <span className="relative flex h-2 w-2">
+          {/* Neon Green Heartbeat Beacon */}
+          <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_6px_#34d399]" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400 shadow-[0_0_8px_#10b981,0_0_16px_rgba(16,185,129,0.5)]" />
           </span>
-          <Bot className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
-          <span className="font-sans text-xs font-bold tracking-wide text-zinc-100">
+          <Bot className="w-4 h-4 text-cyan-400 group-hover:scale-110 drop-shadow-[0_0_8px_rgba(34,211,238,0.7)] transition-transform" />
+          <span className="font-sans text-xs font-black tracking-wider text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
             MİMARİ ASİSTAN
           </span>
         </button>
@@ -305,19 +306,19 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
                 <button
                   onClick={handleManualFlush}
                   disabled={isFlushing}
-                  className={`ios6-btn ios6-btn-silver flex-1 flex items-center justify-center gap-1.5 !py-2 !text-xs font-bold ${
-                    flushSuccess ? '!text-emerald-400' : ''
+                  className={`mac-aqua-btn mac-aqua-btn-silver flex-1 flex items-center justify-center gap-1.5 !py-2.5 !text-xs font-bold ${
+                    flushSuccess ? '!text-emerald-500 dark:!text-emerald-400' : ''
                   }`}
                   title="Redis Write-Behind tamponunu veritabanına aktarır"
                 >
                   {isFlushing ? (
-                    <RefreshCw className="w-3 h-3 animate-spin" />
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                   ) : flushSuccess ? (
-                    <Check className="w-3 h-3 text-emerald-400" />
+                    <Check className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 stroke-[3]" />
                   ) : (
-                    <Sparkles className="w-3 h-3 text-amber-400" />
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                   )}
-                  <span>{isFlushing ? 'YAZILIYOR' : flushSuccess ? 'BAŞARILI ✓' : 'TEST FLUSH ET'}</span>
+                  <span>{isFlushing ? 'YAZILIYOR' : flushSuccess ? 'BAŞARILI' : 'TEST FLUSH ET'}</span>
                 </button>
               </div>
             ) : selectedQnA.actionText ? (

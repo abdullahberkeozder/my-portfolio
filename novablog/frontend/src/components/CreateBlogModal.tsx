@@ -308,16 +308,17 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               type="button"
               disabled={isSubmitting}
               onClick={() => handleSubmit('PUBLISHED')}
-              className="ios6-btn ios6-btn-blue px-3.5 py-1.5 text-xs font-bold"
+              title={isSubmitting ? 'Makale yayınlanıyor, lütfen bekleyin...' : 'Makaleyi doğrula ve canlı yayına al'}
+              className="mac-aqua-btn !px-4 !py-1.5 !text-xs font-bold"
             >
               {isSubmitting && publicationMode === 'PUBLISHED' ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
                   <span>GÖNDERİLİYOR...</span>
                 </>
               ) : (
                 <>
-                  <Send className="w-3.5 h-3.5" />
+                  <Send className="w-3.5 h-3.5 text-white" />
                   <span>Gönder</span>
                 </>
               )}
@@ -328,9 +329,10 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               type="button"
               disabled={isSubmitting}
               onClick={() => handleSubmit('DRAFT')}
-              className="ios6-btn ios6-btn-silver px-3 py-1.5 text-xs font-bold"
+              title={isSubmitting ? 'İşleniyor...' : 'Taslak olarak sakla'}
+              className="mac-aqua-btn mac-aqua-btn-silver !px-3.5 !py-1.5 !text-xs font-bold"
             >
-              <Bookmark className="w-3.5 h-3.5 text-zinc-600" />
+              <Bookmark className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
               <span>Taslak</span>
             </button>
           </div>
