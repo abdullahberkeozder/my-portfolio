@@ -168,10 +168,49 @@ export default function Home() {
     }
   };
 
+  // URL Hash on mount: jump smoothly to target section if present
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const hash = window.location.hash.replace('#', '');
+    if (!hash) return;
+
+    if (hash === 'articles-feed') setActiveTab('feed');
+    else if (hash === 'modular-architecture-console') setActiveTab('system');
+    else if (hash === 'ai-vector-studio') setActiveTab('ai-search');
+    else if (hash === 'batch-etl-studio') setActiveTab('admin-batch');
+
+    setTimeout(() => {
+      const el = document.getElementById(hash);
+      if (el) {
+        const headerOffset = 54;
+        const elementPosition = el.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: Math.max(0, offsetPosition),
+          behavior: 'smooth',
+        });
+      }
+    }, 200);
+  }, []);
+
   // Track active section as user scrolls for high-end reactive nav indicator
   useEffect(() => {
+    let isManualNav = false;
+    let manualTimer: NodeJS.Timeout | null = null;
+
+    const handleManualNavStart = () => {
+      isManualNav = true;
+      if (manualTimer) clearTimeout(manualTimer);
+      manualTimer = setTimeout(() => {
+        isManualNav = false;
+      }, 1000);
+    };
+
+    window.addEventListener('manual-tab-navigation-start', handleManualNavStart);
+
     const observer = new IntersectionObserver(
       (entries) => {
+        if (isManualNav) return;
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const id = entry.target.id;
@@ -182,7 +221,7 @@ export default function Home() {
           }
         });
       },
-      { rootMargin: '-25% 0px -55% 0px', threshold: 0.1 }
+      { rootMargin: '-15% 0px -40% 0px', threshold: 0.1 }
     );
 
     const sectionIds = [
@@ -197,7 +236,11 @@ export default function Home() {
       if (el) observer.observe(el);
     });
 
-    return () => observer.disconnect();
+    return () => {
+      window.removeEventListener('manual-tab-navigation-start', handleManualNavStart);
+      if (manualTimer) clearTimeout(manualTimer);
+      observer.disconnect();
+    };
   }, []);
 
   const handleRefresh = async () => {

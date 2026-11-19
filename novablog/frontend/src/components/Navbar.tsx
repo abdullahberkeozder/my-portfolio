@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   Cpu,
   Database,
@@ -22,10 +23,10 @@ import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
 export type NavTab = 'feed' | 'system' | 'ai-search' | 'admin-batch';
 
 interface NavbarProps {
-  activeTab: NavTab;
-  setActiveTab: (tab: NavTab) => void;
-  isBackendOnline: boolean | null;
-  onRefreshHealth: () => void;
+  activeTab?: NavTab;
+  setActiveTab?: (tab: NavTab) => void;
+  isBackendOnline?: boolean | null;
+  onRefreshHealth?: () => void;
   onOpenTelemetry?: () => void;
   onOpenArchitectureConsole?: () => void;
   onOpenTwoFactor?: () => void;
@@ -36,44 +37,19 @@ interface NavbarProps {
 type MegaDrawerCategory = 'articles' | 'system' | 'ai' | 'batch' | null;
 
 export const Navbar: React.FC<NavbarProps> = ({
-  activeTab,
+  activeTab = 'feed',
   setActiveTab,
-  isBackendOnline,
+  isBackendOnline = true,
   onRefreshHealth,
   onOpenTelemetry,
   onOpenTwoFactor,
   onOpenCreateModal,
   onFocusSearch,
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
   const [megaMenu, setMegaMenu] = useState<MegaDrawerCategory>(null);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Open mega drawer on hover
-  const handleMouseEnter = (cat: MegaDrawerCategory) => {
-    if (closeTimeoutRef.current) {
-      clearTimeout(closeTimeoutRef.current);
-      closeTimeoutRef.current = null;
-    }
-    setMegaMenu(cat);
-  };
-
-  // Gracefully close on mouse leave with debounce
-  const handleMouseLeave = () => {
-    if (closeTimeoutRef.current) {
-      clearTimeout(closeTimeoutRef.current);
-    }
-    closeTimeoutRef.current = setTimeout(() => {
-      setMegaMenu(null);
-    }, 180);
-  };
-
-  // Keep open when cursor enters drawer
-  const handleDrawerMouseEnter = () => {
-    if (closeTimeoutRef.current) {
-      clearTimeout(closeTimeoutRef.current);
-      closeTimeoutRef.current = null;
-    }
-  };
 
   const closeMegaMenu = () => {
     if (closeTimeoutRef.current) {
@@ -83,37 +59,97 @@ export const Navbar: React.FC<NavbarProps> = ({
     setMegaMenu(null);
   };
 
-  // On click: IMMEDIATELY close mega menu and smooth-scroll to section
-  const scrollToSection = (sectionId: string, targetTab?: NavTab) => {
-    closeMegaMenu();
-    if (targetTab) {
+  // Fullscreen toggle for Mac OS X Green Traffic Light
+  const toggleFullscreen = () => {
+    playKeyClick();
+    if (typeof document === 'undefined') return;
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
+
+  // Reliable navigation across routes and in-page sections (NO hover trap, pure tactile click)
+  const handleTabClick = (sectionId: string, targetTab: NavTab) => {
+    playTabSelect();
+    if (setActiveTab) {
       setActiveTab(targetTab);
     }
+    closeMegaMenu();
 
-    setTimeout(() => {
+    const isHome = pathname === '/' || pathname === '';
+
+    if (!isHome) {
+      router.push(`/#${sectionId}`);
+      return;
+    }
+
+    // On home page: signal manual navigation to pause intersection observer flicker
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('manual-tab-navigation-start'));
+      window.history.pushState(null, '', `#${sectionId}`);
+
+      if (sectionId === 'articles-feed' && window.scrollY < 400) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
       const el = document.getElementById(sectionId);
       if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const headerOffset = 54;
+        const elementPosition = el.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: Math.max(0, offsetPosition),
+          behavior: 'smooth',
+        });
       }
-    }, 30);
+    }
   };
+
+  const scrollToSection = handleTabClick;
 
   const navigateToConsoleModule = (moduleId: string) => {
     closeMegaMenu();
-    setActiveTab('system');
+    if (setActiveTab) {
+      setActiveTab('system');
+    }
+    const isHome = pathname === '/' || pathname === '';
+    if (!isHome) {
+      router.push('/#modular-architecture-console');
+      return;
+    }
     setTimeout(() => {
       const el = document.getElementById('modular-architecture-console');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (el) {
+        const headerOffset = 54;
+        const elementPosition = el.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({ top: Math.max(0, offsetPosition), behavior: 'smooth' });
+      }
       window.dispatchEvent(new CustomEvent('select-console-module', { detail: moduleId }));
     }, 50);
   };
 
   const handleTestDrive = () => {
     closeMegaMenu();
-    setActiveTab('system');
+    if (setActiveTab) {
+      setActiveTab('system');
+    }
+    const isHome = pathname === '/' || pathname === '';
+    if (!isHome) {
+      router.push('/#modular-architecture-console');
+      return;
+    }
     setTimeout(() => {
       const el = document.getElementById('modular-architecture-console');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (el) {
+        const headerOffset = 54;
+        const elementPosition = el.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({ top: Math.max(0, offsetPosition), behavior: 'smooth' });
+      }
       window.dispatchEvent(new CustomEvent('select-console-module', { detail: 'loom' }));
       window.dispatchEvent(new CustomEvent('run-console-simulation'));
     }, 50);
@@ -123,26 +159,24 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const handlePrevTab = () => {
     playKeyClick();
-    const currentIndex = TAB_ORDER.indexOf(activeTab);
+    const currentIndex = TAB_ORDER.indexOf(activeTab || 'feed');
     const prevIndex = (currentIndex - 1 + TAB_ORDER.length) % TAB_ORDER.length;
     const targetTab = TAB_ORDER[prevIndex];
-    setActiveTab(targetTab);
-    if (targetTab === 'feed') scrollToSection('articles-feed', targetTab);
-    else if (targetTab === 'system') scrollToSection('modular-architecture-console', targetTab);
-    else if (targetTab === 'ai-search') scrollToSection('ai-vector-studio', targetTab);
-    else if (targetTab === 'admin-batch') scrollToSection('batch-etl-studio', targetTab);
+    if (targetTab === 'feed') handleTabClick('articles-feed', targetTab);
+    else if (targetTab === 'system') handleTabClick('modular-architecture-console', targetTab);
+    else if (targetTab === 'ai-search') handleTabClick('ai-vector-studio', targetTab);
+    else if (targetTab === 'admin-batch') handleTabClick('batch-etl-studio', targetTab);
   };
 
   const handleNextTab = () => {
     playKeyClick();
-    const currentIndex = TAB_ORDER.indexOf(activeTab);
+    const currentIndex = TAB_ORDER.indexOf(activeTab || 'feed');
     const nextIndex = (currentIndex + 1) % TAB_ORDER.length;
     const targetTab = TAB_ORDER[nextIndex];
-    setActiveTab(targetTab);
-    if (targetTab === 'feed') scrollToSection('articles-feed', targetTab);
-    else if (targetTab === 'system') scrollToSection('modular-architecture-console', targetTab);
-    else if (targetTab === 'ai-search') scrollToSection('ai-vector-studio', targetTab);
-    else if (targetTab === 'admin-batch') scrollToSection('batch-etl-studio', targetTab);
+    if (targetTab === 'feed') handleTabClick('articles-feed', targetTab);
+    else if (targetTab === 'system') handleTabClick('modular-architecture-console', targetTab);
+    else if (targetTab === 'ai-search') handleTabClick('ai-vector-studio', targetTab);
+    else if (targetTab === 'admin-batch') handleTabClick('batch-etl-studio', targetTab);
   };
 
   useEffect(() => {
@@ -158,10 +192,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const isMegaOpen = megaMenu !== null;
 
   return (
-    <header
-      className="sticky top-0 z-50 select-none shadow-md"
-      onMouseLeave={handleMouseLeave}
-    >
+    <header className="sticky top-0 z-50 select-none shadow-md">
       {/* Subtle backdrop overlay when mega menu is open */}
       {isMegaOpen && (
         <div
@@ -180,23 +211,33 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="mac-traffic-lights" title="Mac OS X Pencere Yönetimi">
               <button
                 type="button"
-                onClick={() => playKeyClick()}
+                onClick={() => {
+                  playKeyClick();
+                  if (pathname !== '/') {
+                    router.push('/');
+                  } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
                 className="mac-traffic-dot mac-traffic-close focus:outline-none"
-                title="Kapat (Close)"
+                title={pathname !== '/' ? 'Ana Sayfaya Dön' : 'En Başa Kaydır'}
                 aria-label="Kapat"
               />
               <button
                 type="button"
-                onClick={() => playKeyClick()}
+                onClick={() => {
+                  playKeyClick();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
                 className="mac-traffic-dot mac-traffic-min focus:outline-none"
-                title="Simge Durumuna Küçült (Minimize)"
+                title="Pencereyi Başa Al (Scroll Top)"
                 aria-label="Küçült"
               />
               <button
                 type="button"
-                onClick={() => playKeyClick()}
+                onClick={toggleFullscreen}
                 className="mac-traffic-dot mac-traffic-max focus:outline-none"
-                title="Büyüt (Zoom)"
+                title="Tam Ekrana Geç / Çık (Fullscreen)"
                 aria-label="Büyüt"
               />
             </div>
@@ -230,8 +271,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="flex items-center gap-1.5 cursor-pointer group py-1"
               onClick={() => {
                 closeMegaMenu();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                if (onRefreshHealth) onRefreshHealth();
+                playKeyClick();
+                if (pathname !== '/') {
+                  router.push('/');
+                } else {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  if (setActiveTab) setActiveTab('feed');
+                  if (onRefreshHealth) onRefreshHealth();
+                }
               }}
               title="Nova Ana Sayfaya Dön"
             >
@@ -261,16 +308,18 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          {/* Orta Bölge: Finder 4-Segmented View Switcher (Ana Görünüm Çıpası) */}
-          <nav className="hidden md:inline-flex items-center ios-segmented-track !py-0.5 !px-0.5">
+          {/* Orta Bölge: Finder 4-Segmented View Switcher (Ana Görünüm Çıpası - Her Boyutta Tıklanabilir) */}
+          <nav
+            role="tablist"
+            aria-label="Ana Gezinti Sekmeleri"
+            className="flex items-center ios-segmented-track !py-0.5 !px-0.5 overflow-x-auto scrollbar-none max-w-full"
+          >
             <button
               type="button"
-              onMouseEnter={() => handleMouseEnter('articles')}
-              onClick={() => {
-                playTabSelect();
-                scrollToSection('articles-feed', 'feed');
-              }}
-              className={`ios-segment-btn !py-1 !px-3.5 !text-xs font-bold ${
+              role="tab"
+              aria-selected={activeTab === 'feed'}
+              onClick={() => handleTabClick('articles-feed', 'feed')}
+              className={`ios-segment-btn !py-1 !px-2.5 sm:!px-3.5 !text-xs font-bold whitespace-nowrap cursor-pointer ${
                 activeTab === 'feed' ? 'active' : ''
               }`}
             >
@@ -279,12 +328,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <button
               type="button"
-              onMouseEnter={() => handleMouseEnter('system')}
-              onClick={() => {
-                playTabSelect();
-                scrollToSection('modular-architecture-console', 'system');
-              }}
-              className={`ios-segment-btn !py-1 !px-3.5 !text-xs font-bold ${
+              role="tab"
+              aria-selected={activeTab === 'system'}
+              onClick={() => handleTabClick('modular-architecture-console', 'system')}
+              className={`ios-segment-btn !py-1 !px-2.5 sm:!px-3.5 !text-xs font-bold whitespace-nowrap cursor-pointer ${
                 activeTab === 'system' ? 'active' : ''
               }`}
             >
@@ -293,12 +340,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <button
               type="button"
-              onMouseEnter={() => handleMouseEnter('ai')}
-              onClick={() => {
-                playTabSelect();
-                scrollToSection('ai-vector-studio', 'ai-search');
-              }}
-              className={`ios-segment-btn !py-1 !px-3.5 !text-xs font-bold ${
+              role="tab"
+              aria-selected={activeTab === 'ai-search'}
+              onClick={() => handleTabClick('ai-vector-studio', 'ai-search')}
+              className={`ios-segment-btn !py-1 !px-2.5 sm:!px-3.5 !text-xs font-bold whitespace-nowrap cursor-pointer ${
                 activeTab === 'ai-search' ? 'active' : ''
               }`}
             >
@@ -307,12 +352,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <button
               type="button"
-              onMouseEnter={() => handleMouseEnter('batch')}
-              onClick={() => {
-                playTabSelect();
-                scrollToSection('batch-etl-studio', 'admin-batch');
-              }}
-              className={`ios-segment-btn !py-1 !px-3.5 !text-xs font-bold ${
+              role="tab"
+              aria-selected={activeTab === 'admin-batch'}
+              onClick={() => handleTabClick('batch-etl-studio', 'admin-batch')}
+              className={`ios-segment-btn !py-1 !px-2.5 sm:!px-3.5 !text-xs font-bold whitespace-nowrap cursor-pointer ${
                 activeTab === 'admin-batch' ? 'active' : ''
               }`}
             >
@@ -320,7 +363,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </nav>
 
-          {/* Sağ Bölge: Spotlight Search + Aqua +Yaz + Utility Kümesi (Status, 2FA, Theme, Github) */}
+          {/* Sağ Bölge: Spotlight Search + Aqua +Yaz + Utility Kümesi (Status, 2FA, Theme, Github, Spec Dizin) */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Mac Recessed Search Field */}
             {onFocusSearch && (
@@ -405,27 +448,27 @@ export const Navbar: React.FC<NavbarProps> = ({
               <GithubIcon className="w-3.5 h-3.5" />
             </a>
 
-            {/* Mobile Menu Trigger */}
+            {/* Spec Drawer Toggle (Intentional Click, Never Accidental Hover Trap) */}
             <button
               type="button"
               onClick={() => {
                 playKeyClick();
                 setMegaMenu(isMegaOpen ? null : 'articles');
               }}
-              className="md:hidden flex items-center gap-1 px-2.5 py-1 rounded border border-zinc-400 dark:border-zinc-700 bg-white/70 dark:bg-black/40 text-xs font-bold uppercase shadow-sm cursor-pointer"
-              aria-label="Menüyü Aç / Kapat"
+              className="flex items-center gap-1 px-2.5 py-1 rounded border border-zinc-400/80 dark:border-zinc-700 bg-white/70 dark:bg-black/40 text-[11px] font-bold uppercase shadow-sm cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              aria-label="Mimari Dizin ve Şartname Menüsü"
+              title="Mimari Dizin ve Modül Şartnamesi"
             >
               {isMegaOpen ? <ChevronDown className="w-3 h-3 rotate-180" /> : <Menu className="w-3 h-3" />}
-              <span>{isMegaOpen ? 'Kapat' : 'Menü'}</span>
+              <span className="hidden sm:inline">{isMegaOpen ? 'Kapat' : 'Dizin'}</span>
             </button>
           </div>
         </div>
       </div>
 
-          {/* 4. Elegant Frosted Glass Mega-Menu Dropdown (Hardware-Accelerated Single Surface) */}
+          {/* 4. Elegant Frosted Glass Spec Directory Dropdown (Explicit Click, Hardware-Accelerated) */}
           {isMegaOpen && (
             <div
-              onMouseEnter={handleDrawerMouseEnter}
               className="mt-2 bg-white/98 dark:bg-[#0c0e12]/98 rounded-3xl p-6 sm:p-7 lg:p-8 shadow-2xl border border-zinc-200/90 dark:border-zinc-800/90 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start ride-also-drawer-anim text-zinc-900 dark:text-white"
             >
               {/* Mobile Category Switcher (md:hidden) */}

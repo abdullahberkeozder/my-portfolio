@@ -28,8 +28,7 @@ import { BlogDto, CommentResponseDto, AiModerationResponseDto } from '@/types/ap
 import { ApiClient } from '@/lib/api';
 import { useBookmarks, useFollowedAuthors } from '@/hooks/useSocialStore';
 import { BlogCard } from '@/components/BlogCard';
-import { AppleGlobalAcrylicNavBar } from '@/components/AppleGlobalAcrylicNavBar';
-import { MacWindowChrome } from '@/components/MacWindowChrome';
+import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { playKeyClick, playTabSelect, playSendWhoosh } from '@/lib/retroAudio';
 
@@ -322,26 +321,20 @@ function PostContent({ params }: PostPageProps) {
 
   return (
     <div className="min-h-screen safari-reader-backdrop flex flex-col font-sans transition-colors duration-300">
-      {/* 1. Global Apple 2010 Acrylic Bar */}
-      <AppleGlobalAcrylicNavBar
+      {/* 1. Unified Mac OS X Desktop Header */}
+      <Navbar
         isBackendOnline={true}
+        onRefreshHealth={() => {}}
       />
 
-      {/* 2. Mac Window Chrome */}
-      <MacWindowChrome
-        title={`${blog.title} — Safari Reader`}
-        badgeText="SAFARI DESKTOP READER"
-        onClose={() => router.push('/')}
-      />
-
-      {/* 3. Top Sticky Reading Progress Bar */}
+      {/* 2. Top Sticky Reading Progress Bar */}
       <div
         className="fixed top-0 left-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 z-50 transition-all duration-100 ease-out"
         style={{ width: `${scrollProgress}%` }}
       />
 
-      {/* 4. Safari Reader Floating HUD Bar */}
-      <div className="sticky top-20 z-40 w-full flex justify-center py-2 px-4 pointer-events-none">
+      {/* 3. Safari Reader Floating HUD Bar */}
+      <div className="sticky top-14 z-40 w-full flex justify-center py-2 px-4 pointer-events-none">
         <div className="safari-floating-hud pointer-events-auto">
           {/* < Geri Pointed Chevron */}
           <button

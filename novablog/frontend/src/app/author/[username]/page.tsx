@@ -20,8 +20,7 @@ import { BlogDto, AuthorProfileDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
 import { BlogCard } from '@/components/BlogCard';
 import { BlogDetailModal } from '@/components/BlogDetailModal';
-import { AppleGlobalAcrylicNavBar } from '@/components/AppleGlobalAcrylicNavBar';
-import { MacWindowChrome } from '@/components/MacWindowChrome';
+import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { useFollowedAuthors } from '@/hooks/useSocialStore';
 import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
@@ -263,19 +262,13 @@ function AuthorContent({ params }: AuthorPageProps) {
 
   return (
     <div className="min-h-screen ios-pinstripe flex flex-col font-sans transition-colors duration-300">
-      {/* 1. Apple 2010 Global Acrylic Bar */}
-      <AppleGlobalAcrylicNavBar
+      {/* 1. Unified Mac OS X Desktop Header */}
+      <Navbar
         isBackendOnline={true}
+        onRefreshHealth={() => {}}
       />
 
-      {/* 2. Mac Window Chrome */}
-      <MacWindowChrome
-        title={`${displayName} — Mac Address Book & Notes`}
-        badgeText="MAC OS X ADDRESS BOOK"
-        onClose={() => router.push('/')}
-      />
-
-      {/* 3. Main Container */}
+      {/* 2. Main Container */}
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-8 space-y-8">
         {/* Mac OS X Address Book Bifold Card */}
         <section className="mac-addressbook-card shadow-2xl overflow-hidden">
