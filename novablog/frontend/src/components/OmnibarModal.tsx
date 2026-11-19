@@ -298,6 +298,8 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
         <div className="mac-spotlight-input-bar">
           <Search className="w-6 h-6 text-zinc-400 shrink-0" />
           <input
+            id="spotlight-search-input"
+            name="spotlightSearch"
             ref={inputRef}
             type="text"
             placeholder="Spotlight Arama (örn: Virtual Threads, Selin, pgvector, Telemetri)"

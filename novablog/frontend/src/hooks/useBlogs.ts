@@ -1,8 +1,9 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { BlogDto, CommentResponseDto, CommentCreateRequestDto } from '@/types/api';
+import { BlogDto, CommentResponseDto, CommentCreateRequestDto, BlogCategoryDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
+import { MOCK_BLOGS, MOCK_CATEGORIES } from '@/lib/mockData';
 
 /**
  * TanStack Query v5 Hooks for NovaBlog Client & Server State Management.
@@ -32,7 +33,7 @@ export function useBlogDetailQuery(blogId?: number | null) {
 
 // 3. Categories Query
 export function useCategoriesQuery() {
-  return useQuery({
+  return useQuery<BlogCategoryDto[]>({
     queryKey: ['categories'],
     queryFn: () => ApiClient.getCategories(),
     staleTime: 5 * 60 * 1000,

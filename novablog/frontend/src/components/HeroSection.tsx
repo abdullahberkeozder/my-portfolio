@@ -184,8 +184,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   src="/images/architecture-cutaway.jpg"
                   alt="Nova Sistem Mimarisi Şeması"
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                   priority
+                  loading="eager"
                 />
 
                 {/* Subtle CRT Scanline Sheen */}

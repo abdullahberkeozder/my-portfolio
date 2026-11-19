@@ -206,6 +206,8 @@ export const AiPlayground: React.FC = () => {
                   <span className="text-[10px] text-zinc-500">{sumText.length} karakter</span>
                 </div>
                 <textarea
+                  id="ai-playground-summarize-text"
+                  name="summarizeText"
                   rows={7}
                   value={sumText}
                   onChange={(e) => setSumText(e.target.value)}
@@ -290,6 +292,8 @@ export const AiPlayground: React.FC = () => {
                     MAKALE BAŞLIĞI
                   </label>
                   <input
+                    id="ai-playground-tag-title"
+                    name="tagTitle"
                     type="text"
                     value={tagTitle}
                     onChange={(e) => setTagTitle(e.target.value)}
@@ -302,6 +306,8 @@ export const AiPlayground: React.FC = () => {
                     İÇERİK ÖZETİ
                   </label>
                   <textarea
+                    id="ai-playground-tag-content"
+                    name="tagContent"
                     rows={4}
                     value={tagContent}
                     onChange={(e) => setTagContent(e.target.value)}
@@ -388,6 +394,8 @@ export const AiPlayground: React.FC = () => {
                     TEST EDİLECEK YORUM / İÇERİK METNİ
                   </label>
                   <textarea
+                    id="ai-playground-moderate-text"
+                    name="moderateText"
                     rows={6}
                     value={modText}
                     onChange={(e) => setModText(e.target.value)}

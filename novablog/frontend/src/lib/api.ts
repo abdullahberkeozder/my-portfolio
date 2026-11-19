@@ -33,6 +33,19 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost
 export class ApiClient {
   private static token: string | null = null;
   private static isBackendAvailable: boolean | null = null;
+  private static lastHealthCheck = 0;
+
+  private static shouldAttemptBackend(): boolean {
+    if (typeof window === 'undefined') return true;
+    if (this.isBackendAvailable === false) {
+      // Re-probe only after 30 seconds using monotonic performance clock
+      const now = typeof performance !== 'undefined' ? performance.now() : 0;
+      if (now - this.lastHealthCheck < 30000) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   public static setToken(token: string | null) {
     this.token = token;
@@ -66,11 +79,12 @@ export class ApiClient {
   }
 
   public static async checkBackendHealth(): Promise<boolean> {
+    this.lastHealthCheck = typeof performance !== 'undefined' ? performance.now() : 0;
     try {
       const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/list`, {
         method: 'GET',
         headers: this.getHeaders(),
-        signal: AbortSignal.timeout(3500),
+        signal: AbortSignal.timeout(800),
       });
       this.isBackendAvailable = res.ok;
       return res.ok;
@@ -115,15 +129,19 @@ export class ApiClient {
 
   // --- BLOGS ---
   public static async getBlogs(): Promise<BlogDto[]> {
+    if (!this.shouldAttemptBackend()) {
+      return MOCK_BLOGS.map((b) => this.normalizeBlog(b));
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/list`, {
         method: 'GET',
         headers: this.getHeaders(),
-        signal: AbortSignal.timeout(4000),
+        signal: AbortSignal.timeout(1000),
       });
       if (!res.ok) throw new Error('Backend HTTP error');
       const data: ApiResult<BlogDto[]> = await res.json();
       this.isBackendAvailable = true;
+      this.lastHealthCheck = typeof performance !== 'undefined' ? performance.now() : 0;
 
       // Filter out test dummy placeholders (Title-1, Header-1, Content-1)
       const isPlaceholder = (b: BlogDto) => {
@@ -535,10 +553,14 @@ export class ApiClient {
 
   // --- COMMENTS ---
   public static async getComments(blogId: number): Promise<CommentResponseDto[]> {
+    if (!this.shouldAttemptBackend()) {
+      return MOCK_COMMENTS[blogId] || [];
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/comments/${blogId}`, {
         method: 'GET',
         headers: this.getHeaders(),
+        signal: AbortSignal.timeout(800),
       });
       const data: ApiResult<CommentResponseDto[]> = await res.json();
       return data.data || [];
@@ -848,65 +870,72 @@ export class ApiClient {
     }
   }
 
+  public static getFallbackAuthorProfile(username: string): AuthorProfileDto {
+    const target = username.toLowerCase();
+    if (target.includes('selin')) {
+      return {
+        userId: 2,
+        username: 'selindemir',
+        firstName: 'Dr. Selin',
+        lastName: 'Demir',
+        title: 'AI Research Lead & Vector Architect',
+        bio: 'Spring AI, pgvector 128D anlamsal çıkarım motorları ve büyük dil modellerinde RAG optimizasyonu araştırmacısı.',
+        imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+        websiteUrl: 'https://selindemir.ai',
+        githubUrl: 'https://github.com/selindemir',
+        followersCount: 2840,
+        followingCount: 142,
+        articlesCount: 8,
+        isFollowing: false,
+      };
+    }
+    if (target.includes('caner')) {
+      return {
+        userId: 3,
+        username: 'caneraydin',
+        firstName: 'Caner',
+        lastName: 'Aydın',
+        title: 'Principal Security Architect & Cloud Native SRE',
+        bio: 'Cloud-native mimariler, eBPF gözlemlenebilirlik ve sıfır güven (Zero-Trust) RFC 6238 2FA güvenlik altyapıları lideri.',
+        imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+        githubUrl: 'https://github.com/caneraydin',
+        followersCount: 1950,
+        followingCount: 98,
+        articlesCount: 6,
+        isFollowing: false,
+      };
+    }
+    return {
+      userId: 1,
+      username: 'admin',
+      firstName: 'Abdullah Berke',
+      lastName: 'Özder',
+      title: 'Staff Platform Engineer & Distributed Systems Lead',
+      bio: 'Java 22 Loom Virtual Threads, Spring Boot 4 ve mikro-çekirdek reaktif sistemler üzerine teknik incelemeler paylaşıyor.',
+      imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      githubUrl: 'https://github.com/abdullahberkeozder',
+      followersCount: 3420,
+      followingCount: 89,
+      articlesCount: 14,
+      isFollowing: false,
+    };
+  }
+
   public static async getAuthorProfile(username: string): Promise<AuthorProfileDto | null> {
+    if (!this.shouldAttemptBackend()) {
+      return this.getFallbackAuthorProfile(username);
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/users/${encodeURIComponent(username)}`, {
         method: 'GET',
         headers: this.getHeaders(),
-        signal: AbortSignal.timeout(3500),
+        signal: AbortSignal.timeout(800),
       });
       if (!res.ok) throw new Error('Author not found');
       const data: ApiResult<AuthorProfileDto> = await res.json();
       return data.data;
     } catch {
-      const target = username.toLowerCase();
-      if (target.includes('selin')) {
-        return {
-          userId: 2,
-          username: 'selindemir',
-          firstName: 'Dr. Selin',
-          lastName: 'Demir',
-          title: 'AI Research Lead & Vector Architect',
-          bio: 'Spring AI, pgvector 128D anlamsal çıkarım motorları ve büyük dil modellerinde RAG optimizasyonu araştırmacısı.',
-          imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-          websiteUrl: 'https://selindemir.ai',
-          githubUrl: 'https://github.com/selindemir',
-          followersCount: 2840,
-          followingCount: 142,
-          articlesCount: 8,
-          isFollowing: false,
-        };
-      }
-      if (target.includes('caner')) {
-        return {
-          userId: 3,
-          username: 'caneraydin',
-          firstName: 'Caner',
-          lastName: 'Aydın',
-          title: 'Principal Security Architect & Cloud Native SRE',
-          bio: 'Cloud-native mimariler, eBPF gözlemlenebilirlik ve sıfır güven (Zero-Trust) RFC 6238 2FA güvenlik altyapıları lideri.',
-          imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-          githubUrl: 'https://github.com/caneraydin',
-          followersCount: 1950,
-          followingCount: 98,
-          articlesCount: 6,
-          isFollowing: false,
-        };
-      }
-      return {
-        userId: 1,
-        username: 'admin',
-        firstName: 'Abdullah Berke',
-        lastName: 'Özder',
-        title: 'Staff Platform Engineer & Distributed Systems Lead',
-        bio: 'Java 22 Loom Virtual Threads, Spring Boot 4 ve mikro-çekirdek reaktif sistemler üzerine teknik incelemeler paylaşıyor.',
-        imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-        githubUrl: 'https://github.com/abdullahberkeozder',
-        followersCount: 3420,
-        followingCount: 89,
-        articlesCount: 14,
-        isFollowing: false,
-      };
+      return this.getFallbackAuthorProfile(username);
     }
   }
 

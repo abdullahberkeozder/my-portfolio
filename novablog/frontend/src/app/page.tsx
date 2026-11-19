@@ -26,6 +26,7 @@ import { SkeuomorphicLeatherBookmarksBinder } from '@/components/SkeuomorphicLea
 import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
 import { BlogDto, BlogSemanticSearchResultDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
+import { MOCK_BLOGS } from '@/lib/mockData';
 import { useBlogsQuery, useCategoriesQuery } from '@/hooks/useBlogs';
 import { useBookmarks, useFollowedAuthors } from '@/hooks/useSocialStore';
 import {
@@ -95,7 +96,8 @@ const TOPIC_PILLS = [
 
 export default function Home() {
   const queryClient = useQueryClient();
-  const { data: blogs = [], isLoading: isLoadingBlogs, refetch: refetchBlogs } = useBlogsQuery();
+  const { data: rawBlogs, isLoading: isLoadingBlogs, refetch: refetchBlogs } = useBlogsQuery();
+  const blogs = rawBlogs && rawBlogs.length > 0 ? rawBlogs : MOCK_BLOGS;
   const { data: categories = [] } = useCategoriesQuery();
 
   const [activeTab, setActiveTab] = useState<NavTab>('feed');
@@ -770,12 +772,7 @@ export default function Home() {
           )}
 
           {/* Blog Cards Grid */}
-          {isLoadingBlogs ? (
-            <div className="py-24 text-center text-zinc-400 space-y-3 font-mono">
-              <RefreshCw className="w-6 h-6 animate-spin mx-auto text-emerald-500" />
-              <p className="text-xs uppercase tracking-widest">YAYIN MAKALELERİ YÜKLENİYOR...</p>
-            </div>
-          ) : sortedBlogs.length > 0 ? (
+          {sortedBlogs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {sortedBlogs.map((blog, idx) => (
                 <BlogCard
@@ -786,6 +783,11 @@ export default function Home() {
                   onAuthorClick={setActiveAuthorProfile}
                 />
               ))}
+            </div>
+          ) : isLoadingBlogs ? (
+            <div className="py-24 text-center text-zinc-400 space-y-3 font-mono">
+              <RefreshCw className="w-6 h-6 animate-spin mx-auto text-emerald-500" />
+              <p className="text-xs uppercase tracking-widest">YAYIN MAKALELERİ YÜKLENİYOR...</p>
             </div>
           ) : (
             !(feedMode === 'following' && followedAuthors.length === 0) &&

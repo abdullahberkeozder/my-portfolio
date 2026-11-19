@@ -18,6 +18,7 @@ import {
 import { GithubIcon } from '@/components/GithubIcon';
 import { BlogDto, AuthorProfileDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
+import { MOCK_BLOGS } from '@/lib/mockData';
 import { BlogCard } from '@/components/BlogCard';
 import { BlogDetailModal } from '@/components/BlogDetailModal';
 import { Navbar } from '@/components/Navbar';
@@ -54,9 +55,24 @@ function AuthorContent({ params }: AuthorPageProps) {
   const username = decodeURIComponent(resolvedParams.username || '');
   const router = useRouter();
 
-  const [profile, setProfile] = useState<AuthorProfileDto | null>(null);
-  const [blogs, setBlogs] = useState<BlogDto[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [profile, setProfile] = useState<AuthorProfileDto | null>(() =>
+    ApiClient.getFallbackAuthorProfile(username)
+  );
+  const [blogs, setBlogs] = useState<BlogDto[]>(() => {
+    const target = username.toLowerCase();
+    return MOCK_BLOGS.filter((b) => {
+      const u = (b.authorUsername || '').toLowerCase();
+      const n = (b.author || '').toLowerCase();
+      return (
+        u === target ||
+        n === target ||
+        (target.includes('selin') && n.includes('selin')) ||
+        (target.includes('caner') && n.includes('caner')) ||
+        (target.includes('admin') && n.includes('berke'))
+      );
+    }).map((b) => ApiClient.normalizeBlog(b));
+  });
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState<BlogDto | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'articles' | 'notes' | 'about'>('articles');

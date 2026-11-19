@@ -402,6 +402,8 @@ export const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpen, onClose 
                 </div>
                 <form onSubmit={handleDisable2fa} className="flex gap-2">
                   <input
+                    id="twofactor-disable-code"
+                    name="disableCode"
                     type="text"
                     maxLength={6}
                     placeholder="6 haneli kod"

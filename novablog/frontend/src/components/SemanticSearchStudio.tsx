@@ -182,6 +182,8 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
                 Eşik Değeri:
               </span>
               <input
+                id="semantic-threshold-slider"
+                name="semanticThreshold"
                 type="range"
                 min="0.4"
                 max="0.95"
@@ -201,6 +203,8 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
             <div className="relative flex-1 w-full flex items-center bg-white dark:bg-[#121417] rounded-xl border border-zinc-300 dark:border-zinc-700 px-3.5 py-2.5 shadow-inner">
               <Search className="w-4 h-4 text-zinc-400 mr-2.5 shrink-0" />
               <input
+                id="semantic-query-input"
+                name="semanticQuery"
                 type="text"
                 placeholder="Örn: Yüksek eşzamanlı isteklerde thread performansı ve sanal iş parçacıkları..."
                 value={query}

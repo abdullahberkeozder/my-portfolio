@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { BlogDto, CommentResponseDto, AiModerationResponseDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
+import { MOCK_BLOGS, MOCK_COMMENTS } from '@/lib/mockData';
 import { useBookmarks, useFollowedAuthors } from '@/hooks/useSocialStore';
 import { BlogCard } from '@/components/BlogCard';
 import { Navbar } from '@/components/Navbar';
@@ -53,10 +54,20 @@ function PostContent({ params }: PostPageProps) {
   const blogId = Number(rawId);
   const router = useRouter();
 
-  const [blog, setBlog] = useState<BlogDto | null>(null);
-  const [relatedBlogs, setRelatedBlogs] = useState<BlogDto[]>([]);
-  const [comments, setComments] = useState<CommentResponseDto[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const initialMockBlog = Number.isFinite(blogId)
+    ? MOCK_BLOGS.find((b) => (b.id ?? b.blogId) === blogId)
+    : null;
+
+  const [blog, setBlog] = useState<BlogDto | null>(() =>
+    initialMockBlog ? ApiClient.normalizeBlog(initialMockBlog) : null
+  );
+  const [relatedBlogs, setRelatedBlogs] = useState<BlogDto[]>(() =>
+    MOCK_BLOGS.filter((item) => (item.blogId ?? item.id) !== blogId).slice(0, 2).map((b) => ApiClient.normalizeBlog(b))
+  );
+  const [comments, setComments] = useState<CommentResponseDto[]>(() =>
+    Number.isFinite(blogId) ? (MOCK_COMMENTS[blogId] || []) : []
+  );
+  const [isLoading, setIsLoading] = useState(() => !initialMockBlog);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [copiedCodeIdx, setCopiedCodeIdx] = useState<number | null>(null);
   const [isCopiedLink, setIsCopiedLink] = useState(false);
