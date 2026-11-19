@@ -265,10 +265,7 @@ function AuthorContent({ params }: AuthorPageProps) {
     <div className="min-h-screen ios-pinstripe flex flex-col font-sans transition-colors duration-300">
       {/* 1. Apple 2010 Global Acrylic Bar */}
       <AppleGlobalAcrylicNavBar
-        activeTab="feed"
         isBackendOnline={true}
-        onSearchClick={() => router.push('/')}
-        onFeedTabChange={() => router.push('/')}
       />
 
       {/* 2. Mac Window Chrome */}

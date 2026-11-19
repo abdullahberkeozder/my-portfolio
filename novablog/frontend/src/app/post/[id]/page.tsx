@@ -324,10 +324,7 @@ function PostContent({ params }: PostPageProps) {
     <div className="min-h-screen safari-reader-backdrop flex flex-col font-sans transition-colors duration-300">
       {/* 1. Global Apple 2010 Acrylic Bar */}
       <AppleGlobalAcrylicNavBar
-        activeTab="feed"
         isBackendOnline={true}
-        onSearchClick={() => router.push('/')}
-        onFeedTabChange={() => router.push('/')}
       />
 
       {/* 2. Mac Window Chrome */}

@@ -76,7 +76,7 @@ export const Footer: React.FC<FooterProps> = ({
   };
 
   return (
-    <footer className="apple-classic-footer pt-12 pb-8 border-t select-none transition-colors">
+    <footer className="apple-classic-footer pt-12 pb-32 sm:pb-36 border-t select-none transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Apple 2010 Classic 5-Column Sitemap Directory */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 pb-10">

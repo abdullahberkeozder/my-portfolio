@@ -161,16 +161,11 @@ export const Navbar: React.FC<NavbarProps> = ({
       className="sticky top-0 z-50 select-none shadow-md"
       onMouseLeave={handleMouseLeave}
     >
-      {/* 1. Top Tier: Apple 2010 Global Acrylic Nav Bar (40px) */}
+      {/* 1. Top Tier: Apple 2010 Global Acrylic Nav Bar (26px) */}
       <AppleGlobalAcrylicNavBar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
         isBackendOnline={isBackendOnline}
         onRefreshHealth={onRefreshHealth}
-        onOpenTelemetry={onOpenTelemetry}
         onOpenTwoFactor={onOpenTwoFactor}
-        onFocusSearch={onFocusSearch}
-        scrollToSection={scrollToSection}
       />
 
       {/* 2. Middle Tier: Mac OS X Window Titlebar & Traffic Lights */}

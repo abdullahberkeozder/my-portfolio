@@ -645,9 +645,9 @@
   box-shadow: 0 22px 70px 4px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.15);
 }
 
-/* Unified Brushed-Aluminum / Graphite Titlebar & Toolbar */
+/* Unified Brushed-Aluminum / Graphite Titlebar & Toolbar (Compact 26px Desktop Chrome) */
 .mac-titlebar {
-  height: 42px;
+  height: 26px;
   background: linear-gradient(to bottom, #ededed 0%, #dcdcdc 50%, #cecece 51%, #bcbcbc 100%);
   border-bottom: 1px solid #999999;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -659,9 +659,9 @@
 }
 
 .dark .mac-titlebar {
-  background: linear-gradient(to bottom, #3f4247 0%, #303338 50%, #25282d 51%, #1e2024 100%);
-  border-bottom: 1px solid #141618;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 1px 2px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(to bottom, #383b40 0%, #2a2d32 50%, #202327 51%, #191b1e 100%);
+  border-bottom: 1px solid #101214;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 /* Classic Glossy Traffic Light Window Buttons (🔴 Close, 🟡 Minimize, 🟢 Zoom) */
@@ -751,19 +751,23 @@
    7. Apple 2010 Global Acrylic Navigation Bar & Mac Unified Toolbar Tokens
    ============================================================================== */
 
-/* Apple 2010-2012 Global 40px Acrylic Gloss Bar */
+/* Apple 2010-2012 Global 26px Acrylic System Menu Bar */
 .apple-global-nav {
-  height: 40px;
-  background: linear-gradient(180deg, #454545 0%, #292929 50%, #1a1a1a 51%, #222222 100%);
-  border-bottom: 1px solid #111111;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 2px 5px rgba(0, 0, 0, 0.45);
+  height: 26px;
+  background: linear-gradient(180deg, #383838 0%, #242424 50%, #151515 51%, #1d1d1d 100%);
+  border-bottom: 1px solid #0d0d0d;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 1px 3px rgba(0, 0, 0, 0.4);
   user-select: none;
   z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
 }
 
 .apple-global-nav-brand {
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Lucida Grande", sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.5px;
   color: #ffffff;
@@ -772,11 +776,11 @@
 
 .apple-global-nav-link {
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Lucida Grande", sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   color: #d2d2d2;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.85);
-  padding: 4px 10px;
+  padding: 2px 8px;
   border-radius: 3px;
   transition: all 0.12s ease;
   cursor: pointer;
@@ -794,9 +798,10 @@
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* Mac OS X 44px Unified Brushed-Platinum Toolbar */
+/* Mac OS X 42px Unified Brushed-Platinum Toolbar */
 .mac-unified-toolbar {
-  min-height: 44px;
+  min-height: 42px;
+  height: 42px;
   background: linear-gradient(180deg, #f7f7f7 0%, #e3e3e3 45%, #d1d1d1 50%, #dcdcdc 100%);
   border-bottom: 1px solid #9c9c9c;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 3px rgba(0, 0, 0, 0.12);
@@ -808,7 +813,7 @@
 }
 
 .dark .mac-unified-toolbar {
-  background: linear-gradient(180deg, #3a3d42 0%, #2b2e33 45%, #202327 50%, #26292d 100%);
+  background: linear-gradient(180deg, #32353a 0%, #25282c 45%, #1c1e22 50%, #222428 100%);
   border-bottom: 1px solid #141618;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.4);
 }
@@ -871,6 +876,81 @@
 
 .dark .mac-nav-chevron-btn:first-child {
   border-right: 1px solid #2f3135;
+}
+
+/* ==============================================================================
+   Mac OS X Finder Scope Bar (Snow Leopard / Mountain Lion In-Window Filter Bar)
+   ============================================================================== */
+.mac-scope-bar {
+  background: linear-gradient(180deg, #f2f2f4 0%, #e2e2e5 50%, #d5d5d8 100%);
+  border: 1px solid #b8b8b8;
+  border-radius: 8px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+}
+
+.dark .mac-scope-bar {
+  background: linear-gradient(180deg, #2b2e35 0%, #22242b 50%, #1a1c22 100%);
+  border: 1px solid #3c404b;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.mac-scope-label {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #555555;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
+.dark .mac-scope-label {
+  color: #a0a5b0;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.8);
+}
+
+.mac-scope-pill {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #444444;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.mac-scope-pill:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #111111;
+}
+
+.dark .mac-scope-pill {
+  color: #c0c4cc;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dark .mac-scope-pill:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.mac-scope-pill.active {
+  background: linear-gradient(180deg, #4a90e2 0%, #2170d1 100%);
+  color: #ffffff;
+  border-color: #175bb3;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(255, 255, 255, 0.4);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6);
 }
 
 /* ==============================================================================
@@ -1857,11 +1937,12 @@
    ========================================================================== */
 .mac-3d-glass-dock-wrapper {
   position: fixed;
-  bottom: 0px;
+  bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 45;
   pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
 .mac-3d-glass-dock {
@@ -1871,6 +1952,8 @@
   align-items: flex-end;
   gap: 8px;
   padding: 6px 14px 4px 14px;
+  opacity: 0.94;
+  transition: opacity 0.2s ease, transform 0.2s ease;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(220, 224, 235, 0.4) 22%, rgba(180, 185, 200, 0.75) 80%, rgba(140, 145, 160, 0.95) 100%);
   border-top: 1px solid rgba(255, 255, 255, 0.85);
   border-left: 1px solid rgba(255, 255, 255, 0.5);
