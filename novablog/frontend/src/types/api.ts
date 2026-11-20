@@ -62,6 +62,11 @@ export interface BlogDto {
   authorImageUrl?: string;
   isBookmarkedByCurrentUser?: boolean;
   userClaps?: number;
+  publicationType?: 'article' | 'dispatch';
+  viaSource?: string;
+  viaUrl?: string;
+  editorialTake?: string;
+  isBreaking?: boolean;
 }
 
 export interface BlogFilterRequestDto {

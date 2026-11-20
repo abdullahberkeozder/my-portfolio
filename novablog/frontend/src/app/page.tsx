@@ -84,13 +84,13 @@ const SUGGESTED_AUTHORS: SuggestedAuthor[] = [
 ];
 
 const TOPIC_PILLS = [
-  { id: 'all', label: 'TÜMÜ', tag: null },
-  { id: 'java-22', label: 'JAVA 22', tag: 'java' },
-  { id: 'spring-boot', label: 'SPRING BOOT', tag: 'spring' },
-  { id: 'loom', label: 'VIRTUAL THREADS', tag: 'loom' },
-  { id: 'ai', label: 'SPRING AI & VEKTÖR', tag: 'ai' },
+  { id: 'all', label: 'TÜM KONULAR', tag: null },
+  { id: 'tech', label: 'TEKNOLOJİ & BULUT', tag: 'cloud' },
+  { id: 'ai', label: 'AI GELİŞİMİ & AJANLAR', tag: 'ai' },
+  { id: 'react', label: 'REACT & FRONTEND', tag: 'react' },
+  { id: 'backend', label: 'BACKEND & JAVA 22', tag: 'java' },
+  { id: 'mcp', label: 'MCP PROTOKOLÜ', tag: 'mcp' },
   { id: 'redis', label: 'REDIS ÖNBELLEK', tag: 'redis' },
-  { id: 'architecture', label: 'SİSTEM MİMARİSİ', tag: 'distributed' },
   { id: 'security', label: '2FA GÜVENLİK', tag: 'security' },
 ];
 
@@ -102,6 +102,7 @@ export default function Home() {
 
   const [activeTab, setActiveTab] = useState<NavTab>('feed');
   const [feedMode, setFeedMode] = useState<FeedTabMode>('explore');
+  const [publicationTypeFilter, setPublicationTypeFilter] = useState<'all' | 'article' | 'dispatch'>('all');
   const [exploreSort, setExploreSort] = useState<ExploreSortOption>('trending');
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -266,6 +267,14 @@ export default function Home() {
         ? 'Caner Aydın'
         : blog.author || 'Abdullah Berke Özder';
 
+    // 0. Publication Type Filter ('all' | 'article' | 'dispatch')
+    if (publicationTypeFilter !== 'all') {
+      const pubType = blog.publicationType || 'article';
+      if (pubType !== publicationTypeFilter) {
+        return false;
+      }
+    }
+
     // 1. Feed Mode Filter
     if (feedMode === 'following') {
       if (
@@ -335,7 +344,7 @@ export default function Home() {
 
   const activeCategoryObj = categories.find((c) => (c.categoryId ?? c.blogCategoryId) === selectedCategory);
   const hasActiveFilters = Boolean(
-    selectedCategory !== null || selectedTopic !== null || searchTerm.trim()
+    selectedCategory !== null || selectedTopic !== null || searchTerm.trim() || publicationTypeFilter !== 'all'
   );
 
   return (
@@ -490,6 +499,97 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Publication Type Selector & Category Filter (Haber + Blog Hybrid Architecture) */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 pb-2 border-t border-b border-black/5 dark:border-white/5">
+              {/* Publication Type: TÜM AKIŞ | TEKNİK MAKALELER (Blog) | DİSPAÇLAR (Haberler) */}
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider">
+                  YAYIN TÜRÜ:
+                </span>
+                <div className="mac-scope-track font-mono text-[11px]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playKeyClick();
+                      setPublicationTypeFilter('all');
+                    }}
+                    className={`mac-scope-segment !py-1 !px-2.5 !text-[11px] ${
+                      publicationTypeFilter === 'all' ? 'active' : ''
+                    }`}
+                  >
+                    <span>TÜM AKIŞ ({blogs.length})</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playKeyClick();
+                      setPublicationTypeFilter('article');
+                    }}
+                    className={`mac-scope-segment !py-1 !px-2.5 !text-[11px] ${
+                      publicationTypeFilter === 'article' ? 'active' : ''
+                    }`}
+                  >
+                    <span>MAKALELER (Blog)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playKeyClick();
+                      setPublicationTypeFilter('dispatch');
+                    }}
+                    className={`mac-scope-segment !py-1 !px-2.5 !text-[11px] ${
+                      publicationTypeFilter === 'dispatch' ? 'active' : ''
+                    }`}
+                  >
+                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-1" />
+                    <span>DİSPAÇLAR (Haberler)</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Dynamic Category Chips */}
+              <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none max-w-full">
+                <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider hidden sm:inline">
+                  KATEGORİ:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playKeyClick();
+                    setSelectedCategory(null);
+                  }}
+                  className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-colors cursor-pointer ${
+                    selectedCategory === null
+                      ? 'bg-zinc-800 text-white dark:bg-white dark:text-black shadow-sm'
+                      : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 bg-black/5 dark:bg-white/5'
+                  }`}
+                >
+                  Hepsi
+                </button>
+                {categories.map((c) => {
+                  const catId = c.categoryId ?? c.blogCategoryId;
+                  const isSel = selectedCategory === catId;
+                  return (
+                    <button
+                      key={catId}
+                      type="button"
+                      onClick={() => {
+                        playKeyClick();
+                        setSelectedCategory(isSel ? null : (catId ?? null));
+                      }}
+                      className={`px-2 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                        isSel
+                          ? 'bg-blue-600 text-white shadow-sm'
+                          : 'text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-300 bg-black/5 dark:bg-white/5'
+                      }`}
+                    >
+                      {c.categoryName}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Sub-bar: Edge-Faded Topic Ribbon & Apple HIG Segmented Sort Control */}
             <div className="pt-2 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
               {/* Topic Ribbon with CSS Mask Edge-Fade */}
@@ -590,6 +690,7 @@ export default function Home() {
                     setSelectedTopic(null);
                     setSelectedCategory(null);
                     setSearchTerm('');
+                    setPublicationTypeFilter('all');
                   }}
                   className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-[11px] font-bold transition-colors cursor-pointer hover:bg-rose-500 hover:text-white"
                 >
@@ -803,10 +904,11 @@ export default function Home() {
                     setSelectedCategory(null);
                     setSearchTerm('');
                     setFeedMode('explore');
+                    setPublicationTypeFilter('all');
                   }}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-black text-xs font-bold transition-transform active:scale-95 cursor-pointer uppercase"
                 >
-                  Tüm Makaleleri Göster
+                  Tüm Yayın Akışını Göster
                 </button>
               </div>
             )

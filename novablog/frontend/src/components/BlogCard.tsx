@@ -15,6 +15,8 @@ import {
   Check,
   Bookmark,
   MessageSquare,
+  ExternalLink,
+  Radio,
 } from 'lucide-react';
 
 interface BlogCardProps {
@@ -223,6 +225,52 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
           </div>
         </div>
 
+        {/* Dispatch Ribbon & Via Source Attribution */}
+        {blog.publicationType === 'dispatch' && (
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5 pb-1">
+            <div className="flex items-center gap-2">
+              <span
+                className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider uppercase border shadow-sm ${
+                  blog.isBreaking
+                    ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30'
+                    : 'bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/30'
+                }`}
+              >
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    blog.isBreaking ? 'bg-amber-500 animate-pulse' : 'bg-blue-500'
+                  }`}
+                />
+                {blog.isBreaking ? '⚡ FLAŞ HABER' : '📡 DİSPAÇ'}
+              </span>
+
+              {blog.header && (
+                <span className="text-[10px] font-mono tracking-wider uppercase text-zinc-500 dark:text-zinc-400 font-semibold truncate max-w-[220px]">
+                  {blog.header}
+                </span>
+              )}
+            </div>
+
+            {blog.viaSource && (
+              <a
+                href={blog.viaUrl || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playKeyClick();
+                }}
+                className="inline-flex items-center gap-1 text-[11px] font-medium text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 px-2 py-0.5 rounded border border-black/10 dark:border-white/10"
+                title={`Orijinal Kaynağı Görüntüle: ${blog.viaSource}`}
+              >
+                <span className="opacity-70 font-sans">via</span>
+                <span className="font-semibold underline underline-offset-2">{blog.viaSource}</span>
+                <ExternalLink className="w-3 h-3 opacity-60 ml-0.5" />
+              </a>
+            )}
+          </div>
+        )}
+
         {/* 2. Article Title & Excerpt */}
         <div className="space-y-1.5">
           <h3 className="text-base sm:text-lg font-bold text-zinc-950 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug tracking-tight font-sans">
@@ -232,6 +280,19 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
             {rawExcerpt}
           </p>
         </div>
+
+        {/* Editorial Take / Mühendislik Yorumu */}
+        {blog.editorialTake && (
+          <div className="rounded-lg p-2.5 bg-gradient-to-r from-blue-50/90 to-indigo-50/60 dark:from-blue-950/30 dark:to-indigo-950/20 border border-blue-200/60 dark:border-blue-900/40 text-xs text-zinc-800 dark:text-zinc-300 space-y-1 shadow-sm">
+            <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold tracking-wider uppercase text-blue-700 dark:text-blue-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+              <span>MÜHENDİSLİK DEĞERLENDİRMESİ</span>
+            </div>
+            <p className="text-[11px] leading-relaxed italic text-zinc-700 dark:text-zinc-300 font-sans">
+              &ldquo;{blog.editorialTake}&rdquo;
+            </p>
+          </div>
+        )}
 
         {/* 3. Expandable Recessed AI TL;DR (Accordion) */}
         {showSummary && summary && (

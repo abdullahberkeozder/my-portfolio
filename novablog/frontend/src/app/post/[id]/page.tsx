@@ -23,6 +23,7 @@ import {
   ListTree,
   ChevronDown,
   ChevronUp,
+  ExternalLink,
 } from 'lucide-react';
 import { BlogDto, CommentResponseDto, AiModerationResponseDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
@@ -448,23 +449,36 @@ function PostContent({ params }: PostPageProps) {
 
       {/* 5. Main 740px Safari Reader Warm Parchment Canvas */}
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-8 py-8 my-4 safari-reader-parchment space-y-8">
-        {/* Topic Tags Ribbon */}
-        {blog.tags && blog.tags.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2">
-            {blog.tags.map((tag) => (
+        {/* Topic Tags Ribbon & Dispatch Identifier */}
+        <div className="flex flex-wrap items-center gap-2">
+          {blog.publicationType === 'dispatch' && (
+            <span
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono font-bold tracking-wider uppercase border shadow-sm ${
+                blog.isBreaking
+                  ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30'
+                  : 'bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/30'
+              }`}
+            >
               <span
-                key={tag}
-                className="retro-tag-pill uppercase"
-              >
+                className={`w-2 h-2 rounded-full ${
+                  blog.isBreaking ? 'bg-amber-500 animate-pulse' : 'bg-blue-500'
+                }`}
+              />
+              {blog.isBreaking ? '⚡ CANLI FLAŞ HABER' : '📡 GÜNCEL TEKNOLOJİ DİSPAÇI'}
+            </span>
+          )}
+
+          {blog.tags &&
+            blog.tags.map((tag) => (
+              <span key={tag} className="retro-tag-pill uppercase">
                 #{tag}
               </span>
             ))}
-            <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded text-[11px] font-bold border border-emerald-500/20 font-mono">
-              <CheckCircle2 className="w-3 h-3" />
-              VEKTÖR İNDEKSİ (128D)
-            </span>
-          </div>
-        )}
+          <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded text-[11px] font-bold border border-emerald-500/20 font-mono">
+            <CheckCircle2 className="w-3 h-3" />
+            VEKTÖR İNDEKSİ (128D)
+          </span>
+        </div>
 
         {/* Title & Subheader */}
         <div className="space-y-3 border-b border-black/10 dark:border-white/10 pb-6">
@@ -515,6 +529,41 @@ function PostContent({ params }: PostPageProps) {
             </button>
           </div>
         </div>
+
+        {/* Via Source Canonical Citation Banner */}
+        {blog.viaSource && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/60 border border-black/10 dark:border-white/10 text-xs font-mono shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-zinc-400">KAYNAK ATFI:</span>
+              <span className="font-bold text-zinc-900 dark:text-zinc-100">{blog.viaSource}</span>
+            </div>
+            {blog.viaUrl && (
+              <a
+                href={blog.viaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => playKeyClick()}
+                className="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 hover:underline font-bold"
+              >
+                <span>Orijinal Yayını Ziyaret Et</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            )}
+          </div>
+        )}
+
+        {/* Nova Editorial Engineering Commentary */}
+        {blog.editorialTake && (
+          <div className="rounded-xl p-4 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-teal-500/5 border border-blue-400/40 space-y-2 shadow-sm">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">
+              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+              <span>NOVA MÜHENDİSLİK DEĞERLENDİRMESİ</span>
+            </div>
+            <p className="text-xs sm:text-sm leading-relaxed italic text-zinc-800 dark:text-zinc-200 font-sans">
+              &ldquo;{blog.editorialTake}&rdquo;
+            </p>
+          </div>
+        )}
 
         {/* AI TL;DR Abstract Box (Skeuomorphic Recessed Tray) */}
         {blog.aiSummary && (

@@ -628,6 +628,41 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
             )}
           </div>
 
+          {/* Via Source Canonical Citation Banner */}
+          {currentBlog.viaSource && (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-800/60 border border-black/10 dark:border-white/10 text-xs font-mono shadow-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-zinc-400">KAYNAK ATFI:</span>
+                <span className="font-bold text-zinc-900 dark:text-zinc-100">{currentBlog.viaSource}</span>
+              </div>
+              {currentBlog.viaUrl && (
+                <a
+                  href={currentBlog.viaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => playKeyClick()}
+                  className="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 hover:underline font-bold"
+                >
+                  <span>Orijinal Yayını Ziyaret Et</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              )}
+            </div>
+          )}
+
+          {/* Nova Editorial Engineering Commentary */}
+          {currentBlog.editorialTake && (
+            <div className="rounded-xl p-4 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-teal-500/5 border border-blue-400/40 space-y-2 shadow-sm">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">
+                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                <span>NOVA MÜHENDİSLİK DEĞERLENDİRMESİ</span>
+              </div>
+              <p className="text-xs sm:text-sm leading-relaxed italic text-zinc-800 dark:text-zinc-200 font-sans">
+                &ldquo;{currentBlog.editorialTake}&rdquo;
+              </p>
+            </div>
+          )}
+
           {/* AI Executive TL;DR Takeaways Box (Skeuomorphic Recessed Tray) */}
           {currentBlog.aiSummary && (
             <div className="rounded-xl p-5 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-teal-500/5 border border-blue-400/30 space-y-2 shadow-inner">
