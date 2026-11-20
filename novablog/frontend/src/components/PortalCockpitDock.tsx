@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ApiClient } from '@/lib/api';
 import {
   Compass,
@@ -12,6 +12,8 @@ import {
   Sparkles,
   Info,
   Activity,
+  Bot,
+  Pin,
 } from 'lucide-react';
 import { playKeyClick, playTabSelect, playWindowOpen } from '@/lib/retroAudio';
 import { NavTab } from '@/components/Navbar';
@@ -23,6 +25,7 @@ interface PortalCockpitDockProps {
   onOpenTelemetry: () => void;
   onOpenSpotlight?: () => void;
   onOpenAbout?: () => void;
+  onOpenCopilot?: () => void;
   onMetricsFlushed?: () => void;
 }
 
@@ -33,28 +36,15 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
   onOpenTelemetry,
   onOpenSpotlight,
   onOpenAbout,
+  onOpenCopilot,
   onMetricsFlushed,
 }) => {
   const [isFlushing, setIsFlushing] = useState(false);
   const [flushSuccess, setFlushSuccess] = useState(false);
-  const [isAutoHidden, setIsAutoHidden] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-  useEffect(() => {
-    let lastScrollY = window.scrollY;
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      // Scroll down past 280px -> auto-hide dock to unblock reading
-      if (currentScrollY > 280 && currentScrollY > lastScrollY) {
-        setIsAutoHidden(true);
-      } else if (currentScrollY < lastScrollY - 15 || currentScrollY < 120) {
-        // Scroll up or near top -> reveal
-        setIsAutoHidden(false);
-      }
-      lastScrollY = currentScrollY;
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const isDockRevealed = isPinned || isHovered;
 
   const handleFlushBuffer = async () => {
     playKeyClick('crisp');
@@ -103,11 +93,29 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
   return (
     <aside
       aria-label="Mac OS X 3D Glass Desktop Dock"
-      className={`mac-3d-glass-dock-wrapper select-none transition-transform duration-300 ease-out group ${
-        isAutoHidden ? 'translate-y-[84%] hover:translate-y-0' : 'translate-y-0'
-      }`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="fixed bottom-0 left-1/2 -translate-x-1/2 z-40 select-none transition-transform duration-350 ease-[cubic-bezier(0.175,0.885,0.32,1.15)] flex flex-col items-center pointer-events-auto"
+      style={{
+        transform: isDockRevealed
+          ? 'translateX(-50%) translateY(0)'
+          : 'translateX(-50%) translateY(calc(100% - 14px))',
+      }}
     >
-      <div className="mac-3d-glass-dock">
+      {/* 1. Mac OS X Knurled Aluminum Pull-Tab Grip */}
+      <button
+        type="button"
+        onClick={() => setIsHovered((prev) => !prev)}
+        aria-label="Mac OS X 3D Dock'u Aç/Kapat"
+        className="mac-dock-pull-tab group cursor-pointer"
+        title={isDockRevealed ? "Dock'u Daralt" : " Mac OS X Dock'u Genişlet (Hover)"}
+      >
+        <span className="mac-dock-knurled-ribs" />
+        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400/90 shadow-[0_0_6px_#38bdf8] animate-pulse" />
+      </button>
+
+      {/* 2. 3D Reflective Glass Dock Body */}
+      <div className="mac-3d-glass-dock shadow-2xl">
         {/* 1. Finder / Feed (Vitrin) */}
         <div
           onClick={() => handleNavTab('feed', 'articles-feed')}
@@ -159,10 +167,25 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           <div className={`mac-dock-indicator-dot ${activeTab === 'admin-batch' ? 'active' : ''}`} />
         </div>
 
+        {/* 5. Nova Copilot AI Assistant */}
+        <div
+          onClick={() => {
+            playWindowOpen();
+            if (onOpenCopilot) onOpenCopilot();
+          }}
+          className="mac-dock-item"
+          title="Nova Copilot // Mimari Asistan"
+        >
+          <div className="mac-dock-tile-3d">
+            <Bot className="w-5 h-5 text-cyan-500" />
+          </div>
+          <div className="mac-dock-indicator-dot" />
+        </div>
+
         {/* Dock Separator Line */}
         <div className="mac-dock-separator" />
 
-        {/* 5. Mac Mail (Yeni Makale Yaz) */}
+        {/* 6. Mac Mail (Yeni Makale Yaz) */}
         <div
           onClick={handleOpenCompose}
           className="mac-dock-item"
@@ -174,7 +197,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           <div className="mac-dock-indicator-dot" />
         </div>
 
-        {/* 6. Spotlight Search (⌘K) */}
+        {/* 7. Spotlight Search (⌘K) */}
         <div
           onClick={handleOpenSpotlightClick}
           className="mac-dock-item"
@@ -186,7 +209,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           <div className="mac-dock-indicator-dot" />
         </div>
 
-        {/* 7. Redis Write-Behind Flush Trigger */}
+        {/* 8. Redis Write-Behind Flush Trigger */}
         <div
           onClick={handleFlushBuffer}
           className="mac-dock-item"
@@ -204,7 +227,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           <div className={`mac-dock-indicator-dot ${flushSuccess ? 'active' : ''}`} />
         </div>
 
-        {/* 8. About This Mac ( Manifesto) */}
+        {/* 9. About This Mac ( Manifesto) */}
         <div
           onClick={handleOpenAboutClick}
           className="mac-dock-item"
@@ -215,6 +238,23 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
           </div>
           <div className="mac-dock-indicator-dot" />
         </div>
+
+        {/* 10. Dock Pin / Unpin Button */}
+        <button
+          type="button"
+          onClick={() => {
+            playKeyClick();
+            setIsPinned((p) => !p);
+          }}
+          className={`px-1 py-1 rounded transition-colors self-center ${
+            isPinned
+              ? 'text-amber-400 bg-amber-500/20 shadow-xs'
+              : 'text-zinc-400 hover:text-white hover:bg-white/10'
+          }`}
+          title={isPinned ? 'Dock Sabitlendi (Otomatik Gizlemeyi Aç)' : 'Dock’u Sabitle'}
+        >
+          <Pin className={`w-3.5 h-3.5 ${isPinned ? 'rotate-45' : ''}`} />
+        </button>
       </div>
     </aside>
   );

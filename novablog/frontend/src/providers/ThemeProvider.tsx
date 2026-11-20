@@ -25,11 +25,13 @@ const subscribe = (callback: () => void) => {
 };
 
 const getSnapshot = (): Theme => {
+  if (typeof window === 'undefined') return 'light';
   const saved = localStorage.getItem('novablog_theme');
-  return saved === 'light' ? 'light' : 'dark';
+  if (saved === 'dark' || saved === 'light') return saved;
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 };
 
-const getServerSnapshot = (): Theme => 'dark';
+const getServerSnapshot = (): Theme => 'light';
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);

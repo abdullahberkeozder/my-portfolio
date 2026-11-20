@@ -68,6 +68,7 @@ function AuthorContent({ params }: AuthorPageProps) {
         n === target ||
         (target.includes('selin') && n.includes('selin')) ||
         (target.includes('caner') && n.includes('caner')) ||
+        (target.includes('berke') && n.includes('berke')) ||
         (target.includes('admin') && n.includes('berke'))
       );
     }).map((b) => ApiClient.normalizeBlog(b));
@@ -101,6 +102,7 @@ function AuthorContent({ params }: AuthorPageProps) {
             n === target ||
             (target.includes('selin') && n.includes('selin')) ||
             (target.includes('caner') && n.includes('caner')) ||
+            (target.includes('berke') && n.includes('berke')) ||
             (target.includes('admin') && n.includes('berke'))
           );
         });

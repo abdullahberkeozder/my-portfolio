@@ -70,6 +70,7 @@ function PostContent({ params }: PostPageProps) {
   );
   const [isLoading, setIsLoading] = useState(() => !initialMockBlog);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isBarVisible, setIsBarVisible] = useState(true);
   const [copiedCodeIdx, setCopiedCodeIdx] = useState<number | null>(null);
   const [isCopiedLink, setIsCopiedLink] = useState(false);
   const [isTocOpen, setIsTocOpen] = useState(false);
@@ -88,14 +89,22 @@ function PostContent({ params }: PostPageProps) {
   const bookmarkedIds = useBookmarks();
   const followedAuthors = useFollowedAuthors();
 
-  // Scroll Progress listener
+  // Scroll Progress and Auto-Retreating Reader HUD listener
   useEffect(() => {
+    let lastY = window.scrollY;
     const handleScroll = () => {
+      const currentY = window.scrollY;
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
       if (totalHeight > 0) {
-        const progress = Math.min(100, Math.max(0, (window.scrollY / totalHeight) * 100));
+        const progress = Math.min(100, Math.max(0, (currentY / totalHeight) * 100));
         setScrollProgress(progress);
       }
+      if (currentY > lastY + 20 && currentY > 180) {
+        setIsBarVisible(false); // Retract when actively reading down
+      } else if (currentY < lastY - 10) {
+        setIsBarVisible(true); // Reveal on pause or scroll up
+      }
+      lastY = currentY;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -448,7 +457,7 @@ function PostContent({ params }: PostPageProps) {
       )}
 
       {/* 5. Main 740px Safari Reader Warm Parchment Canvas */}
-      <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-8 py-8 my-4 safari-reader-parchment space-y-8">
+      <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-8 pt-8 pb-48 my-4 safari-reader-parchment space-y-8">
         {/* Topic Tags Ribbon & Dispatch Identifier */}
         <div className="flex flex-wrap items-center gap-2">
           {blog.publicationType === 'dispatch' && (
@@ -865,8 +874,12 @@ function PostContent({ params }: PostPageProps) {
         )}
       </main>
 
-      {/* 8. 49px Safari Reader Sticky Bottom Interaction Dock */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 safari-reader-dock rounded-2xl w-[90%] max-w-lg shadow-2xl">
+      {/* 8. 49px Safari Reader Sticky Bottom Interaction Dock (Auto-Retreats on downscroll) */}
+      <div
+        className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-40 safari-reader-dock rounded-2xl w-[90%] max-w-lg shadow-2xl transition-all duration-300 ease-out ${
+          isBarVisible ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0 pointer-events-none'
+        }`}
+      >
         <div className="flex items-center gap-3">
           {/* Claps */}
           <button

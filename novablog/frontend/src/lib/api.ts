@@ -32,19 +32,13 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost
 
 export class ApiClient {
   private static token: string | null = null;
-  private static isBackendAvailable: boolean | null = null;
+  private static isBackendAvailable: boolean | null = false; // Standalone mock by default; verified on explicit health check
   private static lastHealthCheck = 0;
 
   private static shouldAttemptBackend(): boolean {
-    if (typeof window === 'undefined') return true;
-    if (this.isBackendAvailable === false) {
-      // Re-probe only after 30 seconds using monotonic performance clock
-      const now = typeof performance !== 'undefined' ? performance.now() : 0;
-      if (now - this.lastHealthCheck < 30000) {
-        return false;
-      }
-    }
-    return true;
+    if (typeof window === 'undefined') return false;
+    // Only attempt live API calls if backend has explicitly been verified online
+    return this.isBackendAvailable === true;
   }
 
   public static setToken(token: string | null) {
@@ -226,6 +220,15 @@ export class ApiClient {
 
   // --- CONCURRENCY & ENGAGEMENT WRITE-BEHIND METRICS (Adım 24) ---
   public static async recordView(id: number): Promise<{ blogId: number; viewsCount: number }> {
+    if (!this.shouldAttemptBackend()) {
+      const found = MOCK_BLOGS.find((b) => (b.id ?? b.blogId) === id);
+      if (found) {
+        found.views = (found.views || 0) + 1;
+        found.viewsCount = found.views;
+        return { blogId: id, viewsCount: found.views };
+      }
+      return { blogId: id, viewsCount: 1 };
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/${id}/view`, {
         method: 'POST',
@@ -246,6 +249,15 @@ export class ApiClient {
   }
 
   public static async recordLike(id: number): Promise<{ blogId: number; likesCount: number }> {
+    if (!this.shouldAttemptBackend()) {
+      const found = MOCK_BLOGS.find((b) => (b.id ?? b.blogId) === id);
+      if (found) {
+        found.likes = (found.likes || 0) + 1;
+        found.likesCount = found.likes;
+        return { blogId: id, likesCount: found.likes };
+      }
+      return { blogId: id, likesCount: 1 };
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/${id}/like`, {
         method: 'POST',
@@ -266,6 +278,15 @@ export class ApiClient {
   }
 
   public static async removeLike(id: number): Promise<{ blogId: number; likesCount: number }> {
+    if (!this.shouldAttemptBackend()) {
+      const found = MOCK_BLOGS.find((b) => (b.id ?? b.blogId) === id);
+      if (found) {
+        found.likes = Math.max(0, (found.likes || 0) - 1);
+        found.likesCount = found.likes;
+        return { blogId: id, likesCount: found.likes };
+      }
+      return { blogId: id, likesCount: 0 };
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/${id}/like`, {
         method: 'DELETE',
@@ -522,6 +543,7 @@ export class ApiClient {
 
   // --- BLOG LIFECYCLE (STATE MACHINE #1) ---
   public static async getDeletedBlogs(): Promise<BlogDto[]> {
+    if (!this.shouldAttemptBackend()) return [];
     try {
       const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/deleted`, {
         method: 'GET',
@@ -622,6 +644,7 @@ export class ApiClient {
 
   // --- CATEGORIES ---
   public static async getCategories(): Promise<BlogCategoryDto[]> {
+    if (!this.shouldAttemptBackend()) return MOCK_CATEGORIES;
     try {
       const res = await fetch(`${API_BASE_URL}/blog/category/api/v1.0.0/list`, {
         method: 'GET',
@@ -992,6 +1015,7 @@ export class ApiClient {
   }
 
   public static async toggleFollow(username: string): Promise<FollowResponseDto | null> {
+    if (!this.shouldAttemptBackend()) return null;
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/users/${encodeURIComponent(username)}/follow`, {
         method: 'POST',
@@ -1007,6 +1031,15 @@ export class ApiClient {
   }
 
   public static async clapBlog(blogId: number, claps = 1): Promise<ClapResponseDto | null> {
+    if (!this.shouldAttemptBackend()) {
+      const found = MOCK_BLOGS.find((b) => (b.id ?? b.blogId) === blogId);
+      if (found) {
+        found.clapsCount = (found.clapsCount || 0) + claps;
+        found.userClaps = Math.min(50, (found.userClaps || 0) + claps);
+        return { blogId, totalClaps: found.clapsCount, userClaps: found.userClaps };
+      }
+      return { blogId, totalClaps: claps, userClaps: claps };
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/social/blogs/${blogId}/clap`, {
         method: 'POST',
@@ -1027,6 +1060,7 @@ export class ApiClient {
   }
 
   public static async toggleBookmark(blogId: number): Promise<BookmarkResponseDto | null> {
+    if (!this.shouldAttemptBackend()) return null;
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/social/blogs/${blogId}/bookmark`, {
         method: 'POST',
@@ -1047,6 +1081,16 @@ export class ApiClient {
   }): Promise<PagedResponseDto<BlogDto>> {
     const page = params?.page ?? 0;
     const size = params?.size ?? 10;
+    if (!this.shouldAttemptBackend()) {
+      return {
+        content: [],
+        pageNumber: page,
+        pageSize: size,
+        totalElements: 0,
+        totalPages: 0,
+        last: true,
+      };
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/social/me/bookmarks?page=${page}&size=${size}`, {
         method: 'GET',

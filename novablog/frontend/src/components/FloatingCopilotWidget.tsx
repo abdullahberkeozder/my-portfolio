@@ -26,6 +26,9 @@ interface FloatingCopilotWidgetProps {
   onOpenAbout?: () => void;
   onOpenArticle?: (blogId: number) => void;
   onOpenTwoFactor?: () => void;
+  isOpenControlled?: boolean;
+  onCloseControlled?: () => void;
+  showFloatingButton?: boolean;
 }
 
 interface QnA {
@@ -114,15 +117,28 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
   onSelectTab,
   onMetricsFlushed,
   onOpenAbout,
+  isOpenControlled,
+  onCloseControlled,
+  showFloatingButton = false,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = isOpenControlled !== undefined ? isOpenControlled : internalIsOpen;
   const [selectedQnA, setSelectedQnA] = useState<QnA>(KNOWLEDGE_BASE[0]);
   const [isFlushing, setIsFlushing] = useState(false);
   const [flushSuccess, setFlushSuccess] = useState(false);
 
   const handleToggleOpen = () => {
     playWindowOpen();
-    setIsOpen((prev) => !prev);
+    if (onCloseControlled && isOpen) {
+      onCloseControlled();
+    }
+    setInternalIsOpen((prev) => !prev);
+  };
+
+  const handleClose = () => {
+    playWindowOpen();
+    if (onCloseControlled) onCloseControlled();
+    setInternalIsOpen(false);
   };
 
   const handleManualFlush = async () => {
@@ -143,7 +159,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
 
   const handleAction = (type?: QnA['actionType']) => {
     playKeyClick('crisp');
-    setIsOpen(false);
+    handleClose();
     if (!type) return;
 
     if (type === 'console-loom') {
@@ -191,7 +207,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
   return (
     <>
       {/* 1. Floating Trigger Capsule (Mac OS X Snow Leopard Acrylic Glass) */}
-      {!isOpen && (
+      {!isOpen && showFloatingButton && (
         <button
           type="button"
           onClick={handleToggleOpen}

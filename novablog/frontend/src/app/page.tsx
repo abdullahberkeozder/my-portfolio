@@ -113,6 +113,7 @@ export default function Home() {
   const [isTwoFactorModalOpen, setIsTwoFactorModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isOmnibarOpen, setIsOmnibarOpen] = useState(false);
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [activeAuthorProfile, setActiveAuthorProfile] = useState<string | null>(null);
   const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
   const [semanticResults, setSemanticResults] = useState<BlogSemanticSearchResultDto[] | null>(null);
@@ -141,7 +142,12 @@ export default function Home() {
   };
 
   useEffect(() => {
-    ApiClient.checkBackendHealth().then(setIsBackendOnline);
+    // Standalone client by default; avoids triggering net::ERR_CONNECTION_REFUSED console noise
+    if (process.env.NEXT_PUBLIC_ENABLE_BACKEND_SYNC === 'true') {
+      ApiClient.checkBackendHealth().then(setIsBackendOnline);
+    } else {
+      setIsBackendOnline(false);
+    }
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -380,277 +386,158 @@ export default function Home() {
         />
 
         {/* 2. Main Publication Feed (Keşfet / Takip Edilenler / Okuma Listem) */}
-        <div id="articles-feed" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-40 sm:pb-48 space-y-6 scroll-mt-14">
-          {/* Mac OS X Unified Finder Scope Bar & Discovery Panel (Low Cognitive Load 2-Tier Architecture) */}
-          <div className="mac-scope-bar p-3 sm:p-3.5 rounded-2xl border border-black/10 dark:border-white/10 bg-gradient-to-b from-white/90 via-zinc-50/80 to-zinc-100/90 dark:from-[#1b1d24]/90 dark:via-[#14151b]/85 dark:to-[#0f1014]/90 backdrop-blur-md shadow-md space-y-2.5">
-            {/* Tier 1: Scope Switcher (Keşfet / Takip / Okuma) + Publication Type (Tüm / Makale / Haber) + Search */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-              {/* Left Group: Dual Scopes */}
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                {/* 1. Feed Mode Switcher */}
-                <div className="mac-scope-track">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playTabSelect();
-                      setFeedMode('explore');
-                    }}
-                    className={`mac-scope-segment ${
-                      feedMode === 'explore' ? 'active' : ''
-                    }`}
-                  >
-                    <Compass className="w-3.5 h-3.5 text-emerald-500" />
-                    <span>Keşfet</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playTabSelect();
-                      setFeedMode('following');
-                    }}
-                    className={`mac-scope-segment ${
-                      feedMode === 'following' ? 'active' : ''
-                    }`}
-                  >
-                    <Users className="w-3.5 h-3.5 text-cyan-500" />
-                    <span>Takip Edilenler</span>
-                    {followedAuthors.length > 0 && (
-                      <span className="w-4 h-4 rounded-full bg-cyan-500 text-white text-[9px] font-mono flex items-center justify-center font-bold">
-                        {followedAuthors.length}
-                      </span>
-                    )}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playTabSelect();
-                      setFeedMode('bookmarks');
-                    }}
-                    className={`mac-scope-segment ${
-                      feedMode === 'bookmarks' ? 'active' : ''
-                    }`}
-                  >
-                    <Bookmark className="w-3.5 h-3.5 text-amber-500" />
-                    <span>Okuma Listem</span>
-                    {bookmarkedIds.length > 0 && (
-                      <span className="w-4 h-4 rounded-full bg-amber-500 text-white text-[9px] font-mono flex items-center justify-center font-bold">
-                        {bookmarkedIds.length}
-                      </span>
-                    )}
-                  </button>
-                </div>
-
-                <div className="h-5 w-px bg-black/10 dark:bg-white/10 hidden sm:block" />
-
-                {/* 2. Publication Type: Tüm Akış | Makaleler | Haberler */}
-                <div className="mac-scope-track font-mono text-[11px]">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playKeyClick();
-                      setPublicationTypeFilter('all');
-                    }}
-                    className={`mac-scope-segment ${
-                      publicationTypeFilter === 'all' ? 'active' : ''
-                    }`}
-                  >
-                    <span>Tüm Akış ({blogs.length})</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playKeyClick();
-                      setPublicationTypeFilter('article');
-                    }}
-                    className={`mac-scope-segment ${
-                      publicationTypeFilter === 'article' ? 'active' : ''
-                    }`}
-                  >
-                    <span>Makaleler</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playKeyClick();
-                      setPublicationTypeFilter('dispatch');
-                    }}
-                    className={`mac-scope-segment ${
-                      publicationTypeFilter === 'dispatch' ? 'active' : ''
-                    }`}
-                  >
-                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-1" />
-                    <span>Haberler</span>
-                  </button>
-                </div>
+        <div id="articles-feed" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pb-36 sm:pb-44 space-y-4 scroll-mt-14">
+          {/* Mac OS X Unified Finder Scope Bar (Single-Tier High Ergonomics Standard) */}
+          <div className="mac-scope-bar px-3 py-2 sm:px-4 rounded-xl border border-black/10 dark:border-white/10 bg-gradient-to-b from-white/95 via-zinc-100/90 to-zinc-200/90 dark:from-[#242730]/95 dark:via-[#1c1e26]/90 dark:to-[#14161c]/90 backdrop-blur-md shadow-md flex flex-wrap items-center justify-between gap-2.5">
+            {/* Left: View Mode (iOS 6 Segmented Control) + Publication Type */}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="mac-scope-track">
+                <button
+                  type="button"
+                  onClick={() => {
+                    playTabSelect();
+                    setFeedMode('explore');
+                  }}
+                  className={`mac-scope-segment ${feedMode === 'explore' ? 'active' : ''}`}
+                >
+                  <Compass className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>Keşfet ({blogs.length})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playTabSelect();
+                    setFeedMode('following');
+                  }}
+                  className={`mac-scope-segment ${feedMode === 'following' ? 'active' : ''}`}
+                >
+                  <Users className="w-3.5 h-3.5 text-cyan-500" />
+                  <span>Takip Edilenler</span>
+                  {followedAuthors.length > 0 && (
+                    <span className="w-4 h-4 rounded-full bg-cyan-500 text-white text-[9px] font-mono flex items-center justify-center font-bold">
+                      {followedAuthors.length}
+                    </span>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playTabSelect();
+                    setFeedMode('bookmarks');
+                  }}
+                  className={`mac-scope-segment ${feedMode === 'bookmarks' ? 'active' : ''}`}
+                >
+                  <Bookmark className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Okuma Listem</span>
+                  {bookmarkedIds.length > 0 && (
+                    <span className="w-4 h-4 rounded-full bg-amber-500 text-white text-[9px] font-mono flex items-center justify-center font-bold">
+                      {bookmarkedIds.length}
+                    </span>
+                  )}
+                </button>
               </div>
 
-              {/* Right Group: Dedicated Contextual Filter Search */}
-              <div className="relative w-full sm:w-64 lg:w-72">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400 pointer-events-none" />
+              {/* Publication Type Switcher (Aqua Capsule Pill) */}
+              <div className="mac-scope-track font-mono text-[11px] hidden md:flex">
+                <button
+                  type="button"
+                  onClick={() => {
+                    playKeyClick();
+                    setPublicationTypeFilter('all');
+                  }}
+                  className={`mac-scope-segment ${publicationTypeFilter === 'all' ? 'active' : ''}`}
+                >
+                  <span>Tümü</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playKeyClick();
+                    setPublicationTypeFilter('article');
+                  }}
+                  className={`mac-scope-segment ${publicationTypeFilter === 'article' ? 'active' : ''}`}
+                >
+                  <span>Makaleler</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playKeyClick();
+                    setPublicationTypeFilter('dispatch');
+                  }}
+                  className={`mac-scope-segment ${publicationTypeFilter === 'dispatch' ? 'active' : ''}`}
+                >
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-1" />
+                  <span>Haberler</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Right: Cocoa Pop-up Dropdowns + Search */}
+            <div className="flex items-center gap-2">
+              {/* Category Pop-up Button */}
+              <select
+                value={selectedCategory ?? ''}
+                onChange={(e) => {
+                  playKeyClick();
+                  setSelectedCategory(e.target.value ? Number(e.target.value) : null);
+                }}
+                className="h-7 px-2 text-[11px] font-semibold rounded-md border border-black/20 dark:border-white/20 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer shadow-inner focus:outline-none"
+                aria-label="Kategori"
+              >
+                <option value="">Tüm Kategoriler</option>
+                {categories.map((c) => {
+                  const catId = c.categoryId ?? c.blogCategoryId;
+                  return (
+                    <option key={catId} value={catId}>
+                      {c.categoryName}
+                    </option>
+                  );
+                })}
+              </select>
+
+              {/* Sort Pop-up Button */}
+              {feedMode === 'explore' && (
+                <select
+                  value={exploreSort}
+                  onChange={(e) => {
+                    playKeyClick();
+                    setExploreSort(e.target.value as 'trending' | 'featured' | 'latest');
+                  }}
+                  className="h-7 px-2 text-[11px] font-semibold rounded-md border border-black/20 dark:border-white/20 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer shadow-inner focus:outline-none"
+                  aria-label="Sıralama"
+                >
+                  <option value="trending">🔥 Trendler</option>
+                  <option value="featured">✨ Editörün Seçimi</option>
+                  <option value="latest">⏱️ En Yeni</option>
+                </select>
+              )}
+
+              {/* Recessed Filter Search */}
+              <div className="relative w-36 sm:w-44 lg:w-52">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-zinc-400 pointer-events-none" />
                 <input
                   id="blog-search-input"
                   name="blogSearch"
                   type="text"
-                  placeholder="Başlık, yazar veya etiket ara..."
+                  placeholder="Filtrele... (⌘K)"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && searchTerm.trim()) {
-                      handleTriggerSemanticSearch(searchTerm);
-                    }
-                  }}
-                  className="mac-search-recessed !h-8 !text-xs !pl-8 !pr-8 w-full"
+                  className="mac-search-recessed !h-7 !text-[11px] !pl-7 !pr-6 w-full"
                 />
-                {searchTerm ? (
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => handleTriggerSemanticSearch(searchTerm)}
-                      disabled={isSearchingSemantic}
-                      title="Spring AI Vektör Araması (pgvector)"
-                      aria-label="Vektör Ara"
-                      className="p-1 rounded text-emerald-500 hover:bg-emerald-500/10 cursor-pointer disabled:opacity-50"
-                    >
-                      {isSearchingSemantic ? (
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                      ) : (
-                        <Sparkles className="w-3 h-3" />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSearchTerm('');
-                        setSemanticResults(null);
-                      }}
-                      aria-label="Aramayı Temizle"
-                      className="text-zinc-400 hover:text-black dark:hover:text-white p-0.5 cursor-pointer"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ) : (
+                {searchTerm && (
                   <button
                     type="button"
-                    onClick={() => handleTriggerSemanticSearch()}
-                    title="Spring AI Anlamsal Arama ile Tara"
-                    aria-label="Anlamsal Arama"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-emerald-500 cursor-pointer"
+                    onClick={() => {
+                      setSearchTerm('');
+                      setSemanticResults(null);
+                    }}
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer"
                   >
-                    <Sparkles className="w-3 h-3" />
+                    <X className="w-3 h-3" />
                   </button>
                 )}
               </div>
-            </div>
-
-            {/* Tier 2: Category Filter & Sort Predicates */}
-            <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-black/5 dark:border-white/5 text-xs">
-              {/* Category Select & Quick Chips */}
-              <div className="flex items-center gap-2 overflow-x-auto scrollbar-none max-w-full">
-                <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider hidden sm:inline">
-                  KATEGORİ:
-                </span>
-                
-                <select
-                  value={selectedCategory ?? ''}
-                  onChange={(e) => {
-                    playKeyClick();
-                    setSelectedCategory(e.target.value ? Number(e.target.value) : null);
-                  }}
-                  className="h-7 px-2.5 py-0.5 text-[11px] font-semibold rounded-md border border-black/15 dark:border-white/15 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer shadow-sm focus:outline-none"
-                  aria-label="Kategoriye Göre Filtrele"
-                >
-                  <option value="">Tüm Kategoriler ({blogs.length})</option>
-                  {categories.map((c) => {
-                    const catId = c.categoryId ?? c.blogCategoryId;
-                    return (
-                      <option key={catId} value={catId}>
-                        {c.categoryName}
-                      </option>
-                    );
-                  })}
-                </select>
-
-                {/* Quick focus shortcuts for prominent topics */}
-                <div className="hidden md:flex items-center gap-1">
-                  {categories.slice(0, 3).map((c) => {
-                    const catId = c.categoryId ?? c.blogCategoryId;
-                    const isSel = selectedCategory === catId;
-                    return (
-                      <button
-                        key={catId}
-                        type="button"
-                        onClick={() => {
-                          playKeyClick();
-                          setSelectedCategory(isSel ? null : (catId ?? null));
-                        }}
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold transition-colors cursor-pointer ${
-                          isSel
-                            ? 'bg-blue-600 text-white shadow-xs'
-                            : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white bg-black/5 dark:bg-white/5'
-                        }`}
-                      >
-                        {c.categoryName.split(' ')[0]}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Explore Sub-Sort: Apple HIG Segmented Control */}
-              {feedMode === 'explore' && (
-                <div className="flex items-center gap-1.5 shrink-0 ml-auto">
-                  <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-wider hidden xl:inline">
-                    SIRALA:
-                  </span>
-                  <div className="mac-scope-track font-mono text-[11px]">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        playKeyClick();
-                        setExploreSort('trending');
-                      }}
-                      aria-pressed={exploreSort === 'trending'}
-                      className={`mac-scope-segment !py-1 !px-2.5 !text-[11px] ${
-                        exploreSort === 'trending' ? 'active' : ''
-                      }`}
-                    >
-                      <TrendingUp className="w-3 h-3 text-emerald-400 mr-1" />
-                      <span>Trendler</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        playKeyClick();
-                        setExploreSort('featured');
-                      }}
-                      aria-pressed={exploreSort === 'featured'}
-                      className={`mac-scope-segment !py-1 !px-2.5 !text-[11px] ${
-                        exploreSort === 'featured' ? 'active' : ''
-                      }`}
-                    >
-                      <Sparkles className="w-3 h-3 text-cyan-400 mr-1" />
-                      <span>Editörün Seçimi</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        playKeyClick();
-                        setExploreSort('latest');
-                      }}
-                      aria-pressed={exploreSort === 'latest'}
-                      className={`mac-scope-segment !py-1 !px-2.5 !text-[11px] ${
-                        exploreSort === 'latest' ? 'active' : ''
-                      }`}
-                    >
-                      <Clock className="w-3 h-3 text-purple-400 mr-1" />
-                      <span>En Yeni</span>
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Active Filter Pill Bar */}
@@ -1025,8 +912,11 @@ export default function Home() {
         }}
       />
 
-      {/* Floating Copilot Widget */}
+      {/* Floating Copilot Widget (Controlled, Corner Pill Hidden to Unburden Viewport) */}
       <FloatingCopilotWidget
+        isOpenControlled={isCopilotOpen}
+        onCloseControlled={() => setIsCopilotOpen(false)}
+        showFloatingButton={false}
         onOpenArticle={(blogId: number) => {
           const matched = blogs.find((b) => (b.id ?? b.blogId) === blogId);
           if (matched) setSelectedBlog(matched);
@@ -1036,7 +926,7 @@ export default function Home() {
         onOpenAbout={() => setIsAboutModalOpen(true)}
       />
 
-      {/*  Mac OS X 3D Glass Desktop Dock */}
+      {/*  Mac OS X 3D Glass Desktop Dock (Auto-Hidden with Knurled Tab & Copilot App Tile) */}
       <PortalCockpitDock
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -1044,6 +934,7 @@ export default function Home() {
         onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
         onOpenSpotlight={() => setIsOmnibarOpen(true)}
         onOpenAbout={() => setIsAboutModalOpen(true)}
+        onOpenCopilot={() => setIsCopilotOpen((prev) => !prev)}
         onMetricsFlushed={() => refetchBlogs()}
       />
 

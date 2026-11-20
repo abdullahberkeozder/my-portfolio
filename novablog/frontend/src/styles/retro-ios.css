@@ -2365,6 +2365,38 @@
 /* ==========================================================================
    Mac OS X 3D Reflective Glass Desktop Dock (Snow Leopard / Mountain Lion)
    ========================================================================== */
+.mac-dock-pull-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 76px;
+  height: 14px;
+  background: linear-gradient(180deg, #44474d 0%, #26272b 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.45);
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.35);
+  margin-bottom: -1px;
+  z-index: 46;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.mac-dock-pull-tab:hover {
+  background: linear-gradient(180deg, #585c64 0%, #32343a 100%);
+}
+
+.mac-dock-knurled-ribs {
+  display: inline-block;
+  width: 28px;
+  height: 3px;
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
 .mac-3d-glass-dock-wrapper {
   position: fixed;
   bottom: 4px;
