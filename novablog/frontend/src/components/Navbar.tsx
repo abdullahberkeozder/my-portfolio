@@ -319,7 +319,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               role="tab"
               aria-selected={activeTab === 'feed'}
               onClick={() => handleTabClick('articles-feed', 'feed')}
-              className={`ios-segment-btn !py-1 !px-2.5 sm:!px-3.5 !text-xs font-bold whitespace-nowrap cursor-pointer ${
+              className={`ios-segment-btn !py-1.5 !px-3 sm:!px-4 !text-xs font-bold whitespace-nowrap cursor-pointer leading-normal ${
                 activeTab === 'feed' ? 'active' : ''
               }`}
             >
@@ -331,7 +331,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               role="tab"
               aria-selected={activeTab === 'system'}
               onClick={() => handleTabClick('modular-architecture-console', 'system')}
-              className={`ios-segment-btn !py-1 !px-2.5 sm:!px-3.5 !text-xs font-bold whitespace-nowrap cursor-pointer ${
+              className={`ios-segment-btn !py-1.5 !px-3 sm:!px-4 !text-xs font-bold whitespace-nowrap cursor-pointer leading-normal ${
                 activeTab === 'system' ? 'active' : ''
               }`}
             >
@@ -343,7 +343,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               role="tab"
               aria-selected={activeTab === 'ai-search'}
               onClick={() => handleTabClick('ai-vector-studio', 'ai-search')}
-              className={`ios-segment-btn !py-1 !px-2.5 sm:!px-3.5 !text-xs font-bold whitespace-nowrap cursor-pointer ${
+              className={`ios-segment-btn !py-1.5 !px-3 sm:!px-4 !text-xs font-bold whitespace-nowrap cursor-pointer leading-normal ${
                 activeTab === 'ai-search' ? 'active' : ''
               }`}
             >
@@ -355,7 +355,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               role="tab"
               aria-selected={activeTab === 'admin-batch'}
               onClick={() => handleTabClick('batch-etl-studio', 'admin-batch')}
-              className={`ios-segment-btn !py-1 !px-2.5 sm:!px-3.5 !text-xs font-bold whitespace-nowrap cursor-pointer ${
+              className={`ios-segment-btn !py-1.5 !px-3 sm:!px-4 !text-xs font-bold whitespace-nowrap cursor-pointer leading-normal ${
                 activeTab === 'admin-batch' ? 'active' : ''
               }`}
             >

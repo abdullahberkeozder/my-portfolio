@@ -380,74 +380,120 @@ export default function Home() {
         />
 
         {/* 2. Main Publication Feed (Keşfet / Takip Edilenler / Okuma Listem) */}
-        <div id="articles-feed" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 space-y-6 scroll-mt-14">
-          {/* Mac OS X Unified Finder Scope Bar & Discovery Panel */}
-          <div className="mac-scope-bar p-3.5 sm:p-4 rounded-2xl border border-black/10 dark:border-white/10 bg-gradient-to-b from-white/80 via-zinc-50/70 to-zinc-100/80 dark:from-[#1b1d24]/90 dark:via-[#14151b]/85 dark:to-[#0f1014]/90 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.8)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)] space-y-3.5">
-            {/* Top Bar: Feed Switcher & Contextual Filter Search */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              {/* Primary Dual-Feed Tabs with Mac OS X Segmented Styling */}
-              <div className="mac-scope-track w-fit">
-                <button
-                  type="button"
-                  onClick={() => {
-                    playTabSelect();
-                    setFeedMode('explore');
-                  }}
-                  className={`mac-scope-segment ${
-                    feedMode === 'explore' ? 'active' : ''
-                  }`}
-                >
-                  <Compass className="w-4 h-4 text-emerald-500" />
-                  <span>KEŞFET</span>
-                </button>
+        <div id="articles-feed" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-40 sm:pb-48 space-y-6 scroll-mt-14">
+          {/* Mac OS X Unified Finder Scope Bar & Discovery Panel (Low Cognitive Load 2-Tier Architecture) */}
+          <div className="mac-scope-bar p-3 sm:p-3.5 rounded-2xl border border-black/10 dark:border-white/10 bg-gradient-to-b from-white/90 via-zinc-50/80 to-zinc-100/90 dark:from-[#1b1d24]/90 dark:via-[#14151b]/85 dark:to-[#0f1014]/90 backdrop-blur-md shadow-md space-y-2.5">
+            {/* Tier 1: Scope Switcher (Keşfet / Takip / Okuma) + Publication Type (Tüm / Makale / Haber) + Search */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+              {/* Left Group: Dual Scopes */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                {/* 1. Feed Mode Switcher */}
+                <div className="mac-scope-track">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playTabSelect();
+                      setFeedMode('explore');
+                    }}
+                    className={`mac-scope-segment ${
+                      feedMode === 'explore' ? 'active' : ''
+                    }`}
+                  >
+                    <Compass className="w-3.5 h-3.5 text-emerald-500" />
+                    <span>Keşfet</span>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    playTabSelect();
-                    setFeedMode('following');
-                  }}
-                  className={`mac-scope-segment ${
-                    feedMode === 'following' ? 'active' : ''
-                  }`}
-                >
-                  <Users className="w-4 h-4 text-cyan-500" />
-                  <span>TAKİP EDİLENLER</span>
-                  {followedAuthors.length > 0 && (
-                    <span className="w-4 h-4 rounded-full bg-cyan-500 text-white text-[9px] font-mono flex items-center justify-center font-bold shadow-sm">
-                      {followedAuthors.length}
-                    </span>
-                  )}
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playTabSelect();
+                      setFeedMode('following');
+                    }}
+                    className={`mac-scope-segment ${
+                      feedMode === 'following' ? 'active' : ''
+                    }`}
+                  >
+                    <Users className="w-3.5 h-3.5 text-cyan-500" />
+                    <span>Takip Edilenler</span>
+                    {followedAuthors.length > 0 && (
+                      <span className="w-4 h-4 rounded-full bg-cyan-500 text-white text-[9px] font-mono flex items-center justify-center font-bold">
+                        {followedAuthors.length}
+                      </span>
+                    )}
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    playTabSelect();
-                    setFeedMode('bookmarks');
-                  }}
-                  className={`mac-scope-segment ${
-                    feedMode === 'bookmarks' ? 'active' : ''
-                  }`}
-                >
-                  <Bookmark className="w-4 h-4 text-amber-500" />
-                  <span>OKUMA LİSTEM</span>
-                  {bookmarkedIds.length > 0 && (
-                    <span className="w-4 h-4 rounded-full bg-amber-500 text-white text-[9px] font-mono flex items-center justify-center font-bold shadow-sm">
-                      {bookmarkedIds.length}
-                    </span>
-                  )}
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playTabSelect();
+                      setFeedMode('bookmarks');
+                    }}
+                    className={`mac-scope-segment ${
+                      feedMode === 'bookmarks' ? 'active' : ''
+                    }`}
+                  >
+                    <Bookmark className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Okuma Listem</span>
+                    {bookmarkedIds.length > 0 && (
+                      <span className="w-4 h-4 rounded-full bg-amber-500 text-white text-[9px] font-mono flex items-center justify-center font-bold">
+                        {bookmarkedIds.length}
+                      </span>
+                    )}
+                  </button>
+                </div>
+
+                <div className="h-5 w-px bg-black/10 dark:bg-white/10 hidden sm:block" />
+
+                {/* 2. Publication Type: Tüm Akış | Makaleler | Haberler */}
+                <div className="mac-scope-track font-mono text-[11px]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playKeyClick();
+                      setPublicationTypeFilter('all');
+                    }}
+                    className={`mac-scope-segment ${
+                      publicationTypeFilter === 'all' ? 'active' : ''
+                    }`}
+                  >
+                    <span>Tüm Akış ({blogs.length})</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playKeyClick();
+                      setPublicationTypeFilter('article');
+                    }}
+                    className={`mac-scope-segment ${
+                      publicationTypeFilter === 'article' ? 'active' : ''
+                    }`}
+                  >
+                    <span>Makaleler</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playKeyClick();
+                      setPublicationTypeFilter('dispatch');
+                    }}
+                    className={`mac-scope-segment ${
+                      publicationTypeFilter === 'dispatch' ? 'active' : ''
+                    }`}
+                  >
+                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-1" />
+                    <span>Haberler</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Right: Dedicated Contextual Filter Search (Single Source of Truth, No Action Duplication) */}
-              <div className="relative w-full sm:w-72 lg:w-80">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+              {/* Right Group: Dedicated Contextual Filter Search */}
+              <div className="relative w-full sm:w-64 lg:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400 pointer-events-none" />
                 <input
                   id="blog-search-input"
                   name="blogSearch"
                   type="text"
-                  placeholder="Başlık, yazar veya etiket filtrele..."
+                  placeholder="Başlık, yazar veya etiket ara..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={(e) => {
@@ -455,22 +501,22 @@ export default function Home() {
                       handleTriggerSemanticSearch(searchTerm);
                     }
                   }}
-                  className="mac-search-recessed"
+                  className="mac-search-recessed !h-8 !text-xs !pl-8 !pr-8 w-full"
                 />
                 {searchTerm ? (
-                  <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                     <button
                       type="button"
                       onClick={() => handleTriggerSemanticSearch(searchTerm)}
                       disabled={isSearchingSemantic}
                       title="Spring AI Vektör Araması (pgvector)"
                       aria-label="Vektör Ara"
-                      className="p-1 rounded-lg text-emerald-500 hover:bg-emerald-500/10 transition-colors cursor-pointer disabled:opacity-50"
+                      className="p-1 rounded text-emerald-500 hover:bg-emerald-500/10 cursor-pointer disabled:opacity-50"
                     >
                       {isSearchingSemantic ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <Loader2 className="w-3 h-3 animate-spin" />
                       ) : (
-                        <Sparkles className="w-3.5 h-3.5" />
+                        <Sparkles className="w-3 h-3" />
                       )}
                     </button>
                     <button
@@ -480,9 +526,9 @@ export default function Home() {
                         setSemanticResults(null);
                       }}
                       aria-label="Aramayı Temizle"
-                      className="text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer p-0.5"
+                      className="text-zinc-400 hover:text-black dark:hover:text-white p-0.5 cursor-pointer"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-3 h-3" />
                     </button>
                   </div>
                 ) : (
@@ -491,130 +537,62 @@ export default function Home() {
                     onClick={() => handleTriggerSemanticSearch()}
                     title="Spring AI Anlamsal Arama ile Tara"
                     aria-label="Anlamsal Arama"
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 rounded-lg text-zinc-400 hover:text-emerald-500 transition-colors cursor-pointer"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-emerald-500 cursor-pointer"
                   >
-                    <Sparkles className="w-3.5 h-3.5" />
+                    <Sparkles className="w-3 h-3" />
                   </button>
                 )}
               </div>
             </div>
 
-            {/* Publication Type Selector & Category Filter (Haber + Blog Hybrid Architecture) */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 pb-2 border-t border-b border-black/5 dark:border-white/5">
-              {/* Publication Type: TÜM AKIŞ | TEKNİK MAKALELER (Blog) | DİSPAÇLAR (Haberler) */}
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider">
-                  YAYIN TÜRÜ:
-                </span>
-                <div className="mac-scope-track font-mono text-[11px]">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playKeyClick();
-                      setPublicationTypeFilter('all');
-                    }}
-                    className={`mac-scope-segment !py-1 !px-2.5 !text-[11px] ${
-                      publicationTypeFilter === 'all' ? 'active' : ''
-                    }`}
-                  >
-                    <span>TÜM AKIŞ ({blogs.length})</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playKeyClick();
-                      setPublicationTypeFilter('article');
-                    }}
-                    className={`mac-scope-segment !py-1 !px-2.5 !text-[11px] ${
-                      publicationTypeFilter === 'article' ? 'active' : ''
-                    }`}
-                  >
-                    <span>MAKALELER (Blog)</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playKeyClick();
-                      setPublicationTypeFilter('dispatch');
-                    }}
-                    className={`mac-scope-segment !py-1 !px-2.5 !text-[11px] ${
-                      publicationTypeFilter === 'dispatch' ? 'active' : ''
-                    }`}
-                  >
-                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-1" />
-                    <span>DİSPAÇLAR (Haberler)</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Dynamic Category Chips */}
-              <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none max-w-full">
+            {/* Tier 2: Category Filter & Sort Predicates */}
+            <div className="flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-black/5 dark:border-white/5 text-xs">
+              {/* Category Select & Quick Chips */}
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-none max-w-full">
                 <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider hidden sm:inline">
                   KATEGORİ:
                 </span>
-                <button
-                  type="button"
-                  onClick={() => {
+                
+                <select
+                  value={selectedCategory ?? ''}
+                  onChange={(e) => {
                     playKeyClick();
-                    setSelectedCategory(null);
+                    setSelectedCategory(e.target.value ? Number(e.target.value) : null);
                   }}
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-colors cursor-pointer ${
-                    selectedCategory === null
-                      ? 'bg-zinc-800 text-white dark:bg-white dark:text-black shadow-sm'
-                      : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 bg-black/5 dark:bg-white/5'
-                  }`}
+                  className="h-7 px-2.5 py-0.5 text-[11px] font-semibold rounded-md border border-black/15 dark:border-white/15 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer shadow-sm focus:outline-none"
+                  aria-label="Kategoriye Göre Filtrele"
                 >
-                  Hepsi
-                </button>
-                {categories.map((c) => {
-                  const catId = c.categoryId ?? c.blogCategoryId;
-                  const isSel = selectedCategory === catId;
-                  return (
-                    <button
-                      key={catId}
-                      type="button"
-                      onClick={() => {
-                        playKeyClick();
-                        setSelectedCategory(isSel ? null : (catId ?? null));
-                      }}
-                      className={`px-2 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-                        isSel
-                          ? 'bg-blue-600 text-white shadow-sm'
-                          : 'text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-300 bg-black/5 dark:bg-white/5'
-                      }`}
-                    >
-                      {c.categoryName}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+                  <option value="">Tüm Kategoriler ({blogs.length})</option>
+                  {categories.map((c) => {
+                    const catId = c.categoryId ?? c.blogCategoryId;
+                    return (
+                      <option key={catId} value={catId}>
+                        {c.categoryName}
+                      </option>
+                    );
+                  })}
+                </select>
 
-            {/* Sub-bar: Edge-Faded Topic Ribbon & Apple HIG Segmented Sort Control */}
-            <div className="pt-2 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-              {/* Topic Ribbon with CSS Mask Edge-Fade */}
-              <div
-                className="relative overflow-x-auto pb-1 md:pb-0 scrollbar-none flex-1 min-w-0"
-                style={{
-                  WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)',
-                  maskImage: 'linear-gradient(to right, black 85%, transparent 100%)',
-                }}
-              >
-                <div className="flex items-center gap-2 pr-6">
-                  {TOPIC_PILLS.map((topic) => {
-                    const isActive = selectedTopic === topic.tag;
+                {/* Quick focus shortcuts for prominent topics */}
+                <div className="hidden md:flex items-center gap-1">
+                  {categories.slice(0, 3).map((c) => {
+                    const catId = c.categoryId ?? c.blogCategoryId;
+                    const isSel = selectedCategory === catId;
                     return (
                       <button
-                        key={topic.id}
+                        key={catId}
                         type="button"
                         onClick={() => {
                           playKeyClick();
-                          setSelectedTopic(topic.tag);
+                          setSelectedCategory(isSel ? null : (catId ?? null));
                         }}
-                        aria-pressed={isActive}
-                        className={`mac-scope-pill-btn ${isActive ? 'active' : ''}`}
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold transition-colors cursor-pointer ${
+                          isSel
+                            ? 'bg-blue-600 text-white shadow-xs'
+                            : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white bg-black/5 dark:bg-white/5'
+                        }`}
                       >
-                        {topic.label}
+                        {c.categoryName.split(' ')[0]}
                       </button>
                     );
                   })}
@@ -623,8 +601,8 @@ export default function Home() {
 
               {/* Explore Sub-Sort: Apple HIG Segmented Control */}
               {feedMode === 'explore' && (
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-wider hidden lg:inline">
+                <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+                  <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-wider hidden xl:inline">
                     SIRALA:
                   </span>
                   <div className="mac-scope-track font-mono text-[11px]">
@@ -639,7 +617,7 @@ export default function Home() {
                         exploreSort === 'trending' ? 'active' : ''
                       }`}
                     >
-                      <TrendingUp className="w-3 h-3 text-emerald-400" />
+                      <TrendingUp className="w-3 h-3 text-emerald-400 mr-1" />
                       <span>Trendler</span>
                     </button>
                     <button
@@ -653,7 +631,7 @@ export default function Home() {
                         exploreSort === 'featured' ? 'active' : ''
                       }`}
                     >
-                      <Sparkles className="w-3 h-3 text-cyan-400" />
+                      <Sparkles className="w-3 h-3 text-cyan-400 mr-1" />
                       <span>Editörün Seçimi</span>
                     </button>
                     <button
@@ -667,7 +645,7 @@ export default function Home() {
                         exploreSort === 'latest' ? 'active' : ''
                       }`}
                     >
-                      <Clock className="w-3 h-3 text-purple-400" />
+                      <Clock className="w-3 h-3 text-purple-400 mr-1" />
                       <span>En Yeni</span>
                     </button>
                   </div>
@@ -677,25 +655,27 @@ export default function Home() {
 
             {/* Active Filter Pill Bar */}
             {hasActiveFilters && (
-              <div className="flex items-center gap-2 pt-2 text-xs">
-                <span className="text-zinc-500">
+              <div className="flex items-center justify-between pt-2 border-t border-black/5 dark:border-white/5 text-xs text-zinc-600 dark:text-zinc-400">
+                <span className="truncate">
                   {sortedBlogs.length} makale listeleniyor
                   {selectedTopic ? ` (#${selectedTopic})` : ''}
                   {activeCategoryObj ? ` (${activeCategoryObj.categoryName})` : ''}
+                  {publicationTypeFilter !== 'all' ? ` (${publicationTypeFilter === 'article' ? 'Makaleler' : 'Haberler'})` : ''}
                   {searchTerm ? ` "${searchTerm}"` : ''}
                 </span>
                 <button
                   type="button"
                   onClick={() => {
+                    playKeyClick();
                     setSelectedTopic(null);
                     setSelectedCategory(null);
                     setSearchTerm('');
                     setPublicationTypeFilter('all');
                   }}
-                  className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-[11px] font-bold transition-colors cursor-pointer hover:bg-rose-500 hover:text-white"
+                  className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-[11px] font-bold transition-colors cursor-pointer hover:bg-rose-500 hover:text-white shrink-0"
                 >
                   <X className="w-3 h-3" />
-                  Filtreyi Sıfırla
+                  <span>Filtreyi Sıfırla</span>
                 </button>
               </div>
             )}

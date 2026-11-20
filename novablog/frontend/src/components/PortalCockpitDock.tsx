@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ApiClient } from '@/lib/api';
 import {
   Compass,
@@ -37,6 +37,24 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
 }) => {
   const [isFlushing, setIsFlushing] = useState(false);
   const [flushSuccess, setFlushSuccess] = useState(false);
+  const [isAutoHidden, setIsAutoHidden] = useState(false);
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      // Scroll down past 280px -> auto-hide dock to unblock reading
+      if (currentScrollY > 280 && currentScrollY > lastScrollY) {
+        setIsAutoHidden(true);
+      } else if (currentScrollY < lastScrollY - 15 || currentScrollY < 120) {
+        // Scroll up or near top -> reveal
+        setIsAutoHidden(false);
+      }
+      lastScrollY = currentScrollY;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleFlushBuffer = async () => {
     playKeyClick('crisp');
@@ -85,7 +103,9 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
   return (
     <aside
       aria-label="Mac OS X 3D Glass Desktop Dock"
-      className="mac-3d-glass-dock-wrapper select-none"
+      className={`mac-3d-glass-dock-wrapper select-none transition-transform duration-300 ease-out group ${
+        isAutoHidden ? 'translate-y-[84%] hover:translate-y-0' : 'translate-y-0'
+      }`}
     >
       <div className="mac-3d-glass-dock">
         {/* 1. Finder / Feed (Vitrin) */}

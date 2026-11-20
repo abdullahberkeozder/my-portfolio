@@ -68,15 +68,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           
           {/* Left Column: Mac OS X Editorial Presentation (7 cols) */}
           <div className="lg:col-span-7 space-y-4">
-            {/* Apple Hardware Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-gradient-to-b from-white to-zinc-100 dark:from-zinc-800 dark:to-zinc-900 border border-black/15 dark:border-white/15 shadow-sm text-xs font-mono">
+            {/* Apple Minimalist Hardware Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/15 text-xs font-mono">
               <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
               <span className="text-zinc-800 dark:text-zinc-200 font-bold uppercase tracking-wider text-[11px]">
-                NOVA ENTERPRISE // MAC OS X DESKTOP EDITION
+                NOVA MÜHENDİSLİK YAYINI
               </span>
-              <span className="text-zinc-400 font-normal hidden sm:inline">|</span>
-              <span className="text-blue-600 dark:text-blue-400 font-semibold text-[10px] hidden sm:inline">
-                REV 4.1.1 GOLD MASTER
+              <span className="text-zinc-400 font-normal hidden sm:inline">&bull;</span>
+              <span className="text-blue-600 dark:text-blue-400 font-semibold text-[11px] hidden sm:inline">
+                Java 22 Loom &amp; Spring AI
               </span>
             </div>
 
@@ -94,13 +94,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </p>
             </div>
 
-            {/* Tactile Action Buttons: Aqua Glass + Brushed Silver Controls */}
+            {/* Tactile Action Buttons: 2 Clear Hierarchical Controls (Decision Paralysis Free) */}
             <div className="flex flex-wrap items-center gap-3 pt-1">
-              {/* Primary: Apple Aqua Button (Feed Exploration) - High Converting Main CTA */}
+              {/* Primary: Apple Aqua Button (Feed Exploration) - Single Primary Focus */}
               <button
                 type="button"
                 onClick={scrollToFeed}
-                className="mac-aqua-btn-primary mac-aqua-btn-lg flex items-center gap-2.5 !text-xs font-black shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                className="mac-aqua-btn-primary mac-aqua-btn-lg flex items-center gap-2.5 !text-xs font-black shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-transform cursor-pointer"
                 title="Yayın akışına kaydır (Makaleleri Keşfet)"
               >
                 <Compass className="w-4 h-4 text-white" />
@@ -112,46 +112,38 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <button
                 type="button"
                 onClick={handleOpenConsole}
-                className="mac-btn-aluminum mac-aqua-btn-lg flex items-center gap-2 !text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                className="mac-btn-aluminum mac-aqua-btn-lg flex items-center gap-2 !text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-transform cursor-pointer"
                 title="Activity Monitor & Donanım Telemetrisi konsoluna git"
               >
                 <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <span>Mimari &amp; Telemetri</span>
               </button>
-
-              {/* Tertiary: Spring AI pgvector Neural Lab */}
-              <button
-                type="button"
-                onClick={handleExploreAI}
-                className="mac-btn-aluminum mac-aqua-btn-lg flex items-center gap-2 !text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-transform"
-                title="Spring AI ve pgvector 128D anlamsal arama laboratuvarına git"
-              >
-                <Cpu className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                <span>pgvector Vektör Lab</span>
-              </button>
             </div>
 
-            {/* Hardware Architecture Specification Strip */}
+            {/* Hardware Architecture Specification Strip (Minimalist Single-Line Monospaced Spec) */}
             <div className="pt-2">
-              <div className="mac-hardware-spec-strip">
-                <span className="text-[10px] font-mono font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mr-1">
-                  DONANIM MİMARİSİ:
+              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] font-mono text-zinc-600 dark:text-zinc-400">
+                <span className="font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                  MİMARİ:
                 </span>
-                <span className="mac-hardware-chip-badge !text-[9px] flex items-center gap-1">
-                  <Cpu className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                  <span>LOOM 10K V-THREADS</span>
+                <span className="inline-flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Java 22 Loom
                 </span>
-                <span className="mac-hardware-chip-badge !text-[9px] flex items-center gap-1">
-                  <Layers className="w-3 h-3 text-blue-600 dark:text-blue-400" />
-                  <span>pgvector 128D COSINE</span>
+                <span className="text-zinc-400 dark:text-zinc-600">&bull;</span>
+                <span className="inline-flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                  pgvector 128D
                 </span>
-                <span className="mac-hardware-chip-badge !text-[9px] flex items-center gap-1">
-                  <Database className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                  <span>REDIS WRITE-BEHIND</span>
+                <span className="text-zinc-400 dark:text-zinc-600">&bull;</span>
+                <span className="inline-flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  Redis Write-Behind
                 </span>
-                <span className="mac-hardware-chip-badge !text-[9px] flex items-center gap-1">
-                  <ShieldCheck className="w-3 h-3 text-purple-600 dark:text-purple-400" />
-                  <span>RFC 7807 2FA</span>
+                <span className="text-zinc-400 dark:text-zinc-600">&bull;</span>
+                <span className="inline-flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                  RFC 7807 2FA
                 </span>
               </div>
             </div>
@@ -170,11 +162,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
 
                 <span className="text-[11px] font-mono font-semibold text-zinc-700 dark:text-zinc-300 truncate max-w-[200px]">
-                  Cinema_Display_Architecture.mov
+                  Nova_Architecture_Core.spec
                 </span>
 
                 <span className="text-[9px] font-mono text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded border border-black/5 dark:border-white/5">
-                  1080p
+                  v4.1.1
                 </span>
               </div>
 

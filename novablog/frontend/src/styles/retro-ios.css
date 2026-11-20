@@ -890,15 +890,19 @@
 
 .ios-segment-btn {
   padding: 6px 14px;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.35;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.025em;
   color: #333333;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
   border-right: 1px solid rgba(0, 0, 0, 0.2);
   box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.2);
   cursor: pointer;
   user-select: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -2773,16 +2777,20 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
-  min-height: 32px;
-  font-family: -apple-system, BlinkMacSystemFont, "Lucida Grande", sans-serif;
+  padding: 5px 12px;
+  min-height: 28px;
+  line-height: 1.35;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0.025em;
   color: #454d59;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
   border-radius: 7px;
   cursor: pointer;
   user-select: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
   transition: all 0.16s ease;
 }
 
@@ -3027,7 +3035,10 @@
 
 /* --- FORMULA 1: MAC OS X SNOW LEOPARD COPILOT HUD GLASS PILL --- */
 .mac-copilot-pill-master {
-  position: relative;
+  position: fixed !important;
+  bottom: 24px;
+  right: 24px;
+  z-index: 40;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -3086,9 +3097,9 @@
 /* Debossed Aluminum Separator Bar in Copilot Pill */
 .mac-copilot-pill-divider {
   width: 1px;
-  height: 16px;
-  background: rgba(255, 255, 255, 0.22);
-  box-shadow: 1px 0 0 rgba(0, 0, 0, 0.85);
+  height: 14px;
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: none;
 }
 
 /* --- FORMULA 2: BRAUN / DIETER RAMS STUDIO MECHANICAL ROCKER SWITCH --- */

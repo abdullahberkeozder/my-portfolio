@@ -206,7 +206,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400 shadow-[0_0_8px_#10b981,0_0_16px_rgba(16,185,129,0.5)]" />
           </span>
           <Bot className="w-4 h-4 text-emerald-400 group-hover:scale-110 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)] transition-transform shrink-0" />
-          <div className="mac-copilot-pill-divider shrink-0" />
+          <span className="w-px h-3.5 bg-white/25 shrink-0" aria-hidden="true" />
           <span className="font-sans text-xs font-black tracking-wider text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] whitespace-nowrap">
             MİMARİ ASİSTAN
           </span>
