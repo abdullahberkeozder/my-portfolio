@@ -115,7 +115,7 @@ export default function Home() {
   const [isOmnibarOpen, setIsOmnibarOpen] = useState(false);
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [activeAuthorProfile, setActiveAuthorProfile] = useState<string | null>(null);
-  const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
+  const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(false);
   const [semanticResults, setSemanticResults] = useState<BlogSemanticSearchResultDto[] | null>(null);
   const [isSearchingSemantic, setIsSearchingSemantic] = useState(false);
 
@@ -145,8 +145,6 @@ export default function Home() {
     // Standalone client by default; avoids triggering net::ERR_CONNECTION_REFUSED console noise
     if (process.env.NEXT_PUBLIC_ENABLE_BACKEND_SYNC === 'true') {
       ApiClient.checkBackendHealth().then(setIsBackendOnline);
-    } else {
-      setIsBackendOnline(false);
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {

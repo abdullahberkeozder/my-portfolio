@@ -486,9 +486,11 @@ export const ModularArchitectureConsole: React.FC = () => {
                 className={`mac-mechanical-rocker-pro ${virtualThreadsEnabled ? 'active' : ''}`}
                 title="Loom Virtual Threads Toggle (Boşluk/Enter veya Tıkla)"
               >
-                <span className="text-[8px] font-mono text-zinc-400 pl-1">0</span>
-                <div className="rocker-knob">{virtualThreadsEnabled ? 'ON' : 'OFF'}</div>
-                <span className="text-[8px] font-mono text-emerald-400 pr-1">1</span>
+                <span className="rocker-track-label rocker-track-off">OFF</span>
+                <span className="rocker-track-label rocker-track-on">ON</span>
+                <div className="rocker-knob">
+                  <span className="rocker-knob-pip" />
+                </div>
               </div>
             </div>
 
@@ -512,9 +514,11 @@ export const ModularArchitectureConsole: React.FC = () => {
                 className={`mac-mechanical-rocker-pro ${redisBufferEnabled ? 'active' : ''}`}
                 title="Redis Write-Behind Buffer Toggle (Boşluk/Enter veya Tıkla)"
               >
-                <span className="text-[8px] font-mono text-zinc-400 pl-1">0</span>
-                <div className="rocker-knob">{redisBufferEnabled ? 'ON' : 'OFF'}</div>
-                <span className="text-[8px] font-mono text-emerald-400 pr-1">1</span>
+                <span className="rocker-track-label rocker-track-off">OFF</span>
+                <span className="rocker-track-label rocker-track-on">ON</span>
+                <div className="rocker-knob">
+                  <span className="rocker-knob-pip" />
+                </div>
               </div>
             </div>
 
@@ -538,9 +542,11 @@ export const ModularArchitectureConsole: React.FC = () => {
                 className={`mac-mechanical-rocker-pro ${occLockFreeEnabled ? 'active' : ''}`}
                 title="Optimistic Concurrency Control Toggle (Boşluk/Enter veya Tıkla)"
               >
-                <span className="text-[8px] font-mono text-zinc-400 pl-1">0</span>
-                <div className="rocker-knob">{occLockFreeEnabled ? 'ON' : 'OFF'}</div>
-                <span className="text-[8px] font-mono text-emerald-400 pr-1">1</span>
+                <span className="rocker-track-label rocker-track-off">OFF</span>
+                <span className="rocker-track-label rocker-track-on">ON</span>
+                <div className="rocker-knob">
+                  <span className="rocker-knob-pip" />
+                </div>
               </div>
             </div>
           </div>
