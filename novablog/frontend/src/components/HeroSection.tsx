@@ -78,7 +78,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <div className="space-y-1.5">
               <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-black tracking-normal text-zinc-950 dark:text-white leading-[1.2] font-['Charcoal',sans-serif]">
                 System Architecture, Distributed Networks &amp;{' '}
-                <span className="text-[#333399] dark:text-[#818CF8] underline decoration-[#333399]/40 dark:decoration-[#818CF8]/40 underline-offset-4">
+                <span className="text-[#333399] dark:text-[#818CF8]">
                   Modern Engineering.
                 </span>
               </h1>
@@ -89,14 +89,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
             {/* Tactile Mac OS 9 Action Buttons */}
             <div className="flex flex-wrap items-center gap-2.5 pt-0.5">
-              {/* Primary: Mac OS 9 Default Action Button */}
+              {/* Primary: Mac OS 9 Action Button */}
               <button
                 type="button"
                 onClick={scrollToFeed}
-                className="mac9-btn-default flex items-center gap-2 !px-4 !py-1.5 !text-xs font-['Charcoal',sans-serif] font-bold cursor-pointer text-[#262626] dark:text-[#EEEEEE]"
+                className="mac9-btn flex items-center gap-2 !px-4 !py-1.5 !text-xs font-['Charcoal',sans-serif] font-bold cursor-pointer text-[#262626] dark:text-[#EEEEEE]"
                 title="Scroll to feed (Explore Articles)"
               >
-                <Compass className="w-3.5 h-3.5 text-zinc-800 dark:text-zinc-200" />
+                <Compass className="w-3.5 h-3.5 text-[#333399] dark:text-blue-400" />
                 <span>Explore Articles</span>
                 <ArrowDown className="w-3 h-3 opacity-80" />
               </button>

@@ -459,42 +459,63 @@ html.macos9-mode,
   box-shadow: inset 1px 1px 0 #000050, inset -1px -1px 0 #8080FF;
 }
 
+/* 1. Hide all double-buttons completely to prevent duplicate/stacked arrows */
 .macos9-mode ::-webkit-scrollbar-button,
 .mac9-scrollbar::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* 2. Base button defaults only for single-button */
+.macos9-mode ::-webkit-scrollbar-button:single-button,
+.mac9-scrollbar::-webkit-scrollbar-button:single-button {
   background-color: #CCCCCC;
   border: 1px solid #262626;
   box-shadow: inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #808080;
-  display: block;
+  display: block !important;
   height: 16px;
   width: 16px;
 }
 
-.macos9-mode ::-webkit-scrollbar-button:active,
-.mac9-scrollbar::-webkit-scrollbar-button:active {
+.macos9-mode ::-webkit-scrollbar-button:single-button:active,
+.mac9-scrollbar::-webkit-scrollbar-button:single-button:active {
   background-color: #999999;
   box-shadow: inset 1px 1px 0 #404040, inset -1px -1px 0 #FFFFFF;
 }
 
-/* Scrollbar Button Arrow Sprites */
-.macos9-mode ::-webkit-scrollbar-button:vertical:decrement {
+/* Scrollbar Button Arrow Sprites (Strictly Single Arrows: Exactly 1 at start, 1 at end) */
+.macos9-mode ::-webkit-scrollbar-button:single-button:vertical:decrement,
+.mac9-scrollbar::-webkit-scrollbar-button:single-button:vertical:decrement {
+  display: block !important;
+  height: 16px;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><polygon points="8,5 4,11 12,11" fill="%23262626"/></svg>');
   background-repeat: no-repeat;
   background-position: center;
 }
 
-.macos9-mode ::-webkit-scrollbar-button:vertical:increment {
+.macos9-mode ::-webkit-scrollbar-button:single-button:vertical:increment,
+.mac9-scrollbar::-webkit-scrollbar-button:single-button:vertical:increment {
+  display: block !important;
+  height: 16px;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><polygon points="8,11 4,5 12,5" fill="%23262626"/></svg>');
   background-repeat: no-repeat;
   background-position: center;
 }
 
-.macos9-mode ::-webkit-scrollbar-button:horizontal:decrement {
+.macos9-mode ::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.mac9-scrollbar::-webkit-scrollbar-button:single-button:horizontal:decrement {
+  display: block !important;
+  width: 16px;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><polygon points="5,8 11,4 11,12" fill="%23262626"/></svg>');
   background-repeat: no-repeat;
   background-position: center;
 }
 
-.macos9-mode ::-webkit-scrollbar-button:horizontal:increment {
+.macos9-mode ::-webkit-scrollbar-button:single-button:horizontal:increment,
+.mac9-scrollbar::-webkit-scrollbar-button:single-button:horizontal:increment {
+  display: block !important;
+  width: 16px;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><polygon points="11,8 5,4 5,12" fill="%23262626"/></svg>');
   background-repeat: no-repeat;
   background-position: center;
@@ -653,7 +674,12 @@ html.macos9-mode,
   background: linear-gradient(180deg, #FFFFFF 0%, #EAEAEA 25%, #DDDDDD 50%, #CCCCCC 100%);
   border: 1px solid #1F1F1F;
   box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #707070;
-  padding: 2px 6px 2px 8px;
+  padding: 2px 22px 2px 8px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"><polygon points="2,3 8,3 5,7" fill="%23262626"/></svg>'), linear-gradient(180deg, #FFFFFF 0%, #EAEAEA 25%, #DDDDDD 50%, #CCCCCC 100%);
+  background-repeat: no-repeat, repeat;
+  background-position: right 6px center, 0 0;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -664,6 +690,7 @@ html.macos9-mode,
   color: #1F1F1F;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
   user-select: none;
+  cursor: pointer;
   -webkit-font-smoothing: antialiased;
 }
 

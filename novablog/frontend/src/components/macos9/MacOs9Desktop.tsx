@@ -396,8 +396,8 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         subtitle="apple://games/deep-platinum-chess"
         initialPosition={{ x: 160, y: 45 }}
         initialSize={{
-          width: 660,
-          height: 515,
+          width: 680,
+          height: 575,
         }}
       >
         <MacChess />

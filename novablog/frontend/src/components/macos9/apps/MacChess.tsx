@@ -537,11 +537,11 @@ export const MacChess: React.FC = () => {
       </div>
 
       {/* ================= 2. MAIN WORKSPACE (BOARD + SIDEBAR) ================= */}
-      <div className="flex-1 flex overflow-hidden p-3 gap-3 justify-center items-stretch">
+      <div className="flex-1 flex overflow-hidden p-3 gap-3 justify-center items-center">
         {/* Left Column: Board & Player Racks */}
-        <div className="flex flex-col items-center justify-between shrink-0 max-w-[380px]">
+        <div className="flex flex-col items-center justify-center gap-1.5 shrink-0 max-w-[380px]">
           {/* Top Player Card (Black / Deep Platinum AI) */}
-          <div className="w-[360px] flex items-center justify-between text-[11px] font-mono px-2 py-1 bg-[#D8D8D8] dark:bg-[#1E293B] border border-[#B0B0B0] dark:border-[#334155] rounded-[3px] shadow-inner mb-1">
+          <div className="w-[360px] flex items-center justify-between text-[11px] font-mono px-2 py-1 bg-[#D8D8D8] dark:bg-[#1E293B] border border-[#B0B0B0] dark:border-[#334155] rounded-[3px] shadow-inner">
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-cyan-500 inline-block shadow-[0_0_6px_rgba(6,182,212,0.8)]" />
               <span className="font-bold text-[#1E293B] dark:text-gray-200">Black (Deep Platinum AI)</span>
@@ -560,10 +560,15 @@ export const MacChess: React.FC = () => {
 
           {/* 8x8 Mathematical Square Board Container */}
           <div className="p-2 bg-[#8A5229] border-2 border-[#4A2E16] rounded-[4px] shadow-[inset_0_1px_2px_#FFF,0_4px_12px_rgba(0,0,0,0.4)] relative shrink-0">
-            {/* The 8x8 Grid: Exact 360px x 360px with each cell exactly 45px x 45px */}
+            {/* The 8x8 Grid: Exact 360px x 360px with each cell strictly 45px x 45px (1:1 Aspect Ratio) */}
             <div
-              className="grid grid-cols-8 grid-rows-8 w-[360px] h-[360px] max-w-[360px] max-h-[360px] aspect-square border border-[#3E230E] bg-[#ECD2B2] overflow-hidden"
-              style={{ width: '360px', height: '360px' }}
+              className="grid w-[360px] h-[360px] max-w-[360px] max-h-[360px] aspect-square border border-[#3E230E] bg-[#ECD2B2] overflow-hidden"
+              style={{
+                width: '360px',
+                height: '360px',
+                gridTemplateColumns: 'repeat(8, 45px)',
+                gridTemplateRows: 'repeat(8, 45px)',
+              }}
             >
               {board.map((row, r) =>
                 row.map((piece, c) => {

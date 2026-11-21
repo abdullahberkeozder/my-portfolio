@@ -285,9 +285,9 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
       {/* 4. Bottom Footer: Topic Tags & Platinum Action Buttons */}
       <div className="pt-2 flex flex-wrap items-center justify-between gap-1.5 text-xs border-t border-[#A0A0A0] dark:border-[#333742] shadow-[0_1px_0_#FFFFFF] dark:shadow-none mt-auto">
         {/* Left: Tags */}
-        <div className="flex items-center gap-1.5 overflow-hidden">
+        <div className="flex items-center gap-1.5 overflow-hidden min-w-0">
           {categoryName && (
-            <span className="mac9-chip-tag uppercase whitespace-nowrap text-[10px] font-mono">
+            <span className="mac9-chip-tag uppercase whitespace-nowrap text-[10px] font-mono max-w-[110px] truncate" title={categoryName}>
               {categoryName}
             </span>
           )}

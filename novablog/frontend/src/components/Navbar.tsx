@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import {
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Menu,
   PenSquare,
   Search,
@@ -167,9 +169,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 title="Previous Section (◀)"
                 aria-label="Previous"
               >
-                <svg className="w-2.5 h-2.5" viewBox="0 0 8 10" fill="currentColor">
-                  <path d="M7 1 L2 5 L7 9 Z" />
-                </svg>
+                <ChevronLeft className="w-3.5 h-3.5" strokeWidth={2.5} />
               </button>
               <button
                 type="button"
@@ -178,9 +178,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 title="Next Section (▶)"
                 aria-label="Next"
               >
-                <svg className="w-2.5 h-2.5" viewBox="0 0 8 10" fill="currentColor">
-                  <path d="M1 1 L6 5 L1 9 Z" />
-                </svg>
+                <ChevronRight className="w-3.5 h-3.5" strokeWidth={2.5} />
               </button>
             </div>
 
