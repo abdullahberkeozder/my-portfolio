@@ -106,9 +106,8 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           <button
             onClick={() => handleMenuClick('apple')}
             onMouseEnter={() => handleMenuHover('apple')}
-            className={`px-2 h-full flex items-center justify-center transition-none ${
-              openMenu === 'apple' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
-            }`}
+            className={`px-2 h-full flex items-center justify-center transition-none ${openMenu === 'apple' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
+              }`}
             title="Apple Menüsü"
           >
             {/* Gökkuşağı Apple Logosu Vektörü */}
@@ -184,9 +183,8 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                     e.stopPropagation();
                     setActiveSubmenu((prev) => (prev === 'controlPanels' ? null : 'controlPanels'));
                   }}
-                  className={`w-full text-left px-3 py-1 flex items-center justify-between group ${
-                    activeSubmenu === 'controlPanels' ? 'bg-[#333399] text-white' : 'hover:bg-[#333399] hover:text-white'
-                  }`}
+                  className={`w-full text-left px-3 py-1 flex items-center justify-between group ${activeSubmenu === 'controlPanels' ? 'bg-[#333399] text-white' : 'hover:bg-[#333399] hover:text-white'
+                    }`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-[14px]">⚙️</span>
@@ -265,9 +263,8 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                     e.stopPropagation();
                     setActiveSubmenu((prev) => (prev === 'favorites' ? null : 'favorites'));
                   }}
-                  className={`w-full text-left px-3 py-1 flex items-center justify-between group ${
-                    activeSubmenu === 'favorites' ? 'bg-[#333399] text-white' : 'hover:bg-[#333399] hover:text-white'
-                  }`}
+                  className={`w-full text-left px-3 py-1 flex items-center justify-between group ${activeSubmenu === 'favorites' ? 'bg-[#333399] text-white' : 'hover:bg-[#333399] hover:text-white'
+                    }`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-[14px]">🔖</span>
@@ -355,9 +352,8 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                     e.stopPropagation();
                     setActiveSubmenu((prev) => (prev === 'recentApps' ? null : 'recentApps'));
                   }}
-                  className={`w-full text-left px-3 py-1 flex items-center justify-between group ${
-                    activeSubmenu === 'recentApps' ? 'bg-[#333399] text-white' : 'hover:bg-[#333399] hover:text-white'
-                  }`}
+                  className={`w-full text-left px-3 py-1 flex items-center justify-between group ${activeSubmenu === 'recentApps' ? 'bg-[#333399] text-white' : 'hover:bg-[#333399] hover:text-white'
+                    }`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-[14px]">📁</span>
@@ -516,9 +512,8 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           <button
             onClick={() => handleMenuClick('file')}
             onMouseEnter={() => handleMenuHover('file')}
-            className={`px-2 h-full flex items-center transition-none ${
-              openMenu === 'file' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
-            }`}
+            className={`px-2 h-full flex items-center transition-none ${openMenu === 'file' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
+              }`}
           >
             File
           </button>
@@ -575,9 +570,8 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           <button
             onClick={() => handleMenuClick('edit')}
             onMouseEnter={() => handleMenuHover('edit')}
-            className={`px-2 h-full flex items-center transition-none ${
-              openMenu === 'edit' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
-            }`}
+            className={`px-2 h-full flex items-center transition-none ${openMenu === 'edit' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
+              }`}
           >
             Edit
           </button>
@@ -616,9 +610,8 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           <button
             onClick={() => handleMenuClick('view')}
             onMouseEnter={() => handleMenuHover('view')}
-            className={`px-2 h-full flex items-center transition-none ${
-              openMenu === 'view' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
-            }`}
+            className={`px-2 h-full flex items-center transition-none ${openMenu === 'view' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
+              }`}
           >
             View
           </button>
@@ -691,9 +684,8 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           <button
             onClick={() => handleMenuClick('special')}
             onMouseEnter={() => handleMenuHover('special')}
-            className={`px-2 h-full flex items-center transition-none ${
-              openMenu === 'special' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
-            }`}
+            className={`px-2 h-full flex items-center transition-none ${openMenu === 'special' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
+              }`}
           >
             Special
           </button>
@@ -744,9 +736,8 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           <button
             onClick={() => handleMenuClick('help')}
             onMouseEnter={() => handleMenuHover('help')}
-            className={`px-2 h-full flex items-center transition-none ${
-              openMenu === 'help' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
-            }`}
+            className={`px-2 h-full flex items-center transition-none ${openMenu === 'help' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
+              }`}
           >
             Help
           </button>
@@ -775,11 +766,10 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
               macSound.playDroplet();
               onToggleTheme();
             }}
-            className={`h-[17px] px-1.5 rounded-[2px] flex items-center gap-1.5 border transition-none font-['Charcoal',sans-serif] text-[10px] ${
-              isNightMode
-                ? 'bg-[#1E293B] text-[#F1F5F9] border-[#475569] shadow-[inset_1px_1px_1px_#000000]'
-                : 'bg-[#E5E5E5] text-[#262626] border-[#808080] shadow-[inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] hover:bg-[#D4D4D4] active:shadow-[inset_1px_1px_1px_#000000]'
-            }`}
+            className={`h-[17px] px-1.5 rounded-[2px] flex items-center gap-1.5 border transition-none font-['Charcoal',sans-serif] text-[10px] ${isNightMode
+              ? 'bg-[#1E293B] text-[#F1F5F9] border-[#475569] shadow-[inset_1px_1px_1px_#000000]'
+              : 'bg-[#E5E5E5] text-[#262626] border-[#808080] shadow-[inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] hover:bg-[#D4D4D4] active:shadow-[inset_1px_1px_1px_#000000]'
+              }`}
             title={isNightMode ? 'Switch to Day Mode (Gündüz Modu)' : 'Switch to Night Mode (Gece Modu)'}
           >
             {/* Split Sun / Moon HD Graphic matching Figma Image 1 */}

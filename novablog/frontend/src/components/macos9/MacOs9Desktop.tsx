@@ -175,10 +175,15 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         activeAppTitle={activeWindowId ? windows[activeWindowId]?.title.split('—')[0].trim() : 'Finder'}
       />
 
-      {/* ================= 3. SAKİN VE ZARİF NOVA UI LOGO AMBLEMİ (SIFIR BİLİŞSEL YÜK) ================= */}
+      {/* ================= 3. SAKİN VE ZARİF NOVA UI LOGO AMBLEMİ (G4 CUBE LUCITE SUITE) ================= */}
       {!isBooting && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none animate-fade-in">
-          <NovaEmblemWatermark />
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[1] animate-fade-in">
+          <NovaEmblemWatermark
+            hasOpenWindows={Object.values(windows).some((w) => w.isOpen)}
+            wallpaper={currentWallpaper}
+            isNightMode={isNightMode}
+            onOpenAppearance={() => openWindow('about')}
+          />
         </div>
       )}
 
