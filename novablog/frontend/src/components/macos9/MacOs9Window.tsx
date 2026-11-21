@@ -182,13 +182,13 @@ export const MacOs9Window: React.FC<MacOs9WindowProps> = ({
           isActive ? 'mac9-titlebar-stripes' : 'bg-[#DDDDDD]'
         }`}
       >
-        {/* Sol Kapatma Kutusu (Close Box [■]) */}
+        {/* Sol Kapatma Kutusu (Close Box [■] - Figma Image 6 & 8) */}
         <button
           onClick={handleClose}
-          className="relative size-[13px] bg-[#CCCCCC] border border-[#262626] shadow-[inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] active:shadow-[inset_1px_1px_0_#404040,inset_-1px_-1px_0_#FFFFFF] active:bg-[#999999] flex items-center justify-center shrink-0"
+          className="relative size-[13px] bg-[#CCCCCC] border border-[#262626] shadow-[inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] active:shadow-[inset_1px_1px_1px_#000000] active:bg-[#999999] flex items-center justify-center shrink-0 group"
           title="Kapat"
         >
-          <div className="size-[5px] bg-[#262626] opacity-0 active:opacity-100" />
+          <div className="size-[5px] bg-[#262626] opacity-0 group-active:opacity-100" />
         </button>
 
         {/* Ortalanmış Başlık ve Gri Yastık Pedi */}
@@ -205,27 +205,30 @@ export const MacOs9Window: React.FC<MacOs9WindowProps> = ({
           </div>
         </div>
 
-        {/* Sağ Kontroller: Zoom [⧉] & WindowShade [▲] */}
+        {/* Sağ Kontroller: Zoom [⧉] & WindowShade [▲] (Figma Image 6 & 8) */}
         <div className="flex items-center gap-1 shrink-0 z-10">
           {/* Zoom Box [⧉] */}
           <button
             onClick={toggleZoom}
-            className="relative size-[13px] bg-[#CCCCCC] border border-[#262626] shadow-[inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] active:shadow-[inset_1px_1px_0_#404040,inset_-1px_-1px_0_#FFFFFF] flex items-center justify-center"
+            className="relative size-[13px] bg-[#CCCCCC] border border-[#262626] shadow-[inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] active:shadow-[inset_1px_1px_1px_#000000] flex items-center justify-center shrink-0"
             title="Büyüt / Eski Boyut"
           >
-            <div className="size-[7px] border border-[#262626] flex items-start justify-start p-px">
-              <div className="size-[2px] bg-[#262626]" />
-            </div>
+            <svg className="w-2.5 h-2.5" viewBox="0 0 10 10" fill="none">
+              <rect x="0.5" y="0.5" width="9" height="9" stroke="#262626" strokeWidth="1" />
+              <rect x="2.5" y="2.5" width="4" height="4" fill="#262626" />
+            </svg>
           </button>
 
           {/* WindowShade Box [▲] */}
           <button
             onClick={toggleWindowShade}
-            className="relative size-[13px] bg-[#CCCCCC] border border-[#262626] shadow-[inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] active:shadow-[inset_1px_1px_0_#404040,inset_-1px_-1px_0_#FFFFFF] flex items-center justify-center"
+            className="relative size-[13px] bg-[#CCCCCC] border border-[#262626] shadow-[inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] active:shadow-[inset_1px_1px_1px_#000000] flex items-center justify-center shrink-0"
             title={isShaded ? 'Pencereyi Aç' : 'WindowShade (Stor Rulo Yap)'}
           >
-            <div className="w-[7px] h-px bg-[#262626] mb-1" />
-            <div className="absolute bottom-[2px] w-[5px] h-px bg-[#262626]" />
+            <svg className="w-2.5 h-2.5" viewBox="0 0 10 10" fill="none">
+              <rect x="0.5" y="0.5" width="9" height="9" stroke="#262626" strokeWidth="1" />
+              <line x1="2" y1="3" x2="8" y2="3" stroke="#262626" strokeWidth="1.5" />
+            </svg>
           </button>
         </div>
       </div>
@@ -246,14 +249,18 @@ export const MacOs9Window: React.FC<MacOs9WindowProps> = ({
             {children}
           </div>
 
-          {/* Sağ Alt Köşe: Grow Box [▨] (Yeniden Boyutlandırma Tutamacı) */}
+          {/* Sağ Alt Köşe: Grow Box [▨] (Figma Image 6 & 8 HD 3D Diagonal Ridges) */}
           <div
             onMouseDown={handleMouseDownResize}
-            className="absolute bottom-0 right-0 size-4 bg-[#DDDDDD] border-t border-l border-[#262626] cursor-se-resize flex flex-col items-end justify-end p-0.5 z-20 hover:bg-[#CCCCCC]"
+            className="absolute bottom-0 right-0 size-[14px] bg-[#DDDDDD] border-t border-l border-[#808080] shadow-[inset_1px_1px_0_#FFFFFF] cursor-se-resize flex items-center justify-center z-20 hover:bg-[#CCCCCC]"
             title="Boyutlandır"
           >
-            <div className="w-2.5 h-px bg-[#262626] mb-0.5" />
-            <div className="w-1.5 h-px bg-[#262626]" />
+            <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
+              <line x1="10" y1="2" x2="2" y2="10" stroke="#808080" strokeWidth="1" />
+              <line x1="11" y1="3" x2="3" y2="11" stroke="#FFFFFF" strokeWidth="1" />
+              <line x1="10" y1="6" x2="6" y2="10" stroke="#808080" strokeWidth="1" />
+              <line x1="11" y1="7" x2="7" y2="11" stroke="#FFFFFF" strokeWidth="1" />
+            </svg>
           </div>
         </div>
       )}

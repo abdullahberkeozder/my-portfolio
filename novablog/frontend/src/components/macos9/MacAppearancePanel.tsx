@@ -68,8 +68,8 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     patternName: 'Subtle Finder',
     patternMeta: '32 X 32, 4K',
     pictureMeta: '1024 X 768, 180K',
-    thumbSrc: '/retro/wallpapers/macos-background.png',
-    fullSrc: '/retro/wallpapers/macos-background-800.png',
+    thumbSrc: '/retro/wallpapers/macos-bg.png',
+    fullSrc: '/retro/wallpapers/macos-bg-800.png',
     previewClass: 'mac9-wallpaper-macos-bg',
     desc: 'Açık buz mavisi ve büyük transparan Finder logosu (Figma Image 9)',
   },
@@ -217,6 +217,19 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     desc: 'Distraction-free nötr gri pikselli dither',
   },
 ];
+
+// Reusable HD Vector Stepper Arrows (Figma Image 6 & 8)
+const MacStepperArrows = () => (
+  <div className="flex flex-col items-center justify-center pl-1.5 ml-1.5 border-l border-[#808080] shadow-[1px_0_0_#FFFFFF] shrink-0 pointer-events-none">
+    <svg className="w-2 h-1 text-[#262626]" viewBox="0 0 8 4" fill="currentColor">
+      <polygon points="4,0 0,4 8,4" />
+    </svg>
+    <div className="h-[2px]" />
+    <svg className="w-2 h-1 text-[#262626]" viewBox="0 0 8 4" fill="currentColor">
+      <polygon points="0,0 8,0 4,4" />
+    </svg>
+  </div>
+);
 
 export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
   currentWallpaper,
@@ -422,7 +435,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                         className="mac9-dropdown-stepper cursor-pointer select-none flex items-center justify-between"
                       >
                         <span className="text-[11px]">{positionMode}</span>
-                        <span className="text-[8px] border-l border-[#808080] pl-1 ml-1 font-mono text-[#555] leading-none">▲▼</span>
+                        <MacStepperArrows />
                       </div>
 
                       {isPositionOpen && (
@@ -471,10 +484,10 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                     Kapat
                   </button>
                 )}
-                {/* Double-border primary default button */}
+                {/* Double-border primary default button (Figma Image 2 & 6) */}
                 <button
                   onClick={handleApply}
-                  className="px-4 py-1 font-bold text-[11px] bg-[#DDDDDD] border border-[#262626] rounded-[4px] shadow-[0_0_0_2px_#262626,inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] active:shadow-[0_0_0_2px_#262626,inset_1px_1px_0_#000000] hover:bg-[#E5E5E5]"
+                  className="mac9-btn mac9-btn-default px-5 py-1 text-[11px]"
                 >
                   Set Desktop
                 </button>
@@ -495,7 +508,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                 </div>
                 <div className="mac9-dropdown-stepper w-48 justify-between cursor-pointer">
                   <span>Apple platinum</span>
-                  <span className="text-[8px] border-l border-[#808080] pl-1 font-mono text-[#555]">▲▼</span>
+                  <MacStepperArrows />
                 </div>
               </div>
 
@@ -517,7 +530,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                       <div className="w-3.5 h-3.5 border border-[#444] rounded-[1px]" style={{ backgroundColor: highlightColor.hex }} />
                       <span>{highlightColor.name}</span>
                     </div>
-                    <span className="text-[8px] border-l border-[#808080] pl-1 font-mono text-[#555]">▲▼</span>
+                    <MacStepperArrows />
                   </div>
 
                   {isHighlightOpen && (
@@ -562,7 +575,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                       <div className="w-3.5 h-3.5 border border-[#444] rounded-[1px]" style={{ backgroundColor: variation.hex }} />
                       <span>{variation.name}</span>
                     </div>
-                    <span className="text-[8px] border-l border-[#808080] pl-1 font-mono text-[#555]">▲▼</span>
+                    <MacStepperArrows />
                   </div>
 
                   {isVariationOpen && (

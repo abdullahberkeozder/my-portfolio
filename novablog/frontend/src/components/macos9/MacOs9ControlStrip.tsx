@@ -145,15 +145,15 @@ export const MacOs9ControlStrip: React.FC<MacOs9ControlStripProps> = ({
                     Masaüstü Deseni
                   </div>
                   {[
-                    { id: 'quantum-foam' as WallpaperTheme, name: 'Quantum Foam' },
-                    { id: 'sonata-purple' as WallpaperTheme, name: 'Default Wallpaper' },
-                    { id: 'macos-bg' as WallpaperTheme, name: 'macOS Background' },
-                    { id: 'blue-dalmatian' as WallpaperTheme, name: 'Blue Dalmatian' },
-                    { id: 'capsules' as WallpaperTheme, name: 'Capsules' },
-                    { id: 'tub' as WallpaperTheme, name: 'Tub' },
-                    { id: 'heavy-petal' as WallpaperTheme, name: 'Heavy Petal' },
-                    { id: 'indigo-foam' as WallpaperTheme, name: 'Indigo Foam' },
-                    { id: 'dark-carbon' as WallpaperTheme, name: 'Obsidian Carbon' },
+                    { id: 'quantum-foam' as WallpaperTheme, name: 'Quantum Foam', thumb: 'quantum-foam.png' },
+                    { id: 'sonata-purple' as WallpaperTheme, name: 'Default Wallpaper', thumb: 'default-wallpaper.png' },
+                    { id: 'macos-bg' as WallpaperTheme, name: 'macOS Background', thumb: 'macos-bg.png' },
+                    { id: 'blue-dalmatian' as WallpaperTheme, name: 'Blue Dalmatian', thumb: 'blue-dalmatian.png' },
+                    { id: 'capsules' as WallpaperTheme, name: 'Capsules', thumb: 'capsules.png' },
+                    { id: 'tub' as WallpaperTheme, name: 'Tub', thumb: 'tub.png' },
+                    { id: 'heavy-petal' as WallpaperTheme, name: 'Heavy Petal', thumb: 'heavy-petal.png' },
+                    { id: 'indigo-foam' as WallpaperTheme, name: 'Indigo Foam', thumb: 'indigo-foam.png' },
+                    { id: 'dark-carbon' as WallpaperTheme, name: 'Obsidian Carbon', thumb: 'obsidian-carbon.png' },
                   ].map((wp) => (
                     <button
                       key={wp.id}
@@ -170,7 +170,7 @@ export const MacOs9ControlStrip: React.FC<MacOs9ControlStripProps> = ({
                     >
                       <div className="flex items-center gap-1.5 truncate">
                         <img
-                          src={`/retro/wallpapers/${wp.id}.png`}
+                          src={`/retro/wallpapers/${wp.thumb}`}
                           alt=""
                           className="w-4 h-3 object-cover border border-[#808080] rounded-[1px]"
                         />

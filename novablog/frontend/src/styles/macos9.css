@@ -147,7 +147,7 @@ html.macos9-mode,
 /* 2. macOS Background (Figma Image 9: Soft Ice Blue with Subtle Finder Face) */
 .mac9-wallpaper-macos-bg {
   background-color: #D8E2F3;
-  background-image: url('/retro/wallpapers/macos-background-800.png');
+  background-image: url('/retro/wallpapers/macos-bg-800.png');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -298,36 +298,57 @@ html.macos9-mode,
 }
 
 /* ==========================================================================
-   3. PLATINUM 3D BEVEL BUTTONS & CONTROLS
+   3. PLATINUM 3D BEVEL BUTTONS & CONTROLS (Figma Images 2, 6, 8)
    ========================================================================== */
 
 .mac9-btn {
-  background: linear-gradient(180deg, #FFFFFF 0%, #DDDDDD 45%, #CCCCCC 100%);
-  border: 1px solid #262626;
-  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #808080;
-  color: #262626;
+  background: linear-gradient(180deg, #FFFFFF 0%, #EAEAEA 25%, #DDDDDD 50%, #CCCCCC 100%);
+  border: 1px solid #1F1F1F;
+  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #707070;
+  color: #1F1F1F;
   font-family: var(--mac9-font-title);
-  font-size: 12px;
-  padding: 3px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 14px;
   user-select: none;
-  border-radius: 2px;
-  line-height: 1.1;
+  border-radius: 3px;
+  line-height: 1.2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+  -webkit-font-smoothing: antialiased;
 }
 
-.mac9-btn:active {
-  background: #BBBBBB;
-  box-shadow: inset 1px 1px 0px #404040, inset -1px -1px 0px #FFFFFF;
-  transform: translate(1px, 1px);
+.mac9-btn:hover {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F0F0F0 25%, #E2E2E2 50%, #D4D4D4 100%);
 }
 
+.mac9-btn:active,
+.mac9-btn.active {
+  background: #AFAFAF;
+  box-shadow: inset 1px 1px 1px #1F1F1F, inset -1px -1px 0px #FFFFFF;
+  color: #000000;
+  text-shadow: none;
+  transform: translate(0.5px, 0.5px);
+}
+
+/* Double-bordered Primary Default Button (Figma Image 2 - Set Desktop, OK, Save) */
 .mac9-btn-default {
-  border: 2px solid #262626;
-  outline: 1px solid #262626;
+  background: linear-gradient(180deg, #FFFFFF 0%, #EAEAEA 25%, #DDDDDD 50%, #CCCCCC 100%);
+  border: 1px solid #1F1F1F;
+  outline: 2px solid #1F1F1F;
   outline-offset: 1px;
+  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #707070;
   font-weight: bold;
+  border-radius: 3px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.mac9-btn-default:active {
+  background: #9E9E9E;
+  box-shadow: inset 1px 1px 2px #000000, inset -1px -1px 0px #FFFFFF;
+  transform: translate(0.5px, 0.5px);
 }
 
 /* Inset 3D Well / Bevel Box */
@@ -611,20 +632,33 @@ html.macos9-mode,
   margin: 3px 1px;
 }
 
-/* Stepper Dropdown Popup Button (Figma Image 3) */
+/* Stepper Dropdown Popup Button (Figma Image 3 & Image 6) */
 .mac9-dropdown-stepper {
-  background: linear-gradient(180deg, #FFFFFF 0%, #DDDDDD 45%, #CCCCCC 100%);
-  border: 1px solid #262626;
-  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #808080;
-  padding: 1px 4px 1px 6px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #EAEAEA 25%, #DDDDDD 50%, #CCCCCC 100%);
+  border: 1px solid #1F1F1F;
+  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #707070;
+  padding: 2px 6px 2px 8px;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   font-family: var(--mac9-font-title);
   font-size: 11px;
-  border-radius: 2px;
+  font-weight: 500;
+  border-radius: 3px;
+  color: #1F1F1F;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
 }
-.mac9-dropdown-stepper:active {
-  background: #BBBBBB;
-  box-shadow: inset 1px 1px 0px #404040, inset -1px -1px 0px #FFFFFF;
+
+.mac9-dropdown-stepper:hover {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F0F0F0 25%, #E2E2E2 50%, #D4D4D4 100%);
+}
+
+.mac9-dropdown-stepper:active,
+.mac9-dropdown-stepper.active {
+  background: #AFAFAF;
+  box-shadow: inset 1px 1px 1px #1F1F1F, inset -1px -1px 0px #FFFFFF;
+  color: #000000;
+  text-shadow: none;
 }

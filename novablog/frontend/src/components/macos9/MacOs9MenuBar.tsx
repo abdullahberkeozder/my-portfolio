@@ -759,27 +759,41 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
 
       {/* Sağ Durum Grubu (Gece/Gündüz Modu, Ses Mute, Saat, Finder) */}
       <div className="flex items-center gap-1.5 h-full pr-1">
-        {/* Gece & Gündüz Modu Toggle Butonu (Day & Night) */}
+        {/* Gece & Gündüz Modu Toggle Butonu (Day & Night - Figma Image 1 HD Vector) */}
         {onToggleTheme && (
           <button
             onClick={() => {
               macSound.playDroplet();
               onToggleTheme();
             }}
-            className={`px-2 py-0.5 rounded text-[11px] flex items-center gap-1 border transition-none font-medium ${
+            className={`h-[17px] px-1.5 rounded-[2px] flex items-center gap-1.5 border transition-none font-['Charcoal',sans-serif] text-[10px] ${
               isNightMode
-                ? 'bg-[#1E293B] text-[#F1F5F9] border-[#475569] shadow-inner'
-                : 'bg-[#E5E5E5] text-[#262626] border-[#B0B0B0] hover:bg-[#D4D4D4]'
+                ? 'bg-[#1E293B] text-[#F1F5F9] border-[#475569] shadow-[inset_1px_1px_1px_#000000]'
+                : 'bg-[#E5E5E5] text-[#262626] border-[#808080] shadow-[inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] hover:bg-[#D4D4D4] active:shadow-[inset_1px_1px_1px_#000000]'
             }`}
             title={isNightMode ? 'Switch to Day Mode (Gündüz Modu)' : 'Switch to Night Mode (Gece Modu)'}
           >
-            {/* Skeuomorphic Sun/Moon Icon matching Image 1 */}
-            <span className="w-3.5 h-3.5 flex items-center justify-center text-[10px]">
-              {isNightMode ? '🌙' : '☀️'}
-            </span>
-            <span className="text-[10px] hidden sm:inline">
-              {isNightMode ? 'Night' : 'Day'}
-            </span>
+            {/* Split Sun / Moon HD Graphic matching Figma Image 1 */}
+            <div className="w-3.5 h-3.5 relative flex-shrink-0">
+              <svg className="w-full h-full" viewBox="0 0 32 32" fill="none">
+                <circle cx="16" cy="16" r="14" fill={isNightMode ? '#0F172A' : '#F8FAFC'} stroke="#262626" strokeWidth="1.5" />
+                {/* Sol Yarım: Sarı Güneş */}
+                <path d="M16 2 A14 14 0 0 0 16 30 Z" fill="#FBBF24" />
+                <line x1="1" y1="16" x2="6" y2="16" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
+                <line x1="4" y1="7" x2="8" y2="10" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
+                <line x1="4" y1="25" x2="8" y2="22" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
+                {/* Sağ Yarım: Gece Laciverti */}
+                <path d="M16 2 A14 14 0 0 1 16 30 Z" fill="#0F172A" />
+                {/* Beyaz Hilal ve Yıldızlar */}
+                <path
+                  d="M19 8 C22 10 24 14 22 19 C20 23 16 24 17 25 C24 25 26 17 23 10 C22 8 20 7 19 8 Z"
+                  fill="#FFFFFF"
+                />
+                <circle cx="21" cy="6" r="1" fill="#FFFFFF" />
+                <circle cx="27" cy="14" r="0.8" fill="#FFFFFF" />
+              </svg>
+            </div>
+            <span className="font-bold tracking-tight">Day & Night</span>
           </button>
         )}
 
