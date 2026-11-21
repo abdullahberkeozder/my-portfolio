@@ -165,7 +165,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
 
   return (
     <div className="flex flex-col h-full bg-[#CCCCCC] select-none text-[12px] text-[#262626] font-['Charcoal',sans-serif]">
-      {/* 6 Sekmeli Orijinal Mac OS 9 Appearance Sekme Başlığı (Image 5) */}
+      {/* 6 Sekmeli Orijinal Mac OS 9 Appearance Sekme Başlığı (Figma 82-812) */}
       <div className="flex items-center gap-1 px-3 pt-2 border-b border-[#808080] bg-[#DDDDDD] overflow-x-auto">
         {(['Themes', 'Appearance', 'Fonts', 'Desktop', 'Sound', 'Options'] as const).map((tab) => {
           const tabKey = tab.toLowerCase() as typeof activeTab;
@@ -190,21 +190,38 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
       </div>
 
       {/* Ana Gövde */}
-      <div className="flex-1 p-4 overflow-y-auto">
-        {/* ================= TAB: DESKTOP (IMAGE 5) ================= */}
+      <div className="flex-1 p-4 overflow-y-auto mac9-scrollbar">
+        {/* ================= TAB: DESKTOP (CLONED FROM FIGMA 82-812) ================= */}
         {activeTab === 'desktop' && (
           <div className="flex flex-col h-full justify-between gap-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-              {/* SOL TARAF: PREVIEW ÇERÇEVESİ VE METAVERİLER */}
+              {/* SOL TARAF: APPLE STUDIO DISPLAY MONİTÖR ÖNİZLEMESİ & METAVERİLER */}
               <div className="flex flex-col">
-                {/* 3D Inset Preview Frame */}
-                <div className="w-full h-44 border-2 border-[#808080] shadow-[inset_1px_1px_0_#000000,1px_1px_0_#FFFFFF] rounded-[2px] p-1 bg-[#404040]">
-                  <div
-                    className={`w-full h-full rounded-[1px] border border-[#262626] ${activeItem.previewClass}`}
-                  />
+                {/* Figma 82-812 Studio Display Bezel Frame */}
+                <div className="w-full bg-[#D4D4D4] border-2 border-[#808080] shadow-[inset_1px_1px_0_#FFFFFF,1px_1px_0_#FFFFFF] rounded-[4px] p-2 flex flex-col items-center">
+                  {/* Monitor Screen Glass */}
+                  <div className="w-full h-36 border border-[#262626] shadow-[inset_1px_1px_3px_#000000] rounded-[2px] overflow-hidden relative flex flex-col">
+                    {/* Mini Menu Bar at top of monitor screen */}
+                    <div className="h-2 bg-[#E0E0E0] border-b border-[#333] flex items-center px-1 justify-between shrink-0">
+                      <div className="w-1.5 h-1 bg-black rounded-full" />
+                      <div className="w-3 h-0.5 bg-black" />
+                    </div>
+
+                    {/* Active Wallpaper Canvas inside monitor */}
+                    <div className={`flex-1 relative ${activeItem.previewClass}`}>
+                      {/* Mini Desktop Icons mockup on the right */}
+                      <div className="absolute top-1 right-1 flex flex-col gap-1 items-end">
+                        <div className="w-2.5 h-2 bg-[#CCCCCC] border border-[#262626]" />
+                        <div className="w-2.5 h-2 bg-[#3B82F6] border border-[#1E3A8A]" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Monitor Stand and Apple Logo */}
+                  <div className="w-2 h-1 bg-[#888888] mx-auto mt-1 rounded-sm" />
                 </div>
 
-                {/* Pattern & Picture Metadata Info (Tam Image 5) */}
+                {/* Pattern & Picture Metadata Info (Figma 82-812) */}
                 <div className="mt-3 text-[11px] font-mono leading-tight space-y-1 text-[#333]">
                   <div className="flex">
                     <span className="font-bold w-20">Pattern:</span>
@@ -223,15 +240,15 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                 </div>
               </div>
 
-              {/* SAĞ TARAF: PATTERNS LİSTESİ & SEÇİM */}
+              {/* SAĞ TARAF: PATTERNS LİSTESİ & SEÇİM (FIGMA 82-812) */}
               <div className="flex flex-col">
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-bold text-[12px]">Patterns:</span>
-                  <span className="text-[10px] text-[#555]">Figma Mac OS 9 Wallpapers</span>
+                  <span className="text-[10px] text-[#555]">Figma 82-812 Appearance Kit</span>
                 </div>
 
-                {/* Scrollable Mac OS 9 Listbox (Image 5) */}
-                <div className="h-44 bg-white border border-[#808080] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.3)] overflow-y-auto select-none rounded-[1px]">
+                {/* Mac OS 9 Listbox with Authentic Scrollbar */}
+                <div className="h-44 bg-white border border-[#808080] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.3)] overflow-y-auto select-none rounded-[1px] mac9-scrollbar">
                   {WALLPAPER_ITEMS.map((item) => {
                     const isSelected = selectedId === item.id;
                     const isApplied = currentWallpaper === item.id;
@@ -267,11 +284,11 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                   })}
                 </div>
 
-                {/* Picture Actions */}
+                {/* Picture Actions (Figma 82-812) */}
                 <div className="mt-2.5 flex flex-col gap-1.5">
                   <div className="flex items-center justify-between gap-2">
                     <button
-                      onClick={() => alert(`Picture: ${activeItem.name} yüklendi.`)}
+                      onClick={() => alert(`Picture: ${activeItem.name} seçildi.`)}
                       className="mac9-btn px-3 py-1 text-[11px] flex-1"
                     >
                       Place Picture...
@@ -286,13 +303,22 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                       <option value="scale">Scale to Fit</option>
                     </select>
                   </div>
+                  <button
+                    onClick={() => {
+                      onSelectWallpaper('sonata-purple');
+                      setSelectedId('sonata-purple');
+                    }}
+                    className="mac9-btn px-3 py-0.5 text-[10px] text-[#666] self-start"
+                  >
+                    Remove Picture
+                  </button>
                 </div>
               </div>
             </div>
 
-            {/* ALT BUTONLAR (Double-ring primary button "Set Desktop") */}
+            {/* ALT BUTONLAR (Figma 82-812 & Mac OS 9 Standard Dialog Actions) */}
             <div className="pt-2 border-t border-[#808080] flex items-center justify-between">
-              <span className="text-[11px] text-[#555] italic">
+              <span className="text-[11px] text-[#555] italic truncate max-w-[280px]">
                 {activeItem.desc}
               </span>
 
@@ -302,6 +328,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                     Kapat
                   </button>
                 )}
+                {/* Double-border primary default button */}
                 <button
                   onClick={handleApply}
                   className="px-4 py-1 font-bold text-[11px] bg-[#DDDDDD] border border-[#262626] rounded-[4px] shadow-[0_0_0_2px_#262626,inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] active:shadow-[0_0_0_2px_#262626,inset_1px_1px_0_#000000] hover:bg-[#E5E5E5]"

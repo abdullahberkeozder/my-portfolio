@@ -8,7 +8,7 @@ interface NovaApplicationsFolderProps {
   onLaunchStickies: () => void;
   onLaunchRadio: () => void;
   onLaunchBlog: () => void;
-  onLaunchNews: () => void;
+  onLaunchNews?: () => void;
   onLaunchAppearance: () => void;
   onLaunchBrowser: () => void;
 }
@@ -30,7 +30,6 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
   onLaunchStickies,
   onLaunchRadio,
   onLaunchBlog,
-  onLaunchNews,
   onLaunchAppearance,
   onLaunchBrowser,
 }) => {
@@ -38,43 +37,8 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
   const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null);
 
-  // The 9 canonical applications from user's Image 2 & 4
+  // Figma 82-811 Building Blocks - Icons & Canonical Apps
   const APPS: AppItem[] = [
-    {
-      id: 'illustrator',
-      name: 'Adobe Illustrator',
-      dateModified: 'Dec 17, 2020, 8:13 PM',
-      size: '25 M',
-      kind: 'application program',
-      icon: (
-        <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
-          <rect x="4" y="3" width="24" height="26" rx="2" fill="#E8E8E8" stroke="#262626" strokeWidth="1.2" />
-          <rect x="6" y="5" width="20" height="22" fill="#FFF3E0" />
-          <path d="M10 23 L16 8 L22 23 Z" fill="#D97706" stroke="#B45309" strokeWidth="0.8" />
-          <path d="M12 18 L20 18" stroke="#FFFFFF" strokeWidth="1.5" />
-          <circle cx="16" cy="14" r="1.5" fill="#FFFFFF" />
-        </svg>
-      ),
-      action: () => alert('Adobe Illustrator: Vektör çizim motoru başlatılıyor...'),
-    },
-    {
-      id: 'photoshop',
-      name: 'Adobe Photoshop',
-      dateModified: 'Dec 23, 2020, 9:42 PM',
-      size: '42 M',
-      kind: 'application program',
-      icon: (
-        <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
-          <rect x="4" y="3" width="24" height="26" rx="2" fill="#E8E8E8" stroke="#262626" strokeWidth="1.2" />
-          <rect x="6" y="5" width="20" height="22" fill="#E0F2FE" />
-          {/* Classic Photoshop Eye */}
-          <ellipse cx="16" cy="16" rx="7" ry="4.5" fill="#FFFFFF" stroke="#0284C7" strokeWidth="1.2" />
-          <circle cx="16" cy="16" r="3" fill="#0369A1" />
-          <circle cx="17.5" cy="14.5" r="1" fill="#FFFFFF" />
-        </svg>
-      ),
-      action: () => alert('Adobe Photoshop: 24-bit renk motoru hazır.'),
-    },
     {
       id: 'explorer',
       name: 'Internet Explorer',
@@ -82,11 +46,11 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
       size: '15 M',
       kind: 'application program',
       icon: (
-        <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
-          {/* Classic Blue e with golden orbit ring */}
+        <svg className="w-9 h-9" viewBox="0 0 32 32" fill="none">
+          {/* Figma 82-811: Internet Explorer 5 Icon */}
           <circle cx="16" cy="16" r="11" fill="#0284C7" stroke="#0369A1" strokeWidth="1" />
           <path d="M9 15 H23 C23 9 10 9 10 16 C10 22 23 23 23 18" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
-          <ellipse cx="16" cy="16" rx="14" ry="5" stroke="#F59E0B" strokeWidth="1.5" fill="none" transform="rotate(-30 16 16)" />
+          <ellipse cx="16" cy="16" rx="14" ry="5" stroke="#F59E0B" strokeWidth="1.6" fill="none" transform="rotate(-30 16 16)" />
         </svg>
       ),
       action: onLaunchBrowser,
@@ -98,64 +62,37 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
       size: '1.2 M',
       kind: 'application program',
       icon: (
-        <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
-          {/* Compact Disc with Musical Notes */}
+        <svg className="w-9 h-9" viewBox="0 0 32 32" fill="none">
+          {/* Figma 82-811: iTunes CD Disc with Musical Notes */}
           <circle cx="16" cy="16" r="12" fill="#E2E8F0" stroke="#64748B" strokeWidth="1.2" />
           <circle cx="16" cy="16" r="4" fill="#FFFFFF" stroke="#64748B" strokeWidth="1" />
           <circle cx="16" cy="16" r="1.5" fill="#475569" />
-          {/* Note */}
-          <path d="M17 11 V7 H21 V10" stroke="#9333EA" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M17 11 V7 H22 V10" stroke="#9333EA" strokeWidth="1.6" strokeLinecap="round" />
           <circle cx="15.5" cy="11.5" r="1.5" fill="#9333EA" />
         </svg>
       ),
       action: onLaunchRadio,
     },
     {
-      id: 'quicktime',
-      name: 'Quicktime Player',
-      dateModified: 'Dec 19, 2020, 12:45 PM',
-      size: '2.5 M',
-      kind: 'application program',
+      id: 'wallpapers',
+      name: 'Wallpapers',
+      dateModified: 'Nov 21, 2026, 3:30 PM',
+      size: '620 K',
+      kind: 'control panel',
       icon: (
-        <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
-          <rect x="4" y="4" width="24" height="24" rx="2" fill="#E2E8F0" stroke="#262626" strokeWidth="1.2" />
-          <circle cx="15" cy="15" r="7" stroke="#2563EB" strokeWidth="2.5" fill="none" />
-          <path d="M19 19 L25 25" stroke="#2563EB" strokeWidth="3" strokeLinecap="round" />
+        <svg className="w-9 h-9" viewBox="0 0 32 32" fill="none">
+          {/* Figma 82-811: Appearance / Wallpapers Studio Display Icon */}
+          <rect x="3" y="3" width="26" height="20" rx="2" fill="#DDDDDD" stroke="#262626" strokeWidth="1.2" />
+          <rect x="5" y="5" width="22" height="15" fill="#63659C" stroke="#262626" strokeWidth="0.8" />
+          {/* Miniature wallpaper ribbons inside screen */}
+          <path d="M5 16 C10 10 16 20 27 10" stroke="#9FA5C4" strokeWidth="2" fill="none" />
+          <circle cx="16" cy="12" r="2.5" fill="#FBBF24" />
+          {/* Stand and base */}
+          <path d="M12 23 L10 28 L22 28 L20 23 Z" fill="#BBBBBB" stroke="#262626" strokeWidth="1" />
+          <line x1="8" y1="28" x2="24" y2="28" stroke="#808080" strokeWidth="1.5" />
         </svg>
       ),
-      action: () => alert('QuickTime 5: Video ve medya codec oynatıcı.'),
-    },
-    {
-      id: 'scrapbook',
-      name: 'Scrapbook',
-      dateModified: 'Mar 11, 1999, 10:12 AM',
-      size: '960 K',
-      kind: 'application program',
-      icon: (
-        <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
-          <rect x="6" y="4" width="20" height="24" rx="1" fill="#FEF08A" stroke="#262626" strokeWidth="1.2" />
-          <rect x="9" y="8" width="6" height="6" fill="#F43F5E" />
-          <rect x="17" y="8" width="6" height="6" fill="#3B82F6" />
-          <line x1="9" y1="18" x2="23" y2="18" stroke="#713F12" strokeWidth="1" />
-          <line x1="9" y1="22" x2="20" y2="22" stroke="#713F12" strokeWidth="1" />
-        </svg>
-      ),
-      action: onLaunchStickies,
-    },
-    {
-      id: 'sherlock',
-      name: 'Sherlock 2.0',
-      dateModified: 'Dec 19, 2020, 4:55 PM',
-      size: '1.4 M',
-      kind: 'application program',
-      icon: (
-        <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
-          <circle cx="14" cy="14" r="8" fill="#93C5FD" fillOpacity="0.5" stroke="#D97706" strokeWidth="2" />
-          <line x1="20" y1="20" x2="27" y2="27" stroke="#78350F" strokeWidth="3.5" strokeLinecap="round" />
-          <circle cx="13" cy="12" r="2" fill="#FFFFFF" fillOpacity="0.8" />
-        </svg>
-      ),
-      action: onLaunchNews,
+      action: onLaunchAppearance,
     },
     {
       id: 'stickies',
@@ -164,7 +101,8 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
       size: '224 K',
       kind: 'application program',
       icon: (
-        <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
+        <svg className="w-9 h-9" viewBox="0 0 32 32" fill="none">
+          {/* Figma 82-811: Stickies Yellow Note */}
           <rect x="5" y="5" width="22" height="22" rx="1" fill="#FFF59D" stroke="#262626" strokeWidth="1.2" />
           <rect x="5" y="5" width="22" height="4" fill="#FBC02D" />
           <line x1="8" y1="13" x2="20" y2="13" stroke="#5D4037" strokeWidth="1" />
@@ -175,20 +113,45 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
       action: onLaunchStickies,
     },
     {
-      id: 'stuffit',
-      name: 'Stuffit Expander',
-      dateModified: 'Dec 17, 2020, 9:45 AM',
-      size: '1.5 M',
+      id: 'calculator',
+      name: 'Calculator',
+      dateModified: 'Oct 14, 2020, 11:15 AM',
+      size: '180 K',
       kind: 'application program',
       icon: (
-        <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
-          <rect x="6" y="8" width="20" height="18" fill="#CBD5E1" stroke="#262626" strokeWidth="1.2" />
-          <path d="M11 8 V4 H21 V8" stroke="#262626" strokeWidth="1.2" fill="none" />
-          <path d="M8 17 L16 11 L24 17" stroke="#000080" strokeWidth="1.5" fill="none" />
-          <line x1="16" y1="12" x2="16" y2="22" stroke="#000080" strokeWidth="1.5" />
+        <svg className="w-9 h-9" viewBox="0 0 32 32" fill="none">
+          {/* Figma 82-811: Mac Calculator Keypad */}
+          <rect x="5" y="3" width="22" height="26" rx="2" fill="#CCCCCC" stroke="#262626" strokeWidth="1.2" />
+          <rect x="8" y="6" width="16" height="5" fill="#E8EAE6" stroke="#262626" strokeWidth="0.8" />
+          <line x1="10" y1="8.5" x2="16" y2="8.5" stroke="#262626" strokeWidth="1" />
+          <rect x="8" y="14" width="4" height="3" fill="#FFFFFF" stroke="#262626" strokeWidth="0.6" />
+          <rect x="14" y="14" width="4" height="3" fill="#FFFFFF" stroke="#262626" strokeWidth="0.6" />
+          <rect x="20" y="14" width="4" height="3" fill="#FFFFFF" stroke="#262626" strokeWidth="0.6" />
+          <rect x="8" y="19" width="4" height="3" fill="#FFFFFF" stroke="#262626" strokeWidth="0.6" />
+          <rect x="14" y="19" width="4" height="3" fill="#FFFFFF" stroke="#262626" strokeWidth="0.6" />
+          <rect x="20" y="19" width="4" height="3" fill="#FFFFFF" stroke="#262626" strokeWidth="0.6" />
+          <rect x="8" y="24" width="10" height="3" fill="#FFFFFF" stroke="#262626" strokeWidth="0.6" />
         </svg>
       ),
-      action: () => alert('StuffIt Expander 6: .sit ve .zip arşiv açıcı.'),
+      action: onLaunchCalculator,
+    },
+    {
+      id: 'scrapbook',
+      name: 'Scrapbook',
+      dateModified: 'Mar 11, 1999, 10:12 AM',
+      size: '960 K',
+      kind: 'application program',
+      icon: (
+        <svg className="w-9 h-9" viewBox="0 0 32 32" fill="none">
+          {/* Figma 82-811: Scrapbook Notebook */}
+          <rect x="6" y="4" width="20" height="24" rx="1" fill="#FEF08A" stroke="#262626" strokeWidth="1.2" />
+          <rect x="9" y="8" width="6" height="6" fill="#F43F5E" />
+          <rect x="17" y="8" width="6" height="6" fill="#3B82F6" />
+          <line x1="9" y1="18" x2="23" y2="18" stroke="#713F12" strokeWidth="1" />
+          <line x1="9" y1="22" x2="20" y2="22" stroke="#713F12" strokeWidth="1" />
+        </svg>
+      ),
+      action: onLaunchStickies,
     },
   ];
 
@@ -208,14 +171,14 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
       onContextMenu={handleContextMenu}
       className="flex flex-col h-full bg-[#FFFFFF] font-['Charcoal',sans-serif] text-[12px] text-[#262626] select-none relative"
     >
-      {/* ================= HEADER BAR (9 items, 12.44 GB available) ================= */}
+      {/* ================= HEADER BAR (6 items, 12.44 GB available) ================= */}
       <div className="px-3 py-1.5 bg-[#DDDDDD] border-b border-[#262626] flex items-center justify-between text-[11px] shadow-sm">
         <div className="flex items-center gap-2">
           <span className="font-bold">Applications</span>
-          <span className="text-[#666]">9 items, 12.44 GB available</span>
+          <span className="text-[#666]">6 items, 12.44 GB available</span>
         </div>
 
-        {/* View Switcher: as Icons / as List (Image 3) */}
+        {/* View Switcher: as Icons / as List (Figma 69-130300) */}
         <div className="flex items-center gap-1">
           <button
             onClick={() => {
@@ -241,16 +204,16 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
                 ? 'bg-[#000080] text-white border-[#000080] font-bold'
                 : 'bg-[#ECECEC] text-[#262626] border-[#888] hover:bg-[#D8D8D8]'
             }`}
-            title="as List görünümü (Image 4)"
+            title="as List görünümü"
           >
             as List
           </button>
         </div>
       </div>
 
-      {/* ================= VIEW 1: AS ICONS (IMAGE 2) ================= */}
+      {/* ================= VIEW 1: AS ICONS ================= */}
       {viewMode === 'icons' && (
-        <div className="flex-1 p-5 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-6 overflow-y-auto bg-white content-start">
+        <div className="flex-1 p-6 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6 overflow-y-auto bg-white content-start">
           {APPS.map((app) => {
             const isSelected = selectedAppId === app.id;
             return (
@@ -276,7 +239,7 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
                   {app.icon}
                 </div>
                 <span
-                  className={`text-[11px] px-1.5 py-0.5 rounded-[2px] leading-tight break-words max-w-[90px] ${
+                  className={`text-[11px] px-1.5 py-0.5 rounded-[2px] leading-tight break-words max-w-[95px] ${
                     isSelected
                       ? 'bg-[#000080] text-white font-bold'
                       : 'text-[#262626] group-hover:bg-[#EAEAEA]'
@@ -290,7 +253,7 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
         </div>
       )}
 
-      {/* ================= VIEW 2: AS LIST (IMAGE 4) ================= */}
+      {/* ================= VIEW 2: AS LIST ================= */}
       {viewMode === 'list' && (
         <div className="flex-1 overflow-y-auto bg-white">
           <table className="w-full text-left text-[11px] border-collapse font-mono">
@@ -343,7 +306,7 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
         </div>
       )}
 
-      {/* ================= RIGHT CLICK CONTEXT MENU (IMAGE 3) ================= */}
+      {/* ================= RIGHT CLICK CONTEXT MENU ================= */}
       {contextMenuPos && (
         <div
           style={{ top: contextMenuPos.y - 40, left: contextMenuPos.x - 40 }}
@@ -379,8 +342,8 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
 
       {/* Bottom Status bar */}
       <div className="px-3 py-0.5 bg-[#DDDDDD] border-t border-[#808080] text-[10px] font-mono text-[#555] flex justify-between">
-        <span>Mac OS 9.2.2 Applications Folder</span>
-        <span>Çift tıklayarak uygulamayı başlatın</span>
+        <span>Figma 82-811 Applications Suite</span>
+        <span>Çift tıklayarak başlatın</span>
       </div>
     </div>
   );

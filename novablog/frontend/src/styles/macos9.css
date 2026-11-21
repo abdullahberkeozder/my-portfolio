@@ -216,23 +216,23 @@ html.macos9-mode,
 }
 
 /* ==========================================================================
-   4. PINSTRIPE RACING STRIPES & TITLEBARS
+   4. PINSTRIPE RACING STRIPES & TITLEBARS (Figma 68-98697 & 69-130300)
    ========================================================================== */
 
 .mac9-titlebar-stripes {
   background: repeating-linear-gradient(
     to bottom,
-    #CCCCCC,
-    #CCCCCC 1px,
-    #999999 1px,
-    #999999 2px
+    #E8E8E8,
+    #E8E8E8 1px,
+    #888888 1px,
+    #888888 2px
   );
 }
 
 .mac9-window-frame {
   background-color: #CCCCCC;
   border: 1px solid #262626;
-  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.35), inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #808080;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.25), inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #808080;
   border-radius: 4px 4px 0 0;
 }
 
@@ -242,6 +242,98 @@ html.macos9-mode,
 }
 .mac9-window-inactive .mac9-window-title {
   color: #808080 !important;
+}
+
+/* ==========================================================================
+   4.1 RETRO MAC OS 9 SCROLLBARS (Figma 69-125817)
+   ========================================================================== */
+
+/* Universal Mac OS 9 Scrollbar track & elevator */
+.macos9-mode ::-webkit-scrollbar,
+.mac9-scrollbar::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+.macos9-mode ::-webkit-scrollbar-track,
+.mac9-scrollbar::-webkit-scrollbar-track {
+  background-color: #ECECEC;
+  background-image: 
+    linear-gradient(45deg, #DFDFDF 25%, transparent 25%),
+    linear-gradient(-45deg, #DFDFDF 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #DFDFDF 75%),
+    linear-gradient(-45deg, transparent 75%, #DFDFDF 75%);
+  background-size: 4px 4px;
+  border-left: 1px solid #808080;
+  box-shadow: inset 1px 0 1px rgba(0,0,0,0.15);
+}
+
+.macos9-mode ::-webkit-scrollbar-thumb,
+.mac9-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #CCCCCC;
+  border: 1px solid #262626;
+  box-shadow: inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #808080;
+  border-radius: 0px;
+  min-height: 20px;
+  /* 3 Horizontal Grip Ridges in thumb center */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 4px,
+    #FFFFFF 4px,
+    #FFFFFF 5px,
+    #808080 5px,
+    #808080 6px,
+    transparent 6px,
+    transparent 10px
+  );
+}
+
+.macos9-mode ::-webkit-scrollbar-thumb:active,
+.mac9-scrollbar::-webkit-scrollbar-thumb:active {
+  background-color: #000080;
+  box-shadow: inset 1px 1px 0 #000050, inset -1px -1px 0 #8080FF;
+}
+
+.macos9-mode ::-webkit-scrollbar-button,
+.mac9-scrollbar::-webkit-scrollbar-button {
+  background-color: #CCCCCC;
+  border: 1px solid #262626;
+  box-shadow: inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #808080;
+  display: block;
+  height: 16px;
+  width: 16px;
+}
+
+.macos9-mode ::-webkit-scrollbar-button:active,
+.mac9-scrollbar::-webkit-scrollbar-button:active {
+  background-color: #999999;
+  box-shadow: inset 1px 1px 0 #404040, inset -1px -1px 0 #FFFFFF;
+}
+
+/* Scrollbar Button Arrow Sprites */
+.macos9-mode ::-webkit-scrollbar-button:vertical:decrement {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><polygon points="8,5 4,11 12,11" fill="%23262626"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.macos9-mode ::-webkit-scrollbar-button:vertical:increment {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><polygon points="8,11 4,5 12,5" fill="%23262626"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.macos9-mode ::-webkit-scrollbar-button:horizontal:decrement {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><polygon points="5,8 11,4 11,12" fill="%23262626"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.macos9-mode ::-webkit-scrollbar-button:horizontal:increment {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><polygon points="11,8 5,4 5,12" fill="%23262626"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 /* ==========================================================================
