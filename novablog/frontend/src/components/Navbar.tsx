@@ -3,18 +3,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import {
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Menu,
   PenSquare,
   Search,
-  ShieldAlert,
   Sun,
   Moon,
 } from 'lucide-react';
 import { useTheme } from '@/providers/ThemeProvider';
-import { GithubIcon } from './GithubIcon';
 import { SpecDirectoryPopover } from './SpecDirectoryPopover';
 import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
 
@@ -317,45 +313,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <div className="h-4 w-[1px] bg-[#999999] dark:bg-[#404040] hidden sm:block mx-0.5" />
 
-            {/* Backend Health Status Pill */}
-            <button
-              type="button"
-              onClick={() => {
-                playKeyClick();
-                if (onRefreshHealth) onRefreshHealth();
-              }}
-              className="mac9-btn h-[24px] !px-1.5 flex items-center gap-1 text-[10px] font-mono cursor-pointer"
-              title={isBackendOnline ? 'Spring Boot 5555: Online (Click to Refresh)' : 'Backend Offline (Click to Refresh)'}
-            >
-              <span
-                className={`inline-block w-2 h-2 rounded-full ${
-                  isBackendOnline === true
-                    ? 'bg-emerald-500 shadow-[0_0_4px_#10b981]'
-                    : isBackendOnline === false
-                    ? 'bg-amber-400 shadow-[0_0_4px_#fbbf24]'
-                    : 'bg-zinc-400 animate-pulse'
-                }`}
-              />
-              <span className="text-[10px] text-zinc-600 dark:text-zinc-400 hidden xl:inline">
-                {isBackendOnline ? 'Online' : 'Offline'}
-              </span>
-            </button>
-
-            {/* Mac OS 9 2FA Security Button */}
-            {onOpenTwoFactor && (
-              <button
-                type="button"
-                onClick={() => {
-                  playKeyClick();
-                  onOpenTwoFactor();
-                }}
-                className="mac9-btn mac9-btn-icon text-zinc-700 dark:text-zinc-300"
-                title="Mac OS 9 Security &amp; 2FA"
-              >
-                <ShieldAlert className="w-3.5 h-3.5" />
-              </button>
-            )}
-
             {/* Authentic Mac OS 9 Day / Night Theme Button (Matches Platinum aesthetic) */}
             <button
               type="button"
@@ -372,35 +329,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               ) : (
                 <Moon className="w-3.5 h-3.5 text-indigo-700" />
               )}
-            </button>
-
-            {/* GitHub Source Link */}
-            <a
-              href="https://github.com/abdullahberkeozder/my-portfolio"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => playKeyClick()}
-              className="mac9-btn mac9-btn-icon text-zinc-700 dark:text-zinc-300"
-              title="GitHub Source Code"
-            >
-              <GithubIcon className="w-3.5 h-3.5" />
-            </a>
-
-            {/* Spec Directory Menu / Index Button */}
-            <button
-              type="button"
-              onClick={() => {
-                playKeyClick();
-                setMegaMenu(isMegaOpen ? null : 'articles');
-              }}
-              className={`mac9-btn flex items-center gap-1 h-[24px] !px-2 text-[10px] font-['Charcoal',sans-serif] font-bold uppercase cursor-pointer ${
-                isMegaOpen ? 'active' : ''
-              }`}
-              aria-label="Architecture Directory Menu"
-              title="Architecture Directory &amp; Module Specifications"
-            >
-              {isMegaOpen ? <ChevronDown className="w-3 h-3 rotate-180" /> : <Menu className="w-3 h-3" />}
-              <span>{isMegaOpen ? 'Close' : 'Index'}</span>
             </button>
           </div>
         </div>
