@@ -102,26 +102,26 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           </button>
 
           {openMenu === 'apple' && (
-            <div className="absolute top-[20px] left-0 w-52 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50">
+            <div className="absolute top-[20px] left-0 w-60 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50 text-[12px] font-['Charcoal',sans-serif]">
               <button
                 onClick={() => {
                   onAbout?.();
                   setOpenMenu(null);
                   macSound.playMacClickUp();
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
               >
                 <span>About This Computer...</span>
                 <span className="text-[10px] opacity-60">9.2.2</span>
               </button>
-              <div className="h-px bg-[#808080] my-1 mx-2" />
+              <div className="h-px bg-[#999999] border-b border-[#FFFFFF] my-1 mx-1" />
               <button
                 onClick={() => {
                   onOpenCalculator?.();
                   setOpenMenu(null);
                   macSound.playMacClickUp();
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
               >
                 <span>Calculator</span>
                 <span className="text-[10px]">🔢</span>
@@ -132,7 +132,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                   setOpenMenu(null);
                   macSound.playMacClickUp();
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
               >
                 <span>Stickies</span>
                 <span className="text-[10px]">📝</span>
@@ -143,10 +143,10 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                   setOpenMenu(null);
                   macSound.playMacClickUp();
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
               >
                 <span>Control Panels ➔ Appearance</span>
-                <span className="text-[10px]">🎨</span>
+                <span className="text-[9px] text-[#444] group-hover:text-white">▶</span>
               </button>
               <button
                 onClick={() => {
@@ -154,7 +154,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                   setOpenMenu(null);
                   macSound.playMacClickUp();
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
               >
                 <span>Internet Explorer (Web)</span>
                 <span className="text-[10px]">🌐</span>
@@ -165,10 +165,10 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                   setOpenMenu(null);
                   macSound.playMacClickUp();
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
               >
                 <span>Nova Blog Sayfası</span>
-                <span className="text-[10px]">📖</span>
+                <span className="text-[10px] opacity-60 font-mono">⌘B</span>
               </button>
               <button
                 onClick={() => {
@@ -176,20 +176,21 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                   setOpenMenu(null);
                   macSound.playMacClickUp();
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
               >
                 <span>Sherlock 2 (Haberler)</span>
-                <span className="text-[10px]">📰</span>
+                <span className="text-[10px] opacity-60 font-mono">⌘N</span>
               </button>
-              <div className="h-px bg-[#808080] my-1 mx-2" />
+              <div className="h-px bg-[#999999] border-b border-[#FFFFFF] my-1 mx-1" />
               <button
                 onClick={() => {
                   macSound.playSosumi();
                   setOpenMenu(null);
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white"
+                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
               >
-                Test Sound: Sosumi Alert
+                <span>Alert Sound: Sosumi</span>
+                <span className="text-[10px]">🔊</span>
               </button>
             </div>
           )}
@@ -200,19 +201,19 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           <button
             onClick={() => handleMenuClick('file')}
             className={`px-2 h-full flex items-center transition-none ${
-              openMenu === 'file' ? 'bg-[#000080] text-white' : 'hover:bg-[#CCCCCC]'
+              openMenu === 'file' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
             }`}
           >
             File
           </button>
           {openMenu === 'file' && (
-            <div className="absolute top-[20px] left-0 w-44 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50">
+            <div className="absolute top-[20px] left-0 w-44 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50 text-[12px] font-['Charcoal',sans-serif]">
               <button
                 onClick={() => {
                   onOpenBlog?.();
                   setOpenMenu(null);
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex justify-between"
+                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex justify-between"
               >
                 <span>Open Blog</span>
                 <span className="text-[10px] opacity-70">⌘B</span>
@@ -222,7 +223,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                   onOpenNews?.();
                   setOpenMenu(null);
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex justify-between"
+                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex justify-between"
               >
                 <span>Open News</span>
                 <span className="text-[10px] opacity-70">⌘N</span>
@@ -236,13 +237,13 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           <button
             onClick={() => handleMenuClick('edit')}
             className={`px-2 h-full flex items-center transition-none ${
-              openMenu === 'edit' ? 'bg-[#000080] text-white' : 'hover:bg-[#CCCCCC]'
+              openMenu === 'edit' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
             }`}
           >
             Edit
           </button>
           {openMenu === 'edit' && (
-            <div className="absolute top-[20px] left-0 w-36 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50">
+            <div className="absolute top-[20px] left-0 w-36 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50 text-[12px] font-['Charcoal',sans-serif]">
               <div className="px-4 py-1 opacity-50 cursor-not-allowed">Cut (⌘X)</div>
               <div className="px-4 py-1 opacity-50 cursor-not-allowed">Copy (⌘C)</div>
               <div className="px-4 py-1 opacity-50 cursor-not-allowed">Paste (⌘V)</div>
@@ -255,15 +256,27 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           <button
             onClick={() => handleMenuClick('view')}
             className={`px-2 h-full flex items-center transition-none ${
-              openMenu === 'view' ? 'bg-[#000080] text-white' : 'hover:bg-[#CCCCCC]'
+              openMenu === 'view' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
             }`}
           >
             View
           </button>
           {openMenu === 'view' && (
-            <div className="absolute top-[20px] left-0 w-36 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50">
-              <div className="px-4 py-1 hover:bg-[#000080] hover:text-white cursor-pointer">as Icons</div>
-              <div className="px-4 py-1 hover:bg-[#000080] hover:text-white cursor-pointer">as List</div>
+            <div className="absolute top-[20px] left-0 w-44 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50 text-[12px] font-['Charcoal',sans-serif]">
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex justify-between">
+                <span>as Icons</span>
+                <span>✓</span>
+              </div>
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer">
+                <span>as Buttons</span>
+              </div>
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer">
+                <span>as List</span>
+              </div>
+              <div className="h-px bg-[#999999] border-b border-[#FFFFFF] my-1 mx-1" />
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer">
+                <span>Clean Up</span>
+              </div>
             </div>
           )}
         </div>
@@ -273,29 +286,29 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           <button
             onClick={() => handleMenuClick('special')}
             className={`px-2 h-full flex items-center transition-none ${
-              openMenu === 'special' ? 'bg-[#000080] text-white' : 'hover:bg-[#CCCCCC]'
+              openMenu === 'special' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
             }`}
           >
             Special
           </button>
           {openMenu === 'special' && (
-            <div className="absolute top-[20px] left-0 w-48 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50">
+            <div className="absolute top-[20px] left-0 w-48 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50 text-[12px] font-['Charcoal',sans-serif]">
               <button
                 onClick={() => {
                   onEmptyTrash?.();
                   setOpenMenu(null);
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white"
+                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white"
               >
                 Empty Trash...
               </button>
-              <div className="h-px bg-[#808080] my-1 mx-2" />
+              <div className="h-px bg-[#999999] border-b border-[#FFFFFF] my-1 mx-1" />
               <button
                 onClick={() => {
                   onRestart?.();
                   setOpenMenu(null);
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white"
+                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white"
               >
                 Restart
               </button>
@@ -304,7 +317,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                   macSound.playWildEep();
                   setOpenMenu(null);
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white"
+                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white"
               >
                 Shut Down...
               </button>
@@ -317,19 +330,19 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           <button
             onClick={() => handleMenuClick('help')}
             className={`px-2 h-full flex items-center transition-none ${
-              openMenu === 'help' ? 'bg-[#000080] text-white' : 'hover:bg-[#CCCCCC]'
+              openMenu === 'help' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
             }`}
           >
             Help
           </button>
           {openMenu === 'help' && (
-            <div className="absolute top-[20px] left-0 w-44 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50">
+            <div className="absolute top-[20px] left-0 w-44 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50 text-[12px] font-['Charcoal',sans-serif]">
               <div
                 onClick={() => {
                   onAbout?.();
                   setOpenMenu(null);
                 }}
-                className="px-4 py-1 hover:bg-[#000080] hover:text-white cursor-pointer"
+                className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer"
               >
                 Nova Desktop Help
               </div>

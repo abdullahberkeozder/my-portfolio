@@ -1,24 +1,32 @@
-/*  Mac OS 9 (Platinum UI / Sonata) Global Tokens & Hardware-Plane Cursors */
+/*  Mac OS 9 (Platinum UI / Sonata) Global Tokens & Hardware-Plane Cursors (Figma UI Kit) */
 
 :root {
   --mac9-bg-purple: #63659c;
   --mac9-platinum: #CCCCCC;
   --mac9-light: #DDDDDD;
+  --mac9-gray-200: #ECECEC;
+  --mac9-gray-300: #DDDDDD;
+  --mac9-gray-400: #CCCCCC;
+  --mac9-gray-500: #B4B4B4;
+  --mac9-gray-600: #999999;
+  --mac9-gray-700: #808080;
+  --mac9-gray-800: #555555;
   --mac9-stripes: #999999;
-  --mac9-shadow: #808080;
-  --mac9-dark-shadow: #404040;
   --mac9-border: #262626;
   --mac9-white: #FFFFFF;
-  --mac9-selection: #000080;
-  --mac9-font-title: 'Charcoal', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --mac9-font-body: 'Geneva', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mac9-black: #1F1F1F;
+  --mac9-selection: #333399; /* Azul (Figma Colours: #333399) */
+  --mac9-lavender: #C6C8F9;
+  --mac9-font-editorial: 'Apple Garamond', Garamond, Georgia, serif;
+  --mac9-font-title: 'Charcoal', 'Chicago', 'Lucida Grande', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mac9-font-body: 'Geneva', Verdana, Arial, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* ==========================================================================
-   1. HARDWARE-PLANE RETRO MAC OS 9 CURSOR SYSTEM (Zero Latency)
+   1. HARDWARE-PLANE RETRO MAC OS 9 CURSOR SYSTEM (Figma Icons - Cursors)
    ========================================================================== */
 
-/* 16x16 Mac Classic Black Arrow with 1px White Border */
+/* 1. Standard Pointer Arrow (Crisp 16x16 black arrow with 1px white border) */
 html.macos9-mode,
 .macos9-mode body,
 .macos9-desktop,
@@ -26,30 +34,100 @@ html.macos9-mode,
   cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="%23000000" stroke="%23ffffff" stroke-width="1" d="M1,1 L1,14 L5,11 L8,15 L10,14 L7,10 L12,10 Z"/></svg>') 1 1, default !important;
 }
 
-/* 16x16 Mac OS 9 Nostalgic Wristwatch (Busy / Wait) */
+/* 2. Mac OS 9 Wristwatch (Busy / Wait - Figma Cursors) */
 .macos9-mode .is-loading,
 .macos9-mode [aria-busy="true"],
 .macos9-cursor-wait {
   cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="5" y="0" width="6" height="2" fill="%23000000"/><rect x="5" y="14" width="6" height="2" fill="%23000000"/><circle cx="8" cy="8" r="6" fill="%23ffffff" stroke="%23000000" stroke-width="1"/><rect x="14" y="7" width="2" height="2" fill="%23000000"/><line x1="8" y1="8" x2="8" y2="4" stroke="%23000000" stroke-width="1"/><line x1="8" y1="8" x2="11" y2="8" stroke="%23000000" stroke-width="1"/></svg>') 8 8, wait !important;
 }
 
-/* 16x16 Mac OS 9 Pointing Hand (Links & Clickables) */
+/* 3. Pointing Glove Hand (Links & Clickables - Figma Cursors) */
 .macos9-mode a,
 .macos9-mode button,
 .macos9-mode [role="button"],
+.macos9-mode select,
 .macos9-cursor-pointer {
   cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="%23ffffff" stroke="%23000000" stroke-width="1" d="M5,1 L7,1 L7,7 L10,7 L10,9 L13,9 L13,12 L11,15 L4,15 L2,10 L4,7 L5,7 Z"/></svg>') 5 1, pointer !important;
 }
 
-/* 16x16 Mac OS 9 I-Beam (Text Selection) */
+/* 4. I-Beam (Text Selection - Figma Cursors) */
 .macos9-mode input[type="text"],
 .macos9-mode textarea,
 .macos9-cursor-text {
   cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="%23ffffff" d="M1,2h7v2H6v8h2v2H1v-2h2V4H1V2z"/><path fill="%23000000" d="M2,3h5v1H5v8h2v1H2v-1h2V4H2V3z"/></svg>') 4 8, text !important;
 }
 
+/* 5. Open Hand (Pan / Grab - Figma Cursors) */
+.macos9-cursor-grab {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="%23ffffff" stroke="%23000000" stroke-width="1" d="M3,6 L5,6 L5,3 L7,3 L7,2 L9,2 L9,3 L11,3 L11,4 L13,4 L13,9 L12,14 L4,14 L2,9 Z"/></svg>') 8 8, grab !important;
+}
+
+/* 6. Closed Hand (Grabbing / Dragging - Figma Cursors) */
+.macos9-cursor-grabbing {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="%23ffffff" stroke="%23000000" stroke-width="1" d="M4,5 L12,5 L12,8 L13,9 L13,13 L11,15 L5,15 L3,13 L3,8 Z"/></svg>') 8 8, grabbing !important;
+}
+
+/* 7. Not-Allowed (Circle with diagonal slash ⊘ - Figma Cursors) */
+.macos9-cursor-not-allowed {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges"><circle cx="8" cy="8" r="6" fill="none" stroke="%23000000" stroke-width="1.5"/><line x1="4" y1="4" x2="12" y2="12" stroke="%23000000" stroke-width="1.5"/></svg>') 8 8, not-allowed !important;
+}
+
 /* ==========================================================================
-   2. DESKTOP & WALLPAPER STYLING (Figma Node 68-94977)
+   2. TEXT STYLES (Figma Text Styles: Garamond Light, Charcoal Bold, Geneva)
+   ========================================================================== */
+
+.mac9-text-editorial {
+  font-family: var(--mac9-font-editorial);
+  font-weight: 300;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.mac9-text-headline {
+  font-family: var(--mac9-font-title);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 0.3px;
+}
+
+.mac9-text-menu {
+  font-family: var(--mac9-font-title);
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.mac9-text-body {
+  font-family: var(--mac9-font-body);
+  font-weight: 400;
+  font-size: 12px; /* 9pt */
+  line-height: 1.3;
+}
+
+.mac9-text-body-slanted {
+  font-family: var(--mac9-font-body);
+  font-style: italic;
+  font-size: 12px; /* 9pt */
+  line-height: 1.3;
+}
+
+.mac9-text-body-bold {
+  font-family: var(--mac9-font-body);
+  font-weight: 700;
+  font-size: 12px; /* 9pt */
+  line-height: 1.3;
+}
+
+.mac9-text-caption {
+  font-family: var(--mac9-font-body);
+  font-weight: 400;
+  font-size: 11px; /* 8pt */
+  line-height: 1.2;
+}
+
+/* ==========================================================================
+   3. DESKTOP & WALLPAPER STYLING (Figma Node 68-94977 & User Image 9)
    ========================================================================== */
 
 .mac9-wallpaper-canvas {
@@ -57,7 +135,7 @@ html.macos9-mode,
   transition: background 0.25s ease;
 }
 
-/* 1. Default Sonata Purple (Official Mac OS 9 Finder) */
+/* 1. Default Wallpaper (Official Mac OS 9 Sonata Finder) */
 .mac9-wallpaper-sonata-purple {
   background-color: #63659c;
   background-image: url('/retro/wallpaper-macos9.png');
@@ -65,79 +143,123 @@ html.macos9-mode,
   background-size: 512px 384px;
 }
 
-/* 2. Quantum Foam (Figma 73:1100 & Image 6 - Silvery Lavender Ribbon Flow) */
-.mac9-wallpaper-quantum-foam {
-  background-color: #9fa5c4;
-  background: 
-    radial-gradient(ellipse 90% 80% at 75% 30%, rgba(255, 255, 255, 0.6) 0%, rgba(180, 185, 215, 0.4) 30%, transparent 65%),
-    radial-gradient(ellipse 70% 90% at 20% 70%, rgba(140, 145, 175, 0.8) 0%, rgba(95, 100, 130, 0.6) 50%, transparent 80%),
-    linear-gradient(135deg, #d8dbe8 0%, #b8bccf 35%, #888ea8 70%, #5b627d 100%);
+/* 2. macOS Background (Figma Image 9: Soft Ice Blue with Subtle Finder Face) */
+.mac9-wallpaper-macos-bg {
+  background-color: #D8E2F3;
+  background-image: 
+    radial-gradient(ellipse at 70% 30%, rgba(255, 255, 255, 0.7) 0%, transparent 60%),
+    linear-gradient(135deg, #E6EEFA 0%, #D0DEFC 50%, #B8CEF5 100%);
+  position: relative;
+}
+
+/* 3. Blue Dalmatian (Figma Image 9: Translucent Cyan/White Swirl Dots) */
+.mac9-wallpaper-blue-dalmatian {
+  background-color: #124e8a;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.9) 0%, rgba(147, 197, 253, 0.6) 20%, transparent 40%),
+    radial-gradient(circle at 25% 25%, rgba(224, 242, 254, 0.8) 0%, transparent 35%),
+    radial-gradient(circle at 75% 75%, rgba(186, 230, 253, 0.7) 0%, transparent 30%),
+    radial-gradient(circle at 80% 20%, rgba(125, 211, 252, 0.5) 0%, transparent 25%),
+    radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.5) 0%, transparent 30%),
+    linear-gradient(135deg, #0284c7 0%, #0369a1 40%, #1e3a8a 100%);
+}
+
+/* 4. Capsules (Figma Image 9: Glossy Turquoise Lozenge Capsules on Teal) */
+.mac9-wallpaper-capsules {
+  background-color: #1a7a82;
+  background-image: 
+    radial-gradient(ellipse 40px 18px at 25% 25%, #5eead4 0%, #14b8a6 50%, #0f766e 100%),
+    radial-gradient(ellipse 40px 18px at 75% 75%, #5eead4 0%, #14b8a6 50%, #0f766e 100%),
+    radial-gradient(ellipse 40px 18px at 75% 25%, #2dd4bf 0%, #0d9488 50%, #115e59 100%),
+    radial-gradient(ellipse 40px 18px at 25% 75%, #2dd4bf 0%, #0d9488 50%, #115e59 100%),
+    linear-gradient(135deg, #134e4a 0%, #0f766e 50%, #115e59 100%);
+  background-size: 80px 80px;
+}
+
+/* 5. Tub (Figma Image 9: Tangerine Surface with 3-Blade Propeller Turbines) */
+.mac9-wallpaper-tub {
+  background-color: #f97316;
+  background-image: 
+    radial-gradient(circle at 30% 30%, #fde047 0%, #f59e0b 25%, transparent 35%),
+    radial-gradient(circle at 70% 70%, #fde047 0%, #f59e0b 25%, transparent 35%),
+    radial-gradient(circle at 50% 50%, #fbbf24 0%, #d97706 40%, transparent 55%),
+    linear-gradient(135deg, #ea580c 0%, #c2410c 50%, #9a3412 100%);
+  background-size: 64px 64px;
+}
+
+/* 6. UFO (Figma Image 9: Lime-Green Field with Hovering Flying Saucer Discs) */
+.mac9-wallpaper-ufo {
+  background-color: #84cc16;
+  background-image: 
+    radial-gradient(ellipse 45px 20px at 40% 40%, #bef264 0%, #a3e635 45%, #65a30d 85%, transparent 90%),
+    radial-gradient(ellipse 35px 15px at 80% 70%, #d9f99d 0%, #84cc16 50%, #4d7c0f 85%, transparent 90%),
+    radial-gradient(ellipse 25px 10px at 20% 80%, #ecfccb 0%, #a3e635 60%, transparent 90%),
+    linear-gradient(135deg, #bef264 0%, #65a30d 50%, #3f6212 100%);
+  background-size: 110px 110px;
+}
+
+/* 7. Blueberry Union (Figma Image 9: Deep Aquatic Cyan with Jellyfish Pods) */
+.mac9-wallpaper-blueberry-union {
+  background-color: #0c4a6e;
+  background-image: 
+    radial-gradient(ellipse 60px 40px at 30% 30%, #38bdf8 0%, #0284c7 40%, transparent 70%),
+    radial-gradient(ellipse 50px 35px at 70% 65%, #22d3ee 0%, #0891b2 45%, transparent 75%),
+    radial-gradient(circle at 80% 20%, #7dd3fc 0%, transparent 30%),
+    linear-gradient(135deg, #075985 0%, #0c4a6e 40%, #082f49 100%);
+}
+
+/* 8. Heavy Petal (Figma Image 9: Luminous Magenta & Cobalt Translucent Petals) */
+.mac9-wallpaper-heavy-petal {
+  background-color: #701a75;
+  background-image: 
+    radial-gradient(ellipse 90% 70% at 75% 30%, rgba(244, 63, 94, 0.8) 0%, rgba(225, 29, 72, 0.6) 35%, transparent 70%),
+    radial-gradient(ellipse 80% 90% at 20% 70%, rgba(59, 130, 246, 0.9) 0%, rgba(79, 70, 229, 0.7) 45%, transparent 75%),
+    radial-gradient(circle at 50% 50%, rgba(217, 70, 239, 0.5) 0%, transparent 60%),
+    linear-gradient(135deg, #831843 0%, #4c0519 50%, #1e1b4b 100%);
+}
+
+/* 9. Blueberry Oxygen (Figma Image 9: Ocean Teal with Rising Micro-Bubbles) */
+.mac9-wallpaper-blueberry-oxygen {
+  background-color: #0e7490;
+  background-image: 
+    radial-gradient(circle at 45% 45%, rgba(165, 243, 252, 0.8) 0%, rgba(34, 211, 238, 0.5) 15%, transparent 30%),
+    radial-gradient(circle at 65% 30%, rgba(207, 250, 254, 0.9) 0%, transparent 12%),
+    radial-gradient(circle at 25% 65%, rgba(165, 243, 252, 0.7) 0%, transparent 18%),
+    radial-gradient(circle at 75% 80%, rgba(103, 232, 249, 0.6) 0%, transparent 15%),
+    linear-gradient(180deg, #155e75 0%, #0e7490 40%, #083344 100%);
+}
+
+/* 10. Tangerine Radian (Figma Image 9: Warm Amber Radiating Spiky Solar Spheres) */
+.mac9-wallpaper-tangerine-radian {
+  background-color: #b45309;
+  background-image: 
+    radial-gradient(circle at 50% 45%, #fde047 0%, #f59e0b 25%, #d97706 50%, transparent 75%),
+    radial-gradient(circle at 20% 75%, #fbbf24 0%, #b45309 35%, transparent 60%),
+    radial-gradient(circle at 80% 20%, #fde68a 0%, #d97706 40%, transparent 65%),
+    linear-gradient(135deg, #d97706 0%, #b45309 50%, #78350f 100%);
+}
+
+/* 11. Indigo Foam (Figma Image 9: Deep Cobalt / Indigo Rich Satin Waves) */
+.mac9-wallpaper-indigo-foam {
+  background-color: #1e3a8a;
+  background-image: 
+    radial-gradient(ellipse 95% 80% at 75% 35%, rgba(96, 165, 250, 0.7) 0%, rgba(37, 99, 235, 0.4) 35%, transparent 70%),
+    radial-gradient(ellipse 75% 95% at 20% 65%, rgba(30, 58, 138, 0.9) 0%, rgba(15, 23, 42, 0.7) 55%, transparent 85%),
+    linear-gradient(135deg, #3b82f6 0%, #1d4ed8 35%, #1e3a8a 65%, #0f172a 100%);
   background-attachment: fixed;
 }
 
-/* 3. Capsules (Figma 73:1022 - Glossy iMac Candy Capsules) */
-.mac9-wallpaper-capsules {
-  background-color: #2b3a4a;
-  background-image: 
-    radial-gradient(circle at 20% 30%, #38bdf8 0%, transparent 25%),
-    radial-gradient(circle at 80% 40%, #c084fc 0%, transparent 30%),
-    radial-gradient(circle at 40% 80%, #34d399 0%, transparent 28%),
-    radial-gradient(circle at 70% 85%, #fb923c 0%, transparent 22%),
-    linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-}
-
-/* 4. Blue Dalmatian (Figma 73:1019 - Retro iMac Swirl Dots) */
-.mac9-wallpaper-blue-dalmatian {
-  background-color: #3b5998;
-  background-image: 
-    radial-gradient(#6d84b4 25%, transparent 26%),
-    radial-gradient(#8b9dc3 18%, transparent 19%),
-    radial-gradient(#2d4373 30%, transparent 31%);
-  background-size: 48px 48px, 64px 64px, 32px 32px;
-  background-position: 0 0, 24px 24px, 12px 12px;
-}
-
-/* 5. Blueberry Union (Figma 73:1085 - Geometric Tech Grid) */
-.mac9-wallpaper-blueberry-union {
-  background-color: #1e3a5f;
-  background-image: 
-    linear-gradient(45deg, #254670 25%, transparent 25%),
-    linear-gradient(-45deg, #254670 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #254670 75%),
-    linear-gradient(-45deg, transparent 75%, #254670 75%);
-  background-size: 24px 24px;
-  background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
-}
-
-/* 6. Heavy Petal (Figma 73:1084 - Floral Deep Indigo Flow) */
-.mac9-wallpaper-heavy-petal {
-  background-color: #312e81;
+/* 12. Quantum Foam (Figma Image 9: Platinum Lavender Ethereal Ribbon Waves) */
+.mac9-wallpaper-quantum-foam {
+  background-color: #9fa5c4;
   background: 
-    radial-gradient(circle at 30% 20%, #4338ca 0%, transparent 40%),
-    radial-gradient(circle at 80% 70%, #6366f1 0%, transparent 45%),
-    radial-gradient(circle at 10% 80%, #1e1b4b 0%, transparent 50%),
-    linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+    radial-gradient(ellipse 90% 80% at 75% 30%, rgba(255, 255, 255, 0.75) 0%, rgba(195, 200, 230, 0.5) 30%, transparent 65%),
+    radial-gradient(ellipse 70% 90% at 20% 70%, rgba(150, 155, 185, 0.85) 0%, rgba(105, 110, 140, 0.65) 50%, transparent 80%),
+    linear-gradient(135deg, #e4e7f2 0%, #c4c8db 35%, #9298b4 70%, #636b88 100%);
+  background-attachment: fixed;
 }
 
-/* 7. Blueberry Oxygen (Figma 73:1093 - Cyan Radial Oxygen Swirl) */
-.mac9-wallpaper-blueberry-oxygen {
-  background-color: #0369a1;
-  background: radial-gradient(circle at 50% 40%, #38bdf8 0%, #0284c7 35%, #0369a1 65%, #0c4a6e 100%);
-}
-
-/* 8. Tangerine Fusion (Figma 73:1092 - 1999 iMac Tangerine Sunset) */
-.mac9-wallpaper-tangerine-fusion {
-  background-color: #ea580c;
-  background: radial-gradient(circle at 60% 30%, #fdba74 0%, #f97316 40%, #c2410c 75%, #7c2d12 100%);
-}
-
-/* 9. Apple iMac Bondi Blue Aqua */
-.mac9-wallpaper-bondi-blue {
-  background-color: #007788;
-  background: radial-gradient(circle at 50% 35%, #0099aa 0%, #006677 55%, #003e49 100%);
-}
-
-/* 10. Obsidian Carbon Pro Dark Mode */
+/* 13. Obsidian Carbon Pro Dark Mode (Figma Colours: Grays 800 + Black) */
 .mac9-wallpaper-dark-carbon {
   background-color: #15171c;
   background-image: 
@@ -148,6 +270,32 @@ html.macos9-mode,
     linear-gradient(90deg, #181a22 10px, transparent 10px),
     linear-gradient(#1e212b 25%, #1a1c24 25%, #1a1c24 50%, transparent 50%, transparent 75%, #242732 75%, #242732);
   background-size: 20px 20px;
+}
+
+/* 14. Steve Jobs 1998 iMac G3 Bondi Blue Aqua */
+.mac9-wallpaper-bondi-blue {
+  background-color: #007788;
+  background: radial-gradient(circle at 50% 35%, #0099aa 0%, #006677 55%, #003e49 100%);
+}
+
+/* 15. Cupertino Blueprint */
+.mac9-wallpaper-blueprint {
+  background-color: #1e3a8a;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* 16. Classic System 7 Platinum Dither */
+.mac9-wallpaper-platinum-gray {
+  background-color: #7f7f7f;
+  background-image: 
+    linear-gradient(45deg, #a0a0a0 25%, transparent 25%),
+    linear-gradient(-45deg, #a0a0a0 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #a0a0a0 75%),
+    linear-gradient(-45deg, transparent 75%, #a0a0a0 75%);
+  background-size: 2px 2px;
 }
 
 /* Rubberband Marquee Selection Box */
@@ -414,4 +562,88 @@ html.macos9-mode,
 .mac9-wireframe-anim {
   animation: mac9-zoom-wireframe-expand 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   pointer-events: none;
+}
+
+/* ==========================================================================
+   8. DROPDOWN MENUS & POPUPS (Figma Dropdown Menu & List Items Images 2, 3, 5)
+   ========================================================================== */
+
+/* Dropdown Menu Container (Figma Image 2) */
+.mac9-menu-dropdown {
+  background-color: #DDDDDD;
+  border: 1px solid #262626;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.35);
+  font-family: var(--mac9-font-title);
+  font-size: 12px;
+  color: #262626;
+  padding: 2px 0;
+  user-select: none;
+}
+
+/* Dropdown Menu Item (Figma Image 5) */
+.mac9-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 16px 2px 20px;
+  position: relative;
+  line-height: 1.3;
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="%23ffffff" stroke="%23000000" stroke-width="1" d="M5,1 L7,1 L7,7 L10,7 L10,9 L13,9 L13,12 L11,15 L4,15 L2,10 L4,7 L5,7 Z"/></svg>') 5 1, pointer !important;
+}
+
+.mac9-menu-item:hover,
+.mac9-menu-item.active {
+  background-color: var(--mac9-selection); /* Azul #333399 */
+  color: #FFFFFF;
+}
+
+/* Checked Item (Figma Image 5) */
+.mac9-menu-item.checked::before {
+  content: '✓';
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  font-weight: bold;
+}
+
+/* Submenu Flyout Indicator Arrow ▶ (Figma Image 2) */
+.mac9-menu-item-submenu::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 5px solid #262626;
+  margin-left: 8px;
+}
+.mac9-menu-item-submenu:hover::after {
+  border-left-color: #FFFFFF;
+}
+
+/* Menu Separator Line (Figma Image 5) */
+.mac9-menu-separator {
+  height: 1px;
+  background-color: #999999;
+  border-bottom: 1px solid #FFFFFF;
+  margin: 3px 1px;
+}
+
+/* Stepper Dropdown Popup Button (Figma Image 3) */
+.mac9-dropdown-stepper {
+  background: linear-gradient(180deg, #FFFFFF 0%, #DDDDDD 45%, #CCCCCC 100%);
+  border: 1px solid #262626;
+  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #808080;
+  padding: 1px 4px 1px 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--mac9-font-title);
+  font-size: 11px;
+  border-radius: 2px;
+}
+.mac9-dropdown-stepper:active {
+  background: #BBBBBB;
+  box-shadow: inset 1px 1px 0px #404040, inset -1px -1px 0px #FFFFFF;
 }

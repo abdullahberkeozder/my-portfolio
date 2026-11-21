@@ -5,15 +5,19 @@ import { macSound } from '@/lib/retroAudioMac9';
 
 export type WallpaperTheme =
   | 'sonata-purple'
-  | 'quantum-foam'
-  | 'capsules'
+  | 'macos-bg'
   | 'blue-dalmatian'
+  | 'capsules'
+  | 'tub'
+  | 'ufo'
   | 'blueberry-union'
   | 'heavy-petal'
   | 'blueberry-oxygen'
-  | 'tangerine-fusion'
-  | 'bondi-blue'
+  | 'tangerine-radian'
+  | 'indigo-foam'
+  | 'quantum-foam'
   | 'dark-carbon'
+  | 'bondi-blue'
   | 'blueprint'
   | 'platinum-gray';
 
@@ -41,25 +45,25 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     patternMeta: '16 X 16, 2K',
     pictureMeta: '800 X 600, 168K',
     previewClass: 'mac9-wallpaper-quantum-foam',
-    desc: 'Lavanta ipek dalgaları & yumuşak organik eğriler (Figma 68-94977)',
+    desc: 'Lavanta ipek dalgaları & yumuşak organik eğriler (Figma Image 9)',
   },
   {
     id: 'sonata-purple',
-    name: 'Mac OS Default',
+    name: 'Default Wallpaper',
     patternName: 'Sonata Embossed',
     patternMeta: '32 X 32, 4K',
     pictureMeta: '1024 X 768, 220K',
     previewClass: 'mac9-wallpaper-sonata-purple',
-    desc: 'Orijinal 1999 kabartmalı mor Finder deseni',
+    desc: 'Orijinal 1999 kabartmalı mor Finder deseni (Figma Image 9)',
   },
   {
-    id: 'capsules',
-    name: 'Capsules',
-    patternName: 'Aqua Spheres',
+    id: 'macos-bg',
+    name: 'macOS Background',
+    patternName: 'Subtle Finder',
     patternMeta: '32 X 32, 4K',
-    pictureMeta: '800 X 600, 192K',
-    previewClass: 'mac9-wallpaper-capsules',
-    desc: 'Parlak iMac şeker kapsülleri (Figma 73:1022)',
+    pictureMeta: '1024 X 768, 180K',
+    previewClass: 'mac9-wallpaper-macos-bg',
+    desc: 'Açık buz mavisi ve büyük transparan Finder logosu (Figma Image 9)',
   },
   {
     id: 'blue-dalmatian',
@@ -68,52 +72,79 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     patternMeta: '24 X 24, 3K',
     pictureMeta: '800 X 600, 150K',
     previewClass: 'mac9-wallpaper-blue-dalmatian',
-    desc: 'Retro iMac Swirl Dots deseni (Figma 73:1019)',
+    desc: 'Işıltılı transparan küreler & siyanür gradyanı (Figma Image 9)',
+  },
+  {
+    id: 'capsules',
+    name: 'Capsules',
+    patternName: 'Aqua Spheres',
+    patternMeta: '32 X 32, 4K',
+    pictureMeta: '800 X 600, 192K',
+    previewClass: 'mac9-wallpaper-capsules',
+    desc: 'Parlak iMac turkuaz şeker kapsülleri (Figma Image 9)',
+  },
+  {
+    id: 'tub',
+    name: 'Tub',
+    patternName: 'Turbine Propellers',
+    patternMeta: '32 X 32, 4K',
+    pictureMeta: '800 X 600, 170K',
+    previewClass: 'mac9-wallpaper-tub',
+    desc: 'Mandalina rengi zemin ve 3 kanatlı altın pervaneler (Figma Image 9)',
+  },
+  {
+    id: 'ufo',
+    name: 'UFO',
+    patternName: 'Saucer Fleets',
+    patternMeta: '32 X 32, 4K',
+    pictureMeta: '800 X 600, 165K',
+    previewClass: 'mac9-wallpaper-ufo',
+    desc: 'Fıstık yeşili uzay zemini & uçan daire filosu (Figma Image 9)',
   },
   {
     id: 'blueberry-union',
     name: 'Blueberry Union',
-    patternName: 'Blueberry Grid',
-    patternMeta: '16 X 16, 2K',
+    patternName: 'Aquatic Pods',
+    patternMeta: '32 X 32, 4K',
     pictureMeta: '800 X 600, 140K',
     previewClass: 'mac9-wallpaper-blueberry-union',
-    desc: 'Geometrik teknik ızgara (Figma 73:1085)',
+    desc: 'Sualtı biyolojik denizanası & okyanus kapsülleri (Figma Image 9)',
   },
   {
     id: 'heavy-petal',
     name: 'Heavy Petal',
-    patternName: 'Indigo Floral',
+    patternName: 'Petal Flairs',
     patternMeta: '32 X 32, 4K',
     pictureMeta: '800 X 600, 185K',
     previewClass: 'mac9-wallpaper-heavy-petal',
-    desc: 'Derin indigo floral akış (Figma 73:1084)',
+    desc: 'Parlak fuşya & derin çivit orkide taçyaprakları (Figma Image 9)',
   },
   {
     id: 'blueberry-oxygen',
     name: 'Blueberry Oxygen',
-    patternName: 'Oxygen Swirl',
+    patternName: 'Oxygen Bubbles',
     patternMeta: '32 X 32, 4K',
     pictureMeta: '800 X 600, 175K',
     previewClass: 'mac9-wallpaper-blueberry-oxygen',
-    desc: 'Siyanür radyal oksijen helezonu (Figma 73:1093)',
+    desc: 'Okyanus derinliklerinden yükselen mikro oksijen kabarcıkları (Figma Image 9)',
   },
   {
-    id: 'tangerine-fusion',
-    name: 'Tangerine Fusion',
-    patternName: 'Tangerine Sunset',
+    id: 'tangerine-radian',
+    name: 'Tangerine Radian',
+    patternName: 'Solar Radiance',
     patternMeta: '32 X 32, 4K',
     pictureMeta: '800 X 600, 190K',
-    previewClass: 'mac9-wallpaper-tangerine-fusion',
-    desc: '1999 iMac Mandalina günbatımı (Figma 73:1092)',
+    previewClass: 'mac9-wallpaper-tangerine-radian',
+    desc: 'Işıltılı kehribar rengi biyolojik dikenli küreler (Figma Image 9)',
   },
   {
-    id: 'bondi-blue',
-    name: 'Bondi Blue',
-    patternName: 'Bondi Aqua',
-    patternMeta: '16 X 16, 2K',
-    pictureMeta: '800 X 600, 160K',
-    previewClass: 'mac9-wallpaper-bondi-blue',
-    desc: 'Steve Jobs 1998 iMac G3 okyanus mavisi',
+    id: 'indigo-foam',
+    name: 'Indigo Foam',
+    patternName: 'Indigo Satin',
+    patternMeta: '32 X 32, 4K',
+    pictureMeta: '1024 X 768, 210K',
+    previewClass: 'mac9-wallpaper-indigo-foam',
+    desc: 'Derin kobalt mavisi akıcı ipek ve saten kumaş (Figma Image 9)',
   },
   {
     id: 'dark-carbon',
@@ -122,7 +153,16 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     patternMeta: '20 X 20, 2K',
     pictureMeta: '1024 X 768, 210K',
     previewClass: 'mac9-wallpaper-dark-carbon',
-    desc: 'Gece modu için mat karbon fiber örgü',
+    desc: 'Gece modu için mat karbon fiber örgü (Figma Colours: 800)',
+  },
+  {
+    id: 'bondi-blue',
+    name: 'Bondi Blue',
+    patternName: 'Bondi Aqua',
+    patternMeta: '16 X 16, 2K',
+    pictureMeta: '800 X 600, 160K',
+    previewClass: 'mac9-wallpaper-bondi-blue',
+    desc: 'Steve Jobs 1998 iMac G3 okyanus mavisi camı',
   },
   {
     id: 'blueprint',
@@ -265,7 +305,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                         }}
                         className={`px-3 py-1 text-[11px] flex items-center justify-between cursor-pointer ${
                           isSelected
-                            ? 'bg-[#000080] text-white font-bold'
+                            ? 'bg-[#333399] text-white font-bold'
                             : 'hover:bg-[#EAEAEA] text-[#262626]'
                         }`}
                       >
@@ -273,7 +313,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                         {isApplied && (
                           <span
                             className={`text-[9px] px-1 rounded font-mono ${
-                              isSelected ? 'bg-white text-[#000080]' : 'bg-[#D1E7DD] text-[#0F5132]'
+                              isSelected ? 'bg-white text-[#333399]' : 'bg-[#D1E7DD] text-[#0F5132]'
                             }`}
                           >
                             ✓ Aktif
@@ -284,7 +324,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                   })}
                 </div>
 
-                {/* Picture Actions (Figma 82-812) */}
+                {/* Picture Actions (Figma 82-812 & Image 3 Dropdown) */}
                 <div className="mt-2.5 flex flex-col gap-1.5">
                   <div className="flex items-center justify-between gap-2">
                     <button
@@ -293,15 +333,11 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                     >
                       Place Picture...
                     </button>
-                    <select
-                      className="mac9-inset-box bg-[#EAEAEA] text-[11px] px-2 py-1 border border-[#808080] rounded-[2px]"
-                      defaultValue="auto"
-                    >
-                      <option value="auto">Position Automatically</option>
-                      <option value="center">Center on Desktop</option>
-                      <option value="tile">Tile Across Screen</option>
-                      <option value="scale">Scale to Fit</option>
-                    </select>
+                    {/* Figma Image 3 Dropdown Stepper Button */}
+                    <div className="mac9-dropdown-stepper cursor-pointer select-none">
+                      <span>Position Automatically</span>
+                      <span className="text-[8px] border-l border-[#808080] pl-1 ml-0.5 font-mono text-[#555] leading-none">▲▼</span>
+                    </div>
                   </div>
                   <button
                     onClick={() => {
