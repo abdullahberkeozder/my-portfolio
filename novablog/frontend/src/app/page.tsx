@@ -438,43 +438,6 @@ export default function Home() {
                     )}
                   </button>
                 </div>
-
-                <div className="h-4 w-px bg-[#B0B0B0] dark:bg-[#334155] hidden sm:block" />
-
-                {/* Publication Type Switcher (Mac OS 9 Segmented Item) */}
-                <div className="mac9-segmented-group font-mono text-[11px] h-[26px] hidden sm:inline-flex">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playKeyClick();
-                      setPublicationTypeFilter('all');
-                    }}
-                    className={`mac9-segmented-item ${publicationTypeFilter === 'all' ? 'active' : ''}`}
-                  >
-                    <span>All</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playKeyClick();
-                      setPublicationTypeFilter('article');
-                    }}
-                    className={`mac9-segmented-item ${publicationTypeFilter === 'article' ? 'active' : ''}`}
-                  >
-                    <span>Articles</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playKeyClick();
-                      setPublicationTypeFilter('dispatch');
-                    }}
-                    className={`mac9-segmented-item ${publicationTypeFilter === 'dispatch' ? 'active' : ''}`}
-                  >
-                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-1" />
-                    <span>Dispatches</span>
-                  </button>
-                </div>
               </div>
 
               {/* Right: Telemetry Counter Badge */}
