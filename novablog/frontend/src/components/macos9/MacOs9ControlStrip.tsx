@@ -86,7 +86,7 @@ export const MacOs9ControlStrip: React.FC<MacOs9ControlStripProps> = ({
               <button
                 onClick={() => toggleModule('sound')}
                 className={`h-full px-2.5 flex items-center gap-1 mac9-control-strip-btn hover:bg-[#E0E0E0] ${
-                  activeModule === 'sound' ? 'bg-[#000080] text-white' : ''
+                  activeModule === 'sound' ? 'bg-[#333399] text-white' : ''
                 }`}
                 title="Ses Düzeyi & Mute"
               >
@@ -113,7 +113,7 @@ export const MacOs9ControlStrip: React.FC<MacOs9ControlStripProps> = ({
                         onClick={() => handleVolumeChange(lvl)}
                         className={`w-4 h-6 text-[10px] font-mono flex items-center justify-center border border-[#262626] ${
                           volume === lvl
-                            ? 'bg-[#000080] text-white font-bold'
+                            ? 'bg-[#333399] text-white font-bold'
                             : 'bg-white hover:bg-[#EEE] text-black'
                         }`}
                       >
@@ -130,7 +130,7 @@ export const MacOs9ControlStrip: React.FC<MacOs9ControlStripProps> = ({
               <button
                 onClick={() => toggleModule('display')}
                 className={`h-full px-2.5 flex items-center gap-1 mac9-control-strip-btn hover:bg-[#E0E0E0] ${
-                  activeModule === 'display' ? 'bg-[#000080] text-white' : ''
+                  activeModule === 'display' ? 'bg-[#333399] text-white' : ''
                 }`}
                 title="Masaüstü Deseni / Wallpaper"
               >
@@ -140,15 +140,19 @@ export const MacOs9ControlStrip: React.FC<MacOs9ControlStripProps> = ({
 
               {/* Wallpaper Quick Switcher Popover */}
               {activeModule === 'display' && (
-                <div className="absolute bottom-[28px] left-0 w-48 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_8px_rgba(0,0,0,0.35)] p-2 z-50 rounded-[2px] space-y-1">
+                <div className="absolute bottom-[28px] left-0 w-52 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_8px_rgba(0,0,0,0.35)] p-2 z-50 rounded-[2px] space-y-1">
                   <div className="font-bold pb-1 border-b border-[#999] mb-1">
                     Masaüstü Deseni
                   </div>
                   {[
-                    { id: 'sonata-purple' as WallpaperTheme, name: 'Mac OS 9 Sonata' },
-                    { id: 'bondi-blue' as WallpaperTheme, name: 'iMac Bondi Blue' },
-                    { id: 'blueprint' as WallpaperTheme, name: 'Cupertino Blueprint' },
-                    { id: 'platinum-gray' as WallpaperTheme, name: 'System 7 Platinum' },
+                    { id: 'quantum-foam' as WallpaperTheme, name: 'Quantum Foam' },
+                    { id: 'sonata-purple' as WallpaperTheme, name: 'Default Wallpaper' },
+                    { id: 'macos-bg' as WallpaperTheme, name: 'macOS Background' },
+                    { id: 'blue-dalmatian' as WallpaperTheme, name: 'Blue Dalmatian' },
+                    { id: 'capsules' as WallpaperTheme, name: 'Capsules' },
+                    { id: 'tub' as WallpaperTheme, name: 'Tub' },
+                    { id: 'heavy-petal' as WallpaperTheme, name: 'Heavy Petal' },
+                    { id: 'indigo-foam' as WallpaperTheme, name: 'Indigo Foam' },
                     { id: 'dark-carbon' as WallpaperTheme, name: 'Obsidian Carbon' },
                   ].map((wp) => (
                     <button
@@ -160,12 +164,19 @@ export const MacOs9ControlStrip: React.FC<MacOs9ControlStripProps> = ({
                       }}
                       className={`w-full text-left px-2 py-1 rounded-[2px] flex items-center justify-between text-[11px] ${
                         currentWallpaper === wp.id
-                          ? 'bg-[#000080] text-white font-bold'
+                          ? 'bg-[#333399] text-white font-bold'
                           : 'hover:bg-[#CCC] text-[#262626]'
                       }`}
                     >
-                      <span>{wp.name}</span>
-                      {currentWallpaper === wp.id && <span>✓</span>}
+                      <div className="flex items-center gap-1.5 truncate">
+                        <img
+                          src={`/retro/wallpapers/${wp.id}.png`}
+                          alt=""
+                          className="w-4 h-3 object-cover border border-[#808080] rounded-[1px]"
+                        />
+                        <span className="truncate">{wp.name}</span>
+                      </div>
+                      {currentWallpaper === wp.id && <span className="font-bold">✓</span>}
                     </button>
                   ))}
                   <div className="pt-1 border-t border-[#999]">
@@ -174,7 +185,7 @@ export const MacOs9ControlStrip: React.FC<MacOs9ControlStripProps> = ({
                         onOpenWindow('about');
                         setActiveModule(null);
                       }}
-                      className="w-full text-left px-2 py-0.5 text-[10px] text-blue-800 hover:underline"
+                      className="w-full text-left px-2 py-0.5 text-[10px] text-blue-800 hover:underline font-bold"
                     >
                       Tüm Görünüm Ayarları...
                     </button>
@@ -188,7 +199,7 @@ export const MacOs9ControlStrip: React.FC<MacOs9ControlStripProps> = ({
               <button
                 onClick={() => toggleModule('status')}
                 className={`h-full px-2.5 flex items-center gap-1 mac9-control-strip-btn hover:bg-[#E0E0E0] ${
-                  activeModule === 'status' ? 'bg-[#000080] text-white' : ''
+                  activeModule === 'status' ? 'bg-[#333399] text-white' : ''
                 }`}
                 title="Sistem Telemetrisi"
               >

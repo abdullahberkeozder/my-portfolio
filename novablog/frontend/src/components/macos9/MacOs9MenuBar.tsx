@@ -33,6 +33,8 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
   activeAppTitle = 'Finder',
 }) => {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'icons' | 'buttons' | 'list'>('icons');
   const [currentTime, setCurrentTime] = useState<string>('12:00 PM');
   const [isMuted, setIsMuted] = useState<boolean>(macSound.getIsMuted());
   const barRef = useRef<HTMLDivElement>(null);
@@ -41,22 +43,25 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      const hours = now.getHours();
-      const minutes = now.getMinutes().toString().padStart(2, '0');
+      let hours = now.getHours();
+      const minutes = now.getMinutes();
       const ampm = hours >= 12 ? 'PM' : 'AM';
-      const formattedHours = hours % 12 || 12;
-      setCurrentTime(`${formattedHours}:${minutes} ${ampm}`);
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      const strMinutes = minutes < 10 ? '0' + minutes : minutes;
+      setCurrentTime(`${hours}:${strMinutes} ${ampm}`);
     };
     updateTime();
-    const interval = setInterval(updateTime, 10000);
+    const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // Close menus when clicking outside
+  // Global click outside to dismiss menus
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (barRef.current && !barRef.current.contains(e.target as Node)) {
         setOpenMenu(null);
+        setActiveSubmenu(null);
       }
     };
     window.addEventListener('mousedown', handleClickOutside);
@@ -65,7 +70,20 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
 
   const handleMenuClick = (menuName: string) => {
     macSound.playMacClickDown();
-    setOpenMenu((prev) => (prev === menuName ? null : menuName));
+    setOpenMenu((prev) => {
+      if (prev === menuName) {
+        setActiveSubmenu(null);
+        return null;
+      }
+      return menuName;
+    });
+  };
+
+  const handleMenuHover = (menuName: string) => {
+    if (openMenu !== null && openMenu !== menuName) {
+      setOpenMenu(menuName);
+      setActiveSubmenu(null);
+    }
   };
 
   const toggleSound = () => {
@@ -81,14 +99,15 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
       ref={barRef}
       className="fixed top-0 left-0 right-0 h-[20px] bg-[#DDDDDD] border-b border-[#262626] z-[9999] flex items-center justify-between px-2 select-none shadow-[inset_0_1px_0_#FFFFFF,0_1px_2px_rgba(0,0,0,0.15)] font-['Charcoal',sans-serif] text-[12px] text-[#262626]"
     >
-      {/* Sol Menü Grubu */}
-      <div className="flex items-center gap-1 h-full">
-        {/* Apple  Logosu */}
+      {/* Sol Menü Grubu (Apple, File, Edit, View, Special, Help) */}
+      <div className="flex items-center gap-0.5 h-full">
+        {/* ================= 1. APPLE  MENÜSÜ (FIGMA IMAGE 1) ================= */}
         <div className="relative h-full flex items-center">
           <button
             onClick={() => handleMenuClick('apple')}
+            onMouseEnter={() => handleMenuHover('apple')}
             className={`px-2 h-full flex items-center justify-center transition-none ${
-              openMenu === 'apple' ? 'bg-[#000080] text-white' : 'hover:bg-[#CCCCCC]'
+              openMenu === 'apple' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
             }`}
             title="Apple Menüsü"
           >
@@ -102,104 +121,392 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           </button>
 
           {openMenu === 'apple' && (
-            <div className="absolute top-[20px] left-0 w-60 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50 text-[12px] font-['Charcoal',sans-serif]">
+            <div className="absolute top-[20px] left-0 w-64 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50 text-[12px] font-['Charcoal',sans-serif]">
+              {/* About This Computer */}
               <button
                 onClick={() => {
                   onAbout?.();
                   setOpenMenu(null);
+                  setActiveSubmenu(null);
                   macSound.playMacClickUp();
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between group"
               >
-                <span>About This Computer...</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded-sm bg-[#9999CC] border border-[#262626] flex items-center justify-center text-[9px] font-bold text-white"></div>
+                  <span>About This Computer</span>
+                </div>
                 <span className="text-[10px] opacity-60">9.2.2</span>
               </button>
+
               <div className="h-px bg-[#999999] border-b border-[#FFFFFF] my-1 mx-1" />
+
+              {/* Calculator */}
               <button
                 onClick={() => {
                   onOpenCalculator?.();
                   setOpenMenu(null);
+                  setActiveSubmenu(null);
                   macSound.playMacClickUp();
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between group"
               >
-                <span>Calculator</span>
-                <span className="text-[10px]">🔢</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[14px]">🔢</span>
+                  <span>Calculator</span>
+                </div>
               </button>
+
+              {/* Chooser */}
               <button
                 onClick={() => {
-                  onOpenStickies?.();
+                  alert('Mac OS 9 Chooser: LaserWriter & AppleTalk aktif.');
                   setOpenMenu(null);
+                  setActiveSubmenu(null);
                   macSound.playMacClickUp();
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between group"
               >
-                <span>Stickies</span>
-                <span className="text-[10px]">📝</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[14px]">🖨️</span>
+                  <span>Chooser</span>
+                </div>
               </button>
+
+              {/* Control Panels ▶ (With Submenu) */}
+              <div
+                onMouseEnter={() => setActiveSubmenu('controlPanels')}
+                className="relative"
+              >
+                <button
+                  onClick={() => {
+                    onOpenAppearance?.();
+                    setOpenMenu(null);
+                    setActiveSubmenu(null);
+                    macSound.playMacClickUp();
+                  }}
+                  className={`w-full text-left px-3 py-1 flex items-center justify-between group ${
+                    activeSubmenu === 'controlPanels' ? 'bg-[#333399] text-white' : 'hover:bg-[#333399] hover:text-white'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14px]">⚙️</span>
+                    <span>Control Panels</span>
+                  </div>
+                  <span className="text-[10px]">▶</span>
+                </button>
+
+                {/* Submenu for Control Panels */}
+                {activeSubmenu === 'controlPanels' && (
+                  <div className="absolute left-full top-0 ml-[-2px] w-48 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50">
+                    <button
+                      onClick={() => {
+                        onOpenAppearance?.();
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                        macSound.playMacClickUp();
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
+                    >
+                      <span>Appearance</span>
+                      <span className="text-[10px] text-emerald-700">✓ Kit</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        macSound.playSosumi();
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white"
+                    >
+                      Sound
+                    </button>
+                    <button
+                      onClick={() => {
+                        alert('General Controls: System 9.2.2 Platinum');
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white"
+                    >
+                      General Controls
+                    </button>
+                    <button
+                      onClick={() => {
+                        alert('Monitors: Apple Studio Display 1024x768 Millions of Colors');
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white"
+                    >
+                      Monitors
+                    </button>
+                    <button
+                      onClick={() => {
+                        alert('Date & Time: Network Time Active');
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white"
+                    >
+                      Date & Time
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Favorites ▶ */}
+              <div
+                onMouseEnter={() => setActiveSubmenu('favorites')}
+                className="relative"
+              >
+                <button
+                  className={`w-full text-left px-3 py-1 flex items-center justify-between group ${
+                    activeSubmenu === 'favorites' ? 'bg-[#333399] text-white' : 'hover:bg-[#333399] hover:text-white'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14px]">🔖</span>
+                    <span>Favorites</span>
+                  </div>
+                  <span className="text-[10px]">▶</span>
+                </button>
+
+                {activeSubmenu === 'favorites' && (
+                  <div className="absolute left-full top-0 ml-[-2px] w-48 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50">
+                    <button
+                      onClick={() => {
+                        onOpenBlog?.();
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex justify-between"
+                    >
+                      <span>Nova Engineering Blog</span>
+                      <span className="text-[10px] opacity-70">⌘B</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        onOpenNews?.();
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex justify-between"
+                    >
+                      <span>Sherlock 2 (Haberler)</span>
+                      <span className="text-[10px] opacity-70">⌘N</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        onOpenBrowser?.();
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white"
+                    >
+                      Google Web Search
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Key Caps */}
               <button
                 onClick={() => {
-                  onOpenAppearance?.();
+                  alert('Key Caps: Apple Extended Keyboard II');
                   setOpenMenu(null);
-                  macSound.playMacClickUp();
+                  setActiveSubmenu(null);
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between group"
               >
-                <span>Control Panels ➔ Appearance</span>
-                <span className="text-[9px] text-[#444] group-hover:text-white">▶</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[14px]">⌨️</span>
+                  <span>Key Caps</span>
+                </div>
               </button>
+
+              {/* Network Browser */}
               <button
                 onClick={() => {
-                  onOpenBrowser?.();
+                  alert('Network Browser: AppleShare IP / Ethernet Active');
                   setOpenMenu(null);
-                  macSound.playMacClickUp();
+                  setActiveSubmenu(null);
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between group"
               >
-                <span>Internet Explorer (Web)</span>
-                <span className="text-[10px]">🌐</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[14px]">🖥️</span>
+                  <span>Network Browser</span>
+                </div>
               </button>
+
+              {/* Recent Applications ▶ (CLONED FROM FIGMA IMAGE 1) */}
+              <div
+                onMouseEnter={() => setActiveSubmenu('recentApps')}
+                className="relative"
+              >
+                <button
+                  className={`w-full text-left px-3 py-1 flex items-center justify-between group ${
+                    activeSubmenu === 'recentApps' ? 'bg-[#333399] text-white' : 'hover:bg-[#333399] hover:text-white'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14px]">📁</span>
+                    <span>Recent Applications</span>
+                  </div>
+                  <span className="text-[10px]">▶</span>
+                </button>
+
+                {/* Submenu from Image 1 */}
+                {activeSubmenu === 'recentApps' && (
+                  <div className="absolute left-full top-0 ml-[-2px] w-52 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50">
+                    <button
+                      onClick={() => {
+                        onOpenBrowser?.();
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex items-center gap-2"
+                    >
+                      <span>🌐</span>
+                      <span>Internet Explorer</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        onOpenBlog?.();
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex items-center gap-2"
+                    >
+                      <span>📖</span>
+                      <span>Nova Blog</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        onOpenNews?.();
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex items-center gap-2"
+                    >
+                      <span>🔍</span>
+                      <span>Sherlock 2</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        alert('CorelDRAW 8 (Classic Mac OS)');
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white"
+                    >
+                      CorelDRAW 8
+                    </button>
+                    <button
+                      onClick={() => {
+                        alert('Adobe Photoshop 5.5');
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white"
+                    >
+                      Adobe Photoshop 5.5
+                    </button>
+                    <button
+                      onClick={() => {
+                        alert('Help Viewer (Apple Guide)');
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white"
+                    >
+                      Help Viewer
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Scrapbook */}
               <button
                 onClick={() => {
-                  onOpenBlog?.();
+                  alert('Scrapbook: Clipboard clip items.');
                   setOpenMenu(null);
-                  macSound.playMacClickUp();
+                  setActiveSubmenu(null);
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between group"
               >
-                <span>Nova Blog Sayfası</span>
-                <span className="text-[10px] opacity-60 font-mono">⌘B</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[14px]">📓</span>
+                  <span>Scrapbook</span>
+                </div>
               </button>
+
+              {/* Sherlock 2 */}
               <button
                 onClick={() => {
                   onOpenNews?.();
                   setOpenMenu(null);
+                  setActiveSubmenu(null);
                   macSound.playMacClickUp();
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between group"
               >
-                <span>Sherlock 2 (Haberler)</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[14px]">🔍</span>
+                  <span>Sherlock 2</span>
+                </div>
                 <span className="text-[10px] opacity-60 font-mono">⌘N</span>
               </button>
-              <div className="h-px bg-[#999999] border-b border-[#FFFFFF] my-1 mx-1" />
+
+              {/* Stickies */}
               <button
                 onClick={() => {
-                  macSound.playSosumi();
+                  onOpenStickies?.();
                   setOpenMenu(null);
+                  setActiveSubmenu(null);
+                  macSound.playMacClickUp();
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between"
+                className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex items-center justify-between group"
               >
-                <span>Alert Sound: Sosumi</span>
-                <span className="text-[10px]">🔊</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[14px]">📝</span>
+                  <span>Stickies</span>
+                </div>
+              </button>
+
+              <div className="h-px bg-[#999999] border-b border-[#FFFFFF] my-1 mx-1" />
+
+              {/* Restart & Shut Down */}
+              <button
+                onClick={() => {
+                  onRestart?.();
+                  setOpenMenu(null);
+                  setActiveSubmenu(null);
+                }}
+                className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white"
+              >
+                Restart
+              </button>
+              <button
+                onClick={() => {
+                  macSound.playWildEep();
+                  setOpenMenu(null);
+                  setActiveSubmenu(null);
+                }}
+                className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white"
+              >
+                Shut Down...
               </button>
             </div>
           )}
         </div>
 
-        {/* File Menüsü */}
+        {/* ================= 2. FILE MENÜSÜ ================= */}
         <div className="relative h-full flex items-center">
           <button
             onClick={() => handleMenuClick('file')}
+            onMouseEnter={() => handleMenuHover('file')}
             className={`px-2 h-full flex items-center transition-none ${
               openMenu === 'file' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
             }`}
@@ -207,7 +514,11 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
             File
           </button>
           {openMenu === 'file' && (
-            <div className="absolute top-[20px] left-0 w-44 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50 text-[12px] font-['Charcoal',sans-serif]">
+            <div className="absolute top-[20px] left-0 w-48 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50 text-[12px] font-['Charcoal',sans-serif]">
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex justify-between">
+                <span>New Folder</span>
+                <span className="text-[10px] opacity-70">⌘N</span>
+              </div>
               <button
                 onClick={() => {
                   onOpenBlog?.();
@@ -226,16 +537,35 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                 className="w-full text-left px-4 py-1 hover:bg-[#333399] hover:text-white flex justify-between"
               >
                 <span>Open News</span>
-                <span className="text-[10px] opacity-70">⌘N</span>
+                <span className="text-[10px] opacity-70">⌘O</span>
               </button>
+              <div className="h-px bg-[#999999] border-b border-[#FFFFFF] my-1 mx-1" />
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex justify-between">
+                <span>Close Window</span>
+                <span className="text-[10px] opacity-70">⌘W</span>
+              </div>
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex justify-between">
+                <span>Get Info</span>
+                <span className="text-[10px] opacity-70">⌘I</span>
+              </div>
+              <div className="h-px bg-[#999999] border-b border-[#FFFFFF] my-1 mx-1" />
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex justify-between">
+                <span>Duplicate</span>
+                <span className="text-[10px] opacity-70">⌘D</span>
+              </div>
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex justify-between">
+                <span>Make Alias</span>
+                <span className="text-[10px] opacity-70">⌘M</span>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Edit Menüsü */}
+        {/* ================= 3. EDIT MENÜSÜ ================= */}
         <div className="relative h-full flex items-center">
           <button
             onClick={() => handleMenuClick('edit')}
+            onMouseEnter={() => handleMenuHover('edit')}
             className={`px-2 h-full flex items-center transition-none ${
               openMenu === 'edit' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
             }`}
@@ -243,18 +573,40 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
             Edit
           </button>
           {openMenu === 'edit' && (
-            <div className="absolute top-[20px] left-0 w-36 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50 text-[12px] font-['Charcoal',sans-serif]">
-              <div className="px-4 py-1 opacity-50 cursor-not-allowed">Cut (⌘X)</div>
-              <div className="px-4 py-1 opacity-50 cursor-not-allowed">Copy (⌘C)</div>
-              <div className="px-4 py-1 opacity-50 cursor-not-allowed">Paste (⌘V)</div>
+            <div className="absolute top-[20px] left-0 w-44 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50 text-[12px] font-['Charcoal',sans-serif]">
+              <div className="px-4 py-1 opacity-50 cursor-not-allowed flex justify-between">
+                <span>Undo</span>
+                <span className="text-[10px]">⌘Z</span>
+              </div>
+              <div className="h-px bg-[#999999] border-b border-[#FFFFFF] my-1 mx-1" />
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex justify-between">
+                <span>Cut</span>
+                <span className="text-[10px] opacity-70">⌘X</span>
+              </div>
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex justify-between">
+                <span>Copy</span>
+                <span className="text-[10px] opacity-70">⌘C</span>
+              </div>
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex justify-between">
+                <span>Paste</span>
+                <span className="text-[10px] opacity-70">⌘V</span>
+              </div>
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer">
+                <span>Clear</span>
+              </div>
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex justify-between">
+                <span>Select All</span>
+                <span className="text-[10px] opacity-70">⌘A</span>
+              </div>
             </div>
           )}
         </div>
 
-        {/* View Menüsü */}
+        {/* ================= 4. VIEW MENÜSÜ (CLONED FROM FIGMA IMAGE 1 & 4) ================= */}
         <div className="relative h-full flex items-center">
           <button
             onClick={() => handleMenuClick('view')}
+            onMouseEnter={() => handleMenuHover('view')}
             className={`px-2 h-full flex items-center transition-none ${
               openMenu === 'view' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
             }`}
@@ -262,29 +614,74 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
             View
           </button>
           {openMenu === 'view' && (
-            <div className="absolute top-[20px] left-0 w-44 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50 text-[12px] font-['Charcoal',sans-serif]">
-              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex justify-between">
+            <div className="absolute top-[20px] left-0 w-48 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50 text-[12px] font-['Charcoal',sans-serif]">
+              <div
+                onClick={() => {
+                  setViewMode('icons');
+                  setOpenMenu(null);
+                  macSound.playMacClickUp();
+                }}
+                className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex items-center justify-between"
+              >
                 <span>as Icons</span>
-                <span>✓</span>
+                {viewMode === 'icons' && <span className="font-bold">✓</span>}
               </div>
-              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer">
+              <div
+                onClick={() => {
+                  setViewMode('buttons');
+                  setOpenMenu(null);
+                  macSound.playMacClickUp();
+                }}
+                className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex items-center justify-between"
+              >
                 <span>as Buttons</span>
+                {viewMode === 'buttons' && <span className="font-bold">✓</span>}
               </div>
-              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer">
+              <div
+                onClick={() => {
+                  setViewMode('list');
+                  setOpenMenu(null);
+                  macSound.playMacClickUp();
+                }}
+                className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex items-center justify-between"
+              >
                 <span>as List</span>
+                {viewMode === 'list' && <span className="font-bold">✓</span>}
               </div>
+
               <div className="h-px bg-[#999999] border-b border-[#FFFFFF] my-1 mx-1" />
+
               <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer">
                 <span>Clean Up</span>
+              </div>
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex items-center justify-between">
+                <span>Arrange</span>
+                <span className="text-[10px]">▶</span>
+              </div>
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer">
+                <span>Reset Column Positions</span>
+              </div>
+
+              <div className="h-px bg-[#999999] border-b border-[#FFFFFF] my-1 mx-1" />
+
+              <div
+                onClick={() => {
+                  onOpenAppearance?.();
+                  setOpenMenu(null);
+                }}
+                className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer font-bold"
+              >
+                <span>View Options...</span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Special Menüsü */}
+        {/* ================= 5. SPECIAL MENÜSÜ ================= */}
         <div className="relative h-full flex items-center">
           <button
             onClick={() => handleMenuClick('special')}
+            onMouseEnter={() => handleMenuHover('special')}
             className={`px-2 h-full flex items-center transition-none ${
               openMenu === 'special' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
             }`}
@@ -302,6 +699,14 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
               >
                 Empty Trash...
               </button>
+              <div className="h-px bg-[#999999] border-b border-[#FFFFFF] my-1 mx-1" />
+              <div className="px-4 py-1 hover:bg-[#333399] hover:text-white cursor-pointer flex justify-between">
+                <span>Eject</span>
+                <span className="text-[10px] opacity-70">⌘E</span>
+              </div>
+              <div className="px-4 py-1 opacity-50 cursor-not-allowed">
+                <span>Erase Disk...</span>
+              </div>
               <div className="h-px bg-[#999999] border-b border-[#FFFFFF] my-1 mx-1" />
               <button
                 onClick={() => {
@@ -325,10 +730,11 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           )}
         </div>
 
-        {/* Help Menüsü */}
+        {/* ================= 6. HELP MENÜSÜ ================= */}
         <div className="relative h-full flex items-center">
           <button
             onClick={() => handleMenuClick('help')}
+            onMouseEnter={() => handleMenuHover('help')}
             className={`px-2 h-full flex items-center transition-none ${
               openMenu === 'help' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
             }`}
@@ -360,7 +766,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
               macSound.playDroplet();
               onToggleTheme();
             }}
-            className={`px-1.5 py-0.5 rounded text-[11px] flex items-center gap-1 border transition-none font-medium ${
+            className={`px-2 py-0.5 rounded text-[11px] flex items-center gap-1 border transition-none font-medium ${
               isNightMode
                 ? 'bg-[#1E293B] text-[#F1F5F9] border-[#475569] shadow-inner'
                 : 'bg-[#E5E5E5] text-[#262626] border-[#B0B0B0] hover:bg-[#D4D4D4]'
@@ -397,7 +803,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
         {/* 1px Dikey Ayırıcı */}
         <div className="w-px h-3.5 bg-[#808080] mx-0.5" />
 
-        {/* Finder Uygulama Göstergesi */}
+        {/* Finder / Aktif Uygulama Menüsü Göstergesi */}
         <div className="flex items-center gap-1 px-1.5 py-0.5 hover:bg-[#CCCCCC] cursor-default">
           <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
             <rect x="1" y="1" width="14" height="14" rx="2" fill="#9999CC" stroke="#262626" />

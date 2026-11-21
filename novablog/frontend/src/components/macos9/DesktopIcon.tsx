@@ -190,7 +190,7 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
       <span
         className={`px-1.5 py-0.5 text-center text-[11px] leading-tight font-['Charcoal',sans-serif] break-words line-clamp-2 ${
           isSelected
-            ? 'bg-[#000080] text-white rounded-[2px]'
+            ? 'bg-[#333399] text-white rounded-[2px]'
             : 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]'
         }`}
       >

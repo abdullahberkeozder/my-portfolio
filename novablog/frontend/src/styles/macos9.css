@@ -138,164 +138,145 @@ html.macos9-mode,
 /* 1. Default Wallpaper (Official Mac OS 9 Sonata Finder) */
 .mac9-wallpaper-sonata-purple {
   background-color: #63659c;
-  background-image: url('/retro/wallpaper-macos9.png');
-  background-repeat: repeat;
-  background-size: 512px 384px;
+  background-image: url('/retro/wallpapers/default-wallpaper-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 2. macOS Background (Figma Image 9: Soft Ice Blue with Subtle Finder Face) */
 .mac9-wallpaper-macos-bg {
   background-color: #D8E2F3;
-  background-image: 
-    radial-gradient(ellipse at 70% 30%, rgba(255, 255, 255, 0.7) 0%, transparent 60%),
-    linear-gradient(135deg, #E6EEFA 0%, #D0DEFC 50%, #B8CEF5 100%);
-  position: relative;
+  background-image: url('/retro/wallpapers/macos-background-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 3. Blue Dalmatian (Figma Image 9: Translucent Cyan/White Swirl Dots) */
 .mac9-wallpaper-blue-dalmatian {
   background-color: #124e8a;
-  background-image: 
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.9) 0%, rgba(147, 197, 253, 0.6) 20%, transparent 40%),
-    radial-gradient(circle at 25% 25%, rgba(224, 242, 254, 0.8) 0%, transparent 35%),
-    radial-gradient(circle at 75% 75%, rgba(186, 230, 253, 0.7) 0%, transparent 30%),
-    radial-gradient(circle at 80% 20%, rgba(125, 211, 252, 0.5) 0%, transparent 25%),
-    radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.5) 0%, transparent 30%),
-    linear-gradient(135deg, #0284c7 0%, #0369a1 40%, #1e3a8a 100%);
+  background-image: url('/retro/wallpapers/blue-dalmatian-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 4. Capsules (Figma Image 9: Glossy Turquoise Lozenge Capsules on Teal) */
 .mac9-wallpaper-capsules {
   background-color: #1a7a82;
-  background-image: 
-    radial-gradient(ellipse 40px 18px at 25% 25%, #5eead4 0%, #14b8a6 50%, #0f766e 100%),
-    radial-gradient(ellipse 40px 18px at 75% 75%, #5eead4 0%, #14b8a6 50%, #0f766e 100%),
-    radial-gradient(ellipse 40px 18px at 75% 25%, #2dd4bf 0%, #0d9488 50%, #115e59 100%),
-    radial-gradient(ellipse 40px 18px at 25% 75%, #2dd4bf 0%, #0d9488 50%, #115e59 100%),
-    linear-gradient(135deg, #134e4a 0%, #0f766e 50%, #115e59 100%);
-  background-size: 80px 80px;
+  background-image: url('/retro/wallpapers/capsules-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 5. Tub (Figma Image 9: Tangerine Surface with 3-Blade Propeller Turbines) */
 .mac9-wallpaper-tub {
   background-color: #f97316;
-  background-image: 
-    radial-gradient(circle at 30% 30%, #fde047 0%, #f59e0b 25%, transparent 35%),
-    radial-gradient(circle at 70% 70%, #fde047 0%, #f59e0b 25%, transparent 35%),
-    radial-gradient(circle at 50% 50%, #fbbf24 0%, #d97706 40%, transparent 55%),
-    linear-gradient(135deg, #ea580c 0%, #c2410c 50%, #9a3412 100%);
-  background-size: 64px 64px;
+  background-image: url('/retro/wallpapers/tub-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 6. UFO (Figma Image 9: Lime-Green Field with Hovering Flying Saucer Discs) */
 .mac9-wallpaper-ufo {
   background-color: #84cc16;
-  background-image: 
-    radial-gradient(ellipse 45px 20px at 40% 40%, #bef264 0%, #a3e635 45%, #65a30d 85%, transparent 90%),
-    radial-gradient(ellipse 35px 15px at 80% 70%, #d9f99d 0%, #84cc16 50%, #4d7c0f 85%, transparent 90%),
-    radial-gradient(ellipse 25px 10px at 20% 80%, #ecfccb 0%, #a3e635 60%, transparent 90%),
-    linear-gradient(135deg, #bef264 0%, #65a30d 50%, #3f6212 100%);
-  background-size: 110px 110px;
+  background-image: url('/retro/wallpapers/ufo-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 7. Blueberry Union (Figma Image 9: Deep Aquatic Cyan with Jellyfish Pods) */
 .mac9-wallpaper-blueberry-union {
   background-color: #0c4a6e;
-  background-image: 
-    radial-gradient(ellipse 60px 40px at 30% 30%, #38bdf8 0%, #0284c7 40%, transparent 70%),
-    radial-gradient(ellipse 50px 35px at 70% 65%, #22d3ee 0%, #0891b2 45%, transparent 75%),
-    radial-gradient(circle at 80% 20%, #7dd3fc 0%, transparent 30%),
-    linear-gradient(135deg, #075985 0%, #0c4a6e 40%, #082f49 100%);
+  background-image: url('/retro/wallpapers/blueberry-union-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 8. Heavy Petal (Figma Image 9: Luminous Magenta & Cobalt Translucent Petals) */
 .mac9-wallpaper-heavy-petal {
   background-color: #701a75;
-  background-image: 
-    radial-gradient(ellipse 90% 70% at 75% 30%, rgba(244, 63, 94, 0.8) 0%, rgba(225, 29, 72, 0.6) 35%, transparent 70%),
-    radial-gradient(ellipse 80% 90% at 20% 70%, rgba(59, 130, 246, 0.9) 0%, rgba(79, 70, 229, 0.7) 45%, transparent 75%),
-    radial-gradient(circle at 50% 50%, rgba(217, 70, 239, 0.5) 0%, transparent 60%),
-    linear-gradient(135deg, #831843 0%, #4c0519 50%, #1e1b4b 100%);
+  background-image: url('/retro/wallpapers/heavy-petal-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 9. Blueberry Oxygen (Figma Image 9: Ocean Teal with Rising Micro-Bubbles) */
 .mac9-wallpaper-blueberry-oxygen {
   background-color: #0e7490;
-  background-image: 
-    radial-gradient(circle at 45% 45%, rgba(165, 243, 252, 0.8) 0%, rgba(34, 211, 238, 0.5) 15%, transparent 30%),
-    radial-gradient(circle at 65% 30%, rgba(207, 250, 254, 0.9) 0%, transparent 12%),
-    radial-gradient(circle at 25% 65%, rgba(165, 243, 252, 0.7) 0%, transparent 18%),
-    radial-gradient(circle at 75% 80%, rgba(103, 232, 249, 0.6) 0%, transparent 15%),
-    linear-gradient(180deg, #155e75 0%, #0e7490 40%, #083344 100%);
+  background-image: url('/retro/wallpapers/blueberry-oxygen-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 10. Tangerine Radian (Figma Image 9: Warm Amber Radiating Spiky Solar Spheres) */
 .mac9-wallpaper-tangerine-radian {
   background-color: #b45309;
-  background-image: 
-    radial-gradient(circle at 50% 45%, #fde047 0%, #f59e0b 25%, #d97706 50%, transparent 75%),
-    radial-gradient(circle at 20% 75%, #fbbf24 0%, #b45309 35%, transparent 60%),
-    radial-gradient(circle at 80% 20%, #fde68a 0%, #d97706 40%, transparent 65%),
-    linear-gradient(135deg, #d97706 0%, #b45309 50%, #78350f 100%);
+  background-image: url('/retro/wallpapers/tangerine-radian-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 11. Indigo Foam (Figma Image 9: Deep Cobalt / Indigo Rich Satin Waves) */
 .mac9-wallpaper-indigo-foam {
   background-color: #1e3a8a;
-  background-image: 
-    radial-gradient(ellipse 95% 80% at 75% 35%, rgba(96, 165, 250, 0.7) 0%, rgba(37, 99, 235, 0.4) 35%, transparent 70%),
-    radial-gradient(ellipse 75% 95% at 20% 65%, rgba(30, 58, 138, 0.9) 0%, rgba(15, 23, 42, 0.7) 55%, transparent 85%),
-    linear-gradient(135deg, #3b82f6 0%, #1d4ed8 35%, #1e3a8a 65%, #0f172a 100%);
-  background-attachment: fixed;
+  background-image: url('/retro/wallpapers/indigo-foam-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 12. Quantum Foam (Figma Image 9: Platinum Lavender Ethereal Ribbon Waves) */
 .mac9-wallpaper-quantum-foam {
   background-color: #9fa5c4;
-  background: 
-    radial-gradient(ellipse 90% 80% at 75% 30%, rgba(255, 255, 255, 0.75) 0%, rgba(195, 200, 230, 0.5) 30%, transparent 65%),
-    radial-gradient(ellipse 70% 90% at 20% 70%, rgba(150, 155, 185, 0.85) 0%, rgba(105, 110, 140, 0.65) 50%, transparent 80%),
-    linear-gradient(135deg, #e4e7f2 0%, #c4c8db 35%, #9298b4 70%, #636b88 100%);
-  background-attachment: fixed;
+  background-image: url('/retro/wallpapers/quantum-foam-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 13. Obsidian Carbon Pro Dark Mode (Figma Colours: Grays 800 + Black) */
 .mac9-wallpaper-dark-carbon {
   background-color: #15171c;
-  background-image: 
-    linear-gradient(27deg, #121318 5px, transparent 5px) 0 5px,
-    linear-gradient(207deg, #121318 5px, transparent 5px) 10px 0px,
-    linear-gradient(27deg, #22252e 5px, transparent 5px) 0px 10px,
-    linear-gradient(207deg, #22252e 5px, transparent 5px) 10px 5px,
-    linear-gradient(90deg, #181a22 10px, transparent 10px),
-    linear-gradient(#1e212b 25%, #1a1c24 25%, #1a1c24 50%, transparent 50%, transparent 75%, #242732 75%, #242732);
-  background-size: 20px 20px;
+  background-image: url('/retro/wallpapers/obsidian-carbon-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 14. Steve Jobs 1998 iMac G3 Bondi Blue Aqua */
 .mac9-wallpaper-bondi-blue {
   background-color: #007788;
-  background: radial-gradient(circle at 50% 35%, #0099aa 0%, #006677 55%, #003e49 100%);
+  background-image: url('/retro/wallpapers/bondi-blue-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 15. Cupertino Blueprint */
 .mac9-wallpaper-blueprint {
   background-color: #1e3a8a;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
-  background-size: 16px 16px;
+  background-image: url('/retro/wallpapers/blueprint-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* 16. Classic System 7 Platinum Dither */
 .mac9-wallpaper-platinum-gray {
   background-color: #7f7f7f;
-  background-image: 
-    linear-gradient(45deg, #a0a0a0 25%, transparent 25%),
-    linear-gradient(-45deg, #a0a0a0 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #a0a0a0 75%),
-    linear-gradient(-45deg, transparent 75%, #a0a0a0 75%);
-  background-size: 2px 2px;
+  background-image: url('/retro/wallpapers/platinum-gray-800.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 /* Rubberband Marquee Selection Box */

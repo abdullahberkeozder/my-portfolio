@@ -283,7 +283,7 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
                     }}
                     className={`cursor-pointer border-b border-[#F0F0F0] ${
                       isSelected
-                        ? 'bg-[#000080] text-white font-bold'
+                        ? 'bg-[#333399] text-white font-bold'
                         : index % 2 === 0
                         ? 'bg-white hover:bg-[#F2F4F8]'
                         : 'bg-[#F9FAFB] hover:bg-[#F2F4F8]'
@@ -322,7 +322,7 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
               setViewMode('icons');
               setContextMenuPos(null);
             }}
-            className="px-3 py-0.5 hover:bg-[#000080] hover:text-white cursor-pointer flex justify-between"
+            className="px-3 py-0.5 hover:bg-[#333399] hover:text-white cursor-pointer flex justify-between"
           >
             <span>as Icons</span>
             {viewMode === 'icons' && <span>✓</span>}
@@ -332,7 +332,7 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
               setViewMode('list');
               setContextMenuPos(null);
             }}
-            className="px-3 py-0.5 hover:bg-[#000080] hover:text-white cursor-pointer flex justify-between"
+            className="px-3 py-0.5 hover:bg-[#333399] hover:text-white cursor-pointer flex justify-between"
           >
             <span>as List</span>
             {viewMode === 'list' && <span>✓</span>}
