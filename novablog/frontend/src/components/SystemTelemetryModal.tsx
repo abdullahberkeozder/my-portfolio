@@ -97,7 +97,7 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
                   : 'bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700'
               }`}
             >
-              {isBackendOnline ? 'ONLINE :5555' : 'DEMO MODU'}
+              {isBackendOnline ? 'ONLINE :5555' : 'DEMO MODE'}
             </span>
             <button
               onClick={onClose}
