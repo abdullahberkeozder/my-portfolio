@@ -28,7 +28,7 @@ NovaBlog is a full-stack content publishing platform built with **Spring Boot 4.
 
 The repository is structured as a monorepo containing:
 - `backend/`: Spring Boot 4 REST API, Spring AI vector engine, Resilience4j fault tolerance & circuit breakers, Idempotency filter, Redis Write-Behind engagement counters, Spring Batch jobs, Flyway database migrations, and 195 unit and integration tests.
-- `frontend/`: Next.js 16 showcase with App Router, TanStack Query v5 optimistic state management, semantic search studio, AI moderation tools, and administrative batch triggers.
+- `frontend/`: Next.js 16 showcase featuring an authentic **Mac OS 9.2.2 Web Desktop Edition** (Apple Platinum HIG, Finder menus, Control Strip, retro sound synthesis), App Router, TanStack Query v5 optimistic state management, semantic search studio, AI moderation tools, and administrative batch triggers. [Detailed Frontend README & Screenshots](./frontend/README.md).
 - `docker-compose.yml`: Local infrastructure orchestrating PostgreSQL 16, Redis 7, MinIO S3, Mailpit SMTP, and Prometheus.
 
 ---
