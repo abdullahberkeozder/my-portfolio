@@ -61,10 +61,10 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
 
   const formattedDate = blog.publishedAt || blog.createdDate
     ? new Date(blog.publishedAt || blog.createdDate!).toLocaleDateString('en-US', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      })
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    })
     : 'Nov 5, 2026';
 
   const liveLikes = blog.likesCount ?? blog.likes ?? 0;
@@ -84,8 +84,8 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
     blog.authorUsername === 'selindemir'
       ? 'Dr. Selin Demir'
       : blog.authorUsername === 'caneraydin'
-      ? 'Caner Aydin'
-      : blog.author || 'Abdullah Berke Ozder';
+        ? 'Caner Aydin'
+        : blog.author || 'Abdullah Berke Ozder';
   const authorInitial = authorDisplayName.charAt(0).toUpperCase();
   const authorAvatarUrl = blog.authorImageUrl;
 
@@ -145,11 +145,10 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
             type="button"
             onClick={handleToggleBookmark}
             title={isBookmarked ? 'Remove from reading list' : 'Save to Mac OS 9 Reading List'}
-            className={`mac9-btn mac9-btn-icon shrink-0 ${
-              isBookmarked
-                ? '!bg-amber-100 dark:!bg-amber-950/40 !border-amber-500 text-amber-600'
-                : 'text-zinc-500 dark:text-zinc-400'
-            }`}
+            className={`mac9-btn mac9-btn-icon shrink-0 ${isBookmarked
+              ? '!bg-amber-100 dark:!bg-amber-950/40 !border-amber-500 text-amber-600'
+              : 'text-zinc-500 dark:text-zinc-400'
+              }`}
           >
             <Bookmark className={`w-3 h-3 ${isBookmarked ? 'fill-current' : ''}`} />
           </button>
@@ -167,12 +166,12 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
       </div>
 
       {/* 3. Bottom Footer: Category & Platinum Interaction Stats */}
-      <div className="pt-2 flex items-center justify-between gap-1.5 text-xs border-t border-[#B0B0B0] dark:border-[#333742] shadow-[0_1px_0_#FFFFFF] dark:shadow-none mt-auto">
-        {/* Left: Category Chip */}
-        <div className="flex items-center gap-1.5 overflow-hidden min-w-0">
+      <div className="pt-2 flex items-center justify-between w-full border-t border-[#B0B0B0] dark:border-[#333742] shadow-[0_1px_0_#FFFFFF] dark:shadow-none mt-auto">
+        {/* Left: Category & Tag Chips (Compact, Far-Left Aligned) */}
+        <div className="flex items-center gap-1 overflow-hidden min-w-0">
           {categoryName && (
             <span
-              className="mac9-chip-tag uppercase whitespace-nowrap text-[9.5px] font-mono max-w-[130px] truncate"
+              className="mac9-chip-tag uppercase whitespace-nowrap !text-[8.5px] font-mono !py-0 !px-1.5 !h-[18px] max-w-[100px] truncate leading-none flex items-center"
               title={categoryName}
             >
               {categoryName}
@@ -186,40 +185,39 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
                 playKeyClick();
                 if (onTagClick) onTagClick(blog.tags![0]);
               }}
-              className="mac9-chip-tag uppercase whitespace-nowrap text-[9.5px] font-mono cursor-pointer hover:border-[#333399] dark:hover:border-[#818CF8] transition-colors hidden sm:inline-block"
+              className="mac9-chip-tag uppercase whitespace-nowrap !text-[8px] font-mono !py-0 !px-1 !h-[18px] cursor-pointer hover:border-[#333399] dark:hover:border-[#818CF8] transition-colors hidden sm:inline-flex items-center leading-none"
             >
               #{blog.tags[0]}
             </button>
           )}
         </div>
 
-        {/* Right: Interaction Stats */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        {/* Right: Interaction Stats (Compact, Far-Right Aligned) */}
+        <div className="flex items-center gap-1 shrink-0 ml-auto">
           {/* Claps / Likes Button */}
           <button
             type="button"
             onClick={handleToggleLike}
-            className={`mac9-btn h-[22px] !px-2 text-[10px] font-mono flex items-center gap-1 ${
-              blog.isLiked ? 'active !text-white' : ''
-            }`}
+            className={`mac9-btn !h-[18px] !px-1.5 !py-0 !text-[8.5px] font-mono flex items-center gap-0.5 leading-none ${blog.isLiked ? 'active !text-white' : ''
+              }`}
             title="Applaud (Clap)"
           >
-            <span>👏</span>
+            <span className="text-[9px]">👏</span>
             <span className="font-bold">{liveClaps}</span>
           </button>
 
           {/* Comments Count */}
           <span
-            className="mac9-btn h-[22px] !px-1.5 text-[10px] font-mono text-zinc-600 dark:text-zinc-400 flex items-center gap-1 cursor-default"
+            className="mac9-btn !h-[18px] !px-1.5 !py-0 !text-[8.5px] font-mono text-zinc-600 dark:text-zinc-400 flex items-center gap-0.5 cursor-default leading-none"
             title={`${commentCount} Comments`}
           >
-            <MessageSquare className="w-3 h-3" />
+            <MessageSquare className="w-2.5 h-2.5" />
             <span>{commentCount}</span>
           </span>
 
           {/* Read Disclosure Arrow */}
           <span
-            className="text-[11px] font-mono text-zinc-400 group-hover:text-[#333399] dark:group-hover:text-[#818CF8] font-bold transition-transform group-hover:translate-x-0.5 ml-0.5"
+            className="text-[9px] font-mono text-zinc-400 group-hover:text-[#333399] dark:group-hover:text-[#818CF8] font-bold transition-transform group-hover:translate-x-0.5 ml-0.5"
             title="Read Article"
           >
             ➔

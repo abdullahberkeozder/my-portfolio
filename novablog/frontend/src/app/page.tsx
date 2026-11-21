@@ -393,7 +393,7 @@ export default function Home() {
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#B0B0B0] dark:border-[#334155] pb-2">
               <div className="flex flex-wrap items-center gap-2">
                 {/* View Mode (Mac OS 9 Segmented Control) */}
-                <div className="mac9-segmented-group h-[26px]">
+                <div className="mac9-segmented-group h-[24px]">
                   <button
                     type="button"
                     onClick={() => {
@@ -465,12 +465,12 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Tier 2: Secondary Filters & Search Strip */}
-            <div className="flex flex-wrap items-center justify-between gap-2.5">
-              {/* Left: Category & Sort Steppers */}
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] uppercase font-bold text-zinc-500 dark:text-zinc-400 font-mono tracking-wider">
+            {/* Tier 2: Secondary Filters & Search Strip (Distributed Left & Right, Compact Dimensions) */}
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              {/* Left: Category & Sort Steppers (Compact, Far-Left Aligned) */}
+              <div className="flex flex-wrap items-center gap-2.5">
+                <div className="flex items-center gap-1">
+                  <span className="text-[9.5px] uppercase font-bold text-zinc-500 dark:text-zinc-400 font-mono tracking-wider">
                     Category:
                   </span>
                   <select
@@ -479,7 +479,7 @@ export default function Home() {
                       playKeyClick();
                       setSelectedCategory(e.target.value ? Number(e.target.value) : null);
                     }}
-                    className="mac9-dropdown-stepper h-7 px-2 text-[11px] cursor-pointer focus:outline-none"
+                    className="mac9-dropdown-stepper !h-[22px] !py-0 !pl-1.5 !pr-5 !text-[10px] cursor-pointer focus:outline-none"
                     aria-label="Category"
                   >
                     <option value="">All Categories</option>
@@ -495,8 +495,8 @@ export default function Home() {
                 </div>
 
                 {feedMode === 'explore' && (
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] uppercase font-bold text-zinc-500 dark:text-zinc-400 font-mono tracking-wider">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[9.5px] uppercase font-bold text-zinc-500 dark:text-zinc-400 font-mono tracking-wider">
                       Sort:
                     </span>
                     <select
@@ -505,7 +505,7 @@ export default function Home() {
                         playKeyClick();
                         setExploreSort(e.target.value as 'trending' | 'featured' | 'latest');
                       }}
-                      className="mac9-dropdown-stepper h-7 px-2 text-[11px] cursor-pointer focus:outline-none"
+                      className="mac9-dropdown-stepper !h-[22px] !py-0 !pl-1.5 !pr-5 !text-[10px] cursor-pointer focus:outline-none"
                       aria-label="Sort"
                     >
                       <option value="trending">🔥 Trending</option>
@@ -516,9 +516,9 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Right: Recessed Filter Search */}
-              <div className="relative flex-1 min-w-[200px] max-w-md ml-auto">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 pointer-events-none" />
+              {/* Right: Recessed Filter Search (Compact, Far-Right Aligned) */}
+              <div className="relative w-44 sm:w-56 shrink-0 ml-auto">
+                <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-zinc-500 pointer-events-none" />
                 <input
                   id="blog-search-input"
                   name="blogSearch"
@@ -526,7 +526,7 @@ export default function Home() {
                   placeholder="Filter articles... (⌘K)"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="mac9-inset-box !h-7 !text-[11px] !pl-8 !pr-6 w-full rounded-[2px] font-['Geneva',sans-serif] text-zinc-900 dark:text-zinc-100"
+                  className="mac9-inset-box !h-[22px] !text-[10px] !pl-6 !pr-5 w-full rounded-[2px] font-['Geneva',sans-serif] text-zinc-900 dark:text-zinc-100"
                 />
                 {searchTerm && (
                   <button
@@ -535,9 +535,9 @@ export default function Home() {
                       setSearchTerm('');
                       setSemanticResults(null);
                     }}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black dark:hover:text-white cursor-pointer"
                   >
-                    <X className="w-3 h-3" />
+                    <X className="w-2.5 h-2.5" />
                   </button>
                 )}
               </div>
