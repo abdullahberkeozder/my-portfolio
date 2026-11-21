@@ -7,7 +7,6 @@ import { MacOs9Window } from './MacOs9Window';
 import { NovaEmblemWatermark } from './NovaEmblemWatermark';
 import { MacBootSequence } from './MacBootSequence';
 import { MacAppearancePanel, WallpaperTheme } from './MacAppearancePanel';
-import { MacOs9ControlStrip } from './MacOs9ControlStrip';
 import { NovaNewsWindow } from './NovaNewsWindow';
 import { NovaApplicationsFolder } from './apps/NovaApplicationsFolder';
 import { MacCalculator } from './apps/MacCalculator';
@@ -259,14 +258,6 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           }}
         />
       </div>
-
-      {/* ================= 6. RETRACTABLE CONTROL STRIP (FIGMA BUILDING BLOCK) ================= */}
-      <MacOs9ControlStrip
-        currentWallpaper={currentWallpaper}
-        onSelectWallpaper={handleSelectWallpaper}
-        onOpenWindow={openWindow}
-        onRestart={handleRestart}
-      />
 
       {/* =========================================================================
           WINDOWS

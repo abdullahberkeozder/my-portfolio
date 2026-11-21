@@ -37,6 +37,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
   const [viewMode, setViewMode] = useState<'icons' | 'buttons' | 'list'>('icons');
   const [currentTime, setCurrentTime] = useState<string>('12:00 PM');
   const [isMuted, setIsMuted] = useState<boolean>(macSound.getIsMuted());
+  const [volume, setVolume] = useState<number>(macSound.getVolume());
   const barRef = useRef<HTMLDivElement>(null);
 
   // Live Digital Clock
@@ -92,6 +93,13 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
     if (!muted) {
       macSound.playDroplet();
     }
+  };
+
+  const handleVolumeChange = (newVol: number) => {
+    macSound.setVolume(newVol);
+    setVolume(newVol);
+    setIsMuted(newVol === 0);
+    macSound.playDroplet();
   };
 
   return (
@@ -799,14 +807,79 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
         {/* 1px Vertical Separator */}
         <div className="w-px h-3.5 bg-[#808080] mx-0.5" />
 
-        {/* Sound Unmute / Mute Toggle */}
-        <button
-          onClick={toggleSound}
-          className="px-1.5 py-0.5 rounded text-[11px] hover:bg-[#CCCCCC] flex items-center gap-1 border border-transparent hover:border-[#808080]"
-          title={isMuted ? 'Unmute Sound' : 'Mute Sound'}
-        >
-          {isMuted ? '🔇' : '🔊'}
-        </button>
+        {/* Sound Volume & Mute Menu */}
+        <div className="relative h-full flex items-center">
+          <button
+            onClick={() => handleMenuClick('sound')}
+            onMouseEnter={() => handleMenuHover('sound')}
+            className={`px-1.5 h-full flex items-center gap-1 transition-none ${
+              openMenu === 'sound' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
+            }`}
+            title="Sound Volume & Mute Control"
+          >
+            <span>{isMuted || volume === 0 ? '🔇' : '🔊'}</span>
+            <span className="font-mono text-[10px]">{isMuted ? 'Off' : volume}</span>
+          </button>
+
+          {openMenu === 'sound' && (
+            <div className="absolute top-[20px] right-0 w-52 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1.5 px-2.5 z-50 text-[11px] font-['Charcoal',sans-serif]">
+              <div className="flex items-center justify-between font-bold pb-1 mb-1 border-b border-[#999]">
+                <span className="flex items-center gap-1.5 text-xs text-[#262626]">
+                  <span>{isMuted || volume === 0 ? '🔇' : '🔊'}</span>
+                  <span>Sound Volume</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={toggleSound}
+                  className="text-[10px] mac9-btn !py-0.5 !px-1.5 cursor-pointer"
+                >
+                  {isMuted ? 'Unmute' : 'Mute'}
+                </button>
+              </div>
+
+              {/* 8-step volume selector (0 to 7) */}
+              <div className="space-y-1 py-1">
+                <div className="flex items-center justify-between text-[10px] text-[#666]">
+                  <span>Level: {isMuted ? 'Muted' : `${volume} / 7`}</span>
+                  <span>Mac OS 9</span>
+                </div>
+                <div className="grid grid-cols-8 gap-1">
+                  {[0, 1, 2, 3, 4, 5, 6, 7].map((lvl) => (
+                    <button
+                      key={lvl}
+                      type="button"
+                      onClick={() => handleVolumeChange(lvl)}
+                      className={`py-1 text-center font-mono font-bold text-[10px] border border-[#262626] rounded-[2px] transition-none cursor-pointer ${
+                        !isMuted && volume === lvl
+                          ? 'bg-[#333399] text-white'
+                          : 'bg-[#ECECEC] hover:bg-[#CCCCCC] text-[#262626]'
+                      }`}
+                      title={`Set Volume ${lvl}`}
+                    >
+                      {lvl}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Droplet Chime Test Button */}
+              <div className="pt-1.5 mt-1 border-t border-[#999] flex justify-between items-center">
+                <span className="text-[10px] text-[#555]">Droplet Chime</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isMuted) macSound.toggleMute();
+                    setIsMuted(false);
+                    macSound.playDroplet();
+                  }}
+                  className="mac9-btn !py-0.5 !px-2 text-[10px] cursor-pointer"
+                >
+                  ▶ Test
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Digital Clock */}
         <span className="text-[11px] px-1 font-mono tracking-tight font-medium text-[#262626]">
