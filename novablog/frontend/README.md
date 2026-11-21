@@ -47,14 +47,14 @@ A pixel-authentic, high-performance web engineering showcase combining the nosta
 
 ---
 
-### 6. Apple Chess 3D, iTunes Streaming & Nova Analog Synthesizer
-*Authentic brushed metal iTunes player streaming The Weeknd — Less Than Zero with the built-in Nova Analog Synthesizer 99 (QuickTime V-Synth), paired with Apple Chess 3D featuring mathematical 1:1 square geometry, Staunton vector pieces, and the Deep Platinum AI engine:*
+### 6. Apple Chess 3D, iTunes Streaming & Audio Note Spectrum Visualizer
+*Authentic brushed metal iTunes player streaming The Weeknd — Less Than Zero with the integrated Windows Vista / Mac OS 9 Audio Spectrum & Note Matrix Visualizer, paired with Apple Chess 3D featuring mathematical 1:1 square geometry, Staunton vector pieces, and the Deep Platinum AI engine:*
 
-![Apple Chess 3D and Nova Synthesizer](./public/docs/showcase/macos9-synth-chess-fixed.png)
+![Apple Chess 3D and Note Spectrum Visualizer](./public/docs/showcase/macos9-visualizer-chess.png)
 
-*iTunes Playlist mode with quick synthesizer launcher alongside Apple Chess 3D:*
+*iTunes Oscilloscope & Waveform mode reflecting real-time audio harmonics alongside Apple Chess 3D:*
 
-![iTunes Playlist and Apple Chess 3D](./public/docs/showcase/macos9-itunes-chess-perfect.png)
+![iTunes Oscilloscope and Apple Chess 3D](./public/docs/showcase/macos9-visualizer-chess-aligned.png)
 
 *Top Apple Menu Bar Sound pop-up with integrated mini-player, volume stepped controls, and quick iTunes launch:*
 
@@ -76,8 +76,13 @@ A pixel-authentic, high-performance web engineering showcase combining the nosta
 - **🎵 Mac OS 9 iTunes & YouTube Streaming Engine (`MacItunes.tsx`, `musicSystem.ts`):**
   - Authentic brushed metal & pinstripe iTunes player with LED green display and dancing frequency equalizer bars.
   - Curated retro & modern playlist featuring **The Weeknd — Less Than Zero** (`LKsgDcckur0`, *Dawn FM*), **Blinding Lights**, **Daft Punk — One More Time** (Mac G4 era), **Kavinsky — Nightcall**, **Depeche Mode — Enjoy The Silence**, and **Cupertino 1999 Ambient Chime**.
-  - **🎹 Nova Analog Synthesizer 99 (`MacSynthesizer.tsx`):** Real-time interactive QuickTime V-Synth integrated into iTunes with 2-octave keyboard (playable with mouse or keyboard keys `[A, W, S, E, D, F, T...]`), 4 analog waveforms (Sawtooth, Square, Triangle, Sine), Lowpass filter cutoff & resonance (Q) knobs, release envelope, sub-oscillator (-1 octave), and sound presets (*Dawn FM 80s Lead*, *Discovery Vocoder Bass*, *Nightcall Retro Arp*, *Cupertino 1999 Bell*).
-  - Persistent background YouTube audio streaming via `GlobalMusicPlayer.tsx` allowing continuous playback while browsing, playing synth, or playing chess.
+  - **🌊 Audio Spectrum & Musical Note Matrix Visualizer (`MacAudioVisualizer.tsx`):** Nostalgic Windows Vista & Mac OS 9 audio visualizer engine with 4 real-time modes:
+    - *Bars & EQ*: 32-band FFT frequency columns with floating peak hold meters and LED segments.
+    - *Vista Aurora*: Flowing fluid aurora light ribbons inspired by Windows Media Player Ambience.
+    - *Note Trails*: Floating musical symbols (♪, ♫, ♬, ♩, ♯, ♭) bursting outwards in rhythm with the bass kick.
+    - *Oscilloscope*: Glowing phosphor cathode-ray tube waveform.
+    - *Real-time Pitch Class Matrix*: 12-tone scale (C through B) illuminating active harmonics as the melody plays.
+  - Persistent background YouTube audio streaming via `GlobalMusicPlayer.tsx` allowing continuous playback while browsing, playing visualizer modes, or playing chess.
   - Integrated Sound Menu mini-player in the top 20px Apple Menu Bar with track title, Play/Pause, Next/Previous controls, volume steps, and quick launch to iTunes.
 - **♟️ Apple Chess 3D (`MacChess.tsx`):**
   - Authentic Mac OS 9 Apple Chess 3D application with mathematical 1:1 square grid geometry (`w-[45px] h-[45px] aspect-square`), eliminating any vertical square distortion.

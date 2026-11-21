@@ -4,9 +4,9 @@
 import React, { useState } from 'react';
 import { useMusicPlayer, MusicTrack } from '@/lib/musicSystem';
 import { macSound } from '@/lib/retroAudioMac9';
-import { MacSynthesizer } from './MacSynthesizer';
+import { MacAudioVisualizer } from './MacAudioVisualizer';
 
-type ActiveView = 'playlist' | 'synth' | 'video';
+type ActiveView = 'playlist' | 'visualizer' | 'video';
 
 export const MacItunes: React.FC = () => {
   const {
@@ -170,7 +170,7 @@ export const MacItunes: React.FC = () => {
             )}
           </div>
 
-          {/* Mode Switcher Tabs (Playlist / Synth / Video) */}
+          {/* Mode Switcher Tabs (Playlist / Visualizer / Video) */}
           <div className="flex flex-col gap-1.5 items-end shrink-0">
             <div className="flex items-center gap-1 bg-black/10 dark:bg-black/30 p-0.5 rounded-[3px] border border-[#999] dark:border-[#475569]">
               <button
@@ -189,16 +189,16 @@ export const MacItunes: React.FC = () => {
               <button
                 onClick={() => {
                   macSound.playMacClickUp();
-                  setActiveView('synth');
+                  setActiveView('visualizer');
                 }}
                 className={`px-2 py-0.5 text-[10px] rounded-[2px] transition-all font-bold flex items-center gap-1 ${
-                  activeView === 'synth'
+                  activeView === 'visualizer'
                     ? 'bg-cyan-600 text-white shadow-[0_0_8px_rgba(8,145,178,0.7)]'
                     : 'text-[#444] dark:text-gray-300 hover:bg-black/10'
                 }`}
               >
-                <span>🎹</span>
-                <span>Synthesizer</span>
+                <span>🌊</span>
+                <span>Visualizer</span>
               </button>
               <button
                 onClick={() => {
@@ -296,16 +296,16 @@ export const MacItunes: React.FC = () => {
 
               <div className="h-px bg-[#B0B0B0] dark:bg-[#334155] my-2 mx-1" />
 
-              {/* Synthesizer Quick Launch Card */}
+              {/* Visualizer Quick Launch Card */}
               <button
-                onClick={() => setActiveView('synth')}
+                onClick={() => setActiveView('visualizer')}
                 className="mx-1 p-2 bg-gradient-to-r from-cyan-900/40 to-blue-900/40 border border-cyan-500/40 rounded text-left hover:border-cyan-400 transition-all text-[10px]"
               >
                 <div className="font-bold text-cyan-300 flex items-center gap-1 mb-0.5">
-                  <span>🎹</span>
-                  <span>Play Synthesizer</span>
+                  <span>🌊</span>
+                  <span>Audio Visualizer</span>
                 </div>
-                <div className="text-gray-400 text-[9px]">Jam with The Weeknd & 80s Leads</div>
+                <div className="text-gray-400 text-[9px]">Vista & Mac Note Spectrums</div>
               </button>
 
               {/* Quick Info Box */}
@@ -388,10 +388,10 @@ export const MacItunes: React.FC = () => {
           </>
         )}
 
-        {/* VIEW B: INTEGRATED SYNTHESIZER STUDIO */}
-        {activeView === 'synth' && (
-          <div className="flex-1 p-3 bg-[#0B0F17] overflow-y-auto">
-            <MacSynthesizer />
+        {/* VIEW B: INTEGRATED VISTA & MAC AUDIO VISUALIZER */}
+        {activeView === 'visualizer' && (
+          <div className="flex-1 p-2 bg-[#060A10] overflow-hidden flex flex-col">
+            <MacAudioVisualizer />
           </div>
         )}
 
