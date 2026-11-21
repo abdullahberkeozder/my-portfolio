@@ -54,11 +54,54 @@ html.macos9-mode,
 
 /* Authentic Mac OS 9 Finder Embossed Wallpaper Pattern */
 .mac9-wallpaper-canvas {
+  image-rendering: auto;
+  transition: background 0.3s ease;
+}
+
+/* 1. Default Sonata Purple (Official Mac OS 9 Finder) */
+.mac9-wallpaper-sonata-purple {
   background-color: #63659c;
   background-image: url('/retro/wallpaper-macos9.png');
   background-repeat: repeat;
   background-size: 512px 384px;
-  image-rendering: auto;
+}
+
+/* 2. Apple iMac Bondi Blue Aqua Swirl */
+.mac9-wallpaper-bondi-blue {
+  background-color: #007788;
+  background: radial-gradient(circle at 50% 35%, #0099aa 0%, #006677 55%, #003e49 100%);
+}
+
+/* 3. Cupertino Technical Blueprint Grid */
+.mac9-wallpaper-blueprint {
+  background-color: #1a2736;
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-size: 16px 16px, 16px 16px, 64px 64px, 64px 64px;
+}
+
+/* 4. Classic System 7 / Platinum Gray Dither */
+.mac9-wallpaper-platinum-gray {
+  background-color: #CCCCCC;
+  background-image: radial-gradient(#BBBBBB 15%, transparent 16%), radial-gradient(#BBBBBB 15%, transparent 16%);
+  background-size: 4px 4px;
+  background-position: 0 0, 2px 2px;
+}
+
+/* 5. Obsidian Carbon Pro Dark Mode */
+.mac9-wallpaper-dark-carbon {
+  background-color: #15171c;
+  background-image: 
+    linear-gradient(27deg, #121318 5px, transparent 5px) 0 5px,
+    linear-gradient(207deg, #121318 5px, transparent 5px) 10px 0px,
+    linear-gradient(27deg, #22252e 5px, transparent 5px) 0px 10px,
+    linear-gradient(207deg, #22252e 5px, transparent 5px) 10px 5px,
+    linear-gradient(90deg, #181a22 10px, transparent 10px),
+    linear-gradient(#1e212b 25%, #1a1c24 25%, #1a1c24 50%, transparent 50%, transparent 75%, #242732 75%, #242732);
+  background-size: 20px 20px;
 }
 
 /* Rubberband Marquee Selection Box */
@@ -94,6 +137,9 @@ html.macos9-mode,
   user-select: none;
   border-radius: 2px;
   line-height: 1.1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mac9-btn:active {
@@ -106,6 +152,21 @@ html.macos9-mode,
   border: 2px solid #262626;
   outline: 1px solid #262626;
   outline-offset: 1px;
+  font-weight: bold;
+}
+
+/* Inset 3D Well / Bevel Box */
+.mac9-inset-box {
+  background: #FFFFFF;
+  border: 1px solid #262626;
+  box-shadow: inset 1px 1px 2px #404040, inset -1px -1px 1px #FFFFFF;
+}
+
+/* Outset 3D Bevel Card */
+.mac9-outset-card {
+  background: #DDDDDD;
+  border: 1px solid #262626;
+  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #808080;
 }
 
 /* ==========================================================================
@@ -138,7 +199,64 @@ html.macos9-mode,
 }
 
 /* ==========================================================================
-   5. QUICKDRAW ZOOM RECTANGLES (Expanding Wireframes)
+   5. BARBER-POLE PROGRESS BAR ANIMATION (Figma Molecule / Progress Bar)
+   ========================================================================== */
+
+@keyframes mac9-barber-pole {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 24px 0;
+  }
+}
+
+.mac9-progress-stripe {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #336699,
+    #336699 6px,
+    #88bbee 6px,
+    #88bbee 12px
+  );
+  background-size: 24px 24px;
+  animation: mac9-barber-pole 0.65s linear infinite;
+}
+
+/* ==========================================================================
+   6. CONTROL STRIP STYLING (Mac OS 9 Building Block)
+   ========================================================================== */
+
+.mac9-control-strip {
+  background: linear-gradient(180deg, #DDDDDD 0%, #CCCCCC 100%);
+  border: 1px solid #262626;
+  box-shadow: 0 -1px 2px rgba(0,0,0,0.2), inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #808080;
+  border-radius: 4px 4px 0 0;
+}
+
+.mac9-control-strip-tab {
+  background: repeating-linear-gradient(
+    to right,
+    #DDDDDD,
+    #DDDDDD 2px,
+    #808080 2px,
+    #808080 3px
+  );
+  cursor: pointer;
+}
+
+.mac9-control-strip-btn {
+  border-right: 1px solid #808080;
+  border-left: 1px solid #FFFFFF;
+}
+.mac9-control-strip-btn:active,
+.mac9-control-strip-btn.active {
+  background-color: #000080;
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   7. QUICKDRAW ZOOM RECTANGLES (Expanding Wireframes)
    ========================================================================== */
 @keyframes mac9-zoom-wireframe-expand {
   0% {

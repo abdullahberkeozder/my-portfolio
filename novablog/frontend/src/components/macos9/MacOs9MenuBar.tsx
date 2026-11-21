@@ -99,10 +99,21 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                 }}
                 className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
               >
-                <span>About Nova OS...</span>
+                <span>About This Computer...</span>
                 <span className="text-[10px] opacity-60">9.2.2</span>
               </button>
               <div className="h-px bg-[#808080] my-1 mx-2" />
+              <button
+                onClick={() => {
+                  onAbout?.();
+                  setOpenMenu(null);
+                  macSound.playMacClickUp();
+                }}
+                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
+              >
+                <span>Control Panels ➔ Görünüm</span>
+                <span className="text-[10px]">🎨</span>
+              </button>
               <button
                 onClick={() => {
                   onOpenBlog?.();
@@ -121,7 +132,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                 }}
                 className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white"
               >
-                Nova Haberler
+                Sherlock 2 (Haberler)
               </button>
               <div className="h-px bg-[#808080] my-1 mx-2" />
               <button
@@ -131,7 +142,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                 }}
                 className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white"
               >
-                Test Sound: Sosumi
+                Test Sound: Sosumi Alert
               </button>
             </div>
           )}

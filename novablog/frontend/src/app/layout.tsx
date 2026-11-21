@@ -35,8 +35,7 @@ export default function RootLayout({
               (function() {
                 try {
                   var saved = localStorage.getItem('novablog_theme');
-                  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  var theme = saved ? saved : (prefersDark ? 'dark' : 'light');
+                  var theme = saved ? saved : 'light';
                   if (theme === 'dark') {
                     document.documentElement.classList.add('dark');
                     document.documentElement.setAttribute('data-theme', 'dark');

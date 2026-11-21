@@ -28,7 +28,7 @@ const getSnapshot = (): Theme => {
   if (typeof window === 'undefined') return 'light';
   const saved = localStorage.getItem('novablog_theme');
   if (saved === 'dark' || saved === 'light') return saved;
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return 'light';
 };
 
 const getServerSnapshot = (): Theme => 'light';

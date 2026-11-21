@@ -1,0 +1,6 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="109.343" height="85" viewBox="0 0 109.343 85" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Background">
+<path id="half-right" d="M109.343 85V0H60.581C60.581 0 42.2938 30.8962 45.3429 48.2725L63.6286 48.1667C59.4687 65.9435 63.6286 85 63.6286 85H109.343Z" fill-rule="evenodd" clip-rule="evenodd" fill="#809FDF"/>
+<path id="half-left" d="M0 0V85H64C64 85 59.84 65.9435 64 48.1667L45.7143 48.2725C42.6652 30.8962 60.9524 0 60.9524 0H0Z" fill-rule="evenodd" clip-rule="evenodd" fill="#4666CC"/>
+</g>
+</svg>

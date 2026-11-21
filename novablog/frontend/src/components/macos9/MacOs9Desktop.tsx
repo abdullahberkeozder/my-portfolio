@@ -2,13 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { MacOs9MenuBar } from './MacOs9MenuBar';
-import { DesktopIcon, DesktopIconType } from './DesktopIcon';
+import { DesktopIcon } from './DesktopIcon';
 import { MacOs9Window } from './MacOs9Window';
 import { NovaEmblemWatermark } from './NovaEmblemWatermark';
+import { MacBootSequence } from './MacBootSequence';
+import { MacAppearancePanel, WallpaperTheme } from './MacAppearancePanel';
+import { MacOs9ControlStrip } from './MacOs9ControlStrip';
+import { NovaNewsWindow } from './NovaNewsWindow';
 import { macSound } from '@/lib/retroAudioMac9';
 
 interface MacOs9DesktopProps {
-  children?: React.ReactNode; // Optional slot for the existing blog content inside the Blog window!
+  children?: React.ReactNode;
   blogContent?: React.ReactNode;
   newsContent?: React.ReactNode;
 }
@@ -22,8 +26,10 @@ interface WindowState {
 
 export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
   blogContent,
-  newsContent,
 }) => {
+  const [isBooting, setIsBooting] = useState<boolean>(true);
+  const [forceRestart, setForceRestart] = useState<boolean>(false);
+  const [currentWallpaper, setCurrentWallpaper] = useState<WallpaperTheme>('sonata-purple');
   const [selectedIconId, setSelectedIconId] = useState<string | null>(null);
   const [activeWindowId, setActiveWindowId] = useState<string | null>(null);
   const [maxZIndex, setMaxZIndex] = useState<number>(100);
@@ -31,20 +37,41 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
   // Window states
   const [windows, setWindows] = useState<Record<string, WindowState>>({
     blog: { id: 'blog', title: 'Nova Blog — Modern Mühendislik & Sistem Mimarisi', isOpen: false, zIndex: 10 },
-    news: { id: 'news', title: 'Nova News — Teknoloji & Yapay Zeka Bülteni', isOpen: false, zIndex: 10 },
-    about: { id: 'about', title: 'About Nova OS 9.2.2', isOpen: false, zIndex: 10 },
+    news: { id: 'news', title: 'Sherlock 2 — Nova Haberler & Flaş Gelişmeler', isOpen: false, zIndex: 10 },
+    about: { id: 'about', title: 'Görünüm & Sistem Bilgisi (Appearance)', isOpen: false, zIndex: 10 },
     trash: { id: 'trash', title: 'Trash (Çöp Sepeti)', isOpen: false, zIndex: 10 },
   });
 
-  // Startup chime on first user click if not already played
+  // Load saved wallpaper from localStorage
   useEffect(() => {
-    const handleFirstClick = () => {
-      macSound.playMacStartupChime();
-      window.removeEventListener('click', handleFirstClick);
-    };
-    window.addEventListener('click', handleFirstClick, { once: true });
-    return () => window.removeEventListener('click', handleFirstClick);
+    try {
+      const savedWp = localStorage.getItem('novablog_macos9_wallpaper') as WallpaperTheme | null;
+      if (savedWp) {
+        setCurrentWallpaper(savedWp);
+      }
+    } catch {
+      // ignore
+    }
   }, []);
+
+  const handleSelectWallpaper = (theme: WallpaperTheme) => {
+    setCurrentWallpaper(theme);
+    try {
+      localStorage.setItem('novablog_macos9_wallpaper', theme);
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleRestart = () => {
+    try {
+      sessionStorage.removeItem('macos9_booted');
+    } catch {
+      // ignore
+    }
+    setForceRestart(true);
+    setIsBooting(true);
+  };
 
   const bringToFront = (id: string) => {
     const newZ = maxZIndex + 1;
@@ -81,9 +108,20 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
   return (
     <div
       onClick={handleDesktopClick}
-      className="relative w-screen h-screen overflow-hidden mac9-wallpaper-canvas macos9-mode select-none font-['Geneva',sans-serif]"
+      className={`relative w-screen h-screen overflow-hidden mac9-wallpaper-canvas mac9-wallpaper-${currentWallpaper} macos9-mode select-none font-['Geneva',sans-serif]`}
     >
-      {/* 20px Üst Sabit Apple Menü Çubuğu */}
+      {/* ================= 1. MAC BOOT LOADER & STARTUP EXPERIENCE ================= */}
+      {isBooting && (
+        <MacBootSequence
+          forceRestart={forceRestart}
+          onComplete={() => {
+            setIsBooting(false);
+            setForceRestart(false);
+          }}
+        />
+      )}
+
+      {/* ================= 2. 20PX ÜST SABİT APPLE MENÜ ÇUBUĞU ================= */}
       <MacOs9MenuBar
         onOpenBlog={() => openWindow('blog')}
         onOpenNews={() => openWindow('news')}
@@ -92,20 +130,20 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           macSound.playTrashCrinkle();
           alert('Trash has been emptied.');
         }}
-        onRestart={() => {
-          macSound.playMacStartupChime();
-        }}
+        onRestart={handleRestart}
         activeAppTitle={activeWindowId ? windows[activeWindowId]?.title.split('—')[0].trim() : 'Finder'}
       />
 
-      {/* Masaüstü Merkezinde Sakin ve Zarif Nova UI Amblemi (Sıfır Bilişsel Yük) */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <NovaEmblemWatermark />
-      </div>
+      {/* ================= 3. SAKİN VE ZARİF NOVA UI LOGO AMBLEMİ (SIFIR BİLİŞSEL YÜK) ================= */}
+      {!isBooting && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none animate-fade-in">
+          <NovaEmblemWatermark />
+        </div>
+      )}
 
-      {/* Masaüstü İkonları (Figma'daki gibi Ekranın Sağ Tarafında Hizalı) */}
+      {/* ================= 4. MASAÜSTÜ İKONLARI (FIGMA KİT SAĞ HİZALAMA) ================= */}
       <div className="absolute top-[32px] right-4 flex flex-col gap-6 z-10">
-        {/* Macintosh HD */}
+        {/* Macintosh HD (Açar: Görünüm & Sistem Bilgisi) */}
         <DesktopIcon
           id="harddrive"
           type="harddrive"
@@ -115,7 +153,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           onOpen={() => openWindow('about')}
         />
 
-        {/* 🌐 Blog İkonu */}
+        {/* 🌐 Blog İkonu (Açar: Tam Blog İnternet Sayfası) */}
         <DesktopIcon
           id="blog"
           type="blog"
@@ -125,7 +163,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           onOpen={() => openWindow('blog')}
         />
 
-        {/* 📰 News İkonu */}
+        {/* 📰 News İkonu (Açar: Sherlock 2 Haber Bülteni) */}
         <DesktopIcon
           id="news"
           type="news"
@@ -150,6 +188,14 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           }}
         />
       </div>
+
+      {/* ================= 5. GERİ ÇEKİLEBİLİR CONTROL STRIP (FIGMA BUILDING BLOCK) ================= */}
+      <MacOs9ControlStrip
+        currentWallpaper={currentWallpaper}
+        onSelectWallpaper={handleSelectWallpaper}
+        onOpenWindow={openWindow}
+        onRestart={handleRestart}
+      />
 
       {/* =========================================================================
           PENCERELER (Windows)
@@ -183,107 +229,46 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         </div>
       </MacOs9Window>
 
-      {/* 2. News İnternet Sayfası Penceresi */}
+      {/* 2. News İnternet Sayfası Penceresi (Sherlock 2 Motoru) */}
       <MacOs9Window
         id="news"
-        title="Nova News — Teknoloji & Yapay Zeka Haber Bülteni"
+        title="Sherlock 2 — Nova Haberler & Flaş Gelişmeler"
         isOpen={windows.news.isOpen}
         onClose={() => closeWindow('news')}
         zIndex={windows.news.zIndex}
         onFocus={() => bringToFront('news')}
         isActive={activeWindowId === 'news'}
-        subtitle="http://novablog.internal/news-bulletin"
-        initialPosition={{ x: 120, y: 70 }}
+        subtitle="sherlock://channels/nova-engineering-news"
+        initialPosition={{ x: 120, y: 60 }}
         initialSize={{
           width: Math.min(840, typeof window !== 'undefined' ? window.innerWidth - 160 : 800),
-          height: Math.min(600, typeof window !== 'undefined' ? window.innerHeight - 120 : 540),
+          height: Math.min(620, typeof window !== 'undefined' ? window.innerHeight - 100 : 560),
         }}
       >
-        <div className="p-6 bg-[#FFFFFF] min-h-full">
-          {newsContent ? (
-            newsContent
-          ) : (
-            <div className="space-y-4">
-              <div className="border-b border-[#CCCCCC] pb-3">
-                <span className="text-[10px] uppercase font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
-                  Flaş Haber
-                </span>
-                <h3 className="text-base font-bold font-['Charcoal',sans-serif] mt-1 text-[#262626]">
-                  React 19 Kararlı Sürüm: useActionState ve useOptimistic Duyuruldu
-                </h3>
-                <p className="text-xs text-gray-600 mt-1">
-                  Meta React çekirdek ekibi, React 19'un genel kullanıma hazır kararlı sürümünü duyurdu.
-                </p>
-                <div className="mt-2 text-[10px] text-gray-500 font-mono">via React Dev Blog · 19 Kas 2026</div>
-              </div>
-
-              <div className="border-b border-[#CCCCCC] pb-3">
-                <span className="text-[10px] uppercase font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                  Flaş Haber
-                </span>
-                <h3 className="text-base font-bold font-['Charcoal',sans-serif] mt-1 text-[#262626]">
-                  Anthropic Model Context Protocol (MCP) Açık Kaynak Standardı
-                </h3>
-                <p className="text-xs text-gray-600 mt-1">
-                  Anthropic, yapay zeka ajanları ile veri kaynakları arasında evrensel bağlantı protokolünü açık kaynaklaştırdı.
-                </p>
-                <div className="mt-2 text-[10px] text-gray-500 font-mono">via Anthropic Engineering · 20 Kas 2026</div>
-              </div>
-            </div>
-          )}
-        </div>
+        <NovaNewsWindow
+          onOpenArticleInBlog={() => {
+            openWindow('blog');
+          }}
+        />
       </MacOs9Window>
 
-      {/* 3. About This Computer Diyaloğu */}
+      {/* 3. Görünüm & Sistem Bilgisi (Appearance Control Panel) */}
       <MacOs9Window
         id="about"
-        title="About Nova OS 9.2.2"
+        title="Görünüm & Sistem Bilgisi (Appearance Control Panel)"
         isOpen={windows.about.isOpen}
         onClose={() => closeWindow('about')}
         zIndex={windows.about.zIndex}
         onFocus={() => bringToFront('about')}
         isActive={activeWindowId === 'about'}
-        initialPosition={{ x: 180, y: 100 }}
-        initialSize={{ width: 440, height: 260 }}
+        initialPosition={{ x: 160, y: 70 }}
+        initialSize={{ width: 560, height: 420 }}
       >
-        <div className="p-4 bg-[#DDDDDD] h-full flex flex-col justify-between text-[#262626]">
-          <div className="flex items-center gap-4 border-b border-[#808080] pb-3">
-            <div className="w-12 h-12 bg-white border border-[#262626] rounded flex items-center justify-center shadow-inner">
-              <span className="text-2xl">🖥️</span>
-            </div>
-            <div>
-              <h2 className="text-sm font-bold font-['Charcoal',sans-serif]">Mac OS 9.2.2 (Nova Web Edition)</h2>
-              <p className="text-[11px] text-[#555555]">Built-in Memory: 256 MB</p>
-              <p className="text-[11px] text-[#555555]">Processor: PowerPC G4 @ 500 MHz</p>
-            </div>
-          </div>
-
-          <div className="space-y-1.5 my-2">
-            <div className="text-[11px] flex justify-between font-mono">
-              <span>Mac OS 9.2:</span>
-              <span>32.4 MB</span>
-            </div>
-            <div className="w-full h-2.5 bg-white border border-[#808080] rounded-sm overflow-hidden">
-              <div className="w-1/3 h-full bg-[#6666CC]" />
-            </div>
-            <div className="text-[11px] flex justify-between font-mono">
-              <span>Nova Web Engine:</span>
-              <span>18.6 MB</span>
-            </div>
-            <div className="w-full h-2.5 bg-white border border-[#808080] rounded-sm overflow-hidden">
-              <div className="w-1/5 h-full bg-[#339966]" />
-            </div>
-          </div>
-
-          <div className="text-center pt-2 border-t border-[#808080]">
-            <button
-              onClick={() => closeWindow('about')}
-              className="mac9-btn px-6 py-1"
-            >
-              OK
-            </button>
-          </div>
-        </div>
+        <MacAppearancePanel
+          currentWallpaper={currentWallpaper}
+          onSelectWallpaper={handleSelectWallpaper}
+          onClose={() => closeWindow('about')}
+        />
       </MacOs9Window>
 
       {/* 4. Çöp Kutusu Diyaloğu */}
@@ -298,16 +283,22 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         initialPosition={{ x: 220, y: 150 }}
         initialSize={{ width: 380, height: 200 }}
       >
-        <div className="p-4 bg-[#DDDDDD] h-full flex flex-col justify-between text-center">
-          <p className="text-sm font-['Charcoal',sans-serif] text-[#262626]">
-            The Trash is currently empty.
-          </p>
-          <div className="flex justify-center">
+        <div className="p-4 bg-[#DDDDDD] h-full flex flex-col justify-between text-center font-['Charcoal',sans-serif]">
+          <div className="flex flex-col items-center justify-center my-auto">
+            <span className="text-3xl mb-2">🗑️</span>
+            <p className="text-sm font-bold text-[#262626]">
+              Çöp Sepeti Boş
+            </p>
+            <p className="text-[11px] text-[#555] mt-1">
+              Silinecek veya çöpe atılacak dosya bulunmuyor.
+            </p>
+          </div>
+          <div className="flex justify-center pt-2 border-t border-[#808080]">
             <button
               onClick={() => closeWindow('trash')}
               className="mac9-btn px-6 py-1"
             >
-              Close
+              Tamam
             </button>
           </div>
         </div>
