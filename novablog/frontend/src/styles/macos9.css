@@ -49,13 +49,12 @@ html.macos9-mode,
 }
 
 /* ==========================================================================
-   2. DESKTOP & WALLPAPER STYLING
+   2. DESKTOP & WALLPAPER STYLING (Figma Node 68-94977)
    ========================================================================== */
 
-/* Authentic Mac OS 9 Finder Embossed Wallpaper Pattern */
 .mac9-wallpaper-canvas {
   image-rendering: auto;
-  transition: background 0.3s ease;
+  transition: background 0.25s ease;
 }
 
 /* 1. Default Sonata Purple (Official Mac OS 9 Finder) */
@@ -66,32 +65,79 @@ html.macos9-mode,
   background-size: 512px 384px;
 }
 
-/* 2. Apple iMac Bondi Blue Aqua Swirl */
+/* 2. Quantum Foam (Figma 73:1100 & Image 6 - Silvery Lavender Ribbon Flow) */
+.mac9-wallpaper-quantum-foam {
+  background-color: #9fa5c4;
+  background: 
+    radial-gradient(ellipse 90% 80% at 75% 30%, rgba(255, 255, 255, 0.6) 0%, rgba(180, 185, 215, 0.4) 30%, transparent 65%),
+    radial-gradient(ellipse 70% 90% at 20% 70%, rgba(140, 145, 175, 0.8) 0%, rgba(95, 100, 130, 0.6) 50%, transparent 80%),
+    linear-gradient(135deg, #d8dbe8 0%, #b8bccf 35%, #888ea8 70%, #5b627d 100%);
+  background-attachment: fixed;
+}
+
+/* 3. Capsules (Figma 73:1022 - Glossy iMac Candy Capsules) */
+.mac9-wallpaper-capsules {
+  background-color: #2b3a4a;
+  background-image: 
+    radial-gradient(circle at 20% 30%, #38bdf8 0%, transparent 25%),
+    radial-gradient(circle at 80% 40%, #c084fc 0%, transparent 30%),
+    radial-gradient(circle at 40% 80%, #34d399 0%, transparent 28%),
+    radial-gradient(circle at 70% 85%, #fb923c 0%, transparent 22%),
+    linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+}
+
+/* 4. Blue Dalmatian (Figma 73:1019 - Retro iMac Swirl Dots) */
+.mac9-wallpaper-blue-dalmatian {
+  background-color: #3b5998;
+  background-image: 
+    radial-gradient(#6d84b4 25%, transparent 26%),
+    radial-gradient(#8b9dc3 18%, transparent 19%),
+    radial-gradient(#2d4373 30%, transparent 31%);
+  background-size: 48px 48px, 64px 64px, 32px 32px;
+  background-position: 0 0, 24px 24px, 12px 12px;
+}
+
+/* 5. Blueberry Union (Figma 73:1085 - Geometric Tech Grid) */
+.mac9-wallpaper-blueberry-union {
+  background-color: #1e3a5f;
+  background-image: 
+    linear-gradient(45deg, #254670 25%, transparent 25%),
+    linear-gradient(-45deg, #254670 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #254670 75%),
+    linear-gradient(-45deg, transparent 75%, #254670 75%);
+  background-size: 24px 24px;
+  background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
+}
+
+/* 6. Heavy Petal (Figma 73:1084 - Floral Deep Indigo Flow) */
+.mac9-wallpaper-heavy-petal {
+  background-color: #312e81;
+  background: 
+    radial-gradient(circle at 30% 20%, #4338ca 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, #6366f1 0%, transparent 45%),
+    radial-gradient(circle at 10% 80%, #1e1b4b 0%, transparent 50%),
+    linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+}
+
+/* 7. Blueberry Oxygen (Figma 73:1093 - Cyan Radial Oxygen Swirl) */
+.mac9-wallpaper-blueberry-oxygen {
+  background-color: #0369a1;
+  background: radial-gradient(circle at 50% 40%, #38bdf8 0%, #0284c7 35%, #0369a1 65%, #0c4a6e 100%);
+}
+
+/* 8. Tangerine Fusion (Figma 73:1092 - 1999 iMac Tangerine Sunset) */
+.mac9-wallpaper-tangerine-fusion {
+  background-color: #ea580c;
+  background: radial-gradient(circle at 60% 30%, #fdba74 0%, #f97316 40%, #c2410c 75%, #7c2d12 100%);
+}
+
+/* 9. Apple iMac Bondi Blue Aqua */
 .mac9-wallpaper-bondi-blue {
   background-color: #007788;
   background: radial-gradient(circle at 50% 35%, #0099aa 0%, #006677 55%, #003e49 100%);
 }
 
-/* 3. Cupertino Technical Blueprint Grid */
-.mac9-wallpaper-blueprint {
-  background-color: #1a2736;
-  background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
-  background-size: 16px 16px, 16px 16px, 64px 64px, 64px 64px;
-}
-
-/* 4. Classic System 7 / Platinum Gray Dither */
-.mac9-wallpaper-platinum-gray {
-  background-color: #CCCCCC;
-  background-image: radial-gradient(#BBBBBB 15%, transparent 16%), radial-gradient(#BBBBBB 15%, transparent 16%);
-  background-size: 4px 4px;
-  background-position: 0 0, 2px 2px;
-}
-
-/* 5. Obsidian Carbon Pro Dark Mode */
+/* 10. Obsidian Carbon Pro Dark Mode */
 .mac9-wallpaper-dark-carbon {
   background-color: #15171c;
   background-image: 

@@ -6,6 +6,7 @@ import { macSound } from '@/lib/retroAudioMac9';
 export type DesktopIconType =
   | 'harddrive'
   | 'applications'
+  | 'internet'
   | 'blog'
   | 'news'
   | 'trash'
@@ -55,6 +56,24 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
             <circle cx="24" cy="14" r="1.5" fill="#4ade80" stroke="#262626" />
             <rect x="6" y="13" width="12" height="2" fill="#262626" />
             <rect x="4" y="22" width="24" height="2" fill="#999999" />
+          </svg>
+        );
+
+      case 'internet':
+        return (
+          <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
+            {/* Authentic Mac OS 9 "Browse the Internet" Globe with pointing hand cursor */}
+            <circle cx="16" cy="16" r="11" fill="#3B82F6" stroke="#1E3A8A" strokeWidth="1.2" />
+            <ellipse cx="16" cy="16" rx="5.5" ry="11" stroke="#93C5FD" strokeWidth="0.9" fill="none" />
+            <line x1="5" y1="16" x2="27" y2="16" stroke="#93C5FD" strokeWidth="0.9" />
+            <path d="M12 9 C15 7 19 8 21 11 C23 14 21 18 19 21 C17 23 13 22 11 19 Z" fill="#22C55E" opacity="0.9" />
+            {/* Yellow pointing hand pointer icon on top of the globe */}
+            <path
+              d="M10 8 L13 6 L14 11 L18 12 L18 15 L16 17 L12 17 L10 13 Z"
+              fill="#FBBF24"
+              stroke="#78350F"
+              strokeWidth="0.8"
+            />
           </svg>
         );
 

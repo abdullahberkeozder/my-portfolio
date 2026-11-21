@@ -6,18 +6,30 @@ import { macSound } from '@/lib/retroAudioMac9';
 interface MacOs9MenuBarProps {
   onOpenBlog?: () => void;
   onOpenNews?: () => void;
+  onOpenBrowser?: () => void;
+  onOpenCalculator?: () => void;
+  onOpenStickies?: () => void;
+  onOpenAppearance?: () => void;
   onEmptyTrash?: () => void;
   onRestart?: () => void;
   onAbout?: () => void;
+  onToggleTheme?: () => void;
+  isNightMode?: boolean;
   activeAppTitle?: string;
 }
 
 export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
   onOpenBlog,
   onOpenNews,
+  onOpenBrowser,
+  onOpenCalculator,
+  onOpenStickies,
+  onOpenAppearance,
   onEmptyTrash,
   onRestart,
   onAbout,
+  onToggleTheme,
+  isNightMode = false,
   activeAppTitle = 'Finder',
 }) => {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -105,14 +117,47 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
               <div className="h-px bg-[#808080] my-1 mx-2" />
               <button
                 onClick={() => {
-                  onAbout?.();
+                  onOpenCalculator?.();
                   setOpenMenu(null);
                   macSound.playMacClickUp();
                 }}
                 className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
               >
-                <span>Control Panels ➔ Görünüm</span>
+                <span>Calculator</span>
+                <span className="text-[10px]">🔢</span>
+              </button>
+              <button
+                onClick={() => {
+                  onOpenStickies?.();
+                  setOpenMenu(null);
+                  macSound.playMacClickUp();
+                }}
+                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
+              >
+                <span>Stickies</span>
+                <span className="text-[10px]">📝</span>
+              </button>
+              <button
+                onClick={() => {
+                  onOpenAppearance?.();
+                  setOpenMenu(null);
+                  macSound.playMacClickUp();
+                }}
+                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
+              >
+                <span>Control Panels ➔ Appearance</span>
                 <span className="text-[10px]">🎨</span>
+              </button>
+              <button
+                onClick={() => {
+                  onOpenBrowser?.();
+                  setOpenMenu(null);
+                  macSound.playMacClickUp();
+                }}
+                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
+              >
+                <span>Internet Explorer (Web)</span>
+                <span className="text-[10px]">🌐</span>
               </button>
               <button
                 onClick={() => {
@@ -120,9 +165,10 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                   setOpenMenu(null);
                   macSound.playMacClickUp();
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white"
+                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
               >
-                Nova Blog Sayfası
+                <span>Nova Blog Sayfası</span>
+                <span className="text-[10px]">📖</span>
               </button>
               <button
                 onClick={() => {
@@ -130,9 +176,10 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                   setOpenMenu(null);
                   macSound.playMacClickUp();
                 }}
-                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white"
+                className="w-full text-left px-4 py-1 hover:bg-[#000080] hover:text-white flex items-center justify-between"
               >
-                Sherlock 2 (Haberler)
+                <span>Sherlock 2 (Haberler)</span>
+                <span className="text-[10px]">📰</span>
               </button>
               <div className="h-px bg-[#808080] my-1 mx-2" />
               <button
@@ -291,8 +338,35 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
         </div>
       </div>
 
-      {/* Sağ Durum Grubu (Ses Mute, Saat, Finder) */}
-      <div className="flex items-center gap-2 h-full pr-1">
+      {/* Sağ Durum Grubu (Gece/Gündüz Modu, Ses Mute, Saat, Finder) */}
+      <div className="flex items-center gap-1.5 h-full pr-1">
+        {/* Gece & Gündüz Modu Toggle Butonu (Day & Night) */}
+        {onToggleTheme && (
+          <button
+            onClick={() => {
+              macSound.playDroplet();
+              onToggleTheme();
+            }}
+            className={`px-1.5 py-0.5 rounded text-[11px] flex items-center gap-1 border transition-none font-medium ${
+              isNightMode
+                ? 'bg-[#1E293B] text-[#F1F5F9] border-[#475569] shadow-inner'
+                : 'bg-[#E5E5E5] text-[#262626] border-[#B0B0B0] hover:bg-[#D4D4D4]'
+            }`}
+            title={isNightMode ? 'Switch to Day Mode (Gündüz Modu)' : 'Switch to Night Mode (Gece Modu)'}
+          >
+            {/* Skeuomorphic Sun/Moon Icon matching Image 1 */}
+            <span className="w-3.5 h-3.5 flex items-center justify-center text-[10px]">
+              {isNightMode ? '🌙' : '☀️'}
+            </span>
+            <span className="text-[10px] hidden sm:inline">
+              {isNightMode ? 'Night' : 'Day'}
+            </span>
+          </button>
+        )}
+
+        {/* 1px Dikey Ayırıcı */}
+        <div className="w-px h-3.5 bg-[#808080] mx-0.5" />
+
         {/* Ses Açma/Kapama Mute Butonu */}
         <button
           onClick={toggleSound}

@@ -13,6 +13,7 @@ import { NovaApplicationsFolder } from './apps/NovaApplicationsFolder';
 import { MacCalculator } from './apps/MacCalculator';
 import { MacStickies } from './apps/MacStickies';
 import { MacFmRadio } from './apps/MacFmRadio';
+import { NovaWebBrowser } from './apps/NovaWebBrowser';
 import { macSound } from '@/lib/retroAudioMac9';
 
 interface MacOs9DesktopProps {
@@ -43,7 +44,8 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
   const [windows, setWindows] = useState<Record<string, WindowState>>({
     blog: { id: 'blog', title: 'Nova Blog — Modern Mühendislik & Sistem Mimarisi', isOpen: false, zIndex: 10 },
     news: { id: 'news', title: 'Sherlock 2 — Nova Haberler & Flaş Gelişmeler', isOpen: false, zIndex: 10 },
-    about: { id: 'about', title: 'Görünüm & Sistem Bilgisi (Appearance Control Panel)', isOpen: false, zIndex: 10 },
+    browser: { id: 'browser', title: 'Internet Explorer — Web Browser', isOpen: false, zIndex: 10 },
+    about: { id: 'about', title: 'Appearance Control Panel', isOpen: false, zIndex: 10 },
     applications: { id: 'applications', title: 'Applications — Mac OS 9.2.2', isOpen: false, zIndex: 10 },
     calculator: { id: 'calculator', title: 'Calculator', isOpen: false, zIndex: 10 },
     stickies: { id: 'stickies', title: 'Stickies', isOpen: false, zIndex: 10 },
@@ -159,7 +161,12 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
       <MacOs9MenuBar
         onOpenBlog={() => openWindow('blog')}
         onOpenNews={() => openWindow('news')}
-        onAbout={() => openWindow('about')}
+        onOpenBrowser={() => openWindow('browser')}
+        onOpenCalculator={() => openWindow('calculator')}
+        onOpenStickies={() => openWindow('stickies')}
+        onOpenAppearance={() => openWindow('about')}
+        onToggleTheme={handleToggleNightMode}
+        isNightMode={isNightMode}
         onEmptyTrash={() => {
           macSound.playTrashCrinkle();
           alert('Trash has been emptied.');
@@ -175,21 +182,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         </div>
       )}
 
-      {/* ================= 4. SOL MASAÜSTÜ İKONLARI ================= */}
-      <div className="absolute top-[32px] left-4 flex flex-col gap-6 z-10">
-        {/* Day & Night Mode (İngilizce Gece / Gündüz Teması İkonu) */}
-        <DesktopIcon
-          id="theme-toggle"
-          type="theme-toggle"
-          title={isNightMode ? 'Night Mode' : 'Day & Night'}
-          isNightMode={isNightMode}
-          isSelected={selectedIconId === 'theme-toggle'}
-          onSelect={(id) => setSelectedIconId(id)}
-          onOpen={handleToggleNightMode}
-        />
-      </div>
-
-      {/* ================= 5. SAĞ MASAÜSTÜ İKONLARI (FIGMA KİT SAĞ HİZALAMA) ================= */}
+      {/* ================= 4. SAĞ MASAÜSTÜ İKONLARI (FIGMA KİT SAĞ HİZALAMA) ================= */}
       <div className="absolute top-[32px] right-4 flex flex-col gap-5 z-10">
         {/* 1. Macintosh HD (Açar: Applications) */}
         <DesktopIcon
@@ -211,14 +204,14 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           onOpen={() => openWindow('applications')}
         />
 
-        {/* 3. 🌐 Blog İkonu (Açar: Tam Blog İnternet Sayfası) */}
+        {/* 3. Browse the Internet (Açar: Internet Explorer / Google Web) */}
         <DesktopIcon
-          id="blog"
-          type="blog"
-          title="Blog"
-          isSelected={selectedIconId === 'blog'}
+          id="browser"
+          type="internet"
+          title="Browse the Internet"
+          isSelected={selectedIconId === 'browser'}
           onSelect={(id) => setSelectedIconId(id)}
-          onOpen={() => openWindow('blog')}
+          onOpen={() => openWindow('browser')}
         />
 
         {/* 4. 📰 News İkonu (Açar: Sherlock 2 Haber Bülteni) */}
@@ -229,16 +222,6 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           isSelected={selectedIconId === 'news'}
           onSelect={(id) => setSelectedIconId(id)}
           onOpen={() => openWindow('news')}
-        />
-
-        {/* 5. 🎨 Wallpapers İkonu (Açar: Görünüm Denetim Masası) */}
-        <DesktopIcon
-          id="wallpapers"
-          type="wallpapers"
-          title="Wallpapers"
-          isSelected={selectedIconId === 'wallpapers'}
-          onSelect={(id) => setSelectedIconId(id)}
-          onOpen={() => openWindow('about')}
         />
       </div>
 
@@ -289,6 +272,28 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           onLaunchBlog={() => openWindow('blog')}
           onLaunchNews={() => openWindow('news')}
           onLaunchAppearance={() => openWindow('about')}
+          onLaunchBrowser={() => openWindow('browser')}
+        />
+      </MacOs9Window>
+
+      {/* 2. Web Browser / Internet Explorer (Google ve Canlı Web Arama) */}
+      <MacOs9Window
+        id="browser"
+        title="Internet Explorer — Web Browser"
+        isOpen={windows.browser?.isOpen ?? false}
+        onClose={() => closeWindow('browser')}
+        zIndex={windows.browser?.zIndex ?? 10}
+        onFocus={() => bringToFront('browser')}
+        isActive={activeWindowId === 'browser'}
+        subtitle="https://www.google.com"
+        initialPosition={{ x: 100, y: 35 }}
+        initialSize={{
+          width: Math.min(1020, typeof window !== 'undefined' ? window.innerWidth - 80 : 960),
+          height: Math.min(680, typeof window !== 'undefined' ? window.innerHeight - 70 : 620),
+        }}
+      >
+        <NovaWebBrowser
+          onOpenBlog={() => openWindow('blog')}
         />
       </MacOs9Window>
 
