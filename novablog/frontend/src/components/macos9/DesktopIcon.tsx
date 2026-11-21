@@ -32,9 +32,19 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
   onOpen,
   isNightMode = false,
 }) => {
+  const lastClickRef = React.useRef<number>(0);
+
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     macSound.playMacClickDown();
+    const now = Date.now();
+    if (now - lastClickRef.current < 450) {
+      macSound.playWindowOpen();
+      onOpen(id);
+      lastClickRef.current = 0;
+      return;
+    }
+    lastClickRef.current = now;
     onSelect(id);
   };
 
@@ -80,16 +90,29 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
       case 'blog':
         return (
           <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
-            {/* Earth Globe with Hand — Classic "Browse the Internet" */}
-            <circle cx="16" cy="16" r="13" fill="#3b82f6" stroke="#262626" strokeWidth="1.5" />
-            <path
-              d="M10 11C12 9 15 10 17 8C19 6 23 8 25 12C26 15 24 19 22 21C20 23 18 25 16 27C14 27 12 25 10 23C8 20 8 13 10 11Z"
-              fill="#22c55e"
-              stroke="#262626"
-              strokeWidth="0.8"
-            />
-            <ellipse cx="16" cy="16" rx="6" ry="13" stroke="#262626" strokeWidth="1" fill="none" />
-            <line x1="3" y1="16" x2="29" y2="16" stroke="#262626" strokeWidth="1" />
+            {/* Mac OS 9 Blog / Engineering Journal Notebook */}
+            {/* Book Base & Bound Leather/Cloth Cover */}
+            <rect x="4" y="3" width="23" height="26" rx="1.5" fill="#3B5998" stroke="#1A202C" strokeWidth="1.5" />
+            {/* Spine Dark Shadow */}
+            <rect x="4" y="3" width="4.5" height="26" rx="1" fill="#1E293B" />
+            {/* Silver Spiral Ring Loops on Left Spine */}
+            <line x1="3" y1="7" x2="8.5" y2="7" stroke="#E2E8F0" strokeWidth="1.2" strokeLinecap="round" />
+            <line x1="3" y1="12" x2="8.5" y2="12" stroke="#E2E8F0" strokeWidth="1.2" strokeLinecap="round" />
+            <line x1="3" y1="17" x2="8.5" y2="17" stroke="#E2E8F0" strokeWidth="1.2" strokeLinecap="round" />
+            <line x1="3" y1="22" x2="8.5" y2="22" stroke="#E2E8F0" strokeWidth="1.2" strokeLinecap="round" />
+            {/* Crisp White Inner Document Page */}
+            <rect x="9" y="5" width="16" height="22" rx="0.5" fill="#FFFFFF" stroke="#262626" strokeWidth="0.8" />
+            {/* Blog Post Header & Ruled Article Lines */}
+            <rect x="11" y="8" width="10" height="2.5" fill="#8B5CF6" rx="0.5" />
+            <line x1="11" y1="13.5" x2="22" y2="13.5" stroke="#475569" strokeWidth="1" strokeLinecap="round" />
+            <line x1="11" y1="16.5" x2="21" y2="16.5" stroke="#64748B" strokeWidth="1" strokeLinecap="round" />
+            <line x1="11" y1="19.5" x2="19" y2="19.5" stroke="#64748B" strokeWidth="1" strokeLinecap="round" />
+            {/* Red Bookmark Ribbon */}
+            <path d="M17 3 L17 9 L19 7.5 L21 9 L21 3 Z" fill="#EF4444" stroke="#991B1B" strokeWidth="0.6" />
+            {/* Vintage Fountain Pen / Nib */}
+            <path d="M21 21 L28 14 L30 16 L23 23 Z" fill="#F59E0B" stroke="#78350F" strokeWidth="0.8" />
+            <path d="M21 21 L18 24 L23 23 Z" fill="#E2E8F0" stroke="#1E293B" strokeWidth="0.8" />
+            <circle cx="18.5" cy="23.5" r="0.5" fill="#1E293B" />
           </svg>
         );
 

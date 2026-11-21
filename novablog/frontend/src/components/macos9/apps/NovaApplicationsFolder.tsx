@@ -40,6 +40,33 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
   // Figma 82-811 Building Blocks - Icons & Canonical Apps
   const APPS: AppItem[] = [
     {
+      id: 'blog',
+      name: 'Nova Blog',
+      dateModified: 'Nov 21, 2026, 4:00 PM',
+      size: '2.4 M',
+      kind: 'application program',
+      icon: (
+        <svg className="w-9 h-9" viewBox="0 0 32 32" fill="none">
+          <rect x="4" y="3" width="23" height="26" rx="1.5" fill="#3B5998" stroke="#1A202C" strokeWidth="1.5" />
+          <rect x="4" y="3" width="4.5" height="26" rx="1" fill="#1E293B" />
+          <line x1="3" y1="7" x2="8.5" y2="7" stroke="#E2E8F0" strokeWidth="1.2" strokeLinecap="round" />
+          <line x1="3" y1="12" x2="8.5" y2="12" stroke="#E2E8F0" strokeWidth="1.2" strokeLinecap="round" />
+          <line x1="3" y1="17" x2="8.5" y2="17" stroke="#E2E8F0" strokeWidth="1.2" strokeLinecap="round" />
+          <line x1="3" y1="22" x2="8.5" y2="22" stroke="#E2E8F0" strokeWidth="1.2" strokeLinecap="round" />
+          <rect x="9" y="5" width="16" height="22" rx="0.5" fill="#FFFFFF" stroke="#262626" strokeWidth="0.8" />
+          <rect x="11" y="8" width="10" height="2.5" fill="#8B5CF6" rx="0.5" />
+          <line x1="11" y1="13.5" x2="22" y2="13.5" stroke="#475569" strokeWidth="1" strokeLinecap="round" />
+          <line x1="11" y1="16.5" x2="21" y2="16.5" stroke="#64748B" strokeWidth="1" strokeLinecap="round" />
+          <line x1="11" y1="19.5" x2="19" y2="19.5" stroke="#64748B" strokeWidth="1" strokeLinecap="round" />
+          <path d="M17 3 L17 9 L19 7.5 L21 9 L21 3 Z" fill="#EF4444" stroke="#991B1B" strokeWidth="0.6" />
+          <path d="M21 21 L28 14 L30 16 L23 23 Z" fill="#F59E0B" stroke="#78350F" strokeWidth="0.8" />
+          <path d="M21 21 L18 24 L23 23 Z" fill="#E2E8F0" stroke="#1E293B" strokeWidth="0.8" />
+          <circle cx="18.5" cy="23.5" r="0.5" fill="#1E293B" />
+        </svg>
+      ),
+      action: onLaunchBlog,
+    },
+    {
       id: 'explorer',
       name: 'Internet Explorer',
       dateModified: 'Dec 19, 2020, 2:15 PM',

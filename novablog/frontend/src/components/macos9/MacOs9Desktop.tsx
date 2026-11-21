@@ -223,14 +223,14 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           onOpen={() => openWindow('applications')}
         />
 
-        {/* 3. Browse the Internet (Opens: Internet Explorer / Google Web) */}
+        {/* 3. Blog Portal (Opens: Nova Blog Window) */}
         <DesktopIcon
-          id="browser"
-          type="internet"
-          title="Browse the Internet"
-          isSelected={selectedIconId === 'browser'}
+          id="blog"
+          type="blog"
+          title="Blog"
+          isSelected={selectedIconId === 'blog'}
           onSelect={(id) => setSelectedIconId(id)}
-          onOpen={() => openWindow('browser')}
+          onOpen={() => openWindow('blog')}
         />
 
         {/* 4. News Icon (Opens: Sherlock 2 News Bulletin) */}
