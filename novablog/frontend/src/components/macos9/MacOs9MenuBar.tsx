@@ -176,14 +176,13 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
               {/* Control Panels ▶ (With Submenu) */}
               <div
                 onMouseEnter={() => setActiveSubmenu('controlPanels')}
+                onMouseOver={() => setActiveSubmenu('controlPanels')}
                 className="relative"
               >
                 <button
-                  onClick={() => {
-                    onOpenAppearance?.();
-                    setOpenMenu(null);
-                    setActiveSubmenu(null);
-                    macSound.playMacClickUp();
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveSubmenu((prev) => (prev === 'controlPanels' ? null : 'controlPanels'));
                   }}
                   className={`w-full text-left px-3 py-1 flex items-center justify-between group ${
                     activeSubmenu === 'controlPanels' ? 'bg-[#333399] text-white' : 'hover:bg-[#333399] hover:text-white'
@@ -258,9 +257,14 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
               {/* Favorites ▶ */}
               <div
                 onMouseEnter={() => setActiveSubmenu('favorites')}
+                onMouseOver={() => setActiveSubmenu('favorites')}
                 className="relative"
               >
                 <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveSubmenu((prev) => (prev === 'favorites' ? null : 'favorites'));
+                  }}
                   className={`w-full text-left px-3 py-1 flex items-center justify-between group ${
                     activeSubmenu === 'favorites' ? 'bg-[#333399] text-white' : 'hover:bg-[#333399] hover:text-white'
                   }`}
@@ -343,9 +347,14 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
               {/* Recent Applications ▶ (CLONED FROM FIGMA IMAGE 1) */}
               <div
                 onMouseEnter={() => setActiveSubmenu('recentApps')}
+                onMouseOver={() => setActiveSubmenu('recentApps')}
                 className="relative"
               >
                 <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveSubmenu((prev) => (prev === 'recentApps' ? null : 'recentApps'));
+                  }}
                   className={`w-full text-left px-3 py-1 flex items-center justify-between group ${
                     activeSubmenu === 'recentApps' ? 'bg-[#333399] text-white' : 'hover:bg-[#333399] hover:text-white'
                   }`}
