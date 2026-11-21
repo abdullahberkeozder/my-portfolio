@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { macSound } from '@/lib/retroAudioMac9';
+import { useMusicPlayer } from '@/lib/musicSystem';
 
 interface MacOs9MenuBarProps {
   onOpenBlog?: () => void;
@@ -14,6 +15,8 @@ interface MacOs9MenuBarProps {
   onRestart?: () => void;
   onAbout?: () => void;
   onToggleTheme?: () => void;
+  onOpenItunes?: () => void;
+  onOpenChess?: () => void;
   isNightMode?: boolean;
   activeAppTitle?: string;
 }
@@ -29,6 +32,8 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
   onRestart,
   onAbout,
   onToggleTheme,
+  onOpenItunes,
+  onOpenChess,
   isNightMode = false,
   activeAppTitle = 'Finder',
 }) => {
@@ -39,6 +44,14 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
   const [isMuted, setIsMuted] = useState<boolean>(macSound.getIsMuted());
   const [volume, setVolume] = useState<number>(macSound.getVolume());
   const barRef = useRef<HTMLDivElement>(null);
+
+  const {
+    track: currentMusic,
+    isPlaying: isMusicPlaying,
+    togglePlay: toggleMusicPlay,
+    nextTrack: nextMusicTrack,
+    prevTrack: prevMusicTrack,
+  } = useMusicPlayer();
 
   // Live Digital Clock
   useEffect(() => {
@@ -373,6 +386,29 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                 {/* Submenu from Image 1 */}
                 {activeSubmenu === 'recentApps' && (
                   <div className="absolute left-full top-0 ml-[-2px] w-52 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1 z-50">
+                    <button
+                      onClick={() => {
+                        onOpenItunes?.();
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex items-center gap-2"
+                    >
+                      <span>💿</span>
+                      <span className="font-bold">iTunes (The Weeknd)</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        onOpenChess?.();
+                        setOpenMenu(null);
+                        setActiveSubmenu(null);
+                      }}
+                      className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex items-center gap-2"
+                    >
+                      <span>♞</span>
+                      <span className="font-bold">Apple Chess</span>
+                    </button>
+                    <div className="h-px bg-[#B0B0B0] my-0.5" />
                     <button
                       onClick={() => {
                         onOpenBrowser?.();
@@ -822,11 +858,12 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           </button>
 
           {openMenu === 'sound' && (
-            <div className="absolute top-[20px] right-0 w-52 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1.5 px-2.5 z-50 text-[11px] font-['Charcoal',sans-serif]">
+            <div className="absolute top-[20px] right-0 w-64 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.35)] py-1.5 px-2.5 z-50 text-[11px] font-['Charcoal',sans-serif]">
+              {/* Header */}
               <div className="flex items-center justify-between font-bold pb-1 mb-1 border-b border-[#999]">
                 <span className="flex items-center gap-1.5 text-xs text-[#262626]">
                   <span>{isMuted || volume === 0 ? '🔇' : '🔊'}</span>
-                  <span>Sound Volume</span>
+                  <span>Sound & Audio</span>
                 </span>
                 <button
                   type="button"
@@ -837,10 +874,66 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                 </button>
               </div>
 
+              {/* iTunes Mini Player */}
+              <div className="bg-[#E4E4E4] border border-[#A0A0A0] rounded-[2px] p-2 my-1 font-mono">
+                <div className="flex items-center justify-between text-[9px] text-[#666] mb-1">
+                  <span className="font-bold text-[#333] flex items-center gap-1">
+                    <span>🎵</span>
+                    <span>iTunes Audio</span>
+                  </span>
+                  <span className={`font-bold ${isMusicPlaying ? 'text-emerald-700' : 'text-[#888]'}`}>
+                    {isMusicPlaying ? '● Playing' : '❚❚ Paused'}
+                  </span>
+                </div>
+                <div className="text-[11px] font-bold text-[#111] truncate" title={currentMusic.title}>
+                  {currentMusic.title}
+                </div>
+                <div className="text-[10px] text-[#555] truncate mb-1.5">
+                  {currentMusic.artist}
+                </div>
+                <div className="flex items-center justify-between gap-1 pt-1.5 border-t border-[#CCC]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      macSound.playMacClickDown();
+                      prevMusicTrack();
+                    }}
+                    className="mac9-btn !py-0.5 !px-2 text-[10px] cursor-pointer"
+                    title="Previous Track"
+                  >
+                    ⏮ Prev
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      macSound.playMacClickDown();
+                      toggleMusicPlay();
+                    }}
+                    className={`mac9-btn !py-0.5 !px-3 text-[10px] font-bold cursor-pointer ${
+                      isMusicPlaying ? 'bg-[#99CCFF] text-[#003366]' : ''
+                    }`}
+                    title={isMusicPlaying ? 'Pause' : 'Play'}
+                  >
+                    {isMusicPlaying ? '❚❚ Pause' : '▶ Play'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      macSound.playMacClickDown();
+                      nextMusicTrack();
+                    }}
+                    className="mac9-btn !py-0.5 !px-2 text-[10px] cursor-pointer"
+                    title="Next Track"
+                  >
+                    Next ⏭
+                  </button>
+                </div>
+              </div>
+
               {/* 8-step volume selector (0 to 7) */}
               <div className="space-y-1 py-1">
                 <div className="flex items-center justify-between text-[10px] text-[#666]">
-                  <span>Level: {isMuted ? 'Muted' : `${volume} / 7`}</span>
+                  <span>System Volume: {isMuted ? 'Muted' : `${volume} / 7`}</span>
                   <span>Mac OS 9</span>
                 </div>
                 <div className="grid grid-cols-8 gap-1">
@@ -862,9 +955,19 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                 </div>
               </div>
 
-              {/* Droplet Chime Test Button */}
+              {/* Open iTunes & Droplet Chime Buttons */}
               <div className="pt-1.5 mt-1 border-t border-[#999] flex justify-between items-center">
-                <span className="text-[10px] text-[#555]">Droplet Chime</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenItunes?.();
+                    setOpenMenu(null);
+                  }}
+                  className="text-[10px] text-[#000080] hover:underline font-bold flex items-center gap-1 cursor-pointer"
+                >
+                  <span>💿</span>
+                  <span>Open iTunes...</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => {
@@ -874,7 +977,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                   }}
                   className="mac9-btn !py-0.5 !px-2 text-[10px] cursor-pointer"
                 >
-                  ▶ Test
+                  ▶ Chime
                 </button>
               </div>
             </div>

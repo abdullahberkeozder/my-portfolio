@@ -11,6 +11,8 @@ interface NovaApplicationsFolderProps {
   onLaunchNews?: () => void;
   onLaunchAppearance: () => void;
   onLaunchBrowser: () => void;
+  onLaunchChess?: () => void;
+  onLaunchItunes?: () => void;
 }
 
 type ViewMode = 'icons' | 'list';
@@ -32,6 +34,8 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
   onLaunchBlog,
   onLaunchAppearance,
   onLaunchBrowser,
+  onLaunchChess,
+  onLaunchItunes,
 }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('icons');
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
@@ -39,6 +43,41 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
 
   // Figma 82-811 Building Blocks - Icons & Canonical Apps
   const APPS: AppItem[] = [
+    {
+      id: 'chess',
+      name: 'Chess',
+      dateModified: 'Nov 21, 2026, 4:15 PM',
+      size: '1.8 M',
+      kind: 'application program',
+      icon: (
+        <svg className="w-9 h-9" viewBox="0 0 32 32" fill="none">
+          {/* Apple Chess Board & 3D Knight */}
+          <rect x="3" y="4" width="26" height="24" rx="2" fill="#8B5A2B" stroke="#3D2612" strokeWidth="1.2" />
+          <rect x="5" y="6" width="22" height="20" fill="#DFBA87" />
+          {/* Mini checkered squares */}
+          <rect x="5" y="6" width="5.5" height="5" fill="#8B5A2B" />
+          <rect x="16" y="6" width="5.5" height="5" fill="#8B5A2B" />
+          <rect x="10.5" y="11" width="5.5" height="5" fill="#8B5A2B" />
+          <rect x="21.5" y="11" width="5.5" height="5" fill="#8B5A2B" />
+          <rect x="5" y="16" width="5.5" height="5" fill="#8B5A2B" />
+          <rect x="16" y="16" width="5.5" height="5" fill="#8B5A2B" />
+          <rect x="10.5" y="21" width="5.5" height="5" fill="#8B5A2B" />
+          <rect x="21.5" y="21" width="5.5" height="5" fill="#8B5A2B" />
+          {/* 3D Knight Piece in Platinum / Ivory */}
+          <path
+            d="M14 9 C15 7 18 7 20 9 C22 11 21 13 22 14 C23 15 22 18 20 19 C20 20 21 23 21 25 L12 25 C12 23 13 20 13 18 C11 17 11 15 13 13 Z"
+            fill="#F8FAFC"
+            stroke="#1E293B"
+            strokeWidth="1.2"
+            strokeLinejoin="round"
+          />
+          <circle cx="16" cy="11" r="1" fill="#0F172A" />
+          <path d="M13 15 L16 16" stroke="#475569" strokeWidth="0.8" />
+          <path d="M12 25 L21 25" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      ),
+      action: onLaunchChess || (() => {}),
+    },
     {
       id: 'blog',
       name: 'Nova Blog',
@@ -98,7 +137,7 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
           <circle cx="15.5" cy="11.5" r="1.5" fill="#9333EA" />
         </svg>
       ),
-      action: onLaunchRadio,
+      action: onLaunchItunes || onLaunchRadio,
     },
     {
       id: 'wallpapers',
@@ -198,11 +237,11 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
       onContextMenu={handleContextMenu}
       className="flex flex-col h-full bg-[#FFFFFF] font-['Charcoal',sans-serif] text-[12px] text-[#262626] select-none relative"
     >
-      {/* ================= HEADER BAR (6 items, 12.44 GB available) ================= */}
+      {/* ================= HEADER BAR (Items count, available) ================= */}
       <div className="px-3 py-1.5 bg-[#DDDDDD] border-b border-[#262626] flex items-center justify-between text-[11px] shadow-sm">
         <div className="flex items-center gap-2">
           <span className="font-bold">Applications</span>
-          <span className="text-[#666]">6 items, 12.44 GB available</span>
+          <span className="text-[#666]">{APPS.length} items, 12.44 GB available</span>
         </div>
 
         {/* View Switcher: as Icons / as List (Figma 69-130300) */}

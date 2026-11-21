@@ -12,7 +12,10 @@ import { NovaApplicationsFolder } from './apps/NovaApplicationsFolder';
 import { MacCalculator } from './apps/MacCalculator';
 import { MacStickies } from './apps/MacStickies';
 import { MacFmRadio } from './apps/MacFmRadio';
+import { MacItunes } from './apps/MacItunes';
+import { MacChess } from './apps/MacChess';
 import { NovaWebBrowser } from './apps/NovaWebBrowser';
+import { GlobalMusicPlayer } from './GlobalMusicPlayer';
 import { macSound } from '@/lib/retroAudioMac9';
 
 interface MacOs9DesktopProps {
@@ -50,6 +53,8 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
     calculator: { id: 'calculator', title: 'Calculator', isOpen: false, zIndex: 10 },
     stickies: { id: 'stickies', title: 'Stickies', isOpen: false, zIndex: 10 },
     radio: { id: 'radio', title: 'Apple FM Stereo Radio', isOpen: false, zIndex: 10 },
+    itunes: { id: 'itunes', title: 'iTunes — The Weeknd & Classic Hits', isOpen: false, zIndex: 10 },
+    chess: { id: 'chess', title: 'Apple Chess — Mac OS 9.2.2', isOpen: false, zIndex: 10 },
     trash: { id: 'trash', title: 'Trash', isOpen: false, zIndex: 10 },
   });
 
@@ -179,6 +184,8 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         onOpenCalculator={() => openWindow('calculator')}
         onOpenStickies={() => openWindow('stickies')}
         onOpenAppearance={() => openWindow('about')}
+        onOpenItunes={() => openWindow('itunes')}
+        onOpenChess={() => openWindow('chess')}
         onToggleTheme={handleToggleNightMode}
         isNightMode={isNightMode}
         onEmptyTrash={() => {
@@ -188,6 +195,9 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         onRestart={handleRestart}
         activeAppTitle={activeWindowId ? windows[activeWindowId]?.title.split('—')[0].trim() : 'Finder'}
       />
+
+      {/* Global Hidden YouTube Audio Streaming Engine */}
+      <GlobalMusicPlayer />
 
       {/* ================= 3. ELEGANT NOVA UI LOGO EMBLEM (G4 CUBE LUCITE SUITE) ================= */}
       {!isBooting && (
@@ -279,7 +289,9 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         <NovaApplicationsFolder
           onLaunchCalculator={() => openWindow('calculator')}
           onLaunchStickies={() => openWindow('stickies')}
-          onLaunchRadio={() => openWindow('radio')}
+          onLaunchRadio={() => openWindow('itunes')}
+          onLaunchItunes={() => openWindow('itunes')}
+          onLaunchChess={() => openWindow('chess')}
           onLaunchBlog={() => openWindow('blog')}
           onLaunchNews={() => openWindow('news')}
           onLaunchAppearance={() => openWindow('about')}
@@ -351,6 +363,44 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         initialSize={{ width: 360, height: 240 }}
       >
         <MacFmRadio />
+      </MacOs9Window>
+
+      {/* 5b. iTunes Music Player (The Weeknd & Curated Tracks) */}
+      <MacOs9Window
+        id="itunes"
+        title="iTunes — The Weeknd & Classic Hits"
+        isOpen={windows.itunes?.isOpen ?? false}
+        onClose={() => closeWindow('itunes')}
+        zIndex={windows.itunes?.zIndex ?? 10}
+        onFocus={() => bringToFront('itunes')}
+        isActive={activeWindowId === 'itunes'}
+        subtitle="itunes://library/dawn-fm/less-than-zero"
+        initialPosition={{ x: 180, y: 70 }}
+        initialSize={{
+          width: Math.min(760, typeof window !== 'undefined' ? window.innerWidth - 100 : 720),
+          height: 480,
+        }}
+      >
+        <MacItunes />
+      </MacOs9Window>
+
+      {/* 5c. Apple Chess (Deep Platinum AI) */}
+      <MacOs9Window
+        id="chess"
+        title="Apple Chess — Mac OS 9.2.2"
+        isOpen={windows.chess?.isOpen ?? false}
+        onClose={() => closeWindow('chess')}
+        zIndex={windows.chess?.zIndex ?? 10}
+        onFocus={() => bringToFront('chess')}
+        isActive={activeWindowId === 'chess'}
+        subtitle="apple://games/deep-platinum-chess"
+        initialPosition={{ x: 200, y: 55 }}
+        initialSize={{
+          width: 620,
+          height: 490,
+        }}
+      >
+        <MacChess />
       </MacOs9Window>
 
       {/* 5. Blog Web Window */}
