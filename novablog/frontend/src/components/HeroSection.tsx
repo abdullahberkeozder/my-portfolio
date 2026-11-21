@@ -72,7 +72,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/15 text-xs font-mono">
               <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
               <span className="text-zinc-800 dark:text-zinc-200 font-bold uppercase tracking-wider text-[11px]">
-                NOVA MÜHENDİSLİK YAYINI
+                NOVA ENGINEERING DISPATCH
               </span>
               <span className="text-zinc-400 font-normal hidden sm:inline">&bull;</span>
               <span className="text-blue-600 dark:text-blue-400 font-semibold text-[11px] hidden sm:inline">
@@ -83,14 +83,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             {/* Headline with Letterpress Aesthetic */}
             <div className="space-y-1.5">
               <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold tracking-tight text-zinc-950 dark:text-white leading-[1.2] font-sans drop-shadow-xs">
-                Sistem Mimarisi, Dağıtık Ağlar ve{' '}
+                System Architecture, Distributed Networks &amp;{' '}
                 <span className="text-blue-600 dark:text-blue-400 underline decoration-blue-500/30 underline-offset-4">
-                  Modern Mühendislik.
+                  Modern Engineering.
                 </span>
               </h1>
               <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 max-w-xl leading-relaxed font-sans line-clamp-2">
-                Java 22 Loom sanal iş parçacıkları, PostgreSQL pgvector 128 boyutlu anlamsal kosinüs uzayı ve Redis Write-Behind tamponu ile
-                güçlendirilmiş kurumsal bağımsız mühendislik yayını.
+                Enterprise systems publication powered by Java 22 Loom virtual threads, PostgreSQL pgvector 128D semantic cosine search, and Redis write-behind buffers.
               </p>
             </div>
 
@@ -101,10 +100,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 type="button"
                 onClick={scrollToFeed}
                 className="mac-aqua-btn-primary flex items-center gap-2 !px-4 !py-2 !text-xs font-bold shadow-md hover:scale-[1.02] active:scale-[0.98] transition-transform cursor-pointer"
-                title="Yayın akışına kaydır (Makaleleri Keşfet)"
+                title="Scroll to feed (Explore Articles)"
               >
                 <Compass className="w-3.5 h-3.5 text-white" />
-                <span>Makaleleri Keşfet</span>
+                <span>Explore Articles</span>
                 <ArrowDown className="w-3 h-3 opacity-90" />
               </button>
 
@@ -113,10 +112,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 type="button"
                 onClick={handleOpenConsole}
                 className="mac-btn-aluminum flex items-center gap-2 !px-3.5 !py-2 !text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-transform cursor-pointer"
-                title="Activity Monitor & Donanım Telemetrisi konsoluna git"
+                title="Go to Activity Monitor & Hardware Telemetry Console"
               >
                 <Activity className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span>Mimari &amp; Telemetri</span>
+                <span>Architecture &amp; Telemetry</span>
               </button>
             </div>
 
@@ -124,7 +123,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <div className="pt-1">
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10.5px] font-mono text-zinc-600 dark:text-zinc-400">
                 <span className="font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                  MİMARİ:
+                  ARCHITECTURE:
                 </span>
                 <span className="inline-flex items-center gap-1 text-zinc-700 dark:text-zinc-300">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -174,7 +173,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <div className="relative aspect-[16/9] bg-black overflow-hidden cursor-pointer" onClick={handleOpenConsole}>
                 <Image
                   src="/images/architecture-cutaway.jpg"
-                  alt="Nova Sistem Mimarisi Şeması"
+                  alt="Nova System Architecture Schematic"
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -188,22 +187,22 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 {/* Top Corner Live Status Pill */}
                 <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-[9.5px] font-mono font-bold text-emerald-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#34d399]" />
-                  <span>KONSOL AKTİF</span>
+                  <span>CONSOLE ONLINE</span>
                 </div>
 
                 {/* Bottom Overlay Info */}
                 <div className="absolute bottom-2 inset-x-2.5 flex items-end justify-between z-10 pointer-events-none">
                   <div className="space-y-0.5">
                     <span className="text-[9px] font-mono text-blue-400 font-bold block uppercase tracking-wider">
-                      CANLI MİMARİ TELEMETRİSİ
+                      LIVE ARCHITECTURE TELEMETRY
                     </span>
                     <h3 className="text-xs font-bold text-white drop-shadow-md">
-                      Java 22 Loom &amp; pgvector Çekirdeği
+                      Java 22 Loom &amp; pgvector Core
                     </h3>
                   </div>
 
                   <span className="px-1.5 py-0.5 rounded bg-black/80 border border-white/20 text-[9px] font-mono text-zinc-300 font-bold flex items-center gap-1">
-                    <span>Aç</span>
+                    <span>Inspect</span>
                     <Maximize2 className="w-2.5 h-2.5 text-blue-400" />
                   </span>
                 </div>
@@ -213,7 +212,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <div className="p-2 bg-gradient-to-b from-[#e2e2e6] to-[#d4d4da] dark:from-[#222226] dark:to-[#18181c] border-t border-black/10 dark:border-white/10 flex items-center justify-between text-[9.5px] font-mono text-zinc-600 dark:text-zinc-400">
                 <span className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                  <span>201/201 TEST // %100 BAŞARI</span>
+                  <span>201/201 TESTS // 100% PASSED</span>
                 </span>
                 <span className="text-zinc-500 dark:text-zinc-400">
                   SUB-MS P99

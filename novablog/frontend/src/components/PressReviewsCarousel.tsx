@@ -30,86 +30,86 @@ const PRESS_ITEMS: PressQuoteItem[] = [
     quote: '"SHAPE-SHIFTING"',
     outlet: 'the-verge',
     outletName: 'The Verge',
-    subContext: 'Loom Sanal Thread ve Modüler Mimari İncelemesi',
+    subContext: 'Project Loom Virtual Threads & Modular Architecture Review',
   },
   {
     id: 'press-wapo',
     quote: '"ASTONISHINGLY FAST AND SURPRISINGLY DIFFICULT TO CRASH"',
     outlet: 'washington-post',
     outletName: 'The Washington Post',
-    subContext: 'RFC 7807 & 2FA State Machine Dayanıklılık Testi',
+    subContext: 'RFC 7807 & 2FA State Machine Resilience Audit',
   },
   {
     id: 'press-wired',
     quote: '"SOLVES THE AGE-OLD \'N+1\' PROBLEM"',
     outlet: 'wired',
     outletName: 'WIRED',
-    subContext: 'Redis Write-Behind ve pgvector Kosinüs Optimizasyonu',
+    subContext: 'Redis Write-Behind Buffer & pgvector Cosine Optimization',
   },
   {
     id: 'press-techradar',
     quote: '"INSANE LEVELS OF MODULARITY"',
     outlet: 'techradar',
     outletName: 'TechRadar',
-    subContext: 'Spring Boot 4.1.1 + Next.js 16.4.5 Donanımsal Konsol',
+    subContext: 'Spring Boot 4.1.1 + Next.js 16.4.5 Hardware Console',
   },
   {
     id: 'press-infoq',
     quote: '"FAIL-SAFE QUARANTINE: TOXICITY ISOLATED AT REST"',
     outlet: 'infoq',
     outletName: 'InfoQ',
-    subContext: 'Kurumsal İçerik Denetimi ve Asenkron State Machine',
+    subContext: 'Enterprise Content Moderation & Async State Machine',
   },
 ];
 
 const BULLETINS: BulletinItem[] = [
   {
     id: 'loom-release',
-    typeBadge: 'SÜRÜM DUYURUSU // V4.1.1',
+    typeBadge: 'RELEASE BULLETIN // V4.1.1',
     typeColor: 'bg-emerald-600 text-white',
-    date: '10 KAS 2026',
-    headline: '"SPRING BOOT 4.1.1 + JAVA 22 LOOM SANAL THREAD MİMARİSİ CANLI ORTAMDA DEVREYE ALINDI"',
-    description: 'Tomcat OS thread havuzu sınırlaması kaldırıldı; 10.000 sanal thread ile sub-milisaniye gecikme sağlandı.',
-    statusTag: 'CANLI // ONLINE',
+    date: 'NOV 10, 2026',
+    headline: '"SPRING BOOT 4.1.1 + JAVA 22 LOOM VIRTUAL THREADS DEPLOYED TO PRODUCTION"',
+    description: 'Tomcat OS thread pool contention eliminated; 10,000 virtual threads deliver sub-millisecond response latencies.',
+    statusTag: 'ONLINE // PRODUCTION',
     source: 'NOVA CORE ENGINEERING',
   },
   {
     id: 'security-bulletin',
-    typeBadge: 'GÜVENLİK PROTOKOLÜ // 2FA',
+    typeBadge: 'SECURITY PROTOCOL // 2FA',
     typeColor: 'bg-purple-800 text-white',
-    date: '8 KAS 2026',
-    headline: '"RFC 7807 PROBLEM STANDARDI VE 2FA TOTP PRE-AUTH STATE MACHINE AKTİF"',
-    description: 'Şifre doğrulamasında geçici PRE_AUTH JWT tahsis edilir; TOTP onayından sonra tam yetki verilir.',
+    date: 'NOV 8, 2026',
+    headline: '"RFC 7807 PROBLEM DETAILS & 2FA TOTP PRE-AUTH STATE MACHINE ACTIVATED"',
+    description: 'A transient PRE_AUTH JWT is issued upon password verification; full privileges are granted only after TOTP confirmation.',
     statusTag: 'RFC 7807 SPEC',
     source: 'SECURITY // STATE MACHINE',
   },
   {
     id: 'spring-ai-vector',
-    typeBadge: 'AI ANLAMSAL VEKTÖR MOTORU',
+    typeBadge: 'AI SEMANTIC VECTOR ENGINE',
     typeColor: 'bg-blue-600 text-white',
-    date: '6 KAS 2026',
-    headline: '"SPRING AI 128 BOYUTLU KOSİNÜS VEKTÖR UZAYI VE RRF HİBRİT ARAMA YAYINLANDI"',
-    description: 'Klasik SQL LIKE araması geride bırakılarak makaleler arasındaki anlamsal bağlam yakalanıyor.',
+    date: 'NOV 6, 2026',
+    headline: '"SPRING AI 128-DIMENSIONAL COSINE VECTOR SPACE & RRF HYBRID SEARCH RELEASED"',
+    description: 'Replacing legacy SQL LIKE scans with deep semantic embeddings to capture contextual relationships between articles.',
     statusTag: 'pgvector 128-DIM',
     source: 'SPRING AI LAB REPORT',
   },
   {
     id: 'batch-automation',
-    typeBadge: 'ETL OTOMASYONU // BATCH 5',
+    typeBadge: 'ETL AUTOMATION // BATCH 5',
     typeColor: 'bg-amber-600 text-white',
-    date: '4 KAS 2026',
-    headline: '"SOFT-DELETE 30 GÜNLÜK RETENTION PURGE VE YAZAR ETKİLEŞİM RAPORLAMA JOB\'I"',
-    description: '100 kayıtlık chunk işleyicisi her gece veritabanını temizler ve yazar analitiklerini üretir.',
+    date: 'NOV 4, 2026',
+    headline: '"SOFT-DELETE 30-DAY RETENTION PURGE & AUTHOR ENGAGEMENT REPORTING JOB"',
+    description: 'Chunk-oriented processor (size 100) executes nightly retention purges and computes author engagement analytics.',
     statusTag: 'CHUNK SIZE: 100',
     source: 'DATA PIPELINE SPEC',
   },
   {
     id: 'reliability-audit',
-    typeBadge: 'MİMARİ TEST MATRİSİ',
+    typeBadge: 'ARCHITECTURAL TEST MATRIX',
     typeColor: 'bg-indigo-600 text-white',
-    date: '2 KAS 2026',
-    headline: '"201/201 OTOMATİK TEST (%100 BAŞARI) VE SANİYEDE 12.4K SAYAÇ ENGELLENMESİ DOĞRULANDI"',
-    description: 'Birim, entegrasyon, vektör projeksiyonu ve eşzamanlılık testlerinin tamamı yeşil olarak belgelendi.',
+    date: 'NOV 2, 2026',
+    headline: '"201/201 AUTOMATED TESTS (100% PASS) & 12.4K COUNTER OPS/SEC VERIFIED"',
+    description: 'Unit, integration, vector projection, and concurrency test suites verified and green across the entire pipeline.',
     statusTag: '201/201 TESTS PASS',
     source: 'BENCHMARK AUDIT // 2026',
   },
@@ -242,7 +242,7 @@ export const PressReviewsCarousel: React.FC = () => {
                 ❖
               </span>
               <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-950 dark:text-white flex items-center gap-2">
-                <span>Apple Basın Odası ve Mühendislik İncelemeleri</span>
+                <span>Apple Press Room & Engineering Reviews</span>
               </h2>
             </div>
             <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">
@@ -263,7 +263,7 @@ export const PressReviewsCarousel: React.FC = () => {
                 }`}
               >
                 <Newspaper className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                <span>BASIN İNCELEMELERİ</span>
+                <span>PRESS REVIEWS</span>
               </button>
               <button
                 onClick={() => handleModeChange('bulletins')}
@@ -274,7 +274,7 @@ export const PressReviewsCarousel: React.FC = () => {
                 }`}
               >
                 <Bell className="w-3.5 h-3.5 text-amber-500" />
-                <span>MÜHENDİSLİK BÜLTENİ</span>
+                <span>ENGINEERING BULLETINS</span>
               </button>
             </div>
 
@@ -288,16 +288,16 @@ export const PressReviewsCarousel: React.FC = () => {
               <button
                 onClick={() => scroll('left')}
                 className="w-8 h-8 rounded-full bg-gradient-to-b from-white to-zinc-200 dark:from-zinc-700 dark:to-zinc-800 text-zinc-800 dark:text-zinc-100 flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95 shadow border border-black/15 dark:border-white/15"
-                title="Önceki"
-                aria-label="Önceki"
+                title="Previous"
+                aria-label="Previous"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => scroll('right')}
                 className="w-8 h-8 rounded-full bg-gradient-to-b from-white to-zinc-200 dark:from-zinc-700 dark:to-zinc-800 text-zinc-800 dark:text-zinc-100 flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95 shadow border border-black/15 dark:border-white/15"
-                title="Sonraki"
-                aria-label="Sonraki"
+                title="Next"
+                aria-label="Next"
               >
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>

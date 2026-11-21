@@ -81,20 +81,20 @@ export const AdminBatchStudio: React.FC = () => {
         <div className="space-y-1.5">
           <div className="inline-flex items-center gap-2 font-mono text-xs uppercase font-bold text-amber-600 dark:text-amber-400">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]" />
-            <span>MİMARİ MODÜL 04 // MAC OS X SERVER BATCH & ETL ENGINE</span>
+            <span>ARCHITECTURE MODULE 04 // MAC OS X SERVER BATCH &amp; ETL ENGINE</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight flex items-center gap-3">
-            <span>SPRING BATCH 5 & KURUMSAL VERİ AMBARI KONSOLU</span>
+            <span>SPRING BATCH 5 &amp; ENTERPRISE DATA WAREHOUSE CONSOLE</span>
           </h2>
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-3xl font-sans leading-relaxed">
-            Büyük ölçekli veri temizliği (Chunk-based Soft-Delete Cleanup), yazar etkileşim analitiği raporlama işleri
-            ve Spring AI anlamsal vektör veritabanı indeksleme boru hatlarını yüksek sistem kararlılığıyla yönetin.
+            Manage large-scale data retention (chunk-based soft-delete cleanup), author interaction analytics reporting jobs,
+            and Spring AI semantic vector database reindexing pipelines with enterprise stability.
           </p>
         </div>
 
         <div className="flex items-center gap-2 font-mono text-xs text-zinc-500 shrink-0">
           <span className="mac-hardware-chip-badge">CHUNK: 50 ITEMS</span>
-          <span className="mac-hardware-chip-badge">3 RETRY TOLERANSI</span>
+          <span className="mac-hardware-chip-badge">3 RETRY TOLERANCE</span>
           <span className="mac-hardware-chip-badge">ISOLATED TX</span>
         </div>
       </div>
@@ -133,20 +133,20 @@ export const AdminBatchStudio: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-xs font-mono font-bold text-zinc-900 dark:text-white uppercase">
                   <Trash2 className="w-4 h-4 text-rose-500" />
-                  TEMİZLİK (CLEANUP)
+                  CLEANUP (SOFT-DELETE)
                 </span>
                 <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
                   CHUNK: 50
                 </span>
               </div>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed">
-                30 günden eski silinmiş makaleleri 50&apos;şerli paketlerde izole transaction içinde kalıcı olarak temizler.
+                Permanently purges deleted articles older than 30 days in 50-item batches within isolated transactions.
               </p>
             </div>
 
             {cleanupResult && (
               <div className="p-2 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-700 dark:text-emerald-300">
-                Durum: {cleanupResult.status} &bull; İşlenen: {cleanupResult.exitCode || 'COMPLETED'}
+                Status: {cleanupResult.status} &bull; Processed: {cleanupResult.exitCode || 'COMPLETED'}
               </div>
             )}
 
@@ -159,12 +159,12 @@ export const AdminBatchStudio: React.FC = () => {
               {isLoadingCleanup ? (
                 <>
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>İŞLENİYOR...</span>
+                  <span>PROCESSING...</span>
                 </>
               ) : (
                 <>
                   <Trash2 className="w-3.5 h-3.5 text-rose-600" />
-                  <span>TEMİZLİK JOB&apos;I ÇALIŞTIR</span>
+                  <span>RUN CLEANUP JOB</span>
                 </>
               )}
             </button>
@@ -176,20 +176,20 @@ export const AdminBatchStudio: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-xs font-mono font-bold text-zinc-900 dark:text-white uppercase">
                   <BarChart3 className="w-4 h-4 text-indigo-500" />
-                  ANALİTİK (ANALYTICS)
+                  ANALYTICS (INTERACTIONS)
                 </span>
                 <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
                   BATCH ETL
                 </span>
               </div>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed">
-                Yazar performansını, görüntülenme ve alkış metriklerini periyodik aggregate tablolarına aktarır.
+                Periodically aggregates author performance, view counts, and clap metrics into analytics reporting tables.
               </p>
             </div>
 
             {analyticsResult && (
               <div className="p-2 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-700 dark:text-emerald-300">
-                Durum: {analyticsResult.status} &bull; İşlenen: {analyticsResult.exitCode || 'COMPLETED'}
+                Status: {analyticsResult.status} &bull; Processed: {analyticsResult.exitCode || 'COMPLETED'}
               </div>
             )}
 
@@ -202,12 +202,12 @@ export const AdminBatchStudio: React.FC = () => {
               {isLoadingAnalytics ? (
                 <>
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>HESAPLANIYOR...</span>
+                  <span>COMPUTING...</span>
                 </>
               ) : (
                 <>
                   <BarChart3 className="w-3.5 h-3.5" />
-                  <span>ANALİTİK JOB&apos;I ÇALIŞTIR</span>
+                  <span>RUN ANALYTICS JOB</span>
                 </>
               )}
             </button>
@@ -219,14 +219,14 @@ export const AdminBatchStudio: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-xs font-mono font-bold text-zinc-900 dark:text-white uppercase">
                   <RefreshCw className="w-4 h-4 text-emerald-500" />
-                  VEKTÖR RE-INDEX
+                  VECTOR RE-INDEX
                 </span>
                 <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
                   SPRING AI
                 </span>
               </div>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed">
-                Tüm veritabanı makalelerinin 128 boyutlu gömme vektörlerini pgvector HNSW dizinine baştan çıkarır.
+                Re-generates 128-dimensional embedding vectors for all database articles into the pgvector HNSW index.
               </p>
             </div>
 
@@ -245,12 +245,12 @@ export const AdminBatchStudio: React.FC = () => {
               {isLoadingReindex ? (
                 <>
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>İNDEKSLENİYOR...</span>
+                  <span>INDEXING...</span>
                 </>
               ) : (
                 <>
                   <RefreshCw className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>TÜM VEKTÖRLERİ YENİLE</span>
+                  <span>REFRESH ALL VECTORS</span>
                 </>
               )}
             </button>
@@ -263,23 +263,23 @@ export const AdminBatchStudio: React.FC = () => {
             <div className="flex items-center gap-2">
               <Archive className="w-4 h-4 text-zinc-500" />
               <h3 className="text-sm font-bold text-zinc-900 dark:text-white font-mono uppercase">
-                SOFT-DELETE ARŞİVİ &bull; KURTARILABİLİR MAKALELER ({deletedBlogs.length})
+                SOFT-DELETE ARCHIVE &bull; RECOVERABLE ARTICLES ({deletedBlogs.length})
               </h3>
             </div>
             <span className="text-[11px] font-mono text-zinc-500">
-              RETENTION: 30 GÜN &bull; GÜVENLİ GERİ ALMA
+              RETENTION: 30 DAYS &bull; SAFE RESTORATION
             </span>
           </div>
 
           {isLoadingDeleted ? (
             <div className="py-8 text-center text-zinc-400">
               <Loader2 className="w-6 h-6 animate-spin mx-auto text-amber-500" />
-              <p className="text-xs font-mono mt-2">Arşiv taranıyor...</p>
+              <p className="text-xs font-mono mt-2">Scanning archive...</p>
             </div>
           ) : deletedBlogs.length === 0 ? (
             <div className="py-8 text-center text-zinc-500 text-xs font-mono">
               <CheckCircle2 className="w-6 h-6 text-emerald-500 mx-auto mb-1.5" />
-              <span>Soft-Delete çöp kutusu boş. Silinmiş makale bulunmuyor.</span>
+              <span>Soft-Delete archive is empty. No deleted articles found.</span>
             </div>
           ) : (
             <div className="overflow-x-auto border border-zinc-200 dark:border-zinc-800 rounded-lg">
@@ -287,10 +287,10 @@ export const AdminBatchStudio: React.FC = () => {
                 <thead>
                   <tr>
                     <th style={{ width: '60px' }}>ID</th>
-                    <th>BAŞLIK &amp; KAPSAM</th>
-                    <th>YAZAR</th>
-                    <th>SİLİNME TARİHİ</th>
-                    <th style={{ width: '120px' }}>EYLEM</th>
+                    <th>TITLE &amp; SCOPE</th>
+                    <th>AUTHOR</th>
+                    <th>DELETION DATE</th>
+                    <th style={{ width: '120px' }}>ACTION</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -301,9 +301,9 @@ export const AdminBatchStudio: React.FC = () => {
                         <div className="font-bold text-zinc-900 dark:text-white">{b.title}</div>
                         <div className="text-[10px] text-zinc-500">{b.header}</div>
                       </td>
-                      <td className="font-mono">{b.author || 'Mühendis'}</td>
+                      <td className="font-mono">{b.author || 'Engineer'}</td>
                       <td className="font-mono text-zinc-500 text-[10px]">
-                        {b.publishedAt ? new Date(b.publishedAt).toLocaleDateString('tr-TR') : '-'}
+                        {b.publishedAt ? new Date(b.publishedAt).toLocaleDateString('en-US') : '-'}
                       </td>
                       <td>
                         <button
@@ -312,7 +312,7 @@ export const AdminBatchStudio: React.FC = () => {
                           className="ios6-btn ios6-btn-silver px-2.5 py-1 text-[11px] font-bold flex items-center gap-1"
                         >
                           <Undo2 className="w-3 h-3 text-emerald-600" />
-                          <span>Geri Yükle</span>
+                          <span>Restore</span>
                         </button>
                       </td>
                     </tr>

@@ -14,7 +14,7 @@ interface MacWindowChromeProps {
 }
 
 export const MacWindowChrome: React.FC<MacWindowChromeProps> = ({
-  title = 'Nova — Dağıtık Sistemler & Yapay Zeka',
+  title = 'Nova — Distributed Systems & AI',
   subtitle = 'Java 22 Loom · Spring AI · pgvector',
   onClose,
   onMinimize,
@@ -51,27 +51,27 @@ export const MacWindowChrome: React.FC<MacWindowChromeProps> = ({
     <div className={`mac-titlebar flex items-center justify-between px-3 md:px-4 ${className}`}>
       {/* 1. Left: Classic Glossy Traffic Lights (🔴 🟡 🟢) */}
       <div className="flex items-center gap-2">
-        <div className="mac-traffic-lights" title="Mac OS X Pencere Yönetimi">
+        <div className="mac-traffic-lights" title="Mac OS X Window Management">
           <button
             type="button"
             onClick={handleClose}
             className="mac-traffic-dot mac-traffic-close focus:outline-none"
-            title="Kapat (Close)"
-            aria-label="Kapat"
+            title="Close"
+            aria-label="Close"
           />
           <button
             type="button"
             onClick={handleMinimize}
             className="mac-traffic-dot mac-traffic-min focus:outline-none"
-            title="Simge Durumuna Küçült (Minimize)"
-            aria-label="Küçült"
+            title="Minimize"
+            aria-label="Minimize"
           />
           <button
             type="button"
             onClick={handleMaximize}
             className="mac-traffic-dot mac-traffic-max focus:outline-none"
-            title="Ekranı Kapla / Büyüt (Zoom)"
-            aria-label="Büyüt"
+            title="Zoom"
+            aria-label="Zoom"
           />
         </div>
 

@@ -208,19 +208,19 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
     (currentBlog.authorUsername === 'selindemir'
       ? 'Dr. Selin Demir'
       : currentBlog.authorUsername === 'caneraydin'
-      ? 'Caner Aydın'
-      : 'Abdullah Berke Özder');
+      ? 'Caner Aydin'
+      : 'Abdullah Berke Ozder');
   const authorInitial = authorDisplayName.charAt(0).toUpperCase();
   const authorAvatarUrl = currentBlog.authorImageUrl;
   const isAuthorFollowed = followedAuthors.includes(authorUsername) || followedAuthors.includes(authorDisplayName);
 
   const formattedDate = currentBlog.publishedAt || currentBlog.createdDate
-    ? new Date(currentBlog.publishedAt || currentBlog.createdDate!).toLocaleDateString('tr-TR', {
+    ? new Date(currentBlog.publishedAt || currentBlog.createdDate!).toLocaleDateString('en-US', {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
       })
-    : '5 Kasım 2026';
+    : 'Nov 5, 2026';
 
   const liveViews = currentBlog.viewsCount ?? currentBlog.views ?? 0;
 
@@ -309,7 +309,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
         blogId,
         dto: {
           content: newComment,
-          authorName: authorNameInput.trim() || 'Ziyaretçi Mühendis',
+          authorName: authorNameInput.trim() || 'Guest Engineer',
         },
       },
       {
@@ -319,7 +319,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
           setCommentErrorMessage(null);
         },
         onError: () => {
-          setCommentErrorMessage('Yorum kaydedilemedi. Lütfen bağlantınızı kontrol edip tekrar deneyin.');
+          setCommentErrorMessage('Failed to save comment. Please check your connection and try again.');
           setTimeout(() => setCommentErrorMessage(null), 5000);
         },
       }
@@ -441,9 +441,9 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
               onClose();
             }}
             className="ios-back-chevron mr-1"
-            title="Okuyucudan Çık ve Geri Dön"
+            title="Exit Reader"
           >
-            <span>&lt; Geri</span>
+            <span>&lt; Back</span>
           </button>
 
           {/* Typography 'aA' Font Scaler */}
@@ -451,8 +451,8 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
             type="button"
             onClick={cycleFontSize}
             className="safari-hud-btn"
-            title={`Yazı Boyutunu Değiştir (Şu an: ${
-              readerFontSize === 'normal' ? 'Standart' : readerFontSize === 'large' ? 'Büyük' : 'Çok Büyük'
+            title={`Adjust Font Size (Current: ${
+              readerFontSize === 'normal' ? 'Standard' : readerFontSize === 'large' ? 'Large' : 'Extra Large'
             })`}
           >
             <Type className="w-3.5 h-3.5" />
@@ -470,10 +470,10 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                 setIsTocOpen(!isTocOpen);
               }}
               className={`safari-hud-btn ${isTocOpen ? 'bg-white/20' : ''}`}
-              title="İçindekiler Tablosu"
+              title="Table of Contents"
             >
               <ListTree className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">İçindekiler</span>
+              <span className="hidden sm:inline">Contents</span>
               {isTocOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             </button>
           )}
@@ -483,10 +483,10 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
             type="button"
             onClick={handlePrint}
             className="safari-hud-btn hidden md:inline-flex"
-            title="Makaleyi Yazdır (Print to PDF)"
+            title="Print Article (Print to PDF)"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>Yazdır</span>
+            <span>Print</span>
           </button>
 
           {/* Share Article */}
@@ -494,10 +494,10 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
             type="button"
             onClick={handleShareLink}
             className="safari-hud-btn"
-            title="Bağlantıyı Kopyala"
+            title="Copy Link"
           >
             {isCopiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{isCopiedLink ? 'Kopyalandı' : 'Paylaş'}</span>
+            <span className="hidden sm:inline">{isCopiedLink ? 'Copied' : 'Share'}</span>
           </button>
 
           {/* Open in Standalone Post Route */}
@@ -505,7 +505,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
             href={`/post/${blogId}`}
             onClick={() => playKeyClick()}
             className="safari-hud-btn hidden sm:inline-flex"
-            title="Müstakil URL ile Aç (/post/[id])"
+            title="Open in Dedicated URL (/post/[id])"
           >
             <ExternalLink className="w-3.5 h-3.5" />
           </Link>
@@ -530,7 +530,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
         <div className="fixed top-18 z-50 max-w-lg w-full px-4 animate-in fade-in duration-200">
           <div className="p-4 rounded-xl bg-zinc-900/95 border border-zinc-700 shadow-2xl text-xs font-mono space-y-2 text-white">
             <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block">
-              SAFARI İÇİNDEKİLER DİZİNİ
+              SAFARI TABLE OF CONTENTS
             </span>
             <div className="max-h-60 overflow-y-auto space-y-1 scrollbar-thin">
               {tocItems.map((item, idx) => (
@@ -570,15 +570,15 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
           <div className="space-y-4 border-b border-black/10 dark:border-white/10 pb-6 text-center sm:text-left">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-xs font-mono">
               <span className="retro-tag-pill uppercase">
-                {currentBlog.category?.categoryName || 'MÜHENDİSLİK'}
+                {currentBlog.category?.categoryName || 'ENGINEERING'}
               </span>
               <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded text-[11px] font-bold border border-emerald-500/20">
                 <CheckCircle2 className="w-3 h-3" />
-                VEKTÖR İNDEKSİ (128D)
+                VECTOR INDEX (128D)
               </span>
               <span className="flex items-center gap-1 text-zinc-500 text-[11px]">
                 <Eye className="w-3.5 h-3.5" />
-                {liveViews} görüntülenme
+                {liveViews} views
               </span>
             </div>
 
@@ -615,7 +615,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                     {authorDisplayName}
                   </span>
                   <span className="text-[11px] text-zinc-500 font-mono block">
-                    {formattedDate} &bull; {readingTime} dk okuma
+                    {formattedDate} &bull; {readingTime} min read
                   </span>
                 </div>
               </button>
@@ -632,7 +632,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
           {currentBlog.viaSource && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-zinc-100 dark:bg-zinc-800/60 border border-black/10 dark:border-white/10 text-xs font-mono shadow-sm">
               <div className="flex items-center gap-2">
-                <span className="text-zinc-400">KAYNAK ATFI:</span>
+                <span className="text-zinc-400">SOURCE CITATION:</span>
                 <span className="font-bold text-zinc-900 dark:text-zinc-100">{currentBlog.viaSource}</span>
               </div>
               {currentBlog.viaUrl && (
@@ -643,7 +643,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                   onClick={() => playKeyClick()}
                   className="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 hover:underline font-bold"
                 >
-                  <span>Orijinal Yayını Ziyaret Et</span>
+                  <span>Visit Original Publication</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               )}
@@ -655,7 +655,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
             <div className="rounded-xl p-4 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-teal-500/5 border border-blue-400/40 space-y-2 shadow-sm">
               <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">
                 <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                <span>NOVA MÜHENDİSLİK DEĞERLENDİRMESİ</span>
+                <span>NOVA ARCHITECTURE VERDICT</span>
               </div>
               <p className="text-xs sm:text-sm leading-relaxed italic text-zinc-800 dark:text-zinc-200 font-sans">
                 &ldquo;{currentBlog.editorialTake}&rdquo;
@@ -669,7 +669,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
               <div className="flex items-center justify-between font-mono text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wider">
                 <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
                   <Bot className="w-4 h-4" />
-                  SPRING AI // 1 DAKİKALIK YÖNETİCİ ÖZETİ
+                  SPRING AI // 1-MINUTE EXECUTIVE SUMMARY
                 </span>
                 <span className="text-[10px] text-blue-700 dark:text-blue-300 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-400/20">
                   pgvector 128D
@@ -749,10 +749,10 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                 <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-md leading-relaxed font-sans">
                   {currentBlog.authorBio ||
                     (authorUsername === 'selindemir'
-                      ? 'Spring AI, pgvector 128D anlamsal çıkarım motorları ve büyük dil modellerinde RAG optimizasyonu araştırmacısı.'
+                      ? 'Researcher in Spring AI, pgvector 128D semantic inference engines, and RAG optimization across large language models.'
                       : authorUsername === 'caneraydin'
-                      ? 'Cloud-native mimariler, eBPF gözlemlenebilirlik ve sıfır güven güvenlik altyapıları mimarı.'
-                      : 'Java 22 Loom sanal iş parçacıkları, yüksek throughput dağıtık sistemler ve Spring Boot mimarisi.')}
+                      ? 'Cloud-native systems architect specializing in eBPF observability, microkernels, and zero-trust security infrastructures.'
+                      : 'Author of in-depth architecture studies on Java 22 Loom virtual threads, high-throughput distributed systems, and Spring Boot.')}
                 </p>
               </div>
             </div>
@@ -771,24 +771,24 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                 {isAuthorFollowed ? (
                   <>
                     <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>TAKİP EDİLİYOR</span>
+                    <span>FOLLOWING</span>
                   </>
                 ) : (
                   <>
                     <UserPlus className="w-3.5 h-3.5" />
-                    <span>TAKİP ET</span>
+                    <span>FOLLOW</span>
                   </>
                 )}
               </button>
             )}
           </div>
 
-          {/* 3. Masaüstü iMessage Çift Sütunlu Tartışma & Yorum İpliği */}
+          {/* 3. Desktop iMessage Discussion & Comment Thread */}
           <div id="comments-discussion-section" className="pt-8 border-t border-black/10 dark:border-white/10 space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="text-base sm:text-lg font-bold text-zinc-950 dark:text-white flex items-center gap-2 font-mono">
                 <MessageSquare className="w-4 h-4 text-blue-500" />
-                <span>MESAJLAR &amp; TARTIŞMALAR ({comments.length})</span>
+                <span>MESSAGES &amp; DISCUSSIONS ({comments.length})</span>
               </h4>
 
               {/* Glowing Spring AI Verified Safe Seal Badge */}
@@ -804,7 +804,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                 id="comment-author-name"
                 name="authorName"
                 type="text"
-                placeholder="Adınız veya unvanınız (örn. Selin Demir - Platform Architect)"
+                placeholder="Your name or title (e.g. Sarah Connor - Platform Architect)"
                 value={authorNameInput}
                 onChange={(e) => setAuthorNameInput(e.target.value)}
                 className="w-full sm:w-80 px-3 py-2 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-xs font-sans text-zinc-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors shadow-inner"
@@ -813,7 +813,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                 id="comment-content"
                 name="commentContent"
                 rows={3}
-                placeholder="Teknik katkınızı veya sorunuzu yazın... (Spring AI canlı toksisite denetimi devrededir)"
+                placeholder="Add your technical thoughts or questions... (Spring AI live toxicity moderation is active)"
                 value={newComment}
                 onChange={(e) => {
                   setNewComment(e.target.value);
@@ -849,12 +849,12 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                     )}
                     <span>
                       {moderationPreview.toxic
-                        ? 'Spring AI Uyarısı: Sakıncalı içerik tespit edildi.'
-                        : 'Spring AI Analizi: Topluluk kurallarına uygun.'}
+                        ? 'Spring AI Warning: Inappropriate content detected.'
+                        : 'Spring AI Analysis: Conforms to community guidelines.'}
                     </span>
                   </div>
                   <span className="uppercase font-bold text-[10px]">
-                    Duygu: {moderationPreview.sentiment}
+                    Sentiment: {moderationPreview.sentiment}
                   </span>
                 </div>
               )}
@@ -870,7 +870,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                   ) : (
                     <Send className="w-3.5 h-3.5" />
                   )}
-                  <span>Mesaj Gönder</span>
+                  <span>Send Message</span>
                 </button>
               </div>
             </form>
@@ -880,7 +880,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
               {isLoadingComments && (
                 <div className="flex items-center justify-center py-6 text-zinc-400 gap-2 font-mono">
                   <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
-                  <span className="text-xs">Mesajlar yükleniyor...</span>
+                  <span className="text-xs">Loading messages...</span>
                 </div>
               )}
 
@@ -899,10 +899,10 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                     <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500 px-2">
                       <span className="font-bold text-zinc-800 dark:text-zinc-300">{c.authorName}</span>
                       <span>&bull;</span>
-                      <span>{new Date(c.createdAt).toLocaleDateString('tr-TR')}</span>
+                      <span>{new Date(c.createdAt).toLocaleDateString('en-US')}</span>
                       {isApproved && (
                         <span className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400 font-bold text-[10px]">
-                          <CheckCircle2 className="w-3 h-3" /> ONAYLI
+                          <CheckCircle2 className="w-3 h-3" /> VERIFIED
                         </span>
                       )}
                     </div>
@@ -917,7 +917,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                     {/* Admin Moderation Controls */}
                     {blogId && c.id && !c.isOptimistic && (
                       <div className="flex items-center gap-2 pt-0.5 px-2 font-mono text-[10px]">
-                        <span className="text-zinc-400">Moderasyon:</span>
+                        <span className="text-zinc-400">Moderation:</span>
                         {!c.isApproved ? (
                           <button
                             type="button"
@@ -928,7 +928,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                             disabled={approveCommentMutation.isPending}
                             className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline cursor-pointer"
                           >
-                            ✓ Onayla
+                            ✓ Approve
                           </button>
                         ) : (
                           <button
@@ -938,13 +938,13 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
                               flagCommentMutation.mutate({
                                 commentId: c.id,
                                 blogId,
-                                reason: 'Karantina',
+                                reason: 'Quarantine',
                               });
                             }}
                             disabled={flagCommentMutation.isPending}
                             className="text-rose-600 dark:text-rose-400 font-bold hover:underline cursor-pointer"
                           >
-                            ⚠️ Karantinaya Al
+                            ⚠️ Quarantine
                           </button>
                         )}
                       </div>
@@ -964,7 +964,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
               type="button"
               onClick={handleClap}
               className="ios6-btn ios6-btn-blue px-3 py-1.5 text-xs font-bold gap-1.5"
-              title="Alkışla (Medium Clap)"
+              title="Applaud (Medium Clap)"
             >
               <span className="text-sm leading-none">👏</span>
               <span>{clapsCount}</span>
@@ -975,7 +975,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
               type="button"
               onClick={scrollToComments}
               className="ios6-btn ios6-btn-silver px-3 py-1.5 text-xs font-semibold gap-1.5"
-              title="Mesajlara Git"
+              title="Jump to Messages"
             >
               <MessageSquare className="w-3.5 h-3.5 text-blue-600" />
               <span>{comments.length}</span>
@@ -990,15 +990,15 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
               className={`ios6-btn px-3 py-1.5 text-xs font-bold gap-1.5 ${
                 isBookmarked ? 'ios6-btn-silver' : 'ios6-btn-dark'
               }`}
-              title="Safari Okuma Listeme Ekle"
+              title="Add to Safari Reading List"
             >
               <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-400 text-amber-400' : ''}`} />
-              <span className="hidden sm:inline">{isBookmarked ? 'KAYDEDİLDİ' : 'OKUMA LİSTESİ'}</span>
+              <span className="hidden sm:inline">{isBookmarked ? 'SAVED' : 'READING LIST'}</span>
             </button>
 
             {/* Reading stats */}
             <span className="text-zinc-400 text-[11px] hidden md:inline">
-              {readingTime} dk okuma
+              {readingTime} min read
             </span>
           </div>
         </div>

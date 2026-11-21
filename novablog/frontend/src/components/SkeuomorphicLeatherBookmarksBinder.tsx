@@ -13,10 +13,10 @@ interface SkeuomorphicLeatherBookmarksBinderProps {
 }
 
 export const SkeuomorphicLeatherBookmarksBinder: React.FC<SkeuomorphicLeatherBookmarksBinderProps> = ({
-  title = 'Okuma Listeniz Henüz Boş',
-  subtitle = 'Makalelerin üzerindeki yer imi (bookmark) simgesine tıklayarak daha sonra çevrimdışı incelemek istediğiniz teknik yazıları bu arşive ekleyebilirsiniz.',
+  title = 'Your Reading List is Empty',
+  subtitle = 'Click the bookmark icon on any publication to save technical papers to this archive for later review.',
   badgeText = 'MAC OS X SAFARI READING LIST',
-  actionText = 'Makaleleri Keşfet',
+  actionText = 'Explore Articles',
   onAction,
 }) => {
   const handleAction = () => {
@@ -27,7 +27,7 @@ export const SkeuomorphicLeatherBookmarksBinder: React.FC<SkeuomorphicLeatherBoo
   return (
     <div className="relative retro-leather-binder p-8 sm:p-12 my-6 text-center max-w-3xl mx-auto">
       {/* Hanging Crimson Silk Ribbon Bookmark */}
-      <div className="silk-ribbon-bookmark" title="Safari Okuma Listesi Ayracı" />
+      <div className="silk-ribbon-bookmark" title="Safari Reading List Bookmark" />
 
       {/* Decorative Brass Stitched Badge */}
       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/60 border border-amber-600/40 text-amber-300 text-[10px] font-mono font-bold tracking-widest uppercase mb-4 shadow-inner">

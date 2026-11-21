@@ -42,15 +42,15 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
 
   // Window states
   const [windows, setWindows] = useState<Record<string, WindowState>>({
-    blog: { id: 'blog', title: 'Nova Blog — Modern Mühendislik & Sistem Mimarisi', isOpen: false, zIndex: 10 },
-    news: { id: 'news', title: 'Sherlock 2 — Nova Haberler & Flaş Gelişmeler', isOpen: false, zIndex: 10 },
+    blog: { id: 'blog', title: 'Nova Blog — Modern Engineering & System Architecture', isOpen: false, zIndex: 10 },
+    news: { id: 'news', title: 'Sherlock 2 — Nova News & Bulletins', isOpen: false, zIndex: 10 },
     browser: { id: 'browser', title: 'Internet Explorer — Web Browser', isOpen: false, zIndex: 10 },
     about: { id: 'about', title: 'Appearance Control Panel', isOpen: false, zIndex: 10 },
     applications: { id: 'applications', title: 'Applications — Mac OS 9.2.2', isOpen: false, zIndex: 10 },
     calculator: { id: 'calculator', title: 'Calculator', isOpen: false, zIndex: 10 },
     stickies: { id: 'stickies', title: 'Stickies', isOpen: false, zIndex: 10 },
     radio: { id: 'radio', title: 'Apple FM Stereo Radio', isOpen: false, zIndex: 10 },
-    trash: { id: 'trash', title: 'Trash (Çöp Sepeti)', isOpen: false, zIndex: 10 },
+    trash: { id: 'trash', title: 'Trash', isOpen: false, zIndex: 10 },
   });
 
   // Load saved wallpaper and theme from localStorage
@@ -157,7 +157,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         />
       )}
 
-      {/* ================= 2. 20PX ÜST SABİT APPLE MENÜ ÇUBUĞU ================= */}
+      {/* ================= 2. 20PX TOP FIXED APPLE MENU BAR ================= */}
       <MacOs9MenuBar
         onOpenBlog={() => openWindow('blog')}
         onOpenNews={() => openWindow('news')}
@@ -175,7 +175,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         activeAppTitle={activeWindowId ? windows[activeWindowId]?.title.split('—')[0].trim() : 'Finder'}
       />
 
-      {/* ================= 3. SAKİN VE ZARİF NOVA UI LOGO AMBLEMİ (G4 CUBE LUCITE SUITE) ================= */}
+      {/* ================= 3. ELEGANT NOVA UI LOGO EMBLEM (G4 CUBE LUCITE SUITE) ================= */}
       {!isBooting && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[1] animate-fade-in">
           <NovaEmblemWatermark
@@ -187,9 +187,9 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         </div>
       )}
 
-      {/* ================= 4. SAĞ MASAÜSTÜ İKONLARI (FIGMA KİT SAĞ HİZALAMA) ================= */}
+      {/* ================= 4. DESKTOP ICONS (FIGMA KIT RIGHT-ALIGNED) ================= */}
       <div className="absolute top-[32px] right-4 flex flex-col gap-5 z-10">
-        {/* 1. Macintosh HD (Açar: Applications) */}
+        {/* 1. Macintosh HD (Opens: Applications) */}
         <DesktopIcon
           id="harddrive"
           type="harddrive"
@@ -199,7 +199,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           onOpen={() => openWindow('applications')}
         />
 
-        {/* 2. Applications Klasörü (Figma 71:116881) */}
+        {/* 2. Applications Folder (Figma 71:116881) */}
         <DesktopIcon
           id="applications"
           type="applications"
@@ -209,7 +209,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           onOpen={() => openWindow('applications')}
         />
 
-        {/* 3. Browse the Internet (Açar: Internet Explorer / Google Web) */}
+        {/* 3. Browse the Internet (Opens: Internet Explorer / Google Web) */}
         <DesktopIcon
           id="browser"
           type="internet"
@@ -219,7 +219,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           onOpen={() => openWindow('browser')}
         />
 
-        {/* 4. 📰 News İkonu (Açar: Sherlock 2 Haber Bülteni) */}
+        {/* 4. News Icon (Opens: Sherlock 2 News Bulletin) */}
         <DesktopIcon
           id="news"
           type="news"
@@ -230,7 +230,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         />
       </div>
 
-      {/* Sağ Alt Köşe: Çöp Sepeti */}
+      {/* Bottom Right Corner: Trash */}
       <div className="absolute bottom-4 right-4 z-10">
         <DesktopIcon
           id="trash"
@@ -245,7 +245,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         />
       </div>
 
-      {/* ================= 6. GERİ ÇEKİLEBİLİR CONTROL STRIP (FIGMA BUILDING BLOCK) ================= */}
+      {/* ================= 6. RETRACTABLE CONTROL STRIP (FIGMA BUILDING BLOCK) ================= */}
       <MacOs9ControlStrip
         currentWallpaper={currentWallpaper}
         onSelectWallpaper={handleSelectWallpaper}
@@ -254,10 +254,10 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
       />
 
       {/* =========================================================================
-          PENCERELER (Windows)
+          WINDOWS
           ========================================================================= */}
 
-      {/* 1. Applications Klasörü Penceresi (Figma UI Kit Uygulama Paketi) */}
+      {/* 1. Applications Folder Window (Figma UI Kit Application Suite) */}
       <MacOs9Window
         id="applications"
         title="Applications — Mac OS 9.2.2"
@@ -281,7 +281,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         />
       </MacOs9Window>
 
-      {/* 2. Web Browser / Internet Explorer (Google ve Canlı Web Arama) */}
+      {/* 2. Web Browser / Internet Explorer (Google and Live Web Search) */}
       <MacOs9Window
         id="browser"
         title="Internet Explorer — Web Browser"
@@ -302,7 +302,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         />
       </MacOs9Window>
 
-      {/* 2. Calculator (Hesap Makinesi Uygulaması) */}
+      {/* 3. Calculator (Calculator Application) */}
       <MacOs9Window
         id="calculator"
         title="Calculator"
@@ -317,7 +317,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         <MacCalculator />
       </MacOs9Window>
 
-      {/* 3. Stickies (Yapışkan Not Uygulaması) */}
+      {/* 4. Stickies (Sticky Notes Application) */}
       <MacOs9Window
         id="stickies"
         title="Stickies"
@@ -332,7 +332,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         <MacStickies />
       </MacOs9Window>
 
-      {/* 4. Apple FM Radio (Stereo Radyo Uygulaması) */}
+      {/* 5. Apple FM Radio (Stereo Radio Application) */}
       <MacOs9Window
         id="radio"
         title="Apple FM Stereo Radio"
@@ -347,10 +347,10 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         <MacFmRadio />
       </MacOs9Window>
 
-      {/* 5. Blog İnternet Sayfası Penceresi */}
+      {/* 5. Blog Web Window */}
       <MacOs9Window
         id="blog"
-        title="Nova Blog — Modern Mühendislik & Sistem Mimarisi"
+        title="Nova Blog — Modern Engineering & System Architecture"
         isOpen={windows.blog.isOpen}
         onClose={() => closeWindow('blog')}
         zIndex={windows.blog.zIndex}
@@ -368,17 +368,17 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
             blogContent
           ) : (
             <div className="p-8 text-center text-gray-700">
-              <h2 className="text-xl font-bold font-['Charcoal',sans-serif] mb-2">Nova Blog İnternet Sayfası</h2>
-              <p className="text-sm">Makaleler ve blog içeriği burada yüklenecektir.</p>
+              <h2 className="text-xl font-bold font-['Charcoal',sans-serif] mb-2">Nova Blog Web Portal</h2>
+              <p className="text-sm">Articles and engineering publications will load here.</p>
             </div>
           )}
         </div>
       </MacOs9Window>
 
-      {/* 6. News İnternet Sayfası Penceresi (Sherlock 2 Motoru) */}
+      {/* 6. News Window (Sherlock 2 Engine) */}
       <MacOs9Window
         id="news"
-        title="Sherlock 2 — Nova Haberler & Flaş Gelişmeler"
+        title="Sherlock 2 — Nova News & Bulletins"
         isOpen={windows.news.isOpen}
         onClose={() => closeWindow('news')}
         zIndex={windows.news.zIndex}
@@ -398,10 +398,10 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         />
       </MacOs9Window>
 
-      {/* 7. Görünüm & Sistem Bilgisi (Appearance Control Panel) */}
+      {/* 7. Appearance & System Settings (Appearance Control Panel) */}
       <MacOs9Window
         id="about"
-        title="Görünüm & Sistem Bilgisi (Appearance Control Panel)"
+        title="Appearance Control Panel"
         isOpen={windows.about.isOpen}
         onClose={() => closeWindow('about')}
         zIndex={windows.about.zIndex}
@@ -417,7 +417,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         />
       </MacOs9Window>
 
-      {/* 8. Çöp Kutusu Diyaloğu */}
+      {/* 8. Trash Dialog */}
       <MacOs9Window
         id="trash"
         title="Trash"
@@ -433,10 +433,10 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           <div className="flex flex-col items-center justify-center my-auto">
             <span className="text-3xl mb-2">🗑️</span>
             <p className="text-sm font-bold text-[#262626]">
-              Çöp Sepeti Boş
+              The Trash is empty.
             </p>
             <p className="text-[11px] text-[#555] mt-1">
-              Silinecek veya çöpe atılacak dosya bulunmuyor.
+              There are no deleted files or items in Trash.
             </p>
           </div>
           <div className="flex justify-center pt-2 border-t border-[#808080]">
@@ -444,7 +444,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
               onClick={() => closeWindow('trash')}
               className="mac9-btn px-6 py-1"
             >
-              Tamam
+              OK
             </button>
           </div>
         </div>

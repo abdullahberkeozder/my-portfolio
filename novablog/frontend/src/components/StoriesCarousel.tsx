@@ -22,10 +22,10 @@ const STORIES: StoryItem[] = [
   {
     id: 'time-inventions',
     badgeType: 'time',
-    category: '01 // EŞZAMANLILIK & LOOM',
-    title: 'Java 22 Loom: 10.000 Eşzamanlı İstekte Sıfır Sunucu Darboğazı',
-    subtitle: 'Java 22 Project Loom & Yüksek Eşzamanlılık Atılımı',
-    description: 'Tomcat iş parçacığı havuzu tükenmelerine son: 10.000 hafif sanal thread ile her isteğe anında kaynak tahsis eden kesintisiz dağıtık mimari.',
+    category: '01 // CONCURRENCY & LOOM',
+    title: 'Java 22 Loom: Zero Server Contention Under 10,000 Concurrent Requests',
+    subtitle: 'Java 22 Project Loom & High-Concurrency Breakthrough',
+    description: 'Eliminating Tomcat OS thread pool starvation: 10,000 lightweight virtual threads allocate resources per request with sub-millisecond dispatch.',
     keyBenefit: '~1KB RAM / Thread',
     image: '/images/architecture-cutaway.jpg',
     actionModule: 'loom',
@@ -33,11 +33,11 @@ const STORIES: StoryItem[] = [
   {
     id: 'fast-company',
     badgeType: 'fast-company',
-    category: '02 // YAPAY ZEKA & VEKTÖR',
-    title: 'Spring AI: Kelimelerin Ötesinde Derin Anlamsal Arama',
-    subtitle: 'Yapay Zeka Destekli Anlamsal Arama ve Akıllı Sıralama',
-    description: 'Yapay zeka vektör eşleştirmesiyle kullanıcının niyetini kavrayan, yazım hatası olsa dahi doğru makaleyi milisaniyeler içinde bulan bilişsel arama motoru.',
-    keyBenefit: '%94.2 Doğruluk',
+    category: '02 // AI & VECTOR EMBEDDINGS',
+    title: 'Spring AI: Deep Semantic Search Beyond Exact Keywords',
+    subtitle: 'AI-Powered Semantic Retrieval & Intelligent Hybrid Ranking',
+    description: 'Cognitive search engine that understands user intent through high-dimensional vector embeddings, surfacing relevant articles even with typos.',
+    keyBenefit: '94.2% Recall Accuracy',
     image: '/images/lifestyle-hero.jpg',
     customVisual: 'geometric',
     actionModule: 'spring-ai',
@@ -45,22 +45,22 @@ const STORIES: StoryItem[] = [
   {
     id: 'red-dot-award',
     badgeType: 'red-dot',
-    category: '03 // ÖNBELLEK & HIGH-IOPS',
-    title: 'Redis Tamponu: Veritabanı Kilidi Olmadan Milyonluk Trafik',
-    subtitle: 'Veritabanı Kilitlemesi Olmadan Milyonlarca Sayaç Yönetimi',
-    description: 'Her beğeni ve görüntülenmede satır kilitleme çekişmesini önleyen, sayaçları bellekte O(1) hızla toplayıp 30 saniyede bir diske yazan tampon mimarisi.',
-    keyBenefit: '%98 Disk Tasarrufu',
+    category: '03 // CACHE & HIGH-IOPS',
+    title: 'Redis Buffer: Handling Millions of Visits Without Row Locking',
+    subtitle: 'Lock-Free High-Volume Metrics Aggregation',
+    description: 'Eliminating row contention on claps and views: counters aggregate in memory at O(1) velocity and flush to PostgreSQL in 30-second batches.',
+    keyBenefit: '98% Disk I/O Savings',
     image: '/images/terminal-hardware.jpg',
     actionModule: 'write-behind',
   },
   {
     id: 'series-d-finance',
     badgeType: 'series-d',
-    category: '04 // KURUMSAL GÜVENLİK',
-    title: 'Sıfır Güven (Zero-Trust) & 2FA: 201 Testle Doğrulanmış Mimari',
-    subtitle: 'İki Faktörlü Doğrulama (2FA) ve Kurumsal Güvenlik Protokolü',
-    description: '201 birim ve entegrasyon testiyle %100 doğrulanmış, geçici Pre-Auth token durum makinesi ve veri çakışmalarını önleyen iyimser kilitleme altyapısı.',
-    keyBenefit: '201/201 Test Geçti',
+    category: '04 // ENTERPRISE SECURITY',
+    title: 'Zero-Trust & 2FA: Architecture Verified with 201 Tests',
+    subtitle: 'Two-Factor Authentication (2FA) & Enterprise Security Protocols',
+    description: '100% verified with 201 unit and integration tests, featuring transient Pre-Auth JWT state machines and optimistic locking concurrency guards.',
+    keyBenefit: '201/201 Tests Passed',
     image: '/images/hardware-core.jpg',
     customVisual: 'sky-brand',
     actionModule: 'optimistic-locking',
@@ -147,7 +147,7 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
               SYSTEM EDITORIAL // ARCHITECTURAL BREAKTHROUGHS
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
-              <span>MİMARÎ HİKAYELER</span>
+              <span>ARCHITECTURAL STORIES</span>
               <span className="text-[#bef264] font-mono font-bold text-xl sm:text-2xl">{'//'} BREAKTHROUGHS</span>
             </h2>
           </div>
@@ -157,16 +157,16 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
             <button
               onClick={() => scroll('left')}
               className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/10 flex items-center justify-center text-white transition-all cursor-pointer hover:scale-105 active:scale-95 btn-tactile shadow-md"
-              title="Önceki Hikayeler"
-              aria-label="Önceki Hikayeler"
+              title="Previous Stories"
+              aria-label="Previous Stories"
             >
               <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
             </button>
             <button
               onClick={() => scroll('right')}
               className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/10 flex items-center justify-center text-white transition-all cursor-pointer hover:scale-105 active:scale-95 btn-tactile shadow-md"
-              title="Sonraki Hikayeler"
-              aria-label="Sonraki Hikayeler"
+              title="Next Stories"
+              aria-label="Next Stories"
             >
               <ArrowRight className="w-4 h-4 stroke-[2.5]" />
             </button>
@@ -283,7 +283,7 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
                 </p>
               </div>
 
-              {/* Black Pill Button: [MİMARİYİ İNCELE] */}
+              {/* Black Pill Button: [EXPLORE ARCHITECTURE] */}
               <div className="pt-4 flex items-center justify-between border-t border-black/[0.06]">
                 <button
                   type="button"
@@ -293,10 +293,10 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
                   }}
                   className="px-4 py-2 rounded-full bg-black text-white hover:bg-neutral-800 text-[11px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer btn-tactile shadow-sm active:scale-95 flex items-center gap-1.5"
                 >
-                  <span>MİMARİYİ İNCELE</span>
+                  <span>EXPLORE ARCHITECTURE</span>
                   <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                 </button>
-                <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase">MİMARİ RAPOR</span>
+                <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase">ARCHITECTURE REPORT</span>
               </div>
             </div>
           ))}
@@ -311,7 +311,7 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <span className="px-3 py-1 rounded-full bg-black text-white dark:bg-white dark:text-black text-[10px] font-mono font-bold uppercase tracking-wider">
-                  MİMARÎ RAPOR // 2026
+                  ARCHITECTURE REPORT // 2026
                 </span>
                 <h3 className="text-xl sm:text-2xl font-black tracking-tight leading-snug">
                   {selectedStory.title}
@@ -324,7 +324,7 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
               <button
                 onClick={() => setSelectedStory(null)}
                 className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 flex items-center justify-center transition-colors cursor-pointer"
-                title="Kapat"
+                title="Close"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -346,13 +346,13 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
               <div className="p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-black/5 dark:border-white/5 space-y-2 text-xs font-mono">
                 <div className="flex items-center gap-2 font-bold text-zinc-900 dark:text-white">
                   <CheckCircle className="w-4 h-4 text-emerald-500" />
-                  <span>DOĞRULANMIŞ MİMARİ KRİTERLER:</span>
+                  <span>VERIFIED ARCHITECTURAL CRITERIA:</span>
                 </div>
                 <ul className="space-y-1 text-zinc-500 dark:text-zinc-400 pl-6 list-disc">
-                  <li>201/201 otomatik birim ve entegrasyon testi doğrulaması</li>
-                  <li>Saniyede 12.400 sayaç işleminde sıfır satır kilitleme</li>
-                  <li>RFC 7807 problem ayrıntıları ile hata şeffaflığı</li>
-                  <li>2FA TOTP ve geçici Pre-Auth token durum makinesi koruması</li>
+                  <li>201/201 automated unit and integration tests pass</li>
+                  <li>Zero row locking at 12,400 counter ops/sec</li>
+                  <li>RFC 7807 problem details error transparency</li>
+                  <li>2FA TOTP & transient Pre-Auth state machine guards</li>
                 </ul>
               </div>
             </div>
@@ -367,20 +367,20 @@ export const StoriesCarousel: React.FC<StoriesCarouselProps> = ({
                   }}
                   className="px-4 py-2.5 rounded-full text-xs font-mono font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 uppercase transition-colors"
                 >
-                  TELEMETRİ PANELİ
+                  TELEMETRY PANEL
                 </button>
               )}
               <button
                 onClick={() => setSelectedStory(null)}
                 className="px-5 py-2.5 rounded-full text-xs font-mono font-bold text-zinc-600 hover:text-black dark:text-zinc-400 dark:hover:text-white uppercase transition-colors"
               >
-                KAPAT
+                CLOSE
               </button>
               <button
                 onClick={() => handleLaunchModule(selectedStory)}
                 className="px-6 py-2.5 rounded-full bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer shadow-md flex items-center gap-1.5"
               >
-                <span>MİMARİYİ CANLI DENE</span>
+                <span>TEST ARCHITECTURE LIVE</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </button>
             </div>

@@ -69,7 +69,7 @@ export const MacOs9ControlStrip: React.FC<MacOs9ControlStripProps> = ({
         {/* Retractable Grip Handle (:::◀ / :::▶) */}
         <button
           onClick={handleToggleTab}
-          title={isCollapsed ? 'Control Strip’i Genişlet' : 'Control Strip’i Daralt'}
+          title={isCollapsed ? 'Expand Control Strip' : 'Collapse Control Strip'}
           className="h-[26px] px-1.5 mac9-control-strip flex items-center justify-center border border-[#262626] rounded-tl rounded-bl hover:bg-[#CCCCCC] cursor-pointer shadow-md"
         >
           <span className="font-mono text-[9px] tracking-tighter text-[#444]">
@@ -81,29 +81,29 @@ export const MacOs9ControlStrip: React.FC<MacOs9ControlStripProps> = ({
         {!isCollapsed && (
           <div className="h-[26px] mac9-control-strip flex items-center border-t border-b border-r border-[#262626] rounded-tr shadow-md">
             
-            {/* 1. Ses Modülü (Volume Control) */}
+            {/* 1. Volume Control Module */}
             <div className="relative h-full flex items-center">
               <button
                 onClick={() => toggleModule('sound')}
                 className={`h-full px-2.5 flex items-center gap-1 mac9-control-strip-btn hover:bg-[#E0E0E0] ${
                   activeModule === 'sound' ? 'bg-[#333399] text-white' : ''
                 }`}
-                title="Ses Düzeyi & Mute"
+                title="Master Volume & Mute"
               >
                 <span>{isMuted || volume === 0 ? '🔇' : '🔊'}</span>
                 <span className="font-mono text-[10px]">{volume}</span>
               </button>
 
-              {/* Ses Popover */}
+              {/* Volume Popover */}
               {activeModule === 'sound' && (
                 <div className="absolute bottom-[28px] left-0 w-44 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_8px_rgba(0,0,0,0.35)] p-2 z-50 rounded-[2px]">
                   <div className="flex items-center justify-between font-bold mb-1.5 pb-1 border-b border-[#999]">
-                    <span>Hoparlör Düzeyi</span>
+                    <span>Speaker Volume</span>
                     <button
                       onClick={handleToggleMute}
                       className="text-[10px] mac9-btn px-1.5 py-0.5"
                     >
-                      {isMuted ? 'Aç' : 'Mute'}
+                      {isMuted ? 'Unmute' : 'Mute'}
                     </button>
                   </div>
                   <div className="flex items-center gap-1 justify-between py-1">
@@ -125,24 +125,24 @@ export const MacOs9ControlStrip: React.FC<MacOs9ControlStripProps> = ({
               )}
             </div>
 
-            {/* 2. Ekran / Duvar Kağıdı Modülü (Display / Wallpaper) */}
+            {/* 2. Display / Wallpaper Module */}
             <div className="relative h-full flex items-center">
               <button
                 onClick={() => toggleModule('display')}
                 className={`h-full px-2.5 flex items-center gap-1 mac9-control-strip-btn hover:bg-[#E0E0E0] ${
                   activeModule === 'display' ? 'bg-[#333399] text-white' : ''
                 }`}
-                title="Masaüstü Deseni / Wallpaper"
+                title="Desktop Pattern / Wallpaper"
               >
                 <span>🖥️</span>
-                <span className="hidden sm:inline text-[10px]">Desen</span>
+                <span className="hidden sm:inline text-[10px]">Pattern</span>
               </button>
 
               {/* Wallpaper Quick Switcher Popover */}
               {activeModule === 'display' && (
                 <div className="absolute bottom-[28px] left-0 w-52 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_8px_rgba(0,0,0,0.35)] p-2 z-50 rounded-[2px] space-y-1">
                   <div className="font-bold pb-1 border-b border-[#999] mb-1">
-                    Masaüstü Deseni
+                    Desktop Pattern
                   </div>
                   {[
                     { id: 'quantum-foam' as WallpaperTheme, name: 'Quantum Foam', thumb: 'quantum-foam.png' },
@@ -187,55 +187,55 @@ export const MacOs9ControlStrip: React.FC<MacOs9ControlStripProps> = ({
                       }}
                       className="w-full text-left px-2 py-0.5 text-[10px] text-blue-800 hover:underline font-bold"
                     >
-                      Tüm Görünüm Ayarları...
+                      All Appearance Settings...
                     </button>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* 3. Nova Mimarisi Durum Modülü (Telemetry) */}
+            {/* 3. Nova Architecture Status Module (Telemetry) */}
             <div className="relative h-full flex items-center">
               <button
                 onClick={() => toggleModule('status')}
                 className={`h-full px-2.5 flex items-center gap-1 mac9-control-strip-btn hover:bg-[#E0E0E0] ${
                   activeModule === 'status' ? 'bg-[#333399] text-white' : ''
                 }`}
-                title="Sistem Telemetrisi"
+                title="System Telemetry"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse inline-block" />
                 <span className="hidden sm:inline font-mono text-[10px]">11.4K rps</span>
               </button>
 
-              {/* Telemetri Popover */}
+              {/* Telemetry Popover */}
               {activeModule === 'status' && (
                 <div className="absolute bottom-[28px] left-0 w-56 bg-[#DDDDDD] border border-[#262626] shadow-[2px_2px_8px_rgba(0,0,0,0.35)] p-2 z-50 rounded-[2px] space-y-1.5">
                   <div className="font-bold pb-1 border-b border-[#999]">
-                    Nova Çekirdek Telemetrisi
+                    Nova Core Telemetry
                   </div>
                   <div className="mac9-inset-box p-1.5 text-[10px] font-mono space-y-1 bg-white">
                     <div className="flex justify-between">
                       <span className="text-[#666]">Loom V-Threads:</span>
-                      <span className="text-emerald-700 font-bold">10,000 Aktif</span>
+                      <span className="text-emerald-700 font-bold">10,000 Active</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-[#666]">PostgreSQL 16:</span>
                       <span className="text-emerald-700 font-bold">pgvector 128D</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#666]">Kapasite:</span>
-                      <span className="font-bold">11,400+ İstek/sn</span>
+                      <span className="text-[#666]">Capacity:</span>
+                      <span className="font-bold">11,400+ Req/sec</span>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* 4. Hızlı Başlatıcılar (Blog, News, Görünüm) */}
+            {/* 4. Quick Launchers (Blog, News) */}
             <button
               onClick={() => onOpenWindow('blog')}
               className="h-full px-2 mac9-control-strip-btn hover:bg-[#E0E0E0] text-[11px]"
-              title="Blog Penceresini Aç"
+              title="Open Blog Window"
             >
               🌐 Blog
             </button>
@@ -243,19 +243,19 @@ export const MacOs9ControlStrip: React.FC<MacOs9ControlStripProps> = ({
             <button
               onClick={() => onOpenWindow('news')}
               className="h-full px-2 mac9-control-strip-btn hover:bg-[#E0E0E0] text-[11px]"
-              title="Haberler Penceresini Aç"
+              title="Open News Window"
             >
               📰 News
             </button>
 
-            {/* 5. Yeniden Başlat (Restart) */}
+            {/* 5. Reboot System */}
             <button
               onClick={() => {
                 macSound.playMacClickDown();
                 onRestart();
               }}
               className="h-full px-2 mac9-control-strip-btn hover:bg-[#E0E0E0] text-[11px]"
-              title="Sistemi Yeniden Başlat (Reboot Mac OS 9)"
+              title="Restart System (Reboot Mac OS 9)"
             >
               🔄 Reboot
             </button>

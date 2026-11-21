@@ -99,18 +99,18 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
       ref={barRef}
       className="fixed top-0 left-0 right-0 h-[20px] bg-[#DDDDDD] border-b border-[#262626] z-[9999] flex items-center justify-between px-2 select-none shadow-[inset_0_1px_0_#FFFFFF,0_1px_2px_rgba(0,0,0,0.15)] font-['Charcoal',sans-serif] text-[12px] text-[#262626]"
     >
-      {/* Sol Menü Grubu (Apple, File, Edit, View, Special, Help) */}
+      {/* Left Menu Group (Apple, File, Edit, View, Special, Help) */}
       <div className="flex items-center gap-0.5 h-full">
-        {/* ================= 1. APPLE  MENÜSÜ (FIGMA IMAGE 1) ================= */}
+        {/* ================= 1. APPLE  MENU (FIGMA IMAGE 1) ================= */}
         <div className="relative h-full flex items-center">
           <button
             onClick={() => handleMenuClick('apple')}
             onMouseEnter={() => handleMenuHover('apple')}
             className={`px-2 h-full flex items-center justify-center transition-none ${openMenu === 'apple' ? 'bg-[#333399] text-white' : 'hover:bg-[#CCCCCC]'
               }`}
-            title="Apple Menüsü"
+            title="Apple Menu"
           >
-            {/* Gökkuşağı Apple Logosu Vektörü */}
+            {/* Rainbow Apple Logo Vector */}
             <svg className="w-3.5 h-3.5" viewBox="0 0 170 170" fill="currentColor">
               <path
                 d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.69-3.04-7.67-7.85-11.94-14.43-6.53-10.13-11.66-21.65-15.4-34.56-3.74-12.91-5.61-25.14-5.61-36.68 0-14.82 3.69-27.11 11.07-36.87 7.38-9.76 16.59-14.7 27.63-14.82 4.9 0 10.22 1.3 15.97 3.9 5.75 2.61 9.61 3.96 11.59 4.05 1.5.09 5.56-1.29 12.18-4.14 6.62-2.85 12.33-4.11 17.13-3.78 12.42.99 22.42 5.51 30 13.56-10.74 6.5-16.01 15.54-15.82 27.13.18 9.07 3.59 16.73 10.22 22.97 6.63 6.24 14.54 9.87 23.74 10.9-2.42 7.55-5.35 15.11-8.79 22.68zM119.22 31.81c0-7.39 2.68-14.45 8.04-21.18 5.36-6.73 12.12-10.63 20.28-11.71.18 1.03.27 2.06.27 3.09 0 7.39-2.73 14.36-8.19 20.91-5.46 6.55-12.23 10.27-20.31 11.16-.06-.75-.09-1.5-.09-2.27z"
@@ -159,7 +159,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
               {/* Chooser */}
               <button
                 onClick={() => {
-                  alert('Mac OS 9 Chooser: LaserWriter & AppleTalk aktif.');
+                  alert('Mac OS 9 Chooser: LaserWriter & AppleTalk active.');
                   setOpenMenu(null);
                   setActiveSubmenu(null);
                   macSound.playMacClickUp();
@@ -294,7 +294,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
                       }}
                       className="w-full text-left px-3 py-1 hover:bg-[#333399] hover:text-white flex justify-between"
                     >
-                      <span>Sherlock 2 (Haberler)</span>
+                      <span>Sherlock 2 (News)</span>
                       <span className="text-[10px] opacity-70">⌘N</span>
                     </button>
                     <button
@@ -507,7 +507,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           )}
         </div>
 
-        {/* ================= 2. FILE MENÜSÜ ================= */}
+        {/* ================= 2. FILE MENU ================= */}
         <div className="relative h-full flex items-center">
           <button
             onClick={() => handleMenuClick('file')}
@@ -565,7 +565,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           )}
         </div>
 
-        {/* ================= 3. EDIT MENÜSÜ ================= */}
+        {/* ================= 3. EDIT MENU ================= */}
         <div className="relative h-full flex items-center">
           <button
             onClick={() => handleMenuClick('edit')}
@@ -605,7 +605,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           )}
         </div>
 
-        {/* ================= 4. VIEW MENÜSÜ (CLONED FROM FIGMA IMAGE 1 & 4) ================= */}
+        {/* ================= 4. VIEW MENU (CLONED FROM FIGMA IMAGE 1 & 4) ================= */}
         <div className="relative h-full flex items-center">
           <button
             onClick={() => handleMenuClick('view')}
@@ -679,7 +679,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           )}
         </div>
 
-        {/* ================= 5. SPECIAL MENÜSÜ ================= */}
+        {/* ================= 5. SPECIAL MENU ================= */}
         <div className="relative h-full flex items-center">
           <button
             onClick={() => handleMenuClick('special')}
@@ -731,7 +731,7 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           )}
         </div>
 
-        {/* ================= 6. HELP MENÜSÜ ================= */}
+        {/* ================= 6. HELP MENU ================= */}
         <div className="relative h-full flex items-center">
           <button
             onClick={() => handleMenuClick('help')}
@@ -757,9 +757,9 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
         </div>
       </div>
 
-      {/* Sağ Durum Grubu (Gece/Gündüz Modu, Ses Mute, Saat, Finder) */}
+      {/* Right Status Group (Day/Night Mode, Audio Mute, Clock, Finder) */}
       <div className="flex items-center gap-1.5 h-full pr-1">
-        {/* Gece & Gündüz Modu Toggle Butonu (Day & Night - Figma Image 1 HD Vector) */}
+        {/* Day & Night Mode Toggle Button (Day & Night - Figma Image 1 HD Vector) */}
         {onToggleTheme && (
           <button
             onClick={() => {
@@ -770,20 +770,20 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
               ? 'bg-[#1E293B] text-[#F1F5F9] border-[#475569] shadow-[inset_1px_1px_1px_#000000]'
               : 'bg-[#E5E5E5] text-[#262626] border-[#808080] shadow-[inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] hover:bg-[#D4D4D4] active:shadow-[inset_1px_1px_1px_#000000]'
               }`}
-            title={isNightMode ? 'Switch to Day Mode (Gündüz Modu)' : 'Switch to Night Mode (Gece Modu)'}
+            title={isNightMode ? 'Switch to Day Mode' : 'Switch to Night Mode'}
           >
             {/* Split Sun / Moon HD Graphic matching Figma Image 1 */}
             <div className="w-3.5 h-3.5 relative flex-shrink-0">
               <svg className="w-full h-full" viewBox="0 0 32 32" fill="none">
                 <circle cx="16" cy="16" r="14" fill={isNightMode ? '#0F172A' : '#F8FAFC'} stroke="#262626" strokeWidth="1.5" />
-                {/* Sol Yarım: Sarı Güneş */}
+                {/* Left Half: Golden Sun */}
                 <path d="M16 2 A14 14 0 0 0 16 30 Z" fill="#FBBF24" />
                 <line x1="1" y1="16" x2="6" y2="16" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
                 <line x1="4" y1="7" x2="8" y2="10" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
                 <line x1="4" y1="25" x2="8" y2="22" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
-                {/* Sağ Yarım: Gece Laciverti */}
+                {/* Right Half: Midnight Navy */}
                 <path d="M16 2 A14 14 0 0 1 16 30 Z" fill="#0F172A" />
-                {/* Beyaz Hilal ve Yıldızlar */}
+                {/* White Crescent and Stars */}
                 <path
                   d="M19 8 C22 10 24 14 22 19 C20 23 16 24 17 25 C24 25 26 17 23 10 C22 8 20 7 19 8 Z"
                   fill="#FFFFFF"
@@ -796,27 +796,27 @@ export const MacOs9MenuBar: React.FC<MacOs9MenuBarProps> = ({
           </button>
         )}
 
-        {/* 1px Dikey Ayırıcı */}
+        {/* 1px Vertical Separator */}
         <div className="w-px h-3.5 bg-[#808080] mx-0.5" />
 
-        {/* Ses Açma/Kapama Mute Butonu */}
+        {/* Sound Unmute / Mute Toggle */}
         <button
           onClick={toggleSound}
           className="px-1.5 py-0.5 rounded text-[11px] hover:bg-[#CCCCCC] flex items-center gap-1 border border-transparent hover:border-[#808080]"
-          title={isMuted ? 'Sesi Aç' : 'Sesi Kapat (Mute)'}
+          title={isMuted ? 'Unmute Sound' : 'Mute Sound'}
         >
           {isMuted ? '🔇' : '🔊'}
         </button>
 
-        {/* Dijital Saat */}
+        {/* Digital Clock */}
         <span className="text-[11px] px-1 font-mono tracking-tight font-medium text-[#262626]">
           {currentTime}
         </span>
 
-        {/* 1px Dikey Ayırıcı */}
+        {/* 1px Vertical Separator */}
         <div className="w-px h-3.5 bg-[#808080] mx-0.5" />
 
-        {/* Finder / Aktif Uygulama Menüsü Göstergesi */}
+        {/* Finder / Active Application Menu Indicator */}
         <div className="flex items-center gap-1 px-1.5 py-0.5 hover:bg-[#CCCCCC] cursor-default">
           <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
             <rect x="1" y="1" width="14" height="14" rx="2" fill="#9999CC" stroke="#262626" />

@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'NovaBlog Enterprise | High-Throughput Engineering & Spring AI',
   description:
-    'Endüstriyel Seviye Dağıtık Sistem Mimarisi - Java 22 Loom Sanal İş Parçacıkları, Spring Boot 4.1.1, Spring AI Anlamsal Arama, Redis Write-Behind Önbellek & Next.js 16. Mimar: Abdullah Berke Özder',
+    'Industrial Grade Distributed Systems Architecture — Java 22 Loom Virtual Threads, Spring Boot 4.1.1, Spring AI Semantic Search, Redis Write-Behind Caching & Next.js 16. Architect: Abdullah Berke Ozder',
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <head>
         {/* Zero-Flash Synchronous Theme Initializer (Prevents Dark-to-Light FOUC on First Paint) */}
         <script

@@ -64,7 +64,7 @@ export const SpotlightBanner: React.FC<SpotlightBannerProps> = ({
           </div>
 
           <p className="text-xs sm:text-sm text-zinc-200 font-sans leading-relaxed max-w-xl drop-shadow-sm">
-            Aynı anda binlerce ziyaretçiyi gecikmesiz karşılayan, kelimelerin anlamsal ilişkisini kavrayan yapay zeka arama motoru ve veri kaybını önleyen önbellek mimarisiyle inşa edilmiş modern dağıtık mühendislik platformu.
+            Modern distributed engineering publication engineered to handle thousands of concurrent requests with zero blocking, semantic vector search, and data integrity caching.
           </p>
 
           {/* Action Buttons */}
@@ -73,7 +73,7 @@ export const SpotlightBanner: React.FC<SpotlightBannerProps> = ({
               onClick={handleDiscover}
               className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-[#bef264] hover:bg-[#aee64c] text-black text-xs font-mono font-bold uppercase tracking-wider transition-all duration-300 shadow-xl shadow-[#bef264]/25 hover:scale-105 active:scale-95 cursor-pointer btn-tactile"
             >
-              <span>KEŞFET // CANLI DENE</span>
+              <span>EXPLORE // LIVE LAB</span>
               <ArrowRight className="w-4 h-4 stroke-[2.5]" />
             </button>
 
@@ -83,7 +83,7 @@ export const SpotlightBanner: React.FC<SpotlightBannerProps> = ({
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-black/75 hover:bg-black text-white border border-white/25 text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer backdrop-blur-md hover:scale-105 active:scale-95"
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#bef264]" />
-                <span>VEKTÖR LAB</span>
+                <span>VECTOR LAB</span>
               </button>
             )}
           </div>

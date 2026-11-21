@@ -48,7 +48,7 @@ interface PaletteAction {
 
 const AUTHORS = [
   {
-    name: 'Abdullah Berke Özder',
+    name: 'Abdullah Berke Ozder',
     role: 'Senior Systems Architect & Tech Lead',
     topics: ['Java 22', 'Loom', 'Distributed Systems'],
   },
@@ -58,7 +58,7 @@ const AUTHORS = [
     topics: ['Spring AI', 'Vector DB', 'pgvector'],
   },
   {
-    name: 'Caner Aydın',
+    name: 'Caner Aydin',
     role: 'Staff Cloud & Kubernetes Architect',
     topics: ['Security', 'Cloud', 'TOTP'],
   },
@@ -105,9 +105,9 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
       result.push({
         id: 'action-semantic-search',
         category: 'actions',
-        categoryLabel: 'YAPAY ZEKA VEKTÖR ARAMASI',
-        title: `Spring AI ile Vektör Uzayında Ara: "${query.trim()}"`,
-        subtitle: '128-boyutlu gömme kosinüs benzerliği taraması',
+        categoryLabel: 'AI VECTOR SEARCH',
+        title: `Search Vector Space with Spring AI: "${query.trim()}"`,
+        subtitle: '128-dimensional embedding cosine similarity scan',
         badge: 'pgvector 128D',
         icon: <Sparkles className="w-4 h-4 text-emerald-500 animate-pulse" />,
         onExecute: () => {
@@ -135,9 +135,9 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
       result.push({
         id: `blog-${b.blogId ?? b.id}`,
         category: 'articles',
-        categoryLabel: 'TEKNİK MAKALELER',
+        categoryLabel: 'TECHNICAL ARTICLES',
         title: b.title,
-        subtitle: `${b.author || 'Mühendis'} • ~${readTime} dk okuma`,
+        subtitle: `${b.author || 'Engineer'} • ~${readTime} min read`,
         badge: b.tags?.[0] ? `#${b.tags[0]}` : undefined,
         icon: <FileText className="w-4 h-4 text-emerald-500" />,
         rawBlog: b,
@@ -162,7 +162,7 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
       result.push({
         id: `author-${a.name}`,
         category: 'authors',
-        categoryLabel: 'YAZARLAR MASASI',
+        categoryLabel: 'AUTHORS DESK',
         title: a.name,
         subtitle: a.role,
         badge: a.topics[0],
@@ -177,10 +177,10 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
 
     // 3. Navigation Sections
     const navSections = [
-      { id: 'articles-feed', label: 'Yayın Akışı & Makaleler', icon: <Layers className="w-4 h-4 text-emerald-500" /> },
-      { id: 'modular-architecture-console', label: 'Modüler Dağıtık Sistem Mimarisi', icon: <Cpu className="w-4 h-4 text-indigo-500" /> },
-      { id: 'ai-vector-studio', label: 'Spring AI & pgvector Vektör Stüdyosu', icon: <Sparkles className="w-4 h-4 text-purple-500" /> },
-      { id: 'batch-etl-studio', label: 'Spring Batch 5 Chunk ETL Konsolu', icon: <Database className="w-4 h-4 text-amber-500" /> },
+      { id: 'articles-feed', label: 'Publications Feed & Articles', icon: <Layers className="w-4 h-4 text-emerald-500" /> },
+      { id: 'modular-architecture-console', label: 'Modular Distributed Systems Architecture', icon: <Cpu className="w-4 h-4 text-indigo-500" /> },
+      { id: 'ai-vector-studio', label: 'Spring AI & pgvector Vector Studio', icon: <Sparkles className="w-4 h-4 text-purple-500" /> },
+      { id: 'batch-etl-studio', label: 'Spring Batch 5 Chunk ETL Console', icon: <Database className="w-4 h-4 text-amber-500" /> },
     ];
 
     navSections
@@ -189,9 +189,9 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
         result.push({
           id: `nav-${s.id}`,
           category: 'navigation',
-          categoryLabel: 'MİMARİ BÖLÜMLER',
+          categoryLabel: 'ARCHITECTURAL SECTIONS',
           title: s.label,
-          subtitle: `Bölüme Zıpla (#${s.id})`,
+          subtitle: `Jump to Section (#${s.id})`,
           icon: s.icon,
           onExecute: () => {
             onClose();
@@ -205,8 +205,8 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
     const quickActions = [
       {
         id: 'action-write',
-        title: 'Yeni Teknik Makale Yayınla',
-        subtitle: 'Markdown & Kod Editörünü Başlat',
+        title: 'Publish New Technical Article',
+        subtitle: 'Launch Markdown & Code Editor',
         icon: <PenSquare className="w-4 h-4 text-emerald-500" />,
         onExecute: () => {
           onClose();
@@ -215,8 +215,8 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
       },
       {
         id: 'action-telemetry',
-        title: 'Sistem Telemetrisi & Canlı Metrikler',
-        subtitle: 'JVM, Loom ve Redis Durumunu İncele',
+        title: 'System Telemetry & Live Metrics',
+        subtitle: 'Inspect JVM, Loom, and Redis State',
         icon: <Activity className="w-4 h-4 text-emerald-500" />,
         onExecute: () => {
           onClose();
@@ -225,8 +225,8 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
       },
       {
         id: 'action-2fa',
-        title: 'Donanımsal 2FA Güvenlik Konsolu',
-        subtitle: 'RFC 6238 TOTP Donanım Doğrulaması',
+        title: 'Hardware 2FA Security Console',
+        subtitle: 'RFC 6238 TOTP Hardware Verification',
         icon: <Shield className="w-4 h-4 text-indigo-500" />,
         onExecute: () => {
           onClose();
@@ -241,7 +241,7 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
         result.push({
           id: a.id,
           category: 'actions',
-          categoryLabel: 'HIZLI EYLEMLER',
+          categoryLabel: 'QUICK ACTIONS',
           title: a.title,
           subtitle: a.subtitle,
           icon: a.icon,
@@ -302,7 +302,7 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
             name="spotlightSearch"
             ref={inputRef}
             type="text"
-            placeholder="Spotlight Arama (örn: Virtual Threads, Selin, pgvector, Telemetri)"
+            placeholder="Spotlight Search (e.g., Virtual Threads, Selin, pgvector, Telemetry)"
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -334,8 +334,8 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
           <div ref={listRef} className="mac-spotlight-results-col space-y-1">
             {items.length === 0 ? (
               <div className="py-16 text-center text-zinc-400 space-y-2">
-                <p className="text-xs font-mono uppercase tracking-wider font-bold">Eşleşen sonuç bulunamadı</p>
-                <p className="text-[11px] text-zinc-500">Farklı bir terim veya mimari kavramı aratabilirsiniz.</p>
+                <p className="text-xs font-mono uppercase tracking-wider font-bold">No matching results found</p>
+                <p className="text-[11px] text-zinc-500">Try searching for a different keyword or architectural concept.</p>
               </div>
             ) : (
               items.map((item, idx) => {
@@ -398,7 +398,7 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
                       </span>
                       <span className="text-[11px] text-zinc-500 flex items-center gap-1 font-mono">
                         <Clock className="w-3 h-3" />
-                        ~{selectedItem.rawBlog.readTimeMinutes || 5} dk okuma
+                        ~{selectedItem.rawBlog.readTimeMinutes || 5} min read
                       </span>
                     </div>
 
@@ -411,7 +411,7 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
                         {selectedItem.rawBlog.author?.charAt(0) || 'A'}
                       </div>
                       <div className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                        {selectedItem.rawBlog.author || 'Mühendis'}
+                        {selectedItem.rawBlog.author || 'Engineer'}
                       </div>
                     </div>
 
@@ -425,7 +425,7 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
                         className="ios6-btn ios6-btn-blue w-full py-2 text-xs"
                       >
                         <BookOpen className="w-3.5 h-3.5" />
-                        <span>Safari Reader ile Aç (↵)</span>
+                        <span>Open in Safari Reader (↵)</span>
                       </button>
                     </div>
                   </div>
@@ -448,7 +448,7 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
 
                     <div className="space-y-1.5 pt-2 border-t border-black/10 dark:border-white/10">
                       <div className="text-[10px] font-mono font-bold text-zinc-400 uppercase">
-                        UZMANLIK & ÇALIŞMA ALANLARI
+                        AREAS OF EXPERTISE & RESEARCH
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {selectedItem.rawAuthor.topics.map((t, idx) => (
@@ -460,7 +460,7 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
                     </div>
 
                     <p className="text-xs text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed">
-                      Mac OS X Address Book ve Mountain Lion Sarı Hukuk Pedi ile yazarın mühendislik notlarını ve tüm yayınlarını inceleyin.
+                      Explore the author&apos;s engineering notes and all publications in Mac OS X Address Book and Mountain Lion Legal Pad.
                     </p>
 
                     <div className="pt-4">
@@ -469,7 +469,7 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
                         className="ios6-btn ios6-btn-blue w-full py-2 text-xs"
                       >
                         <User className="w-3.5 h-3.5" />
-                        <span>Yazar Profilini Aç (↵)</span>
+                        <span>Open Author Profile (↵)</span>
                       </button>
                     </div>
                   </div>
@@ -490,7 +490,7 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
                     </div>
 
                     <div className="p-3 rounded-lg bg-black/5 dark:bg-white/5 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
-                      Java 22 Loom, Spring AI ve Activity Monitor telemetri konsoluna doğrudan erişin veya ilgili modülü başlatın.
+                      Directly access Java 22 Loom, Spring AI, and Activity Monitor telemetry console, or execute the respective module.
                     </div>
 
                     <div className="pt-4">
@@ -499,7 +499,7 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
                         className="ios6-btn ios6-btn-silver w-full py-2 text-xs"
                       >
                         <ArrowRight className="w-3.5 h-3.5" />
-                        <span>Şimdi Yürüt (↵)</span>
+                        <span>Execute Now (↵)</span>
                       </button>
                     </div>
                   </div>
@@ -507,7 +507,7 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
               </div>
             ) : (
               <div className="py-20 text-center text-zinc-400 text-xs">
-                Önizleme için bir sonuç seçin
+                Select a result for preview
               </div>
             )}
           </div>
@@ -519,15 +519,15 @@ export const OmnibarModal: React.FC<OmnibarModalProps> = ({
             <span className="flex items-center gap-1">
               <kbd className="px-1.5 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-[10px]">↑</kbd>
               <kbd className="px-1.5 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-[10px]">↓</kbd>
-              <span>Gezin</span>
+              <span>Navigate</span>
             </span>
             <span className="flex items-center gap-1">
               <kbd className="px-1.5 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-[10px]">↵</kbd>
-              <span>Seç / Aç</span>
+              <span>Select / Open</span>
             </span>
             <span className="flex items-center gap-1">
               <kbd className="px-1.5 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-[10px]">esc</kbd>
-              <span>Kapat</span>
+              <span>Close</span>
             </span>
           </div>
 

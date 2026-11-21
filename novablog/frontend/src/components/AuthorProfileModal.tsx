@@ -86,9 +86,9 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
       : isStaffSelin
       ? 'Dr. Selin Demir'
       : isStaffCaner
-      ? 'Caner Aydın'
+      ? 'Caner Aydin'
       : isStaffBerke
-      ? 'Abdullah Berke Özder'
+      ? 'Abdullah Berke Ozder'
       : authorName;
 
   const initial = displayName.charAt(0).toUpperCase();
@@ -97,18 +97,18 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
     ? [
         {
           id: 'm-n1',
-          date: '14 Kas 2026',
+          date: 'Nov 14, 2026',
           topic: 'Virtual Threads & JDBC Pools',
           content:
-            'HikariCP havuz boyutunu sanal iş parçacığı sayısına göre değil, PostgreSQL CPU çekirdek sayısına göre boyutlandırın. Sanal threadler I/O bloklamalarını sıfıra indirir fakat veritabanı bağlantı havuzunu şişirmek için bahane değildir.',
+            'Size the HikariCP connection pool based on PostgreSQL CPU cores (2 x CPU + Disk IO), not on the number of virtual threads. Virtual threads eliminate I/O blocking, but they are not an excuse to bloat the database connection pool.',
           claps: 48,
         },
         {
           id: 'm-n2',
-          date: '12 Kas 2026',
+          date: 'Nov 12, 2026',
           topic: 'Redis Write-Behind Buffer',
           content:
-            'Redis HINCRBY tamponu ile alkış ve görüntülenme telemetrilerini asenkron flush etmek, PostgreSQL üzerindeki satır kilitlemelerini %99.2 oranında düşürdü.',
+            'Asynchronously flushing claps and views via Redis HINCRBY buffer reduced PostgreSQL row contention by 99.2% under stress loads.',
           claps: 64,
         },
       ]
@@ -116,10 +116,10 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
     ? [
         {
           id: 'm-s1',
-          date: '13 Kas 2026',
+          date: 'Nov 13, 2026',
           topic: 'Dimension Reduction & Memory',
           content:
-            '128D vs 1536D embedding karşılaştırması: Düşük boyutlu optimize edilmiş gömmeler kurumsal vektör aramasında %80 bellek tasarrufu sağlarken doğruluğu koruyor.',
+            '128D vs 1536D embedding comparison: Low-dimensional optimized embeddings reduce memory consumption by 80% in enterprise vector search while retaining high retrieval accuracy.',
           claps: 57,
         },
       ]
@@ -127,19 +127,19 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
     ? [
         {
           id: 'm-c1',
-          date: '15 Kas 2026',
+          date: 'Nov 15, 2026',
           topic: 'Kubernetes CFS Quota',
           content:
-            'Kubernetes pod limitlerinde CFS throttling gecikmeyi 300ms fırlatabiliyor. Sadece CPU request belirleyip limitleri esnetmek tail latency değerini derhal düşürdü.',
+            'CFS throttling in Kubernetes pod CPU limits can spike tail latency by 300ms. Configuring CPU requests while flexing limits immediately stabilized p99 latency.',
           claps: 73,
         },
       ]
     : [
         {
           id: 'm-gen',
-          date: '10 Kas 2026',
-          topic: 'Mühendislik Notları',
-          content: 'Nova platformunda yüksek ölçekli sistem incelemeleri ve optimizasyon mimarileri paylaşıyorum.',
+          date: 'Nov 10, 2026',
+          topic: 'Engineering Notes',
+          content: 'Sharing high-scale distributed systems analyses and optimization architectures on the Nova platform.',
           claps: 12,
         },
       ];
@@ -150,7 +150,7 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
     ? ['Spring AI', 'pgvector 128D', 'HNSW Indexing', 'Cosine Similarity', 'Embeddings RAG', 'Semantic Cache']
     : isStaffCaner
     ? ['Kubernetes', 'eBPF Telemetry', 'Docker Containers', 'Prometheus', 'Zero-Trust 2FA', 'CI/CD Pipelines']
-    : ['Java & Spring Boot', 'Sistem Mimarisi', 'Dağıtık Sistemler'];
+    : ['Java & Spring Boot', 'Systems Architecture', 'Distributed Systems'];
 
   return (
     <div
@@ -164,7 +164,7 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
         {/* 1. Saddle-Stitched Leather Top Header Banner */}
         <div className="leather-stitched-header shrink-0">
           <div className="inline-flex items-center gap-2 text-amber-200 text-xs font-mono font-bold tracking-wider uppercase">
-            <span>❖ NOVA ADDRESS BOOK // KİŞİ KARTI</span>
+            <span>❖ NOVA ADDRESS BOOK // CONTACT CARD</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -175,9 +175,9 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
                 onClose();
               }}
               className="safari-hud-btn text-[11px] font-mono"
-              title="Müstakil Profil Sayfasında Aç"
+              title="Open in Dedicated Profile Page"
             >
-              <span>Ayrı Sayfa</span>
+              <span>Dedicated Page</span>
               <ExternalLink className="w-3 h-3" />
             </Link>
 
@@ -188,7 +188,7 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
                 onClose();
               }}
               className="w-5 h-5 rounded-full bg-red-500/80 hover:bg-red-500 text-white flex items-center justify-center font-bold text-xs shadow-inner cursor-pointer"
-              title="Kapat"
+              title="Close"
             >
               &times;
             </button>
@@ -236,12 +236,12 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
               {isFollowing ? (
                 <>
                   <Check className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>TAKİP EDİLİYOR</span>
+                  <span>FOLLOWING</span>
                 </>
               ) : (
                 <>
                   <UserPlus className="w-3.5 h-3.5" />
-                  <span>TAKİP ET</span>
+                  <span>FOLLOW</span>
                 </>
               )}
             </button>
@@ -251,10 +251,10 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
           <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-sans">
             {profile?.bio ||
               (isStaffSelin
-                ? 'Spring AI entegrasyonları, pgvector gömmeleri ve yüksek boyutlu vektör uzaylarında anlamsal bilgi getirme (RAG) mimarileri üzerinde araştırmalar yapıyor.'
+                ? 'Conducting research on Spring AI integrations, pgvector embeddings, and high-dimensional vector space semantic retrieval (RAG) architectures.'
                 : isStaffCaner
-                ? 'Cloud-Native mimariler, eBPF gözlemlenebilirlik, sıfır kesintili dağıtımlar ve yüksek erişilebilirlikli mikroservis altyapıları tasarlıyor.'
-                : 'Java 22 Loom, Spring Boot 3.4 ve mikro-çekirdek sistemler üzerine derinlemesine teknik incelemeler ve üretim mimarileri yayınlıyor.')}
+                ? 'Designing cloud-native architectures, eBPF observability, zero-downtime deployments, and high-availability microservice infrastructure.'
+                : 'Publishing deep technical analyses and production architectures on Java 22 Loom, Spring Boot 3.4, and microkernel reactive systems.')}
           </p>
 
           {/* Social Stats & Links */}
@@ -265,14 +265,14 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
                 <strong className="text-zinc-950 dark:text-white font-bold">
                   {(profile?.followersCount || 1240) + (isFollowing ? 1 : 0)}
                 </strong>{' '}
-                takipçi
+                followers
               </span>
               <span className="flex items-center gap-1.5">
                 <BookOpen className="w-3.5 h-3.5 text-emerald-500" />
                 <strong className="text-zinc-950 dark:text-white font-bold">
                   {authorBlogs.length > 0 ? authorBlogs.length : profile?.articlesCount || 4}
                 </strong>{' '}
-                makale
+                articles
               </span>
             </div>
 
@@ -292,7 +292,7 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
               </span>
-              <span className="hover:text-black dark:hover:text-white transition-colors cursor-pointer p-1" title="Web Sitesi">
+              <span className="hover:text-black dark:hover:text-white transition-colors cursor-pointer p-1" title="Website">
                 <Globe className="w-3.5 h-3.5" />
               </span>
             </div>
@@ -313,7 +313,7 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
               }`}
             >
               <BookOpen className="w-3 h-3" />
-              <span>MAKALELER ({authorBlogs.length})</span>
+              <span>ARTICLES ({authorBlogs.length})</span>
             </button>
             <button
               type="button"
@@ -326,7 +326,7 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
               }`}
             >
               <FileText className="w-3 h-3 text-amber-500" />
-              <span>SARI NOTLAR ({authorNotes.length})</span>
+              <span>LEGAL PAD NOTES ({authorNotes.length})</span>
             </button>
             <button
               type="button"
@@ -339,7 +339,7 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
               }`}
             >
               <Cpu className="w-3 h-3 text-cyan-400" />
-              <span>ÇİP ROZETLERİ</span>
+              <span>HARDWARE BADGES</span>
             </button>
           </div>
         </div>
@@ -363,10 +363,10 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
                     className="group mac-blog-card p-4 flex flex-col justify-between space-y-2 cursor-pointer"
                   >
                     <div className="flex items-center justify-between text-[11px] text-zinc-500 font-mono">
-                      <span className="retro-tag-pill uppercase">{b.category?.categoryName || 'YAYIN'}</span>
+                      <span className="retro-tag-pill uppercase">{b.category?.categoryName || 'PUBLICATION'}</span>
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3 text-zinc-400" />
-                        {b.readTimeMinutes || 4} dk okuma
+                        {b.readTimeMinutes || 4} min read
                       </span>
                     </div>
                     <h4 className="font-bold text-zinc-950 dark:text-white text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors font-sans">
@@ -382,14 +382,14 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
                         <span>💬 {b.commentCount ?? 0}</span>
                       </div>
                       <span className="text-blue-600 dark:text-blue-400 font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span>Oku</span> <ArrowRight className="w-3 h-3" />
+                        <span>Read</span> <ArrowRight className="w-3 h-3" />
                       </span>
                     </div>
                   </div>
                 ))
               ) : (
                 <div className="py-8 text-center text-xs text-zinc-400 font-mono">
-                  Bu yazar henüz başka bir makale yayınlamamış.
+                  This author hasn&apos;t published any other articles yet.
                 </div>
               )}
             </div>
@@ -418,7 +418,7 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
                       onClick={() => playKeyClick()}
                       className="cursor-pointer hover:text-blue-600 font-bold"
                     >
-                      👏 {note.claps} alkış
+                      👏 {note.claps} claps
                     </button>
                     <span className="text-[10px] text-zinc-400 uppercase tracking-widest">
                       MAC OS X MOUNTAIN LION NOTE
@@ -435,7 +435,7 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
               <div className="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3">
                 <span className="text-xs font-bold text-zinc-950 dark:text-white flex items-center gap-1.5 uppercase font-mono">
                   <Cpu className="w-3.5 h-3.5 text-blue-500" />
-                  <span>DONANIM &amp; MİMARİ ÇİP ROZETLERİ</span>
+                  <span>HARDWARE &amp; ARCHITECTURE CHIP BADGES</span>
                 </span>
                 <div className="flex flex-wrap gap-2 pt-1">
                   {techStack.map((tech) => (
@@ -453,10 +453,10 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
               <div className="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2 text-xs text-zinc-700 dark:text-zinc-300">
                 <span className="font-bold text-zinc-950 dark:text-white flex items-center gap-1.5 font-mono">
                   <Flame className="w-3.5 h-3.5 text-amber-500" />
-                  <span>MİMARİ VİZYON &amp; MANİFESTO</span>
+                  <span>ARCHITECTURE VISION &amp; MANIFESTO</span>
                 </span>
                 <p className="leading-relaxed font-sans">
-                  Sentetik telemetri ve yapay zeka illüzyonlarından arındırılmış; yüksek eşzamanlı, güvenilir ve sürdürülebilir kurumsal yazılım mimarileri. Java 22 Loom sanal iş parçacıkları ve pgvector 128D uzayında deterministic mühendislik.
+                  Stripped of synthetic telemetry and artificial intelligence illusions; high-throughput, deterministic, and sustainable enterprise software architectures. Zero locking with Java 22 Loom virtual threads, precision semantic inference in pgvector 128D space.
                 </p>
               </div>
             </div>

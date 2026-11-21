@@ -24,58 +24,58 @@ const NEWS_DATA: NewsItem[] = [
   {
     id: 'react-19',
     category: 'frontend',
-    categoryLabel: 'FRONTEND ÇEKİRDEĞİ',
-    badge: 'FLAŞ HABER',
-    title: 'React 19 Kararlı Sürüm: useActionState, useOptimistic ve Otomatik Memoization',
-    author: 'Caner Aydın',
-    date: '19 Kas 2026',
+    categoryLabel: 'FRONTEND CORE',
+    badge: 'BREAKING',
+    title: 'React 19 Release: useActionState, useOptimistic & Automatic Memoization',
+    author: 'Caner Aydin',
+    date: 'Nov 19, 2026',
     summary:
-      'Meta React çekirdek ekibi, React 19’un genel kullanıma hazır kararlı sürümünü duyurdu. Yıllardır beklenen otomatik derleyici ve asenkron form eylemleri standartlaştı.',
+      'Meta React core team released the general availability release of React 19. The compiler and asynchronous form actions are now standardized.',
     verdict:
-      'NovaBlog’un beğeni, alkış ve yer imi gibi anlık taktil kullanıcı etkileşimlerinde useOptimistic ile sıfır gecikmeli UI tepkileri sağlandı; karmaşık useMemo yazımları tarihe karıştı.',
+      'Zero-latency tactile user interactions for likes, claps, and bookmarks in NovaBlog via useOptimistic; manual useMemo declarations deprecated.',
     tags: ['REACT & MODERN FRONTEND', '#REACT-19', '#ACTIONS', '#OPTIMISTIC'],
   },
   {
     id: 'anthropic-mcp',
     category: 'ai',
-    categoryLabel: 'AJAN STANDARTLARI & MCP',
-    badge: 'FLAŞ HABER',
-    title: 'Anthropic Model Context Protocol (MCP) Açık Kaynak Standartlaşması',
+    categoryLabel: 'AGENT PROTOCOLS & MCP',
+    badge: 'BREAKING',
+    title: 'Anthropic Model Context Protocol (MCP) Open Standard Adoption',
     author: 'Dr. Selin Demir',
-    date: '20 Kas 2026',
+    date: 'Nov 20, 2026',
     summary:
-      'Anthropic, yapay zeka ajanları ile veri kaynakları (veritabanları, IDE’ler, dosya sistemleri, GitHub) arasındaki iki yönlü protokol standardını açık kaynak olarak duyurdu.',
+      'Anthropic open-sourced the bidirectional Model Context Protocol standard connecting AI agents with real-world datasources (databases, IDEs, filesystems, and GitHub).',
     verdict:
-      'Kurumsal backend sistemlerimizde mikroservisleri ve PostgreSQL pgvector veritabanımızı ajanlara bağlamak için ortak standart kuruldu; custom API sarmalayıcı ihtiyacı kalktı.',
-    tags: ['YAPAY ZEKA', '#MCP', '#ANTHROPIC', '#LLM-INTEGRATION'],
+      'Unified standard established for integrating microservices and PostgreSQL pgvector with autonomous agents; eliminates custom wrapper bloat.',
+    tags: ['ARTIFICIAL INTELLIGENCE', '#MCP', '#ANTHROPIC', '#LLM-INTEGRATION'],
   },
   {
     id: 'java-23-amber',
     category: 'backend',
-    categoryLabel: 'JAVA EVRİMİ & AMBER',
-    badge: 'FLAŞ HABER',
-    title: 'Java 23 ve Amber Projesi: Primitive Tiplerde Pattern Matching ve Stream Gatherers',
-    author: 'Abdullah Berke Özder',
-    date: '20 Kas 2026',
+    categoryLabel: 'JAVA EVOLUTION & AMBER',
+    badge: 'BREAKING',
+    title: 'Java 23 & Project Amber: Pattern Matching in Primitives & Stream Gatherers',
+    author: 'Abdullah Berke Ozder',
+    date: 'Nov 20, 2026',
     summary:
-      'Oracle Java Platform Grubu, Java 23 sürümünü resmen kullanıma sundu. Project Amber kapsamında primitive tiplerde switch pattern matching ve özelleştirilebilir Stream ara işlemleri devreye girdi.',
+      'Oracle Java Platform Group announced Java 23 general availability. Project Amber brings primitive type switch pattern matching and custom intermediate Stream gatherers.',
     verdict:
-      'Spring Boot veri dönüşümlerinde ve telemetri metrik hesaplamalarında heap tahsisatları ve boxing-unboxing yükü ortadan kalktı; işlem hızı %28 arttı.',
-    tags: ['JAVA & SPRING ÇEKİRDEĞİ', '#JAVA-23', '#VIRTUAL-THREADS', '#AMBER'],
+      'Eliminated heap allocations and boxing-unboxing overhead in Spring Boot telemetry transforms; increased pipeline throughput by 28%.',
+    tags: ['JAVA & SPRING CORE', '#JAVA-23', '#VIRTUAL-THREADS', '#AMBER'],
   },
   {
     id: 'loom-concurrency',
     category: 'architecture',
-    categoryLabel: 'MİMARİ PERFORMANS',
-    badge: 'ANALİZ',
-    title: 'Spring Boot 4.1.1 & Virtual Threads: 10,000+ Eşzamanlı İstek Benchmark Raporu',
-    author: 'Nova Sistem Ekibi',
-    date: '21 Kas 2026',
+    categoryLabel: 'ARCHITECTURE BENCHMARK',
+    badge: 'ANALYSIS',
+    title: 'Spring Boot 4.1.1 & Virtual Threads: 10,000+ Concurrent Requests Benchmark',
+    author: 'Nova Systems Team',
+    date: 'Nov 21, 2026',
     summary:
-      'Tomcat üzerinde her gelen istek için ayrı bir sanal iş parçacığı tahsis edilerek yapılan yük testinde, PostgreSQL pgvector ve Redis Write-Behind tamponu eşliğinde 11,400+ istek/sn ölçüldü.',
+      'Stress test using Tomcat with dedicated virtual threads per request alongside PostgreSQL pgvector and Redis Write-Behind buffer clocked 11,400+ req/sec.',
     verdict:
-      'Geleneksel platform thread kilitlenmesi sıfıra indirildi; sub-ms P99 gecikme ile kurumsal yüksek verim elde edildi.',
-    tags: ['SİSTEM MİMARİSİ', '#LOOM', '#CONCURRENCY', '#REDIS'],
+      'Eliminated platform thread pool starvation completely; achieved enterprise-grade high throughput with sub-millisecond P99 latency.',
+    tags: ['SYSTEM ARCHITECTURE', '#LOOM', '#CONCURRENCY', '#REDIS'],
   },
 ];
 
@@ -95,15 +95,15 @@ export const NovaNewsWindow: React.FC<NovaNewsWindowProps> = ({ onOpenArticleInB
 
   return (
     <div className="flex flex-col h-full bg-[#CCCCCC] select-none text-[12px] text-[#262626] font-['Charcoal',sans-serif]">
-      {/* Sherlock 2 Üst Kanallar Çubuğu */}
+      {/* Sherlock 2 Channels Bar */}
       <div className="p-2 bg-[#DDDDDD] border-b border-[#808080] flex flex-wrap items-center justify-between gap-2 shadow-sm">
-        {/* Kanallar (Kanallar Sekmesi) */}
+        {/* Channels */}
         <div className="flex items-center gap-1">
           {[
-            { id: 'all' as const, label: '✦ Tüm Bülten' },
+            { id: 'all' as const, label: '✦ All Bulletins' },
             { id: 'frontend' as const, label: 'Frontend & React' },
             { id: 'backend' as const, label: 'Java & Loom' },
-            { id: 'ai' as const, label: 'Yapay Zeka & MCP' },
+            { id: 'ai' as const, label: 'AI & MCP' },
           ].map((ch) => (
             <button
               key={ch.id}
@@ -122,13 +122,13 @@ export const NovaNewsWindow: React.FC<NovaNewsWindowProps> = ({ onOpenArticleInB
           ))}
         </div>
 
-        {/* Sherlock Arama Çubuğu */}
+        {/* Sherlock Search Input */}
         <div className="relative flex items-center">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Sherlock ile haberlerde ara..."
+            placeholder="Search news with Sherlock..."
             className="mac9-cursor-text w-48 sm:w-56 h-[22px] px-2 text-[11px] border border-[#262626] bg-white text-[#262626] shadow-inner rounded-[2px] outline-none placeholder:text-[#888]"
           />
           {searchQuery && (
@@ -142,12 +142,12 @@ export const NovaNewsWindow: React.FC<NovaNewsWindowProps> = ({ onOpenArticleInB
         </div>
       </div>
 
-      {/* Bülten Listesi */}
+      {/* Bulletins List */}
       <div className="flex-1 p-3 overflow-y-auto space-y-3 bg-[#E5E5E5]">
         {filteredNews.length === 0 ? (
           <div className="text-center py-12 text-[#666]">
-            <p className="font-bold">Eşleşen haber bulunamadı.</p>
-            <p className="text-[11px] mt-1">Farklı bir arama terimi deneyin veya kanalı değiştirin.</p>
+            <p className="font-bold">No matching articles found.</p>
+            <p className="text-[11px] mt-1">Try a different search term or channel.</p>
           </div>
         ) : (
           filteredNews.map((news) => (
@@ -155,7 +155,7 @@ export const NovaNewsWindow: React.FC<NovaNewsWindowProps> = ({ onOpenArticleInB
               key={news.id}
               className="mac9-outset-card p-3 rounded-[3px] bg-[#FFFFFF] border border-[#262626] shadow-[2px_2px_0_rgba(0,0,0,0.15)] flex flex-col gap-2 hover:border-[#000080] transition-colors"
             >
-              {/* Üst Bilgi Satırı */}
+              {/* Meta Row */}
               <div className="flex items-center justify-between text-[11px]">
                 <div className="flex items-center gap-2">
                   <span className="bg-[#FFE5B4] text-[#B85D00] border border-[#CCA066] px-1.5 py-0.2 rounded font-bold font-mono text-[10px]">
@@ -170,25 +170,25 @@ export const NovaNewsWindow: React.FC<NovaNewsWindowProps> = ({ onOpenArticleInB
                 </div>
               </div>
 
-              {/* Başlık */}
+              {/* Title */}
               <h3 className="font-bold text-[14px] text-black leading-snug">
                 {news.title}
               </h3>
 
-              {/* Özet */}
+              {/* Summary */}
               <p className="text-[12px] text-[#444] leading-relaxed">
                 {news.summary}
               </p>
 
-              {/* Mühendislik Değerlendirmesi Kutusu */}
+              {/* Engineering Verdict Box */}
               <div className="bg-[#F0F5FF] border-l-2 border-[#000080] p-2 text-[11px] text-[#1E3A8A] rounded-[2px] italic">
                 <span className="font-bold not-italic block mb-0.5 font-mono text-[10px]">
-                  🔹 MÜHENDİSLİK DEĞERLENDİRMESİ:
+                  🔹 ENGINEERING VERDICT:
                 </span>
                 &quot;{news.verdict}&quot;
               </div>
 
-              {/* Etiketler & Blogda Oku Butonu */}
+              {/* Tags & Action Button */}
               <div className="flex flex-wrap items-center justify-between pt-1 border-t border-[#DDD] gap-2">
                 <div className="flex flex-wrap gap-1">
                   {news.tags.map((tag) => (
@@ -208,7 +208,7 @@ export const NovaNewsWindow: React.FC<NovaNewsWindowProps> = ({ onOpenArticleInB
                   }}
                   className="mac9-btn mac9-btn-default text-[11px] py-1 px-3 ml-auto"
                 >
-                  Blogda İncele ➔
+                  Read in Blog ➔
                 </button>
               </div>
             </div>
@@ -216,10 +216,10 @@ export const NovaNewsWindow: React.FC<NovaNewsWindowProps> = ({ onOpenArticleInB
         )}
       </div>
 
-      {/* Durum Çubuğu */}
+      {/* Status Bar */}
       <div className="px-3 py-1 bg-[#DDDDDD] border-t border-[#808080] text-[10px] font-mono text-[#555] flex justify-between">
-        <span>{filteredNews.length} haber listelendi</span>
-        <span>Sherlock 2 Haber Motoru v9.2</span>
+        <span>{filteredNews.length} articles indexed</span>
+        <span>Sherlock 2 News Engine v9.2</span>
       </div>
     </div>
   );

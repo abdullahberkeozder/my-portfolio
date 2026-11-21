@@ -41,7 +41,7 @@ interface ModuleSpec {
   concurrencyMetric: string;
   cpuMetric: string;
   latencyMetric: string;
-  status: 'AKTİF' | 'HAZIR' | 'TAMPONDA' | 'LOCK-FREE';
+  status: 'ACTIVE' | 'READY' | 'BUFFERED' | 'LOCK-FREE';
 }
 
 const MODULES: ModuleSpec[] = [
@@ -50,25 +50,25 @@ const MODULES: ModuleSpec[] = [
     pid: 1024,
     processName: 'com.berkeozder.ai.VectorEmbeddingService',
     tag: 'MODULE // 01',
-    title: 'Spring AI & Anlamsal Vektör Arama Motoru',
-    category: 'YAPAY ZEKA & İÇERİK ANLAMA',
+    title: 'Spring AI & Semantic Vector Search Engine',
+    category: 'ARTIFICIAL INTELLIGENCE & NLP',
     description:
-      'Klasik kelime aramasının ötesine geçerek, kullanıcı sorgularını anlam ilişkisine göre analiz eder; farklı kelimeler veya yazım hataları kullanılsa dahi en alakalı makaleleri milisaniyeler içinde bulup sıralar.',
+      'Going beyond literal keyword searches, analyzes user queries by contextual meaning; returns and ranks relevant articles in sub-milliseconds even with colloquial wording or misspellings.',
     specs: [
-      { label: 'VEKTÖR BOYUTU', value: '128 Boyutlu Yoğun' },
-      { label: 'BENZERLİK METRİĞİ', value: 'Kosinüs Benzerliği' },
-      { label: 'HİBRİT ARAMA', value: 'Hibrit Skorlama (RRF)' },
-      { label: 'SORGU GECİKMESİ', value: '~1.8ms P99' },
+      { label: 'VECTOR DIMENSION', value: '128-Dimensional Dense' },
+      { label: 'SIMILARITY METRIC', value: 'Cosine Similarity' },
+      { label: 'HYBRID SEARCH', value: 'Hybrid RRF Fusion' },
+      { label: 'QUERY LATENCY', value: '~1.8ms P99' },
     ],
     whyExists: {
-      bottleneck: "Geleneksel SQL 'LIKE %query%' araması semantik bağlamı yakalayamaz ('bellek yönetimi' arandığında 'garbage collector' bulunamaz).",
-      solution: 'Yapay zeka vektör eşleştirmesi ile kelimeler arasındaki anlamsal yakınlık hesaplanır.',
-      gain: '%94.2 kavramsal doğruluk ve 1.4ms P99 sorgu gecikmesi.',
+      bottleneck: "Traditional SQL 'LIKE %query%' cannot capture semantic context (searching for 'memory management' misses 'garbage collector').",
+      solution: 'Calculates semantic proximity between concepts in multi-dimensional vector space.',
+      gain: '94.2% conceptual precision and 1.4ms P99 retrieval latency.',
     },
     concurrencyMetric: '128D Dense Embed',
     cpuMetric: '1.8% CPU (SIMD)',
     latencyMetric: '~1.4ms',
-    status: 'AKTİF',
+    status: 'ACTIVE',
     language: 'java',
     code: `@Component
 public class VectorEmbeddingService {
@@ -76,7 +76,7 @@ public class VectorEmbeddingService {
     private EmbeddingClient embeddingClient;
 
     public float[] embedDocument(String text) {
-        // 128 boyutlu normalize vektör üretir
+        // Generates 128-dimensional normalized embedding vector
         return embeddingClient.embed(text);
     }
 
@@ -91,31 +91,31 @@ public class VectorEmbeddingService {
     processName: 'com.berkeozder.loom.VirtualThreadDispatcher',
     tag: 'MODULE // 02',
     title: 'Java 22 Virtual Threads (Project Loom)',
-    category: 'EŞZAMANLILIK & CONCURRENCY',
+    category: 'CONCURRENCY & VIRTUAL THREADS',
     description:
-      'Spring Boot 4 üzerinde thread-per-request modelini donanım seviyesinde hafif sanal iş parçacıklarına devrederek Tomcat thread pool darboğazlarını tamamen ortadan kaldırır.',
+      'Delegates the thread-per-request model on Spring Boot 4 to hardware-level lightweight virtual threads, eliminating Tomcat thread pool bottlenecks.',
     specs: [
-      { label: 'İŞ PARÇACIĞI', value: 'Kullanıcı Seviyesi (Sanal)' },
-      { label: 'EŞZAMANLI İSTEK', value: '10,000+ Kapasite' },
-      { label: 'OS THREAD KİLİTLEME', value: 'Sıfır Bloke (Lock-Free)' },
-      { label: 'BELLEK TÜKETİMİ', value: '~1KB / Thread' },
+      { label: 'THREAD MODEL', value: 'User-Space (Virtual)' },
+      { label: 'CONCURRENT CAPACITY', value: '10,000+ Concurrent' },
+      { label: 'OS THREAD BLOCKING', value: 'Zero Blocking (Lock-Free)' },
+      { label: 'MEMORY FOOTPRINT', value: '~1KB / Thread' },
     ],
     whyExists: {
-      bottleneck: 'Tomcat varsayılan 200 OS iş parçacığıyla çalışır; yavaş I/O beklemelerinde thread havuzu tükenir ve sunucu 503 kilitlenir.',
-      solution: 'Project Loom ile her gelen HTTP isteğine hafif sanal thread atanır; I/O anında OS carrier thread serbest bırakılır.',
-      gain: 'Thread başına 1MB yerine ~1KB RAM tüketimi ve sıfır platform thread blokeleme.',
+      bottleneck: 'Tomcat default pool runs 200 platform threads; blocking I/O calls quickly exhaust the pool, triggering 503 gateway timeouts.',
+      solution: 'Project Loom assigns lightweight virtual threads to incoming requests; releases carrier threads immediately during I/O wait.',
+      gain: '~1KB RAM consumption per thread instead of 1MB, with zero platform thread starvation.',
     },
-    concurrencyMetric: '10,000+ Sanal Thread',
+    concurrencyMetric: '10,000+ Virtual Threads',
     cpuMetric: '8 Core Carrier',
     latencyMetric: '< 0.8ms',
-    status: 'AKTİF',
+    status: 'ACTIVE',
     language: 'properties',
     code: `# application.properties - Spring Boot 4 Virtual Threads
 spring.threads.virtual.enabled=true
 server.tomcat.threads.max=200
 server.tomcat.threads.min-spare=20
 
-# Her gelen I/O isteği otomatik olarak Virtual Thread'e devredilir`,
+# All incoming I/O requests are automatically scheduled on virtual threads`,
   },
   {
     id: 'write-behind',
@@ -123,24 +123,24 @@ server.tomcat.threads.min-spare=20
     processName: 'com.berkeozder.metrics.RedisMetricBuffer',
     tag: 'MODULE // 03',
     title: 'Redis Write-Behind Buffer & Scheduled Sync',
-    category: 'HIGH-THROUGHPUT SAYAÇ YÖNETİMİ',
+    category: 'HIGH-THROUGHPUT COUNTER PIPELINE',
     description:
-      'Görüntülenme ve beğeni sayaçları PostgreSQL yerine Redis Hash tamponunda atomik HINCRBY komutlarıyla toplanır. Her 30 saniyede bir çalışan arka plan görevi deltaları topluca veritabanına aktarır.',
+      'Aggregates article view and clap telemetry in Redis Hash structures via atomic HINCRBY. A scheduled background task flushes accumulated deltas to PostgreSQL every 30 seconds.',
     specs: [
-      { label: 'YAZMA GECİKMESİ', value: '< 0.5ms (O(1))' },
-      { label: 'TAMPON HAFIZA', value: 'Redis In-Memory' },
-      { label: 'TOPLU YAZIM', value: '30sn Periyodik' },
-      { label: 'DİSK YÜKÜNDE DÜŞÜŞ', value: '%98 Azalma' },
+      { label: 'WRITE LATENCY', value: '< 0.5ms (O(1))' },
+      { label: 'BUFFER MEMORY', value: 'Redis In-Memory' },
+      { label: 'BATCH SYNC', value: '30s Periodic' },
+      { label: 'DISK I/O REDUCTION', value: '98% Reduction' },
     ],
     whyExists: {
-      bottleneck: 'Her makale okunmasında veya beğenilmesinde veritabanı satır kilidi (Row Lock) almak yüksek trafikte DB disk I/O kilitlenmesi yaratır.',
-      solution: 'Sayaç artışları Redis Hash içinde O(1) HINCRBY ile toplanır; 30 saniyede bir toplu (batch) DB yazımı yapılır.',
-      gain: '%98 DB disk I/O tasarrufu ve sıfır satır kilitleme çekişmesi.',
+      bottleneck: 'Acquiring row-level locks on PostgreSQL for every page view and clap causes intense disk I/O contention under load.',
+      solution: 'Counters increment in RAM via O(1) HINCRBY; synchronized to database periodically in isolated batch transactions.',
+      gain: '98% database disk I/O reduction and zero row lock contention.',
     },
     concurrencyMetric: 'O(1) HINCRBY Buffer',
     cpuMetric: '0.4% Redis CPU',
     latencyMetric: '< 0.3ms',
-    status: 'TAMPONDA',
+    status: 'BUFFERED',
     language: 'java',
     code: `@Service
 public class RedisMetricBufferService {
@@ -148,7 +148,7 @@ public class RedisMetricBufferService {
     private StringRedisTemplate redisTemplate;
 
     public void incrementView(Long blogId) {
-        // O(1) atomik işlem: disk I/O sıfır
+        // O(1) in-memory atomic operation: zero disk I/O
         redisTemplate.opsForHash().increment("novablog:metrics:views:buffer", blogId.toString(), 1L);
     }
 }`,
@@ -158,23 +158,23 @@ public class RedisMetricBufferService {
     pid: 4096,
     processName: 'com.berkeozder.entity.OptimisticLockValidator',
     tag: 'MODULE // 04',
-    title: 'JPA @Version ile Optimistic Concurrency Control',
-    category: 'VERİ BÜTÜNLÜĞÜ & LOCKING',
+    title: 'JPA @Version with Optimistic Concurrency Control',
+    category: 'DATA INTEGRITY & LOCKING',
     description:
-      'Kayıp Güncelleme (Lost Update) anomalilerini lock-free önler. Satır kilidi tutmaksızın eski versiyonla gelen eşzamanlı istekleri tespit eder ve RFC 7807 409 Conflict Problem Details ile yönetir.',
+      'Prevents Lost Update anomalies lock-free. Intercepts concurrent mutations carrying stale version tokens and handles them transparently via RFC 7807 409 Conflict Problem Details.',
     specs: [
-      { label: 'KİLİTLEME TİPİ', value: 'İyimser (Lock-Free)' },
-      { label: 'KİLİTLENME RİSKİ', value: 'Sıfır (Satır Kilidi Yok)' },
-      { label: 'ÇAKIŞMA KODU', value: 'HTTP 409 Çakışma' },
-      { label: 'GERİ ALMA İLKESİ', value: 'Otomatik UI Geri Alma' },
+      { label: 'LOCKING TYPE', value: 'Optimistic (Lock-Free)' },
+      { label: 'DEADLOCK RISK', value: 'Zero (No Row Locks)' },
+      { label: 'CONFLICT CODE', value: 'HTTP 409 Conflict' },
+      { label: 'RECOVERY POLICY', value: 'Automatic UI Rollback' },
     ],
     whyExists: {
-      bottleneck: 'Aynı makaleyi eşzamanlı güncelleyen iki editörden biri diğerinin içeriğini farkında olmadan ezebilir (Lost Update anomalisi).',
-      solution: 'Pessimistic kilitleme yerine @Version long alanı ile lock-free OCC uygulanır; eski versiyonla gelen istek RFC 7807 409 Conflict döner.',
-      gain: 'Sıfır kilitlenme (deadlock) riski, tam veri bütünlüğü ve otomatik UI geri alma.',
+      bottleneck: 'Two editors updating the same article concurrently can overwrite each other without warning (Lost Update anomaly).',
+      solution: 'Replaces pessimistic database locking with @Version long fields for OCC; stale updates return RFC 7807 409 Conflict.',
+      gain: 'Zero deadlock risk, complete transactional data integrity, and automatic UI state recovery.',
     },
     concurrencyMetric: 'Lock-Free OCC (@Version)',
-    cpuMetric: 'Sıfır Lock Bekleme',
+    cpuMetric: 'Zero Lock Contention',
     latencyMetric: '~0.2ms',
     status: 'LOCK-FREE',
     language: 'java',
@@ -195,25 +195,25 @@ public class BlogEntity {
     pid: 5200,
     processName: 'com.berkeozder.batch.ChunkCleanupPipeline',
     tag: 'MODULE // 05',
-    title: 'Spring Batch 5 Chunk-Tabanlı ETL Boru Hattı',
-    category: 'BÜYÜK VERİ & ASENKRON İŞLEME',
+    title: 'Spring Batch 5 Chunk-Based ETL Pipeline',
+    category: 'BIG DATA & ASYNC PIPELINES',
     description:
-      'Milyonlarca satırlık veri temizliği (Soft-Delete Cleanup) ve yazar analitik hesaplamalarını 50\'şerli chunk bloklarında işler. Retry, skip ve transaction rollback mekanizmaları devrededir.',
+      'Processes millions of soft-deleted records and author interaction analytics in 50-item chunk transactions with automatic retry, skip, and rollback mechanisms.',
     specs: [
-      { label: 'PAKET BOYUTU', value: '50 Kayıt / Commit' },
-      { label: 'HATA TOLERANSI', value: '3 Tekrar Deneme' },
-      { label: 'YÜRÜTME DURUMU', value: 'PostgreSQL Metadata' },
-      { label: 'TETİKLEME ŞEKLİ', value: 'Zamanlanmış & REST' },
+      { label: 'CHUNK SIZE', value: '50 Items / Commit' },
+      { label: 'FAULT TOLERANCE', value: '3 Retry Limit' },
+      { label: 'EXECUTION STATE', value: 'PostgreSQL Metadata' },
+      { label: 'TRIGGER MECHANISM', value: 'Scheduled & REST' },
     ],
     whyExists: {
-      bottleneck: "Milyonlarca silinmiş makaleyi tek bir 'DELETE FROM' ile silmek tablo kilitlenmesine ve OutOfMemory bellek aşımına yol açar.",
-      solution: "Spring Batch 5 chunk-tabanlı mimari ile kayıtlar 50'şerli paketlerde okunur, doğrulanır ve izole transaction içinde silinir.",
-      gain: 'Hata durumunda 3 retry toleransı, sıfır bellek sızıntısı ve kesintisiz arka plan arşivleme.',
+      bottleneck: "Purging millions of deleted articles with a single 'DELETE FROM' locks tables and triggers OutOfMemoryErrors.",
+      solution: 'Reads, validates, and purges records in 50-item chunks within isolated transactions using Spring Batch 5.',
+      gain: '3-retry fault tolerance, zero memory leaks, and non-blocking background archiving.',
     },
     concurrencyMetric: '50 Items / Isolated TX',
     cpuMetric: 'Chunk Commit: 50ms',
     latencyMetric: '~12ms / Chunk',
-    status: 'HAZIR',
+    status: 'READY',
     language: 'java',
     code: `@Bean
 public Step cleanupStep(JobRepository repo, PlatformTransactionManager tx) {
@@ -353,14 +353,14 @@ export const ModularArchitectureConsole: React.FC = () => {
         <div className="space-y-1.5">
           <div className="inline-flex items-center gap-2 font-mono text-xs uppercase font-bold text-emerald-600 dark:text-emerald-400">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-            <span>SİTEMAP PARÇASI 5 // MAC OS X ACTIVITY MONITOR KONSOLU</span>
+            <span>SITEMAP SECTION 5 // MAC OS X ACTIVITY MONITOR CONSOLE</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight flex items-center gap-3">
-            <span>DAĞITIK SİSTEM MİMARİSİ & DONANIM TEŞHİSLERİ</span>
+            <span>DISTRIBUTED SYSTEMS ARCHITECTURE &amp; HARDWARE TELEMETRY</span>
           </h2>
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-3xl font-sans leading-relaxed">
-            Mac OS X Snow Leopard & Lion Activity Monitor standartlarında tasarlanan donanım konsolu.
-            Java 22 Project Loom, Spring AI 128D vektör, Redis Write-Behind ve JPA Optimistic Locking süreçlerini canlı inceleyin.
+            Hardware diagnostic console modeled after Mac OS X Snow Leopard &amp; Lion Activity Monitor standards.
+            Inspect Java 22 Project Loom, Spring AI 128D vector space, Redis Write-Behind, and JPA Optimistic Locking live.
           </p>
         </div>
 
@@ -384,7 +384,7 @@ export const ModularArchitectureConsole: React.FC = () => {
             </div>
             <span className="ml-3 font-mono text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              Activity Monitor — Nova Dağıtık Çekirdek (pid: 1024..5200)
+              Activity Monitor — Nova Distributed Core (pid: 1024..5200)
             </span>
           </div>
 
@@ -425,7 +425,7 @@ export const ModularArchitectureConsole: React.FC = () => {
           </div>
 
           <div className="hidden lg:flex items-center gap-2 text-xs font-mono text-zinc-500">
-            <span>DAĞITIK MOD:</span>
+            <span>DISTRIBUTED MODE:</span>
             <span className="text-emerald-700 dark:text-emerald-400 font-bold">LOCK-FREE CLUSTER</span>
           </div>
         </div>
@@ -462,7 +462,7 @@ export const ModularArchitectureConsole: React.FC = () => {
           {/* Mechanical Rocker Switches Panel (3 cols) */}
           <div className="md:col-span-3 p-3 rounded-lg bg-[#dedede] dark:bg-[#15171c] border border-[#bfbfbf] dark:border-[#2c3038] flex flex-col justify-between space-y-2 select-none">
             <div className="text-[10px] font-mono font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider flex items-center justify-between">
-              <span>DONANIM ŞALTERLERİ</span>
+              <span>HARDWARE TOGGLES</span>
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             </div>
 
@@ -474,7 +474,7 @@ export const ModularArchitectureConsole: React.FC = () => {
               <div
                 role="switch"
                 aria-checked={virtualThreadsEnabled}
-                aria-label="Loom Sanal İş Parçacıkları Donanım Şalteri"
+                aria-label="Loom Virtual Threads Hardware Switch"
                 tabIndex={0}
                 onClick={() => handleToggleRocker('loom')}
                 onKeyDown={(e) => {
@@ -484,7 +484,7 @@ export const ModularArchitectureConsole: React.FC = () => {
                   }
                 }}
                 className={`mac-mechanical-rocker-pro ${virtualThreadsEnabled ? 'active' : ''}`}
-                title="Loom Virtual Threads Toggle (Boşluk/Enter veya Tıkla)"
+                title="Loom Virtual Threads Toggle (Space/Enter or Click)"
               >
                 <span className="rocker-track-label rocker-track-off">OFF</span>
                 <span className="rocker-track-label rocker-track-on">ON</span>
@@ -502,7 +502,7 @@ export const ModularArchitectureConsole: React.FC = () => {
               <div
                 role="switch"
                 aria-checked={redisBufferEnabled}
-                aria-label="Redis Write-Behind Tampon Donanım Şalteri"
+                aria-label="Redis Write-Behind Buffer Hardware Switch"
                 tabIndex={0}
                 onClick={() => handleToggleRocker('redis')}
                 onKeyDown={(e) => {
@@ -512,7 +512,7 @@ export const ModularArchitectureConsole: React.FC = () => {
                   }
                 }}
                 className={`mac-mechanical-rocker-pro ${redisBufferEnabled ? 'active' : ''}`}
-                title="Redis Write-Behind Buffer Toggle (Boşluk/Enter veya Tıkla)"
+                title="Redis Write-Behind Buffer Toggle (Space/Enter or Click)"
               >
                 <span className="rocker-track-label rocker-track-off">OFF</span>
                 <span className="rocker-track-label rocker-track-on">ON</span>
@@ -530,7 +530,7 @@ export const ModularArchitectureConsole: React.FC = () => {
               <div
                 role="switch"
                 aria-checked={occLockFreeEnabled}
-                aria-label="JPA İyimser Kilitleme Donanım Şalteri"
+                aria-label="JPA Optimistic Concurrency Control Hardware Switch"
                 tabIndex={0}
                 onClick={() => handleToggleRocker('occ')}
                 onKeyDown={(e) => {
@@ -540,7 +540,7 @@ export const ModularArchitectureConsole: React.FC = () => {
                   }
                 }}
                 className={`mac-mechanical-rocker-pro ${occLockFreeEnabled ? 'active' : ''}`}
-                title="Optimistic Concurrency Control Toggle (Boşluk/Enter veya Tıkla)"
+                title="Optimistic Concurrency Control Toggle (Space/Enter or Click)"
               >
                 <span className="rocker-track-label rocker-track-off">OFF</span>
                 <span className="rocker-track-label rocker-track-on">ON</span>
@@ -558,11 +558,11 @@ export const ModularArchitectureConsole: React.FC = () => {
             <thead>
               <tr>
                 <th style={{ width: '65px' }}>PID</th>
-                <th>SÜREÇ / MİMARİ MODÜL ADI</th>
-                <th>EŞZAMANLILIK (CONCURRENCY)</th>
-                <th>KAYNAK / CPU</th>
-                <th>P99 GECİKME</th>
-                <th style={{ width: '90px' }}>DURUM</th>
+                <th>PROCESS / ARCHITECTURAL MODULE</th>
+                <th>CONCURRENCY MODEL</th>
+                <th>RESOURCE / CPU</th>
+                <th>P99 LATENCY</th>
+                <th style={{ width: '90px' }}>STATUS</th>
               </tr>
             </thead>
             <tbody>
@@ -595,7 +595,7 @@ export const ModularArchitectureConsole: React.FC = () => {
                         className={`inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
                           isSelected
                             ? 'bg-white/20 text-white'
-                            : m.status === 'AKTİF'
+                            : m.status === 'ACTIVE'
                             ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
                             : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700'
                         }`}
@@ -639,17 +639,17 @@ export const ModularArchitectureConsole: React.FC = () => {
               ))}
             </div>
 
-            {/* Architectural Justification: "NEDEN VAR?" Box */}
+            {/* Architectural Justification: "WHY DOES IT EXIST?" Box */}
             <div className="p-3.5 rounded-xl bg-zinc-100/70 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 space-y-2 font-mono text-xs">
               <div className="flex items-center gap-2 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
                 <HelpCircle className="w-3.5 h-3.5" />
-                <span>NEDEN VAR? // MİMARİ GEREKÇE</span>
+                <span>WHY DOES IT EXIST? // ARCHITECTURAL RATIONALE</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 font-sans text-xs">
                 <div className="p-2.5 rounded-lg bg-white dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 space-y-1">
                   <div className="text-[10px] font-mono text-rose-500 font-bold uppercase flex items-center gap-1">
                     <AlertTriangle className="w-3 h-3" />
-                    DARBOĞAZ
+                    BOTTLENECK
                   </div>
                   <p className="text-zinc-600 dark:text-zinc-400 text-[11px] leading-snug">
                     {activeModule.whyExists.bottleneck}
@@ -658,7 +658,7 @@ export const ModularArchitectureConsole: React.FC = () => {
                 <div className="p-2.5 rounded-lg bg-white dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 space-y-1">
                   <div className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400 font-bold uppercase flex items-center gap-1">
                     <ShieldCheck className="w-3 h-3" />
-                    ÇÖZÜM
+                    SOLUTION
                   </div>
                   <p className="text-zinc-600 dark:text-zinc-400 text-[11px] leading-snug">
                     {activeModule.whyExists.solution}
@@ -667,7 +667,7 @@ export const ModularArchitectureConsole: React.FC = () => {
                 <div className="p-2.5 rounded-lg bg-white dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 space-y-1">
                   <div className="text-[10px] font-mono text-emerald-500 font-bold uppercase flex items-center gap-1">
                     <ArrowUpRight className="w-3 h-3" />
-                    KAZANIM
+                    GAIN
                   </div>
                   <p className="text-zinc-600 dark:text-zinc-400 text-[11px] leading-snug">
                     {activeModule.whyExists.gain}
@@ -681,7 +681,7 @@ export const ModularArchitectureConsole: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 font-bold text-zinc-950 dark:text-white uppercase text-[11px]">
                   <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                  <span>CANLI TELEMETRİ SİMÜLATÖRÜ //</span>
+                  <span>LIVE TELEMETRY SIMULATOR //</span>
                 </div>
                 <button
                   type="button"
@@ -690,13 +690,13 @@ export const ModularArchitectureConsole: React.FC = () => {
                   aria-disabled={isSimulating}
                   title={
                     isSimulating
-                      ? 'Simülasyon çalışıyor, lütfen bekleyin...'
-                      : 'Aktif mimari modül için gerçek zamanlı yük simülasyonunu başlat'
+                      ? 'Simulation running, please wait...'
+                      : 'Launch real-time workload simulation for active module'
                   }
                   className="mac-aqua-btn !px-4 !py-1.5 !text-xs uppercase font-mono font-bold"
                 >
                   {isSimulating ? <RotateCcw className="w-3.5 h-3.5 animate-spin text-white" /> : <Play className="w-3.5 h-3.5 fill-current text-white" />}
-                  <span>{isSimulating ? 'İŞLENİYOR...' : 'SİMÜLE ET'}</span>
+                  <span>{isSimulating ? 'PROCESSING...' : 'SIMULATE'}</span>
                 </button>
               </div>
 
@@ -704,8 +704,8 @@ export const ModularArchitectureConsole: React.FC = () => {
               {activeModuleId === 'spring-ai' && (
                 <div className="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-zinc-500">ANLAMSAL UYUM: %94.2 İSABET</span>
-                    <span className="text-emerald-500 font-bold">YANIT SÜRESİ: 1.4 MS</span>
+                    <span className="text-zinc-500">SEMANTIC ACCURACY: 94.2%</span>
+                    <span className="text-emerald-500 font-bold">RESPONSE TIME: 1.4 MS</span>
                   </div>
                   <div className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
                     <div
@@ -714,10 +714,10 @@ export const ModularArchitectureConsole: React.FC = () => {
                     />
                   </div>
                   <p className="text-[10px] text-zinc-500 font-sans">
-                    {simStep === 0 && 'Simülasyon hazır: Yapay zeka anlamsal eşleştirme motoru sorguyu bekliyor.'}
-                    {simStep === 1 && 'Sorgu çözümleniyor: Cümlenin anlamsal özeti ve anahtar kavramları çıkarılıyor...'}
-                    {simStep === 2 && 'Vektör veritabanı taranıyor: pgvector HNSW kosinüs benzerliği eşleştiriliyor...'}
-                    {simStep >= 3 && 'Eşleşme tamamlandı: %94.2 anlamsal uyum ile milisaniyeler içinde en doğru makale bulundu.'}
+                    {simStep === 0 && 'Simulation ready: Semantic retrieval engine awaiting query.'}
+                    {simStep === 1 && 'Deconstructing query: Extracting conceptual tokens and contextual embeddings...'}
+                    {simStep === 2 && 'Scanning vector space: Matching pgvector HNSW cosine similarity...'}
+                    {simStep >= 3 && 'Match complete: Retrieved target technical documentation with 94.2% semantic precision in milliseconds.'}
                   </p>
                 </div>
               )}
@@ -725,7 +725,7 @@ export const ModularArchitectureConsole: React.FC = () => {
               {activeModuleId === 'loom' && (
                 <div className="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-zinc-500">AKTİF SANAL THREAD:</span>
+                    <span className="text-zinc-500">ACTIVE VIRTUAL THREADS:</span>
                     <span className="text-emerald-500 font-bold">{simLoomThreads.toLocaleString()} CONCURRENT</span>
                   </div>
                   <div className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
@@ -736,7 +736,7 @@ export const ModularArchitectureConsole: React.FC = () => {
                   </div>
                   <div className="flex justify-between text-[10px] text-zinc-500 font-sans">
                     <span>Carrier OS Threads: 8 Core (Zero Blocked)</span>
-                    <span>RAM Maliyeti: ~{(simLoomThreads / 1024).toFixed(1)} MB</span>
+                    <span>RAM Footprint: ~{(simLoomThreads / 1024).toFixed(1)} MB</span>
                   </div>
                 </div>
               )}
@@ -744,12 +744,12 @@ export const ModularArchitectureConsole: React.FC = () => {
               {activeModuleId === 'write-behind' && (
                 <div className="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-zinc-500">REDIS HASH TAMPONU:</span>
+                    <span className="text-zinc-500">REDIS HASH BUFFER:</span>
                     <span className="text-emerald-500 font-bold">HINCRBY = {simBufferCount} DELTA</span>
                   </div>
                   <div className="flex items-center gap-2 text-[10px] text-zinc-500 font-sans">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>Disk I/O tasarrufu: %98. Her 30 saniyede bir DB Batch Flush tetiklenir.</span>
+                    <span>Disk I/O savings: 98%. Periodic DB Batch Flush triggers every 30 seconds.</span>
                   </div>
                 </div>
               )}
@@ -757,17 +757,17 @@ export const ModularArchitectureConsole: React.FC = () => {
               {activeModuleId === 'optimistic-locking' && (
                 <div className="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-zinc-500">LOCK-FREE DURUMU:</span>
+                    <span className="text-zinc-500">LOCK-FREE STATE:</span>
                     <span className="font-bold">
-                      {simConflictStatus === 'IDLE' && <span className="text-zinc-500">HAZIR (VERSION = 1)</span>}
-                      {simConflictStatus === 'RACE' && <span className="text-amber-500">EŞZAMANLI ÇAKIŞMA TESPİT EDİLDİ</span>}
-                      {simConflictStatus === '409_RESOLVED' && <span className="text-emerald-500">RFC 7807 409 CONFLICT YÖNETİLDİ</span>}
+                      {simConflictStatus === 'IDLE' && <span className="text-zinc-500">READY (VERSION = 1)</span>}
+                      {simConflictStatus === 'RACE' && <span className="text-amber-500">CONCURRENT RACE DETECTED</span>}
+                      {simConflictStatus === '409_RESOLVED' && <span className="text-emerald-500">RFC 7807 409 CONFLICT HANDLED</span>}
                     </span>
                   </div>
                   <p className="text-[10px] text-zinc-500 font-sans">
-                    {simConflictStatus === 'IDLE' && 'Satır kilitleme yok. İstekler versiyon numarası ile atomik doğrulanır.'}
-                    {simConflictStatus === 'RACE' && 'Kullanıcı A ve B aynı anda yazdı. B eski versiyon ile geldiğinden yakalandı.'}
-                    {simConflictStatus === '409_RESOLVED' && 'Veri kaybı (Lost Update) önlendi; istemciye 409 Conflict Problem Details iletildi.'}
+                    {simConflictStatus === 'IDLE' && 'No row locks held. Writes verified atomically via version number.'}
+                    {simConflictStatus === 'RACE' && 'Users A and B committed simultaneously. User B caught carrying stale version.'}
+                    {simConflictStatus === '409_RESOLVED' && 'Lost Update anomaly averted; 409 Conflict Problem Details returned to client.'}
                   </p>
                 </div>
               )}
@@ -775,7 +775,7 @@ export const ModularArchitectureConsole: React.FC = () => {
               {activeModuleId === 'spring-batch' && (
                 <div className="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-zinc-500">CHUNK BOYUTU: 50 ITEMS</span>
+                    <span className="text-zinc-500">CHUNK SIZE: 50 ITEMS</span>
                     <span className="text-emerald-500 font-bold">COMMIT: ISOLATED TX</span>
                   </div>
                   <div className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
@@ -785,7 +785,7 @@ export const ModularArchitectureConsole: React.FC = () => {
                     />
                   </div>
                   <p className="text-[10px] text-zinc-500 font-sans">
-                    Bellek sızıntısı olmadan Soft-Delete kayıtlar 50&apos;lik paketler halinde işlenir.
+                    Soft-deleted records purged in 50-item batches without memory leaks.
                   </p>
                 </div>
               )}
@@ -826,9 +826,9 @@ export const ModularArchitectureConsole: React.FC = () => {
             <div className="pt-4 border-t border-zinc-800 flex items-center justify-between text-[11px] text-zinc-400">
               <span className="flex items-center gap-1.5">
                 <Terminal className="w-3.5 h-3.5 text-zinc-400" />
-                <span>TEST DOĞRULAMASI: 201/201 GEÇTİ</span>
+                <span>TEST VERIFICATION: 201/201 PASSED</span>
               </span>
-              <span className="text-emerald-400 font-bold">RFC 7807 UYUMLU</span>
+              <span className="text-emerald-400 font-bold">RFC 7807 COMPLIANT</span>
             </div>
           </div>
         </div>

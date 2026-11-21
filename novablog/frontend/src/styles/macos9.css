@@ -15,7 +15,8 @@
   --mac9-border: #262626;
   --mac9-white: #FFFFFF;
   --mac9-black: #1F1F1F;
-  --mac9-selection: #333399; /* Azul (Figma Colours: #333399) */
+  --mac9-selection: #333399;
+  /* Azul (Figma Colours: #333399) */
   --mac9-lavender: #C6C8F9;
   --mac9-font-editorial: 'Apple Garamond', Garamond, Georgia, serif;
   --mac9-font-title: 'Charcoal', 'Chicago', 'Lucida Grande', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -101,28 +102,32 @@ html.macos9-mode,
 .mac9-text-body {
   font-family: var(--mac9-font-body);
   font-weight: 400;
-  font-size: 12px; /* 9pt */
+  font-size: 12px;
+  /* 9pt */
   line-height: 1.3;
 }
 
 .mac9-text-body-slanted {
   font-family: var(--mac9-font-body);
   font-style: italic;
-  font-size: 12px; /* 9pt */
+  font-size: 12px;
+  /* 9pt */
   line-height: 1.3;
 }
 
 .mac9-text-body-bold {
   font-family: var(--mac9-font-body);
   font-weight: 700;
-  font-size: 12px; /* 9pt */
+  font-size: 12px;
+  /* 9pt */
   line-height: 1.3;
 }
 
 .mac9-text-caption {
   font-family: var(--mac9-font-body);
   font-weight: 400;
-  font-size: 11px; /* 8pt */
+  font-size: 11px;
+  /* 8pt */
   line-height: 1.2;
 }
 
@@ -293,6 +298,7 @@ html.macos9-mode,
   color: #FFFFFF !important;
   border-radius: 2px;
 }
+
 .mac9-icon-selected .mac9-icon-img {
   filter: brightness(0.7) contrast(1.3);
 }
@@ -370,13 +376,11 @@ html.macos9-mode,
    ========================================================================== */
 
 .mac9-titlebar-stripes {
-  background: repeating-linear-gradient(
-    to bottom,
-    #E8E8E8,
-    #E8E8E8 1px,
-    #888888 1px,
-    #888888 2px
-  );
+  background: repeating-linear-gradient(to bottom,
+      #E8E8E8,
+      #E8E8E8 1px,
+      #888888 1px,
+      #888888 2px);
 }
 
 .mac9-window-frame {
@@ -390,6 +394,7 @@ html.macos9-mode,
 .mac9-window-inactive .mac9-titlebar-stripes {
   background: #DDDDDD !important;
 }
+
 .mac9-window-inactive .mac9-window-title {
   color: #808080 !important;
 }
@@ -408,14 +413,14 @@ html.macos9-mode,
 .macos9-mode ::-webkit-scrollbar-track,
 .mac9-scrollbar::-webkit-scrollbar-track {
   background-color: #ECECEC;
-  background-image: 
+  background-image:
     linear-gradient(45deg, #DFDFDF 25%, transparent 25%),
     linear-gradient(-45deg, #DFDFDF 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, #DFDFDF 75%),
     linear-gradient(-45deg, transparent 75%, #DFDFDF 75%);
   background-size: 4px 4px;
   border-left: 1px solid #808080;
-  box-shadow: inset 1px 0 1px rgba(0,0,0,0.15);
+  box-shadow: inset 1px 0 1px rgba(0, 0, 0, 0.15);
 }
 
 .macos9-mode ::-webkit-scrollbar-thumb,
@@ -426,17 +431,15 @@ html.macos9-mode,
   border-radius: 0px;
   min-height: 20px;
   /* 3 Horizontal Grip Ridges in thumb center */
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent 4px,
-    #FFFFFF 4px,
-    #FFFFFF 5px,
-    #808080 5px,
-    #808080 6px,
-    transparent 6px,
-    transparent 10px
-  );
+  background-image: repeating-linear-gradient(to bottom,
+      transparent,
+      transparent 4px,
+      #FFFFFF 4px,
+      #FFFFFF 5px,
+      #808080 5px,
+      #808080 6px,
+      transparent 6px,
+      transparent 10px);
 }
 
 .macos9-mode ::-webkit-scrollbar-thumb:active,
@@ -494,19 +497,18 @@ html.macos9-mode,
   0% {
     background-position: 0 0;
   }
+
   100% {
     background-position: 24px 0;
   }
 }
 
 .mac9-progress-stripe {
-  background-image: repeating-linear-gradient(
-    -45deg,
-    #336699,
-    #336699 6px,
-    #88bbee 6px,
-    #88bbee 12px
-  );
+  background-image: repeating-linear-gradient(-45deg,
+      #336699,
+      #336699 6px,
+      #88bbee 6px,
+      #88bbee 12px);
   background-size: 24px 24px;
   animation: mac9-barber-pole 0.65s linear infinite;
 }
@@ -518,18 +520,16 @@ html.macos9-mode,
 .mac9-control-strip {
   background: linear-gradient(180deg, #DDDDDD 0%, #CCCCCC 100%);
   border: 1px solid #262626;
-  box-shadow: 0 -1px 2px rgba(0,0,0,0.2), inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #808080;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2), inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #808080;
   border-radius: 4px 4px 0 0;
 }
 
 .mac9-control-strip-tab {
-  background: repeating-linear-gradient(
-    to right,
-    #DDDDDD,
-    #DDDDDD 2px,
-    #808080 2px,
-    #808080 3px
-  );
+  background: repeating-linear-gradient(to right,
+      #DDDDDD,
+      #DDDDDD 2px,
+      #808080 2px,
+      #808080 3px);
   cursor: pointer;
 }
 
@@ -537,6 +537,7 @@ html.macos9-mode,
   border-right: 1px solid #808080;
   border-left: 1px solid #FFFFFF;
 }
+
 .mac9-control-strip-btn:active,
 .mac9-control-strip-btn.active {
   background-color: #000080;
@@ -551,10 +552,12 @@ html.macos9-mode,
     opacity: 0.9;
     transform: scale(0.2);
   }
+
   50% {
     opacity: 0.7;
     transform: scale(0.6);
   }
+
   100% {
     opacity: 0;
     transform: scale(1);
@@ -595,7 +598,8 @@ html.macos9-mode,
 
 .mac9-menu-item:hover,
 .mac9-menu-item.active {
-  background-color: var(--mac9-selection); /* Azul #333399 */
+  background-color: var(--mac9-selection);
+  /* Azul #333399 */
   color: #FFFFFF;
 }
 
@@ -620,6 +624,7 @@ html.macos9-mode,
   border-left: 5px solid #262626;
   margin-left: 8px;
 }
+
 .mac9-menu-item-submenu:hover::after {
   border-left-color: #FFFFFF;
 }

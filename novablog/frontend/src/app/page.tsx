@@ -59,10 +59,10 @@ interface SuggestedAuthor {
 
 const SUGGESTED_AUTHORS: SuggestedAuthor[] = [
   {
-    name: 'Abdullah Berke Özder',
+    name: 'Abdullah Berke Ozder',
     role: 'Senior Systems Architect & Tech Lead',
     initial: 'A',
-    bio: 'Java 22 Loom sanal iş parçacıkları, yüksek throughput dağıtık sistemler ve Spring Boot mimarisi.',
+    bio: 'Java 22 Loom virtual threads, high-throughput distributed systems, and Spring Boot architecture.',
     articlesCount: 4,
     topics: ['Java 22', 'Loom', 'Distributed Systems'],
   },
@@ -70,29 +70,29 @@ const SUGGESTED_AUTHORS: SuggestedAuthor[] = [
     name: 'Dr. Selin Demir',
     role: 'Principal AI & Data Systems Researcher',
     initial: 'S',
-    bio: 'Spring AI, pgvector 128D anlamsal arama ve büyük dil modellerinde RAG optimizasyonu.',
+    bio: 'Spring AI, pgvector 128D semantic search, and RAG optimization for large language models.',
     articlesCount: 1,
     topics: ['Spring AI', 'Vector DB', 'Embeddings'],
   },
   {
-    name: 'Caner Aydın',
+    name: 'Caner Aydin',
     role: 'Staff Cloud & Kubernetes Architect',
     initial: 'C',
-    bio: 'Cloud-native mimariler, eBPF gözlemlenebilirlik ve sıfır güven (Zero-Trust) güvenlik altyapıları.',
+    bio: 'Cloud-native architectures, eBPF observability, and zero-trust security infrastructure.',
     articlesCount: 1,
     topics: ['Security', 'Cloud', 'TOTP'],
   },
 ];
 
 const TOPIC_PILLS = [
-  { id: 'all', label: 'TÜM KONULAR', tag: null },
-  { id: 'tech', label: 'TEKNOLOJİ & BULUT', tag: 'cloud' },
-  { id: 'ai', label: 'AI GELİŞİMİ & AJANLAR', tag: 'ai' },
+  { id: 'all', label: 'ALL TOPICS', tag: null },
+  { id: 'tech', label: 'TECH & CLOUD', tag: 'cloud' },
+  { id: 'ai', label: 'AI & AGENTS', tag: 'ai' },
   { id: 'react', label: 'REACT & FRONTEND', tag: 'react' },
   { id: 'backend', label: 'BACKEND & JAVA 22', tag: 'java' },
-  { id: 'mcp', label: 'MCP PROTOKOLÜ', tag: 'mcp' },
-  { id: 'redis', label: 'REDIS ÖNBELLEK', tag: 'redis' },
-  { id: 'security', label: '2FA GÜVENLİK', tag: 'security' },
+  { id: 'mcp', label: 'MCP PROTOCOL', tag: 'mcp' },
+  { id: 'redis', label: 'REDIS CACHING', tag: 'redis' },
+  { id: 'security', label: '2FA SECURITY', tag: 'security' },
 ];
 
 export default function Home() {
@@ -269,8 +269,8 @@ export default function Home() {
       blog.authorUsername === 'selindemir'
         ? 'Dr. Selin Demir'
         : blog.authorUsername === 'caneraydin'
-        ? 'Caner Aydın'
-        : blog.author || 'Abdullah Berke Özder';
+        ? 'Caner Aydin'
+        : blog.author || 'Abdullah Berke Ozder';
 
     // 0. Publication Type Filter ('all' | 'article' | 'dispatch')
     if (publicationTypeFilter !== 'all') {
@@ -386,7 +386,7 @@ export default function Home() {
           }}
         />
 
-        {/* 2. Main Publication Feed (Keşfet / Takip Edilenler / Okuma Listem) */}
+        {/* 2. Main Publication Feed (Explore / Following / Reading List) */}
         <div id="articles-feed" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pb-36 sm:pb-44 space-y-4 scroll-mt-14">
           {/* Mac OS X Unified Finder Scope Bar (Single-Tier High Ergonomics Standard) */}
           <div className="mac-scope-bar px-3 py-2 sm:px-4 rounded-xl border border-black/10 dark:border-white/10 bg-gradient-to-b from-white/95 via-zinc-100/90 to-zinc-200/90 dark:from-[#242730]/95 dark:via-[#1c1e26]/90 dark:to-[#14161c]/90 backdrop-blur-md shadow-md flex flex-wrap items-center justify-between gap-2.5">
@@ -402,7 +402,7 @@ export default function Home() {
                   className={`mac-scope-segment ${feedMode === 'explore' ? 'active' : ''}`}
                 >
                   <Compass className="w-3.5 h-3.5 text-emerald-500" />
-                  <span>Keşfet ({blogs.length})</span>
+                  <span>Explore ({blogs.length})</span>
                 </button>
                 <button
                   type="button"
@@ -413,7 +413,7 @@ export default function Home() {
                   className={`mac-scope-segment ${feedMode === 'following' ? 'active' : ''}`}
                 >
                   <Users className="w-3.5 h-3.5 text-cyan-500" />
-                  <span>Takip Edilenler</span>
+                  <span>Following</span>
                   {followedAuthors.length > 0 && (
                     <span className="w-4 h-4 rounded-full bg-cyan-500 text-white text-[9px] font-mono flex items-center justify-center font-bold">
                       {followedAuthors.length}
@@ -429,7 +429,7 @@ export default function Home() {
                   className={`mac-scope-segment ${feedMode === 'bookmarks' ? 'active' : ''}`}
                 >
                   <Bookmark className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Okuma Listem</span>
+                  <span>Reading List</span>
                   {bookmarkedIds.length > 0 && (
                     <span className="w-4 h-4 rounded-full bg-amber-500 text-white text-[9px] font-mono flex items-center justify-center font-bold">
                       {bookmarkedIds.length}
@@ -448,7 +448,7 @@ export default function Home() {
                   }}
                   className={`mac-scope-segment ${publicationTypeFilter === 'all' ? 'active' : ''}`}
                 >
-                  <span>Tümü</span>
+                  <span>All</span>
                 </button>
                 <button
                   type="button"
@@ -458,7 +458,7 @@ export default function Home() {
                   }}
                   className={`mac-scope-segment ${publicationTypeFilter === 'article' ? 'active' : ''}`}
                 >
-                  <span>Makaleler</span>
+                  <span>Articles</span>
                 </button>
                 <button
                   type="button"
@@ -469,7 +469,7 @@ export default function Home() {
                   className={`mac-scope-segment ${publicationTypeFilter === 'dispatch' ? 'active' : ''}`}
                 >
                   <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-1" />
-                  <span>Haberler</span>
+                  <span>Dispatches</span>
                 </button>
               </div>
             </div>
@@ -484,9 +484,9 @@ export default function Home() {
                   setSelectedCategory(e.target.value ? Number(e.target.value) : null);
                 }}
                 className="h-7 px-2 text-[11px] font-semibold rounded-md border border-black/20 dark:border-white/20 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer shadow-inner focus:outline-none"
-                aria-label="Kategori"
+                aria-label="Category"
               >
-                <option value="">Tüm Kategoriler</option>
+                <option value="">All Categories</option>
                 {categories.map((c) => {
                   const catId = c.categoryId ?? c.blogCategoryId;
                   return (
@@ -506,11 +506,11 @@ export default function Home() {
                     setExploreSort(e.target.value as 'trending' | 'featured' | 'latest');
                   }}
                   className="h-7 px-2 text-[11px] font-semibold rounded-md border border-black/20 dark:border-white/20 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer shadow-inner focus:outline-none"
-                  aria-label="Sıralama"
+                  aria-label="Sort"
                 >
-                  <option value="trending">🔥 Trendler</option>
-                  <option value="featured">✨ Editörün Seçimi</option>
-                  <option value="latest">⏱️ En Yeni</option>
+                  <option value="trending">🔥 Trending</option>
+                  <option value="featured">✨ Featured</option>
+                  <option value="latest">⏱️ Latest</option>
                 </select>
               )}
 
@@ -521,7 +521,7 @@ export default function Home() {
                   id="blog-search-input"
                   name="blogSearch"
                   type="text"
-                  placeholder="Filtrele... (⌘K)"
+                  placeholder="Filter... (⌘K)"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="mac-search-recessed !h-7 !text-[11px] !pl-7 !pr-6 w-full"
@@ -545,10 +545,10 @@ export default function Home() {
             {hasActiveFilters && (
               <div className="flex items-center justify-between pt-2 border-t border-black/5 dark:border-white/5 text-xs text-zinc-600 dark:text-zinc-400">
                 <span className="truncate">
-                  {sortedBlogs.length} makale listeleniyor
+                  {sortedBlogs.length} articles displayed
                   {selectedTopic ? ` (#${selectedTopic})` : ''}
                   {activeCategoryObj ? ` (${activeCategoryObj.categoryName})` : ''}
-                  {publicationTypeFilter !== 'all' ? ` (${publicationTypeFilter === 'article' ? 'Makaleler' : 'Haberler'})` : ''}
+                  {publicationTypeFilter !== 'all' ? ` (${publicationTypeFilter === 'article' ? 'Articles' : 'Dispatches'})` : ''}
                   {searchTerm ? ` "${searchTerm}"` : ''}
                 </span>
                 <button
@@ -563,7 +563,7 @@ export default function Home() {
                   className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-[11px] font-bold transition-colors cursor-pointer hover:bg-rose-500 hover:text-white shrink-0"
                 >
                   <X className="w-3 h-3" />
-                  <span>Filtreyi Sıfırla</span>
+                  <span>Reset Filters</span>
                 </button>
               </div>
             )}
@@ -579,13 +579,13 @@ export default function Home() {
                   </div>
                   <div>
                     <h4 className="text-base font-bold text-zinc-950 dark:text-white flex items-center gap-2">
-                      Spring AI & pgvector Anlamsal Arama Sonuçları
+                      Spring AI & pgvector Semantic Search Results
                       <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-bold">
-                        {semanticResults.length} eşleşme
+                        {semanticResults.length} matches
                       </span>
                     </h4>
                     <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                      128-boyutlu gömme vektör uzayında kosinüs benzerliği (cosine distance) ile sıralandı.
+                      Ranked by cosine distance metric within 128-dimensional embedding vector space.
                     </p>
                   </div>
                 </div>
@@ -595,13 +595,13 @@ export default function Home() {
                   className="px-3 py-1.5 rounded-full bg-zinc-200/80 dark:bg-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white flex items-center gap-1.5 cursor-pointer transition-colors"
                 >
                   <X className="w-3.5 h-3.5" />
-                  <span>Sonuçları Temizle</span>
+                  <span>Clear Results</span>
                 </button>
               </div>
 
               {semanticResults.length === 0 ? (
                 <div className="py-8 text-center text-xs text-zinc-500 font-mono">
-                  Belirtilen eşik değerinde (threshold: 0.45) anlamsal eşleşme bulunamadı. Standart metin araması sonuçlarını inceleyebilirsiniz.
+                  No semantic matches found at threshold (0.45). You can explore standard keyword search results.
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
@@ -614,7 +614,7 @@ export default function Home() {
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-xs font-mono">
                           <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-bold">
-                            Benzerlik: %{(result.similarityScore * 100).toFixed(1)}
+                            Similarity: %{(result.similarityScore * 100).toFixed(1)}
                           </span>
                           <span className="text-[11px] text-zinc-400 uppercase font-bold tracking-wider">pgvector</span>
                         </div>
@@ -627,10 +627,10 @@ export default function Home() {
                       </div>
                       <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 text-xs text-zinc-500 flex items-center justify-between">
                         <span className="font-medium text-zinc-700 dark:text-zinc-300 truncate max-w-[150px]">
-                          {result.blog.author || 'Mühendis'}
+                          {result.blog.author || 'Architect'}
                         </span>
                         <span className="text-emerald-600 dark:text-emerald-400 font-bold group-hover:underline flex items-center gap-1">
-                          İncele <span>→</span>
+                          Inspect <span>→</span>
                         </span>
                       </div>
                     </div>
@@ -640,20 +640,19 @@ export default function Home() {
             </div>
           )}
 
-{/* Smart Seed Onboarding Widget (When Following Feed is Empty) */}
+          {/* Smart Seed Onboarding Widget (When Following Feed is Empty) */}
           {feedMode === 'following' && followedAuthors.length === 0 && (
             <div className="rounded-3xl p-6 sm:p-8 bg-white dark:bg-[#0d0f14] border border-zinc-200/90 dark:border-zinc-800/90 space-y-6 shadow-sm">
               <div className="max-w-2xl space-y-2">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-xs font-mono font-bold uppercase">
                   <Users className="w-3.5 h-3.5" />
-                  <span>KİŞİSEL AKIŞ BAŞLANGICI</span>
+                  <span>PERSONAL STREAM ONBOARDING</span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-zinc-950 dark:text-white">
-                  Takip ettiğiniz mühendislerin makaleleri burada görünür.
+                  Articles from engineers you follow will appear here.
                 </h3>
                 <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  Şu anda henüz bir yazar takip etmiyorsunuz. Nova topluluğundaki kıdemli mimarları ve sistem
-                  mühendislerini takip ederek kişiselleştirilmiş akışınızı hemen oluşturun:
+                  You are not following any authors yet. Follow senior architects and systems engineers across the Nova community to customize your stream:
                 </p>
               </div>
 
@@ -670,7 +669,7 @@ export default function Home() {
                           type="button"
                           onClick={() => setActiveAuthorProfile(author.name)}
                           className="flex items-center gap-3 cursor-pointer group/author text-left bg-transparent border-none p-0"
-                          title="Yazar profilini aç"
+                          title="Open author profile"
                         >
                           <div className="w-10 h-10 rounded-full bg-zinc-900 dark:bg-zinc-800 text-white flex items-center justify-center font-bold text-sm uppercase shadow-sm group-hover/author:ring-2 group-hover/author:ring-emerald-500 transition-all">
                             {author.initial}
@@ -711,12 +710,12 @@ export default function Home() {
                         {isFollowing ? (
                           <>
                             <Check className="w-3.5 h-3.5 text-emerald-500" />
-                            <span>Takip Ediliyor</span>
+                            <span>Following</span>
                           </>
                         ) : (
                           <>
                             <UserPlus className="w-3.5 h-3.5" />
-                            <span>Takip Et</span>
+                            <span>Follow</span>
                           </>
                         )}
                       </button>
@@ -730,10 +729,10 @@ export default function Home() {
           {/* Bookmarks Empty State: Skeuomorphic Stitched Saddle-Leather Binder */}
           {feedMode === 'bookmarks' && bookmarkedIds.length === 0 && (
             <SkeuomorphicLeatherBookmarksBinder
-              title="Okuma Listeniz Henüz Boş"
-              subtitle="Makalelerin üzerindeki yer imi (bookmark) simgesine tıklayarak daha sonra çevrimdışı incelemek istediğiniz teknik yazıları bu arşive ekleyebilirsiniz."
+              title="Your Reading List is Empty"
+              subtitle="Click the bookmark icon on any publication to save technical papers to this archive for later review."
               badgeText="MAC OS X SAFARI READING LIST"
-              actionText="Makaleleri Keşfet"
+              actionText="Explore Articles"
               onAction={() => {
                 setFeedMode('explore');
               }}
@@ -756,14 +755,14 @@ export default function Home() {
           ) : isLoadingBlogs ? (
             <div className="py-24 text-center text-zinc-400 space-y-3 font-mono">
               <RefreshCw className="w-6 h-6 animate-spin mx-auto text-emerald-500" />
-              <p className="text-xs uppercase tracking-widest">YAYIN MAKALELERİ YÜKLENİYOR...</p>
+              <p className="text-xs uppercase tracking-widest">LOADING PUBLICATION ARTICLES...</p>
             </div>
           ) : (
             !(feedMode === 'following' && followedAuthors.length === 0) &&
             !(feedMode === 'bookmarks' && bookmarkedIds.length === 0) && (
               <div className="py-20 text-center space-y-4 rounded-3xl border border-dashed border-zinc-300 dark:border-zinc-800 p-8">
                 <p className="text-xs uppercase tracking-widest text-zinc-500">
-                  Kriterlerinize uygun makale bulunamadı.
+                  No articles matching your criteria were found.
                 </p>
                 <button
                   type="button"
@@ -776,7 +775,7 @@ export default function Home() {
                   }}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-black text-xs font-bold transition-transform active:scale-95 cursor-pointer uppercase"
                 >
-                  Tüm Yayın Akışını Göster
+                  Show All Publications
                 </button>
               </div>
             )
@@ -789,18 +788,18 @@ export default function Home() {
             <div className="space-y-1.5">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>CANLI SİSTEM MİMARİSİ LABORATUVARI</span>
+                <span>LIVE SYSTEM ARCHITECTURE LAB</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950 dark:text-white font-sans">
-                İnteraktif Çekirdek ve Telemetri Simülasyonları
+                Interactive Core & Telemetry Simulations
               </h2>
               <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
-                Java 22 Loom sanal iş parçacıklarını, pgvector 128D anlamsal eşleşmelerini ve Redis önbellek mekanizmalarını canlı olarak test edin ve telemetri metriklerini gözlemleyin.
+                Test Java 22 Loom virtual threads, pgvector 128D semantic matches, and Redis caching mechanisms live with real-time telemetry metrics.
               </p>
             </div>
             <div className="flex items-center gap-2 font-mono text-xs text-zinc-500 shrink-0">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span>CANLI TEST ORTAMI</span>
+              <span>LIVE TEST ENVIRONMENT</span>
             </div>
           </div>
         </div>

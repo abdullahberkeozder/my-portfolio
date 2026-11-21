@@ -209,10 +209,10 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="mac-unified-desktop-header relative z-40">
         <div className="w-full max-w-7xl mx-auto h-[44px] px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-4">
           
-          {/* Sol Bölge: Trafik Işıkları (🔴 🟡 🟢) + Nav Chevrons [<][>] + NOVA Wordmark */}
+          {/* Left Region: Traffic Lights (🔴 🟡 🟢) + Nav Chevrons [<][>] + NOVA Wordmark */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Mac OS X Traffic Lights */}
-            <div className="mac-traffic-lights" title="Mac OS X Pencere Yönetimi">
+            <div className="mac-traffic-lights" title="Mac OS X Window Controls">
               <button
                 type="button"
                 onClick={() => {
@@ -224,8 +224,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }
                 }}
                 className="mac-traffic-dot mac-traffic-close focus:outline-none"
-                title={pathname !== '/' ? 'Ana Sayfaya Dön' : 'En Başa Kaydır'}
-                aria-label="Kapat"
+                title={pathname !== '/' ? 'Return to Home' : 'Scroll to Top'}
+                aria-label="Close"
               />
               <button
                 type="button"
@@ -234,28 +234,28 @@ export const Navbar: React.FC<NavbarProps> = ({
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 className="mac-traffic-dot mac-traffic-min focus:outline-none"
-                title="Pencereyi Başa Al (Scroll Top)"
-                aria-label="Küçült"
+                title="Scroll Window to Top"
+                aria-label="Minimize"
               />
               <button
                 type="button"
                 onClick={toggleFullscreen}
                 className="mac-traffic-dot mac-traffic-max focus:outline-none"
-                title="Tam Ekrana Geç / Çık (Fullscreen)"
-                aria-label="Büyüt"
+                title="Toggle Fullscreen"
+                aria-label="Zoom"
               />
             </div>
 
             <div className="h-4 w-[1px] bg-black/15 dark:bg-white/15 hidden sm:block mx-0.5" />
 
             {/* Finder Nav Chevrons [<] [>] */}
-            <div className="mac-nav-chevron-group hidden sm:inline-flex" title="Finder Tarihsel Pencereler Arası Gezinme">
+            <div className="mac-nav-chevron-group hidden sm:inline-flex" title="Finder Historical Window Navigation">
               <button
                 type="button"
                 onClick={handlePrevTab}
                 className="mac-nav-chevron-btn"
-                title="Önceki Sekme"
-                aria-label="Önceki"
+                title="Previous Tab"
+                aria-label="Previous"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
               </button>
@@ -263,8 +263,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 type="button"
                 onClick={handleNextTab}
                 className="mac-nav-chevron-btn"
-                title="Sonraki Sekme"
-                aria-label="Sonraki"
+                title="Next Tab"
+                aria-label="Next"
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
@@ -284,7 +284,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   if (onRefreshHealth) onRefreshHealth();
                 }
               }}
-              title="Nova Ana Sayfaya Dön"
+              title="Return to Nova Home"
             >
               <svg
                 viewBox="0 0 40 40"
@@ -312,10 +312,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          {/* Orta Bölge: Finder 4-Segmented View Switcher (Ana Görünüm Çıpası - Her Boyutta Tıklanabilir) */}
+          {/* Center Region: Finder 4-Segmented View Switcher */}
           <nav
             role="tablist"
-            aria-label="Ana Gezinti Sekmeleri"
+            aria-label="Main Navigation Tabs"
             className="flex items-center ios-segmented-track !py-0.5 !px-0.5 overflow-x-auto scrollbar-none max-w-full"
           >
             <button
@@ -327,7 +327,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 activeTab === 'feed' ? 'active' : ''
               }`}
             >
-              <span>MAKALELER</span>
+              <span>ARTICLES</span>
             </button>
 
             <button
@@ -339,7 +339,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 activeTab === 'system' ? 'active' : ''
               }`}
             >
-              <span>ÇEKİRDEK</span>
+              <span>CORE ENGINE</span>
             </button>
 
             <button
@@ -351,7 +351,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 activeTab === 'ai-search' ? 'active' : ''
               }`}
             >
-              <span>AI &amp; VEKTÖR</span>
+              <span>AI &amp; VECTOR</span>
             </button>
 
             <button
@@ -367,7 +367,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           </nav>
 
-          {/* Sağ Bölge: Spotlight Search + Aqua +Yaz + Utility Kümesi (Status, 2FA, Theme, Github, Spec Dizin) */}
+          {/* Right Region: Spotlight Search + Aqua +Write + Utility Cluster */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Mac Recessed Search Field */}
             {onFocusSearch && (
@@ -378,14 +378,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onFocusSearch();
                 }}
                 className="mac-search-field hidden lg:flex items-center gap-1.5 cursor-pointer select-none text-[11px]"
-                title="Spotlight Arama (⌘K)"
+                title="Spotlight Search (⌘K)"
               >
                 <Search className="w-3 h-3 text-zinc-400" />
-                <span>⌘K Ara...</span>
+                <span>⌘K Search...</span>
               </button>
             )}
 
-            {/* Apple Aqua Blue +Yaz Action Button */}
+            {/* Apple Aqua Blue +Write Action Button */}
             {onOpenCreateModal && (
               <button
                 type="button"
@@ -394,16 +394,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onOpenCreateModal();
                 }}
                 className="mac-aqua-btn-primary flex items-center gap-1.5 !px-3.5 !py-1.5 !text-xs font-bold cursor-pointer select-none"
-                title="Yeni Teknik Makale Yayınla (Mac Mail)"
+                title="Compose Technical Article (Mac Mail)"
               >
                 <PenSquare className="w-3.5 h-3.5" />
-                <span>+ Yaz</span>
+                <span>+ Write</span>
               </button>
             )}
 
             <div className="h-4 w-[1px] bg-black/15 dark:bg-white/15 hidden sm:block mx-0.5" />
 
-            {/* Tekil Minimalist Durum LED'i */}
+            {/* Status LED */}
             <button
               type="button"
               onClick={() => {
@@ -411,7 +411,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 if (onRefreshHealth) onRefreshHealth();
               }}
               className="p-1 rounded cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-              title={isBackendOnline ? 'Spring Boot 5555: Online (Tıkla Yenile)' : 'Backend Çevrimdışı (Tıkla Yenile)'}
+              title={isBackendOnline ? 'Spring Boot 5555: Online (Click to Refresh)' : 'Backend Offline (Click to Refresh)'}
             >
               <span className={`inline-block w-2 h-2 rounded-full ${
                 isBackendOnline === true
@@ -422,7 +422,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }`} />
             </button>
 
-            {/* 2FA Güvenlik */}
+            {/* 2FA Security */}
             {onOpenTwoFactor && (
               <button
                 type="button"
@@ -431,13 +431,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onOpenTwoFactor();
                 }}
                 className="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 p-1 cursor-pointer"
-                title="Mac OS X Keychain Güvenlik & 2FA"
+                title="Mac OS X Keychain Security & 2FA"
               >
                 <ShieldAlert className="w-3.5 h-3.5" />
               </button>
             )}
 
-            {/* Gece/Gündüz Göksel Geçiş */}
+            {/* Day / Night Celestial Toggle */}
             <MacThemeToggle size="compact" className="scale-85" />
 
             {/* GitHub Repo */}
@@ -447,7 +447,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               rel="noopener noreferrer"
               onClick={() => playKeyClick()}
               className="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white p-1"
-              title="GitHub Kaynak Kodu"
+              title="GitHub Source Code"
             >
               <GithubIcon className="w-3.5 h-3.5" />
             </a>
@@ -460,11 +460,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 setMegaMenu(isMegaOpen ? null : 'articles');
               }}
               className="flex items-center gap-1 px-2.5 py-1 rounded border border-zinc-400/80 dark:border-zinc-700 bg-white/70 dark:bg-black/40 text-[11px] font-bold uppercase shadow-sm cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-              aria-label="Mimari Dizin ve Şartname Menüsü"
-              title="Mimari Dizin ve Modül Şartnamesi"
+              aria-label="Architecture Directory Menu"
+              title="Architecture Directory & Module Specifications"
             >
               {isMegaOpen ? <ChevronDown className="w-3 h-3 rotate-180" /> : <Menu className="w-3 h-3" />}
-              <span className="hidden sm:inline">{isMegaOpen ? 'Kapat' : 'Dizin'}</span>
+              <span className="hidden sm:inline">{isMegaOpen ? 'Close' : 'Index'}</span>
             </button>
           </div>
         </div>

@@ -11,8 +11,8 @@ export const LiquidThemeToggle: React.FC = () => {
     <button
       onClick={(e) => toggleTheme(e)}
       type="button"
-      aria-label="Gece/Gündüz Modunu Değiştir"
-      title={isDark ? 'Gündüz Moduna Geç (Kaolti Circular Wipe)' : 'Gece Moduna Geç (Ride Also Dark Mode)'}
+      aria-label="Toggle Day/Night Mode"
+      title={isDark ? 'Switch to Day Mode' : 'Switch to Night Mode'}
       className="group relative inline-flex items-center gap-2 p-1 pl-2 pr-2.5 rounded-full glass-liquid hover:border-[var(--color-volt)]/50 transition-all duration-300 cursor-pointer shadow-sm active:scale-95"
     >
       {/* Specular Edge Highlight Overlay */}

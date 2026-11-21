@@ -106,9 +106,9 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
       <button
         type="button"
         onClick={() => setIsHovered((prev) => !prev)}
-        aria-label="Mac OS X 3D Dock'u Aç/Kapat"
+        aria-label="Toggle Mac OS X 3D Dock"
         className="mac-dock-pull-tab group cursor-pointer"
-        title={isDockRevealed ? "Dock'u Daralt" : " Mac OS X Dock'u Genişlet (Hover)"}
+        title={isDockRevealed ? "Collapse Dock" : " Expand Mac OS X Dock (Hover)"}
       >
         <span className="mac-dock-knurled-ribs" />
         <span className="w-1.5 h-1.5 rounded-full bg-cyan-400/90 shadow-[0_0_6px_#38bdf8] animate-pulse" />
@@ -120,7 +120,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
         <div
           onClick={() => handleNavTab('feed', 'articles-feed')}
           className="mac-dock-item"
-          title="Yayın Akışı (Finder / Vitrin)"
+          title="Publications Feed (Finder / Showcase)"
         >
           <div className="mac-dock-tile-3d">
             <Compass className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -135,7 +135,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
             onOpenTelemetry();
           }}
           className="mac-dock-item"
-          title="Activity Monitor & CRT Telemetri"
+          title="Activity Monitor & CRT Telemetry"
         >
           <div className="mac-dock-tile-3d">
             <Activity className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
@@ -147,7 +147,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
         <div
           onClick={() => handleNavTab('ai-search', 'ai-vector-studio')}
           className="mac-dock-item"
-          title="Spring AI & pgvector Vektör Stüdyosu"
+          title="Spring AI & pgvector Vector Studio"
         >
           <div className="mac-dock-tile-3d">
             <Cpu className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
@@ -159,7 +159,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
         <div
           onClick={() => handleNavTab('admin-batch', 'batch-etl-studio')}
           className="mac-dock-item"
-          title="Spring Batch 5 & Xserve Veri Ambarı"
+          title="Spring Batch 5 & Xserve Data Warehouse"
         >
           <div className="mac-dock-tile-3d">
             <Database className="w-5 h-5 text-amber-600 dark:text-amber-400" />
@@ -201,7 +201,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
         <div
           onClick={handleOpenSpotlightClick}
           className="mac-dock-item"
-          title="Spotlight Arama (⌘K)"
+          title="Spotlight Search (⌘K)"
         >
           <div className="mac-dock-tile-3d">
             <Search className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
@@ -213,7 +213,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
         <div
           onClick={handleFlushBuffer}
           className="mac-dock-item"
-          title="Redis Write-Behind Tamponunu Veritabanına Aktar"
+          title="Flush Redis Write-Behind Buffer to Database"
         >
           <div className={`mac-dock-tile-3d ${flushSuccess ? '!bg-emerald-500 text-white' : ''}`}>
             {isFlushing ? (
@@ -231,7 +231,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
         <div
           onClick={handleOpenAboutClick}
           className="mac-dock-item"
-          title="Bu Mac Hakkında (Mimari Manifesto)"
+          title="About This Mac (Architecture Manifesto)"
         >
           <div className="mac-dock-tile-3d">
             <Info className="w-5 h-5 text-zinc-800 dark:text-zinc-200" />
@@ -251,7 +251,7 @@ export const PortalCockpitDock: React.FC<PortalCockpitDockProps> = ({
               ? 'text-amber-400 bg-amber-500/20 shadow-xs'
               : 'text-zinc-400 hover:text-white hover:bg-white/10'
           }`}
-          title={isPinned ? 'Dock Sabitlendi (Otomatik Gizlemeyi Aç)' : 'Dock’u Sabitle'}
+          title={isPinned ? 'Dock Pinned (Enable Auto-Hide)' : 'Pin Dock'}
         >
           <Pin className={`w-3.5 h-3.5 ${isPinned ? 'rotate-45' : ''}`} />
         </button>

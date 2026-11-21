@@ -27,8 +27,8 @@ export const MacThemeToggle: React.FC<MacThemeToggleProps> = ({
     <button
       type="button"
       onClick={(e) => toggleTheme(e)}
-      aria-label={isDark ? 'Gündüz moduna geç' : 'Gece moduna geç'}
-      title={isDark ? 'Gündüz Moduna Geç (Mac OS X Day Horizon)' : 'Gece Moduna Geç (Mac OS X Night Sky)'}
+      aria-label={isDark ? 'Switch to day mode' : 'Switch to night mode'}
+      title={isDark ? 'Switch to Day Mode (Mac OS X Day Horizon)' : 'Switch to Night Mode (Mac OS X Night Sky)'}
       className={`group relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] p-1 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-900 rounded-full transition-transform active:scale-95 ${className}`}
     >
       <div

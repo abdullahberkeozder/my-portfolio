@@ -190,7 +190,7 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
                 ? 'bg-[#000080] text-white border-[#000080] font-bold'
                 : 'bg-[#ECECEC] text-[#262626] border-[#888] hover:bg-[#D8D8D8]'
             }`}
-            title="as Icons görünümü"
+            title="View as Icons"
           >
             as Icons
           </button>
@@ -204,7 +204,7 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
                 ? 'bg-[#000080] text-white border-[#000080] font-bold'
                 : 'bg-[#ECECEC] text-[#262626] border-[#888] hover:bg-[#D8D8D8]'
             }`}
-            title="as List görünümü"
+            title="View as List"
           >
             as List
           </button>
@@ -343,7 +343,7 @@ export const NovaApplicationsFolder: React.FC<NovaApplicationsFolderProps> = ({
       {/* Bottom Status bar */}
       <div className="px-3 py-0.5 bg-[#DDDDDD] border-t border-[#808080] text-[10px] font-mono text-[#555] flex justify-between">
         <span>Figma 82-811 Applications Suite</span>
-        <span>Çift tıklayarak başlatın</span>
+        <span>Double-click to open</span>
       </div>
     </div>
   );

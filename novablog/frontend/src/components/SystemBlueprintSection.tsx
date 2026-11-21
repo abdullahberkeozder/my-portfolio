@@ -36,172 +36,172 @@ interface BlueprintCategory {
 const BLUEPRINT_DATA: BlueprintCategory[] = [
   {
     index: '01',
-    title: 'YÜKSEK TRAFİK & EŞZAMANLILIK (CONCURRENCY BUS)',
+    title: 'HIGH CONCURRENCY & TRAFFIC (CONCURRENCY BUS)',
     tag: 'JAVA 22 LOOM',
     busSlot: 'PCIe 2.0 x16 HOST BUS',
     chipModel: 'INTEL-XEON-LOOM-V22',
     icon: Zap,
     specs: [
       {
-        key: 'İŞ PARÇACIĞI MİMARİSİ',
+        key: 'THREAD ARCHITECTURE',
         value: 'Virtual Threads (Loom)',
-        desc: 'Geleneksel ağır işletim sistemi threadleri yerine hafif sanal iş parçacıkları; sunucu kilitlenmesi sıfıra iner.',
+        desc: 'Lightweight virtual threads replace heavy OS carrier threads, eliminating server thread pool starvation.',
         chipBadge: 'QFP-64 // V-THREAD',
       },
       {
-        key: 'EŞZAMANLI İSTEK KAPASİTESİ',
-        value: '11,400+ İstek/sn',
-        desc: 'Tomcat üzerinde her istek için anında sanal thread tahsis edilir; yüksek trafikte yanıt süreleri uzamaz.',
+        key: 'CONCURRENT CAPACITY',
+        value: '11,400+ Req/s',
+        desc: 'Instant virtual thread allocation per request on Tomcat ensures consistent low-latency response times.',
         chipBadge: 'SOIC-16 // THROUGHPUT',
       },
       {
-        key: 'ÇALIŞMA ZAMANI (RUNTIME)',
+        key: 'RUNTIME (JDK)',
         value: 'OpenJDK 22.0.2 LTS',
-        desc: 'Java 22 sanal makine optimizasyonlarıyla bellek tüketimi minimum seviyede tutulur.',
+        desc: 'JVM HotSpot optimizations with Project Loom deliver minimal memory footprint per execution unit.',
         chipBadge: 'BGA-256 // JVM-HOTSPOT',
       },
       {
-        key: 'KİLİTLENME DİRENCİ',
+        key: 'LOCK RESISTANCE',
         value: 'Zero Blocking Locks',
-        desc: 'Gereksiz beklemeler ve darboğazlar kaldırıldı; işlemler birbirini engellemeden paralel işlenir.',
+        desc: 'Lock-free CAS synchronization avoids thread contention and blocking bottlenecks during bursts.',
         chipBadge: 'LOCKLESS // CAS',
       },
       {
-        key: 'SUNUCU YÜRÜTÜCÜSÜ',
+        key: 'SERVER EXECUTOR',
         value: 'Tomcat 10.1 Virtual Exec',
-        desc: 'Tam asenkron HTTP I/O yönetimiyle sunucu kaynakları yalnızca aktif işlem anında tüketilir.',
+        desc: 'Non-blocking virtual executors consume resources strictly during active execution slices.',
         chipBadge: 'EXEC // SUB-MS',
       },
     ],
   },
   {
     index: '02',
-    title: 'ANLAMSAL ARAMA & YAPAY ZEKA (VECTOR MATRIX)',
+    title: 'SEMANTIC RETRIEVAL & AI (VECTOR MATRIX)',
     tag: 'SPRING AI + PGVECTOR',
     busSlot: 'QPI INTERCONNECT 6.4 GT/s',
     chipModel: 'APPLE-NEURAL-VEC-128D',
     icon: Cpu,
     specs: [
       {
-        key: 'ANLAMSAL VEKTÖR TEMSİLİ',
-        value: '128-Boyutlu Yoğun Vektör',
-        desc: 'Makaleler yalnızca kelime benzerliğiyle değil, yapay zekanın çıkardığı derin anlam ilişkisine göre eşleştirilir.',
+        key: 'SEMANTIC EMBEDDINGS',
+        value: '128-Dimensional Vector',
+        desc: 'Articles mapped to mathematical semantic space, capturing deep thematic relevance beyond keywords.',
         chipBadge: 'EMBED // 128-DIM',
       },
       {
-        key: 'BENZERLİK ALGORİTMASI',
-        value: 'Kosinüs Benzerliği (Cosine)',
-        desc: 'Arama kutusuna farklı kelimeler veya yazım hataları girseniz dahi en yakın anlamlı içeriği bulan açısal yakınlık hesabı.',
+        key: 'DISTANCE ALGORITHM',
+        value: 'Cosine Distance (pgvector)',
+        desc: 'Angular vector distance calculation finding nearest semantic neighbors even with typos or phrasing variances.',
         chipBadge: 'MATH // COSINE-DIST',
       },
       {
-        key: 'HIZLI İNDEKSLEME GRAFİĞİ',
+        key: 'INDEXING GRAPH',
         value: 'pgvector HNSW Graph',
-        desc: 'Veri tabanındaki binlerce makale arasında milisaniyenin altında gecikmeyle sonuç getiren modern grafik arama indeksi.',
+        desc: 'HNSW hierarchical navigable small-world index delivering sub-millisecond approximate nearest neighbor retrieval.',
         chipBadge: 'HNSW // M=16 ef=64',
       },
       {
-        key: 'HİBRİT ARAMA HARMANLAMA',
-        value: 'Hibrit Sıralama (RRF)',
-        desc: 'Klasik anahtar kelime araması ile yapay zeka anlamsal skorunu birleştirerek en isabetli sıralamayı sunar.',
+        key: 'HYBRID SEARCH FUSION',
+        value: 'Hybrid Ranking (RRF)',
+        desc: 'Reciprocal Rank Fusion merges full-text lexical ranking with vector similarity for optimal relevance.',
         chipBadge: 'FUSION // RRF-K60',
       },
       {
-        key: 'ARAMA YANIT SÜRESİ',
-        value: '< 1.8ms P99 Gecikme',
-        desc: 'Kullanıcı henüz tuşlara basarken arama sonuçları gecikmesiz olarak ekrana gelir.',
+        key: 'QUERY RESPONSE LATENCY',
+        value: '< 1.8ms P99 Latency',
+        desc: 'Instant live-query response stream rendered as the user types with zero perceptible delay.',
         chipBadge: 'LATENCY // P99',
       },
     ],
   },
   {
     index: '03',
-    title: 'VERİTABANI, ÖNBELLEK & DEPOLAMA (STORAGE CONTROLLER)',
+    title: 'DATABASE, CACHE & STORAGE (STORAGE CONTROLLER)',
     tag: 'DUAL-TIER CACHE',
     busSlot: 'SAS 6Gb/s CONTROLLER BUS',
     chipModel: 'RAID-REDIS-POSTGRES-X7',
     icon: Database,
     specs: [
       {
-        key: 'ANA VERİTABANI',
+        key: 'PRIMARY DATABASE',
         value: 'PostgreSQL 16.2',
-        desc: 'Flyway ile otomatik versiyonlanan, tam ilişkisel ve ACID garantili güvenli veri tabanı.',
+        desc: 'Fully relational, ACID-compliant PostgreSQL persistence with automated Flyway schema migrations.',
         chipBadge: 'ACID // FLYWAY-MIG',
       },
       {
-        key: 'BAĞLANTI HAVUZU',
-        value: 'HikariCP (10/10 Havuz)',
-        desc: 'Bağlantı sızıntısını önleyen, anında hazır bekleyen optimize veritabanı bağlantı havuzu.',
+        key: 'CONNECTION POOL',
+        value: 'HikariCP (10/10 Pool)',
+        desc: 'High-performance zero-leak pool delivering instant connection availability without thread starvation.',
         chipBadge: 'HIKARI // ZERO-LEAK',
       },
       {
-        key: 'YEREL L1 ÖNBELLEK',
+        key: 'LOCAL L1 CACHE',
         value: 'Caffeine Cache',
-        desc: 'Sıfır ağ gecikmesiyle doğrudan bellekten okunan, sık erişilen veriler için mikro-önbellek.',
+        desc: 'In-process high-frequency micro-cache accessed with zero network hop latency.',
         chipBadge: 'L1 // ZERO-NET-LAT',
       },
       {
-        key: 'DAĞITIK L2 ÖNBELLEK',
+        key: 'DISTRIBUTED L2 CACHE',
         value: 'Redis 7.2 Cache',
-        desc: 'Sunucular arasında paylaşılan, kullanıcı oturumlarını ve makale listelerini hızlandıran dağıtık katman.',
+        desc: 'Shared in-memory caching tier accelerating article lookups, user profiles, and session validation.',
         chipBadge: 'L2 // IN-MEMORY',
       },
       {
-        key: 'ARKA PLAN TAMPONLAMA',
+        key: 'BACKGROUND BUFFER',
         value: 'Redis Write-Behind',
-        desc: 'Okunma ve beğeni sayaçları veritabanını yormadan bellekte toplanır, 30 saniyede bir toplu yazılır.',
+        desc: 'Clap and view counters aggregated in memory and flushed in 30-second write-behind batches.',
         chipBadge: 'BUFFER // BATCH-30S',
       },
       {
-        key: 'MEDYA DEPOLAMA',
+        key: 'MEDIA STORAGE',
         value: 'MinIO S3 Presigned',
-        desc: 'Görseller sunucuyu meşgul etmeden doğrudan güvenli depolama alanına şifreli URL ile aktarılır.',
+        desc: 'Direct encrypted presigned URL uploads bypassing the application server to S3 object storage.',
         chipBadge: 'S3 // ENCRYPTED-URL',
       },
     ],
   },
   {
     index: '04',
-    title: 'GÜVENLİK, HATA YÖNETİMİ & DAYANIKLILIK (KEYCHAIN CHIP)',
+    title: 'SECURITY, RESILIENCE & INTEGRITY (KEYCHAIN CHIP)',
     tag: 'ENTERPRISE RESILIENCE',
     busSlot: 'ECC MEMORY BUS & SECURE ENCLAVE',
     chipModel: 'APPLE-T1-KEYCHAIN-SEC',
     icon: ShieldCheck,
     specs: [
       {
-        key: 'VERİ ÇAKIŞMA KORUMASI',
-        value: 'İyimser Kilitleme (Optimistic)',
-        desc: 'Aynı anda iki kişi makale güncellediğinde veri kaybı yaşanmaz; son değişiklikler güvenle korunur.',
+        key: 'CONCURRENCY GUARD',
+        value: 'Optimistic Locking (OCC)',
+        desc: 'Automatic @Version tracking prevents race conditions and overwrites during concurrent updates.',
         chipBadge: 'VERSION // OPT-LOCK',
       },
       {
-        key: 'STANDART HATA FORMATI',
+        key: 'STANDARD ERROR FORMAT',
         value: 'RFC 7807 Problem Details',
-        desc: 'Hatalar anlaşılmaz teknik kodlar yerine standart, açık ve istemcinin anlayacağı JSON formatında iletilir.',
+        desc: 'IETF RFC 7807 problem details delivering structured, transparent JSON error models without leaking internal traces.',
         chipBadge: 'RFC-7807 // IETF-SPEC',
       },
       {
-        key: 'DEVRE KESİCİ (CIRCUIT BREAKER)',
+        key: 'CIRCUIT BREAKER',
         value: 'Resilience4j Fail-Safe',
-        desc: 'Bağlı servislerde kesinti olduğunda tüm sistem çökmez; otomatik alternatif akış devreye girer.',
+        desc: 'Resilience4j trip gates isolate downstream service outages, redirecting requests to fallback strategies.',
         chipBadge: 'FAIL-SAFE // 50%-TRIP',
       },
       {
-        key: 'YİNELENEN İSTEK KORUMASI',
+        key: 'IDEMPOTENCY GUARD',
         value: 'X-Idempotency-Key',
-        desc: 'Ağ kopması nedeniyle butona iki kez basılsa dahi aynı makale iki kez oluşturulmaz.',
+        desc: 'Cryptographic SHA-256 header hashing guarantees duplicate operations are safely ignored.',
         chipBadge: 'IDEMPOTENT // SHA-256',
       },
       {
-        key: 'İSTEK SINIRLAYICI (RATE LIMIT)',
-        value: 'Token Bucket (100 istek/dk)',
-        desc: 'Kötü niyetli bot saldırılarını ve sunucuyu yormayı engelleyen akıllı trafik regülatörü.',
+        key: 'RATE LIMITING',
+        value: 'Token Bucket (100 req/min)',
+        desc: 'Intelligent token bucket rate limiter defending backend APIs from brute-force bot bursts.',
         chipBadge: 'RATE-LIMIT // TOKEN-BUCKET',
       },
       {
-        key: 'TOPLU VERİ TEMİZLİĞİ',
+        key: 'DATA RETENTION BATCH',
         value: 'Spring Batch 5 ETL',
-        desc: 'Eski ve silinmiş veriler arka planda sistem performansını düşürmeden otomatik temizlenir.',
+        desc: 'Spring Batch 5 chunk pipelines purge expired soft-deleted entities without affecting OLTP throughput.',
         chipBadge: 'ETL // CHUNK-100',
       },
     ],
@@ -291,7 +291,7 @@ export const SystemBlueprintSection: React.FC<SystemBlueprintSectionProps> = ({
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-extrabold text-zinc-900 dark:text-white tracking-tight">
-              Sistem Mimarisi ve Donanımsal Mantık Kartı Şartnamesi
+              System Architecture & Logic Board Specification
             </h2>
           </div>
 
@@ -304,10 +304,10 @@ export const SystemBlueprintSection: React.FC<SystemBlueprintSectionProps> = ({
                   onOpenAbout();
                 }}
                 className="mac-aqua-btn flex items-center gap-1.5 !px-3 !py-1.5 !text-xs"
-                title="Bu Mac Hakkında penceresini aç"
+                title="Open About This Mac window"
               >
                 <Info className="w-3.5 h-3.5" />
-                <span>Bu Mac Hakkında</span>
+                <span>About This Mac</span>
               </button>
             )}
 
@@ -318,7 +318,7 @@ export const SystemBlueprintSection: React.FC<SystemBlueprintSectionProps> = ({
                   onOpenTelemetry();
                 }}
                 className="mac-aqua-btn flex items-center gap-1.5 !px-3 !py-1.5 !text-xs"
-                title="Activity Monitor telemetrisini aç"
+                title="Open Activity Monitor telemetry"
               >
                 <Activity className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                 <span>Activity Monitor</span>
@@ -332,7 +332,7 @@ export const SystemBlueprintSection: React.FC<SystemBlueprintSectionProps> = ({
                   onOpenTwoFactor();
                 }}
                 className="mac-aqua-btn flex items-center gap-1.5 !px-3 !py-1.5 !text-xs"
-                title="Keychain 2FA Güvenlik Panelini aç"
+                title="Open Keychain 2FA security panel"
               >
                 <Lock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                 <span>Keychain 2FA</span>
@@ -342,12 +342,12 @@ export const SystemBlueprintSection: React.FC<SystemBlueprintSectionProps> = ({
             <button
               onClick={handleCopySpecManifest}
               className="mac-aqua-btn flex items-center gap-1.5 !px-3 !py-1.5 !text-xs !bg-gradient-to-b !from-zinc-100 !to-zinc-200 dark:!from-zinc-700 dark:!to-zinc-800"
-              title="Tam şartname JSON manifestini panoya kopyala"
+              title="Copy full specification JSON manifest to clipboard"
             >
               {copied ? (
                 <>
                   <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span className="text-emerald-700 dark:text-emerald-300 font-bold">Kopyalandı!</span>
+                  <span className="text-emerald-700 dark:text-emerald-300 font-bold">Copied!</span>
                 </>
               ) : (
                 <>
@@ -369,7 +369,7 @@ export const SystemBlueprintSection: React.FC<SystemBlueprintSectionProps> = ({
                 : 'bg-white/60 dark:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-700 border border-black/10 dark:border-white/10'
             }`}
           >
-            TÜM MİMARİ VERİ YOLU (23 SPESİFİKASYON)
+            ALL ARCHITECTURAL BUSES (23 SPECIFICATIONS)
           </button>
           {BLUEPRINT_DATA.map((cat) => (
             <button
@@ -460,7 +460,7 @@ export const SystemBlueprintSection: React.FC<SystemBlueprintSectionProps> = ({
                       onClick={() => toggleCategory(category.index)}
                       className="inline-flex items-center gap-1.5 px-3 py-1 rounded text-zinc-600 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 font-mono text-[10px] font-bold uppercase transition-colors cursor-pointer"
                     >
-                      <span>{isExpanded ? 'Parametreleri Daralt' : `+ ${category.specs.length - 3} Diğer Parametreyi Aç`}</span>
+                      <span>{isExpanded ? 'Collapse Parameters' : `+ ${category.specs.length - 3} More Parameters`}</span>
                       {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                     </button>
                   </div>
@@ -475,18 +475,18 @@ export const SystemBlueprintSection: React.FC<SystemBlueprintSectionProps> = ({
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
             <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase">
-              TÜM VERİ YOLLARI AKTİF &bull; 4 MİMARİ SLOT ÇALIŞIYOR
+              ALL BUSES ACTIVE &bull; 4 ARCHITECTURAL SLOTS ONLINE
             </span>
           </div>
 
           <div className="flex items-center gap-4 text-[10px]">
             <span className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300">
               <Terminal className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span>201/201 OTOMATİK ENTEGRASYON TESTİ // %100 BAŞARI</span>
+              <span>201/201 AUTOMATED INTEGRATION TESTS // 100% PASS</span>
             </span>
             <span className="text-zinc-400 hidden sm:inline">&bull;</span>
             <span className="text-blue-600 dark:text-blue-400 font-bold hidden sm:inline">
-              RFC 7807 &amp; RFC 6238 MİMARİ STANDARTLARI
+              RFC 7807 &amp; RFC 6238 ARCHITECTURAL STANDARDS
             </span>
           </div>
         </div>

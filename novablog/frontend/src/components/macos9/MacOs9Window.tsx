@@ -174,7 +174,7 @@ export const MacOs9Window: React.FC<MacOs9WindowProps> = ({
         isActive ? 'mac9-window-active ring-1 ring-black/40' : 'mac9-window-inactive opacity-95'
       }`}
     >
-      {/* 19px Otantik Platin Başlık Çubuğu */}
+      {/* 19px Authentic Platinum Title Bar */}
       <div
         onMouseDown={handleMouseDownTitle}
         onDoubleClick={toggleWindowShade}
@@ -182,16 +182,16 @@ export const MacOs9Window: React.FC<MacOs9WindowProps> = ({
           isActive ? 'mac9-titlebar-stripes' : 'bg-[#DDDDDD]'
         }`}
       >
-        {/* Sol Kapatma Kutusu (Close Box [■] - Figma Image 6 & 8) */}
+        {/* Left Close Box (Close Box [■] - Figma Image 6 & 8) */}
         <button
           onClick={handleClose}
           className="relative size-[13px] bg-[#CCCCCC] border border-[#262626] shadow-[inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] active:shadow-[inset_1px_1px_1px_#000000] active:bg-[#999999] flex items-center justify-center shrink-0 group"
-          title="Kapat"
+          title="Close"
         >
           <div className="size-[5px] bg-[#262626] opacity-0 group-active:opacity-100" />
         </button>
 
-        {/* Ortalanmış Başlık ve Gri Yastık Pedi */}
+        {/* Centered Title and Platinum Pillow Tab */}
         <div className="absolute inset-x-12 top-0 bottom-0 flex items-center justify-center pointer-events-none">
           <div className="bg-[#CCCCCC] px-2.5 h-[17px] flex items-center gap-1.5 border-x border-[#CCCCCC] shadow-[0_0_1px_#CCCCCC]">
             {icon && <span className="size-3.5 flex items-center justify-center">{icon}</span>}
@@ -205,13 +205,13 @@ export const MacOs9Window: React.FC<MacOs9WindowProps> = ({
           </div>
         </div>
 
-        {/* Sağ Kontroller: Zoom [⧉] & WindowShade [▲] (Figma Image 6 & 8) */}
+        {/* Right Controls: Zoom [⧉] & WindowShade [▲] (Figma Image 6 & 8) */}
         <div className="flex items-center gap-1 shrink-0 z-10">
           {/* Zoom Box [⧉] */}
           <button
             onClick={toggleZoom}
             className="relative size-[13px] bg-[#CCCCCC] border border-[#262626] shadow-[inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] active:shadow-[inset_1px_1px_1px_#000000] flex items-center justify-center shrink-0"
-            title="Büyüt / Eski Boyut"
+            title="Zoom / Restore"
           >
             <svg className="w-2.5 h-2.5" viewBox="0 0 10 10" fill="none">
               <rect x="0.5" y="0.5" width="9" height="9" stroke="#262626" strokeWidth="1" />
@@ -223,7 +223,7 @@ export const MacOs9Window: React.FC<MacOs9WindowProps> = ({
           <button
             onClick={toggleWindowShade}
             className="relative size-[13px] bg-[#CCCCCC] border border-[#262626] shadow-[inset_1px_1px_0_#FFFFFF,inset_-1px_-1px_0_#808080] active:shadow-[inset_1px_1px_1px_#000000] flex items-center justify-center shrink-0"
-            title={isShaded ? 'Pencereyi Aç' : 'WindowShade (Stor Rulo Yap)'}
+            title={isShaded ? 'Expand Window' : 'WindowShade (Collapse)'}
           >
             <svg className="w-2.5 h-2.5" viewBox="0 0 10 10" fill="none">
               <rect x="0.5" y="0.5" width="9" height="9" stroke="#262626" strokeWidth="1" />
@@ -233,10 +233,10 @@ export const MacOs9Window: React.FC<MacOs9WindowProps> = ({
         </div>
       </div>
 
-      {/* Pencere Gövdesi (WindowShade ile katlandığında gizlenir) */}
+      {/* Window Body (Collapsed and hidden when WindowShaded) */}
       {!isShaded && (
         <div className="flex-1 flex flex-col bg-white overflow-hidden relative">
-          {/* Durum / Adres Çubuğu */}
+          {/* Status / Address Bar */}
           {subtitle && (
             <div className="h-[20px] bg-[#DDDDDD] border-b border-[#262626] px-3 flex items-center justify-between text-[11px] font-['Geneva',sans-serif] text-[#262626] shadow-[inset_0_1px_0_#FFFFFF]">
               <span className="truncate">{subtitle}</span>
@@ -244,16 +244,16 @@ export const MacOs9Window: React.FC<MacOs9WindowProps> = ({
             </div>
           )}
 
-          {/* İçerik Alanı (Kaydırılabilir Web Sayfası) */}
+          {/* Content Area (Scrollable Web Canvas) */}
           <div className="flex-1 overflow-auto relative select-text">
             {children}
           </div>
 
-          {/* Sağ Alt Köşe: Grow Box [▨] (Figma Image 6 & 8 HD 3D Diagonal Ridges) */}
+          {/* Lower Right Corner: Grow Box [▨] (Figma Image 6 & 8 HD 3D Diagonal Ridges) */}
           <div
             onMouseDown={handleMouseDownResize}
             className="absolute bottom-0 right-0 size-[14px] bg-[#DDDDDD] border-t border-l border-[#808080] shadow-[inset_1px_1px_0_#FFFFFF] cursor-se-resize flex items-center justify-center z-20 hover:bg-[#CCCCCC]"
-            title="Boyutlandır"
+            title="Resize Window"
           >
             <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
               <line x1="10" y1="2" x2="2" y2="10" stroke="#808080" strokeWidth="1" />

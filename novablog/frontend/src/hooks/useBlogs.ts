@@ -9,7 +9,7 @@ import { MOCK_BLOGS, MOCK_CATEGORIES } from '@/lib/mockData';
  * TanStack Query v5 Hooks for NovaBlog Client & Server State Management.
  * Includes Optimistic UI for likes and comments with automatic cache rollback on failure.
  *
- * @author Abdullah Berke Özder
+ * @author Abdullah Berke Ozder
  */
 
 // 1. All Blogs Query
@@ -68,17 +68,17 @@ export function useToggleLikeMutation() {
       return currentlyLiked ? ApiClient.removeLike(blogId) : ApiClient.recordLike(blogId);
     },
 
-    // OPTIMISTIC UPDATE: Sunucudan yanıt beklemeden anında UI güncellemesi
+    // OPTIMISTIC UPDATE: Immediate UI update without waiting for server response
     onMutate: async ({ blogId, currentlyLiked }) => {
-      // 1. Devam eden sorgu isteklerini iptal et (yarış durumunu önler)
+      // 1. Cancel in-flight queries (prevents race conditions)
       await queryClient.cancelQueries({ queryKey: ['blogs'] });
       await queryClient.cancelQueries({ queryKey: ['blogs', blogId] });
 
-      // 2. Olası hata durumunda geri yüklemek için önceki önbellek anlık görüntüsünü (snapshot) al
+      // 2. Snapshot the previous cache value to rollback on error
       const previousBlogs = queryClient.getQueryData<BlogDto[]>(['blogs']);
       const previousDetail = queryClient.getQueryData<BlogDto>(['blogs', blogId]);
 
-      // 3. 'blogs' listesindeki ilgili kaydı atomik olarak optimistik güncelle
+      // 3. Atomically update the matching item in 'blogs' optimistically
       if (previousBlogs) {
         queryClient.setQueryData<BlogDto[]>(['blogs'], (old) => {
           if (!old) return [];
@@ -100,7 +100,7 @@ export function useToggleLikeMutation() {
         });
       }
 
-      // 4. Eğer blog detay modalı açıksa onun da önbelleğini optimistik güncelle
+      // 4. If blog detail modal is open, optimistically update its cache too
       if (previousDetail) {
         queryClient.setQueryData<BlogDto>(['blogs', blogId], (old) => {
           if (!old) return old;
@@ -116,11 +116,11 @@ export function useToggleLikeMutation() {
         });
       }
 
-      // Rollback için context döndür
+      // Return context for rollback
       return { previousBlogs, previousDetail, blogId };
     },
 
-    // ROLLBACK: Sunucu hata verirse önceki duruma geri dön
+    // ROLLBACK: Revert to previous state if server returns error
     onError: (_err, _vars, context) => {
       if (context?.previousBlogs) {
         queryClient.setQueryData(['blogs'], context.previousBlogs);
@@ -130,7 +130,7 @@ export function useToggleLikeMutation() {
       }
     },
 
-    // REFETCH: İşlem tamamlandığında Write-Behind Redis tamponundaki son durumu sunucuyla eşitle
+    // REFETCH: Sync latest state with server once operation settles
     onSettled: (_data, _error, vars) => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
       queryClient.invalidateQueries({ queryKey: ['blogs', vars.blogId] });
@@ -145,7 +145,7 @@ export function useRecordViewMutation() {
   return useMutation({
     mutationFn: (blogId: number) => ApiClient.recordView(blogId),
     onSuccess: (res, blogId) => {
-      // Önbellekteki görüntülenme sayısını sessizce güncelle
+      // Silently update view count in cache
       queryClient.setQueryData<BlogDto[]>(['blogs'], (old) => {
         if (!old) return old;
         return old.map((b) => {
@@ -195,16 +195,16 @@ export function useAddCommentMutation() {
 
       const previousComments = queryClient.getQueryData<CommentResponseDto[]>(['comments', blogId]);
 
-      // Optimistik geçici yorum oluştur
+      // Create optimistic temporary comment
       const optimisticComment: CommentResponseDto = {
         id: Date.now(),
         blogId,
         content: dto.content,
-        authorName: dto.authorName || 'Ziyaretçi Mühendis',
+        authorName: dto.authorName || 'Guest Engineer',
         createdAt: new Date().toISOString(),
         isApproved: true,
         sentiment: 'POSITIVE',
-        isOptimistic: true, // UI'da "Kaydediliyor..." görseli göstermek için
+        isOptimistic: true, // For displaying "Saving..." UI state
       };
 
       queryClient.setQueryData<CommentResponseDto[]>(['comments', blogId], (old) => {

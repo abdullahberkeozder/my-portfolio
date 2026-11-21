@@ -92,7 +92,7 @@ export const NovaEmblemWatermark: React.FC<NovaEmblemWatermarkProps> = ({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onDoubleClick={handleDoubleClick}
-        title="Nova Architecture Emblem — Çift tıklayarak Appearance kontrol panelini açabilirsiniz"
+        title="Nova Architecture Emblem — Double-click to open Appearance Control Panel"
         className={`pointer-events-auto relative px-9 py-6 rounded-2xl transition-transform duration-200 ease-out cursor-default ${
           isHighPattern ? 'backdrop-blur-[20px]' : 'backdrop-blur-[14px]'
         }`}
@@ -335,7 +335,7 @@ export const NovaEmblemWatermark: React.FC<NovaEmblemWatermarkProps> = ({
               : 'text-[#E2E8F0] [text-shadow:0_1px_3px_rgba(0,0,0,0.7)]'
           }`}
         >
-          Modern Mühendislik & Sistem Mimarisi
+          MODERN ENGINEERING & SYSTEM ARCHITECTURE
         </p>
 
         {/* =========================================================================

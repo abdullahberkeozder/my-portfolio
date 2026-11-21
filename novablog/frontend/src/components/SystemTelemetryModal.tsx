@@ -51,12 +51,12 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
     setFlushMessage(null);
     try {
       const msg = await ApiClient.flushMetrics();
-      setFlushMessage(msg || 'Tamponlanmış metrikler başarıyla veritabanına aktarıldı.');
+      setFlushMessage(msg || 'Buffered metrics successfully flushed to the database.');
       if (onMetricsFlushed) {
         onMetricsFlushed();
       }
     } catch {
-      setFlushMessage('Metrik flush işlemi gerçekleştirilemedi.');
+      setFlushMessage('Failed to flush metrics to database.');
     } finally {
       setIsFlushing(false);
     }
@@ -78,14 +78,14 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
               <button
                 onClick={onClose}
                 className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] hover:opacity-80 cursor-pointer"
-                title="Kapat"
+                title="Close"
               />
               <span className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
               <span className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
             </div>
             <span className="ml-3 font-mono text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              Sistem Profileri & Activity Monitor — Canlı Telemetri
+              System Profiler &amp; Activity Monitor — Live Telemetry
             </span>
           </div>
 
@@ -120,7 +120,7 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
               }`}
             >
               <Cpu className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span>Donanım & Loom</span>
+              <span>Hardware &amp; Loom</span>
             </button>
             <button
               onClick={() => handleTabChange('redis')}
@@ -131,7 +131,7 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
               }`}
             >
               <Database className="w-3.5 h-3.5 text-rose-500" />
-              <span>Redis Tamponu</span>
+              <span>Redis Buffer</span>
             </button>
             <button
               onClick={() => handleTabChange('security')}
@@ -142,7 +142,7 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
               }`}
             >
               <ShieldCheck className="w-3.5 h-3.5 text-indigo-500" />
-              <span>Güvenlik & Kilit</span>
+              <span>Security &amp; Locking</span>
             </button>
           </div>
 
@@ -184,11 +184,10 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
                   <span className="text-emerald-700 dark:text-emerald-400 text-[10px] font-bold">PROJECT LOOM</span>
                 </div>
                 <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
-                  Platform OS thread havuzu yerine lightweight sanal thread&apos;ler devrede. Her gelen I/O isteği
-                  carrier thread&apos;i bloke etmeden askıya alınır.
+                  Lightweight virtual threads replace platform OS thread pools. Each incoming I/O request yields without blocking carrier threads.
                 </p>
                 <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-zinc-500">
-                  <span>Thread-per-request: Aktif</span>
+                  <span>Thread-per-request: Active</span>
                   <span>&bull;</span>
                   <span>Throughput: ~10k+ req/s</span>
                 </div>
@@ -204,13 +203,12 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
                   <span className="text-purple-600 dark:text-purple-400 text-[10px] font-bold">L1 + L2</span>
                 </div>
                 <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
-                  L1 Caffeine in-memory önbellek (sıfır ağ gecikmesi) + L2 Redis kümesi. Okuma trafiğinde veritabanı
-                  yükü %90 oranında bypass edilir.
+                  L1 Caffeine in-memory cache (zero network latency) + L2 Redis cluster. Database load is bypassed by 90% across read workloads.
                 </p>
                 <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-zinc-500">
-                  <span>Caffeine TTL: 5 dk</span>
+                  <span>Caffeine TTL: 5 min</span>
                   <span>&bull;</span>
-                  <span>Redis TTL: 10 dk</span>
+                  <span>Redis TTL: 10 min</span>
                 </div>
               </div>
             </div>
@@ -223,23 +221,21 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 font-mono font-bold text-zinc-950 dark:text-white text-sm">
                     <Database className="w-4 h-4 text-rose-500" />
-                    REDIS WRITE-BEHIND BUFFER & BATCH FLUSH
+                    REDIS WRITE-BEHIND BUFFER &amp; BATCH FLUSH
                   </div>
                   <p className="text-zinc-600 dark:text-zinc-400 text-xs leading-relaxed max-w-lg font-sans">
-                    Kullanıcıların her tıklamasında PostgreSQL&apos;e anlık UPDATE atmak yerine sayaçlar Redis tamponunda
-                    atomik INCR komutlarıyla toplanır. Her 30 saniyede bir Scheduled Batch Job bu deltaları topluca
-                    veritabanına yazar.
+                    Instead of issuing instant PostgreSQL UPDATE queries on every click, counters coalesce in a Redis Hash via atomic HINCRBY commands. A scheduled batch job flushes deltas to disk every 30 seconds.
                   </p>
                 </div>
 
                 <div className="flex flex-col items-end gap-1 font-mono text-[11px]">
                   <span className="flex items-center gap-1 text-zinc-500">
                     <Clock className="w-3.5 h-3.5" />
-                    Zamanlayıcı: 30s
+                    Timer: 30s
                   </span>
                   <span className="text-emerald-700 dark:text-emerald-400 flex items-center gap-1 font-bold">
                     <Sparkles className="w-3.5 h-3.5" />
-                    Tampon: Canlı
+                    Buffer: Live
                   </span>
                 </div>
               </div>
@@ -255,7 +251,7 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
               {/* Action Button */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-zinc-200 dark:border-zinc-800">
                 <span className="text-zinc-500 text-[11px] font-mono">
-                  Zamanlayıcıyı beklemeden tamponlanmış sayaçları veritabanına aktarın:
+                  Flush buffered counters to the database without waiting for the timer:
                 </span>
                 <button
                   onClick={handleFlush}
@@ -265,12 +261,12 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
                   {isFlushing ? (
                     <>
                       <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                      <span>DB&apos;YE YAZILIYOR...</span>
+                      <span>FLUSHING TO DB...</span>
                     </>
                   ) : (
                     <>
                       <ArrowDownToLine className="w-3.5 h-3.5" />
-                      <span>ŞİMDİ DB&apos;YE FLUSH ET</span>
+                      <span>FLUSH TO DB NOW</span>
                     </>
                   )}
                 </button>
@@ -291,12 +287,12 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
                   <span className="text-emerald-700 dark:text-emerald-400 text-[10px] font-bold">CLOSED</span>
                 </div>
                 <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
-                  Hata oranı %50&apos;yi aştığında devre açılır (OPEN), çağrılar anında fallback yanıtına yönlendirilir.
+                  Circuit trips OPEN when the failure rate exceeds 50%, immediately routing requests to resilient fallback responses.
                 </p>
                 <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-zinc-500">
-                  <span>Hata Oranı: %0.0</span>
+                  <span>Failure Rate: 0.0%</span>
                   <span>&bull;</span>
-                  <span>Fallback: Devrede</span>
+                  <span>Fallback: Armed</span>
                 </div>
               </div>
 
@@ -310,10 +306,10 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
                   <span className="text-amber-600 dark:text-amber-400 text-[10px] font-bold">OPTIMISTIC</span>
                 </div>
                 <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
-                  Eşzamanlı güncelleme yarışlarını engeller. Satır kilidi tutulmaksızın eski versiyonla gelen istekler 409 Conflict alır.
+                  Prevents concurrent lost updates lock-free. Stale mutation requests without locks receive RFC 7807 409 Conflict Problem Details.
                 </p>
                 <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-zinc-500">
-                  <span>Row Lock: Yok (Lock-free)</span>
+                  <span>Row Lock: None (Lock-free)</span>
                   <span>&bull;</span>
                   <span>RFC 7807 Problem Details</span>
                 </div>
@@ -329,10 +325,10 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
                   <span className="text-emerald-700 dark:text-emerald-400 text-[10px] font-bold">BURSTABLE</span>
                 </div>
                 <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
-                  Nanosaniye hesaplamalı sürekli dolum. Kategori bazlı DoS koruması (Genel: 100/dk, Auth: 10/dk).
+                  Continuous replenishment with nanosecond precision. Category-based DoS protection (General: 100/min, Auth: 10/min).
                 </p>
                 <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-zinc-500">
-                  <span>Limit: 100 req/dk</span>
+                  <span>Limit: 100 req/min</span>
                   <span>&bull;</span>
                   <span>HTTP 429 Too Many Requests</span>
                 </div>
@@ -348,7 +344,7 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
                   <span className="text-cyan-600 dark:text-cyan-400 text-[10px] font-bold">SETNX LOCK</span>
                 </div>
                 <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans text-xs">
-                  X-Idempotency-Key ile mutasyon isteklerinde 120s süreli distributed lock kurar. Mükerrer çağrılarda önceki sonucu replay eder.
+                  Acquires a 120s distributed lock for mutation requests via X-Idempotency-Key, replaying cached responses on duplicate calls.
                 </p>
                 <div className="flex items-center gap-2 pt-1 font-mono text-[11px] text-zinc-500">
                   <span>Lock TTL: 120s</span>
@@ -364,13 +360,13 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
         <div className="px-5 py-3 border-t border-[#c0c0c0] dark:border-[#2f343e] bg-[#f0f0f0] dark:bg-[#181a1f] flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400 font-mono select-none">
           <span className="flex items-center gap-1.5">
             <Server className="w-3.5 h-3.5 text-zinc-500" />
-            NOVA CORE 2026 &bull; TELEMETRİ ENGINE V4
+            NOVA CORE 2026 &bull; TELEMETRY ENGINE V4
           </span>
           <button
             onClick={onClose}
             className="ios6-btn ios6-btn-silver px-4 py-1 text-xs"
           >
-            KAPAT
+            CLOSE
           </button>
         </div>
       </div>

@@ -168,7 +168,7 @@ class Mac9SoundEngine {
     });
   }
 
-  // --- 2. Mekanik Fare Tıklaması - MouseDown (Mikro-anahtar çıtırtısı) ---
+  // --- 2. Mechanical Mouse Click - MouseDown (Microswitch click) ---
   public playMacClickDown() {
     if (this.isMuted) return;
     const ctx = this.ensureContext();
@@ -210,7 +210,7 @@ class Mac9SoundEngine {
     osc.stop(now + 0.01);
   }
 
-  // --- 2. Mekanik Fare Bırakma - MouseUp (Plastik yay gevşemesi) ---
+  // --- 2. Mechanical Mouse Release - MouseUp (Plastic spring release) ---
   public playMacClickUp() {
     if (this.isMuted) return;
     const ctx = this.ensureContext();
@@ -233,7 +233,7 @@ class Mac9SoundEngine {
     osc.stop(now + 0.007);
   }
 
-  // --- 3. Pencere Açılma (Zoom In) ---
+  // --- 3. Window Open (Zoom In) ---
   public playWindowOpen() {
     if (this.isMuted) return;
     const ctx = this.ensureContext();
@@ -310,7 +310,7 @@ class Mac9SoundEngine {
     }
   }
 
-  // --- 5. Çöp Sepeti Boşaltma Hışırtısı (Trash Paper Crinkle) ---
+  // --- 5. Empty Trash Crinkle (Trash Paper Crinkle) ---
   public playTrashCrinkle() {
     if (this.isMuted) return;
     const ctx = this.ensureContext();
@@ -348,7 +348,7 @@ class Mac9SoundEngine {
     }
   }
 
-  // --- 6. Sistem İkaz Sesi: Sosumi (Ahşap Marimba C6) ---
+  // --- 6. System Alert Sound: Sosumi (Wooden Marimba C6) ---
   public playSosumi() {
     if (this.isMuted) return;
     const ctx = this.ensureContext();
@@ -382,7 +382,7 @@ class Mac9SoundEngine {
     osc2.stop(now + 0.06);
   }
 
-  // --- 7. Sistem İkaz Sesi: Wild Eep ---
+  // --- 7. System Alert Sound: Wild Eep ---
   public playWildEep() {
     if (this.isMuted) return;
     const ctx = this.ensureContext();
@@ -409,7 +409,7 @@ class Mac9SoundEngine {
     chirp(now + 0.06, 880, 1820, 0.05);
   }
 
-  // --- 8. Sistem İkaz Sesi: Droplet ---
+  // --- 8. System Alert Sound: Droplet ---
   public playDroplet() {
     if (this.isMuted) return;
     const ctx = this.ensureContext();

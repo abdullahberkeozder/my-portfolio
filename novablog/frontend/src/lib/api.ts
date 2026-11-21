@@ -218,7 +218,7 @@ export class ApiClient {
     }
   }
 
-  // --- CONCURRENCY & ENGAGEMENT WRITE-BEHIND METRICS (Adım 24) ---
+  // --- CONCURRENCY & ENGAGEMENT WRITE-BEHIND METRICS (Step 24) ---
   public static async recordView(id: number): Promise<{ blogId: number; viewsCount: number }> {
     if (!this.shouldAttemptBackend()) {
       const found = MOCK_BLOGS.find((b) => (b.id ?? b.blogId) === id);
@@ -316,7 +316,7 @@ export class ApiClient {
       const data = await res.json();
       return typeof data === 'string' ? data : (data.message || data.status || 'Metrikler senkronize edildi.');
     } catch {
-      return 'Tamponlanmış metrikler başarıyla veritabanına aktarıldı (12 Görüntülenme, 4 Beğeni).';
+      return 'Buffered metrics successfully flushed to database (12 Views, 4 Likes).';
     }
   }
 
@@ -329,7 +329,7 @@ export class ApiClient {
       });
       if (res.status === 409) {
         const err = await res.json();
-        throw new Error(err.detail || 'Bu makale başka bir işlem tarafından güncellendi (409 Conflict).');
+        throw new Error(err.detail || 'This article was updated by another concurrent transaction (409 Conflict).');
       }
       if (!res.ok) throw new Error('Update failed');
       const data: ApiResult<BlogDto> = await res.json();
@@ -377,7 +377,7 @@ export class ApiClient {
           similarityScore: Math.min(0.985, score),
           matchedKeywords: b.tags?.slice(0, 3),
           searchMode: 'SEMANTIC' as const,
-          explanation: `Sorgu ile "${b.title}" başlığı arasında anlamsal uzayda yüksek alaka düzeyi yakalandı.`,
+          explanation: `High semantic relevance identified between query and title "${b.title}" in vector space.`,
         };
       }).sort((a, b) => b.similarityScore - a.similarityScore);
       return scored.slice(0, limit);
@@ -400,7 +400,7 @@ export class ApiClient {
       return semanticResults.map((r) => ({
         ...r,
         searchMode: 'HYBRID' as const,
-        explanation: `Hibrit Arama: SQL anahtar kelime eşleşmesi + Anlamsal benzerlik birleşik skoru (%${(r.similarityScore * 100).toFixed(1)}).`,
+        explanation: `Hybrid Search: Lexical SQL match + Semantic similarity composite score (${(r.similarityScore * 100).toFixed(1)}%).`,
       }));
     }
   }
@@ -417,7 +417,7 @@ export class ApiClient {
       const blog = MOCK_BLOGS.find((b) => b.id === blogId) || MOCK_BLOGS[0];
       return {
         ...blog,
-        aiSummary: `[AI TL;DR] ${blog.title}: Bu makalede kurumsal Spring Boot mimarisi, yüksek erişilebilirlik ve performans optimizasyonları özetlenmektedir.`,
+        aiSummary: `[AI TL;DR] ${blog.title}: This article summarizes enterprise Spring Boot architecture, high availability, and performance optimizations.`,
       };
     }
   }
@@ -491,7 +491,7 @@ export class ApiClient {
         suggestedTags: ['spring-ai', 'vector-search', 'java-22', 'backend', 'high-performance'],
         suggestedCategory: 'Yapay Zeka & AI',
         confidenceScore: 0.94,
-        keywords: ['spring', 'ai', 'vektör', 'arama', 'performans'],
+        keywords: ['spring', 'ai', 'vector', 'search', 'performance'],
       };
     }
   }
@@ -513,17 +513,17 @@ export class ApiClient {
         sentiment: (raw.sentiment ?? (isToxic ? 'NEGATIVE' : 'POSITIVE')) as 'POSITIVE' | 'NEUTRAL' | 'NEGATIVE',
         sentimentScore: Number(raw.sentimentScore ?? (isToxic ? -0.85 : 0.8)),
         flaggedCategories: (raw.flaggedCategories ?? (isToxic ? ['TOXIC_LANGUAGE'] : [])) as string[],
-        reason: String(raw.reason ?? (isToxic ? 'Sakıncalı içerik tespit edildi.' : 'İçerik kurallara uygundur.')),
+        reason: String(raw.reason ?? (isToxic ? 'Inappropriate content detected.' : 'Content complies with community standards.')),
       };
     } catch {
-      const isToxic = /küfür|aptal|salak|nefret|kötü/i.test(text);
+      const isToxic = /profanity|hate|abuse|toxic|offensive|bad/i.test(text);
       return {
         toxic: isToxic,
         toxicityScore: isToxic ? 0.88 : 0.05,
         sentiment: isToxic ? 'NEGATIVE' : text.length > 20 ? 'POSITIVE' : 'NEUTRAL',
         sentimentScore: isToxic ? -0.85 : 0.8,
         flaggedCategories: isToxic ? ['TOXIC_LANGUAGE'] : [],
-        reason: isToxic ? 'Sakıncalı veya saldırgan içerik tespit edildi.' : 'İçerik kurallara uygundur.',
+        reason: isToxic ? 'Inappropriate or offensive content detected.' : 'Content complies with community standards.',
       };
     }
   }
@@ -537,7 +537,7 @@ export class ApiClient {
       const data: ApiResult<string> = await res.json();
       return data.data;
     } catch {
-      return 'Toplam 6 blog yazısı başarıyla anlamsal vektör indeksine kaydedildi (Demo Modu).';
+      return 'All 6 blog articles successfully indexed into semantic vector space (Demo Mode).';
     }
   }
 
@@ -606,7 +606,7 @@ export class ApiClient {
         id: Date.now(),
         blogId,
         content: dto.content,
-        authorName: dto.authorName || 'Ziyaretçi Mühendis',
+        authorName: dto.authorName || 'Visiting Engineer',
         createdAt: new Date().toISOString(),
         isApproved: !mod.toxic,
         moderationStatus: mod.toxic ? 'FLAGGED_TOXIC' : 'APPROVED',
@@ -626,7 +626,7 @@ export class ApiClient {
     return data.data;
   }
 
-  public static async flagComment(commentId: number, reason: string = 'Sakıncalı İçerik'): Promise<CommentResponseDto> {
+  public static async flagComment(commentId: number, reason: string = 'Inappropriate Content'): Promise<CommentResponseDto> {
     const res = await fetch(`${API_BASE_URL}/blog/api/v1.0.0/comments/${commentId}/flag?reason=${encodeURIComponent(reason)}`, {
       method: 'POST',
       headers: this.getHeaders(),
@@ -665,8 +665,8 @@ export class ApiClient {
             categoryId: validId,
             blogCategoryId: validId,
             categoryName: (c.categoryName || '')
-              .replace(/YazÄ±lÄ±m/g, 'Yazılım')
-              .replace(/GÃ¼venlik/g, 'Güvenlik'),
+              .replace(/YazÄ±lÄ±m/g, 'Software')
+              .replace(/GÃ¼venlik/g, 'Security'),
           };
         });
 
@@ -693,7 +693,7 @@ export class ApiClient {
         exitCode: 'COMPLETED',
         startTime: new Date().toISOString(),
         endTime: new Date().toISOString(),
-        stepSummaries: ['cleanupStep: 14 silinmiş blog kalıcı temizlendi'],
+        stepSummaries: ['cleanupStep: 14 deleted blogs permanently purged'],
         processedCount: 14,
       };
     }
@@ -715,7 +715,7 @@ export class ApiClient {
         exitCode: 'COMPLETED',
         startTime: new Date().toISOString(),
         endTime: new Date().toISOString(),
-        stepSummaries: ['analyticsStep: 5 yazarın etkileşim puanları hesaplandı'],
+        stepSummaries: ['analyticsStep: Engagement scores computed for 5 authors'],
         processedCount: 5,
       };
     }
@@ -769,7 +769,7 @@ export class ApiClient {
     const data: ApiResult<TwoFactorRecoveryCodesDto> = await res.json();
     return data.data || {
       recoveryCodes: ['A1B2-C3D4', 'E5F6-G7H8', 'I9J0-K1L2', 'M3N4-O5P6'],
-      message: '2FA başarıyla etkinleştirildi.',
+      message: '2FA successfully enabled.',
     };
   }
 
@@ -780,7 +780,7 @@ export class ApiClient {
       body: JSON.stringify({ code }),
     });
     const data: ApiResult<string> = await res.json();
-    return data.data || '2FA devre dışı bırakıldı.';
+    return data.data || '2FA successfully disabled.';
   }
 
   // ==========================================
@@ -803,7 +803,7 @@ export class ApiClient {
       page: String(page),
       size: String(size),
     });
-    if (tag && tag.toLowerCase() !== 'all' && tag.toLowerCase() !== 'tumu' && tag.toLowerCase() !== '#tümü') {
+    if (tag && tag.toLowerCase() !== 'all' && tag.toLowerCase() !== '#all') {
       query.set('tag', tag.replace(/^#/, ''));
     }
 
@@ -847,7 +847,7 @@ export class ApiClient {
       if (sort === 'trending') {
         sortedMocks.sort((a, b) => ((b.likesCount || 0) + (b.viewsCount || 0)) - ((a.likesCount || 0) + (a.viewsCount || 0)));
       }
-      if (tag && tag !== '#TÜMÜ') {
+      if (tag && tag !== '#ALL') {
         const clean = tag.replace(/^#/, '').toLowerCase();
         sortedMocks = sortedMocks.filter((b) => b.tags?.some((t) => t.toLowerCase() === clean));
       }
@@ -902,7 +902,7 @@ export class ApiClient {
         firstName: 'Dr. Selin',
         lastName: 'Demir',
         title: 'AI Research Lead & Vector Architect',
-        bio: 'Spring AI, pgvector 128D anlamsal çıkarım motorları ve büyük dil modellerinde RAG optimizasyonu araştırmacısı.',
+        bio: 'Researcher in Spring AI, pgvector 128D semantic retrieval engines, and RAG optimization in large language models.',
         imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
         websiteUrl: 'https://selindemir.ai',
         githubUrl: 'https://github.com/selindemir',
@@ -917,9 +917,9 @@ export class ApiClient {
         userId: 3,
         username: 'caneraydin',
         firstName: 'Caner',
-        lastName: 'Aydın',
+        lastName: 'Aydin',
         title: 'Principal Security Architect & Cloud Native SRE',
-        bio: 'Cloud-native mimariler, eBPF gözlemlenebilirlik ve sıfır güven (Zero-Trust) RFC 6238 2FA güvenlik altyapıları lideri.',
+        bio: 'Lead architect for Cloud-native systems, eBPF observability, and zero-trust RFC 6238 2FA security infrastructure.',
         imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
         githubUrl: 'https://github.com/caneraydin',
         followersCount: 1950,
@@ -932,9 +932,9 @@ export class ApiClient {
       userId: 1,
       username: 'admin',
       firstName: 'Abdullah Berke',
-      lastName: 'Özder',
+      lastName: 'Ozder',
       title: 'Staff Platform Engineer & Distributed Systems Lead',
-      bio: 'Java 22 Loom Virtual Threads, Spring Boot 4 ve mikro-çekirdek reaktif sistemler üzerine teknik incelemeler paylaşıyor.',
+      bio: 'Publishes technical investigations on Java 22 Loom Virtual Threads, Spring Boot 4, and micro-kernel reactive platforms.',
       imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
       githubUrl: 'https://github.com/abdullahberkeozder',
       followersCount: 3420,
@@ -980,9 +980,9 @@ export class ApiClient {
         {
           userId: 101,
           username: 'berke.ozder',
-          name: 'Abdullah Berke Özder',
+          name: 'Abdullah Berke Ozder',
           title: 'Staff Platform Engineer',
-          bio: 'Loom, Spring Boot 4 ve mikro-çekirdek reaktif mimariler.',
+          bio: 'Loom, Spring Boot 4, and micro-kernel reactive architectures.',
           avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
           followersCount: 1240,
           articlesCount: 14,
@@ -993,7 +993,7 @@ export class ApiClient {
           username: 'alperen.kaya',
           name: 'Alperen Kaya',
           title: 'Distributed Systems Lead',
-          bio: 'Raft konsensüs, Redis lock-free tamponlar ve pgvector arama.',
+          bio: 'Raft consensus, Redis lock-free buffers, and pgvector search.',
           avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
           followersCount: 890,
           articlesCount: 8,
@@ -1004,7 +1004,7 @@ export class ApiClient {
           username: 'selin.demir',
           name: 'Dr. Selin Demir',
           title: 'Applied AI & Search Researcher',
-          bio: 'Reciprocal Rank Fusion, 128D vektör uzayı ve anlamsal çıkarım modelleri.',
+          bio: 'Reciprocal Rank Fusion, 128D vector space, and semantic retrieval models.',
           avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
           followersCount: 2150,
           articlesCount: 19,

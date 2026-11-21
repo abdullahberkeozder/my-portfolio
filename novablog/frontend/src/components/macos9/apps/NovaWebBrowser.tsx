@@ -108,7 +108,7 @@ export const NovaWebBrowser: React.FC<NovaWebBrowserProps> = ({
             className={`mac9-btn px-2 py-0.5 text-[11px] flex items-center gap-1 ${
               historyIndex === 0 ? 'opacity-40 cursor-not-allowed' : ''
             }`}
-            title="Geri"
+            title="Back"
           >
             <span>◄</span>
             <span className="hidden sm:inline">Back</span>
@@ -120,7 +120,7 @@ export const NovaWebBrowser: React.FC<NovaWebBrowserProps> = ({
             className={`mac9-btn px-2 py-0.5 text-[11px] flex items-center gap-1 ${
               historyIndex >= history.length - 1 ? 'opacity-40 cursor-not-allowed' : ''
             }`}
-            title="İleri"
+            title="Forward"
           >
             <span>►</span>
             <span className="hidden sm:inline">Forward</span>
@@ -129,7 +129,7 @@ export const NovaWebBrowser: React.FC<NovaWebBrowserProps> = ({
           <button
             onClick={handleRefresh}
             className="mac9-btn px-2 py-0.5 text-[11px] flex items-center gap-1"
-            title="Yenile"
+            title="Refresh"
           >
             <span>↻</span>
             <span className="hidden sm:inline">Refresh</span>
@@ -138,7 +138,7 @@ export const NovaWebBrowser: React.FC<NovaWebBrowserProps> = ({
           <button
             onClick={() => navigateTo('https://www.google.com/webhp?igu=1', 'iframe')}
             className="mac9-btn px-2 py-0.5 text-[11px] flex items-center gap-1"
-            title="Google Ana Sayfası"
+            title="Google Home"
           >
             <span>🏠</span>
             <span className="hidden sm:inline">Home</span>
@@ -149,7 +149,7 @@ export const NovaWebBrowser: React.FC<NovaWebBrowserProps> = ({
             className={`mac9-btn px-2 py-0.5 text-[11px] flex items-center gap-1 ${
               viewMode === 'retro-google' ? 'bg-[#C0C0E0] font-bold' : ''
             }`}
-            title="Retro Google Görünümü"
+            title="Retro Google View"
           >
             <span>🔍</span>
             <span className="hidden sm:inline">Retro Google</span>
@@ -164,7 +164,7 @@ export const NovaWebBrowser: React.FC<NovaWebBrowserProps> = ({
                 ? 'border-t-[#000080] border-r-[#000080] border-b-transparent border-l-transparent animate-spin'
                 : 'border-[#808080]'
             }`}
-            title={isLoading ? 'Sayfa yükleniyor...' : 'Hazır'}
+            title={isLoading ? 'Loading page...' : 'Ready'}
           />
           <span className="text-[10px] text-[#555] font-mono hidden md:inline">IE 5.0 Mac</span>
         </div>
@@ -179,7 +179,7 @@ export const NovaWebBrowser: React.FC<NovaWebBrowserProps> = ({
             value={urlInput}
             onChange={(e) => setUrlInput(e.target.value)}
             className="flex-1 px-2 py-0.5 bg-white border border-[#808080] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.25)] rounded-[2px] text-[12px] font-mono text-[#111] focus:outline-none focus:border-[#000080]"
-            placeholder="URL girin veya arama yapın (örn: www.google.com)..."
+            placeholder="Enter URL or search the web (e.g. www.google.com)..."
           />
           <button type="submit" className="mac9-btn px-3 py-0.5 text-[11px] font-bold">
             Go
@@ -244,12 +244,12 @@ export const NovaWebBrowser: React.FC<NovaWebBrowserProps> = ({
 
             {/* In case user wants to jump to quick search overlay */}
             <div className="absolute top-2 right-2 z-10 bg-[#DDDDDD]/95 border border-[#262626] rounded p-1 shadow-md flex items-center gap-1">
-              <span className="text-[10px] text-[#333]">Site açılmıyorsa:</span>
+              <span className="text-[10px] text-[#333]">If page fails to embed:</span>
               <button
                 onClick={() => setViewMode('retro-google')}
                 className="mac9-btn px-2 py-0.2 text-[10px]"
               >
-                Retro Google Motorunu Aç
+                Open Retro Google View
               </button>
               <a
                 href={currentUrl}
@@ -257,7 +257,7 @@ export const NovaWebBrowser: React.FC<NovaWebBrowserProps> = ({
                 rel="noreferrer"
                 className="mac9-btn px-2 py-0.2 text-[10px] text-[#000080]"
               >
-                Yeni Sekmede Aç ↗
+                Open in New Tab ↗
               </a>
             </div>
           </div>
@@ -287,7 +287,7 @@ export const NovaWebBrowser: React.FC<NovaWebBrowserProps> = ({
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Google'da veya webde arayın..."
+                  placeholder="Search Google or enter web address..."
                   className="w-full px-2 py-1 text-[13px] font-sans focus:outline-none"
                   autoFocus
                 />
@@ -321,7 +321,7 @@ export const NovaWebBrowser: React.FC<NovaWebBrowserProps> = ({
                 onClick={() => navigateTo('https://www.google.com/webhp?igu=1', 'iframe')}
                 className="text-[#000080] hover:underline"
               >
-                Canlı Google Iframe Modu
+                Live Google Iframe Mode
               </button>
               <span>•</span>
               <button
@@ -331,7 +331,7 @@ export const NovaWebBrowser: React.FC<NovaWebBrowserProps> = ({
                 }}
                 className="text-[#000080] hover:underline font-bold"
               >
-                Nova Blog Sayfası
+                Nova Blog Portal
               </button>
             </div>
           </div>
@@ -342,16 +342,16 @@ export const NovaWebBrowser: React.FC<NovaWebBrowserProps> = ({
           <div className="p-6 h-full overflow-y-auto bg-[#F8F9FA]">
             <div className="max-w-2xl mx-auto space-y-4">
               <div className="p-4 bg-white border border-[#CCC] rounded shadow-sm">
-                <h3 className="text-xl font-bold text-[#000080]">Nova Blog — Modern Sistem Mimarisi</h3>
+                <h3 className="text-xl font-bold text-[#000080]">Nova Blog — Modern System Architecture</h3>
                 <p className="text-xs text-[#666] mt-1">
-                  Mac OS 9 Masaüstü içerisinden modern web uygulaması deneyimi.
+                  Modern web application experience within the Mac OS 9 desktop environment.
                 </p>
                 <div className="mt-4 flex gap-2">
                   <button
                     onClick={() => onOpenBlog?.()}
                     className="mac9-btn mac9-btn-default px-4 py-1"
                   >
-                    Ayrı Pencerede Tam Ekran Aç
+                    Open Fullscreen in New Window
                   </button>
                 </div>
               </div>

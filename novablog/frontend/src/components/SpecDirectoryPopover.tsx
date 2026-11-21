@@ -41,19 +41,19 @@ const DIRECTORY_DATA: ColumnCategory[] = [
     items: [
       {
         id: 'all-articles',
-        title: 'Tüm Makaleler (Feed)',
+        title: 'All Articles (Feed)',
         specCode: 'FEED // ALL',
-        summary: 'Son eklenen ve trend teknik yayınlar listesi.',
-        status: '26 YAYIN',
+        summary: 'Latest technical releases and trending engineering publications.',
+        status: '26 ARTICLES',
         targetId: 'articles-feed',
         tab: 'feed',
       },
       {
         id: 'featured-spec',
-        title: 'Öne Çıkan Mühendislik',
+        title: 'Featured Engineering',
         specCode: 'CURATED // SPEC',
-        summary: 'Mimari kurul tarafından onaylanan derinlemesine analizler.',
-        status: 'EDİTÖR SEÇİMİ',
+        summary: 'Curated deep-dive architectural breakdowns approved by engineering committee.',
+        status: 'EDITOR CHOICE',
         targetId: 'articles-feed',
         tab: 'feed',
       },
@@ -61,15 +61,15 @@ const DIRECTORY_DATA: ColumnCategory[] = [
   },
   {
     id: 'core',
-    title: 'Mimari Çekirdek',
+    title: 'Architectural Core',
     icon: <Cpu className="w-3.5 h-3.5" />,
     items: [
       {
         id: 'loom',
         title: 'Java 22 Loom V-Threads',
         specCode: 'JDK-22 // JEP-444',
-        summary: '10.000 sanal thread havuzu ile sıfır platform thread kilitlemesi.',
-        status: '11,400+ İSTEK/SN',
+        summary: '10,000 virtual thread pool eliminating operating system thread contention.',
+        status: '11,400+ REQ/S',
         targetId: 'modular-architecture-console',
         tab: 'system',
       },
@@ -77,7 +77,7 @@ const DIRECTORY_DATA: ColumnCategory[] = [
         id: 'write-behind',
         title: 'Redis Write-Behind Buffer',
         specCode: 'CACHE // WRITE-BEHIND',
-        summary: 'Görüntülenme ve beğeni sayaçlarında sıfır PostgreSQL satır kilitlemesi.',
+        summary: 'Zero PostgreSQL row lock contention on view and clap engagement metrics.',
         status: 'ASYNC BUFFER',
         targetId: 'modular-architecture-console',
         tab: 'system',
@@ -86,7 +86,7 @@ const DIRECTORY_DATA: ColumnCategory[] = [
         id: 'occ',
         title: 'JPA Optimistic Locking',
         specCode: 'JPA // RFC-OPT-LOCK',
-        summary: 'Versiyonlama (@Version) ile çakışmasız eşzamanlı veri mutasyonu.',
+        summary: 'Conflict-free concurrent state mutations guarded by @Version optimistic locking.',
         status: 'LOCK-FREE OCC',
         targetId: 'modular-architecture-console',
         tab: 'system',
@@ -95,8 +95,8 @@ const DIRECTORY_DATA: ColumnCategory[] = [
         id: 'storage',
         title: 'PostgreSQL 16 & HikariCP',
         specCode: 'DB // POOL-OPTIMIZED',
-        summary: 'Zero-leak bağlantı havuzu ve Flyway ile otomatik şema göçü.',
-        status: '10/10 HAVUZ',
+        summary: 'Zero-leak connection pool paired with Flyway automated schema migrations.',
+        status: '10/10 POOL',
         targetId: 'modular-architecture-console',
         tab: 'system',
       },
@@ -104,24 +104,24 @@ const DIRECTORY_DATA: ColumnCategory[] = [
   },
   {
     id: 'ai',
-    title: 'Spring AI & Vektör',
+    title: 'Spring AI & Vector',
     icon: <Brain className="w-3.5 h-3.5" />,
     items: [
       {
         id: 'pgvector',
-        title: '128D Vektör Arama',
+        title: '128D Vector Retrieval',
         specCode: 'PGVECTOR // COSINE',
-        summary: 'PostgreSQL pgvector ile kosinüs benzerliği ve anlamsal eşleştirme.',
+        summary: 'Cosine similarity and deep semantic embeddings with PostgreSQL pgvector.',
         status: 'SUB-MS EMBED',
         targetId: 'ai-vector-studio',
         tab: 'ai-search',
       },
       {
         id: 'moderation',
-        title: 'AI İçerik Denetim Radarı',
+        title: 'AI Moderation Radar',
         specCode: 'SAFETY // MODERATION',
-        summary: 'Çok dilli LLM tabanlı toksisite ve kalite filtresi.',
-        status: 'OTOMATİK ONAY',
+        summary: 'Multilingual LLM-based toxicity quarantine and quality gate.',
+        status: 'AUTO-APPROVED',
         targetId: 'ai-vector-studio',
         tab: 'ai-search',
       },
@@ -129,23 +129,23 @@ const DIRECTORY_DATA: ColumnCategory[] = [
   },
   {
     id: 'batch',
-    title: 'Batch & ETL Konsolu',
+    title: 'Batch & ETL Console',
     icon: <Database className="w-3.5 h-3.5" />,
     items: [
       {
         id: 'retention',
         title: 'Soft-Delete Purge Job',
         specCode: 'BATCH // RETENTION-30D',
-        summary: '30 günden eski silinmiş kayıtların arka planda kalıcı temizliği.',
+        summary: 'Nightly retention job purging soft-deleted records older than 30 days.',
         status: 'CRON SCHEDULED',
         targetId: 'batch-etl-studio',
         tab: 'admin-batch',
       },
       {
         id: 'analytics',
-        title: 'Yazar CSV Analitik ETL',
+        title: 'Author Analytics ETL',
         specCode: 'BATCH // AUTHOR-STATS',
-        summary: 'Tüm yazar metriklerinin derlenip S3 depolamaya aktarılması.',
+        summary: 'Aggregating author metrics and exporting analytical digests to S3 storage.',
         status: 'CHUNK 100',
         targetId: 'batch-etl-studio',
         tab: 'admin-batch',
@@ -154,14 +154,14 @@ const DIRECTORY_DATA: ColumnCategory[] = [
   },
   {
     id: 'security',
-    title: 'Güvenlik & Telemetri',
+    title: 'Security & Telemetry',
     icon: <Shield className="w-3.5 h-3.5" />,
     items: [
       {
         id: 'totp',
         title: 'RFC 6238 TOTP 2FA',
         specCode: 'SEC // GOOGLE-AUTH',
-        summary: 'Donanımsal zamana dayalı tek kullanımlık şifreleme ve QR eşleme.',
+        summary: 'Hardware-backed time-based one-time password encryption and QR provisioning.',
         status: 'SECURE ENCLAVE',
         targetId: 'modular-architecture-console',
         tab: 'system',
@@ -170,8 +170,8 @@ const DIRECTORY_DATA: ColumnCategory[] = [
         id: 'problem-details',
         title: 'RFC 7807 Problem Details',
         specCode: 'IETF // RFC-7807',
-        summary: 'Hata yönetiminde küresel standart format ve stack trace gizleme.',
-        status: 'STANDART JSON',
+        summary: 'Global RFC standard format concealing stack traces while exposing actionable details.',
+        status: 'STANDARD JSON',
         targetId: 'modular-architecture-console',
         tab: 'system',
       },
@@ -236,7 +236,7 @@ export const SpecDirectoryPopover: React.FC<SpecDirectoryPopoverProps> = ({
             <span className="w-2.5 h-2.5 rounded-full bg-[#28c840] border border-[#1aab29]" />
           </div>
           <span className="font-bold tracking-wider text-[10px] uppercase">
-             MİMARİ DİZİN // FINDER COLUMN VIEW
+             SPEC DIRECTORY // FINDER COLUMN VIEW
           </span>
           <button
             onClick={onClose}
@@ -251,7 +251,7 @@ export const SpecDirectoryPopover: React.FC<SpecDirectoryPopoverProps> = ({
           {/* Column 1: Root Sidebar (4 cols) */}
           <div className="col-span-4 p-1.5 space-y-0.5 bg-zinc-200/50 dark:bg-zinc-900/40 overflow-y-auto scrollbar-none font-medium">
             <div className="text-[9px] font-mono text-zinc-400 dark:text-zinc-500 uppercase px-2 py-1 font-bold">
-              KÖK ALANLAR
+              ROOT DOMAINS
             </div>
             {DIRECTORY_DATA.map((cat) => (
               <button
@@ -276,7 +276,7 @@ export const SpecDirectoryPopover: React.FC<SpecDirectoryPopoverProps> = ({
           {/* Column 2: Spec List (4 cols) */}
           <div className="col-span-4 p-1.5 space-y-0.5 bg-white/40 dark:bg-black/20 overflow-y-auto scrollbar-none">
             <div className="text-[9px] font-mono text-zinc-400 dark:text-zinc-500 uppercase px-2 py-1 font-bold">
-              MODÜLLER
+              MODULES
             </div>
             {activeCategory.items.map((item) => (
               <button
@@ -323,7 +323,7 @@ export const SpecDirectoryPopover: React.FC<SpecDirectoryPopoverProps> = ({
               }}
               className="mac-aqua-btn-primary w-full py-1.5 !text-xs font-bold flex items-center justify-center gap-1.5 shadow cursor-pointer hover:scale-[1.01] active:scale-[0.98] transition-transform"
             >
-              <span>Modüle Git</span>
+              <span>Launch Module</span>
               <ExternalLink className="w-3 h-3" />
             </button>
           </div>

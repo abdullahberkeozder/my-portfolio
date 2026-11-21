@@ -38,10 +38,10 @@ const REELS: ReelItem[] = [
     id: 'reel-loom',
     tag: '01 // JAVA 22 LOOM',
     badge: '10K VIRTUAL THREADS',
-    caption: '10,000 EŞZAMANLI İSTEK',
-    title: 'SANAL İŞ PARÇACIĞI HAVUZU',
-    subtitle: 'SUNUCU KİLİTLENMESİNE SON',
-    detail: 'Aynı anda 10.000 kişi bağlandığında dahi milisaniyeler içinde yanıt veren hafif iş parçacığı mimarisi.',
+    caption: '10,000 CONCURRENT REQUESTS',
+    title: 'VIRTUAL THREAD DISPATCH POOL',
+    subtitle: 'ZERO SERVER CONTENTION',
+    detail: 'Lightweight virtual threads allocate execution contexts per connection, serving 10,000 concurrent requests with sub-millisecond latencies.',
     image: '/images/architecture-cutaway.jpg',
     moduleTarget: 'loom',
     durationSec: 6,
@@ -54,10 +54,10 @@ const REELS: ReelItem[] = [
     id: 'reel-redis',
     tag: '02 // REDIS WRITE-BEHIND',
     badge: 'LOCKLESS BUFFER',
-    caption: '12.4K İSTEK/SN',
-    title: 'ÖNBELLEK TAMPONLAMA',
-    subtitle: 'VERİTABANI KİLİTLENMESİNE SON',
-    detail: 'Yüksek trafik anında veritabanını yormayan, sayaçları bellekte toplayıp düzenli senkronize eden akıllı tampon.',
+    caption: '12.4K OPS/SEC',
+    title: 'WRITE-BEHIND BUFFER',
+    subtitle: 'ZERO ROW CONTENTION',
+    detail: 'High-speed Redis memory buffer aggregating view and clap metrics at O(1) velocity, batch-flushing to PostgreSQL without disk bottlenecks.',
     image: '/images/terminal-hardware.jpg',
     moduleTarget: 'write-behind',
     durationSec: 7,
@@ -70,10 +70,10 @@ const REELS: ReelItem[] = [
     id: 'reel-springai',
     tag: '03 // SPRING AI pgvector',
     badge: '128D VECTOR SPACE',
-    caption: '%94.2 ANLAMSAL İSABET',
-    title: 'YAPAY ZEKA ANLAMSAL ARAMA',
-    subtitle: 'AKILLI HİBRİT SIRALAMA',
-    detail: 'Yazım hatası yapsanız dahi içeriğin derin anlamını kavrayan ve en doğru makaleyi getiren yapay zeka motoru.',
+    caption: '94.2% SEMANTIC RECALL',
+    title: 'AI SEMANTIC RETRIEVAL',
+    subtitle: 'HYBRID RRF RE-RANKING',
+    detail: 'Cognitive pgvector search combining 128D cosine distance and keyword matching to understand semantic intent and typo-tolerant queries.',
     image: '/images/hardware-core.jpg',
     moduleTarget: 'spring-ai',
     durationSec: 6,
@@ -86,10 +86,10 @@ const REELS: ReelItem[] = [
     id: 'reel-security',
     tag: '04 // RFC 7807 & 2FA',
     badge: 'STATE MACHINE',
-    caption: 'İKİ ADIMLI 2FA DOĞRULAMA',
-    title: 'PRE-AUTH & 2FA GÜVENLİK ZIRHI',
-    subtitle: 'KURUMSAL KİMLİK KORUMASI',
-    detail: 'İki faktörlü TOTP kodları ve standart hata yanıtlarıyla verilerinizi koruyan tavizsiz güvenlik protokolü.',
+    caption: 'TWO-FACTOR AUTHENTICATION',
+    title: 'PRE-AUTH & 2FA SECURITY SHIELD',
+    subtitle: 'ENTERPRISE IDENTITY DEFENSE',
+    detail: 'RFC 6238 TOTP hardware code generation paired with transient PRE_AUTH token state machine and RFC 7807 error problem specifications.',
     image: '/images/terminal-hardware.jpg',
     moduleTarget: 'optimistic-locking',
     durationSec: 6,
@@ -102,10 +102,10 @@ const REELS: ReelItem[] = [
     id: 'reel-batch',
     tag: '05 // SPRING BATCH 5',
     badge: 'CHUNK 100 ZERO LEAK',
-    caption: 'SIFIR SIZINTI ETL',
-    title: 'OTOMATİK VERİ TEMİZLİĞİ',
-    subtitle: 'KESİNTİSİZ ARKA PLAN BORU HATTI',
-    detail: 'Eski ve silinmiş verileri sunucu performansını zedelemeden arka planda temizleyen akıllı toplu iş motoru.',
+    caption: 'ZERO LEAK ETL',
+    title: 'AUTOMATED DATA RETENTION',
+    subtitle: 'BACKGROUND CHUNK PIPELINE',
+    detail: 'Spring Batch 5 chunk-oriented retention jobs silently archiving expired soft-deleted records without impacting OLTP transaction throughput.',
     image: '/images/architecture-cutaway.jpg',
     moduleTarget: 'spring-batch',
     durationSec: 8,
@@ -233,37 +233,37 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
                 <Film className="w-3.5 h-3.5 text-white" />
               </span>
               <h2 className="font-sans text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                <span>QuickTime X Mimari Telemetri Kayıtları</span>
+                <span>QuickTime X Architecture Telemetry Reels</span>
                 <span className="text-xs font-mono font-normal text-zinc-400 bg-white/5 px-2 py-0.5 rounded border border-white/10 hidden md:inline">
                   PRORES 422 HQ // 1080P DESKTOP REEL
                 </span>
               </h2>
             </div>
             <p className="text-xs text-zinc-400 mt-1 font-mono">
-              Sanal iş parçacıkları, önbellek tamponu ve pgvector kosinüs hesaplamalarını QuickTime arayüzünde inceleyin.
+              Review virtual threads, Redis write-behind buffers, and pgvector cosine telemetry inside the QuickTime player interface.
             </p>
           </div>
 
           {/* Carousel Navigation Toolbar */}
           <div className="flex items-center gap-3">
             <span className="text-[11px] font-mono text-zinc-400 hidden lg:inline tracking-wider bg-black/40 px-3 py-1 rounded-full border border-white/10">
-              SÜRÜKLE VEYA HOVER İLE OYNAT
+              DRAG OR HOVER TO PLAY
             </span>
 
             <div className="flex items-center gap-1.5 p-1 rounded-lg bg-zinc-900/90 border border-white/15 shadow-inner">
               <button
                 onClick={() => scroll('left')}
                 className="w-8 h-8 rounded bg-gradient-to-b from-zinc-700 to-zinc-800 hover:from-zinc-600 hover:to-zinc-700 border border-white/20 flex items-center justify-center text-white transition-all cursor-pointer active:scale-95 shadow-sm"
-                title="Önceki Kayıt"
-                aria-label="Önceki Kayıt"
+                title="Previous Reel"
+                aria-label="Previous Reel"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => scroll('right')}
                 className="w-8 h-8 rounded bg-gradient-to-b from-zinc-700 to-zinc-800 hover:from-zinc-600 hover:to-zinc-700 border border-white/20 flex items-center justify-center text-white transition-all cursor-pointer active:scale-95 shadow-sm"
-                title="Sonraki Kayıt"
-                aria-label="Sonraki Kayıt"
+                title="Next Reel"
+                aria-label="Next Reel"
               >
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
@@ -350,7 +350,7 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
                         setIsMuted(!isMuted);
                       }}
                       className="w-7 h-7 rounded-full bg-black/75 hover:bg-black text-white border border-white/20 flex items-center justify-center transition-transform hover:scale-110 pointer-events-auto shadow-md"
-                      title={isMuted ? 'Sesi Aç' : 'Sesi Kapat'}
+                      title={isMuted ? 'Unmute' : 'Mute'}
                     >
                       {isMuted ? (
                         <VolumeX className="w-3.5 h-3.5 text-zinc-400" />
@@ -379,16 +379,16 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
                           <span className="text-zinc-200 font-semibold">{reel.codec}</span>
                         </p>
                         <p className="flex justify-between">
-                          <span className="text-zinc-500">Çözünürlük:</span>
+                          <span className="text-zinc-500">Resolution:</span>
                           <span className="text-zinc-200">{reel.fps}</span>
                         </p>
                         <p className="flex justify-between">
-                          <span className="text-zinc-500">Veri Akışı:</span>
+                          <span className="text-zinc-500">Bitrate:</span>
                           <span className="text-emerald-400 font-bold">{reel.bitrate}</span>
                         </p>
                         <p className="flex justify-between">
-                          <span className="text-zinc-500">Süre:</span>
-                          <span className="text-zinc-200">00:00:0{reel.durationSec} (Tam Döngü)</span>
+                          <span className="text-zinc-500">Duration:</span>
+                          <span className="text-zinc-200">00:00:0{reel.durationSec} (Full Loop)</span>
                         </p>
                       </div>
                     </div>
@@ -437,7 +437,7 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
                   <div className="pt-3 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-zinc-400">
                     <span className="text-zinc-500 uppercase">{reel.caption}</span>
                     <span className="text-blue-400 font-semibold group-hover:underline flex items-center gap-1">
-                      <span>Simülasyon</span>
+                      <span>Simulation</span>
                       <Maximize2 className="w-2.5 h-2.5" />
                     </span>
                   </div>

@@ -29,10 +29,10 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
   const [latencyMs, setLatencyMs] = useState<number | null>(null);
 
   const sampleQueries = [
-    'Yüksek eşzamanlı isteklerde thread performansı ve sanal iş parçacıkları',
-    'Yapay zeka ile anlamsal makale arama ve akıllı sıralama',
-    'Google Authenticator ile iki aşamalı güvenlik ve kurtarma kodları',
-    'Büyük veri kümelerinde toplu chunk ETL ve veri temizliği',
+    'Thread performance and virtual threads under high concurrent traffic',
+    'AI-powered semantic article search and smart ranking',
+    'Two-factor authentication with Google Authenticator and recovery codes',
+    'Chunk-based ETL and data cleanup in large datasets',
   ];
 
   const handleSearch = async (overrideQuery?: string) => {
@@ -60,7 +60,7 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
             similarityScore: 0.88,
             matchedKeywords: [lower],
             searchMode: 'KEYWORD' as const,
-            explanation: 'Geleneksel SQL LIKE tam metin araması ile sözcüksel eşleşme sağlandı.',
+            explanation: 'Lexical match completed via standard SQL LIKE full-text search.',
           }));
       }
       setResults(data);
@@ -79,20 +79,20 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
         <div className="space-y-1.5">
           <div className="inline-flex items-center gap-2 font-mono text-xs uppercase font-bold text-emerald-600 dark:text-emerald-400">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-            <span>MİMARİ MODÜL 02 // MAC OS X VECTOR LAB & SPOTLIGHT STUDIO</span>
+            <span>ARCHITECTURE MODULE 02 // MAC OS X VECTOR LAB &amp; SPOTLIGHT STUDIO</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight flex items-center gap-3">
-            <span>SPRING AI & PGVECTOR ANLAMSAL ARAMA STÜDYOSU</span>
+            <span>SPRING AI &amp; PGVECTOR SEMANTIC SEARCH STUDIO</span>
           </h2>
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-3xl font-sans leading-relaxed">
-            Klasik anahtar kelime aramasının ötesine geçen akıllı anlamsal arama motoru. Kullanıcı sorgularını 128 boyutlu
-            kosinüs uzayında eşleştirerek milisaniyeler içinde en alakalı makaleleri bulur ve sıralar.
+            An intelligent semantic retrieval engine beyond traditional keyword matching. Matches user queries in 128-dimensional
+            cosine space to rank and surface relevant technical literature in sub-milliseconds.
           </p>
         </div>
 
         <div className="flex items-center gap-2 font-mono text-xs text-zinc-500 shrink-0">
           <span className="mac-hardware-chip-badge">128D DENSE</span>
-          <span className="mac-hardware-chip-badge">HNSW KOSİNÜS</span>
+          <span className="mac-hardware-chip-badge">HNSW COSINE</span>
           <span className="mac-hardware-chip-badge">P99: ~1.8MS</span>
         </div>
       </div>
@@ -171,7 +171,7 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
                 }`}
               >
                 <Search className="w-3.5 h-3.5 text-amber-600" />
-                <span>Sözcüksel (SQL)</span>
+                <span>Lexical (SQL)</span>
               </button>
             </div>
 
@@ -179,7 +179,7 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
             <div className="flex items-center gap-3 font-mono text-xs">
               <span className="text-zinc-600 dark:text-zinc-400 flex items-center gap-1">
                 <Sliders className="w-3.5 h-3.5" />
-                Eşik Değeri:
+                Similarity Threshold:
               </span>
               <input
                 id="semantic-threshold-slider"
@@ -206,7 +206,7 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
                 id="semantic-query-input"
                 name="semanticQuery"
                 type="text"
-                placeholder="Örn: Yüksek eşzamanlı isteklerde thread performansı ve sanal iş parçacıkları..."
+                placeholder="e.g.: Thread performance and virtual threads under high concurrent traffic..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => {
@@ -225,12 +225,12 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
               {isSearching ? (
                 <>
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>ARANIYOR...</span>
+                  <span>SEARCHING...</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>VEKTÖRDE ARA</span>
+                  <span>SEARCH VECTOR SPACE</span>
                 </>
               )}
             </button>
@@ -238,7 +238,7 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
 
           {/* Sample Query Pills */}
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            <span className="text-[10px] font-mono text-zinc-500 uppercase mr-1">Örnek Sorgular:</span>
+            <span className="text-[10px] font-mono text-zinc-500 uppercase mr-1">Sample Queries:</span>
             {sampleQueries.map((sq, idx) => (
               <button
                 key={idx}
@@ -261,21 +261,21 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
             <div className="space-y-4">
               <div className="flex items-center justify-between text-xs font-mono text-zinc-500 pb-2 border-b border-zinc-200 dark:border-zinc-800">
                 <span className="font-bold text-zinc-900 dark:text-white">
-                  BULUNAN SONUÇLAR: {results.length} ADET
+                  RESULTS FOUND: {results.length} ITEMS
                 </span>
                 {latencyMs !== null && (
                   <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
                     <Activity className="w-3 h-3" />
-                    Sorgu Gecikmesi: {latencyMs} ms
+                    Query Latency: {latencyMs} ms
                   </span>
                 )}
               </div>
 
               {results.length === 0 ? (
                 <div className="py-12 text-center text-zinc-400 space-y-2">
-                  <p className="text-xs font-mono uppercase font-bold">Eşleşen sonuç bulunamadı</p>
+                  <p className="text-xs font-mono uppercase font-bold">No matching results found</p>
                   <p className="text-[11px] text-zinc-500">
-                    Eşik değerini düşürebilir (%50) veya farklı bir anlamsal cümle deneyebilirsiniz.
+                    You can lower the similarity threshold (e.g. 50%) or try a different conceptual query.
                   </p>
                 </div>
               ) : (
@@ -290,10 +290,10 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <span className="retro-tag-pill">
-                              #{r.blog.tags?.[0] || 'mimari'}
+                              #{r.blog.tags?.[0] || 'architecture'}
                             </span>
                             <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                              %{simPercent} Anlamsal Uyum
+                              %{simPercent} Semantic Match
                             </span>
                           </div>
 
@@ -314,7 +314,7 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
 
                         <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
                           <span className="text-[10px] font-mono text-zinc-500">
-                            {r.blog.author || 'Mühendis'}
+                            {r.blog.author || 'Engineer'}
                           </span>
                           <button
                             type="button"
@@ -325,7 +325,7 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
                             className="ios6-btn ios6-btn-silver px-3 py-1 text-xs"
                           >
                             <BookOpen className="w-3 h-3 text-emerald-600" />
-                            <span>Safari Reader ile Aç</span>
+                            <span>Open in Safari Reader</span>
                           </button>
                         </div>
                       </div>
@@ -338,10 +338,10 @@ export const SemanticSearchStudio: React.FC<SemanticSearchStudioProps> = ({ onSe
             <div className="py-12 text-center text-zinc-500 space-y-2">
               <Sparkles className="w-8 h-8 text-purple-500 mx-auto opacity-70 animate-pulse" />
               <p className="text-xs font-mono uppercase font-bold text-zinc-700 dark:text-zinc-300">
-                Vektör Sorgulama Motoru Beklemede
+                Vector Retrieval Engine Idle
               </p>
               <p className="text-[11px] text-zinc-500 max-w-md mx-auto">
-                Yukarıdaki arama çubuğuna bir kavram girin veya örnek sorgulardan birine tıklayarak 128D anlamsal uzayı tarayın.
+                Enter an architectural concept above or click a sample query to scan the 128D semantic vector space.
               </p>
             </div>
           )}

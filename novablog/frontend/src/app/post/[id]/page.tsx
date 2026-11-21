@@ -43,7 +43,7 @@ function PostPageSkeleton() {
     <div className="min-h-screen safari-reader-backdrop flex items-center justify-center font-mono text-xs text-zinc-400">
       <div className="space-y-3 text-center">
         <RefreshCw className="w-6 h-6 animate-spin mx-auto text-blue-500" />
-        <p className="tracking-widest uppercase">SAFARI DESKTOP READER YÜKLENİYOR...</p>
+        <p className="tracking-widest uppercase">SAFARI DESKTOP READER LOADING...</p>
       </div>
     </div>
   );
@@ -169,8 +169,8 @@ function PostContent({ params }: PostPageProps) {
     return (
       <div className="min-h-screen safari-reader-backdrop flex items-center justify-center p-4">
         <div className="max-w-md w-full text-center space-y-4 p-8 rounded-xl bg-white dark:bg-[#181a1d] border border-zinc-300 dark:border-zinc-800 shadow-2xl">
-          <h2 className="text-xl font-bold text-zinc-950 dark:text-white font-sans">Makale Bulunamadı</h2>
-          <p className="text-xs text-zinc-500 font-sans">İstediğiniz teknik makale yayından kaldırılmış veya taşınmış olabilir.</p>
+          <h2 className="text-xl font-bold text-zinc-950 dark:text-white font-sans">Article Not Found</h2>
+          <p className="text-xs text-zinc-500 font-sans">The requested technical article may have been unpublished or moved.</p>
           <button
             type="button"
             onClick={() => {
@@ -179,7 +179,7 @@ function PostContent({ params }: PostPageProps) {
             }}
             className="mac-aqua-btn mac-aqua-btn-primary px-5 py-2 text-xs font-bold gap-1.5"
           >
-            <span>&lt; Yayın Akışına Dön</span>
+            <span>&lt; Return to Feed</span>
           </button>
         </div>
       </div>
@@ -193,8 +193,8 @@ function PostContent({ params }: PostPageProps) {
     (authorUsername === 'selindemir'
       ? 'Dr. Selin Demir'
       : authorUsername === 'caneraydin'
-      ? 'Caner Aydın'
-      : 'Abdullah Berke Özder');
+      ? 'Caner Aydin'
+      : 'Abdullah Berke Ozder');
 
   const isAuthorFollowed = followedAuthors.includes(authorUsername) || followedAuthors.includes(authorDisplayName);
   const initial = authorDisplayName.charAt(0).toUpperCase();
@@ -202,12 +202,12 @@ function PostContent({ params }: PostPageProps) {
   const wordCount = (blog.content || '').split(/\s+/).filter(Boolean).length;
   const readingTime = blog.readTimeMinutes || Math.max(1, Math.ceil(wordCount / 180));
   const formattedDate = blog.publishedAt || blog.createdDate
-    ? new Date(blog.publishedAt || blog.createdDate!).toLocaleDateString('tr-TR', {
+    ? new Date(blog.publishedAt || blog.createdDate!).toLocaleDateString('en-US', {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
       })
-    : '5 Kasım 2026';
+    : 'November 5, 2026';
 
   const toggleBookmark = () => {
     playTabSelect();
@@ -282,7 +282,7 @@ function PostContent({ params }: PostPageProps) {
     playSendWhoosh();
 
     setIsSubmittingComment(true);
-    const authorName = authorNameInput.trim() || 'Ziyaretçi Mühendis';
+    const authorName = authorNameInput.trim() || 'Visiting Engineer';
 
     try {
       const res = await ApiClient.addComment(blogId, {
@@ -316,7 +316,7 @@ function PostContent({ params }: PostPageProps) {
     playKeyClick();
     setFlaggedCommentIds((prev) => [...prev, commentId]);
     try {
-      await ApiClient.flagComment(commentId, 'Topluluk tarafından sakıncalı bulundu');
+      await ApiClient.flagComment(commentId, 'Flagged as inappropriate by community');
     } catch {
       // ignore
     }
@@ -365,9 +365,9 @@ function PostContent({ params }: PostPageProps) {
               router.push('/');
             }}
             className="ios-back-chevron mr-1"
-            title="Yayın Akışına Dön"
+            title="Return to Feed"
           >
-            <span>&lt; Geri</span>
+            <span>&lt; Back</span>
           </button>
 
           {/* Typography 'aA' Font Scaler */}
@@ -375,8 +375,8 @@ function PostContent({ params }: PostPageProps) {
             type="button"
             onClick={cycleFontSize}
             className="safari-hud-btn"
-            title={`Yazı Boyutu (Şu an: ${
-              readerFontSize === 'normal' ? 'Standart' : readerFontSize === 'large' ? 'Büyük' : 'Çok Büyük'
+            title={`Font Size (Current: ${
+              readerFontSize === 'normal' ? 'Standard' : readerFontSize === 'large' ? 'Large' : 'Extra Large'
             })`}
           >
             <Type className="w-3.5 h-3.5" />
@@ -394,10 +394,10 @@ function PostContent({ params }: PostPageProps) {
                 setIsTocOpen(!isTocOpen);
               }}
               className={`safari-hud-btn ${isTocOpen ? 'bg-white/20' : ''}`}
-              title="İçindekiler Tablosu"
+              title="Table of Contents"
             >
               <ListTree className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">İçindekiler</span>
+              <span className="hidden sm:inline">Contents</span>
               {isTocOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             </button>
           )}
@@ -407,10 +407,10 @@ function PostContent({ params }: PostPageProps) {
             type="button"
             onClick={handlePrint}
             className="safari-hud-btn hidden md:inline-flex"
-            title="Makaleyi Yazdır"
+            title="Print Article"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>Yazdır</span>
+            <span>Print</span>
           </button>
 
           {/* Share Article */}
@@ -418,10 +418,10 @@ function PostContent({ params }: PostPageProps) {
             type="button"
             onClick={handleShare}
             className="safari-hud-btn"
-            title="Bağlantıyı Kopyala"
+            title="Copy Link"
           >
             {isCopiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{isCopiedLink ? 'Kopyalandı' : 'Paylaş'}</span>
+            <span className="hidden sm:inline">{isCopiedLink ? 'Copied' : 'Share'}</span>
           </button>
         </div>
       </div>
@@ -431,7 +431,7 @@ function PostContent({ params }: PostPageProps) {
         <div className="fixed top-32 z-50 left-1/2 -translate-x-1/2 max-w-lg w-full px-4 animate-in fade-in duration-200">
           <div className="p-4 rounded-xl bg-zinc-900/95 border border-zinc-700 shadow-2xl text-xs font-mono space-y-2 text-white">
             <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block">
-              SAFARI İÇİNDEKİLER DİZİNİ
+              SAFARI TABLE OF CONTENTS
             </span>
             <div className="max-h-60 overflow-y-auto space-y-1 scrollbar-thin">
               {headings.map((item, idx) => (
@@ -473,7 +473,7 @@ function PostContent({ params }: PostPageProps) {
                   blog.isBreaking ? 'bg-amber-500 animate-pulse' : 'bg-blue-500'
                 }`}
               />
-              {blog.isBreaking ? '⚡ CANLI FLAŞ HABER' : '📡 GÜNCEL TEKNOLOJİ DİSPAÇI'}
+              {blog.isBreaking ? '⚡ LIVE BREAKING NEWS' : '📡 TECH DISPATCH'}
             </span>
           )}
 
@@ -485,7 +485,7 @@ function PostContent({ params }: PostPageProps) {
             ))}
           <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded text-[11px] font-bold border border-emerald-500/20 font-mono">
             <CheckCircle2 className="w-3 h-3" />
-            VEKTÖR İNDEKSİ (128D)
+            VECTOR INDEX (128D)
           </span>
         </div>
 
@@ -522,7 +522,7 @@ function PostContent({ params }: PostPageProps) {
                   {authorDisplayName}
                 </span>
                 <span className="text-[11px] text-zinc-500 font-mono block">
-                  {formattedDate} &bull; {readingTime} dk okuma
+                  {formattedDate} &bull; {readingTime} min read
                 </span>
               </div>
             </Link>
@@ -534,7 +534,7 @@ function PostContent({ params }: PostPageProps) {
                 isAuthorFollowed ? 'mac-aqua-btn-silver' : 'mac-aqua-btn-primary'
               } !px-4 !py-1.5 !text-xs font-bold gap-1 cursor-pointer`}
             >
-              {isAuthorFollowed ? 'Takip Ediliyor' : 'Takip Et'}
+              {isAuthorFollowed ? 'Following' : 'Follow Author'}
             </button>
           </div>
         </div>
@@ -543,7 +543,7 @@ function PostContent({ params }: PostPageProps) {
         {blog.viaSource && (
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/60 border border-black/10 dark:border-white/10 text-xs font-mono shadow-sm">
             <div className="flex items-center gap-2">
-              <span className="text-zinc-400">KAYNAK ATFI:</span>
+              <span className="text-zinc-400">SOURCE ATTRIBUTION:</span>
               <span className="font-bold text-zinc-900 dark:text-zinc-100">{blog.viaSource}</span>
             </div>
             {blog.viaUrl && (
@@ -554,7 +554,7 @@ function PostContent({ params }: PostPageProps) {
                 onClick={() => playKeyClick()}
                 className="inline-flex items-center gap-1.5 text-blue-600 dark:text-blue-400 hover:underline font-bold"
               >
-                <span>Orijinal Yayını Ziyaret Et</span>
+                <span>Visit Original Release</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             )}
@@ -566,7 +566,7 @@ function PostContent({ params }: PostPageProps) {
           <div className="rounded-xl p-4 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-teal-500/5 border border-blue-400/40 space-y-2 shadow-sm">
             <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-              <span>NOVA MÜHENDİSLİK DEĞERLENDİRMESİ</span>
+              <span>NOVA ENGINEERING EVALUATION</span>
             </div>
             <p className="text-xs sm:text-sm leading-relaxed italic text-zinc-800 dark:text-zinc-200 font-sans">
               &ldquo;{blog.editorialTake}&rdquo;
@@ -580,7 +580,7 @@ function PostContent({ params }: PostPageProps) {
             <div className="flex items-center justify-between font-mono text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wider">
               <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
                 <Sparkles className="w-4 h-4" />
-                SPRING AI // 1 DAKİKALIK YÖNETİCİ ÖZETİ
+                SPRING AI // 1-MINUTE EXECUTIVE SUMMARY
               </span>
               <span className="text-[10px] text-blue-700 dark:text-blue-300 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-400/20">
                 pgvector 128D
@@ -646,7 +646,7 @@ function PostContent({ params }: PostPageProps) {
                       className="ios6-btn ios6-btn-dark px-2.5 py-0.5 text-[10px] font-mono"
                     >
                       {copiedCodeIdx === idx ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedCodeIdx === idx ? 'Kopyalandı' : 'Kopyala'}</span>
+                      <span>{copiedCodeIdx === idx ? 'Copied' : 'Copy'}</span>
                     </button>
                   </div>
                   <pre className="p-4 sm:p-5 overflow-x-auto text-xs font-mono text-emerald-300 leading-relaxed scrollbar-thin">
@@ -691,7 +691,7 @@ function PostContent({ params }: PostPageProps) {
                 {authorDisplayName}
               </Link>
               <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-md font-sans">
-                {blog.authorBio || 'Java 22, Loom Virtual Threads ve yüksek throughput mimarileri üzerine araştırmacı mühendis.'}
+                {blog.authorBio || 'Research engineer specializing in Java 22, Project Loom Virtual Threads, and high-throughput systems.'}
               </p>
             </div>
           </div>
@@ -703,16 +703,16 @@ function PostContent({ params }: PostPageProps) {
               isAuthorFollowed ? 'mac-aqua-btn-silver' : 'mac-aqua-btn-primary'
             } !px-4 !py-2 !text-xs font-bold gap-1.5 cursor-pointer whitespace-nowrap`}
           >
-            {isAuthorFollowed ? 'Takip Ediliyor' : 'Yazarı Takip Et'}
+            {isAuthorFollowed ? 'Following' : 'Follow Author'}
           </button>
         </section>
 
-        {/* 6. Masaüstü iMessage Çift Sütunlu Tartışma & Yorum İpliği */}
+        {/* 6. Desktop iMessage Two-Column Discussion & Comments Thread */}
         <section id="comments-discussion-section" className="pt-8 border-t border-black/10 dark:border-white/10 space-y-6 scroll-mt-20">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <h3 className="text-base sm:text-lg font-bold text-zinc-950 dark:text-white flex items-center gap-2 font-mono">
               <MessageSquare className="w-4 h-4 text-blue-500" />
-              <span>MESAJLAR &amp; TARTIŞMALAR ({comments.length})</span>
+              <span>MESSAGES &amp; DISCUSSIONS ({comments.length})</span>
             </h3>
 
             {/* Glowing Spring AI Verified Safe Seal Badge */}
@@ -728,7 +728,7 @@ function PostContent({ params }: PostPageProps) {
               id="comment-author-name-input"
               name="authorName"
               type="text"
-              placeholder="Adınız veya unvanınız (örn. Selin Demir - Platform Architect)"
+              placeholder="Your name or title (e.g. Sarah Connor - Platform Architect)"
               value={authorNameInput}
               onChange={(e) => setAuthorNameInput(e.target.value)}
               className="w-full sm:w-80 px-3 py-2 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 text-xs font-sans text-zinc-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors shadow-inner"
@@ -738,7 +738,7 @@ function PostContent({ params }: PostPageProps) {
               id="comment-body-textarea"
               name="commentBody"
               rows={3}
-              placeholder="Mimari veya teknik değerlendirmenizi ekleyin... (Spring AI canlı toksisite ve duygu analizi aktiftir)"
+              placeholder="Add your architectural or technical evaluation... (Spring AI live toxicity and sentiment analysis enabled)"
               value={newCommentText}
               onChange={(e) => {
                 setNewCommentText(e.target.value);
@@ -766,12 +766,12 @@ function PostContent({ params }: PostPageProps) {
                   )}
                   <span>
                     {moderationPreview.toxic
-                      ? 'Spring AI Uyarısı: Sakıncalı ifade tespit edildi. Yorum karantinaya alınır.'
-                      : 'Spring AI Analizi: Topluluk standartlarına uygundur.'}
+                      ? 'Spring AI Alert: Inappropriate content detected. Comment quarantined.'
+                      : 'Spring AI Analysis: Meets community standards.'}
                   </span>
                 </div>
                 <span className="uppercase font-bold text-[10px]">
-                  Duygu: {moderationPreview.sentiment}
+                  Sentiment: {moderationPreview.sentiment}
                 </span>
               </div>
             )}
@@ -787,7 +787,7 @@ function PostContent({ params }: PostPageProps) {
                 ) : (
                   <Send className="w-3.5 h-3.5 text-white" />
                 )}
-                <span>Mesaj Gönder</span>
+                <span>Send Message</span>
               </button>
             </div>
           </form>
@@ -797,7 +797,7 @@ function PostContent({ params }: PostPageProps) {
             {isLoading ? (
               <div className="py-6 text-center font-mono text-xs text-zinc-400 flex items-center justify-center gap-2">
                 <RefreshCw className="w-4 h-4 animate-spin text-blue-500" />
-                <span>YORUMLAR YÜKLENİYOR...</span>
+                <span>LOADING COMMENTS...</span>
               </div>
             ) : comments.length > 0 ? (
               comments.map((comm) => {
@@ -811,12 +811,12 @@ function PostContent({ params }: PostPageProps) {
                   <div key={comm.id} className="space-y-1">
                     {/* Timestamp & Author Meta Header */}
                     <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500 px-2">
-                      <span className="font-bold text-zinc-800 dark:text-zinc-300">{comm.authorName || 'Anonim Mühendis'}</span>
+                      <span className="font-bold text-zinc-800 dark:text-zinc-300">{comm.authorName || 'Anonymous Engineer'}</span>
                       <span>&bull;</span>
                       <span>{new Date(comm.createdAt).toLocaleDateString('tr-TR')}</span>
                       {isApproved && (
                         <span className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400 font-bold text-[10px]">
-                          <CheckCircle2 className="w-3 h-3" /> ONAYLI
+                          <CheckCircle2 className="w-3 h-3" /> APPROVED
                         </span>
                       )}
                       {!isFlagged ? (
@@ -824,13 +824,13 @@ function PostContent({ params }: PostPageProps) {
                           type="button"
                           onClick={() => handleFlagComment(comm.id)}
                           className="text-zinc-400 hover:text-rose-500 cursor-pointer ml-auto"
-                          title="Sakıncalı İçerik Olarak Bildir"
+                          title="Report Inappropriate Content"
                         >
                           <Flag className="w-3 h-3" />
                         </button>
                       ) : (
                         <span className="text-[10px] text-rose-500 font-bold uppercase ml-auto">
-                          [Karantinada]
+                          [Quarantined]
                         </span>
                       )}
                     </div>
@@ -839,7 +839,7 @@ function PostContent({ params }: PostPageProps) {
                     <div className="max-w-xl">
                       <div className={bubbleClass}>
                         <p className="text-xs sm:text-sm leading-relaxed font-sans">
-                          {isFlagged ? 'Bu yorum topluluk denetimi nedeniyle karantinaya alınmıştır.' : comm.content}
+                          {isFlagged ? 'This comment is quarantined pending community moderation review.' : comm.content}
                         </p>
                       </div>
                     </div>
@@ -848,8 +848,8 @@ function PostContent({ params }: PostPageProps) {
               })
             ) : (
               <div className="py-6 text-center rounded-xl border border-dashed border-zinc-300 dark:border-zinc-800 p-6 space-y-1">
-                <p className="text-xs font-bold text-zinc-950 dark:text-white">İlk teknik yorumu siz yapın</p>
-                <p className="text-[11px] text-zinc-500">Bu makale hakkındaki mimari görüşlerinizi iMessage ipliğinde paylaşabilirsiniz.</p>
+                <p className="text-xs font-bold text-zinc-950 dark:text-white">Be the first to share a technical comment</p>
+                <p className="text-[11px] text-zinc-500">Share your architectural insights and questions in this iMessage thread.</p>
               </div>
             )}
           </div>
@@ -859,7 +859,7 @@ function PostContent({ params }: PostPageProps) {
         {relatedBlogs.length > 0 && (
           <section className="space-y-4 pt-8 border-t border-black/10 dark:border-white/10">
             <h3 className="text-base font-bold text-zinc-950 dark:text-white font-mono">
-              ÖNERİLEN DİĞER YAYINLAR
+              RECOMMENDED PUBLICATIONS
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {relatedBlogs.map((b) => (
@@ -886,7 +886,7 @@ function PostContent({ params }: PostPageProps) {
             type="button"
             onClick={handleClap}
             className="mac-aqua-btn mac-aqua-btn-primary !px-3.5 !py-1.5 !text-xs font-bold gap-1.5"
-            title="Alkışla (Medium Clap)"
+            title="Applaud (Medium Clap)"
           >
             <span className="text-sm leading-none">👏</span>
             <span className="font-mono">{localClaps}</span>
@@ -901,7 +901,7 @@ function PostContent({ params }: PostPageProps) {
               if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
             className="mac-aqua-btn mac-aqua-btn-silver !px-3.5 !py-1.5 !text-xs font-semibold gap-1.5"
-            title="Mesajlara Git"
+            title="Jump to Messages"
           >
             <MessageSquare className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             <span className="font-mono">{comments.length}</span>
@@ -916,10 +916,10 @@ function PostContent({ params }: PostPageProps) {
             className={`mac-aqua-btn ${
               isBookmarked ? 'mac-aqua-btn-silver' : '!bg-[#1e222a] border border-white/20 text-white'
             } !px-3.5 !py-1.5 !text-xs font-bold gap-1.5`}
-            title="Safari Okuma Listeme Ekle"
+            title="Add to Safari Reading List"
           >
             <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-400 text-amber-400' : ''}`} />
-            <span className="hidden sm:inline">{isBookmarked ? 'KAYDEDİLDİ' : 'OKUMA LİSTESİ'}</span>
+            <span className="hidden sm:inline">{isBookmarked ? 'SAVED' : 'READING LIST'}</span>
           </button>
 
           {/* Share */}
@@ -927,7 +927,7 @@ function PostContent({ params }: PostPageProps) {
             type="button"
             onClick={handleShare}
             className="mac-aqua-btn mac-aqua-btn-silver !px-3.5 !py-1.5 !text-xs font-semibold gap-1.5"
-            title="Makale Bağlantısını Kopyala"
+            title="Copy Article Link"
           >
             {isCopiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
           </button>

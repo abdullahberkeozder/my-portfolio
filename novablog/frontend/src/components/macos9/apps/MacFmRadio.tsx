@@ -129,7 +129,7 @@ export const MacFmRadio: React.FC = () => {
             isPlaying ? 'bg-[#FFDDDD]' : 'mac9-btn-default'
           }`}
         >
-          {isPlaying ? '■ Durdur' : '▶ Çal (Synth)'}
+          {isPlaying ? '■ Stop' : '▶ Play (Synth)'}
         </button>
 
         <span className="text-[10px] text-[#555] font-mono">

@@ -24,22 +24,22 @@ export const AiPlayground: React.FC = () => {
 
   // Summarize state
   const [sumText, setSumText] = useState(
-    'Spring Boot 4.1.1 ve Java 22 Virtual Threads mimarisi, yüksek trafik anında sunucu kilitlenmelerini ortadan kaldırır. Spring AI entegrasyonu, kelimelerin ötesinde derin anlamsal ilişkileri kavrayarak en alakalı makaleleri milisaniyeler içinde kullanıcıya sunar. Sistem ayrıca Redis önbellek tamponu, iki faktörlü (2FA TOTP) kimlik doğrulama ve veri kaybını önleyen lock-free kilitlenme korumasıyla güçlendirilmiştir.'
+    'Spring Boot 4.1.1 and Java 22 Virtual Threads architecture eliminate server contention during high-traffic bursts. Spring AI integration captures deep semantic context beyond keywords, delivering the most relevant articles within milliseconds. The platform is hardened with a Redis write-behind buffer, two-factor authentication (2FA TOTP), and lock-free collision resistance.'
   );
   const [sumResult, setSumResult] = useState<AiSummaryResponseDto | null>(null);
   const [isSummarizing, setIsSummarizing] = useState(false);
 
   // Tagging state
-  const [tagTitle, setTagTitle] = useState('Spring Boot 4 ve Java 22 ile Sanal İş Parçacıkları');
+  const [tagTitle, setTagTitle] = useState('Spring Boot 4 and Java 22 Virtual Threads');
   const [tagContent, setTagContent] = useState(
-    'Loom projesi kapsamında gelen virtual threads ile eşzamanlı I/O işlemlerinde sıfır maliyetli iş parçacığı yönetimi ve PostgreSQL bağlantı havuzu optimizasyonu.'
+    'Zero-cost thread management and PostgreSQL connection pool optimization for concurrent I/O operations with Project Loom virtual threads.'
   );
   const [tagResult, setTagResult] = useState<AiTagSuggestionResponseDto | null>(null);
   const [isTagging, setIsTagging] = useState(false);
 
   // Moderation state
   const [modText, setModText] = useState(
-    'Harika bir mimari makalesi olmuş, Spring AI vektör arama entegrasyonunu çok başarılı buldum!'
+    'Excellent architectural deep-dive! The Spring AI vector search integration is cleanly designed.'
   );
   const [modResult, setModResult] = useState<AiModerationResponseDto | null>(null);
   const [isModerating, setIsModerating] = useState(false);
@@ -56,10 +56,10 @@ export const AiPlayground: React.FC = () => {
     setIsSummarizing(true);
     setErrorMessage(null);
     try {
-      const res = await ApiClient.summarizeText(sumText, 'Kurumsal Mimari');
+      const res = await ApiClient.summarizeText(sumText, 'Enterprise Architecture');
       setSumResult(res);
     } catch {
-      setErrorMessage('Özet çıkarılamadı. Lütfen backend bağlantısını kontrol ediniz.');
+      setErrorMessage('Unable to generate summary. Please verify backend connectivity.');
     } finally {
       setIsSummarizing(false);
     }
@@ -74,7 +74,7 @@ export const AiPlayground: React.FC = () => {
       const res = await ApiClient.suggestTags(tagTitle, tagContent);
       setTagResult(res);
     } catch {
-      setErrorMessage('Etiket önerilemedi. Lütfen alanları kontrol ediniz.');
+      setErrorMessage('Unable to suggest tags. Please verify input fields.');
     } finally {
       setIsTagging(false);
     }
@@ -89,7 +89,7 @@ export const AiPlayground: React.FC = () => {
       const res = await ApiClient.moderateContent(modText);
       setModResult(res);
     } catch {
-      setErrorMessage('İçerik moderasyon analizi yapılamadı.');
+      setErrorMessage('Content moderation analysis failed.');
     } finally {
       setIsModerating(false);
     }
@@ -102,13 +102,13 @@ export const AiPlayground: React.FC = () => {
         <div className="space-y-1">
           <div className="inline-flex items-center gap-2 font-mono text-xs uppercase font-bold text-purple-600 dark:text-purple-400">
             <span className="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-[0_0_8px_#a855f7]" />
-            <span>MİMARİ MODÜL 03 // MAC OS X NEURAL LAB &amp; SPRING AI INFERENCE</span>
+            <span>ARCHITECTURE MODULE 03 // MAC OS X NEURAL LAB &amp; SPRING AI INFERENCE</span>
           </div>
           <h2 className="text-xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-100 tracking-tight flex items-center gap-2.5">
-            <span>SPRING AI LLM &amp; İÇERİK ANLAMA ATÖLYESİ</span>
+            <span>SPRING AI LLM &amp; COGNITIVE STUDIO</span>
           </h2>
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-2xl font-sans leading-relaxed">
-            Büyük dil modellerini (LLM) kullanarak anında teknik özet çıkarma, otomatik etiketleme ve toksisite kalkanı testlerini canlı gerçekleştirin.
+            Execute live technical executive summarization, automatic categorization, and toxicity shield evaluations using large language models (LLMs).
           </p>
         </div>
 
@@ -154,7 +154,7 @@ export const AiPlayground: React.FC = () => {
               }`}
             >
               <FileText className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Akıllı Özetleme</span>
+              <span>Smart Summary</span>
             </button>
             <button
               type="button"
@@ -166,7 +166,7 @@ export const AiPlayground: React.FC = () => {
               }`}
             >
               <Tags className="w-3.5 h-3.5 text-cyan-600" />
-              <span>Otomatik Etiketleme</span>
+              <span>Auto Tagging</span>
             </button>
             <button
               type="button"
@@ -178,7 +178,7 @@ export const AiPlayground: React.FC = () => {
               }`}
             >
               <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Toksisite Kalkanı</span>
+              <span>Toxicity Shield</span>
             </button>
           </div>
 
@@ -202,8 +202,8 @@ export const AiPlayground: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300">
-                  <span>GİRDİ METNİ (KAYNAK MAKALE)</span>
-                  <span className="text-[10px] text-zinc-500">{sumText.length} karakter</span>
+                  <span>INPUT TEXT (SOURCE ARTICLE)</span>
+                  <span className="text-[10px] text-zinc-500">{sumText.length} characters</span>
                 </div>
                 <textarea
                   id="ai-playground-summarize-text"
@@ -212,7 +212,7 @@ export const AiPlayground: React.FC = () => {
                   value={sumText}
                   onChange={(e) => setSumText(e.target.value)}
                   className="w-full p-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-[#fbfbfb] dark:bg-[#16181d] text-xs font-sans text-zinc-900 dark:text-zinc-100 leading-relaxed focus:outline-none focus:border-emerald-500 resize-none"
-                  placeholder="Özetlenecek teknik makale veya paragraf metnini girin..."
+                  placeholder="Enter technical article or paragraph text to summarize..."
                 />
                 <button
                   type="button"
@@ -223,12 +223,12 @@ export const AiPlayground: React.FC = () => {
                   {isSummarizing ? (
                     <>
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>ÖZET ÇIKARILIYOR...</span>
+                      <span>GENERATING SUMMARY...</span>
                     </>
                   ) : (
                     <>
                       <Sparkles className="w-3.5 h-3.5" />
-                      <span>SPRING AI İLE ÖZET ÇIKAR</span>
+                      <span>SUMMARIZE WITH SPRING AI</span>
                     </>
                   )}
                 </button>
@@ -240,11 +240,11 @@ export const AiPlayground: React.FC = () => {
                   <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800 text-xs font-mono">
                     <span className="font-bold text-zinc-900 dark:text-white uppercase flex items-center gap-1.5">
                       <FileText className="w-3.5 h-3.5 text-emerald-600" />
-                      LLM ÇIKTI RAPORU
+                      LLM INFERENCE REPORT
                     </span>
                     {sumResult && (
                       <span className="text-emerald-700 dark:text-emerald-400 font-bold text-[10px]">
-                        BAŞARILI
+                        SUCCESS
                       </span>
                     )}
                   </div>
@@ -258,7 +258,7 @@ export const AiPlayground: React.FC = () => {
                       {sumResult.keyPoints && sumResult.keyPoints.length > 0 && (
                         <div className="space-y-1 pt-1 border-t border-zinc-200 dark:border-zinc-800">
                           <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase">
-                            ANAHTAR ÇIKARIMLAR:
+                            KEY TAKEAWAYS:
                           </span>
                           <ul className="list-disc list-inside space-y-0.5 text-xs text-zinc-700 dark:text-zinc-300">
                             {sumResult.keyPoints.map((kp, i) => (
@@ -270,14 +270,14 @@ export const AiPlayground: React.FC = () => {
                     </div>
                   ) : (
                     <div className="py-12 text-center text-zinc-400 text-xs font-mono">
-                      Metni girdikten sonra butona basarak modelin özet çıktısını gözlemleyin.
+                      Enter text and click the button to observe the model&apos;s executive summary.
                     </div>
                   )}
                 </div>
 
                 <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-500">
                   <span>MODEL: GEMINI FLASH</span>
-                  <span>KOMPRESYON: ~%65</span>
+                  <span>COMPRESSION: ~65%</span>
                 </div>
               </div>
             </div>
@@ -289,7 +289,7 @@ export const AiPlayground: React.FC = () => {
               <div className="space-y-3">
                 <div className="space-y-1">
                   <label className="text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300">
-                    MAKALE BAŞLIĞI
+                    ARTICLE TITLE
                   </label>
                   <input
                     id="ai-playground-tag-title"
@@ -303,7 +303,7 @@ export const AiPlayground: React.FC = () => {
 
                 <div className="space-y-1">
                   <label className="text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300">
-                    İÇERİK ÖZETİ
+                    CONTENT SCOPE
                   </label>
                   <textarea
                     id="ai-playground-tag-content"
@@ -324,12 +324,12 @@ export const AiPlayground: React.FC = () => {
                   {isTagging ? (
                     <>
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>ETİKETLER ÇIKARILIYOR...</span>
+                      <span>EXTRACTING TAGS...</span>
                     </>
                   ) : (
                     <>
                       <Tags className="w-3.5 h-3.5" />
-                      <span>OTOMATİK ETİKET VE KATEGORİ ÖNER</span>
+                      <span>SUGGEST TAGS &amp; CATEGORY</span>
                     </>
                   )}
                 </button>
@@ -341,11 +341,11 @@ export const AiPlayground: React.FC = () => {
                   <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800 text-xs font-mono">
                     <span className="font-bold text-zinc-900 dark:text-white uppercase flex items-center gap-1.5">
                       <Tags className="w-3.5 h-3.5 text-cyan-600" />
-                      ÖNERİLEN TAKSONOMİ
+                      SUGGESTED TAXONOMY
                     </span>
                     {tagResult && (
                       <span className="text-emerald-700 dark:text-emerald-400 font-bold text-[10px]">
-                        EŞLEŞTİ
+                        MATCHED
                       </span>
                     )}
                   </div>
@@ -353,14 +353,14 @@ export const AiPlayground: React.FC = () => {
                   {tagResult ? (
                     <div className="space-y-3">
                       <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-zinc-500 uppercase">ÖNERİLEN KATEGORİ:</span>
+                        <span className="text-[10px] font-mono text-zinc-500 uppercase">SUGGESTED CATEGORY:</span>
                         <div className="text-sm font-bold text-zinc-900 dark:text-white font-mono">
                           📂 {tagResult.suggestedCategory}
                         </div>
                       </div>
 
                       <div className="space-y-1.5 pt-2 border-t border-zinc-200 dark:border-zinc-800">
-                        <span className="text-[10px] font-mono text-zinc-500 uppercase">SEMANTİK ETİKETLER:</span>
+                        <span className="text-[10px] font-mono text-zinc-500 uppercase">SEMANTIC TAGS:</span>
                         <div className="flex flex-wrap gap-1.5">
                           {tagResult.suggestedTags.map((t, idx) => (
                             <span key={idx} className="mac-hardware-chip-badge">
@@ -372,14 +372,14 @@ export const AiPlayground: React.FC = () => {
                     </div>
                   ) : (
                     <div className="py-12 text-center text-zinc-400 text-xs font-mono">
-                      Başlık ve içerikten çıkarılan etiketler burada listelenecektir.
+                      Tags extracted from title and content will be listed here.
                     </div>
                   )}
                 </div>
 
                 <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-500">
-                  <span>SINIFLANDIRMA: ÇOKLU ETİKET</span>
-                  <span>GÜVENİLİRLİK: %96.4</span>
+                  <span>CLASSIFICATION: MULTI-LABEL</span>
+                  <span>CONFIDENCE: 96.4%</span>
                 </div>
               </div>
             </div>
@@ -391,7 +391,7 @@ export const AiPlayground: React.FC = () => {
               <div className="space-y-3">
                 <div className="space-y-1">
                   <label className="text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300">
-                    TEST EDİLECEK YORUM / İÇERİK METNİ
+                    TEST COMMENT / CONTENT TEXT
                   </label>
                   <textarea
                     id="ai-playground-moderate-text"
@@ -400,7 +400,7 @@ export const AiPlayground: React.FC = () => {
                     value={modText}
                     onChange={(e) => setModText(e.target.value)}
                     className="w-full p-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-[#fbfbfb] dark:bg-[#16181d] text-xs font-sans text-zinc-900 dark:text-zinc-100 leading-relaxed focus:outline-none focus:border-indigo-500 resize-none"
-                    placeholder="Denetlenecek yorum veya tartışma metnini yazın..."
+                    placeholder="Enter comment or discussion text to inspect for toxicity..."
                   />
                 </div>
 
@@ -413,12 +413,12 @@ export const AiPlayground: React.FC = () => {
                   {isModerating ? (
                     <>
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>TOKSİSİTE ANALİZİ YAPILIYOR...</span>
+                      <span>EVALUATING TOXICITY...</span>
                     </>
                   ) : (
                     <>
                       <ShieldCheck className="w-3.5 h-3.5" />
-                      <span>TOKSİSİTE KALKANINI ÇALIŞTIR</span>
+                      <span>RUN TOXICITY SHIELD</span>
                     </>
                   )}
                 </button>
@@ -430,11 +430,11 @@ export const AiPlayground: React.FC = () => {
                   <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800 text-xs font-mono">
                     <span className="font-bold text-zinc-900 dark:text-white uppercase flex items-center gap-1.5">
                       <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
-                      GÜVENLİK VE UYGUNLUK MÜHRÜ
+                      SECURITY &amp; COMPLIANCE SEAL
                     </span>
                     {modResult && (
                       <span className="spring-ai-shield-badge">
-                        SPRING AI ONAYLI
+                        SPRING AI VERIFIED
                       </span>
                     )}
                   </div>
@@ -443,7 +443,7 @@ export const AiPlayground: React.FC = () => {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-mono text-zinc-600 dark:text-zinc-400">
-                          Genel Durum:
+                          Overall Verdict:
                         </span>
                         <span
                           className={`font-mono text-xs font-bold px-2 py-0.5 rounded ${
@@ -452,19 +452,19 @@ export const AiPlayground: React.FC = () => {
                               : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
                           }`}
                         >
-                          {modResult.toxic ? '🔴 İÇERİK ENGELLENDİ' : '🟢 GÜVENLİ VE ONAYLI'}
+                          {modResult.toxic ? '🔴 CONTENT BLOCKED' : '🟢 SAFE & APPROVED'}
                         </span>
                       </div>
 
                       <div className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-800/80 text-xs font-mono space-y-1">
                         <div className="flex justify-between">
-                          <span className="text-zinc-500">Toksisite Skoru:</span>
+                          <span className="text-zinc-500">Toxicity Score:</span>
                           <span className="font-bold text-zinc-900 dark:text-white">
                             {(modResult.toxicityScore * 100).toFixed(1)}%
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-zinc-500">Güvenlik Sınıfı:</span>
+                          <span className="text-zinc-500">Security Tier:</span>
                           <span className="text-emerald-600 dark:text-emerald-400 font-bold">
                             PROFESSIONAL_COMMUNITY
                           </span>
@@ -472,19 +472,19 @@ export const AiPlayground: React.FC = () => {
                       </div>
 
                       <p className="text-[11px] text-zinc-500 font-sans leading-relaxed">
-                        {modResult.reason || 'İçerik kurumsal mühendislik tartışma ilkelerine uygundur.'}
+                        {modResult.reason || 'Content adheres to enterprise engineering discussion standards.'}
                       </p>
                     </div>
                   ) : (
                     <div className="py-12 text-center text-zinc-400 text-xs font-mono">
-                      Metin girildiğinde Spring AI toksisite ve spam analizi burada gösterilecektir.
+                      Spring AI toxicity and spam analysis will appear here upon submission.
                     </div>
                   )}
                 </div>
 
                 <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[10px] font-mono text-zinc-500">
-                  <span>DENETİM: ASENKRON ZAMANLI</span>
-                  <span>FALSE-POSITIVE: &lt; %0.1</span>
+                  <span>INSPECTION: ASYNCHRONOUS</span>
+                  <span>FALSE-POSITIVE: &lt; 0.1%</span>
                 </div>
               </div>
             </div>

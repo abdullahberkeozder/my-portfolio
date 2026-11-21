@@ -45,68 +45,68 @@ interface QnA {
 const KNOWLEDGE_BASE: QnA[] = [
   {
     id: 'manifesto',
-    chipText: 'Mimari Felsefe',
+    chipText: 'Philosophy',
     icon: BookOpen,
-    title: 'Neden Endüstriyel Dokunsallık ve Java 22?',
-    tag: 'FELSEFE // MÜHENDİSLİK DİSİPLİNİ',
+    title: 'Why Industrial Tactility and Java 22?',
+    tag: 'PHILOSOPHY // ENGINEERING DISCIPLINE',
     answer:
-      'Dieter Rams’ın "İyi tasarım dürüsttür ve olabildiğince az tasarımdır" ilkesiyle inşa edildi. Şişirilmiş gereksiz mikroservisler yerine, tek bir modern JVM üzerinde donanım sınırlarını zorlayan, kilitlenmeyen ve veri kaybetmeyen saf mühendislik disiplinini benimsiyoruz.',
-    actionText: 'Mühendislik Manifestosunu Oku',
+      'Built upon Dieter Rams\' principle: "Good design is honest and as little design as possible." Instead of bloated microservices, we embrace a pure engineering discipline on a single modern JVM that pushes hardware limits, avoids locking, and never loses data.',
+    actionText: 'Read Architecture Manifesto',
     actionType: 'manifesto',
   },
   {
     id: 'loom',
     chipText: 'Java 22 Loom',
     icon: Cpu,
-    title: 'Sanal İş Parçacıkları ve Eşzamanlılık',
-    tag: 'EŞZAMANLILIK // VIRTUAL THREADS',
+    title: 'Virtual Threads & Concurrency',
+    tag: 'CONCURRENCY // VIRTUAL THREADS',
     answer:
-      'Tomcat’in geleneksel 200 iş parçacığı havuzu yüksek trafikte tükenip sunucunun kilitlenmesine yol açar. Java 22 Loom sanal iş parçacıkları ise işletim sistemini bloke etmeden çalışır; bellek tüketimini megabaytlardan kilobaytlara düşürerek 10.000+ eşzamanlı isteği takılmadan karşılar.',
-    actionText: 'Loom Simülatörünü Başlat',
+      'Tomcat\'s traditional 200 platform thread pool exhausts under high traffic, leading to server deadlock. Java 22 Loom virtual threads run without blocking OS threads, dropping memory overhead from megabytes to kilobytes to effortlessly handle 10,000+ concurrent requests.',
+    actionText: 'Launch Loom Simulator',
     actionType: 'console-loom',
   },
   {
     id: 'write-behind',
-    chipText: 'Redis Önbellek',
+    chipText: 'Redis Cache',
     icon: Database,
-    title: 'Redis Write-Behind Asenkron Sayaç Mimarisi',
-    tag: 'ÖNBELLEK // SIFIR KİLİTLEME',
+    title: 'Redis Write-Behind Asynchronous Counter Architecture',
+    tag: 'CACHING // ZERO ROW CONTENTION',
     answer:
-      'Her makale okunduğunda veya beğenildiğinde veritabanına doğrudan yazmak sunucu diskini kilitler. Redis Write-Behind mimarisinde sayaçlar önce ultra-hızlı bellekte toplanır ve her 30 saniyede bir topluca veritabanına güvenle aktarılır (%98 I/O tasarrufu).',
-    actionText: 'Write-Behind Tamponunu İncele',
+      'Writing directly to the database on every article view or clap locks server disks. In Redis Write-Behind, counters accumulate in ultra-fast RAM and safely batch-flush to the database every 30 seconds (98% I/O savings).',
+    actionText: 'Inspect Write-Behind Buffer',
     actionType: 'console-writebehind',
   },
   {
     id: 'spring-ai',
-    chipText: 'Yapay Zeka Arama',
+    chipText: 'AI Vector Search',
     icon: Bot,
-    title: 'Yapay Zeka Destekli Anlamsal Arama',
-    tag: 'YAPAY ZEKA // VEKTÖR UZAYI',
+    title: 'AI-Powered Semantic Search',
+    tag: 'ARTIFICIAL INTELLIGENCE // VECTOR SPACE',
     answer:
-      'Klasik arama sadece yazdığınız aynı harfleri arar. Yapay zeka arama motorumuz ise girdiğiniz cümlenin gerçek anlamını kavrar. Örneğin "bellek yönetimi" aradığınızda içinde bu kelime geçmese bile "garbage collector" makalelerini bularak en alakalı içeriği getirir.',
-    actionText: 'Vektör Arama Modülünü Aç',
+      'Classical search only matches the exact letters you type. Our semantic AI engine understands the contextual meaning of your query. For instance, searching for "memory management" returns "garbage collector" articles with highest relevance even if the phrase is absent.',
+    actionText: 'Open Vector Studio',
     actionType: 'tab-ai',
   },
   {
     id: '2fa',
-    chipText: '2FA Güvenlik',
+    chipText: '2FA Security',
     icon: ShieldCheck,
-    title: 'İki Aşamalı Güvenlik ve Pre-Auth Doğrulama',
-    tag: 'GÜVENLİK // İKİ AŞAMALI TOTP',
+    title: 'Two-Factor Authentication & Pre-Auth Verification',
+    tag: 'SECURITY // TWO-FACTOR TOTP',
     answer:
-      'Kullanıcı şifresini doğruladığında doğrudan tam yetki verilmez; geçici "PRE_AUTH" güvenlik kapsamı tanımlanır. Bu token yalnızca TOTP doğrulama uç noktasına erişebilir. Başarılı Google Authenticator kodundan sonra asıl kurumsal oturum açılır.',
-    actionText: 'Telemetri Konsolunu Aç',
+      'Validating a password does not grant full system access immediately; a temporary "PRE_AUTH" security scope is issued. This token can only reach the TOTP verification endpoint. Full corporate session is unlocked only upon valid Google Authenticator code entry.',
+    actionText: 'Open Telemetry Console',
     actionType: 'telemetry',
   },
   {
     id: 'batch',
     chipText: 'Spring Batch',
     icon: Layers,
-    title: 'Büyük Veri Temizliği ve Analitik Boru Hattı',
-    tag: 'ETL // ARŞİV TEMİZLİĞİ',
+    title: 'Big Data Retention & Analytics Pipeline',
+    tag: 'ETL // CHUNK CLEANUP',
     answer:
-      'Silinmiş makaleler sistemde kalıcı çöp oluşturmaz. Spring Batch 5 ile arka planda çalışan 50 kayıtlık paket işleyicisi, 30 günü aşan kayıtları sunucuyu yormadan güvenli şekilde siler ve yazar analitik raporunu üretir.',
-    actionText: 'Batch Stüdyosuna Git',
+      'Soft-deleted records do not accumulate as permanent waste. With Spring Batch 5, background chunk processors safely purge records older than 30 days in 50-item transactions without stressing production throughput, while aggregating author interaction analytics.',
+    actionText: 'Go to Batch Studio',
     actionType: 'tab-batch',
   },
 ];
@@ -212,9 +212,9 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
           type="button"
           onClick={handleToggleOpen}
           aria-expanded={isOpen}
-          aria-label="Nova Sistem Mimarı & Copilot Danışmanını Aç"
+          aria-label="Open Nova Systems Architect & Copilot Advisor"
           className="fixed bottom-6 right-6 z-40 mac-copilot-pill-master group"
-          title="Nova Sistem Mimarı & Copilot Danışmanını Aç"
+          title="Open Nova Systems Architect & Copilot Advisor"
         >
           {/* Neon Green Heartbeat Beacon */}
           <span className="relative flex h-2.5 w-2.5 shrink-0">
@@ -224,7 +224,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
           <Bot className="w-4 h-4 text-emerald-400 group-hover:scale-110 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)] transition-transform shrink-0" />
           <span className="w-px h-3.5 bg-white/25 shrink-0" aria-hidden="true" />
           <span className="font-sans text-xs font-black tracking-wider text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] whitespace-nowrap">
-            MİMARİ ASİSTAN
+            COPILOT ADVISOR
           </span>
         </button>
       )}
@@ -240,7 +240,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
                 <button
                   onClick={handleToggleOpen}
                   className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e] shadow-inner cursor-pointer"
-                  title="Pencereyi Kapat"
+                  title="Close Window"
                 />
                 <span className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d89e24] shadow-inner" />
                 <span className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29] shadow-inner" />
@@ -249,7 +249,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
               <div className="ml-2 flex items-center gap-1.5">
                 <Bot className="w-4 h-4 text-cyan-400" />
                 <h3 className="font-sans text-xs font-bold text-white tracking-tight">
-                  Nova Sistem Mimarı &amp; Copilot
+                  Nova Systems Architect &amp; Copilot
                 </h3>
               </div>
             </div>
@@ -257,7 +257,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
             <button
               onClick={handleToggleOpen}
               className="text-zinc-400 hover:text-white p-1 rounded hover:bg-white/10 transition-colors cursor-pointer"
-              title="Kapat"
+              title="Close"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -266,7 +266,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
           {/* Quick Subject Chip Carousel (Apple Aqua Segmented Tabs) */}
           <div className="space-y-1.5">
             <span className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-widest block">
-              MİMARİ KONU BAŞLIĞI //
+              ARCHITECTURAL TOPIC //
             </span>
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
               {KNOWLEDGE_BASE.map((item) => {
@@ -298,7 +298,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
               </span>
               <span className="inline-flex items-center gap-1 text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                 <Check className="w-2.5 h-2.5 stroke-[3]" />
-                <span>DOĞRULANMIŞ SPEC</span>
+                <span>VERIFIED SPEC</span>
               </span>
             </div>
 
@@ -317,7 +317,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
                   onClick={() => handleAction(selectedQnA.actionType)}
                   className="mac-aqua-btn flex-1 flex items-center justify-center gap-1.5 !py-2 !text-xs font-bold"
                 >
-                  <span>Konsolda İncele</span>
+                  <span>Inspect in Console</span>
                   <ArrowRight className="w-3 h-3" />
                 </button>
                 <button
@@ -326,7 +326,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
                   className={`mac-aqua-btn mac-aqua-btn-silver flex-1 flex items-center justify-center gap-1.5 !py-2.5 !text-xs font-bold ${
                     flushSuccess ? '!text-emerald-500 dark:!text-emerald-400' : ''
                   }`}
-                  title="Redis Write-Behind tamponunu veritabanına aktarır"
+                  title="Flushes Redis Write-Behind buffer to database"
                 >
                   {isFlushing ? (
                     <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -335,7 +335,7 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
                   ) : (
                     <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                   )}
-                  <span>{isFlushing ? 'YAZILIYOR' : flushSuccess ? 'BAŞARILI' : 'TEST FLUSH ET'}</span>
+                  <span>{isFlushing ? 'WRITING' : flushSuccess ? 'SUCCESS' : 'FLUSH TO DB'}</span>
                 </button>
               </div>
             ) : selectedQnA.actionText ? (

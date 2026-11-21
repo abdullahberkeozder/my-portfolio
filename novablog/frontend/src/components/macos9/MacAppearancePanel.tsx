@@ -49,7 +49,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/quantum-foam.png',
     fullSrc: '/retro/wallpapers/quantum-foam-800.png',
     previewClass: 'mac9-wallpaper-quantum-foam',
-    desc: 'Lavanta ipek dalgaları & yumuşak organik eğriler (Figma Image 9)',
+    desc: 'Lavender silk waves and smooth organic curves',
   },
   {
     id: 'sonata-purple',
@@ -60,7 +60,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/default-wallpaper.png',
     fullSrc: '/retro/wallpapers/default-wallpaper-800.png',
     previewClass: 'mac9-wallpaper-sonata-purple',
-    desc: 'Orijinal 1999 kabartmalı mor Finder deseni (Figma Image 9)',
+    desc: 'Original 1999 embossed purple Finder pattern',
   },
   {
     id: 'macos-bg',
@@ -71,7 +71,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/macos-bg.png',
     fullSrc: '/retro/wallpapers/macos-bg-800.png',
     previewClass: 'mac9-wallpaper-macos-bg',
-    desc: 'Açık buz mavisi ve büyük transparan Finder logosu (Figma Image 9)',
+    desc: 'Crisp ice blue with large translucent Finder face',
   },
   {
     id: 'blue-dalmatian',
@@ -82,7 +82,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/blue-dalmatian.png',
     fullSrc: '/retro/wallpapers/blue-dalmatian-800.png',
     previewClass: 'mac9-wallpaper-blue-dalmatian',
-    desc: 'Işıltılı transparan küreler & siyanür gradyanı (Figma Image 9)',
+    desc: 'Luminous translucent spheres with cyan gradient',
   },
   {
     id: 'capsules',
@@ -93,7 +93,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/capsules.png',
     fullSrc: '/retro/wallpapers/capsules-800.png',
     previewClass: 'mac9-wallpaper-capsules',
-    desc: 'Parlak iMac turkuaz şeker kapsülleri (Figma Image 9)',
+    desc: 'Glossy iMac turquoise candy capsule bubbles',
   },
   {
     id: 'tub',
@@ -104,7 +104,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/tub.png',
     fullSrc: '/retro/wallpapers/tub-800.png',
     previewClass: 'mac9-wallpaper-tub',
-    desc: 'Mandalina rengi zemin ve 3 kanatlı altın pervaneler (Figma Image 9)',
+    desc: 'Tangerine orange backdrop with golden three-blade turbines',
   },
   {
     id: 'ufo',
@@ -115,7 +115,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/ufo.png',
     fullSrc: '/retro/wallpapers/ufo-800.png',
     previewClass: 'mac9-wallpaper-ufo',
-    desc: 'Fıstık yeşili uzay zemini & uçan daire filosu (Figma Image 9)',
+    desc: 'Pistachio green space landscape with saucer fleet',
   },
   {
     id: 'blueberry-union',
@@ -126,7 +126,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/blueberry-union.png',
     fullSrc: '/retro/wallpapers/blueberry-union-800.png',
     previewClass: 'mac9-wallpaper-blueberry-union',
-    desc: 'Sualtı biyolojik denizanası & okyanus kapsülleri (Figma Image 9)',
+    desc: 'Underwater bio jellyfish and deep ocean capsules',
   },
   {
     id: 'heavy-petal',
@@ -137,7 +137,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/heavy-petal.png',
     fullSrc: '/retro/wallpapers/heavy-petal-800.png',
     previewClass: 'mac9-wallpaper-heavy-petal',
-    desc: 'Parlak fuşya & derin çivit orkide taçyaprakları (Figma Image 9)',
+    desc: 'Vivid fuchsia and deep indigo orchid petals',
   },
   {
     id: 'blueberry-oxygen',
@@ -148,7 +148,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/blueberry-oxygen.png',
     fullSrc: '/retro/wallpapers/blueberry-oxygen-800.png',
     previewClass: 'mac9-wallpaper-blueberry-oxygen',
-    desc: 'Okyanus derinliklerinden yükselen mikro oksijen kabarcıkları (Figma Image 9)',
+    desc: 'Micro oxygen bubbles rising from oceanic depths',
   },
   {
     id: 'tangerine-radian',
@@ -159,7 +159,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/tangerine-radian.png',
     fullSrc: '/retro/wallpapers/tangerine-radian-800.png',
     previewClass: 'mac9-wallpaper-tangerine-radian',
-    desc: 'Işıltılı kehribar rengi biyolojik dikenli küreler (Figma Image 9)',
+    desc: 'Luminous amber biological spore orbs',
   },
   {
     id: 'indigo-foam',
@@ -170,7 +170,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/indigo-foam.png',
     fullSrc: '/retro/wallpapers/indigo-foam-800.png',
     previewClass: 'mac9-wallpaper-indigo-foam',
-    desc: 'Derin kobalt mavisi akıcı ipek ve saten kumaş (Figma Image 9)',
+    desc: 'Deep cobalt blue fluid silk and flowing satin drapery',
   },
   {
     id: 'dark-carbon',
@@ -181,7 +181,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/obsidian-carbon.png',
     fullSrc: '/retro/wallpapers/obsidian-carbon-800.png',
     previewClass: 'mac9-wallpaper-dark-carbon',
-    desc: 'Gece modu için mat karbon fiber örgü (Figma Colours: 800)',
+    desc: 'Matte carbon fiber weave for Night Mode',
   },
   {
     id: 'bondi-blue',
@@ -192,7 +192,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/bondi-blue.png',
     fullSrc: '/retro/wallpapers/bondi-blue-800.png',
     previewClass: 'mac9-wallpaper-bondi-blue',
-    desc: 'Steve Jobs 1998 iMac G3 okyanus mavisi camı',
+    desc: 'Steve Jobs 1998 iMac G3 Bondi blue translucent casing',
   },
   {
     id: 'blueprint',
@@ -203,7 +203,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/blueprint.png',
     fullSrc: '/retro/wallpapers/blueprint-800.png',
     previewClass: 'mac9-wallpaper-blueprint',
-    desc: 'Mühendislik matris koordinatları',
+    desc: 'Engineering matrix blueprint coordinates',
   },
   {
     id: 'platinum-gray',
@@ -214,7 +214,7 @@ const WALLPAPER_ITEMS: WallpaperItem[] = [
     thumbSrc: '/retro/wallpapers/platinum-gray.png',
     fullSrc: '/retro/wallpapers/platinum-gray-800.png',
     previewClass: 'mac9-wallpaper-platinum-gray',
-    desc: 'Distraction-free nötr gri pikselli dither',
+    desc: 'Distraction-free neutral gray pixel dither',
   },
 ];
 
@@ -279,7 +279,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
 
   return (
     <div className="flex flex-col h-full bg-[#CCCCCC] select-none text-[12px] text-[#262626] font-['Charcoal',sans-serif]">
-      {/* 6 Sekmeli Orijinal Mac OS 9 Appearance Sekme Başlığı (Figma 82-812) */}
+      {/* 6-Tab Authentic Mac OS 9 Appearance Tab Strip (Figma 82-812) */}
       <div className="flex items-center gap-1 px-3 pt-2 border-b border-[#808080] bg-[#DDDDDD] overflow-x-auto">
         {(['Themes', 'Appearance', 'Fonts', 'Desktop', 'Sound', 'Options'] as const).map((tab) => {
           const tabKey = tab.toLowerCase() as typeof activeTab;
@@ -303,13 +303,13 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
         })}
       </div>
 
-      {/* Ana Gövde */}
+      {/* Main Body */}
       <div className="flex-1 p-4 overflow-y-auto mac9-scrollbar">
         {/* ================= TAB: DESKTOP (CLONED FROM FIGMA 82-812) ================= */}
         {activeTab === 'desktop' && (
           <div className="flex flex-col h-full justify-between gap-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-              {/* SOL TARAF: APPLE STUDIO DISPLAY MONİTÖR ÖNİZLEMESİ & METAVERİLER */}
+              {/* LEFT SIDE: APPLE STUDIO DISPLAY MONITOR PREVIEW & METADATA */}
               <div className="flex flex-col">
                 {/* Figma 82-812 Studio Display Bezel Frame */}
                 <div className="w-full bg-[#D4D4D4] border-2 border-[#808080] shadow-[inset_1px_1px_0_#FFFFFF,1px_1px_0_#FFFFFF] rounded-[4px] p-2 flex flex-col items-center">
@@ -364,7 +364,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                 </div>
               </div>
 
-              {/* SAĞ TARAF: PATTERNS LİSTESİ & SEÇİM (FIGMA 82-812) */}
+              {/* RIGHT SIDE: PATTERNS LIST & SELECTION (FIGMA 82-812) */}
               <div className="flex flex-col">
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-bold text-[12px]">Patterns:</span>
@@ -410,7 +410,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                               isSelected ? 'bg-white text-[#333399]' : 'bg-[#D1E7DD] text-[#0F5132]'
                             }`}
                           >
-                            ✓ Aktif
+                            ✓ Current
                           </span>
                         )}
                       </div>
@@ -422,7 +422,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
                 <div className="mt-2.5 flex flex-col gap-1.5 relative">
                   <div className="flex items-center justify-between gap-2">
                     <button
-                      onClick={() => alert(`Picture: ${activeItem.name} seçildi.`)}
+                      onClick={() => alert(`Picture "${activeItem.name}" selected.`)}
                       className="mac9-btn px-3 py-1 text-[11px] flex-1"
                     >
                       Place Picture...
@@ -481,7 +481,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
               <div className="flex items-center gap-2">
                 {onClose && (
                   <button onClick={onClose} className="mac9-btn px-4 py-1 text-[11px]">
-                    Kapat
+                    Close
                   </button>
                 )}
                 {/* Double-border primary default button (Figma Image 2 & 6) */}
@@ -608,9 +608,9 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
         {/* ================= TAB: THEMES ================= */}
         {activeTab === 'themes' && (
           <div className="space-y-3">
-            <h4 className="font-bold text-[13px]">Sistem Temaları</h4>
+            <h4 className="font-bold text-[13px]">System Themes</h4>
             <p className="text-[11px] text-[#555]">
-              Mac OS 9 sistem görünümleri ve renk paletleri.
+              Mac OS 9 system appearance schemes and color palettes.
             </p>
             <div className="grid grid-cols-2 gap-3">
               <div
@@ -622,7 +622,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
               >
                 <div className="font-bold text-[12px] text-[#333399]">Aqua Sonata (1999)</div>
                 <div className="text-[11px] text-[#555] mt-1">
-                  Quantum Foam ipek desenli varsayılan masaüstü teması.
+                  Default desktop theme with Quantum Foam silk pattern.
                 </div>
               </div>
 
@@ -635,7 +635,7 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
               >
                 <div className="font-bold text-[12px] text-[#38BDF8]">Obsidian Pro (Night Mode)</div>
                 <div className="text-[11px] text-[#94A3B8] mt-1">
-                  Karanlık mod ve yüksek kontrastlı mühendislik görünümü.
+                  Night mode with high-contrast engineering appearance.
                 </div>
               </div>
             </div>
@@ -646,14 +646,14 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
         {activeTab === 'sound' && (
           <div className="space-y-4">
             <div>
-              <h4 className="font-bold text-[13px] mb-1">Web Audio API Prosedürel Ses Motoru</h4>
+              <h4 className="font-bold text-[13px] mb-1">Web Audio API Procedural Sound Engine</h4>
               <p className="text-[11px] text-[#555]">
-                Sıfır harici MP3/WAV dosyası; tüm sesler donanımsal frekans sentezleyicisi ile gerçek zamanlı oluşturulur.
+                Zero external audio files; all sounds generated in real-time via Web Audio hardware synthesis.
               </p>
             </div>
 
             <div className="bg-[#DDDDDD] p-3 border border-[#808080] rounded space-y-2">
-              <span className="font-bold text-[11px] text-[#444] block">Sistem Ses Efektlerini Dinle:</span>
+              <span className="font-bold text-[11px] text-[#444] block">Preview System Sound Effects:</span>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 <button
                   onClick={() => macSound.playMacStartupChime()}
@@ -699,19 +699,19 @@ export const MacAppearancePanel: React.FC<MacAppearancePanelProps> = ({
         {/* ================= TAB: FONTS / OPTIONS ================= */}
         {(activeTab === 'fonts' || activeTab === 'options') && (
           <div className="space-y-3">
-            <h4 className="font-bold text-[13px]">Sistem Tercihleri — {activeTab.toUpperCase()}</h4>
+            <h4 className="font-bold text-[13px]">System Preferences — {activeTab.toUpperCase()}</h4>
             <div className="mac9-inset-box p-3 bg-white space-y-2 text-[11px]">
               <div className="flex justify-between border-b pb-1">
-                <span>Ana Sistem Fontu:</span>
+                <span>System Font:</span>
                 <span className="font-bold">Charcoal 12pt / Geneva 9pt</span>
               </div>
               <div className="flex justify-between border-b pb-1">
-                <span>Vurgu Rengi:</span>
+                <span>Highlight Color:</span>
                 <span className="font-bold text-[#333399]">Azul #333399 / Lavender #C6C8F9</span>
               </div>
               <div className="flex justify-between">
-                <span>WindowShade Animasyonu:</span>
-                <span className="font-bold text-emerald-700">Etkin (Saniyede 60 Kare)</span>
+                <span>WindowShade Animation:</span>
+                <span className="font-bold text-emerald-700">Enabled (60 FPS Accordion)</span>
               </div>
             </div>
           </div>

@@ -130,7 +130,7 @@ export const MacBootSequence: React.FC<MacBootSequenceProps> = ({
           : 'bg-[#63659c] mac9-wallpaper-sonata-purple'
       }`}
       style={{ cursor: phase === 'desktop-transition' ? 'wait' : 'default' }}
-      title="Tıklayarak veya Boşluk tuşuna basarak hızlıca masaüstüne geçebilirsiniz"
+      title="Click or press Spacebar to quickly skip to desktop"
     >
       {/* ================= STAGE 1: HAPPY MAC CRT SCREEN ================= */}
       {phase === 'crt-screen' && (
@@ -252,7 +252,7 @@ export const MacBootSequence: React.FC<MacBootSequenceProps> = ({
             }}
             className="absolute -bottom-8 text-[11px] text-white/80 hover:text-white bg-black/40 hover:bg-black/60 px-3 py-0.5 rounded-full backdrop-blur-sm border border-white/20 transition-all cursor-pointer font-sans"
           >
-            [Boşluk Tuşu veya Tıkla: Hızlı Başlat ➔]
+            [Spacebar or Click: Quick Launch ➔]
           </button>
         </div>
       )}

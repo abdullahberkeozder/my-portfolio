@@ -63,7 +63,7 @@ export const NovaSystemFolderWindow: React.FC<NovaSystemFolderWindowProps> = ({
 
       {/* Bottom Status */}
       <div className="px-3 py-1 bg-[#DDDDDD] border-t border-[#808080] text-[10px] font-mono text-[#555]">
-        Mac OS 9.2.2 System Enclave • Çift tıklayarak klasörleri açabilirsiniz
+        Mac OS 9.2.2 System Enclave • Double-click items to open
       </div>
     </div>
   );

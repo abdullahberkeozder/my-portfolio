@@ -6,10 +6,11 @@ import { macSound } from '@/lib/retroAudioMac9';
 export const MacStickies: React.FC = () => {
   const [content, setContent] = useState<string>(
     ' Nova Stickies\n\n' +
-    '• Mac OS 9 Web OS mimarisi devrede.\n' +
-    '• "Applications" klasöründen Calculator, FM Radio ve Stickies açılabilir.\n' +
-    '• "Day & Night" ikonu ile sistem teması anında değiştirilebilir.\n' +
-    '• Notlarınız tarayıcıda otomatik kaydedilir.'
+    '• Welcome to Mac OS 9.2.2 Web Desktop!\n' +
+    '• Open Applications folder for Calculator, FM Radio, and Stickies.\n' +
+    '• Click "Day & Night" in menu bar to toggle theme.\n' +
+    '• Double-click the Nova emblem to open Appearance.\n' +
+    '• All stickies and preferences auto-save to browser storage.'
   );
 
   useEffect(() => {
@@ -40,9 +41,9 @@ export const MacStickies: React.FC = () => {
             } catch {}
           }}
           className="text-[10px] text-[#8D6E63] hover:text-[#3E2723] px-1"
-          title="Notu Temizle"
+          title="Clear Note"
         >
-          Temizle
+          Clear
         </button>
       </div>
 
@@ -50,12 +51,12 @@ export const MacStickies: React.FC = () => {
       <textarea
         value={content}
         onChange={handleChange}
-        placeholder="Buraya istediğiniz notu yazabilirsiniz..."
+        placeholder="Type your note here..."
         className="mac9-cursor-text flex-1 p-3 bg-transparent resize-none outline-none leading-relaxed text-[#262626] font-sans selection:bg-[#FFE082]"
       />
 
       <div className="px-2 py-0.5 bg-[#FFF59D] text-[10px] text-[#8D6E63] text-right font-mono select-none">
-        Otomatik Kaydedildi
+        Auto-Saved
       </div>
     </div>
   );

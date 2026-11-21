@@ -85,7 +85,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
       setSummary(res.aiSummary);
       setShowSummary(true);
     } catch {
-      setSummary('Özet çıkarılamadı.');
+      setSummary('Failed to generate summary.');
     } finally {
       setIsLoadingSummary(false);
     }
@@ -105,12 +105,12 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
   const readingTime = Math.max(1, Math.ceil(wordCount / 180));
 
   const formattedDate = blog.publishedAt || blog.createdDate
-    ? new Date(blog.publishedAt || blog.createdDate!).toLocaleDateString('tr-TR', {
+    ? new Date(blog.publishedAt || blog.createdDate!).toLocaleDateString('en-US', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
       })
-    : '5 Kas 2026';
+    : 'Nov 5, 2026';
 
   const liveLikes = blog.likesCount ?? blog.likes ?? 0;
 
@@ -127,8 +127,8 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
     blog.authorUsername === 'selindemir'
       ? 'Dr. Selin Demir'
       : blog.authorUsername === 'caneraydin'
-      ? 'Caner Aydın'
-      : blog.author || 'Abdullah Berke Özder';
+      ? 'Caner Aydin'
+      : blog.author || 'Abdullah Berke Ozder';
   const authorInitial = authorDisplayName.charAt(0).toUpperCase();
   const authorTitle =
     blog.authorTitle ||
@@ -164,7 +164,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
               }
             }}
             className="flex items-center gap-2 min-w-0 group/author cursor-pointer text-left bg-transparent border-none p-0"
-            title={`${authorDisplayName} profilini görüntüle`}
+            title={`View ${authorDisplayName}'s profile`}
           >
             {/* Brushed-silver coin avatar ring */}
             <div className="retro-avatar-silver shrink-0">
@@ -192,7 +192,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
               </span>
               <span className="text-zinc-300 dark:text-zinc-700 hidden sm:inline">&bull;</span>
               <span className="text-zinc-500 dark:text-zinc-400 hidden sm:flex items-center gap-1 shrink-0 text-[11px]">
-                {readingTime} dk
+                {readingTime} min read
               </span>
               {blog.publicationType === 'dispatch' && (
                 <span
@@ -207,7 +207,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
                       blog.isBreaking ? 'bg-amber-500 animate-pulse' : 'bg-blue-500'
                     }`}
                   />
-                  {blog.isBreaking ? 'Flaş' : 'Haber'}
+                  {blog.isBreaking ? 'BREAKING' : 'DISPATCH'}
                 </span>
               )}
             </div>
@@ -225,7 +225,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
                   playKeyClick();
                 }}
                 className="hidden md:inline-flex items-center gap-0.5 text-[10px] font-medium text-zinc-500 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 px-1.5 py-0.5 rounded border border-black/5 dark:border-white/5"
-                title={`Orijinal Kaynağı Görüntüle: ${blog.viaSource}`}
+                title={`View original source: ${blog.viaSource}`}
               >
                 <span>via</span>
                 <span className="underline truncate max-w-[80px]">{blog.viaSource}</span>
@@ -234,14 +234,14 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
             )}
             <button
               onClick={handleCopyLink}
-              title={isCopied ? 'Bağlantı Kopyalandı' : 'Yazı Bağlantısını Kopyala'}
+              title={isCopied ? 'Link Copied' : 'Copy Article Link'}
               className="p-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
             >
               {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
             </button>
             <button
               onClick={handleToggleBookmark}
-              title={isBookmarked ? 'Okuma listesinden kaldır' : 'Daha sonra oku (Safari Reading List)'}
+              title={isBookmarked ? 'Remove from reading list' : 'Read later (Safari Reading List)'}
               className={`p-1 rounded transition-all ${
                 isBookmarked
                   ? 'text-amber-500 bg-amber-50 dark:bg-amber-950/40 border border-amber-300/50 dark:border-amber-700/50'
@@ -263,11 +263,11 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
           </p>
         </div>
 
-        {/* 3. Streamlined Editorial Take / Mühendislik Değerlendirmesi (Slim Accent Bar) */}
+        {/* 3. Streamlined Editorial Take / Engineering Commentary (Slim Accent Bar) */}
         {blog.editorialTake && (
           <div className="border-l-2 border-blue-500 dark:border-blue-400 pl-2 py-0.5 text-[11px] text-zinc-700 dark:text-zinc-300 italic line-clamp-1 bg-blue-50/40 dark:bg-blue-950/20 rounded-r">
             <span className="font-semibold text-blue-700 dark:text-blue-400 not-italic font-mono mr-1 text-[10px] uppercase">
-              Mühendislik:
+              Engineering Take:
             </span>
             &ldquo;{blog.editorialTake}&rdquo;
           </div>
@@ -279,7 +279,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
             <div className="flex items-center justify-between text-[10px] font-mono font-bold uppercase text-zinc-500 dark:text-zinc-400">
               <span className="flex items-center gap-1 text-zinc-900 dark:text-white">
                 <Sparkles className="w-3 h-3 text-blue-500" />
-                1 DAKİKALIK ÖZET (SPRING AI)
+                1-MINUTE SUMMARY (SPRING AI)
               </span>
               <button
                 onClick={(e) => {
@@ -289,7 +289,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
                 }}
                 className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
               >
-                Gizle
+                Hide
               </button>
             </div>
             <p className="leading-relaxed font-sans text-xs">{summary}</p>
@@ -329,28 +329,28 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
             onClick={handleFetchSummary}
             disabled={isLoadingSummary}
             className="mac-btn-aluminum !min-h-[26px] !px-2 !py-0.5 text-[10.5px] font-semibold"
-            title="Spring AI ile Yönetici Özeti"
+            title="Executive Summary via Spring AI"
           >
             {isLoadingSummary ? (
               <Loader2 className="w-3 h-3 animate-spin text-blue-500" />
             ) : (
               <Sparkles className="w-3 h-3 text-blue-500" />
             )}
-            <span>{showSummary ? 'Gizle' : 'Özet'}</span>
+            <span>{showSummary ? 'Hide' : 'AI TL;DR'}</span>
           </button>
 
           {/* Claps / Likes (Aqua Primary Gloss Button) */}
           <button
             onClick={handleToggleLike}
             className="mac-aqua-btn-primary !min-h-[26px] !px-2 !py-0.5 text-[10.5px] font-bold"
-            title="Alkışla (Medium Clap)"
+            title="Applaud (Medium Clap)"
           >
             <span className="text-[11px]">👏</span>
             <span>{liveClaps}</span>
           </button>
 
           {/* Comments count (Mac Aqua Notification Badge) */}
-          <span className="mac-aqua-comment-badge !h-[26px] !px-1.5 text-[10.5px]" title={`${commentCount} Yorum`}>
+          <span className="mac-aqua-comment-badge !h-[26px] !px-1.5 text-[10.5px]" title={`${commentCount} Comments`}>
             <MessageSquare className="w-2.5 h-2.5" />
             <span>{commentCount}</span>
           </span>

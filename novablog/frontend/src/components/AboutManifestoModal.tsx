@@ -73,7 +73,7 @@ export const AboutManifestoModal: React.FC<AboutManifestoModalProps> = ({
             </div>
             <span className="ml-3 font-mono text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
               <Info className="w-3.5 h-3.5 text-zinc-500" />
-              Bu Sistem Hakkında — NovaBlog Enterprise
+              About This System — NovaBlog Enterprise
             </span>
           </div>
 
@@ -97,7 +97,7 @@ export const AboutManifestoModal: React.FC<AboutManifestoModalProps> = ({
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'
               }`}
             >
-              Genel Bakış
+              Overview
             </button>
             <button
               type="button"
@@ -125,7 +125,7 @@ export const AboutManifestoModal: React.FC<AboutManifestoModalProps> = ({
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'
               }`}
             >
-              Taahhütler
+              Pillars
             </button>
           </div>
         </div>
@@ -144,45 +144,45 @@ export const AboutManifestoModal: React.FC<AboutManifestoModalProps> = ({
                   NovaBlog Enterprise OS
                 </h2>
                 <p className="text-xs font-mono text-zinc-500">
-                  Sürüm 4.1.1 (Yapı 2026.11.16 &bull; Loom 64-Bit)
+                  Version 4.1.1 (Build 2026.11.16 &bull; Loom 64-Bit)
                 </p>
               </div>
 
               {/* Hardware & System Profile Rows */}
               <div className="space-y-2.5 font-mono text-xs">
                 <div className="flex items-start justify-between py-1 border-b border-zinc-200 dark:border-zinc-800">
-                  <span className="text-zinc-500 font-bold w-28 shrink-0">İŞLEMCİ:</span>
+                  <span className="text-zinc-500 font-bold w-28 shrink-0">PROCESSOR:</span>
                   <span className="text-zinc-900 dark:text-zinc-100 font-semibold text-right">
-                    Java 22 Project Loom (8 Carrier Core, Lock-Free)
+                    Java 22 Project Loom (8 Carrier Cores, Lock-Free)
                   </span>
                 </div>
 
                 <div className="flex items-start justify-between py-1 border-b border-zinc-200 dark:border-zinc-800">
-                  <span className="text-zinc-500 font-bold w-28 shrink-0">BELLEK (RAM):</span>
+                  <span className="text-zinc-500 font-bold w-28 shrink-0">MEMORY (RAM):</span>
                   <span className="text-zinc-900 dark:text-zinc-100 font-semibold text-right">
                     128D Dense Vector &bull; pgvector HNSW + L1 Caffeine
                   </span>
                 </div>
 
                 <div className="flex items-start justify-between py-1 border-b border-zinc-200 dark:border-zinc-800">
-                  <span className="text-zinc-500 font-bold w-28 shrink-0">DEPOLAMA:</span>
+                  <span className="text-zinc-500 font-bold w-28 shrink-0">STORAGE:</span>
                   <span className="text-zinc-900 dark:text-zinc-100 font-semibold text-right">
                     PostgreSQL 16 Cluster &bull; Redis Write-Behind
                   </span>
                 </div>
 
                 <div className="flex items-start justify-between py-1 border-b border-zinc-200 dark:border-zinc-800">
-                  <span className="text-zinc-500 font-bold w-28 shrink-0">YAPAY ZEKA:</span>
+                  <span className="text-zinc-500 font-bold w-28 shrink-0">ARTIFICIAL INTELLIGENCE:</span>
                   <span className="text-zinc-900 dark:text-zinc-100 font-semibold text-right">
-                    Spring AI 1.0 M4 &bull; 1.4ms P99 Kosinüs Arama
+                    Spring AI 1.0 M4 &bull; 1.4ms P99 Cosine Search
                   </span>
                 </div>
 
                 <div className="flex items-start justify-between py-1 border-b border-zinc-200 dark:border-zinc-800">
-                  <span className="text-zinc-500 font-bold w-28 shrink-0">MİMAR &amp; LEAD:</span>
+                  <span className="text-zinc-500 font-bold w-28 shrink-0">ARCHITECT &amp; LEAD:</span>
                   <span className="text-zinc-900 dark:text-zinc-100 font-bold text-right flex items-center gap-1 justify-end">
                     <User className="w-3.5 h-3.5 text-emerald-600" />
-                    Abdullah Berke Özder
+                    Abdullah Berke Ozder
                   </span>
                 </div>
               </div>
@@ -195,17 +195,16 @@ export const AboutManifestoModal: React.FC<AboutManifestoModalProps> = ({
               <div className="p-4 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
                 <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase">
                   <Cpu className="w-4 h-4" />
-                  <span>DİETER RAMS &amp; STEVE JOBS DİSİPLİNİ</span>
+                  <span>DIETER RAMS &amp; STEVE JOBS DISCIPLINE</span>
                 </div>
                 <p className="text-xs text-zinc-700 dark:text-zinc-300 font-sans leading-relaxed">
-                  Dieter Rams&apos;ın <span className="italic font-semibold">&ldquo;İyi tasarım dürüsttür, ayrıntıya kadar tutarlıdır ve olabildiğince az tasarımdır&rdquo;</span> ilkesini
-                  yazılım mimarisine uyarladık. Şişirilmiş gereksiz mikroservisler yerine, tek bir JVM üzerinde donanım sınırlarını zorlayan,
-                  kilitlenmeyen ve veri kaybetmeyen saf mühendislik disiplinini benimsiyoruz.
+                  We applied Dieter Rams&apos;s principle that <span className="italic font-semibold">&ldquo;Good design is honest, thorough down to the last detail, and is as little design as possible&rdquo;</span> directly
+                  to distributed software architecture. In place of bloated microservices, we practice pure engineering discipline: pushing hardware boundaries on a single JVM with zero thread locking and zero data loss.
                 </p>
               </div>
 
               <div className="p-3.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 text-xs text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed">
-                NovaBlog platformu sıradan bir web şablonu olarak değil, <strong>&ldquo;Büyük veri ve yoğun trafik altında dahi milisaniyeler içinde yanıt veren modern bir dağıtık sistem şartnamesi&rdquo;</strong> olarak inşa edildi.
+                The NovaBlog platform was engineered not as a generic template, but as a <strong>&ldquo;Modern distributed systems specification delivering sub-millisecond responses even under massive traffic and datasets.&rdquo;</strong>
               </div>
             </div>
           )}
@@ -216,40 +215,40 @@ export const AboutManifestoModal: React.FC<AboutManifestoModalProps> = ({
               <div className="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1">
                 <div className="flex items-center gap-1.5 font-bold text-zinc-900 dark:text-white text-[11px]">
                   <Zap className="w-3.5 h-3.5 text-amber-500" />
-                  <span>01 // SIFIR KİLİTLENME</span>
+                  <span>01 // ZERO LOCKING</span>
                 </div>
                 <p className="text-[10px] font-sans text-zinc-500 leading-snug">
-                  Java 22 Loom ile 10.000+ eşzamanlı istekte sunucu RAM darboğazına girmeden sub-milisaniyede yanıt verir.
+                  Java 22 Loom responds in sub-milliseconds across 10,000+ concurrent requests without memory bottlenecks.
                 </p>
               </div>
 
               <div className="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1">
                 <div className="flex items-center gap-1.5 font-bold text-zinc-900 dark:text-white text-[11px]">
                   <Layers className="w-3.5 h-3.5 text-purple-500" />
-                  <span>02 // ANLAMSAL ZEKA</span>
+                  <span>02 // SEMANTIC INTELLIGENCE</span>
                 </div>
                 <p className="text-[10px] font-sans text-zinc-500 leading-snug">
-                  Spring AI ve pgvector ile kelimeleri anlam ilişkisine göre kavrayan açısal arama motoru.
+                  Spring AI and pgvector power an angular search engine that grasps semantic intent rather than raw characters.
                 </p>
               </div>
 
               <div className="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1">
                 <div className="flex items-center gap-1.5 font-bold text-zinc-900 dark:text-white text-[11px]">
                   <Database className="w-3.5 h-3.5 text-rose-500" />
-                  <span>03 // VERİ KORUMASI</span>
+                  <span>03 // DATA INTEGRITY</span>
                 </div>
                 <p className="text-[10px] font-sans text-zinc-500 leading-snug">
-                  Redis Write-Behind ile sayaçları bellekte toplayıp 30 saniyede bir toplu veritabanına yazar.
+                  Redis Write-Behind buffers telemetry in memory and batches disk writes every 30 seconds for 98% I/O reduction.
                 </p>
               </div>
 
               <div className="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1">
                 <div className="flex items-center gap-1.5 font-bold text-zinc-900 dark:text-white text-[11px]">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                  <span>04 // TEST GÜVENCESİ</span>
+                  <span>04 // TEST ASSURANCE</span>
                 </div>
                 <p className="text-[10px] font-sans text-zinc-500 leading-snug">
-                  201 test ile %100 doğrulanmış, RFC 7807 standartlarında kurumsal hata yönetimi.
+                  100% verified across 201 automated tests with RFC 7807 enterprise Problem Details error handling.
                 </p>
               </div>
             </div>
@@ -266,7 +265,7 @@ export const AboutManifestoModal: React.FC<AboutManifestoModalProps> = ({
                 className="ios6-btn ios6-btn-blue px-3 py-1.5 text-xs font-bold"
               >
                 <Terminal className="w-3.5 h-3.5" />
-                <span>Sistem Raporu...</span>
+                <span>System Report...</span>
               </a>
 
               <a
@@ -290,15 +289,15 @@ export const AboutManifestoModal: React.FC<AboutManifestoModalProps> = ({
               }}
               className="ios6-btn ios6-btn-silver px-4 py-1.5 text-xs font-bold"
             >
-              Kapat
+              Close
             </button>
           </div>
         </div>
 
         {/* Footer */}
         <div className="h-8 px-4 bg-[#e8e8e8] dark:bg-[#1a1c22] border-t border-[#c0c0c0] dark:border-[#2c3038] flex items-center justify-between text-[10px] font-mono text-zinc-500 select-none shrink-0">
-          <span>TM ve © 2010–2026 Apple Inc. ve Nova Teknoloji</span>
-          <span>TÜM HAKLARI SAKLIDIR</span>
+          <span>TM and © 2010–2026 Apple Inc. and Nova Technology</span>
+          <span>ALL RIGHTS RESERVED</span>
         </div>
       </div>
     </div>

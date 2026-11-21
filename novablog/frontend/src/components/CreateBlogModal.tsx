@@ -90,7 +90,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
   const handleAutoSuggest = async () => {
     playKeyClick('crisp');
     if (!title.trim()) {
-      setFormError('Lütfen önce bir makale başlığı giriniz.');
+      setFormError('Please enter an article title first.');
       return;
     }
     setFormError(null);
@@ -131,7 +131,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
 
   const handleSubmit = async (targetStatus: 'PUBLISHED' | 'DRAFT') => {
     if (!header.trim() || !title.trim() || !content.trim()) {
-      setFormError('Lütfen başlık, alt başlık ve makale içeriğini eksiksiz doldurunuz.');
+      setFormError('Please provide title, subtitle, and article content.');
       return;
     }
     setFormError(null);
@@ -151,7 +151,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
       created.readTimeMinutes = readingTimeMinutes;
       created.publicationStatus = targetStatus;
       created.publishedAt = new Date().toISOString();
-      created.author = 'Abdullah Berke Özder';
+      created.author = 'Abdullah Berke Ozder';
       created.clapsCount = 0;
       created.bookmarksCount = 0;
 
@@ -161,7 +161,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
       onBlogCreated(created);
       onClose();
     } catch {
-      setFormError('Makale kaydedilemedi. Lütfen bağlantınızı ve alanları kontrol ediniz.');
+      setFormError('Failed to save article. Please verify your connection and form fields.');
     } finally {
       setIsSubmitting(false);
     }
@@ -171,7 +171,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
     if (!rawText.trim()) {
       return (
         <p className="text-zinc-400 italic font-mono text-xs">
-          İçerik henüz girilmedi. &quot;Yaz&quot; sekmesine geçerek makalenizi yazmaya başlayabilirsiniz.
+          No content entered yet. Switch to the &quot;Write&quot; tab to compose your article.
         </p>
       );
     }
@@ -282,13 +282,13 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
             </div>
             <span className="ml-3 font-mono text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
               <Mail className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
-              Mac OS X Mail — Yeni Teknik Makale Gönder (Draft)
+              Mac OS X Mail — Compose Technical Article (Draft)
             </span>
           </div>
 
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-mono text-zinc-500 hidden sm:inline">
-              SPRING AI SEMANTİK VEKTÖR ETİKETLEYİCİ
+              SPRING AI SEMANTIC VECTOR TAGGER
             </span>
             <button
               type="button"
@@ -308,18 +308,18 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               type="button"
               disabled={isSubmitting}
               onClick={() => handleSubmit('PUBLISHED')}
-              title={isSubmitting ? 'Makale yayınlanıyor, lütfen bekleyin...' : 'Makaleyi doğrula ve canlı yayına al'}
+              title={isSubmitting ? 'Publishing article, please wait...' : 'Verify and publish article live'}
               className="mac-aqua-btn !px-4 !py-1.5 !text-xs font-bold"
             >
               {isSubmitting && publicationMode === 'PUBLISHED' ? (
                 <>
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
-                  <span>GÖNDERİLİYOR...</span>
+                  <span>PUBLISHING...</span>
                 </>
               ) : (
                 <>
                   <Send className="w-3.5 h-3.5 text-white" />
-                  <span>Gönder</span>
+                  <span>Send</span>
                 </>
               )}
             </button>
@@ -329,11 +329,11 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               type="button"
               disabled={isSubmitting}
               onClick={() => handleSubmit('DRAFT')}
-              title={isSubmitting ? 'İşleniyor...' : 'Taslak olarak sakla'}
+              title={isSubmitting ? 'Processing...' : 'Save as draft'}
               className="mac-aqua-btn mac-aqua-btn-silver !px-3.5 !py-1.5 !text-xs font-bold"
             >
               <Bookmark className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
-              <span>Taslak</span>
+              <span>Draft</span>
             </button>
           </div>
 
@@ -341,41 +341,41 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
           <div className="hidden sm:inline-flex items-center p-0.5 rounded-lg bg-[#cecece] dark:bg-[#16181d] border border-[#b4b4b4] dark:border-[#2b2f38]">
             <button
               type="button"
-              onClick={() => insertMarkdown('\n## ', '\n', 'Başlık')}
+              onClick={() => insertMarkdown('\n## ', '\n', 'Heading')}
               className="px-2 py-1 rounded text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-700"
-              title="Bölüm Başlığı (H2)"
+              title="Section Heading (H2)"
             >
               <Heading className="w-3.5 h-3.5 text-emerald-600" />
             </button>
             <button
               type="button"
-              onClick={() => insertMarkdown('**', '**', 'vurgulu')}
+              onClick={() => insertMarkdown('**', '**', 'bold text')}
               className="px-2 py-1 rounded text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-700"
-              title="Kalın Metin"
+              title="Bold Text"
             >
               <Bold className="w-3.5 h-3.5" />
             </button>
             <button
               type="button"
-              onClick={() => insertMarkdown('\n```java\n', '\n```\n', '// Java 22 Loom kodu')}
+              onClick={() => insertMarkdown('\n```java\n', '\n```\n', '// Java 22 Loom code')}
               className="px-2 py-1 rounded text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-700"
-              title="Java Kod Bloğu"
+              title="Java Code Block"
             >
               <Code className="w-3.5 h-3.5 text-amber-600" />
             </button>
             <button
               type="button"
-              onClick={() => insertMarkdown('\n- ', '', 'Madde')}
+              onClick={() => insertMarkdown('\n- ', '', 'Item')}
               className="px-2 py-1 rounded text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-700"
-              title="Madde Listesi"
+              title="Bullet List"
             >
               <List className="w-3.5 h-3.5" />
             </button>
             <button
               type="button"
-              onClick={() => insertMarkdown('\n> ', '', 'Mimari not')}
+              onClick={() => insertMarkdown('\n> ', '', 'Architectural note')}
               className="px-2 py-1 rounded text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-700"
-              title="Alıntı / Not"
+              title="Quote / Note"
             >
               <Quote className="w-3.5 h-3.5 text-purple-500" />
             </button>
@@ -396,7 +396,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               }`}
             >
               <PenTool className="w-3 h-3" />
-              <span>Yaz</span>
+              <span>Write</span>
             </button>
             <button
               type="button"
@@ -411,16 +411,16 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               }`}
             >
               <Eye className="w-3 h-3 text-emerald-500" />
-              <span>Önizle</span>
+              <span>Preview</span>
             </button>
           </div>
         </div>
 
-        {/* Mail Header Form Fields (Kime, Konu, Kapsam) */}
+        {/* Mail Header Form Fields (To, Subject, Scope) */}
         <div className="shrink-0">
-          {/* Row 1: Kategori / Kime */}
+          {/* Row 1: Category / To */}
           <div className="mac-mail-field-row">
-            <span className="mac-mail-field-label">Kime / Bölüm:</span>
+            <span className="mac-mail-field-label">To / Section:</span>
             <div className="flex-1 flex items-center justify-between gap-2">
               <select
                 id="blog-create-category"
@@ -448,44 +448,44 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
                 onClick={handleAutoSuggest}
                 disabled={isSuggestingTags}
                 className="ios6-btn ios6-btn-silver px-2.5 py-0.5 text-[10px] font-mono shrink-0"
-                title="Spring AI ile başlığa uygun etiket ve kategori öner"
+                title="Suggest tags and category based on title via Spring AI"
               >
                 {isSuggestingTags ? (
                   <Loader2 className="w-3 h-3 animate-spin" />
                 ) : (
                   <Sparkles className="w-3 h-3 text-emerald-600" />
                 )}
-                <span>AI ÖNER</span>
+                <span>AI SUGGEST</span>
               </button>
             </div>
           </div>
 
-          {/* Row 2: Konu (Title) */}
+          {/* Row 2: Subject (Title) */}
           <div className="mac-mail-field-row">
-            <span className="mac-mail-field-label">Konu / Başlık:</span>
+            <span className="mac-mail-field-label">Subject / Title:</span>
             <input
               id="blog-create-title"
               name="title"
               type="text"
               required
               maxLength={100}
-              placeholder="Örn: Java 22 Virtual Threads ve Loom ile Yüksek Throughput Mimarisi"
+              placeholder="e.g.: Java 22 Virtual Threads and High-Throughput Loom Architecture"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="flex-1 bg-transparent text-xs font-sans font-bold text-zinc-900 dark:text-zinc-100 focus:outline-none py-1"
             />
           </div>
 
-          {/* Row 3: Kapsam (Header / Subtitle) */}
+          {/* Row 3: Scope (Header / Subtitle) */}
           <div className="mac-mail-field-row">
-            <span className="mac-mail-field-label">Kapsam / Özet:</span>
+            <span className="mac-mail-field-label">Scope / Summary:</span>
             <input
               id="blog-create-header"
               name="header"
               type="text"
               required
               maxLength={100}
-              placeholder="Örn: Concurrency, Thread Pool Darboğazı ve Non-blocking I/O"
+              placeholder="e.g.: Concurrency, Thread Pool Bottlenecks, and Non-blocking I/O"
               value={header}
               onChange={(e) => setHeader(e.target.value)}
               className="flex-1 bg-transparent text-xs font-sans text-zinc-700 dark:text-zinc-300 focus:outline-none py-1"
@@ -494,7 +494,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
 
           {/* Row 4: Etiketler (Tags) */}
           <div className="mac-mail-field-row">
-            <span className="mac-mail-field-label">Etiketler:</span>
+            <span className="mac-mail-field-label">Tags:</span>
             <div className="flex-1 flex flex-wrap items-center gap-1.5 py-1">
               {tags.map((t, idx) => (
                 <span
@@ -516,7 +516,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
                   id="blog-create-tag-input"
                   name="tagInput"
                   type="text"
-                  placeholder="+ etiket..."
+                  placeholder="+ tag..."
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={handleAddTag}
@@ -560,7 +560,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
                 name="content"
                 rows={14}
                 required
-                placeholder="Teknik makale metnini buraya yazın... Başlıklar için ##, listeler için -, kod blokları için ```java formatını kullanabilirsiniz."
+                placeholder="Compose your technical article here... Markdown supported: ## for Headings, - for Lists, ```java for Code blocks."
                 value={content}
                 onChange={(e) => {
                   setContent(e.target.value);
@@ -572,15 +572,15 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-[11px] font-mono text-zinc-400 select-none">
                 <span className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                  Spring AI 128D Vektör İndeksine Hazır
+                  Ready for Spring AI 128D Vector Index
                 </span>
                 <span className="flex items-center gap-2">
                   <span className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
-                    ~{readingTimeMinutes} dk okuma
+                    ~{readingTimeMinutes} min read
                   </span>
                   <span>&bull;</span>
-                  <span>{wordCount} kelime</span>
+                  <span>{wordCount} words</span>
                 </span>
               </div>
             </div>
@@ -590,16 +590,16 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               <div className="space-y-2 border-b border-zinc-300 dark:border-zinc-700 pb-4">
                 <div className="flex items-center gap-2 text-xs font-mono text-zinc-500">
                   <span className="font-bold uppercase text-emerald-600">
-                    {categories.find((c) => getCatId(c) === effectiveCatId)?.categoryName || 'MÜHENDİSLİK'}
+                    {categories.find((c) => getCatId(c) === effectiveCatId)?.categoryName || 'ENGINEERING'}
                   </span>
                   <span>&bull;</span>
-                  <span>~{readingTimeMinutes} dk okuma</span>
+                  <span>~{readingTimeMinutes} min read</span>
                 </div>
                 <h1 className="text-2xl font-extrabold text-zinc-950 dark:text-white leading-tight">
-                  {title || 'Makale Başlığı'}
+                  {title || 'Article Title'}
                 </h1>
                 <p className="text-xs text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed">
-                  {header || 'Alt başlık özeti...'}
+                  {header || 'Subtitle summary...'}
                 </p>
               </div>
 
