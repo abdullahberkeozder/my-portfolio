@@ -806,6 +806,7 @@ html.macos9-mode,
   border-radius: 2px;
   color: #262626;
   box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #C0C0C0;
+  white-space: nowrap !important;
 }
 
 .dark .mac9-chip-tag {
