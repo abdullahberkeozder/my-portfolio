@@ -9,9 +9,10 @@ import { MacBootSequence } from './MacBootSequence';
 import { MacAppearancePanel, WallpaperTheme } from './MacAppearancePanel';
 import { MacOs9ControlStrip } from './MacOs9ControlStrip';
 import { NovaNewsWindow } from './NovaNewsWindow';
-import { NovaSimpleTextWindow } from './NovaSimpleTextWindow';
-import { NovaArchitectureSpecWindow } from './NovaArchitectureSpecWindow';
-import { NovaSystemFolderWindow } from './NovaSystemFolderWindow';
+import { NovaApplicationsFolder } from './apps/NovaApplicationsFolder';
+import { MacCalculator } from './apps/MacCalculator';
+import { MacStickies } from './apps/MacStickies';
+import { MacFmRadio } from './apps/MacFmRadio';
 import { macSound } from '@/lib/retroAudioMac9';
 
 interface MacOs9DesktopProps {
@@ -43,9 +44,10 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
     blog: { id: 'blog', title: 'Nova Blog — Modern Mühendislik & Sistem Mimarisi', isOpen: false, zIndex: 10 },
     news: { id: 'news', title: 'Sherlock 2 — Nova Haberler & Flaş Gelişmeler', isOpen: false, zIndex: 10 },
     about: { id: 'about', title: 'Görünüm & Sistem Bilgisi (Appearance Control Panel)', isOpen: false, zIndex: 10 },
-    specs: { id: 'specs', title: 'Mac Pro Workstation Architecture — Spec Sheet', isOpen: false, zIndex: 10 },
-    readme: { id: 'readme', title: 'ReadMe.txt — SimpleText', isOpen: false, zIndex: 10 },
-    'system-folder': { id: 'system-folder', title: 'System Folder — Mac OS 9.2.2', isOpen: false, zIndex: 10 },
+    applications: { id: 'applications', title: 'Applications — Mac OS 9.2.2', isOpen: false, zIndex: 10 },
+    calculator: { id: 'calculator', title: 'Calculator', isOpen: false, zIndex: 10 },
+    stickies: { id: 'stickies', title: 'Stickies', isOpen: false, zIndex: 10 },
+    radio: { id: 'radio', title: 'Apple FM Stereo Radio', isOpen: false, zIndex: 10 },
     trash: { id: 'trash', title: 'Trash (Çöp Sepeti)', isOpen: false, zIndex: 10 },
   });
 
@@ -132,7 +134,6 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
   };
 
   const handleDesktopClick = (e: React.MouseEvent) => {
-    // Only deselect if clicked directly on the desktop canvas
     if ((e.target as HTMLElement).classList.contains('mac9-wallpaper-canvas')) {
       setSelectedIconId(null);
     }
@@ -174,9 +175,9 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         </div>
       )}
 
-      {/* ================= 4. SOL MASAÜSTÜ İKONLARI (ZENGİNLEŞTİRİLMİŞ 3 İKON) ================= */}
+      {/* ================= 4. SOL MASAÜSTÜ İKONLARI ================= */}
       <div className="absolute top-[32px] left-4 flex flex-col gap-6 z-10">
-        {/* 1. Day & Night Mode (İngilizce Gece / Gündüz Teması İkonu) */}
+        {/* Day & Night Mode (İngilizce Gece / Gündüz Teması İkonu) */}
         <DesktopIcon
           id="theme-toggle"
           type="theme-toggle"
@@ -186,41 +187,31 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           onSelect={(id) => setSelectedIconId(id)}
           onOpen={handleToggleNightMode}
         />
-
-        {/* 2. ReadMe.txt (SimpleText Belgesi) */}
-        <DesktopIcon
-          id="readme"
-          type="readme"
-          title="ReadMe.txt"
-          isSelected={selectedIconId === 'readme'}
-          onSelect={(id) => setSelectedIconId(id)}
-          onOpen={() => openWindow('readme')}
-        />
-
-        {/* 3. Architecture Specs (Donanımsal Mantık Kartı Şartnamesi) */}
-        <DesktopIcon
-          id="specs"
-          type="specs"
-          title="Architecture"
-          isSelected={selectedIconId === 'specs'}
-          onSelect={(id) => setSelectedIconId(id)}
-          onOpen={() => openWindow('specs')}
-        />
       </div>
 
       {/* ================= 5. SAĞ MASAÜSTÜ İKONLARI (FIGMA KİT SAĞ HİZALAMA) ================= */}
       <div className="absolute top-[32px] right-4 flex flex-col gap-5 z-10">
-        {/* 1. Macintosh HD (Açar: System Folder) */}
+        {/* 1. Macintosh HD (Açar: Applications) */}
         <DesktopIcon
           id="harddrive"
           type="harddrive"
           title="Macintosh HD"
           isSelected={selectedIconId === 'harddrive'}
           onSelect={(id) => setSelectedIconId(id)}
-          onOpen={() => openWindow('system-folder')}
+          onOpen={() => openWindow('applications')}
         />
 
-        {/* 2. 🌐 Blog İkonu (Açar: Tam Blog İnternet Sayfası) */}
+        {/* 2. Applications Klasörü (Figma 71:116881) */}
+        <DesktopIcon
+          id="applications"
+          type="applications"
+          title="Applications"
+          isSelected={selectedIconId === 'applications'}
+          onSelect={(id) => setSelectedIconId(id)}
+          onOpen={() => openWindow('applications')}
+        />
+
+        {/* 3. 🌐 Blog İkonu (Açar: Tam Blog İnternet Sayfası) */}
         <DesktopIcon
           id="blog"
           type="blog"
@@ -230,7 +221,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           onOpen={() => openWindow('blog')}
         />
 
-        {/* 3. 📰 News İkonu (Açar: Sherlock 2 Haber Bülteni) */}
+        {/* 4. 📰 News İkonu (Açar: Sherlock 2 Haber Bülteni) */}
         <DesktopIcon
           id="news"
           type="news"
@@ -240,7 +231,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           onOpen={() => openWindow('news')}
         />
 
-        {/* 4. 🎨 Wallpapers İkonu (Açar: Görünüm Denetim Masası) */}
+        {/* 5. 🎨 Wallpapers İkonu (Açar: Görünüm Denetim Masası) */}
         <DesktopIcon
           id="wallpapers"
           type="wallpapers"
@@ -248,26 +239,6 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           isSelected={selectedIconId === 'wallpapers'}
           onSelect={(id) => setSelectedIconId(id)}
           onOpen={() => openWindow('about')}
-        />
-
-        {/* 5. 🔍 Sherlock 2 İkonu (Açar: Sherlock Arama & Bülten) */}
-        <DesktopIcon
-          id="sherlock"
-          type="sherlock"
-          title="Sherlock 2"
-          isSelected={selectedIconId === 'sherlock'}
-          onSelect={(id) => setSelectedIconId(id)}
-          onOpen={() => openWindow('news')}
-        />
-
-        {/* 6. 📁 System Folder İkonu (Açar: Klasör Listesi) */}
-        <DesktopIcon
-          id="system-folder"
-          type="system-folder"
-          title="System Folder"
-          isSelected={selectedIconId === 'system-folder'}
-          onSelect={(id) => setSelectedIconId(id)}
-          onOpen={() => openWindow('system-folder')}
         />
       </div>
 
@@ -298,7 +269,75 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           PENCERELER (Windows)
           ========================================================================= */}
 
-      {/* 1. Blog İnternet Sayfası Penceresi */}
+      {/* 1. Applications Klasörü Penceresi (Figma UI Kit Uygulama Paketi) */}
+      <MacOs9Window
+        id="applications"
+        title="Applications — Mac OS 9.2.2"
+        isOpen={windows.applications.isOpen}
+        onClose={() => closeWindow('applications')}
+        zIndex={windows.applications.zIndex}
+        onFocus={() => bringToFront('applications')}
+        isActive={activeWindowId === 'applications'}
+        subtitle="finder://Macintosh_HD/Applications"
+        initialPosition={{ x: 140, y: 60 }}
+        initialSize={{ width: 560, height: 380 }}
+      >
+        <NovaApplicationsFolder
+          onLaunchCalculator={() => openWindow('calculator')}
+          onLaunchStickies={() => openWindow('stickies')}
+          onLaunchRadio={() => openWindow('radio')}
+          onLaunchBlog={() => openWindow('blog')}
+          onLaunchNews={() => openWindow('news')}
+          onLaunchAppearance={() => openWindow('about')}
+        />
+      </MacOs9Window>
+
+      {/* 2. Calculator (Hesap Makinesi Uygulaması) */}
+      <MacOs9Window
+        id="calculator"
+        title="Calculator"
+        isOpen={windows.calculator.isOpen}
+        onClose={() => closeWindow('calculator')}
+        zIndex={windows.calculator.zIndex}
+        onFocus={() => bringToFront('calculator')}
+        isActive={activeWindowId === 'calculator'}
+        initialPosition={{ x: 220, y: 100 }}
+        initialSize={{ width: 220, height: 280 }}
+      >
+        <MacCalculator />
+      </MacOs9Window>
+
+      {/* 3. Stickies (Yapışkan Not Uygulaması) */}
+      <MacOs9Window
+        id="stickies"
+        title="Stickies"
+        isOpen={windows.stickies.isOpen}
+        onClose={() => closeWindow('stickies')}
+        zIndex={windows.stickies.zIndex}
+        onFocus={() => bringToFront('stickies')}
+        isActive={activeWindowId === 'stickies'}
+        initialPosition={{ x: 280, y: 130 }}
+        initialSize={{ width: 280, height: 240 }}
+      >
+        <MacStickies />
+      </MacOs9Window>
+
+      {/* 4. Apple FM Radio (Stereo Radyo Uygulaması) */}
+      <MacOs9Window
+        id="radio"
+        title="Apple FM Stereo Radio"
+        isOpen={windows.radio.isOpen}
+        onClose={() => closeWindow('radio')}
+        zIndex={windows.radio.zIndex}
+        onFocus={() => bringToFront('radio')}
+        isActive={activeWindowId === 'radio'}
+        initialPosition={{ x: 320, y: 90 }}
+        initialSize={{ width: 360, height: 240 }}
+      >
+        <MacFmRadio />
+      </MacOs9Window>
+
+      {/* 5. Blog İnternet Sayfası Penceresi */}
       <MacOs9Window
         id="blog"
         title="Nova Blog — Modern Mühendislik & Sistem Mimarisi"
@@ -326,7 +365,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         </div>
       </MacOs9Window>
 
-      {/* 2. News İnternet Sayfası Penceresi (Sherlock 2 Motoru) */}
+      {/* 6. News İnternet Sayfası Penceresi (Sherlock 2 Motoru) */}
       <MacOs9Window
         id="news"
         title="Sherlock 2 — Nova Haberler & Flaş Gelişmeler"
@@ -349,7 +388,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         />
       </MacOs9Window>
 
-      {/* 3. Görünüm & Sistem Bilgisi (Appearance Control Panel) */}
+      {/* 7. Görünüm & Sistem Bilgisi (Appearance Control Panel) */}
       <MacOs9Window
         id="about"
         title="Görünüm & Sistem Bilgisi (Appearance Control Panel)"
@@ -368,62 +407,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         />
       </MacOs9Window>
 
-      {/* 4. Architecture Specs (Donanımsal Mantık Kartı Şartnamesi) */}
-      <MacOs9Window
-        id="specs"
-        title="Mac Pro Workstation Architecture — Spec Sheet"
-        isOpen={windows.specs.isOpen}
-        onClose={() => closeWindow('specs')}
-        zIndex={windows.specs.zIndex}
-        onFocus={() => bringToFront('specs')}
-        isActive={activeWindowId === 'specs'}
-        subtitle="system://logicboard/rev4.1.1"
-        initialPosition={{ x: 140, y: 50 }}
-        initialSize={{
-          width: Math.min(880, typeof window !== 'undefined' ? window.innerWidth - 140 : 840),
-          height: Math.min(620, typeof window !== 'undefined' ? window.innerHeight - 90 : 580),
-        }}
-      >
-        <NovaArchitectureSpecWindow />
-      </MacOs9Window>
-
-      {/* 5. ReadMe.txt (SimpleText Belgesi) */}
-      <MacOs9Window
-        id="readme"
-        title="ReadMe.txt — SimpleText"
-        isOpen={windows.readme.isOpen}
-        onClose={() => closeWindow('readme')}
-        zIndex={windows.readme.zIndex}
-        onFocus={() => bringToFront('readme')}
-        isActive={activeWindowId === 'readme'}
-        subtitle="file://Macintosh_HD/Desktop/ReadMe.txt"
-        initialPosition={{ x: 180, y: 80 }}
-        initialSize={{ width: 580, height: 440 }}
-      >
-        <NovaSimpleTextWindow />
-      </MacOs9Window>
-
-      {/* 6. System Folder (Finder Penceresi) */}
-      <MacOs9Window
-        id="system-folder"
-        title="System Folder — Mac OS 9.2.2"
-        isOpen={windows['system-folder'].isOpen}
-        onClose={() => closeWindow('system-folder')}
-        zIndex={windows['system-folder'].zIndex}
-        onFocus={() => bringToFront('system-folder')}
-        isActive={activeWindowId === 'system-folder'}
-        subtitle="finder://Macintosh_HD/System_Folder"
-        initialPosition={{ x: 200, y: 100 }}
-        initialSize={{ width: 520, height: 340 }}
-      >
-        <NovaSystemFolderWindow
-          onOpenAppearance={() => openWindow('about')}
-          onOpenSpecs={() => openWindow('specs')}
-          onOpenReadme={() => openWindow('readme')}
-        />
-      </MacOs9Window>
-
-      {/* 7. Çöp Kutusu Diyaloğu */}
+      {/* 8. Çöp Kutusu Diyaloğu */}
       <MacOs9Window
         id="trash"
         title="Trash"

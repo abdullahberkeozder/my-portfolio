@@ -5,15 +5,12 @@ import { macSound } from '@/lib/retroAudioMac9';
 
 export type DesktopIconType =
   | 'harddrive'
+  | 'applications'
   | 'blog'
   | 'news'
   | 'trash'
   | 'wallpapers'
-  | 'theme-toggle'
-  | 'sherlock'
-  | 'system-folder'
-  | 'readme'
-  | 'specs';
+  | 'theme-toggle';
 
 interface DesktopIconProps {
   id: string;
@@ -129,72 +126,15 @@ export const DesktopIcon: React.FC<DesktopIconProps> = ({
           </svg>
         );
 
-      case 'sherlock':
+      case 'applications':
         return (
           <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
-            {/* Classic Sherlock 2 Detective Hat & Magnifier (Figma 69:143705) */}
-            <circle cx="16" cy="16" r="13" fill="#E2E8F0" stroke="#262626" strokeWidth="1.5" />
-            {/* Globe Grid */}
-            <ellipse cx="16" cy="16" rx="6" ry="12" stroke="#94A3B8" strokeWidth="0.8" fill="none" />
-            <line x1="4" y1="16" x2="28" y2="16" stroke="#94A3B8" strokeWidth="0.8" />
-            {/* Brass Magnifying Glass */}
-            <circle cx="14" cy="13" r="7" fill="#60A5FA" fillOpacity="0.4" stroke="#D97706" strokeWidth="2" />
-            <line x1="19" y1="18" x2="26" y2="25" stroke="#78350F" strokeWidth="3" strokeLinecap="round" />
-            <circle cx="12" cy="11" r="1.5" fill="#FFFFFF" fillOpacity="0.8" />
-          </svg>
-        );
-
-      case 'system-folder':
-        return (
-          <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
-            {/* Mac OS 9 Golden System Folder with Embossed Finder Face (Figma 73:909) */}
-            <path d="M3 8 L12 8 L15 11 L29 11 L29 27 L3 27 Z" fill="#E5C158" stroke="#262626" strokeWidth="1.5" />
-            <path d="M4 12 L28 12 L28 26 L4 26 Z" fill="#FDE047" stroke="#B45309" strokeWidth="0.8" />
-            {/* Mini Finder Face on the folder */}
-            <rect x="11" y="15" width="10" height="8" rx="1" fill="#3B82F6" stroke="#1E3A8A" strokeWidth="0.8" />
-            <circle cx="14" cy="17.5" r="0.8" fill="#FFFFFF" />
-            <circle cx="18" cy="17.5" r="0.8" fill="#FFFFFF" />
-            <path d="M14 20.5 Q16 22 18 20.5" stroke="#FFFFFF" strokeWidth="0.8" fill="none" />
-          </svg>
-        );
-
-      case 'readme':
-        return (
-          <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
-            {/* SimpleText / ReadMe.txt Document with Dog-Ear Corner (Figma 73:842) */}
-            <path d="M6 3 L20 3 L26 9 L26 29 L6 29 Z" fill="#FFFFFF" stroke="#262626" strokeWidth="1.5" />
-            {/* Dog-ear fold */}
-            <path d="M20 3 L20 9 L26 9 Z" fill="#CBD5E1" stroke="#262626" strokeWidth="1" />
-            {/* Text lines */}
-            <line x1="9" y1="8" x2="16" y2="8" stroke="#1E293B" strokeWidth="1.2" />
-            <line x1="9" y1="12" x2="23" y2="12" stroke="#64748B" strokeWidth="1" />
-            <line x1="9" y1="16" x2="23" y2="16" stroke="#64748B" strokeWidth="1" />
-            <line x1="9" y1="20" x2="21" y2="20" stroke="#64748B" strokeWidth="1" />
-            <line x1="9" y1="24" x2="17" y2="24" stroke="#64748B" strokeWidth="1" />
-          </svg>
-        );
-
-      case 'specs':
-        return (
-          <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none">
-            {/* Mac Pro Logic Board / Microprocessor Chip */}
-            <rect x="6" y="6" width="20" height="20" rx="1.5" fill="#1E293B" stroke="#262626" strokeWidth="1.5" />
-            <rect x="10" y="10" width="12" height="12" fill="#0EA5E9" stroke="#38BDF8" strokeWidth="0.8" />
-            {/* Core Label */}
-            <text x="12" y="19" fill="#FFFFFF" fontSize="7" fontFamily="monospace" fontWeight="bold">G4</text>
-            {/* Pins on 4 sides */}
-            <line x1="10" y1="3" x2="10" y2="6" stroke="#F59E0B" strokeWidth="1.2" />
-            <line x1="16" y1="3" x2="16" y2="6" stroke="#F59E0B" strokeWidth="1.2" />
-            <line x1="22" y1="3" x2="22" y2="6" stroke="#F59E0B" strokeWidth="1.2" />
-            <line x1="10" y1="26" x2="10" y2="29" stroke="#F59E0B" strokeWidth="1.2" />
-            <line x1="16" y1="26" x2="16" y2="29" stroke="#F59E0B" strokeWidth="1.2" />
-            <line x1="22" y1="26" x2="22" y2="29" stroke="#F59E0B" strokeWidth="1.2" />
-            <line x1="3" y1="10" x2="6" y2="10" stroke="#F59E0B" strokeWidth="1.2" />
-            <line x1="3" y1="16" x2="6" y2="16" stroke="#F59E0B" strokeWidth="1.2" />
-            <line x1="3" y1="22" x2="6" y2="22" stroke="#F59E0B" strokeWidth="1.2" />
-            <line x1="26" y1="10" x2="29" y2="10" stroke="#F59E0B" strokeWidth="1.2" />
-            <line x1="26" y1="16" x2="29" y2="16" stroke="#F59E0B" strokeWidth="1.2" />
-            <line x1="26" y1="22" x2="29" y2="22" stroke="#F59E0B" strokeWidth="1.2" />
+            {/* Mac OS 9 Applications Folder (Figma 71:116881) */}
+            <path d="M3 8 L12 8 L15 11 L29 11 L29 27 L3 27 Z" fill="#4B6FA8" stroke="#262626" strokeWidth="1.5" />
+            <path d="M4 12 L28 12 L28 26 L4 26 Z" fill="#6B94D4" stroke="#262626" strokeWidth="0.8" />
+            {/* White Applications A Badge */}
+            <circle cx="16" cy="19" r="5.5" fill="#FFFFFF" stroke="#262626" strokeWidth="0.8" />
+            <text x="13.5" y="22.5" fill="#262626" fontSize="8" fontFamily="sans-serif" fontWeight="bold">A</text>
           </svg>
         );
 

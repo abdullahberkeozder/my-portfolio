@@ -432,6 +432,54 @@ class Mac9SoundEngine {
     osc.start(now);
     osc.stop(now + 0.18);
   }
+
+  // --- 9. Apple FM Radio Tuning Static & Melodic Chord ---
+  public playRadioStatic(duration = 0.15) {
+    if (this.isMuted) return;
+    const ctx = this.ensureContext();
+    if (!ctx || !this.compressor) return;
+
+    const bufferSize = ctx.sampleRate * duration;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * 0.08;
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 1800;
+    filter.Q.value = 1.2;
+
+    noise.connect(filter);
+    filter.connect(this.compressor);
+    noise.start();
+  }
+
+  // Play a smooth retro chord for FM radio station
+  public playRadioChord(freq1 = 440, freq2 = 554.37, freq3 = 659.25) {
+    if (this.isMuted) return;
+    const ctx = this.ensureContext();
+    if (!ctx || !this.compressor) return;
+
+    const now = ctx.currentTime;
+    [freq1, freq2, freq3].forEach((f, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(f, now);
+
+      gain.gain.setValueAtTime(0.06 / (idx + 1), now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+
+      osc.connect(gain);
+      gain.connect(this.compressor!);
+      osc.start(now);
+      osc.stop(now + 1.2);
+    });
+  }
 }
 
 export const macSound = Mac9SoundEngine.getInstance();
