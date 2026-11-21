@@ -1,25 +1,17 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import {
-  Cpu,
-  Database,
-  ArrowRight,
-  Layers,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Menu,
   PenSquare,
   Search,
   ShieldAlert,
-  X,
-  Zap,
-  Compass,
+  Sun,
+  Moon,
 } from 'lucide-react';
-import { MacThemeToggle } from './MacThemeToggle';
+import { useTheme } from '@/providers/ThemeProvider';
 import { GithubIcon } from './GithubIcon';
 import { SpecDirectoryPopover } from './SpecDirectoryPopover';
 import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
@@ -52,6 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const { isDark, toggleTheme } = useTheme();
   const [megaMenu, setMegaMenu] = useState<MegaDrawerCategory>(null);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -63,18 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     setMegaMenu(null);
   };
 
-  // Fullscreen toggle for Mac OS X Green Traffic Light
-  const toggleFullscreen = () => {
-    playKeyClick();
-    if (typeof document === 'undefined') return;
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    } else {
-      document.exitFullscreen().catch(() => {});
-    }
-  };
-
-  // Reliable navigation across routes and in-page sections (NO hover trap, pure tactile click)
+  // Reliable navigation across routes and in-page sections
   const handleTabClick = (sectionId: string, targetTab: NavTab) => {
     playTabSelect();
     if (setActiveTab) {
@@ -89,7 +71,6 @@ export const Navbar: React.FC<NavbarProps> = ({
       return;
     }
 
-    // On home page: signal manual navigation to pause intersection observer flicker
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('manual-tab-navigation-start'));
       window.history.pushState(null, '', `#${sectionId}`);
@@ -101,71 +82,37 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       const el = document.getElementById(sectionId);
       if (el) {
-        const headerOffset = 54;
-        const elementPosition = el.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-        window.scrollTo({
-          top: Math.max(0, offsetPosition),
-          behavior: 'smooth',
-        });
+        el.scrollIntoView({ behavior: 'smooth' });
       }
     }
   };
 
-  const scrollToSection = handleTabClick;
-
-  const navigateToConsoleModule = (moduleId: string) => {
-    closeMegaMenu();
+  const scrollToSection = (targetId: string, targetTab: NavTab) => {
+    playTabSelect();
     if (setActiveTab) {
-      setActiveTab('system');
+      setActiveTab(targetTab);
     }
+    closeMegaMenu();
+
     const isHome = pathname === '/' || pathname === '';
     if (!isHome) {
-      router.push('/#modular-architecture-console');
+      router.push(`/#${targetId}`);
       return;
     }
-    setTimeout(() => {
-      const el = document.getElementById('modular-architecture-console');
-      if (el) {
-        const headerOffset = 54;
-        const elementPosition = el.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-        window.scrollTo({ top: Math.max(0, offsetPosition), behavior: 'smooth' });
-      }
-      window.dispatchEvent(new CustomEvent('select-console-module', { detail: moduleId }));
-    }, 50);
+
+    const el = document.getElementById(targetId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
-  const handleTestDrive = () => {
-    closeMegaMenu();
-    if (setActiveTab) {
-      setActiveTab('system');
-    }
-    const isHome = pathname === '/' || pathname === '';
-    if (!isHome) {
-      router.push('/#modular-architecture-console');
-      return;
-    }
-    setTimeout(() => {
-      const el = document.getElementById('modular-architecture-console');
-      if (el) {
-        const headerOffset = 54;
-        const elementPosition = el.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-        window.scrollTo({ top: Math.max(0, offsetPosition), behavior: 'smooth' });
-      }
-      window.dispatchEvent(new CustomEvent('select-console-module', { detail: 'loom' }));
-      window.dispatchEvent(new CustomEvent('run-console-simulation'));
-    }, 50);
-  };
-
-  const TAB_ORDER: NavTab[] = ['feed', 'system', 'ai-search', 'admin-batch'];
+  const tabOrder: NavTab[] = ['feed', 'system', 'ai-search', 'admin-batch'];
 
   const handlePrevTab = () => {
     playKeyClick();
-    const currentIndex = TAB_ORDER.indexOf(activeTab || 'feed');
-    const prevIndex = (currentIndex - 1 + TAB_ORDER.length) % TAB_ORDER.length;
-    const targetTab = TAB_ORDER[prevIndex];
+    const currentIndex = tabOrder.indexOf(activeTab);
+    const prevIndex = (currentIndex - 1 + tabOrder.length) % tabOrder.length;
+    const targetTab = tabOrder[prevIndex];
     if (targetTab === 'feed') handleTabClick('articles-feed', targetTab);
     else if (targetTab === 'system') handleTabClick('modular-architecture-console', targetTab);
     else if (targetTab === 'ai-search') handleTabClick('ai-vector-studio', targetTab);
@@ -174,9 +121,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const handleNextTab = () => {
     playKeyClick();
-    const currentIndex = TAB_ORDER.indexOf(activeTab || 'feed');
-    const nextIndex = (currentIndex + 1) % TAB_ORDER.length;
-    const targetTab = TAB_ORDER[nextIndex];
+    const currentIndex = tabOrder.indexOf(activeTab);
+    const nextIndex = (currentIndex + 1) % tabOrder.length;
+    const targetTab = tabOrder[nextIndex];
     if (targetTab === 'feed') handleTabClick('articles-feed', targetTab);
     else if (targetTab === 'system') handleTabClick('modular-architecture-console', targetTab);
     else if (targetTab === 'ai-search') handleTabClick('ai-vector-studio', targetTab);
@@ -196,7 +143,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const isMegaOpen = megaMenu !== null;
 
   return (
-    <header className="sticky top-0 z-50 select-none shadow-md">
+    <header className="sticky top-0 z-50 select-none shadow-[0_1px_3px_rgba(0,0,0,0.1)]">
       {/* Subtle backdrop overlay when mega menu is open */}
       {isMegaOpen && (
         <div
@@ -205,39 +152,43 @@ export const Navbar: React.FC<NavbarProps> = ({
         />
       )}
 
-      {/* Mac OS 9 Platinum Application Toolbar (42px) */}
-      <div className="mac9-app-toolbar relative z-40 select-none">
-        <div className="w-full max-w-7xl mx-auto h-[42px] px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-4">
+      {/* Mac OS 9 Platinum Application Toolbar (38px height, razor-sharp alignment) */}
+      <div className="mac9-app-toolbar relative z-40 select-none border-b border-[#808080] dark:border-[#141518]">
+        <div className="w-full px-2.5 sm:px-3 h-[38px] flex items-center justify-between gap-1.5 sm:gap-3">
           
           {/* Left Region: Mac OS 9 Nav Chevrons [◀] [▶] + NOVA Wordmark */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Finder Nav Chevrons [◀] [▶] in Mac OS 9 Bevel Buttons */}
-            <div className="flex items-center gap-1" title="Finder Historical Window Navigation">
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Finder Nav Chevrons [◀] [▶] in authentic Mac OS 9 Bevel Buttons */}
+            <div className="flex items-center gap-1" title="Finder Section Navigation">
               <button
                 type="button"
                 onClick={handlePrevTab}
-                className="mac9-btn w-6 h-6 flex items-center justify-center p-0 text-[#262626] dark:text-[#E0E0E0]"
-                title="Previous Tab"
+                className="mac9-btn mac9-btn-icon text-[#262626] dark:text-[#E0E0E0]"
+                title="Previous Section (◀)"
                 aria-label="Previous"
               >
-                <ChevronLeft className="w-3.5 h-3.5" />
+                <svg className="w-2.5 h-2.5" viewBox="0 0 8 10" fill="currentColor">
+                  <path d="M7 1 L2 5 L7 9 Z" />
+                </svg>
               </button>
               <button
                 type="button"
                 onClick={handleNextTab}
-                className="mac9-btn w-6 h-6 flex items-center justify-center p-0 text-[#262626] dark:text-[#E0E0E0]"
-                title="Next Tab"
+                className="mac9-btn mac9-btn-icon text-[#262626] dark:text-[#E0E0E0]"
+                title="Next Section (▶)"
                 aria-label="Next"
               >
-                <ChevronRight className="w-3.5 h-3.5" />
+                <svg className="w-2.5 h-2.5" viewBox="0 0 8 10" fill="currentColor">
+                  <path d="M1 1 L6 5 L1 9 Z" />
+                </svg>
               </button>
             </div>
 
-            <div className="h-4 w-[1px] bg-[#808080] dark:bg-[#404040] hidden sm:block mx-0.5" />
+            <div className="h-4 w-[1px] bg-[#999999] dark:bg-[#404040] hidden sm:block mx-0.5" />
 
-            {/* Brand Logo & Wordmark (Single Source of Truth) */}
+            {/* Brand Logo & Wordmark (Mac OS 9 Title Font) */}
             <div
-              className="flex items-center gap-1.5 cursor-pointer group py-1"
+              className="flex items-center gap-1.5 cursor-pointer group py-0.5"
               onClick={() => {
                 closeMegaMenu();
                 playKeyClick();
@@ -255,7 +206,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 viewBox="0 0 40 40"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-5 h-5 shrink-0 text-zinc-900 dark:text-zinc-100 transition-transform group-hover:scale-105 duration-200"
+                className="w-4 h-4 shrink-0 text-zinc-900 dark:text-zinc-100 transition-transform group-hover:scale-105 duration-200"
                 aria-label="Nova Logo"
               >
                 <path
@@ -271,24 +222,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                 />
               </svg>
 
-              <span className="font-['Charcoal',sans-serif] font-black text-xs tracking-wider uppercase leading-none text-zinc-900 dark:text-zinc-100">
+              <span className="font-['Charcoal',sans-serif] font-bold text-[12px] tracking-wider uppercase leading-none text-zinc-950 dark:text-zinc-100">
                 NOVA
               </span>
             </div>
           </div>
 
-          {/* Center Region: Mac OS 9 Segmented 4-Tab Switcher */}
+          {/* Center Region: Mac OS 9 Segmented 4-Tab Switcher (Strictly single-line, NO text wrapping) */}
           <nav
             role="tablist"
             aria-label="Main Navigation Tabs"
-            className="mac9-segmented-group overflow-x-auto scrollbar-none max-w-full"
+            className="mac9-segmented-group shrink-0 h-[26px] overflow-hidden"
           >
             <button
               type="button"
               role="tab"
               aria-selected={activeTab === 'feed'}
               onClick={() => handleTabClick('articles-feed', 'feed')}
-              className={`mac9-segmented-item ${activeTab === 'feed' ? 'active' : ''}`}
+              className={`mac9-segmented-item whitespace-nowrap shrink-0 !py-1 !px-2.5 !text-[11px] ${
+                activeTab === 'feed' ? 'active' : ''
+              }`}
             >
               <span>ARTICLES</span>
             </button>
@@ -298,7 +251,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               role="tab"
               aria-selected={activeTab === 'system'}
               onClick={() => handleTabClick('modular-architecture-console', 'system')}
-              className={`mac9-segmented-item ${activeTab === 'system' ? 'active' : ''}`}
+              className={`mac9-segmented-item whitespace-nowrap shrink-0 !py-1 !px-2.5 !text-[11px] ${
+                activeTab === 'system' ? 'active' : ''
+              }`}
             >
               <span>CORE ENGINE</span>
             </button>
@@ -308,7 +263,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               role="tab"
               aria-selected={activeTab === 'ai-search'}
               onClick={() => handleTabClick('ai-vector-studio', 'ai-search')}
-              className={`mac9-segmented-item ${activeTab === 'ai-search' ? 'active' : ''}`}
+              className={`mac9-segmented-item whitespace-nowrap shrink-0 !py-1 !px-2.5 !text-[11px] ${
+                activeTab === 'ai-search' ? 'active' : ''
+              }`}
             >
               <span>AI &amp; VECTOR</span>
             </button>
@@ -318,15 +275,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               role="tab"
               aria-selected={activeTab === 'admin-batch'}
               onClick={() => handleTabClick('batch-etl-studio', 'admin-batch')}
-              className={`mac9-segmented-item ${activeTab === 'admin-batch' ? 'active' : ''}`}
+              className={`mac9-segmented-item whitespace-nowrap shrink-0 !py-1 !px-2.5 !text-[11px] ${
+                activeTab === 'admin-batch' ? 'active' : ''
+              }`}
             >
               <span>BATCH &amp; ETL</span>
             </button>
           </nav>
 
-          {/* Right Region: Spotlight Search + Default +Write + Utility Cluster */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* Mac OS 9 Inset Search Field */}
+          {/* Right Region: Search + Action Button + Mac OS 9 Utility Palette */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Mac OS 9 Inset Search Field (24px height, matching controls) */}
             {onFocusSearch && (
               <button
                 type="button"
@@ -334,7 +293,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   playKeyClick();
                   onFocusSearch();
                 }}
-                className="mac9-inset-box hidden lg:flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-['Geneva',sans-serif] text-zinc-700 dark:text-zinc-300 cursor-pointer select-none rounded-[2px]"
+                className="mac9-inset-box hidden md:flex items-center gap-1.5 px-2 h-[24px] text-[11px] font-['Geneva',sans-serif] text-zinc-700 dark:text-zinc-300 cursor-pointer select-none rounded-[2px]"
                 title="Spotlight Search (⌘K)"
               >
                 <Search className="w-3 h-3 text-zinc-500" />
@@ -342,7 +301,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {/* Mac OS 9 Default +Write Action Button */}
+            {/* Compose Article Action Button (Clean Mac OS 9 Bevel Button) */}
             {onOpenCreateModal && (
               <button
                 type="button"
@@ -350,36 +309,41 @@ export const Navbar: React.FC<NavbarProps> = ({
                   playKeyClick();
                   onOpenCreateModal();
                 }}
-                className="mac9-btn-default flex items-center gap-1.5 !px-3 !py-1 !text-xs font-['Charcoal',sans-serif] font-bold cursor-pointer select-none text-[#262626] dark:text-[#EEEEEE]"
+                className="mac9-btn flex items-center gap-1.5 h-[24px] !px-2.5 text-[11px] font-['Charcoal',sans-serif] font-bold cursor-pointer select-none text-[#262626] dark:text-[#EEEEEE]"
                 title="Compose Technical Article"
               >
-                <PenSquare className="w-3.5 h-3.5" />
+                <PenSquare className="w-3 h-3 text-[#333399] dark:text-blue-400" />
                 <span>+ Write</span>
               </button>
             )}
 
-            <div className="h-4 w-[1px] bg-[#808080] dark:bg-[#404040] hidden sm:block mx-0.5" />
+            <div className="h-4 w-[1px] bg-[#999999] dark:bg-[#404040] hidden sm:block mx-0.5" />
 
-            {/* Status LED */}
+            {/* Backend Health Status Pill */}
             <button
               type="button"
               onClick={() => {
                 playKeyClick();
                 if (onRefreshHealth) onRefreshHealth();
               }}
-              className="p-1 rounded cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+              className="mac9-btn h-[24px] !px-1.5 flex items-center gap-1 text-[10px] font-mono cursor-pointer"
               title={isBackendOnline ? 'Spring Boot 5555: Online (Click to Refresh)' : 'Backend Offline (Click to Refresh)'}
             >
-              <span className={`inline-block w-2 h-2 rounded-full ${
-                isBackendOnline === true
-                  ? 'bg-emerald-500 shadow-[0_0_6px_#10b981]'
-                  : isBackendOnline === false
-                  ? 'bg-amber-400'
-                  : 'bg-zinc-400 animate-pulse'
-              }`} />
+              <span
+                className={`inline-block w-2 h-2 rounded-full ${
+                  isBackendOnline === true
+                    ? 'bg-emerald-500 shadow-[0_0_4px_#10b981]'
+                    : isBackendOnline === false
+                    ? 'bg-amber-400 shadow-[0_0_4px_#fbbf24]'
+                    : 'bg-zinc-400 animate-pulse'
+                }`}
+              />
+              <span className="text-[10px] text-zinc-600 dark:text-zinc-400 hidden xl:inline">
+                {isBackendOnline ? 'Online' : 'Offline'}
+              </span>
             </button>
 
-            {/* 2FA Security */}
+            {/* Mac OS 9 2FA Security Button */}
             {onOpenTwoFactor && (
               <button
                 type="button"
@@ -387,55 +351,72 @@ export const Navbar: React.FC<NavbarProps> = ({
                   playKeyClick();
                   onOpenTwoFactor();
                 }}
-                className="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 p-1 cursor-pointer"
+                className="mac9-btn mac9-btn-icon text-zinc-700 dark:text-zinc-300"
                 title="Mac OS 9 Security &amp; 2FA"
               >
                 <ShieldAlert className="w-3.5 h-3.5" />
               </button>
             )}
 
-            {/* Day / Night Celestial Toggle */}
-            <MacThemeToggle size="compact" className="scale-85" />
+            {/* Authentic Mac OS 9 Day / Night Theme Button (Matches Platinum aesthetic) */}
+            <button
+              type="button"
+              onClick={(e) => {
+                playKeyClick();
+                toggleTheme(e);
+              }}
+              className="mac9-btn mac9-btn-icon text-zinc-700 dark:text-zinc-300"
+              title={isDark ? 'Switch to Day Mode (Mac OS 9 Platinum)' : 'Switch to Night Mode (Mac OS X Night Sky)'}
+              aria-label="Toggle Theme"
+            >
+              {isDark ? (
+                <Sun className="w-3.5 h-3.5 text-amber-400" />
+              ) : (
+                <Moon className="w-3.5 h-3.5 text-indigo-700" />
+              )}
+            </button>
 
-            {/* GitHub Repo */}
+            {/* GitHub Source Link */}
             <a
               href="https://github.com/abdullahberkeozder/my-portfolio"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => playKeyClick()}
-              className="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white p-1"
+              className="mac9-btn mac9-btn-icon text-zinc-700 dark:text-zinc-300"
               title="GitHub Source Code"
             >
               <GithubIcon className="w-3.5 h-3.5" />
             </a>
 
-            {/* Spec Drawer Toggle (Mac OS 9 Button Style) */}
+            {/* Spec Directory Menu / Index Button */}
             <button
               type="button"
               onClick={() => {
                 playKeyClick();
                 setMegaMenu(isMegaOpen ? null : 'articles');
               }}
-              className="mac9-btn flex items-center gap-1 !px-2 !py-0.5 text-[10px] font-['Charcoal',sans-serif] font-bold uppercase cursor-pointer"
+              className={`mac9-btn flex items-center gap-1 h-[24px] !px-2 text-[10px] font-['Charcoal',sans-serif] font-bold uppercase cursor-pointer ${
+                isMegaOpen ? 'active' : ''
+              }`}
               aria-label="Architecture Directory Menu"
               title="Architecture Directory &amp; Module Specifications"
             >
               {isMegaOpen ? <ChevronDown className="w-3 h-3 rotate-180" /> : <Menu className="w-3 h-3" />}
-              <span className="hidden sm:inline">{isMegaOpen ? 'Close' : 'Index'}</span>
+              <span>{isMegaOpen ? 'Close' : 'Index'}</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* 4. Mac OS 9 Finder Column View Popover (Zero Layout Shift Overlay) */}
-          <SpecDirectoryPopover
-            isOpen={Boolean(isMegaOpen)}
-            onClose={() => setMegaMenu(null)}
-            onNavigate={(targetId, tab) => {
-              setMegaMenu(null);
-              scrollToSection(targetId, tab);
-            }}
-          />
+      <SpecDirectoryPopover
+        isOpen={Boolean(isMegaOpen)}
+        onClose={() => setMegaMenu(null)}
+        onNavigate={(targetId, tab) => {
+          setMegaMenu(null);
+          scrollToSection(targetId, tab);
+        }}
+      />
     </header>
   );
 };

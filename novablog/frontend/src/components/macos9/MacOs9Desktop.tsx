@@ -419,7 +419,7 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           height: Math.min(720, typeof window !== 'undefined' ? window.innerHeight - 80 : 640),
         }}
       >
-        <div className="p-4 bg-[#F8F9FA] min-h-full">
+        <div className="min-h-full flex flex-col bg-[#ECECEC] dark:bg-[#1A1C21]">
           {blogContent ? (
             blogContent
           ) : (

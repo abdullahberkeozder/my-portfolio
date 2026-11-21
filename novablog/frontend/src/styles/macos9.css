@@ -339,6 +339,17 @@ html.macos9-mode,
   transform: translate(0.5px, 0.5px);
 }
 
+.mac9-btn-icon {
+  padding: 0 !important;
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 /* Double-bordered Primary Default Button (Figma Image 2 - Set Desktop, OK, Save) */
 .mac9-btn-default {
   background: linear-gradient(180deg, #FFFFFF 0%, #EAEAEA 25%, #DDDDDD 50%, #CCCCCC 100%);
@@ -718,6 +729,9 @@ html.macos9-mode,
   user-select: none;
   transition: none;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+  white-space: nowrap !important;
+  flex-shrink: 0;
+  line-height: 1.1;
 }
 
 .dark .mac9-segmented-item {
