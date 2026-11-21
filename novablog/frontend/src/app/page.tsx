@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Navbar, NavTab } from '@/components/Navbar';
+import { MacOs9Desktop } from '@/components/macos9/MacOs9Desktop';
 import { HeroSection } from '@/components/HeroSection';
 import { ModularArchitectureConsole } from '@/components/ModularArchitectureConsole';
 import { FieldDemoReels } from '@/components/FieldDemoReels';
@@ -352,7 +353,9 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col font-sans transition-colors duration-300">
+    <MacOs9Desktop
+      blogContent={
+        <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col font-sans transition-colors duration-300">
       {/* Navigation */}
       <Navbar
         activeTab={activeTab}
@@ -840,7 +843,18 @@ export default function Home() {
           />
         </div>
       </main>
-
+        <Footer
+          onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
+          onOpenArchitectureConsole={() => {
+            const el = document.getElementById("modular-architecture-console");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+          }}
+          onOpenTwoFactor={() => setIsTwoFactorModalOpen(true)}
+          onOpenAbout={() => setIsAboutModalOpen(true)}
+        />
+        </div>
+      }
+    >
       {/* Detail Modal */}
       <BlogDetailModal
         blog={selectedBlog}
@@ -936,16 +950,6 @@ export default function Home() {
         onMetricsFlushed={() => refetchBlogs()}
       />
 
-      {/* Footer */}
-      <Footer
-        onOpenTelemetry={() => setIsTelemetryModalOpen(true)}
-        onOpenArchitectureConsole={() => {
-          const el = document.getElementById('modular-architecture-console');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }}
-        onOpenTwoFactor={() => setIsTwoFactorModalOpen(true)}
-        onOpenAbout={() => setIsAboutModalOpen(true)}
-      />
-    </div>
+    </MacOs9Desktop>
   );
 }

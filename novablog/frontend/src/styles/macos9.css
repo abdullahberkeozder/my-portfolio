@@ -1,0 +1,161 @@
+/*  Mac OS 9 (Platinum UI / Sonata) Global Tokens & Hardware-Plane Cursors */
+
+:root {
+  --mac9-bg-purple: #63659c;
+  --mac9-platinum: #CCCCCC;
+  --mac9-light: #DDDDDD;
+  --mac9-stripes: #999999;
+  --mac9-shadow: #808080;
+  --mac9-dark-shadow: #404040;
+  --mac9-border: #262626;
+  --mac9-white: #FFFFFF;
+  --mac9-selection: #000080;
+  --mac9-font-title: 'Charcoal', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mac9-font-body: 'Geneva', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ==========================================================================
+   1. HARDWARE-PLANE RETRO MAC OS 9 CURSOR SYSTEM (Zero Latency)
+   ========================================================================== */
+
+/* 16x16 Mac Classic Black Arrow with 1px White Border */
+html.macos9-mode,
+.macos9-mode body,
+.macos9-desktop,
+.macos9-cursor-default {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="%23000000" stroke="%23ffffff" stroke-width="1" d="M1,1 L1,14 L5,11 L8,15 L10,14 L7,10 L12,10 Z"/></svg>') 1 1, default !important;
+}
+
+/* 16x16 Mac OS 9 Nostalgic Wristwatch (Busy / Wait) */
+.macos9-mode .is-loading,
+.macos9-mode [aria-busy="true"],
+.macos9-cursor-wait {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="5" y="0" width="6" height="2" fill="%23000000"/><rect x="5" y="14" width="6" height="2" fill="%23000000"/><circle cx="8" cy="8" r="6" fill="%23ffffff" stroke="%23000000" stroke-width="1"/><rect x="14" y="7" width="2" height="2" fill="%23000000"/><line x1="8" y1="8" x2="8" y2="4" stroke="%23000000" stroke-width="1"/><line x1="8" y1="8" x2="11" y2="8" stroke="%23000000" stroke-width="1"/></svg>') 8 8, wait !important;
+}
+
+/* 16x16 Mac OS 9 Pointing Hand (Links & Clickables) */
+.macos9-mode a,
+.macos9-mode button,
+.macos9-mode [role="button"],
+.macos9-cursor-pointer {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="%23ffffff" stroke="%23000000" stroke-width="1" d="M5,1 L7,1 L7,7 L10,7 L10,9 L13,9 L13,12 L11,15 L4,15 L2,10 L4,7 L5,7 Z"/></svg>') 5 1, pointer !important;
+}
+
+/* 16x16 Mac OS 9 I-Beam (Text Selection) */
+.macos9-mode input[type="text"],
+.macos9-mode textarea,
+.macos9-cursor-text {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="%23ffffff" d="M1,2h7v2H6v8h2v2H1v-2h2V4H1V2z"/><path fill="%23000000" d="M2,3h5v1H5v8h2v1H2v-1h2V4H2V3z"/></svg>') 4 8, text !important;
+}
+
+/* ==========================================================================
+   2. DESKTOP & WALLPAPER STYLING
+   ========================================================================== */
+
+/* Authentic Mac OS 9 Finder Embossed Wallpaper Pattern */
+.mac9-wallpaper-canvas {
+  background-color: #63659c;
+  background-image: url('/retro/wallpaper-macos9.png');
+  background-repeat: repeat;
+  background-size: 512px 384px;
+  image-rendering: auto;
+}
+
+/* Rubberband Marquee Selection Box */
+.mac9-rubberband-box {
+  background-color: rgba(0, 0, 128, 0.2);
+  border: 1px dotted #000080;
+  box-shadow: inset 0 0 2px rgba(0, 0, 128, 0.3);
+  pointer-events: none;
+}
+
+/* Selected Desktop Icon Inverted State */
+.mac9-icon-selected .mac9-icon-label {
+  background-color: #000080 !important;
+  color: #FFFFFF !important;
+  border-radius: 2px;
+}
+.mac9-icon-selected .mac9-icon-img {
+  filter: brightness(0.7) contrast(1.3);
+}
+
+/* ==========================================================================
+   3. PLATINUM 3D BEVEL BUTTONS & CONTROLS
+   ========================================================================== */
+
+.mac9-btn {
+  background: linear-gradient(180deg, #FFFFFF 0%, #DDDDDD 45%, #CCCCCC 100%);
+  border: 1px solid #262626;
+  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #808080;
+  color: #262626;
+  font-family: var(--mac9-font-title);
+  font-size: 12px;
+  padding: 3px 12px;
+  user-select: none;
+  border-radius: 2px;
+  line-height: 1.1;
+}
+
+.mac9-btn:active {
+  background: #BBBBBB;
+  box-shadow: inset 1px 1px 0px #404040, inset -1px -1px 0px #FFFFFF;
+  transform: translate(1px, 1px);
+}
+
+.mac9-btn-default {
+  border: 2px solid #262626;
+  outline: 1px solid #262626;
+  outline-offset: 1px;
+}
+
+/* ==========================================================================
+   4. PINSTRIPE RACING STRIPES & TITLEBARS
+   ========================================================================== */
+
+.mac9-titlebar-stripes {
+  background: repeating-linear-gradient(
+    to bottom,
+    #CCCCCC,
+    #CCCCCC 1px,
+    #999999 1px,
+    #999999 2px
+  );
+}
+
+.mac9-window-frame {
+  background-color: #CCCCCC;
+  border: 1px solid #262626;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.35), inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #808080;
+  border-radius: 4px 4px 0 0;
+}
+
+/* Inactive window titlebar turns flat saten gray without stripes */
+.mac9-window-inactive .mac9-titlebar-stripes {
+  background: #DDDDDD !important;
+}
+.mac9-window-inactive .mac9-window-title {
+  color: #808080 !important;
+}
+
+/* ==========================================================================
+   5. QUICKDRAW ZOOM RECTANGLES (Expanding Wireframes)
+   ========================================================================== */
+@keyframes mac9-zoom-wireframe-expand {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.2);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+.mac9-wireframe-anim {
+  animation: mac9-zoom-wireframe-expand 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
+}

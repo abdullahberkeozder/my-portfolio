@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../styles/retro-ios.css";
+@import "../styles/macos9.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
