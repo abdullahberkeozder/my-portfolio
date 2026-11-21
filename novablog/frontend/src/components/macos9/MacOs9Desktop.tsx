@@ -67,6 +67,20 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
     } catch {
       // ignore
     }
+
+    const handleThemeChange = () => {
+      try {
+        const theme = localStorage.getItem('novablog_theme');
+        setIsNightMode(theme === 'dark');
+      } catch {}
+    };
+
+    window.addEventListener('novablog-theme-change', handleThemeChange);
+    window.addEventListener('storage', handleThemeChange);
+    return () => {
+      window.removeEventListener('novablog-theme-change', handleThemeChange);
+      window.removeEventListener('storage', handleThemeChange);
+    };
   }, []);
 
   const handleSelectWallpaper = (theme: WallpaperTheme) => {
@@ -86,16 +100,16 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
     if (nextNight) {
       document.documentElement.classList.add('dark');
       document.documentElement.setAttribute('data-theme', 'dark');
-      handleSelectWallpaper('dark-carbon');
       try {
         localStorage.setItem('novablog_theme', 'dark');
+        window.dispatchEvent(new Event('novablog-theme-change'));
       } catch {}
     } else {
       document.documentElement.classList.remove('dark');
       document.documentElement.setAttribute('data-theme', 'light');
-      handleSelectWallpaper('sonata-purple');
       try {
         localStorage.setItem('novablog_theme', 'light');
+        window.dispatchEvent(new Event('novablog-theme-change'));
       } catch {}
     }
   };
