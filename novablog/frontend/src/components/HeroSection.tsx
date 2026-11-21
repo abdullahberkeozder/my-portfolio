@@ -57,11 +57,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <section className="relative overflow-hidden border-b border-[#808080] dark:border-[#2C2E35] select-none bg-[#ECECEC] dark:bg-[#1A1C21] transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-4 lg:pt-5 lg:pb-5 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-center">
           
           {/* Left Column: Mac OS 9 System Specification Presentation (7 cols) */}
-          <div className="lg:col-span-7 space-y-3">
+          <div className="lg:col-span-7 space-y-2.5">
             {/* Apple Minimalist Hardware Badge */}
             <div className="mac9-chip-tag !py-0.5 !px-2.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.8)] animate-pulse" />
@@ -75,67 +75,55 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
 
             {/* Headline with Apple Charcoal & Geneva Aesthetic */}
-            <div className="space-y-1.5">
-              <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-black tracking-normal text-zinc-950 dark:text-white leading-[1.2] font-['Charcoal',sans-serif]">
+            <div className="space-y-1">
+              <h1 className="text-xl sm:text-2xl lg:text-[26px] font-black tracking-normal text-zinc-950 dark:text-white leading-[1.2] font-['Charcoal',sans-serif]">
                 System Architecture, Distributed Networks &amp;{' '}
                 <span className="text-[#333399] dark:text-[#818CF8]">
                   Modern Engineering.
                 </span>
               </h1>
-              <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 max-w-xl leading-relaxed font-['Geneva',sans-serif] line-clamp-2">
+              <p className="text-xs text-zinc-700 dark:text-zinc-300 max-w-xl leading-relaxed font-['Geneva',sans-serif] line-clamp-2">
                 Enterprise systems publication powered by Java 22 Loom virtual threads, PostgreSQL pgvector 128D semantic cosine search, and Redis write-behind buffers.
               </p>
             </div>
 
-            {/* Tactile Mac OS 9 Action Buttons */}
-            <div className="flex flex-wrap items-center gap-2.5 pt-0.5">
-              {/* Primary: Mac OS 9 Action Button */}
+            {/* Tactile Mac OS 9 Actions & Specification Tags (Unified single row) */}
+            <div className="flex flex-wrap items-center gap-2 pt-0.5">
               <button
                 type="button"
                 onClick={scrollToFeed}
-                className="mac9-btn flex items-center gap-2 !px-4 !py-1.5 !text-xs font-['Charcoal',sans-serif] font-bold cursor-pointer text-[#262626] dark:text-[#EEEEEE]"
-                title="Scroll to feed (Explore Articles)"
+                className="mac9-btn flex items-center gap-1.5 !px-3 !py-1 !text-[11px] font-['Charcoal',sans-serif] font-bold cursor-pointer text-[#262626] dark:text-[#EEEEEE]"
+                title="Scroll to articles feed"
               >
-                <Compass className="w-3.5 h-3.5 text-[#333399] dark:text-blue-400" />
+                <Compass className="w-3 h-3 text-[#333399] dark:text-blue-400" />
                 <span>Explore Articles</span>
-                <ArrowDown className="w-3 h-3 opacity-80" />
+                <ArrowDown className="w-2.5 h-2.5 opacity-75" />
               </button>
 
-              {/* Secondary: Mac OS 9 Standard Button */}
               <button
                 type="button"
                 onClick={handleOpenConsole}
-                className="mac9-btn flex items-center gap-2 !px-3.5 !py-1.5 !text-xs font-['Charcoal',sans-serif] font-bold cursor-pointer text-[#262626] dark:text-[#EEEEEE]"
-                title="Go to Activity Monitor & Hardware Telemetry Console"
+                className="mac9-btn flex items-center gap-1.5 !px-3 !py-1 !text-[11px] font-['Charcoal',sans-serif] font-bold cursor-pointer text-[#262626] dark:text-[#EEEEEE]"
+                title="Open Architecture & Telemetry Console"
               >
-                <Activity className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span>Architecture &amp; Telemetry</span>
+                <Activity className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                <span>Architecture Lab</span>
               </button>
-            </div>
 
-            {/* Hardware Architecture Specification Strip */}
-            <div className="pt-1">
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-['Geneva',sans-serif] text-zinc-600 dark:text-zinc-400">
-                <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider font-['Charcoal',sans-serif]">
-                  ARCHITECTURE:
-                </span>
-                <span className="mac9-chip-tag">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  Java 22 Loom
-                </span>
-                <span className="mac9-chip-tag">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                  pgvector 128D
-                </span>
-                <span className="mac9-chip-tag">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                  Redis Write-Behind
-                </span>
-                <span className="mac9-chip-tag">
-                  <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                  RFC 7807 2FA
-                </span>
-              </div>
+              <div className="h-4 w-px bg-[#B0B0B0] dark:bg-[#333742] hidden sm:block mx-0.5" />
+
+              <span className="mac9-chip-tag !text-[9.5px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Java 22 Loom
+              </span>
+              <span className="mac9-chip-tag !text-[9.5px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                pgvector 128D
+              </span>
+              <span className="mac9-chip-tag !text-[9.5px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                Redis Cache
+              </span>
             </div>
           </div>
 
