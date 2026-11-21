@@ -260,66 +260,62 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 dark:bg-black/75 backdrop-blur-md overflow-hidden animate-fade-in"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/60 dark:bg-black/75 backdrop-blur-md overflow-hidden animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="relative mac-mail-compose-window max-h-[92vh] flex flex-col shadow-2xl overflow-hidden my-auto animate-in zoom-in-95 duration-150"
+        className="relative mac9-window-frame w-full max-w-3xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden my-auto animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Mac OS X Window Title Bar with Traffic Lights */}
-        <div className="h-10 px-4 bg-gradient-to-b from-[#f2f2f2] to-[#d8d8d8] dark:from-[#2c3038] dark:to-[#1e2127] border-b border-[#a8a8a8] dark:border-[#383d47] flex items-center justify-between select-none shrink-0">
+        {/* Mac OS 9 Platinum Pinstripe Titlebar */}
+        <div className="mac9-subwindow-titlebar shrink-0">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={onClose}
-                className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] hover:opacity-80 cursor-pointer"
-                title="Kapat"
-              />
-              <span className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
-              <span className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
-            </div>
-            <span className="ml-3 font-mono text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
-              Mac OS X Mail — Compose Technical Article (Draft)
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono text-zinc-500 hidden sm:inline">
-              SPRING AI SEMANTIC VECTOR TAGGER
-            </span>
             <button
               type="button"
               onClick={onClose}
-              className="p-1 rounded text-zinc-500 hover:text-black dark:hover:text-white cursor-pointer ml-1"
+              className="mac9-box-btn"
+              title="Close (Esc)"
+            />
+            <span className="mac9-title-badge">
+               New Publication — Compose Article
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="text-[10px] font-mono text-zinc-500 hidden sm:inline mr-2">
+              SPRING AI VECTOR TAGGER
+            </span>
+            <div className="mac9-mini-close-box cursor-pointer" title="Zoom" />
+            <div
+              className="mac9-mini-close-box flex flex-col justify-center items-center gap-[1px] cursor-pointer"
+              title="WindowShade"
             >
-              <X className="w-4 h-4" />
-            </button>
+              <div className="w-[7px] h-[1px] bg-[#262626] dark:bg-[#AAA]" />
+              <div className="w-[7px] h-[1px] bg-[#262626] dark:bg-[#AAA]" />
+            </div>
           </div>
         </div>
 
-        {/* 48px Unified Mac Mail Toolbar */}
-        <div className="mac-mail-toolbar shrink-0">
+        {/* Mac OS 9 Application Toolbar */}
+        <div className="mac9-app-toolbar px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 shrink-0">
           <div className="flex items-center gap-2">
-            {/* Send Button */}
+            {/* Send / Publish Button */}
             <button
               type="button"
               disabled={isSubmitting}
               onClick={() => handleSubmit('PUBLISHED')}
               title={isSubmitting ? 'Publishing article, please wait...' : 'Verify and publish article live'}
-              className="mac-aqua-btn !px-4 !py-1.5 !text-xs font-bold"
+              className="mac9-btn-default !px-3.5 !py-1 text-xs font-bold"
             >
               {isSubmitting && publicationMode === 'PUBLISHED' ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" />
                   <span>PUBLISHING...</span>
                 </>
               ) : (
                 <>
-                  <Send className="w-3.5 h-3.5 text-white" />
-                  <span>Send</span>
+                  <Send className="w-3.5 h-3.5 mr-1" />
+                  <span>Publish</span>
                 </>
               )}
             </button>
@@ -330,9 +326,9 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
               disabled={isSubmitting}
               onClick={() => handleSubmit('DRAFT')}
               title={isSubmitting ? 'Processing...' : 'Save as draft'}
-              className="mac-aqua-btn mac-aqua-btn-silver !px-3.5 !py-1.5 !text-xs font-bold"
+              className="mac9-btn !px-3 !py-1 text-xs font-bold"
             >
-              <Bookmark className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
+              <Bookmark className="w-3.5 h-3.5 mr-1 text-zinc-600 dark:text-zinc-400" />
               <span>Draft</span>
             </button>
           </div>
@@ -612,7 +608,7 @@ export const CreateBlogModal: React.FC<CreateBlogModalProps> = ({
 
         {/* Bottom Status Bar */}
         <div className="h-8 px-4 bg-[#e8e8e8] dark:bg-[#1a1c22] border-t border-[#c0c0c0] dark:border-[#2c3038] flex items-center justify-between text-[10px] font-mono text-zinc-500 select-none shrink-0">
-          <span>MAC OS X MAIL 2010–2016 CLIENT</span>
+          <span>MAC OS 9.2.2 PLATINUM PUBLICATION STUDIO</span>
           <span>AUTOSAVE: LOCAL BUFFER</span>
         </div>
       </div>

@@ -233,34 +233,29 @@ export const FloatingCopilotWidget: React.FC<FloatingCopilotWidgetProps> = ({
       {isOpen && (
         <div className="fixed bottom-6 right-4 sm:right-6 z-50 w-[95vw] sm:w-[440px] max-w-[460px] rounded-2xl bg-gradient-to-b from-[#222226]/95 via-[#1a1a1e]/95 to-[#121215]/95 backdrop-blur-xl border border-white/20 shadow-[0_24px_60px_rgba(0,0,0,0.85)] text-white p-5 space-y-4 animate-in fade-in zoom-in-95 duration-200 select-none">
           
-          {/* Mac Window Titlebar */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+          {/* Mac OS 9 Platinum Window Titlebar */}
+          <div className="mac9-subwindow-titlebar shrink-0 -mx-5 -mt-5 mb-4 px-3">
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={handleToggleOpen}
-                  className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e] shadow-inner cursor-pointer"
-                  title="Close Window"
-                />
-                <span className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d89e24] shadow-inner" />
-                <span className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29] shadow-inner" />
-              </div>
-
-              <div className="ml-2 flex items-center gap-1.5">
-                <Bot className="w-4 h-4 text-cyan-400" />
-                <h3 className="font-sans text-xs font-bold text-white tracking-tight">
-                  Nova Systems Architect &amp; Copilot
-                </h3>
-              </div>
+              <button
+                onClick={handleToggleOpen}
+                className="mac9-box-btn"
+                title="Close Window (Esc)"
+              />
+              <span className="mac9-title-badge">
+                <Bot className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+                 Nova Systems Architect &amp; Copilot
+              </span>
             </div>
 
-            <button
-              onClick={handleToggleOpen}
-              className="text-zinc-400 hover:text-white p-1 rounded hover:bg-white/10 transition-colors cursor-pointer"
-              title="Close"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                onClick={handleToggleOpen}
+                className="text-zinc-500 hover:text-black dark:hover:text-white p-0.5"
+                title="Close"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
           {/* Quick Subject Chip Carousel (Apple Aqua Segmented Tabs) */}

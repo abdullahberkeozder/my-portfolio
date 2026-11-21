@@ -149,11 +149,11 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
         playKeyClick();
         onSelect(blog);
       }}
-      className="group ios-grouped-table-card p-4 sm:p-5 flex flex-col justify-between space-y-3 cursor-pointer transition-all duration-200 hover:shadow-md"
+      className="group mac9-blog-card p-4 sm:p-5 flex flex-col justify-between space-y-3 cursor-pointer transition-all duration-150"
     >
       <div className="space-y-2.5">
-        {/* 1. Mac Mail / Contacts Header: Brushed Silver Coin Avatar & Author Info & Quick Badges */}
-        <div className="flex items-center justify-between gap-2 text-xs ios-etched-divider pb-2.5">
+        {/* 1. Mac OS 9 Platinum Author Header & Badges */}
+        <div className="flex items-center justify-between gap-2 text-xs border-b border-[#A0A0A0] dark:border-[#333742] pb-2 shadow-[0_1px_0_#FFFFFF] dark:shadow-none">
           <button
             type="button"
             onClick={(e) => {
@@ -166,9 +166,9 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
             className="flex items-center gap-2 min-w-0 group/author cursor-pointer text-left bg-transparent border-none p-0"
             title={`View ${authorDisplayName}'s profile`}
           >
-            {/* Brushed-silver coin avatar ring */}
+            {/* Mac OS 9 Beveled Coin Avatar */}
             <div className="retro-avatar-silver shrink-0">
-              <div className="w-7 h-7 rounded-full overflow-hidden bg-gradient-to-b from-zinc-800 to-zinc-950 text-white flex items-center justify-center font-bold text-[11px] uppercase shadow-inner">
+              <div className="w-7 h-7 rounded-full overflow-hidden bg-gradient-to-b from-[#404040] to-[#1F1F1F] text-white flex items-center justify-center font-bold text-[11px] uppercase shadow-inner">
                 {authorAvatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -182,29 +182,29 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 min-w-0 font-medium text-zinc-800 dark:text-zinc-200 truncate">
-              <span className="font-bold text-xs group-hover/author:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+            <div className="flex items-center gap-1.5 min-w-0 font-medium text-zinc-800 dark:text-zinc-200 truncate font-['Geneva',sans-serif]">
+              <span className="font-bold text-xs group-hover/author:text-[#333399] dark:group-hover/author:text-[#818CF8] transition-colors">
                 {authorDisplayName}
               </span>
-              <span className="text-zinc-300 dark:text-zinc-700">&bull;</span>
-              <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1 shrink-0 text-[11px]">
+              <span className="text-zinc-400 dark:text-zinc-600">&bull;</span>
+              <span className="text-zinc-600 dark:text-zinc-400 flex items-center gap-1 shrink-0 text-[11px]">
                 {formattedDate}
               </span>
-              <span className="text-zinc-300 dark:text-zinc-700 hidden sm:inline">&bull;</span>
-              <span className="text-zinc-500 dark:text-zinc-400 hidden sm:flex items-center gap-1 shrink-0 text-[11px]">
+              <span className="text-zinc-400 dark:text-zinc-600 hidden sm:inline">&bull;</span>
+              <span className="text-zinc-600 dark:text-zinc-400 hidden sm:flex items-center gap-1 shrink-0 text-[11px]">
                 {readingTime} min read
               </span>
               {blog.publicationType === 'dispatch' && (
                 <span
-                  className={`inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9.5px] font-mono font-bold uppercase border shrink-0 ${
+                  className={`mac9-chip-tag !py-0 !px-1.5 text-[9px] uppercase shrink-0 ${
                     blog.isBreaking
-                      ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30'
-                      : 'bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/30'
+                      ? '!border-amber-600 !text-amber-700 dark:!text-amber-400'
+                      : '!border-[#333399] !text-[#333399] dark:!text-[#818CF8]'
                   }`}
                 >
                   <span
-                    className={`w-1 h-1 rounded-full ${
-                      blog.isBreaking ? 'bg-amber-500 animate-pulse' : 'bg-blue-500'
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      blog.isBreaking ? 'bg-amber-500 animate-pulse' : 'bg-[#333399] dark:bg-[#818CF8]'
                     }`}
                   />
                   {blog.isBreaking ? 'BREAKING' : 'DISPATCH'}
@@ -224,7 +224,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
                   e.stopPropagation();
                   playKeyClick();
                 }}
-                className="hidden md:inline-flex items-center gap-0.5 text-[10px] font-medium text-zinc-500 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 px-1.5 py-0.5 rounded border border-black/5 dark:border-white/5"
+                className="hidden md:inline-flex items-center gap-0.5 text-[10px] font-medium text-zinc-600 dark:text-zinc-400 hover:text-[#333399] dark:hover:text-[#818CF8] px-1.5 py-0.5 rounded border border-[#A0A0A0] dark:border-[#383D47] bg-[#F0F0F0] dark:bg-[#1A1C22]"
                 title={`View original source: ${blog.viaSource}`}
               >
                 <span>via</span>
@@ -235,17 +235,17 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
             <button
               onClick={handleCopyLink}
               title={isCopied ? 'Link Copied' : 'Copy Article Link'}
-              className="p-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
+              className="p-1 rounded hover:bg-[#DDD] dark:hover:bg-[#2A2C34] text-zinc-500 hover:text-black dark:hover:text-white transition-colors"
             >
-              {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
+              {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
             </button>
             <button
               onClick={handleToggleBookmark}
-              title={isBookmarked ? 'Remove from reading list' : 'Read later (Safari Reading List)'}
+              title={isBookmarked ? 'Remove from reading list' : 'Save to Mac OS 9 Reading List'}
               className={`p-1 rounded transition-all ${
                 isBookmarked
-                  ? 'text-amber-500 bg-amber-50 dark:bg-amber-950/40 border border-amber-300/50 dark:border-amber-700/50'
-                  : 'text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                  ? 'text-amber-600 bg-amber-100 dark:bg-amber-950/40 border border-amber-400'
+                  : 'text-zinc-500 hover:text-black dark:hover:text-white hover:bg-[#DDD] dark:hover:bg-[#2A2C34]'
               }`}
             >
               <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-current' : ''}`} />
@@ -255,18 +255,18 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
 
         {/* 2. Article Title & Excerpt */}
         <div className="space-y-1">
-          <h3 className="text-base font-bold text-zinc-950 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug tracking-tight font-sans line-clamp-2">
+          <h3 className="font-['Charcoal',sans-serif] text-[15px] sm:text-[16px] font-bold text-zinc-950 dark:text-white group-hover:text-[#333399] dark:group-hover:text-[#818CF8] transition-colors leading-snug line-clamp-2">
             {blog.title}
           </h3>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+          <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed font-['Geneva',sans-serif]">
             {rawExcerpt}
           </p>
         </div>
 
-        {/* 3. Streamlined Editorial Take / Engineering Commentary (Slim Accent Bar) */}
+        {/* 3. Streamlined Editorial Take / Engineering Commentary */}
         {blog.editorialTake && (
-          <div className="border-l-2 border-blue-500 dark:border-blue-400 pl-2 py-0.5 text-[11px] text-zinc-700 dark:text-zinc-300 italic line-clamp-1 bg-blue-50/40 dark:bg-blue-950/20 rounded-r">
-            <span className="font-semibold text-blue-700 dark:text-blue-400 not-italic font-mono mr-1 text-[10px] uppercase">
+          <div className="border-l-2 border-[#333399] dark:border-[#818CF8] pl-2 py-0.5 text-[11px] text-zinc-800 dark:text-zinc-200 italic line-clamp-1 bg-[#ECECEC] dark:bg-[#1E2026] rounded-r border border-[#C0C0C0] dark:border-[#2D3038]">
+            <span className="font-semibold text-[#333399] dark:text-[#818CF8] not-italic font-mono mr-1 text-[10px] uppercase">
               Engineering Take:
             </span>
             &ldquo;{blog.editorialTake}&rdquo;
@@ -275,10 +275,10 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
 
         {/* Expandable Recessed AI TL;DR (Accordion) */}
         {showSummary && summary && (
-          <div className="rounded-lg p-2.5 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-inner text-xs text-zinc-800 dark:text-zinc-200 space-y-1 animate-in fade-in duration-200">
+          <div className="mac9-inset-box p-2.5 rounded-[2px] bg-white dark:bg-[#16181D] text-xs text-zinc-800 dark:text-zinc-200 space-y-1 animate-in fade-in duration-200 font-['Geneva',sans-serif]">
             <div className="flex items-center justify-between text-[10px] font-mono font-bold uppercase text-zinc-500 dark:text-zinc-400">
-              <span className="flex items-center gap-1 text-zinc-900 dark:text-white">
-                <Sparkles className="w-3 h-3 text-blue-500" />
+              <span className="flex items-center gap-1 text-[#333399] dark:text-[#818CF8]">
+                <Sparkles className="w-3 h-3" />
                 1-MINUTE SUMMARY (SPRING AI)
               </span>
               <button
@@ -287,22 +287,22 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
                   playKeyClick();
                   setShowSummary(false);
                 }}
-                className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                className="text-zinc-500 hover:text-black dark:hover:text-white"
               >
                 Hide
               </button>
             </div>
-            <p className="leading-relaxed font-sans text-xs">{summary}</p>
+            <p className="leading-relaxed text-xs">{summary}</p>
           </div>
         )}
       </div>
 
-      {/* 4. Bottom Footer: Topic Tags & Skeuomorphic Action Buttons */}
-      <div className="pt-2 flex flex-wrap items-center justify-between gap-1.5 text-xs border-t border-black/10 dark:border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+      {/* 4. Bottom Footer: Topic Tags & Platinum Action Buttons */}
+      <div className="pt-2 flex flex-wrap items-center justify-between gap-1.5 text-xs border-t border-[#A0A0A0] dark:border-[#333742] shadow-[0_1px_0_#FFFFFF] dark:shadow-none">
         {/* Left: Tags */}
         <div className="flex items-center gap-1.5 overflow-hidden">
           {categoryName && (
-            <span className="retro-tag-pill uppercase truncate max-w-[130px]">
+            <span className="mac9-chip-tag uppercase truncate max-w-[130px]">
               {categoryName}
             </span>
           )}
@@ -315,7 +315,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
                   playKeyClick();
                   if (onTagClick) onTagClick(tag);
                 }}
-                className="retro-tag-pill uppercase cursor-pointer hover:border-zinc-400 dark:hover:border-zinc-500 transition-colors hidden sm:inline-block"
+                className="mac9-chip-tag uppercase cursor-pointer hover:border-[#333399] dark:hover:border-[#818CF8] transition-colors hidden sm:inline-block"
               >
                 #{tag}
               </button>
@@ -324,40 +324,40 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
 
         {/* Right: Interaction Buttons */}
         <div className="flex items-center gap-1.5">
-          {/* Quick AI Summary Button (Silver Skeuomorphic Button) */}
+          {/* Quick AI Summary Button (Platinum 3D Button) */}
           <button
             onClick={handleFetchSummary}
             disabled={isLoadingSummary}
-            className="mac-btn-aluminum !min-h-[26px] !px-2 !py-0.5 text-[10.5px] font-semibold"
+            className="mac9-btn !min-h-[24px] !px-2 !py-0.5 text-[10.5px]"
             title="Executive Summary via Spring AI"
           >
             {isLoadingSummary ? (
-              <Loader2 className="w-3 h-3 animate-spin text-blue-500" />
+              <Loader2 className="w-3 h-3 animate-spin text-[#333399] dark:text-[#818CF8] mr-1" />
             ) : (
-              <Sparkles className="w-3 h-3 text-blue-500" />
+              <Sparkles className="w-3 h-3 text-[#333399] dark:text-[#818CF8] mr-1" />
             )}
             <span>{showSummary ? 'Hide' : 'AI TL;DR'}</span>
           </button>
 
-          {/* Claps / Likes (Aqua Primary Gloss Button) */}
+          {/* Claps / Likes (Platinum Default Double-Bordered Button) */}
           <button
             onClick={handleToggleLike}
-            className="mac-aqua-btn-primary !min-h-[26px] !px-2 !py-0.5 text-[10.5px] font-bold"
+            className="mac9-btn-default !min-h-[24px] !px-2.5 !py-0.5 text-[10.5px]"
             title="Applaud (Medium Clap)"
           >
-            <span className="text-[11px]">👏</span>
+            <span className="text-[11px] mr-1">👏</span>
             <span>{liveClaps}</span>
           </button>
 
-          {/* Comments count (Mac Aqua Notification Badge) */}
-          <span className="mac-aqua-comment-badge !h-[26px] !px-1.5 text-[10.5px]" title={`${commentCount} Comments`}>
-            <MessageSquare className="w-2.5 h-2.5" />
+          {/* Comments count (Mac OS 9 Chip Badge) */}
+          <span className="mac9-chip-tag !h-[24px] !px-2 text-[10.5px]" title={`${commentCount} Comments`}>
+            <MessageSquare className="w-2.5 h-2.5 mr-1" />
             <span>{commentCount}</span>
           </span>
 
-          {/* Classic iOS / Mac Right Disclosure Arrow */}
-          <div className="pl-0.5 flex items-center justify-center">
-            <span className="ios-disclosure-arrow group-hover:translate-x-0.5 transition-transform" />
+          {/* Classic Mac OS 9 Right Disclosure Arrow */}
+          <div className="pl-1 flex items-center justify-center text-[10px] text-zinc-500 group-hover:text-[#333399] dark:group-hover:text-[#818CF8] font-bold transition-transform group-hover:translate-x-0.5">
+            ▶
           </div>
         </div>
       </div>

@@ -56,62 +56,56 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   };
 
   return (
-    <section className="relative overflow-hidden border-b border-black/15 dark:border-white/10 select-none bg-gradient-to-b from-[#f8f8fb] via-[#eeeeee] to-[#e4e4e9] dark:from-[#1b1b20] dark:via-[#141418] dark:to-[#0d0d10] transition-colors duration-300">
-      {/* Authentic Mac OS X 2010 Pinstripe Texture Overlay */}
-      <div className="absolute inset-0 ios-pinstripe opacity-25 pointer-events-none" />
-
-      {/* Subtle Studio Glow */}
-      <div className="absolute top-0 right-1/4 w-[500px] h-[300px] bg-blue-500/5 blur-[120px] pointer-events-none" />
-
+    <section className="relative overflow-hidden border-b border-[#808080] dark:border-[#2C2E35] select-none bg-[#ECECEC] dark:bg-[#1A1C21] transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-4 lg:pt-5 lg:pb-5 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center">
           
-          {/* Left Column: Mac OS X Editorial Presentation (7 cols) */}
+          {/* Left Column: Mac OS 9 System Specification Presentation (7 cols) */}
           <div className="lg:col-span-7 space-y-3">
             {/* Apple Minimalist Hardware Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/15 text-xs font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
-              <span className="text-zinc-800 dark:text-zinc-200 font-bold uppercase tracking-wider text-[11px]">
+            <div className="mac9-chip-tag !py-0.5 !px-2.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.8)] animate-pulse" />
+              <span className="text-zinc-800 dark:text-zinc-200 font-bold uppercase tracking-wider text-[10px]">
                 NOVA ENGINEERING DISPATCH
               </span>
               <span className="text-zinc-400 font-normal hidden sm:inline">&bull;</span>
-              <span className="text-blue-600 dark:text-blue-400 font-semibold text-[11px] hidden sm:inline">
+              <span className="text-[#333399] dark:text-blue-400 font-semibold text-[10px] hidden sm:inline">
                 Java 22 Loom &amp; Spring AI
               </span>
             </div>
 
-            {/* Headline with Letterpress Aesthetic */}
+            {/* Headline with Apple Charcoal & Geneva Aesthetic */}
             <div className="space-y-1.5">
-              <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold tracking-tight text-zinc-950 dark:text-white leading-[1.2] font-sans drop-shadow-xs">
+              <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-black tracking-normal text-zinc-950 dark:text-white leading-[1.2] font-['Charcoal',sans-serif]">
                 System Architecture, Distributed Networks &amp;{' '}
-                <span className="text-blue-600 dark:text-blue-400 underline decoration-blue-500/30 underline-offset-4">
+                <span className="text-[#333399] dark:text-[#818CF8] underline decoration-[#333399]/40 dark:decoration-[#818CF8]/40 underline-offset-4">
                   Modern Engineering.
                 </span>
               </h1>
-              <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 max-w-xl leading-relaxed font-sans line-clamp-2">
+              <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 max-w-xl leading-relaxed font-['Geneva',sans-serif] line-clamp-2">
                 Enterprise systems publication powered by Java 22 Loom virtual threads, PostgreSQL pgvector 128D semantic cosine search, and Redis write-behind buffers.
               </p>
             </div>
 
-            {/* Tactile Action Buttons: 2 Clear Hierarchical Controls (Decision Paralysis Free) */}
+            {/* Tactile Mac OS 9 Action Buttons */}
             <div className="flex flex-wrap items-center gap-2.5 pt-0.5">
-              {/* Primary: Apple Aqua Button (Feed Exploration) - Single Primary Focus */}
+              {/* Primary: Mac OS 9 Default Action Button */}
               <button
                 type="button"
                 onClick={scrollToFeed}
-                className="mac-aqua-btn-primary flex items-center gap-2 !px-4 !py-2 !text-xs font-bold shadow-md hover:scale-[1.02] active:scale-[0.98] transition-transform cursor-pointer"
+                className="mac9-btn-default flex items-center gap-2 !px-4 !py-1.5 !text-xs font-['Charcoal',sans-serif] font-bold cursor-pointer text-[#262626] dark:text-[#EEEEEE]"
                 title="Scroll to feed (Explore Articles)"
               >
-                <Compass className="w-3.5 h-3.5 text-white" />
+                <Compass className="w-3.5 h-3.5 text-zinc-800 dark:text-zinc-200" />
                 <span>Explore Articles</span>
-                <ArrowDown className="w-3 h-3 opacity-90" />
+                <ArrowDown className="w-3 h-3 opacity-80" />
               </button>
 
-              {/* Secondary: Architecture & Telemetry Console */}
+              {/* Secondary: Mac OS 9 Standard Button */}
               <button
                 type="button"
                 onClick={handleOpenConsole}
-                className="mac-btn-aluminum flex items-center gap-2 !px-3.5 !py-2 !text-xs font-bold hover:scale-[1.02] active:scale-[0.98] transition-transform cursor-pointer"
+                className="mac9-btn flex items-center gap-2 !px-3.5 !py-1.5 !text-xs font-['Charcoal',sans-serif] font-bold cursor-pointer text-[#262626] dark:text-[#EEEEEE]"
                 title="Go to Activity Monitor & Hardware Telemetry Console"
               >
                 <Activity className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
@@ -119,28 +113,25 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </button>
             </div>
 
-            {/* Hardware Architecture Specification Strip (Minimalist Single-Line Monospaced Spec) */}
+            {/* Hardware Architecture Specification Strip */}
             <div className="pt-1">
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10.5px] font-mono text-zinc-600 dark:text-zinc-400">
-                <span className="font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-['Geneva',sans-serif] text-zinc-600 dark:text-zinc-400">
+                <span className="font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider font-['Charcoal',sans-serif]">
                   ARCHITECTURE:
                 </span>
-                <span className="inline-flex items-center gap-1 text-zinc-700 dark:text-zinc-300">
+                <span className="mac9-chip-tag">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   Java 22 Loom
                 </span>
-                <span className="text-zinc-400 dark:text-zinc-600">&bull;</span>
-                <span className="inline-flex items-center gap-1 text-zinc-700 dark:text-zinc-300">
+                <span className="mac9-chip-tag">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                   pgvector 128D
                 </span>
-                <span className="text-zinc-400 dark:text-zinc-600">&bull;</span>
-                <span className="inline-flex items-center gap-1 text-zinc-700 dark:text-zinc-300">
+                <span className="mac9-chip-tag">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                   Redis Write-Behind
                 </span>
-                <span className="text-zinc-400 dark:text-zinc-600">&bull;</span>
-                <span className="inline-flex items-center gap-1 text-zinc-700 dark:text-zinc-300">
+                <span className="mac9-chip-tag">
                   <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
                   RFC 7807 2FA
                 </span>
@@ -148,25 +139,30 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
           </div>
 
-          {/* Right Column:  Apple Cinema Display / Mac Window Chassis Showcase (5 cols) */}
+          {/* Right Column: Mac OS 9 Pinstripe Window Chassis (5 cols) */}
           <div className="lg:col-span-5">
-            <div className="rounded-2xl bg-gradient-to-b from-[#e8e8ec] to-[#dcdce0] dark:from-[#26262a] dark:to-[#1a1a1e] border border-black/20 dark:border-white/20 shadow-[0_15px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col group">
+            <div className="mac9-section-panel overflow-hidden flex flex-col group">
               
-              {/* Mac Window Chrome Titlebar */}
-              <div className="h-7 bg-gradient-to-b from-[#f2f2f5] to-[#d8d8de] dark:from-[#323236] dark:to-[#222226] px-3 flex items-center justify-between border-b border-black/15 dark:border-black/60 select-none">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-[#ff5f57] border border-[#e0443e] shadow-inner" />
-                  <span className="w-2 h-2 rounded-full bg-[#febc2e] border border-[#d89e24] shadow-inner" />
-                  <span className="w-2 h-2 rounded-full bg-[#28c840] border border-[#1aab29] shadow-inner" />
-                </div>
+              {/* Mac OS 9 Pinstripe Mini Titlebar */}
+              <div className="mac9-mini-titlebar">
+                {/* Classic Square Close Box */}
+                <div
+                  className="mac9-mini-close-box cursor-pointer"
+                  onClick={handleOpenConsole}
+                  title="Close Window"
+                />
 
-                <span className="text-[10px] font-mono font-semibold text-zinc-700 dark:text-zinc-300 truncate max-w-[180px]">
+                <span className="text-[10px] font-['Charcoal',sans-serif] font-bold text-zinc-800 dark:text-zinc-200 truncate max-w-[200px]">
                   Nova_Architecture_Core.spec
                 </span>
 
-                <span className="text-[9px] font-mono text-zinc-400 bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded border border-black/5 dark:border-white/5">
-                  v4.1.1
-                </span>
+                {/* Classic Zoom / Collapse Box */}
+                <div className="flex items-center gap-1">
+                  <div className="w-2.5 h-2.5 bg-[#CCCCCC] dark:bg-[#2E313A] border border-[#262626] dark:border-[#101115] shadow-[inset_1px_1px_0_#FFF,inset_-1px_-1px_0_#808080]" />
+                  <span className="text-[9px] font-mono text-zinc-600 dark:text-zinc-400 px-1 bg-[#DDDDDD] dark:bg-[#1E2025] border border-[#808080] dark:border-[#333]">
+                    v4.1.1
+                  </span>
+                </div>
               </div>
 
               {/* Viewport Screen */}

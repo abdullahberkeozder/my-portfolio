@@ -225,22 +225,20 @@ export const SpecDirectoryPopover: React.FC<SpecDirectoryPopoverProps> = ({
         className="relative pointer-events-auto w-[680px] max-w-[95vw] h-[350px] rounded-2xl bg-[#ececec]/95 dark:bg-[#1a1c22]/95 border border-black/20 dark:border-white/15 shadow-[0_25px_60px_rgba(0,0,0,0.4)] backdrop-blur-xl flex flex-col overflow-hidden text-zinc-900 dark:text-zinc-100 select-none animate-in fade-in zoom-in-95 duration-150"
       >
         {/* Window Chrome Titlebar */}
-        <div className="h-7 px-3 bg-gradient-to-b from-[#f6f6f6] to-[#dddddd] dark:from-[#2d3039] dark:to-[#1e2026] border-b border-black/15 dark:border-black/50 flex items-center justify-between text-[11px] font-mono font-semibold text-zinc-600 dark:text-zinc-300">
-          <div className="flex items-center gap-1.5">
-            <span
-              className="w-2.5 h-2.5 rounded-full bg-[#ff5f57] border border-[#e0443e] cursor-pointer hover:opacity-80"
+        <div className="mac9-subwindow-titlebar shrink-0">
+          <div className="flex items-center gap-2">
+            <button
               onClick={onClose}
-              title="Kapat (Esc)"
+              className="mac9-box-btn"
+              title="Close (Esc)"
             />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e] border border-[#d89e24]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#28c840] border border-[#1aab29]" />
+            <span className="mac9-title-badge">
+               SPEC DIRECTORY // FINDER COLUMN VIEW
+            </span>
           </div>
-          <span className="font-bold tracking-wider text-[10px] uppercase">
-             SPEC DIRECTORY // FINDER COLUMN VIEW
-          </span>
           <button
             onClick={onClose}
-            className="text-[10px] text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
+            className="text-[10px] text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-mono"
           >
             Esc
           </button>

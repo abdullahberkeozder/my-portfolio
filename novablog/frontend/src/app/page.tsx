@@ -355,7 +355,7 @@ export default function Home() {
   return (
     <MacOs9Desktop
       blogContent={
-        <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col font-sans transition-colors duration-300">
+        <div className="min-h-screen bg-[#ECECEC] dark:bg-[#1A1C21] text-[#262626] dark:text-[#EAEAEA] flex flex-col font-['Geneva',sans-serif] transition-colors duration-200">
       {/* Navigation */}
       <Navbar
         activeTab={activeTab}
@@ -372,7 +372,7 @@ export default function Home() {
         onFocusSearch={focusSearchInput}
       />
 
-      <main className="flex-1 ios-pinstripe min-h-screen">
+      <main className="flex-1 bg-[#ECECEC] dark:bg-[#1A1C21] min-h-screen">
         {/* 1. Publication Hero Header */}
         <HeroSection
           onExploreAI={() => {
@@ -388,20 +388,20 @@ export default function Home() {
 
         {/* 2. Main Publication Feed (Explore / Following / Reading List) */}
         <div id="articles-feed" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pb-36 sm:pb-44 space-y-4 scroll-mt-14">
-          {/* Mac OS X Unified Finder Scope Bar (Single-Tier High Ergonomics Standard) */}
-          <div className="mac-scope-bar px-3 py-2 sm:px-4 rounded-xl border border-black/10 dark:border-white/10 bg-gradient-to-b from-white/95 via-zinc-100/90 to-zinc-200/90 dark:from-[#242730]/95 dark:via-[#1c1e26]/90 dark:to-[#14161c]/90 backdrop-blur-md shadow-md flex flex-wrap items-center justify-between gap-2.5">
-            {/* Left: View Mode (iOS 6 Segmented Control) + Publication Type */}
+          {/* Mac OS 9 Platinum Scope & Control Bar */}
+          <div className="mac9-section-panel px-3 py-2 sm:px-4 flex flex-wrap items-center justify-between gap-2.5">
+            {/* Left: View Mode (Mac OS 9 Segmented Control) + Publication Type */}
             <div className="flex flex-wrap items-center gap-2">
-              <div className="mac-scope-track">
+              <div className="mac9-segmented-group">
                 <button
                   type="button"
                   onClick={() => {
                     playTabSelect();
                     setFeedMode('explore');
                   }}
-                  className={`mac-scope-segment ${feedMode === 'explore' ? 'active' : ''}`}
+                  className={`mac9-segmented-item ${feedMode === 'explore' ? 'active' : ''}`}
                 >
-                  <Compass className="w-3.5 h-3.5 text-emerald-500" />
+                  <Compass className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                   <span>Explore ({blogs.length})</span>
                 </button>
                 <button
@@ -410,12 +410,12 @@ export default function Home() {
                     playTabSelect();
                     setFeedMode('following');
                   }}
-                  className={`mac-scope-segment ${feedMode === 'following' ? 'active' : ''}`}
+                  className={`mac9-segmented-item ${feedMode === 'following' ? 'active' : ''}`}
                 >
-                  <Users className="w-3.5 h-3.5 text-cyan-500" />
+                  <Users className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                   <span>Following</span>
                   {followedAuthors.length > 0 && (
-                    <span className="w-4 h-4 rounded-full bg-cyan-500 text-white text-[9px] font-mono flex items-center justify-center font-bold">
+                    <span className="w-3.5 h-3.5 rounded bg-cyan-600 text-white text-[9px] font-mono flex items-center justify-center font-bold">
                       {followedAuthors.length}
                     </span>
                   )}
@@ -426,27 +426,27 @@ export default function Home() {
                     playTabSelect();
                     setFeedMode('bookmarks');
                   }}
-                  className={`mac-scope-segment ${feedMode === 'bookmarks' ? 'active' : ''}`}
+                  className={`mac9-segmented-item ${feedMode === 'bookmarks' ? 'active' : ''}`}
                 >
-                  <Bookmark className="w-3.5 h-3.5 text-amber-500" />
+                  <Bookmark className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                   <span>Reading List</span>
                   {bookmarkedIds.length > 0 && (
-                    <span className="w-4 h-4 rounded-full bg-amber-500 text-white text-[9px] font-mono flex items-center justify-center font-bold">
+                    <span className="w-3.5 h-3.5 rounded bg-amber-600 text-white text-[9px] font-mono flex items-center justify-center font-bold">
                       {bookmarkedIds.length}
                     </span>
                   )}
                 </button>
               </div>
 
-              {/* Publication Type Switcher (Aqua Capsule Pill) */}
-              <div className="mac-scope-track font-mono text-[11px] hidden md:flex">
+              {/* Publication Type Switcher (Mac OS 9 Segmented Item) */}
+              <div className="mac9-segmented-group font-mono text-[11px] hidden md:inline-flex">
                 <button
                   type="button"
                   onClick={() => {
                     playKeyClick();
                     setPublicationTypeFilter('all');
                   }}
-                  className={`mac-scope-segment ${publicationTypeFilter === 'all' ? 'active' : ''}`}
+                  className={`mac9-segmented-item ${publicationTypeFilter === 'all' ? 'active' : ''}`}
                 >
                   <span>All</span>
                 </button>
@@ -456,7 +456,7 @@ export default function Home() {
                     playKeyClick();
                     setPublicationTypeFilter('article');
                   }}
-                  className={`mac-scope-segment ${publicationTypeFilter === 'article' ? 'active' : ''}`}
+                  className={`mac9-segmented-item ${publicationTypeFilter === 'article' ? 'active' : ''}`}
                 >
                   <span>Articles</span>
                 </button>
@@ -466,7 +466,7 @@ export default function Home() {
                     playKeyClick();
                     setPublicationTypeFilter('dispatch');
                   }}
-                  className={`mac-scope-segment ${publicationTypeFilter === 'dispatch' ? 'active' : ''}`}
+                  className={`mac9-segmented-item ${publicationTypeFilter === 'dispatch' ? 'active' : ''}`}
                 >
                   <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-1" />
                   <span>Dispatches</span>
@@ -474,7 +474,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right: Cocoa Pop-up Dropdowns + Search */}
+            {/* Right: Mac OS 9 Pop-up Dropdowns + Search */}
             <div className="flex items-center gap-2">
               {/* Category Pop-up Button */}
               <select
@@ -483,7 +483,7 @@ export default function Home() {
                   playKeyClick();
                   setSelectedCategory(e.target.value ? Number(e.target.value) : null);
                 }}
-                className="h-7 px-2 text-[11px] font-semibold rounded-md border border-black/20 dark:border-white/20 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer shadow-inner focus:outline-none"
+                className="mac9-dropdown-stepper h-7 px-2 text-[11px] cursor-pointer focus:outline-none"
                 aria-label="Category"
               >
                 <option value="">All Categories</option>
@@ -505,7 +505,7 @@ export default function Home() {
                     playKeyClick();
                     setExploreSort(e.target.value as 'trending' | 'featured' | 'latest');
                   }}
-                  className="h-7 px-2 text-[11px] font-semibold rounded-md border border-black/20 dark:border-white/20 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 cursor-pointer shadow-inner focus:outline-none"
+                  className="mac9-dropdown-stepper h-7 px-2 text-[11px] cursor-pointer focus:outline-none"
                   aria-label="Sort"
                 >
                   <option value="trending">🔥 Trending</option>
@@ -516,7 +516,7 @@ export default function Home() {
 
               {/* Recessed Filter Search */}
               <div className="relative w-36 sm:w-44 lg:w-52">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-zinc-400 pointer-events-none" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-zinc-500 pointer-events-none" />
                 <input
                   id="blog-search-input"
                   name="blogSearch"
@@ -524,7 +524,7 @@ export default function Home() {
                   placeholder="Filter... (⌘K)"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="mac-search-recessed !h-7 !text-[11px] !pl-7 !pr-6 w-full"
+                  className="mac9-inset-box !h-7 !text-[11px] !pl-7 !pr-6 w-full rounded-[2px] font-['Geneva',sans-serif] text-zinc-900 dark:text-zinc-100"
                 />
                 {searchTerm && (
                   <button

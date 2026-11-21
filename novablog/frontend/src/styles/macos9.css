@@ -667,3 +667,269 @@ html.macos9-mode,
   color: #000000;
   text-shadow: none;
 }
+
+/* ==========================================================================
+   10. MAC OS 9 BLOG & PORTAL DESIGN SYSTEM (Figma UI Kit Building Blocks)
+   ========================================================================== */
+
+/* Authentic Mac OS 9 Application Toolbar (Brushed Platinum) */
+.mac9-app-toolbar {
+  background: linear-gradient(180deg, #ECECEC 0%, #E0E0E0 35%, #D4D4D4 70%, #CCCCCC 100%);
+  border-bottom: 1px solid #808080;
+  box-shadow: inset 0 1px 0 #FFFFFF, 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.dark .mac9-app-toolbar {
+  background: linear-gradient(180deg, #2E3037 0%, #25272D 50%, #1E2025 100%);
+  border-bottom: 1px solid #141518;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* Mac OS 9 Segmented Scope Track */
+.mac9-segmented-group {
+  display: inline-flex;
+  align-items: center;
+  background: #BDBDBD;
+  border: 1px solid #262626;
+  border-radius: 3px;
+  padding: 1px;
+  box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.35), inset -1px -1px 0 #FFFFFF;
+}
+
+.dark .mac9-segmented-group {
+  background: #18191E;
+  border-color: #0D0E11;
+  box-shadow: inset 1px 1px 2px #000000, inset -1px -1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.mac9-segmented-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  font-family: var(--mac9-font-title);
+  font-size: 11px;
+  font-weight: 700;
+  color: #262626;
+  background: linear-gradient(180deg, #F8F8F8 0%, #E6E6E6 50%, #D8D8D8 100%);
+  border: 1px solid transparent;
+  border-radius: 2px;
+  cursor: pointer;
+  user-select: none;
+  transition: none;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.dark .mac9-segmented-item {
+  color: #D4D4D8;
+  background: linear-gradient(180deg, #32353D 0%, #282A31 50%, #202227 100%);
+  text-shadow: 0 1px 0 #000000;
+}
+
+.mac9-segmented-item:hover {
+  background: linear-gradient(180deg, #FFFFFF 0%, #EEEEEE 50%, #E0E0E0 100%);
+}
+
+.dark .mac9-segmented-item:hover {
+  background: linear-gradient(180deg, #3E424C 0%, #30333C 50%, #272930 100%);
+}
+
+.mac9-segmented-item.active {
+  background: var(--mac9-selection); /* Azul #333399 */
+  color: #FFFFFF !important;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6) !important;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.5), inset -1px -1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Mac OS 9 Blog Article Card */
+.mac9-blog-card {
+  background-color: #FFFFFF;
+  border: 1px solid #262626;
+  border-radius: 3px;
+  box-shadow: 
+    inset 1px 1px 0px #FFFFFF, 
+    inset -1px -1px 0px #999999, 
+    1px 1px 0px rgba(0, 0, 0, 0.15);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.dark .mac9-blog-card {
+  background-color: #23252C;
+  border-color: #141518;
+  box-shadow: 
+    inset 1px 1px 0px rgba(255, 255, 255, 0.12), 
+    inset -1px -1px 0px #18191E, 
+    1px 1px 0px rgba(0, 0, 0, 0.5);
+}
+
+.mac9-blog-card:hover {
+  border-color: #333399;
+  box-shadow: 
+    inset 1px 1px 0px #FFFFFF, 
+    inset -1px -1px 0px #999999, 
+    0 2px 8px rgba(51, 51, 153, 0.25);
+}
+
+.dark .mac9-blog-card:hover {
+  border-color: #6366F1;
+  box-shadow: 
+    inset 1px 1px 0px rgba(255, 255, 255, 0.15), 
+    inset -1px -1px 0px #18191E, 
+    0 2px 8px rgba(99, 102, 241, 0.35);
+}
+
+/* Mac OS 9 Inset Chip Tag */
+.mac9-chip-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px;
+  font-family: var(--mac9-font-title);
+  font-size: 10px;
+  font-weight: 700;
+  background: #EAEAEA;
+  border: 1px solid #7F7F7F;
+  border-radius: 2px;
+  color: #262626;
+  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #C0C0C0;
+}
+
+.dark .mac9-chip-tag {
+  background: #1A1B20;
+  border-color: #353840;
+  color: #CCCCCC;
+  box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.08), inset -1px -1px 0px #101114;
+}
+
+/* Mac OS 9 Section Panel / Outset Bevel Container */
+.mac9-section-panel {
+  background: #EEEEEE;
+  border: 1px solid #262626;
+  border-radius: 4px;
+  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #808080, 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dark .mac9-section-panel {
+  background: #1F2126;
+  border-color: #121316;
+  box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.1), inset -1px -1px 0px #141518, 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Mac OS 9 Mini Titlebar for Cards & Sub-Panels */
+.mac9-mini-titlebar {
+  height: 20px;
+  background: repeating-linear-gradient(to bottom,
+      #ECECEC,
+      #ECECEC 1px,
+      #999999 1px,
+      #999999 2px);
+  border-bottom: 1px solid #262626;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  user-select: none;
+}
+
+.dark .mac9-mini-titlebar {
+  background: repeating-linear-gradient(to bottom,
+      #333742,
+      #333742 1px,
+      #1C1E24 1px,
+      #1C1E24 2px);
+  border-bottom-color: #101115;
+}
+
+.mac9-mini-close-box {
+  width: 11px;
+  height: 11px;
+  background: #CCCCCC;
+  border: 1px solid #262626;
+  box-shadow: inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #808080;
+}
+
+.dark .mac9-mini-close-box {
+  background: #2E313A;
+  border-color: #101115;
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.2), inset -1px -1px 0 #18191F;
+}
+
+/* Mac OS 9 Subwindow / Console / Modal Pinstripe Header Bar */
+.mac9-subwindow-titlebar {
+  height: 26px;
+  background: repeating-linear-gradient(to bottom,
+      #EBEBEB,
+      #EBEBEB 1px,
+      #8C8C8C 1px,
+      #8C8C8C 2px);
+  border-bottom: 1px solid #262626;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  user-select: none;
+}
+
+.dark .mac9-subwindow-titlebar {
+  background: repeating-linear-gradient(to bottom,
+      #353945,
+      #353945 1px,
+      #1C1E24 1px,
+      #1C1E24 2px);
+  border-bottom-color: #121317;
+}
+
+/* Mac OS 9 Close Box */
+.mac9-box-btn {
+  width: 13px;
+  height: 13px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #CCCCCC 100%);
+  border: 1px solid #1F1F1F;
+  box-shadow: inset 1px 1px 0 #FFFFFF, inset -1px -1px 0 #7A7A7A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.mac9-box-btn:active {
+  background: #999999;
+  box-shadow: inset 1px 1px 1px #000000;
+}
+
+.dark .mac9-box-btn {
+  background: linear-gradient(180deg, #4A4D58 0%, #2A2C34 100%);
+  border-color: #101115;
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.2), inset -1px -1px 0 #18191F;
+}
+
+.dark .mac9-box-btn:active {
+  background: #18191F;
+  box-shadow: inset 1px 1px 1px #000000;
+}
+
+/* Mac OS 9 Window Title Badge */
+.mac9-title-badge {
+  font-family: var(--mac9-font-title);
+  font-size: 11px;
+  font-weight: 700;
+  color: #1F1F1F;
+  background: #ECECEC;
+  padding: 1px 10px;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #808080;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.dark .mac9-title-badge {
+  color: #EAEAEA;
+  background: #252830;
+  border-left-color: #404450;
+  border-right-color: #404450;
+  box-shadow: none;
+}

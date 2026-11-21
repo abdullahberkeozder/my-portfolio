@@ -373,18 +373,13 @@ export const ModularArchitectureConsole: React.FC = () => {
 
       {/* Main Mac Activity Monitor Window Chassis */}
       <div className="mac-activity-monitor-chassis">
-        {/* Mac OS X Window Header Bar with Traffic Lights */}
-        <div className="h-10 px-4 bg-gradient-to-b from-[#f2f2f2] to-[#d8d8d8] dark:from-[#2c3038] dark:to-[#1e2127] border-b border-[#a8a8a8] dark:border-[#383d47] flex items-center justify-between select-none">
+        {/* Mac OS 9 Window Header Bar with Pinstripe Titlebar */}
+        <div className="mac9-subwindow-titlebar shrink-0">
           <div className="flex items-center gap-2">
-            {/* Traffic Lights */}
-            <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
-              <span className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
-              <span className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
-            </div>
-            <span className="ml-3 font-mono text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+            <div className="mac9-box-btn" title="Window Control" />
+            <span className="mac9-title-badge">
               <Activity className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              Activity Monitor — Nova Distributed Core (pid: 1024..5200)
+               Activity Monitor — Nova Distributed Core (pid: 1024..5200)
             </span>
           </div>
 
@@ -395,6 +390,7 @@ export const ModularArchitectureConsole: React.FC = () => {
             </span>
             <span>&bull;</span>
             <span>OS THREADS BLOCKED: 0</span>
+            <div className="mac9-mini-close-box" title="Zoom" />
           </div>
         </div>
 

@@ -64,28 +64,23 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 backdrop-blur-md overflow-y-auto"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 backdrop-blur-md overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-3xl rounded-xl mac-activity-monitor-chassis text-zinc-900 dark:text-zinc-100 shadow-2xl overflow-hidden my-auto animate-in zoom-in-95 duration-150"
+        className="relative w-full max-w-3xl mac9-window-frame text-zinc-900 dark:text-zinc-100 shadow-2xl overflow-hidden my-auto animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Mac Window Title Bar with Traffic Lights */}
-        <div className="h-10 px-4 bg-gradient-to-b from-[#f2f2f2] to-[#d8d8d8] dark:from-[#2c3038] dark:to-[#1e2127] border-b border-[#a8a8a8] dark:border-[#383d47] flex items-center justify-between select-none">
+        {/* Mac OS 9 Platinum Pinstripe Titlebar */}
+        <div className="mac9-subwindow-titlebar shrink-0">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={onClose}
-                className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] hover:opacity-80 cursor-pointer"
-                title="Close"
-              />
-              <span className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
-              <span className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)]" />
-            </div>
-            <span className="ml-3 font-mono text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
-              <Activity className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              System Profiler &amp; Activity Monitor — Live Telemetry
+            <button
+              onClick={onClose}
+              className="mac9-box-btn"
+              title="Close (Esc)"
+            />
+            <span className="mac9-title-badge">
+               System Profiler &amp; Activity Monitor — Live Telemetry
             </span>
           </div>
 
@@ -99,12 +94,7 @@ export const SystemTelemetryModal: React.FC<SystemTelemetryModalProps> = ({
             >
               {isBackendOnline ? 'ONLINE :5555' : 'DEMO MODE'}
             </span>
-            <button
-              onClick={onClose}
-              className="p-1 rounded text-zinc-500 hover:text-black dark:hover:text-white cursor-pointer ml-1"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div className="mac9-mini-close-box cursor-pointer" title="Zoom" />
           </div>
         </div>
 

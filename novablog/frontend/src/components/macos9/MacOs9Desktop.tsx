@@ -30,6 +30,7 @@ interface WindowState {
 }
 
 export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
+  children,
   blogContent,
 }) => {
   const [isBooting, setIsBooting] = useState<boolean>(true);
@@ -463,6 +464,9 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
           </div>
         </div>
       </MacOs9Window>
+
+      {/* Modals & Portals rendered on top of desktop */}
+      {children}
     </div>
   );
 };

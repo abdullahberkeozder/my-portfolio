@@ -43,43 +43,41 @@ export const AboutManifestoModal: React.FC<AboutManifestoModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 select-none">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 select-none">
       {/* Backdrop */}
       <div
         onClick={onClose}
         className="absolute inset-0 bg-black/60 dark:bg-black/75 backdrop-blur-md transition-opacity duration-200"
       />
 
-      {/* Mac OS X "About This Mac" Dialog Sheet */}
+      {/* Mac OS 9 "About This Computer" Dialog Sheet */}
       <div
-        className="relative mac-security-dialog w-full max-w-lg shadow-2xl overflow-hidden z-10 flex flex-col animate-in zoom-in-95 duration-150"
+        className="relative mac9-window-frame w-full max-w-lg shadow-2xl overflow-hidden z-10 flex flex-col animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Mac OS X Window Title Bar with Traffic Lights */}
-        <div className="h-10 px-4 bg-gradient-to-b from-[#f2f2f2] to-[#d8d8d8] dark:from-[#2c3038] dark:to-[#1e2127] border-b border-[#a8a8a8] dark:border-[#383d47] flex items-center justify-between select-none shrink-0">
+        {/* Mac OS 9 Platinum Pinstripe Titlebar */}
+        <div className="mac9-subwindow-titlebar shrink-0">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  playKeyClick('crisp');
-                  onClose();
-                }}
-                className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] hover:opacity-80 cursor-pointer"
-                title="Kapat"
-              />
-              <span className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] opacity-60" />
-              <span className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] shadow-[inset_0_1px_1px_rgba(255,255,255,0.6)] opacity-60" />
-            </div>
-            <span className="ml-3 font-mono text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
-              <Info className="w-3.5 h-3.5 text-zinc-500" />
-              About This System — NovaBlog Enterprise
+            <button
+              type="button"
+              onClick={() => {
+                playKeyClick('crisp');
+                onClose();
+              }}
+              className="mac9-box-btn"
+              title="Close (Esc)"
+            />
+            <span className="mac9-title-badge">
+               About This System — NovaBlog Enterprise
             </span>
           </div>
 
-          <span className="text-[10px] font-mono text-zinc-500">
-            MAC OS X 10.8 EDITION
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-mono text-zinc-500">
+              MAC OS 9.2.2 PLATINUM EDITION
+            </span>
+            <div className="mac9-mini-close-box cursor-pointer" title="Zoom" />
+          </div>
         </div>
 
         {/* Tab Switcher */}

@@ -299,29 +299,29 @@ export const FieldDemoReels: React.FC<FieldDemoReelsProps> = ({
                 onClick={() => handleCardClick(reel)}
                 className="relative min-w-[280px] sm:min-w-[320px] max-w-[340px] flex-shrink-0 snap-start rounded-xl overflow-hidden bg-[#1c1c1f] border border-white/20 shadow-[0_16px_36px_rgba(0,0,0,0.8)] transition-all duration-300 hover:scale-[1.02] hover:border-blue-400/60 group cursor-pointer flex flex-col"
               >
-                {/* Mac OS X QuickTime Window Titlebar */}
-                <div className="h-8 bg-gradient-to-b from-[#3a3a3d] to-[#252528] px-3 flex items-center justify-between border-b border-black/60 select-none">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57] border border-[#e0443e] shadow-inner" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e] border border-[#d89e24] shadow-inner" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#28c840] border border-[#1aab29] shadow-inner" />
+                {/* Mac OS 9 QuickTime Window Titlebar */}
+                <div className="mac9-subwindow-titlebar shrink-0">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="mac9-box-btn !w-3 !h-3" title="Close" />
+                    <span className="font-['Charcoal',sans-serif] text-[10px] font-bold text-zinc-900 dark:text-zinc-100 truncate max-w-[170px]">
+                      {reel.filename}
+                    </span>
                   </div>
 
-                  <span className="text-[11px] font-mono text-zinc-300 truncate max-w-[170px] drop-shadow-sm font-semibold">
-                    {reel.filename}
-                  </span>
-
-                  <button
-                    onClick={(e) => toggleInspector(e, reel.id)}
-                    className={`w-5 h-5 rounded flex items-center justify-center transition-colors ${
-                      isInspectorOpen
-                        ? 'bg-blue-600 text-white shadow-inner'
-                        : 'text-zinc-400 hover:text-white hover:bg-white/10'
-                    }`}
-                    title="Movie Inspector (⌘I)"
-                  >
-                    <Info className="w-3 h-3" />
-                  </button>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      onClick={(e) => toggleInspector(e, reel.id)}
+                      className={`w-4 h-4 rounded-xs flex items-center justify-center transition-colors ${
+                        isInspectorOpen
+                          ? 'bg-[#333399] text-white shadow-inner'
+                          : 'text-zinc-500 hover:text-black dark:hover:text-white'
+                      }`}
+                      title="Movie Inspector (⌘I)"
+                    >
+                      <Info className="w-2.5 h-2.5" />
+                    </button>
+                    <div className="mac9-mini-close-box cursor-pointer" title="Zoom" />
+                  </div>
                 </div>
 
                 {/* Video Viewport Area */}

@@ -256,17 +256,12 @@ export const SystemBlueprintSection: React.FC<SystemBlueprintSectionProps> = ({
         <div className="absolute bottom-2.5 left-2.5 w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-600 border border-black/30 dark:border-white/20 shadow-inner" />
         <div className="absolute bottom-2.5 right-2.5 w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-600 border border-black/30 dark:border-white/20 shadow-inner" />
 
-        {/* Mac OS X Window Titlebar */}
-        <div className="h-10 bg-gradient-to-b from-[#f2f2f5] to-[#d8d8de] dark:from-[#323236] dark:to-[#222226] px-4 flex items-center justify-between border-b border-black/15 dark:border-black/60">
+        {/* Mac OS 9 Platinum Window Titlebar */}
+        <div className="mac9-subwindow-titlebar shrink-0">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e] shadow-inner" />
-            <span className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d89e24] shadow-inner" />
-            <span className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29] shadow-inner" />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 font-sans tracking-tight drop-shadow-xs">
-              Mac Pro Workstation Architecture — System Hardware &amp; Logic Board Spec Sheet
+            <div className="mac9-box-btn" title="Window Control" />
+            <span className="mac9-title-badge">
+               Power Mac G4 Architecture — System Logic Board Spec Sheet
             </span>
           </div>
 
@@ -276,6 +271,7 @@ export const SystemBlueprintSection: React.FC<SystemBlueprintSectionProps> = ({
               <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
               <span>LOGIC BOARD ONLINE</span>
             </span>
+            <div className="mac9-mini-close-box" title="Zoom" />
           </div>
         </div>
 

@@ -205,55 +205,18 @@ export const Navbar: React.FC<NavbarProps> = ({
         />
       )}
 
-      {/* Mac OS X Yosemite / Snow Leopard Single Unified Window Header (44px) */}
-      <div className="mac-unified-desktop-header relative z-40">
-        <div className="w-full max-w-7xl mx-auto h-[44px] px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-4">
+      {/* Mac OS 9 Platinum Application Toolbar (42px) */}
+      <div className="mac9-app-toolbar relative z-40 select-none">
+        <div className="w-full max-w-7xl mx-auto h-[42px] px-3 sm:px-4 flex items-center justify-between gap-2 sm:gap-4">
           
-          {/* Left Region: Traffic Lights (🔴 🟡 🟢) + Nav Chevrons [<][>] + NOVA Wordmark */}
+          {/* Left Region: Mac OS 9 Nav Chevrons [◀] [▶] + NOVA Wordmark */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Mac OS X Traffic Lights */}
-            <div className="mac-traffic-lights" title="Mac OS X Window Controls">
-              <button
-                type="button"
-                onClick={() => {
-                  playKeyClick();
-                  if (pathname !== '/') {
-                    router.push('/');
-                  } else {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }
-                }}
-                className="mac-traffic-dot mac-traffic-close focus:outline-none"
-                title={pathname !== '/' ? 'Return to Home' : 'Scroll to Top'}
-                aria-label="Close"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  playKeyClick();
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="mac-traffic-dot mac-traffic-min focus:outline-none"
-                title="Scroll Window to Top"
-                aria-label="Minimize"
-              />
-              <button
-                type="button"
-                onClick={toggleFullscreen}
-                className="mac-traffic-dot mac-traffic-max focus:outline-none"
-                title="Toggle Fullscreen"
-                aria-label="Zoom"
-              />
-            </div>
-
-            <div className="h-4 w-[1px] bg-black/15 dark:bg-white/15 hidden sm:block mx-0.5" />
-
-            {/* Finder Nav Chevrons [<] [>] */}
-            <div className="mac-nav-chevron-group hidden sm:inline-flex" title="Finder Historical Window Navigation">
+            {/* Finder Nav Chevrons [◀] [▶] in Mac OS 9 Bevel Buttons */}
+            <div className="flex items-center gap-1" title="Finder Historical Window Navigation">
               <button
                 type="button"
                 onClick={handlePrevTab}
-                className="mac-nav-chevron-btn"
+                className="mac9-btn w-6 h-6 flex items-center justify-center p-0 text-[#262626] dark:text-[#E0E0E0]"
                 title="Previous Tab"
                 aria-label="Previous"
               >
@@ -262,13 +225,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={handleNextTab}
-                className="mac-nav-chevron-btn"
+                className="mac9-btn w-6 h-6 flex items-center justify-center p-0 text-[#262626] dark:text-[#E0E0E0]"
                 title="Next Tab"
                 aria-label="Next"
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
+
+            <div className="h-4 w-[1px] bg-[#808080] dark:bg-[#404040] hidden sm:block mx-0.5" />
 
             {/* Brand Logo & Wordmark (Single Source of Truth) */}
             <div
@@ -306,26 +271,24 @@ export const Navbar: React.FC<NavbarProps> = ({
                 />
               </svg>
 
-              <span className="font-black text-sm tracking-tight uppercase leading-none text-zinc-900 dark:text-zinc-100 drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] dark:drop-shadow-[0_-1px_0_rgba(0,0,0,0.8)]">
+              <span className="font-['Charcoal',sans-serif] font-black text-xs tracking-wider uppercase leading-none text-zinc-900 dark:text-zinc-100">
                 NOVA
               </span>
             </div>
           </div>
 
-          {/* Center Region: Finder 4-Segmented View Switcher */}
+          {/* Center Region: Mac OS 9 Segmented 4-Tab Switcher */}
           <nav
             role="tablist"
             aria-label="Main Navigation Tabs"
-            className="flex items-center ios-segmented-track !py-0.5 !px-0.5 overflow-x-auto scrollbar-none max-w-full"
+            className="mac9-segmented-group overflow-x-auto scrollbar-none max-w-full"
           >
             <button
               type="button"
               role="tab"
               aria-selected={activeTab === 'feed'}
               onClick={() => handleTabClick('articles-feed', 'feed')}
-              className={`ios-segment-btn !py-1.5 !px-3 sm:!px-4 !text-xs font-bold whitespace-nowrap cursor-pointer leading-normal ${
-                activeTab === 'feed' ? 'active' : ''
-              }`}
+              className={`mac9-segmented-item ${activeTab === 'feed' ? 'active' : ''}`}
             >
               <span>ARTICLES</span>
             </button>
@@ -335,9 +298,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               role="tab"
               aria-selected={activeTab === 'system'}
               onClick={() => handleTabClick('modular-architecture-console', 'system')}
-              className={`ios-segment-btn !py-1.5 !px-3 sm:!px-4 !text-xs font-bold whitespace-nowrap cursor-pointer leading-normal ${
-                activeTab === 'system' ? 'active' : ''
-              }`}
+              className={`mac9-segmented-item ${activeTab === 'system' ? 'active' : ''}`}
             >
               <span>CORE ENGINE</span>
             </button>
@@ -347,9 +308,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               role="tab"
               aria-selected={activeTab === 'ai-search'}
               onClick={() => handleTabClick('ai-vector-studio', 'ai-search')}
-              className={`ios-segment-btn !py-1.5 !px-3 sm:!px-4 !text-xs font-bold whitespace-nowrap cursor-pointer leading-normal ${
-                activeTab === 'ai-search' ? 'active' : ''
-              }`}
+              className={`mac9-segmented-item ${activeTab === 'ai-search' ? 'active' : ''}`}
             >
               <span>AI &amp; VECTOR</span>
             </button>
@@ -359,17 +318,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               role="tab"
               aria-selected={activeTab === 'admin-batch'}
               onClick={() => handleTabClick('batch-etl-studio', 'admin-batch')}
-              className={`ios-segment-btn !py-1.5 !px-3 sm:!px-4 !text-xs font-bold whitespace-nowrap cursor-pointer leading-normal ${
-                activeTab === 'admin-batch' ? 'active' : ''
-              }`}
+              className={`mac9-segmented-item ${activeTab === 'admin-batch' ? 'active' : ''}`}
             >
               <span>BATCH &amp; ETL</span>
             </button>
           </nav>
 
-          {/* Right Region: Spotlight Search + Aqua +Write + Utility Cluster */}
+          {/* Right Region: Spotlight Search + Default +Write + Utility Cluster */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* Mac Recessed Search Field */}
+            {/* Mac OS 9 Inset Search Field */}
             {onFocusSearch && (
               <button
                 type="button"
@@ -377,15 +334,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                   playKeyClick();
                   onFocusSearch();
                 }}
-                className="mac-search-field hidden lg:flex items-center gap-1.5 cursor-pointer select-none text-[11px]"
+                className="mac9-inset-box hidden lg:flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-['Geneva',sans-serif] text-zinc-700 dark:text-zinc-300 cursor-pointer select-none rounded-[2px]"
                 title="Spotlight Search (⌘K)"
               >
-                <Search className="w-3 h-3 text-zinc-400" />
+                <Search className="w-3 h-3 text-zinc-500" />
                 <span>⌘K Search...</span>
               </button>
             )}
 
-            {/* Apple Aqua Blue +Write Action Button */}
+            {/* Mac OS 9 Default +Write Action Button */}
             {onOpenCreateModal && (
               <button
                 type="button"
@@ -393,15 +350,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                   playKeyClick();
                   onOpenCreateModal();
                 }}
-                className="mac-aqua-btn-primary flex items-center gap-1.5 !px-3.5 !py-1.5 !text-xs font-bold cursor-pointer select-none"
-                title="Compose Technical Article (Mac Mail)"
+                className="mac9-btn-default flex items-center gap-1.5 !px-3 !py-1 !text-xs font-['Charcoal',sans-serif] font-bold cursor-pointer select-none text-[#262626] dark:text-[#EEEEEE]"
+                title="Compose Technical Article"
               >
                 <PenSquare className="w-3.5 h-3.5" />
                 <span>+ Write</span>
               </button>
             )}
 
-            <div className="h-4 w-[1px] bg-black/15 dark:bg-white/15 hidden sm:block mx-0.5" />
+            <div className="h-4 w-[1px] bg-[#808080] dark:bg-[#404040] hidden sm:block mx-0.5" />
 
             {/* Status LED */}
             <button
@@ -431,7 +388,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onOpenTwoFactor();
                 }}
                 className="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 p-1 cursor-pointer"
-                title="Mac OS X Keychain Security & 2FA"
+                title="Mac OS 9 Security &amp; 2FA"
               >
                 <ShieldAlert className="w-3.5 h-3.5" />
               </button>
@@ -452,16 +409,16 @@ export const Navbar: React.FC<NavbarProps> = ({
               <GithubIcon className="w-3.5 h-3.5" />
             </a>
 
-            {/* Spec Drawer Toggle (Intentional Click, Never Accidental Hover Trap) */}
+            {/* Spec Drawer Toggle (Mac OS 9 Button Style) */}
             <button
               type="button"
               onClick={() => {
                 playKeyClick();
                 setMegaMenu(isMegaOpen ? null : 'articles');
               }}
-              className="flex items-center gap-1 px-2.5 py-1 rounded border border-zinc-400/80 dark:border-zinc-700 bg-white/70 dark:bg-black/40 text-[11px] font-bold uppercase shadow-sm cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              className="mac9-btn flex items-center gap-1 !px-2 !py-0.5 text-[10px] font-['Charcoal',sans-serif] font-bold uppercase cursor-pointer"
               aria-label="Architecture Directory Menu"
-              title="Architecture Directory & Module Specifications"
+              title="Architecture Directory &amp; Module Specifications"
             >
               {isMegaOpen ? <ChevronDown className="w-3 h-3 rotate-180" /> : <Menu className="w-3 h-3" />}
               <span className="hidden sm:inline">{isMegaOpen ? 'Close' : 'Index'}</span>
@@ -470,7 +427,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-          {/* 4. Mac OS X Finder Column View Popover (Zero Layout Shift Overlay) */}
+      {/* 4. Mac OS 9 Finder Column View Popover (Zero Layout Shift Overlay) */}
           <SpecDirectoryPopover
             isOpen={Boolean(isMegaOpen)}
             onClose={() => setMegaMenu(null)}

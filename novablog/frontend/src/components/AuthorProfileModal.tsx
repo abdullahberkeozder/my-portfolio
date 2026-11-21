@@ -154,7 +154,7 @@ export const AuthorProfileModal: React.FC<AuthorProfileModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 safari-reader-backdrop overflow-hidden animate-fade-in"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 safari-reader-backdrop overflow-hidden animate-fade-in"
       onClick={onClose}
     >
       <div

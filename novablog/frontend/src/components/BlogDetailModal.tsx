@@ -65,8 +65,8 @@ const CodeSnippet: React.FC<{ code: string; language: string }> = ({ code, langu
   };
 
   return (
-    <div className="my-5 rounded-lg overflow-hidden border border-zinc-700/80 bg-[#1e2024] text-zinc-100 shadow-xl">
-      <div className="flex items-center justify-between px-4 py-2 bg-[#16171a] border-b border-zinc-800 text-[11px] font-mono text-zinc-400">
+    <div className="my-5 rounded-[3px] overflow-hidden border border-[#808080] dark:border-[#383C45] bg-[#1e2024] text-zinc-100 shadow-sm">
+      <div className="flex items-center justify-between px-3.5 py-1.5 bg-[#252830] border-b border-[#383C45] text-[11px] font-mono text-zinc-400">
         <span className="flex items-center gap-1.5 uppercase font-bold text-emerald-400">
           <FileCode className="w-3.5 h-3.5" />
           {language || 'JAVA'}
@@ -74,17 +74,17 @@ const CodeSnippet: React.FC<{ code: string; language: string }> = ({ code, langu
         <button
           type="button"
           onClick={handleCopy}
-          className="ios6-btn ios6-btn-dark px-2.5 py-0.5 text-[10px] font-mono"
+          className="mac9-btn !py-0.5 !px-2.5 text-[10px] font-mono"
         >
           {copied ? (
             <>
               <Check className="w-3 h-3 text-emerald-400" />
-              <span className="text-emerald-400">KOPYALANDI</span>
+              <span className="text-emerald-400 font-bold">COPIED</span>
             </>
           ) : (
             <>
               <Copy className="w-3 h-3" />
-              <span>KOPYALA</span>
+              <span>COPY</span>
             </>
           )}
         </button>
@@ -429,142 +429,171 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-between p-2 sm:p-4 md:p-6 safari-reader-backdrop overflow-hidden animate-fade-in">
-      {/* 1. Safari Reader Top Floating HUD Capsule */}
-      <div className="w-full flex justify-center py-2 shrink-0 z-50">
-        <div className="safari-floating-hud">
-          {/* Pointed Chevron Back Button (< Geri) */}
-          <button
-            type="button"
-            onClick={() => {
-              playKeyClick();
-              onClose();
-            }}
-            className="ios-back-chevron mr-1"
-            title="Exit Reader"
-          >
-            <span>&lt; Back</span>
-          </button>
-
-          {/* Typography 'aA' Font Scaler */}
-          <button
-            type="button"
-            onClick={cycleFontSize}
-            className="safari-hud-btn"
-            title={`Adjust Font Size (Current: ${
-              readerFontSize === 'normal' ? 'Standard' : readerFontSize === 'large' ? 'Large' : 'Extra Large'
-            })`}
-          >
-            <Type className="w-3.5 h-3.5" />
-            <span className="font-serif font-bold text-xs">
-              {readerFontSize === 'normal' ? 'aA' : readerFontSize === 'large' ? 'aA+' : 'aA++'}
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/60 dark:bg-black/75 backdrop-blur-md overflow-hidden animate-fade-in"
+      onClick={onClose}
+    >
+      {/* Mac OS 9 Platinum Document Window Chassis */}
+      <div
+        className="relative mac9-window-frame w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden my-auto animate-in zoom-in-95 duration-150"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Mac OS 9 Pinstripe Titlebar */}
+        <div className="mac9-subwindow-titlebar shrink-0">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="mac9-box-btn"
+              title="Close (Esc)"
+            />
+            <span className="mac9-title-badge">
+               Nova Reader — {currentBlog.title}
             </span>
-          </button>
+          </div>
 
-          {/* Table of Contents Dropdown Trigger */}
-          {tocItems.length > 0 && (
+          <div className="flex items-center gap-1.5 shrink-0">
+            <div className="mac9-mini-close-box cursor-pointer" title="Zoom" />
+            <div
+              className="mac9-mini-close-box flex flex-col justify-center items-center gap-[1px] cursor-pointer"
+              title="WindowShade"
+            >
+              <div className="w-[7px] h-[1px] bg-[#262626] dark:bg-[#AAA]" />
+              <div className="w-[7px] h-[1px] bg-[#262626] dark:bg-[#AAA]" />
+            </div>
+          </div>
+        </div>
+
+        {/* Mac OS 9 Application Toolbar */}
+        <div className="mac9-app-toolbar px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 shrink-0">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => {
                 playKeyClick();
-                setIsTocOpen(!isTocOpen);
+                onClose();
               }}
-              className={`safari-hud-btn ${isTocOpen ? 'bg-white/20' : ''}`}
-              title="Table of Contents"
+              className="mac9-btn gap-1 text-[11px]"
+              title="Exit Reader"
             >
-              <ListTree className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Contents</span>
-              {isTocOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              <span>◀ Back to Feed</span>
             </button>
-          )}
 
-          {/* Print Article */}
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="safari-hud-btn hidden md:inline-flex"
-            title="Print Article (Print to PDF)"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            <span>Print</span>
-          </button>
+            <button
+              type="button"
+              onClick={cycleFontSize}
+              className="mac9-btn gap-1 text-[11px]"
+              title={`Adjust Font Size (Current: ${readerFontSize.toUpperCase()})`}
+            >
+              <Type className="w-3.5 h-3.5" />
+              <span>Size: {readerFontSize === 'normal' ? 'Standard' : readerFontSize === 'large' ? 'Large' : 'Extra Large'}</span>
+            </button>
 
-          {/* Share Article */}
-          <button
-            type="button"
-            onClick={handleShareLink}
-            className="safari-hud-btn"
-            title="Copy Link"
-          >
-            {isCopiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{isCopiedLink ? 'Copied' : 'Share'}</span>
-          </button>
+            {tocItems.length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  playKeyClick();
+                  setIsTocOpen(!isTocOpen);
+                }}
+                className={`mac9-btn gap-1 text-[11px] ${isTocOpen ? 'active' : ''}`}
+                title="Table of Contents"
+              >
+                <ListTree className="w-3.5 h-3.5" />
+                <span>Contents ⬍</span>
+              </button>
+            )}
+          </div>
 
-          {/* Open in Standalone Post Route */}
-          <Link
-            href={`/post/${blogId}`}
-            onClick={() => playKeyClick()}
-            className="safari-hud-btn hidden sm:inline-flex"
-            title="Open in Dedicated URL (/post/[id])"
-          >
-            <ExternalLink className="w-3.5 h-3.5" />
-          </Link>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="mac9-btn gap-1 text-[11px] hidden sm:inline-flex"
+              title="Print Article"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Print</span>
+            </button>
 
-          {/* Close Window Traffic Light */}
-          <button
-            type="button"
-            onClick={() => {
-              playKeyClick();
-              onClose();
-            }}
-            className="w-5 h-5 rounded-full bg-red-500/80 hover:bg-red-500 text-white flex items-center justify-center font-bold text-xs ml-1 shadow-inner cursor-pointer"
-            title="Kapat"
-          >
-            &times;
-          </button>
-        </div>
-      </div>
+            <button
+              type="button"
+              onClick={handleShareLink}
+              className="mac9-btn gap-1 text-[11px]"
+              title="Copy Link"
+            >
+              {isCopiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
+              <span>{isCopiedLink ? 'Copied' : 'Share'}</span>
+            </button>
 
-      {/* Collapsible Table of Contents Popover HUD */}
-      {isTocOpen && tocItems.length > 0 && (
-        <div className="fixed top-18 z-50 max-w-lg w-full px-4 animate-in fade-in duration-200">
-          <div className="p-4 rounded-xl bg-zinc-900/95 border border-zinc-700 shadow-2xl text-xs font-mono space-y-2 text-white">
-            <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider block">
-              SAFARI TABLE OF CONTENTS
-            </span>
-            <div className="max-h-60 overflow-y-auto space-y-1 scrollbar-thin">
-              {tocItems.map((item, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => scrollToTocHeading(item.id)}
-                  className={`w-full text-left px-2.5 py-1.5 rounded hover:bg-white/10 transition-colors cursor-pointer truncate block ${
-                    item.level === 3 ? 'pl-5 text-zinc-400' : 'font-semibold text-zinc-200'
-                  }`}
-                >
-                  &rarr; {item.text}
-                </button>
-              ))}
-            </div>
+            <Link
+              href={`/post/${blogId}`}
+              onClick={() => playKeyClick()}
+              className="mac9-btn gap-1 text-[11px] hidden sm:inline-flex"
+              title="Open Dedicated Route (/post/[id])"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Direct Link</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={handleToggleBookmark}
+              className={`mac9-btn gap-1 text-[11px] ${isBookmarked ? 'active' : ''}`}
+              title={isBookmarked ? 'Remove Bookmark' : 'Add to Reading List'}
+            >
+              <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-current text-amber-500' : ''}`} />
+              <span>{isBookmarked ? 'Saved' : 'Bookmark'}</span>
+            </button>
           </div>
         </div>
-      )}
 
-      {/* 2. Centered Safari Reader Parchment Canvas (740px Classic Warm Document) */}
-      <div className="relative w-full max-w-3xl flex-1 flex flex-col safari-reader-parchment overflow-hidden my-2">
+        {/* Collapsible Table of Contents Popover HUD */}
+        {isTocOpen && tocItems.length > 0 && (
+          <div className="absolute top-20 left-4 z-50 max-w-sm w-full animate-in fade-in duration-150">
+            <div className="mac9-section-panel p-3 text-xs font-['Geneva',sans-serif] space-y-2 shadow-2xl">
+              <div className="mac9-mini-titlebar -mx-3 -mt-3 mb-2 px-2">
+                <span className="font-['Charcoal',sans-serif] text-[10px] font-bold uppercase text-zinc-900 dark:text-zinc-100">
+                  DOCUMENT CONTENTS
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsTocOpen(false)}
+                  className="mac9-box-btn !w-3 !h-3"
+                  title="Close"
+                />
+              </div>
+              <div className="max-h-56 overflow-y-auto space-y-1 mac9-scrollbar">
+                {tocItems.map((item, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => scrollToTocHeading(item.id)}
+                    className={`w-full text-left px-2 py-1 rounded-sm hover:bg-[#333399] hover:text-white dark:hover:bg-[#4338CA] transition-colors cursor-pointer truncate block ${
+                      item.level === 3 ? 'pl-4 text-zinc-500 dark:text-zinc-400' : 'font-bold text-zinc-800 dark:text-zinc-200'
+                    }`}
+                  >
+                    &bull; {item.text}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Subtle Reading Progress Line */}
-        <div className="w-full h-1 bg-black/5 dark:bg-white/5 overflow-hidden shrink-0">
+        <div className="w-full h-1 bg-[#BBB] dark:bg-[#202328] overflow-hidden shrink-0">
           <div
-            className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-150"
+            className="h-full bg-[#333399] dark:bg-[#818CF8] transition-all duration-150"
             style={{ width: `${scrollProgress}%` }}
           />
         </div>
 
-        {/* Scrollable Parchment Body */}
+        {/* Scrollable Document Body */}
         <div
           ref={contentScrollRef}
           onScroll={handleBodyScroll}
-          className="flex-1 overflow-y-auto px-6 sm:px-12 lg:px-16 py-8 space-y-8"
+          className="flex-1 overflow-y-auto px-6 sm:px-12 lg:px-16 py-8 space-y-8 bg-white dark:bg-[#1A1C22] text-zinc-900 dark:text-zinc-100 mac9-scrollbar"
         >
           {/* Article Header & Scope */}
           <div className="space-y-4 border-b border-black/10 dark:border-white/10 pb-6 text-center sm:text-left">
@@ -956,15 +985,15 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
           </div>
         </div>
 
-        {/* 4. Safari Reader 49px Glossy Black Bottom Interaction Dock */}
-        <div className="safari-reader-dock shrink-0">
-          <div className="flex items-center gap-3">
-            {/* Clap Button with Audio Click */}
+        {/* 4. Mac OS 9 Platinum Document Footer Toolbar */}
+        <div className="mac9-app-toolbar px-4 py-2 border-t border-[#808080] dark:border-[#383C45] flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2">
+            {/* Clap Button (Mac OS 9 Default Double-Bordered Button) */}
             <button
               type="button"
               onClick={handleClap}
-              className="ios6-btn ios6-btn-blue px-3 py-1.5 text-xs font-bold gap-1.5"
-              title="Applaud (Medium Clap)"
+              className="mac9-btn-default px-3 py-1 text-xs font-bold gap-1.5 cursor-pointer"
+              title="Applaud (Clap)"
             >
               <span className="text-sm leading-none">👏</span>
               <span>{clapsCount}</span>
@@ -974,11 +1003,11 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
             <button
               type="button"
               onClick={scrollToComments}
-              className="ios6-btn ios6-btn-silver px-3 py-1.5 text-xs font-semibold gap-1.5"
-              title="Jump to Messages"
+              className="mac9-btn px-3 py-1 text-xs font-semibold gap-1.5 cursor-pointer"
+              title="Jump to Discussions"
             >
-              <MessageSquare className="w-3.5 h-3.5 text-blue-600" />
-              <span>{comments.length}</span>
+              <MessageSquare className="w-3.5 h-3.5 text-[#333399] dark:text-[#818CF8]" />
+              <span>{comments.length} Comments</span>
             </button>
           </div>
 
@@ -987,18 +1016,18 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({
             <button
               type="button"
               onClick={handleToggleBookmark}
-              className={`ios6-btn px-3 py-1.5 text-xs font-bold gap-1.5 ${
-                isBookmarked ? 'ios6-btn-silver' : 'ios6-btn-dark'
+              className={`mac9-btn px-3 py-1 text-xs font-bold gap-1.5 cursor-pointer ${
+                isBookmarked ? 'active' : ''
               }`}
-              title="Add to Safari Reading List"
+              title="Save to Mac OS 9 Reading List"
             >
-              <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-400 text-amber-400' : ''}`} />
+              <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}`} />
               <span className="hidden sm:inline">{isBookmarked ? 'SAVED' : 'READING LIST'}</span>
             </button>
 
             {/* Reading stats */}
-            <span className="text-zinc-400 text-[11px] hidden md:inline">
-              {readingTime} min read
+            <span className="mac9-chip-tag !text-[11px] hidden md:inline-flex">
+              {readingTime} MIN READ
             </span>
           </div>
         </div>

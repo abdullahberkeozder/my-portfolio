@@ -19,14 +19,28 @@ A pixel-authentic, high-performance web engineering showcase combining the nosta
 
 ---
 
-### 2. Nova Blog Application Window
-*Full-featured enterprise engineering portal running inside an authentic Mac OS 9 Platinum window with pinstripe titlebars, WindowShade, and dynamic application switching:*
+### 2. Nova Blog Application Window (Unified Mac OS 9 Platinum Interior)
+*Full-featured enterprise engineering portal running inside an authentic Mac OS 9 Platinum window with brushed Platinum application toolbar, segmented scope tabs, 3D beveled cards, and pinstripe sub-titlebars:*
 
 ![Nova Blog Portal Window](./public/docs/showcase/macos9-desktop-blog-window.png)
 
 ---
 
-### 3. Appearance Control Panel & Night Mode
+### 3. Nova Reader Document Window
+*Pixel-authentic Mac OS 9 Platinum document window featuring pinstripe titlebar with classic close box, zoom/collapse controls, brushed Platinum navigation toolbar, dynamic typography sizing, and technical discussions pane:*
+
+![Nova Reader Document Window](./public/docs/showcase/macos9-reader-modal.png)
+
+---
+
+### 4. Technical Article Compose Studio
+*Mac OS 9 Platinum publication window featuring double-bordered default action buttons, live Spring AI vector tag suggestions, and Markdown formatting:*
+
+![Compose Studio Window](./public/docs/showcase/macos9-compose-modal.png)
+
+---
+
+### 5. Appearance Control Panel & Night Mode
 *Figma 82-812 exact clone featuring CRT monitor preview, curated HD wallpapers, highlight color tokens, and Day/Night mode with wallpaper preservation:*
 
 ![Appearance Control Panel and Night Mode](./public/docs/showcase/macos9-desktop-appearance-night.png)
