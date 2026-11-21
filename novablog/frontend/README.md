@@ -47,10 +47,14 @@ A pixel-authentic, high-performance web engineering showcase combining the nosta
 
 ---
 
-### 6. Apple Chess 3D & iTunes Audio Streaming System
-*Authentic brushed metal iTunes player streaming The Weeknd — Less Than Zero alongside classic synth hits, paired with the full-featured Apple Chess 3D application running the Deep Platinum AI engine:*
+### 6. Apple Chess 3D, iTunes Streaming & Nova Analog Synthesizer
+*Authentic brushed metal iTunes player streaming The Weeknd — Less Than Zero with the built-in Nova Analog Synthesizer 99 (QuickTime V-Synth), paired with Apple Chess 3D featuring mathematical 1:1 square geometry, Staunton vector pieces, and the Deep Platinum AI engine:*
 
-![Apple Chess 3D and iTunes](./public/docs/showcase/macos9-itunes-chess.png)
+![Apple Chess 3D and Nova Synthesizer](./public/docs/showcase/macos9-synth-chess-fixed.png)
+
+*iTunes Playlist mode with quick synthesizer launcher alongside Apple Chess 3D:*
+
+![iTunes Playlist and Apple Chess 3D](./public/docs/showcase/macos9-itunes-chess-perfect.png)
 
 *Top Apple Menu Bar Sound pop-up with integrated mini-player, volume stepped controls, and quick iTunes launch:*
 
@@ -72,14 +76,16 @@ A pixel-authentic, high-performance web engineering showcase combining the nosta
 - **🎵 Mac OS 9 iTunes & YouTube Streaming Engine (`MacItunes.tsx`, `musicSystem.ts`):**
   - Authentic brushed metal & pinstripe iTunes player with LED green display and dancing frequency equalizer bars.
   - Curated retro & modern playlist featuring **The Weeknd — Less Than Zero** (`LKsgDcckur0`, *Dawn FM*), **Blinding Lights**, **Daft Punk — One More Time** (Mac G4 era), **Kavinsky — Nightcall**, **Depeche Mode — Enjoy The Silence**, and **Cupertino 1999 Ambient Chime**.
-  - Persistent background YouTube audio streaming via `GlobalMusicPlayer.tsx` allowing continuous playback while browsing or playing chess.
+  - **🎹 Nova Analog Synthesizer 99 (`MacSynthesizer.tsx`):** Real-time interactive QuickTime V-Synth integrated into iTunes with 2-octave keyboard (playable with mouse or keyboard keys `[A, W, S, E, D, F, T...]`), 4 analog waveforms (Sawtooth, Square, Triangle, Sine), Lowpass filter cutoff & resonance (Q) knobs, release envelope, sub-oscillator (-1 octave), and sound presets (*Dawn FM 80s Lead*, *Discovery Vocoder Bass*, *Nightcall Retro Arp*, *Cupertino 1999 Bell*).
+  - Persistent background YouTube audio streaming via `GlobalMusicPlayer.tsx` allowing continuous playback while browsing, playing synth, or playing chess.
   - Integrated Sound Menu mini-player in the top 20px Apple Menu Bar with track title, Play/Pause, Next/Previous controls, volume steps, and quick launch to iTunes.
 - **♟️ Apple Chess 3D (`MacChess.tsx`):**
-  - Authentic Mac OS 9 Apple Chess 3D application with rich 8x8 walnut chessboard and tactile vector pieces.
+  - Authentic Mac OS 9 Apple Chess 3D application with mathematical 1:1 square grid geometry (`w-[45px] h-[45px] aspect-square`), eliminating any vertical square distortion.
+  - Razor-sharp Staunton SVG vector chess piece suite with skeuomorphic shading, platinum highlights, and crisp outlines.
   - Built-in "Deep Platinum AI" computer opponent with heuristic piece evaluation (material captures, center control bonuses) and realistic thinking delay.
   - Game modes: Single Player vs Deep Platinum AI (Casual & Grandmaster) or 2-Player Pass & Play.
   - Interactive legal move indicators (green target dots / red capture rings), check warnings, undo move support, and algebraic move history notation.
-  - Accessible directly from Applications folder and Apple  Menu.
+  - Unclipped player status cards showing captured pieces and material score advantage (`+3`).
 - **Appearance Control Panel (`MacAppearancePanel.tsx`):**
   - Live CRT monitor display with aspect ratio simulation.
   - 10+ authentic Apple wallpapers (Sonata Purple, Quantum Foam, Heavy Petal, Bondi Blue, Azul Wave, Obsidian Carbon, Capsules, Dalmatian).

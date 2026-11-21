@@ -375,10 +375,10 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         onFocus={() => bringToFront('itunes')}
         isActive={activeWindowId === 'itunes'}
         subtitle="itunes://library/dawn-fm/less-than-zero"
-        initialPosition={{ x: 180, y: 70 }}
+        initialPosition={{ x: 120, y: 55 }}
         initialSize={{
-          width: Math.min(760, typeof window !== 'undefined' ? window.innerWidth - 100 : 720),
-          height: 480,
+          width: Math.min(800, typeof window !== 'undefined' ? window.innerWidth - 60 : 760),
+          height: 500,
         }}
       >
         <MacItunes />
@@ -394,10 +394,10 @@ export const MacOs9Desktop: React.FC<MacOs9DesktopProps> = ({
         onFocus={() => bringToFront('chess')}
         isActive={activeWindowId === 'chess'}
         subtitle="apple://games/deep-platinum-chess"
-        initialPosition={{ x: 200, y: 55 }}
+        initialPosition={{ x: 160, y: 45 }}
         initialSize={{
-          width: 620,
-          height: 490,
+          width: 660,
+          height: 515,
         }}
       >
         <MacChess />
