@@ -1,5 +1,5 @@
 // NovaBlog Enterprise - High Quality Mock Data for Vitrin / Offline Demo
-// Hybrid Tech Publication: Deep Engineering Articles + Curated Dispatches (Haberler)
+// Hybrid Tech Publication: 12 Deep Engineering Articles + 8 Curated Dispatches (Approved Core Catalog)
 
 import { BlogDto, BlogCategoryDto, CommentResponseDto, BlogSemanticSearchResultDto } from '@/types/api';
 
@@ -13,886 +13,754 @@ export const MOCK_CATEGORIES: BlogCategoryDto[] = [
 ];
 
 export const MOCK_BLOGS: BlogDto[] = [
-  // --- 1. IN-DEPTH TECHNICAL ARTICLES (Long-Form) ---
+  // ==========================================
+  // PILLAR 1: DISTRIBUTED SYSTEMS & CONCURRENCY
+  // ==========================================
   {
     id: 1,
+    blogId: 1,
     publicationType: 'article',
-    header: 'Spring AI & Semantic Search',
-    title: 'Spring AI and Intelligent Vector Database Architecture',
-    content: `Traditional keyword-based scans in enterprise information systems fall short when trying to understand user intent and conceptual context.
+    header: 'Java 22 & Virtual Threads',
+    title: 'Overcoming Carrier Thread Pinning in Project Loom: Migrating from Synchronized Blocks to ReentrantLock and Scoped Values',
+    content: `Project Loom in Java 21 and 22 represents a generational leap in server-side throughput by decoupling user-mode Virtual Threads from the operating system's kernel carrier threads. However, unmonitored deployments frequently suffer from a catastrophic failure mode: **Carrier Thread Pinning**.
 
-## 1. Why Semantic Vector Retrieval?
-When natural language text is projected into a multi-dimensional mathematical embedding space, synonymous terms and related concepts cluster close to one another. For instance, searching for "memory optimization" conceptually matches "JVM Garbage Collector tuning", even if those exact words never appear in the document.
+## 1. The Mechanics of Carrier Thread Pinning
+When a Virtual Thread enters a \`synchronized\` block or invokes a native method (JNI) and subsequently performs a blocking I/O operation, the underlying carrier thread cannot be unmounted. The JVM's \`ForkJoinPool\` scheduler is forced to keep the OS carrier thread blocked, rapidly exhausting the carrier worker pool and triggering massive tail latency spikes.
 
 \`\`\`java
-@Component
-public class VectorEmbeddingService {
-    private final EmbeddingClient embeddingClient;
+// BAD: Pinning the OS carrier thread during network I/O
+public synchronized byte[] fetchRemoteTelemetryBad(String serviceUrl) {
+    // Blocking socket read prevents ForkJoinPool unmounting!
+    return restTemplate.getForObject(serviceUrl, byte[].class);
+}
 
-    public float[] generateEmbedding(String documentText) {
-        // Transforms raw text into a semantic coordinate vector
-        return embeddingClient.embed(documentText);
+// GOOD: Fully unmountable Virtual Thread execution with ReentrantLock
+private final ReentrantLock lock = new ReentrantLock();
+
+public byte[] fetchRemoteTelemetrySafe(String serviceUrl) {
+    lock.lock();
+    try {
+        // Virtual thread unmounts cleanly; carrier thread is returned to pool
+        return restTemplate.getForObject(serviceUrl, byte[].class);
+    } finally {
+        lock.unlock();
     }
 }
 \`\`\`
 
-## 2. Hybrid Search & Intelligent Re-Ranking
-Our search engine implements Reciprocal Rank Fusion (RRF):
-- Classic keyword matching
-- Dense vector similarity
-- Unified hybrid relevance score
+## 2. Replacing ThreadLocal with JEP 480 Scoped Values
+Beyond locking, enterprise Spring Boot applications often pass security tokens and database contexts via \`ThreadLocal\`. In a system handling 50,000 concurrent Virtual Threads, \`ThreadLocal\` memory overhead causes severe heap bloat and memory leaks.
 
-Through this architecture, users searching with natural phrasing receive accurate technical documentation within milliseconds.`,
+\`\`\`java
+// Modern Java 22 Scoped Values pattern
+public final static ScopedValue<SecurityContext> CURRENT_SECURITY_CONTEXT = ScopedValue.newInstance();
+
+ScopedValue.where(CURRENT_SECURITY_CONTEXT, userContext)
+           .run(() -> {
+               // Immutable, zero-overhead context inherited across structured subtasks
+               executeAuditedTransaction();
+           });
+\`\`\`
+
+## 3. Production Verification & Metrics
+Enabling \`-Djdk.tracePinnedThreads=full\` in the JVM arguments immediately logs stack traces whenever a carrier thread is pinned. After refactoring our connection pools and database wrappers, p99 latency dropped from 480ms to 12ms under 20,000 concurrent socket connections.`,
     author: 'Abdullah Berke Ozder',
-    views: 1420,
-    likes: 189,
+    authorUsername: 'berke.ozder',
+    authorTitle: 'Staff Platform Engineer',
+    views: 3420,
+    likes: 412,
+    clapsCount: 412,
+    commentCount: 14,
     isPublished: true,
-    publishedAt: '2026-11-05T10:00:00Z',
-    createdDate: '2026-11-05T09:30:00Z',
-    category: MOCK_CATEGORIES[0],
-    tags: ['artificial-intelligence', 'semantic-search', 'vector-database', 'spring-ai', 'smart-filter'],
-    aiSummary: 'Spring AI and vector database architecture understanding user intent. Delivers 94% recall accuracy and sub-millisecond query responses over legacy SQL LIKE searches.',
+    publishedAt: '2026-11-20T10:00:00Z',
+    createdDate: '2026-11-20T09:30:00Z',
+    category: MOCK_CATEGORIES[1],
+    tags: ['java-22', 'virtual-threads', 'loom', 'concurrency', 'scoped-values'],
+    aiSummary: 'Comprehensive architectural analysis of Java 22 Project Loom carrier thread pinning. Eliminates thread starvation via ReentrantLock and JEP 480 Scoped Values, cutting p99 latency by 97%.',
     hasVectorEmbedding: true,
+    isFeatured: true,
+    readTimeMinutes: 6,
     version: 1,
   },
   {
     id: 2,
+    blogId: 2,
     publicationType: 'article',
-    header: 'Java 22 & High Concurrency',
-    title: 'Java 22 Virtual Threads and High-Throughput Request Dispatching',
-    content: `One of the most foundational transformations in the Java runtime, Project Loom (Virtual Threads), replaces the traditional 1:1 OS carrier thread model with lightweight, user-mode execution units.
+    header: 'Distributed Data & CDC',
+    title: 'The Distributed Dual-Write Dilemma: Outbox Pattern and Debezium CDC Over Two-Phase Commit',
+    content: `When a microservice needs to persist an entity to PostgreSQL and simultaneously publish an event to Redis or Kafka, issuing two separate network calls introduces the classic **Dual-Write Hazard**. If the database commit succeeds but the message broker rejects the packet, downstream consumers remain permanently desynchronized.
 
-## 1. The Virtual Thread Paradigm
-In conventional Spring Boot architectures, the Tomcat thread pool is throttled to ~200 carrier threads. Any blocking database I/O or REST call monopolizes an entire OS thread. Virtual threads decouple this by parking during blocking operations and releasing carrier threads to execute other work.
+## 1. Why Two-Phase Commit (2PC) Fails in Cloud Architectures
+Traditional distributed transactions (XA / 2PC) enforce atomicity by holding row locks across multiple independent systems throughout the duration of network round trips. Under high traffic, this causes catastrophic lock contention, deadlock cascades, and severe latency amplification.
 
-\`\`\`java
-// Spawning lightweight execution units via Virtual Threads
-Thread.ofVirtual()
-      .name("virtual-worker-", 0)
-      .start(() -> {
-          // Blocking I/O operations will not suspend the underlying carrier thread
-          fetchRemoteEnterpriseData();
-      });
+\`\`\`sql
+-- Dedicated Transactional Outbox Table in PostgreSQL 16
+CREATE TABLE outbox_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    aggregate_type VARCHAR(64) NOT NULL,
+    aggregate_id VARCHAR(64) NOT NULL,
+    event_type VARCHAR(64) NOT NULL,
+    payload JSONB NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT clock_timestamp()
+);
+CREATE INDEX idx_outbox_created ON outbox_events(created_at ASC);
 \`\`\`
 
-## 2. Spring Boot 4 Integration
-Enabling \`spring.threads.virtual.enabled=true\` in Spring Boot 4:
-- Automatically offloads every HTTP request to a virtual thread.
-- Reduces context-switching overhead by over 90%.
-- Maintains a negligible memory footprint even under 10,000 concurrent socket connections.`,
+## 2. Debezium Log-Based Change Data Capture (CDC)
+Instead of polling the table with polling queries that burn database IOPS, we deploy **Debezium**, an open-source distributed platform that taps directly into the PostgreSQL Write-Ahead Log (WAL) via logical decoding:
+- Zero polling query overhead on primary database CPUs.
+- Guarantees strict ordering and at-least-once delivery semantics.
+- Decouples core business transactions from downstream event consumers.
+
+\`\`\`java
+@Transactional
+public BlogEntity createBlogPost(BlogCreateRequest request) {
+    BlogEntity blog = blogRepository.save(new BlogEntity(request));
+    
+    // Atomically persisted in the same local ACID transaction
+    outboxRepository.save(new OutboxEvent("BLOG", blog.getId(), "BLOG_CREATED", toJson(blog)));
+    return blog;
+}
+\`\`\`
+
+## 3. High-Frequency Counters with Redis Write-Behind
+For high-frequency telemetry counters like claps and views, we bypass relational row updates entirely using Redis \`HINCRBY\` buffers. A scheduled batch job flushes aggregated counters to PostgreSQL every 5 seconds, cutting write contention by over 85%.`,
     author: 'Abdullah Berke Ozder',
-    views: 2840,
-    likes: 312,
+    authorUsername: 'berke.ozder',
+    authorTitle: 'Staff Platform Engineer',
+    views: 2890,
+    likes: 356,
+    clapsCount: 356,
+    commentCount: 9,
     isPublished: true,
-    publishedAt: '2026-11-04T14:15:00Z',
-    createdDate: '2026-11-04T13:00:00Z',
-    category: MOCK_CATEGORIES[1],
-    tags: ['java-22', 'virtual-threads', 'high-concurrency', 'spring-boot-4', 'performance'],
-    aiSummary: 'Eliminating thread pool starvation with Java 22 Virtual Threads. Concurrent request capacity scales by 10x while reducing idle memory consumption by 90%.',
+    publishedAt: '2026-11-19T14:15:00Z',
+    createdDate: '2026-11-19T13:00:00Z',
+    category: MOCK_CATEGORIES[4],
+    tags: ['debezium', 'cdc', 'transactional-outbox', 'redis', 'postgresql'],
+    aiSummary: 'Solving the distributed dual-write problem using the Transactional Outbox Pattern and Debezium PostgreSQL WAL streaming. Guarantees consistency while eliminating 2PC locking bottlenecks.',
     hasVectorEmbedding: true,
-    version: 2,
+    isFeatured: true,
+    readTimeMinutes: 7,
+    version: 1,
   },
   {
     id: 3,
+    blogId: 3,
     publicationType: 'article',
-    header: 'Redis & High Traffic',
-    title: 'Zeroing Database I/O Bottlenecks with Redis Write-Behind Buffering',
-    content: `Under heavy traffic, issuing synchronous database writes to PostgreSQL for every page view and article clap leads to catastrophic disk I/O bottlenecks and row contention.
+    header: 'SRE & High-Throughput Networks',
+    title: 'Tail Latency Amplification: Taming p99.9 Latency in Fan-Out Microservice Topologies with Hedging Requests and Circuit Breakers',
+    content: `In distributed architectures where a single incoming user request fans out across 20 downstream microservices, system responsiveness is governed not by median latency (p50), but by the slowest tail percentile ($p99$ and $p99.9$). The mathematical probability of encountering a slow dependency scales aggressively as:
 
-## 1. The Write-Behind Principle
-NovaBlog never performs direct disk writes for high-frequency telemetry counters. Instead, metrics coalesce in Redis RAM memory using atomic operations and flush asynchronously in periodic batches.
+$$P(\\text{slow}) = 1 - (1 - p)^N$$
+
+Where $N$ is the fan-out degree. At $N=20$, even if each service has a 99% SLA, over 18% of user requests experience extreme tail degradation.
+
+## 1. Coordinated Omission in Load Testing
+Standard benchmarking tools often wait for a request to complete before sending the next one. When a microservice hiccups, the tool pauses, artificially masking the queue backup in production. Using Gil Tene's **HdrHistogram** methodology, we capture true latency distributions under constant arrival rates.
+
+\`\`\`yaml
+# Resilience4j Sliding Window Configuration
+resilience4j.circuitbreaker:
+  instances:
+    downstreamSearchService:
+      slidingWindowType: TIME_BASED
+      slidingWindowSize: 30
+      minimumNumberOfCalls: 10
+      failureRateThreshold: 50
+      slowCallRateThreshold: 75
+      slowCallDurationThreshold: 250ms
+      waitDurationInOpenState: 5000ms
+\`\`\`
+
+## 2. Hedged Requests Pattern
+If a downstream read has not responded within the 95th percentile threshold (e.g., 40ms), an identical speculative secondary request is dispatched to an alternative replica. The client accepts whichever completes first and cancels the other.
+
+\`\`\`java
+CompletableFuture<SearchResponse> primary = fetchAsync(replicaA);
+scheduler.schedule(() -> {
+    if (!primary.isDone()) {
+        CompletableFuture<SearchResponse> hedged = fetchAsync(replicaB);
+        return CompletableFuture.anyOf(primary, hedged);
+    }
+    return primary;
+}, 40, TimeUnit.MILLISECONDS);
+\`\`\`
+
+## 3. Production Outcomes
+Implementing hedged requests combined with Resilience4j rate limiting dropped our global p99.9 response time from 1,420ms down to 88ms with less than 2% additional network overhead.`,
+    author: 'Caner Aydin',
+    authorUsername: 'caneraydin',
+    authorTitle: 'Principal Security Architect & Cloud Native SRE',
+    views: 2150,
+    likes: 278,
+    clapsCount: 278,
+    commentCount: 8,
+    isPublished: true,
+    publishedAt: '2026-11-18T11:20:00Z',
+    createdDate: '2026-11-18T10:45:00Z',
+    category: MOCK_CATEGORIES[2],
+    tags: ['sre', 'tail-latency', 'p99', 'resilience4j', 'circuit-breaker'],
+    aiSummary: 'Mathematical modeling and SRE mitigation of tail latency amplification in distributed systems. Deploys request hedging and Resilience4j to crush p99.9 latency by over 93%.',
+    hasVectorEmbedding: true,
+    isFeatured: false,
+    readTimeMinutes: 5,
+    version: 1,
+  },
+
+  // ==========================================
+  // PILLAR 2: APPLIED AI & VECTOR RETRIEVAL
+  // ==========================================
+  {
+    id: 4,
+    blogId: 4,
+    publicationType: 'article',
+    header: 'Spring AI & Vector Engine',
+    title: 'Hybrid Semantic Retrieval with Spring AI and pgvector: Fusing 128D Cosine Similarity with BM25 Lexical Ranking',
+    content: `Traditional relational search engines struggle with synonyms and conceptual intent, while pure vector retrieval often misses exact product IDs, acronyms, and error codes. NovaBlog implements **Hybrid Search via Reciprocal Rank Fusion (RRF)** on PostgreSQL 16.
+
+## 1. The 128D Cosine Similarity Vector Space
+We normalize text embeddings to 128-dimensional unit vectors ($\\|\\mathbf{u}\\|_2 = 1$). Under $L_2$ normalization, calculating cosine distance simplifies directly to dot products:
+
+$$\\cos(\\theta) = \\mathbf{u} \\cdot \\mathbf{v} = \\sum_{i=1}^{128} u_i v_i$$
+
+\`\`\`sql
+-- PostgreSQL pgvector 16+ HNSW Index Definition
+CREATE INDEX idx_blogs_embedding_hnsw 
+ON blogs 
+USING hnsw (embedding vector_cosine_ops) 
+WITH (m = 16, ef_construction = 64);
+
+-- Full-Text Lexical GIN Index
+CREATE INDEX idx_blogs_fts 
+ON blogs 
+USING gin (to_tsvector('english', coalesce(title, '') || ' ' || coalesce(content, '')));
+\`\`\`
+
+## 2. Reciprocal Rank Fusion (RRF) Implementation
+Because dense vector scores and sparse BM25 scores have incompatible statistical distributions, they cannot be linearly summed. RRF combines their rank positions:
+
+$$RRF\\_Score(d) = \\sum_{m \\in \\{Dense, Sparse\\}} \\frac{1}{k + r_m(d)}, \\quad k = 60$$
 
 \`\`\`java
 @Service
-public class RedisWriteBehindBuffer {
+public class HybridSearchService {
     @Autowired
-    private StringRedisTemplate redisTemplate;
+    private JdbcTemplate jdbcTemplate;
 
-    public void incrementViewCount(Long blogId) {
-        // Nanosecond in-memory counter incrementation
-        redisTemplate.opsForValue().increment("blog:views:" + blogId);
+    public List<SearchResult> executeRrfSearch(String query, float[] vector, int limit) {
+        String sql = """
+            WITH vector_ranked AS (
+                SELECT id, ROW_NUMBER() OVER (ORDER BY embedding <=> ?::vector) as r_dense
+                FROM blogs WHERE is_published = true LIMIT 50
+            ),
+            keyword_ranked AS (
+                SELECT id, ROW_NUMBER() OVER (ORDER BY ts_rank_cd(to_tsvector('english', title || ' ' || content), plainto_tsquery('english', ?)) DESC) as r_sparse
+                FROM blogs WHERE is_published = true AND to_tsvector('english', title || ' ' || content) @@ plainto_tsquery('english', ?) LIMIT 50
+            )
+            SELECT COALESCE(v.id, k.id) as blog_id,
+                   (COALESCE(1.0 / (60 + v.r_dense), 0.0) + COALESCE(1.0 / (60 + k.r_sparse), 0.0)) as rrf_score
+            FROM vector_ranked v
+            FULL OUTER JOIN keyword_ranked k ON v.id = k.id
+            ORDER BY rrf_score DESC LIMIT ?;
+        """;
+        return jdbcTemplate.query(sql, mapper, vector, query, query, limit);
     }
 }
 \`\`\`
 
-## 2. Scheduled Batch Synchronization
-A background worker flushes accumulated memory counts every 5 seconds using a single atomic batch SQL query. This reduces database write contention by over 85%.`,
-    author: 'Abdullah Berke Ozder',
-    views: 2150,
-    likes: 245,
+## 3. Benchmark Results
+RRF achieved a 94.4% Mean Reciprocal Rank (MRR@10) on enterprise documentation queries, outperforming pure vector search by 18% on technical acronym queries.`,
+    author: 'Dr. Selin Demir',
+    authorUsername: 'selindemir',
+    authorTitle: 'AI Research Lead & Vector Architect',
+    views: 4120,
+    likes: 512,
+    clapsCount: 512,
+    commentCount: 16,
     isPublished: true,
-    publishedAt: '2026-11-03T11:20:00Z',
-    createdDate: '2026-11-03T10:00:00Z',
-    category: MOCK_CATEGORIES[1],
-    tags: ['redis', 'write-behind', 'cache-buffer', 'high-scale', 'performance'],
-    aiSummary: 'Reducing disk write pressure by 85% with an in-memory Redis write-behind buffer. Lock-free metric aggregation prevents PostgreSQL row contention under thousands of concurrent readers.',
+    publishedAt: '2026-11-17T08:00:00Z',
+    createdDate: '2026-11-17T07:15:00Z',
+    category: MOCK_CATEGORIES[0],
+    tags: ['spring-ai', 'pgvector', 'hnsw', 'semantic-search', 'rrf-fusion'],
+    aiSummary: 'End-to-end implementation of hybrid search combining PostgreSQL pgvector HNSW indexing and BM25 lexical ranking via Reciprocal Rank Fusion (RRF), achieving 94.4% MRR.',
     hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 4,
-    publicationType: 'article',
-    header: 'Data Integrity & JPA',
-    title: 'Preventing Data Loss with Optimistic Concurrency Control (OCC)',
-    content: `In multi-tenant editorial platforms where multiple authors or administrators update records simultaneously, the "Last-Write-Wins" hazard silently wipes earlier revisions.
-
-## 1. Collision Detection with JPA @Version
-Hibernate tracks changes across mutations by attaching an automatic version token to entity models.
-
-\`\`\`java
-@Entity
-public class BlogEntity {
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @Version
-    private Integer version; // Hibernate version tracking token
-}
-\`\`\`
-
-## 2. Handling Collisions
-If two concurrent requests attempt to commit updates using the same version token, Hibernate throws an \`OptimisticLockException\`. The application traps the collision and alerts the author without discarding their unsaved input.`,
-    author: 'Abdullah Berke Ozder',
-    views: 980,
-    likes: 88,
-    isPublished: true,
-    publishedAt: '2026-11-02T16:45:00Z',
-    createdDate: '2026-11-02T15:30:00Z',
-    category: MOCK_CATEGORIES[1],
-    tags: ['jpa-hibernate', 'optimistic-locking', 'data-integrity', 'concurrency', 'security'],
-    aiSummary: 'Guarding concurrent state mutations with JPA @Version optimistic locking. Eliminates race conditions and silent overwrites in multi-user editorial flows.',
-    hasVectorEmbedding: true,
+    isFeatured: true,
+    readTimeMinutes: 6,
     version: 1,
   },
   {
     id: 5,
+    blogId: 5,
     publicationType: 'article',
-    header: 'Spring Batch & Big Data',
-    title: 'Large-Scale Data Retention Pipelines & Automated Chunk Purging',
-    content: `As historical audit logs, analytical metrics, and soft-deleted entities accumulate, maintenance jobs quickly outgrow the capacity of standard synchronous HTTP request workers.
+    header: 'AI Caching & Performance',
+    title: 'Sub-Millisecond LLM Response Latency with Semantic Caching: Cosine Distance Thresholds in Redis VSS',
+    content: `Calling hosted LLM APIs costs up to 1500ms of network latency and thousands of dollars in monthly token fees. Traditional HTTP caches fail because natural language questions are rarely character-for-character identical. **Semantic Caching** solves this via vector proximity.
 
-## 1. Chunk-Oriented Processing Pipeline
-With Spring Batch 5, entities are processed in bounded transaction windows of 50 items each, preventing memory leaks and transaction rollbacks.
+## 1. The Proximity Threshold Axiom
+When a user asks *"How do I tune HikariCP pool size?"*, the embedding vector is mathematically almost identical to *"Best practices for Hikari connection pool configuration"*. If their cosine distance satisfies:
+
+$$D_{\\text{cosine}}(\\mathbf{u}, \\mathbf{v}) \\le 0.08 \\quad (\\text{Similarity} \\ge 0.92)$$
+
+The cached response is retrieved directly from in-memory Redis storage in under 3 milliseconds, completely bypassing the external model.
 
 \`\`\`java
-@Bean
-public Step softDeleteCleanupStep(JobRepository jobRepository, PlatformTransactionManager txManager) {
-    return new StepBuilder("cleanupStep", jobRepository)
-        .<BlogEntity, BlogEntity>chunk(50, txManager)
-        .reader(softDeletedBlogItemReader())
-        .processor(expiredBlogItemProcessor())
-        .writer(permanentDeleteBlogItemWriter())
-        .faultTolerant()
-        .retryLimit(3)
-        .build();
-}
-\`\`\`
+@Service
+public class SemanticCacheService {
+    @Autowired
+    private JedisPooled jedis;
 
-## 2. Fault Tolerance & Automatic Retries
-- Automatic retry policies isolate transient network or disk hiccups.
-- Bad records are diverted to dead-letter sinks without blocking valid rows.
-- Full step execution status is journaled durably in the job repository schema.`,
-    author: 'Abdullah Berke Ozder',
-    views: 1190,
-    likes: 95,
-    isPublished: true,
-    publishedAt: '2026-11-01T14:00:00Z',
-    createdDate: '2026-11-01T13:30:00Z',
-    category: MOCK_CATEGORIES[4],
-    tags: ['spring-batch', 'big-data', 'etl-pipeline', 'postgresql', 'automation'],
-    aiSummary: 'Processing millions of records without heap spikes using Spring Batch chunk-oriented pipelines. Built-in fault tolerance and automatic retries ensure bulletproof background maintenance.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 6,
-    publicationType: 'article',
-    header: 'Cybersecurity & 2FA',
-    title: 'Hardening Authentication with RFC 6238 TOTP State Machines',
-    content: `To defend privileged accounts against credential stuffing and leak hazards, time-based two-factor authentication (2FA) is an indispensable zero-trust requirement.
+    public Optional<String> lookupCachedAnswer(float[] queryVector) {
+        Query q = new Query("*=>[KNN 1 @embedding $vec AS score]")
+            .addParam("vec", toByteArray(queryVector))
+            .returnFields("response", "score")
+            .setSortBy("score", true)
+            .limit(0, 1);
 
-## 1. RFC 6238 Time-Based One-Time Passwords (TOTP)
-The TOTP algorithm computes 6-digit verification codes by cryptographically hashing a base32 shared secret key against synchronized 30-second UNIX timestamp intervals.
-
-\`\`\`java
-public boolean verifyTotpCode(String base32Secret, int userCode) {
-    long currentWindow = System.currentTimeMillis() / 1000L / 30L;
-    // Inspect [-1, 0, +1] intervals to tolerate client clock drifts
-    for (int i = -1; i <= 1; i++) {
-        if (generateTotp(base32Secret, currentWindow + i) == userCode) {
-            return true;
+        SearchResult res = jedis.ftSearch("idx:semantic_cache", q);
+        if (!res.getDocuments().isEmpty()) {
+            Document doc = res.getDocuments().get(0);
+            double distance = Double.parseDouble(doc.getString("score"));
+            if (distance <= 0.08) {
+                return Optional.of(doc.getString("response")); // Cache HIT!
+            }
         }
+        return Optional.empty(); // Cache MISS
     }
-    return false;
 }
 \`\`\`
 
-## 2. Emergency Recovery Codes
-To safeguard access in the event of hardware token loss:
-- Five unique 8-character emergency recovery codes are generated.
-- Codes are hashed securely at rest using strong salted algorithms.
-- Each code is marked invalid immediately upon first redemption.`,
-    author: 'Abdullah Berke Ozder',
-    views: 1750,
-    likes: 144,
-    isPublished: true,
-    publishedAt: '2026-10-31T09:15:00Z',
-    createdDate: '2026-10-31T08:45:00Z',
-    category: MOCK_CATEGORIES[5],
-    tags: ['cybersecurity', 'totp-2fa', 'zero-trust', 'cryptography', 'account-defense'],
-    aiSummary: 'RFC 6238 compliant time-based one-time password (TOTP) verification. Seamlessly compatible with standard Authenticator applications and guarded by single-use recovery codes.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-
-  // --- 2. CURATED TECH DISPATCHES (20 Curated Releases via Global Tech Press) ---
-
-  // === CATEGORY 1: CLOUD & INFRASTRUCTURE (5 DISPATCHES) ===
-  {
-    id: 1001,
-    publicationType: 'dispatch',
-    header: 'CLOUD INFRASTRUCTURE & DATA TRANSIT',
-    title: 'AWS and Cloudflare Form Zero-Egress Data Bridge Standard',
-    content: `Egress fees—long the single greatest cost bottleneck for multi-cloud enterprise architectures—have been effectively neutralized through an automated interconnect agreement between Cloudflare and Amazon Web Services.
-
-Large datasets stored in AWS S3 can now replicate directly into Cloudflare Workers and global Edge KV caches without incurring outbound bandwidth penalties.
-
-### Key Architectural Gains:
-- Complete elimination of multi-cloud vendor lock-in.
-- Distributed analytical processing remains anchored in AWS while static media caches across 330+ global edge nodes.
-- 40% reduction in measured P99 media distribution latency.`,
-    author: 'Nova Tech Wire',
-    authorTitle: 'Cloud Infrastructure Bureau',
-    views: 3120,
-    likes: 420,
-    clapsCount: 420,
-    isPublished: true,
-    publishedAt: '2026-11-19T08:30:00Z',
-    createdDate: '2026-11-19T08:00:00Z',
-    category: MOCK_CATEGORIES[2],
-    viaSource: 'The Cloudflare Blog',
-    viaUrl: 'https://blog.cloudflare.com',
-    editorialTake: 'Eliminating egress lock-in allows analytical processing pipelines to reside on AWS while delivering sub-millisecond edge cache hits globally.',
-    isBreaking: true,
-    readTimeMinutes: 3,
-    tags: ['cloud', 'aws', 'cloudflare', 'egress', 'edge-computing'],
-    aiSummary: 'Zero-egress transit agreement between AWS and Cloudflare dramatically cuts multi-cloud data transport costs while boosting edge delivery speeds.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 1002,
-    publicationType: 'dispatch',
-    header: 'KERNEL ARCHITECTURE & REAL-TIME',
-    title: 'Linux Kernel 6.12 Officially Releases with Full PREEMPT_RT Support',
-    content: `Long maintained as an external out-of-tree patch for high-frequency financial order books and industrial robotics, the PREEMPT_RT patchset has officially merged into Linux Kernel 6.12 mainline.
-
-Standard Linux distributions can now be compiled with deterministic interrupt response guarantees directly out of the box.
-
-### Key Architectural Gains:
-- In-kernel spinlock and interrupt latency dropped below 5 microseconds.
-- Garbage collection and thread context switch jitter eliminated in high-throughput trading engines.
-- Standalone RTOS layers are no longer required on commodity LTS server hardware.`,
-    author: 'Nova Tech Wire',
-    authorTitle: 'Systems & OS Reporter',
-    views: 2450,
-    likes: 310,
-    clapsCount: 310,
-    isPublished: true,
-    publishedAt: '2026-11-18T14:10:00Z',
-    createdDate: '2026-11-18T13:40:00Z',
-    category: MOCK_CATEGORIES[2],
-    viaSource: 'Phoronix & Kernel.org',
-    viaUrl: 'https://www.phoronix.com',
-    editorialTake: 'Mainline real-time scheduling in Linux 6.12 unlocks sub-5 microsecond deterministic guarantees on commodity hardware without custom RTOS kernels.',
-    isBreaking: false,
-    readTimeMinutes: 4,
-    tags: ['linux', 'kernel-6-12', 'preempt-rt', 'low-latency', 'systems'],
-    aiSummary: 'PREEMPT_RT merged into mainline Linux 6.12, providing deterministic microsecond scheduling for mission-critical trading and telecom systems.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 1003,
-    publicationType: 'dispatch',
-    header: 'OBSERVABILITY & eBPF',
-    title: 'OpenTelemetry and eBPF Standardization: Distributed Tracing with Zero Instrumentation',
-    content: `The Cloud Native Computing Foundation (CNCF) has solidified eBPF (Extended Berkeley Packet Filter) as a first-class citizen under the OpenTelemetry framework.
-
-Developers are no longer required to inject manual SDKs, byte-code agents, or sidecars into production service code to capture distributed traces.
-
-### Key Architectural Gains:
-- CPU and memory observability overhead reduced from 12% to under 0.4%.
-- Inter-service P99 latency anomalies mapped instantaneously across kernel sockets.
-- Distributed tracing configuration drift and instrumentation bugs completely eliminated.`,
-    author: 'Nova Tech Wire',
-    authorTitle: 'Observability Architect',
-    views: 1890,
-    likes: 275,
-    clapsCount: 275,
-    isPublished: true,
-    publishedAt: '2026-11-17T11:45:00Z',
-    createdDate: '2026-11-17T11:15:00Z',
-    category: MOCK_CATEGORIES[2],
-    viaSource: 'The New Stack',
-    viaUrl: 'https://thenewstack.io',
-    editorialTake: 'Zero-instrumentation tracing via kernel eBPF probes captures all HTTP, gRPC, and socket telemetry without touching application code.',
-    isBreaking: false,
-    readTimeMinutes: 3,
-    tags: ['opentelemetry', 'ebpf', 'observability', 'distributed-systems', 'cncf'],
-    aiSummary: 'CNCF OpenTelemetry and eBPF integration provides deep distributed tracing and socket observability with less than 0.5% CPU overhead.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 1004,
-    publicationType: 'dispatch',
-    header: 'HARDWARE & INDEPENDENT CLOUD',
-    title: 'Hetzner and European Sovereign Clouds Roll Out NVMe-over-Fabrics and ARM Neoverse',
-    content: `Accelerated by European data sovereignty mandates and power efficiency benchmarks, independent cloud providers are upgrading infrastructure with NVMe-over-Fabrics (NVMe-oF) and ARM Neoverse V2 silicon.
-
-Hetzner and OVHcloud report 45% higher performance-per-watt efficiency in their newest bare-metal lineups compared to legacy x86 architectures.
-
-### Key Architectural Gains:
-- NVMe-oF remote block storage latency benchmarked at under 12 microseconds over 100GbE RoCEv2 fabrics.
-- ARM Neoverse V2 cores deliver 35% higher throughput on PostgreSQL and Redis workloads compared to equivalent x86 instances.
-- 50% reduction in rack-level thermal dissipation and operational power draw.`,
-    author: 'Nova Tech Wire',
-    authorTitle: 'Infrastructure Analyst',
-    views: 1650,
-    likes: 210,
-    clapsCount: 210,
-    isPublished: true,
-    publishedAt: '2026-11-16T16:20:00Z',
-    createdDate: '2026-11-16T15:50:00Z',
-    category: MOCK_CATEGORIES[2],
-    viaSource: 'Ars Technica',
-    viaUrl: 'https://arstechnica.com',
-    editorialTake: 'NVMe-over-Fabrics with RoCEv2 eliminates remote block storage bottlenecks, giving independent clouds hyperscaler-grade I/O at a fraction of the cost.',
-    isBreaking: false,
-    readTimeMinutes: 3,
-    tags: ['arm-neoverse', 'hetzner', 'nvme-of', 'hardware', 'sovereign-cloud'],
-    aiSummary: 'European clouds adopt ARM Neoverse V2 and NVMe-over-Fabrics, delivering 45% better power efficiency and sub-12 microsecond remote storage access.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 1005,
-    publicationType: 'dispatch',
-    header: 'NETWORK PROTOCOLS & QUIC',
-    title: 'HTTP/3 and QUIC Protocol Surpasses 35% of Global Internet Traffic',
-    content: `Transport Layer metrics published by Cloudflare and Google confirm that HTTP/3 over UDP-based QUIC now carries over 35% of all live global web transactions.
-
-By eliminating Head-of-Line (HoL) blocking on congested packet networks, QUIC fundamentally outperforms legacy TCP+TLS handshake cycles.
-
-### Key Architectural Gains:
-- Single-round-trip 0-RTT connection re-establishment on mobile handoffs.
-- Packet loss on mobile cellular links no longer stalls concurrent multiplexed streams.
-- 18% improvement in First Contentful Paint (FCP) across unstable mobile networks.`,
-    author: 'Nova Tech Wire',
-    authorTitle: 'Network Protocol Specialist',
-    views: 2100,
-    likes: 290,
-    clapsCount: 290,
-    isPublished: true,
-    publishedAt: '2026-11-15T09:00:00Z',
-    createdDate: '2026-11-15T08:30:00Z',
-    category: MOCK_CATEGORIES[2],
-    viaSource: 'Cloudflare Radar',
-    viaUrl: 'https://radar.cloudflare.com',
-    editorialTake: 'Multiplexed streams without Head-of-Line blocking make QUIC and HTTP/3 essential for low-latency global delivery on unreliable connections.',
-    isBreaking: false,
-    readTimeMinutes: 2,
-    tags: ['http3', 'quic', 'networking', 'latency', 'web-protocols'],
-    aiSummary: 'HTTP/3 over QUIC exceeds 35% global traffic share, eliminating Head-of-Line blocking and improving mobile connection resumption to 0-RTT.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-
-  // === CATEGORY 2: AI DEVELOPMENT & AGENTS (5 DISPATCHES) ===
-  {
-    id: 1006,
-    publicationType: 'dispatch',
-    header: 'AI AGENTS & MCP PROTOCOL',
-    title: 'Anthropic Model Context Protocol (MCP) Open-Source Standardization',
-    content: `Anthropic has open-sourced the Model Context Protocol (MCP), establishing an industry-standard interface between Large Language Models (LLMs) and external enterprise data stores, file systems, and API endpoints.
-
-Supported by major developer platforms, MCP provides a unified client-server architecture for autonomous agent tool execution.
-
-### Key Architectural Gains:
-- Standardized JSON-RPC protocol replaces ad-hoc API adapter glue code.
-- Granular permission boundaries isolate local filesystems and databases from prompt injection.
-- Seamless multi-agent interoperability across diverse enterprise tool ecosystems.`,
+## 2. Production Economics
+Across 250,000 monthly reader queries on NovaBlog, the semantic cache achieved an 43.8% hit rate, reducing LLM token billing by $3,400/month while dropping p50 latency from 1,200ms to 4ms.`,
     author: 'Dr. Selin Demir',
-    authorTitle: 'Principal AI Researcher',
-    views: 4520,
-    likes: 680,
-    clapsCount: 680,
-    isPublished: true,
-    publishedAt: '2026-11-20T10:15:00Z',
-    createdDate: '2026-11-20T09:45:00Z',
-    category: MOCK_CATEGORIES[0],
-    viaSource: 'Anthropic Engineering',
-    viaUrl: 'https://www.anthropic.com/news/model-context-protocol',
-    editorialTake: 'Replacing fragile ad-hoc API wrappers with a standardized MCP server interface brings enterprise-grade security and modularity to LLM tool execution.',
-    isBreaking: true,
-    readTimeMinutes: 4,
-    tags: ['mcp', 'anthropic', 'agentic-ai', 'developer-tools', 'llm-standards'],
-    aiSummary: 'Model Context Protocol (MCP) open-sourced by Anthropic to standardize how autonomous AI agents interface with tools, databases, and APIs.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 1007,
-    publicationType: 'dispatch',
-    header: 'ENTERPRISE AI & SPRING',
-    title: 'Spring AI 1.0 Milestone: Structured Outputs and Multi-Agent Advisors',
-    content: `The Spring engineering team has announced the 1.0 Milestone of Spring AI, introducing native typed JSON Schema structured output extraction and modular multi-agent advisor chains.
-
-Enterprise Java applications can now safely interface with frontier LLMs while preserving strong compile-time type safety.
-
-### Key Architectural Gains:
-- Guaranteed type-safe JSON parsing backed by Jackson and Bean validation models.
-- Modular Advisor chains intercept prompt pipelines for toxicity screening, token budgeting, and RAG injection.
-- Native integration with PostgreSQL pgvector, Milvus, and Redis vector stores.`,
-    author: 'Dr. Selin Demir',
-    authorTitle: 'Principal AI Researcher',
-    views: 3100,
-    likes: 415,
-    clapsCount: 415,
-    isPublished: true,
-    publishedAt: '2026-11-19T13:00:00Z',
-    createdDate: '2026-11-19T12:30:00Z',
-    category: MOCK_CATEGORIES[0],
-    viaSource: 'Spring.io Blog',
-    viaUrl: 'https://spring.io/blog',
-    editorialTake: 'Spring AI 1.0 bridges enterprise Java rigor and frontier generative models, enforcing strict JSON Schema contracts and modular pipeline advisors.',
-    isBreaking: false,
-    readTimeMinutes: 3,
-    tags: ['spring-ai', 'java', 'structured-outputs', 'rag', 'enterprise-ai'],
-    aiSummary: 'Spring AI 1.0 Milestone brings typed structured outputs, modular agent advisors, and production-grade vector store abstractions to the JVM.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 1008,
-    publicationType: 'dispatch',
-    header: 'VECTOR DATABASES & PGVECTOR',
-    title: 'PostgreSQL pgvector 0.8: 10x Faster HNSW Indexing with AVX-512 SIMD',
-    content: `The open-source pgvector team has released version 0.8, implementing hardware-accelerated AVX-512 and ARM SVE vector math routines alongside parallel HNSW graph construction.
-
-PostgreSQL instances can now index multi-million embedding vector datasets up to ten times faster while reducing memory footprint.
-
-### Key Architectural Gains:
-- HNSW index build time reduced by 10x via AVX-512 vector distance primitives.
-- Half-precision (fp16) and scalar quantization (int8) storage options reduce RAM usage by up to 75%.
-- Zero-downtime concurrent index builds under continuous live production insertion.`,
-    author: 'Dr. Selin Demir',
-    authorTitle: 'Principal AI Researcher',
-    views: 2950,
-    likes: 380,
-    clapsCount: 380,
-    isPublished: true,
-    publishedAt: '2026-11-18T10:30:00Z',
-    createdDate: '2026-11-18T10:00:00Z',
-    category: MOCK_CATEGORIES[0],
-    viaSource: 'PostgreSQL News',
-    viaUrl: 'https://www.postgresql.org',
-    editorialTake: 'Hardware-accelerated AVX-512 SIMD vector math makes PostgreSQL pgvector a formidable alternative to dedicated vector databases like Pinecone.',
-    isBreaking: false,
-    readTimeMinutes: 3,
-    tags: ['pgvector', 'hnsw', 'postgresql', 'vector-search', 'simd'],
-    aiSummary: 'pgvector 0.8 leverages AVX-512 SIMD and quantization to achieve 10x faster HNSW indexing and a 75% reduction in vector memory consumption.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 1009,
-    publicationType: 'dispatch',
-    header: 'OPEN WEIGHT MODELS & LLAMA',
-    title: 'Meta Llama 3.3 70B: GPT-4 Class Reasoning in Open Source',
-    content: `Meta has unveiled Llama 3.3 70B, matching the reasoning, coding, and benchmark performance of early closed-source frontier models while running efficiently on commodity dual-GPU hardware.
-
-The model is released under an open commercial license with 128k context window support.
-
-### Key Architectural Gains:
-- Matches GPT-4 and Claude 3.5 Sonnet class reasoning on standard MMLU-Pro and HumanEval benchmarks.
-- Fits onto dual NVIDIA RTX 4090 or single A100 GPU systems with 4-bit AWQ/EXL2 quantization.
-- Native multilingual support with high precision across enterprise technical documentation.`,
-    author: 'Dr. Selin Demir',
-    authorTitle: 'Principal AI Researcher',
-    views: 3800,
-    likes: 540,
-    clapsCount: 540,
-    isPublished: true,
-    publishedAt: '2026-11-17T15:45:00Z',
-    createdDate: '2026-11-17T15:15:00Z',
-    category: MOCK_CATEGORIES[0],
-    viaSource: 'Hugging Face & Meta AI',
-    viaUrl: 'https://huggingface.co/blog',
-    editorialTake: 'Llama 3.3 70B brings frontier reasoning capabilities to private on-premise infrastructure, eliminating data sovereignty and API cost trade-offs.',
-    isBreaking: false,
-    readTimeMinutes: 3,
-    tags: ['llama-3-3', 'meta-ai', 'open-weights', 'inference', 'huggingface'],
-    aiSummary: 'Meta releases Llama 3.3 70B with 128k context, delivering GPT-4 tier reasoning performance on accessible open-weight dual-GPU hardware.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 1010,
-    publicationType: 'dispatch',
-    header: 'AGENT FRAMEWORKS & BENCHMARKS',
-    title: 'LangChain vs Semantic Kernel vs Spring AI: 2026 Enterprise Agent Matrix',
-    content: `Independent architecture audits published across InfoQ and The New Stack evaluate the leading enterprise AI orchestration frameworks across latency, memory safety, and thread concurrency.
-
-The audit compares Python-first ecosystems against JVM and .NET native enterprise agent platforms.
-
-### Key Architectural Gains:
-- Spring AI and Virtual Threads demonstrate the highest concurrency throughput, handling 10,000 parallel agent tasks with zero thread exhaustion.
-- Semantic Kernel leads in enterprise Microsoft Azure RBAC and token validation ergonomics.
-- LangChain / LangGraph excels in rapid prototyping but requires careful memory management under sustained production loads.`,
-    author: 'Dr. Selin Demir',
-    authorTitle: 'Principal AI Researcher',
-    views: 2600,
-    likes: 340,
-    clapsCount: 340,
+    authorUsername: 'selindemir',
+    authorTitle: 'AI Research Lead & Vector Architect',
+    views: 1980,
+    likes: 245,
+    clapsCount: 245,
+    commentCount: 6,
     isPublished: true,
     publishedAt: '2026-11-16T12:00:00Z',
     createdDate: '2026-11-16T11:30:00Z',
     category: MOCK_CATEGORIES[0],
-    viaSource: 'InfoQ Architecture',
-    viaUrl: 'https://www.infoq.com',
-    editorialTake: 'For high-concurrency microservices, Spring AI combined with Java 22 Virtual Threads delivers unmatched throughput and memory safety for multi-agent workflows.',
-    isBreaking: false,
-    readTimeMinutes: 4,
-    tags: ['agentic-ai', 'infoq', 'spring-ai', 'semantic-kernel', 'benchmarks'],
-    aiSummary: 'Benchmarking LangChain, Semantic Kernel, and Spring AI reveals JVM and Virtual Threads achieve top concurrency and memory isolation in enterprise agent workloads.',
+    tags: ['semantic-cache', 'redis-vss', 'cosine-similarity', 'llm-optimization', 'vector-db'],
+    aiSummary: 'Achieving 3ms response times for AI queries using Redis Vector Similarity Search and cosine distance thresholding, reducing LLM token billing by over 40%.',
     hasVectorEmbedding: true,
+    isFeatured: false,
+    readTimeMinutes: 5,
     version: 1,
   },
-
-  // === CATEGORY 3: REACT & MODERN FRONTEND (5 DISPATCHES) ===
   {
-    id: 1011,
-    publicationType: 'dispatch',
-    header: 'FRONTEND CORE & REACT 19',
-    title: 'React 19 Stable Release: useActionState, useOptimistic, and Automatic Memoization',
-    content: `The React core team has released React 19 stable, establishing Server Actions, the React Compiler, and native optimistic UI primitives as standard web building blocks.
+    id: 6,
+    blogId: 6,
+    publicationType: 'article',
+    header: 'Agent Protocols & MCP',
+    title: 'Enterprise Model Context Protocol (MCP) Server Architecture with Spring Boot 4: Zero-Trust Database and Filesystem Tooling',
+    content: `The 2026 AI era has transitioned from conversational chat completion to autonomous agentic systems. Rather than coding brittle proprietary tool-calling wrappers, the industry has standardized on the open **Model Context Protocol (MCP)**.
 
-Manual \`useMemo\` and \`useCallback\` annotations are rendered obsolete by compiler-level AST optimizations.
+## 1. What is the Model Context Protocol?
+MCP establishes a bidirectional, JSON-RPC 2.0 based protocol between AI host orchestrators (Claude Desktop, local IDE agents) and system resources (databases, Git, POSIX filesystems, CI/CD runners).
 
-### Key Architectural Gains:
-- \`useOptimistic\` provides instant tactile feedback on user actions before network round-trips complete.
-- \`useActionState\` streamlines asynchronous form mutations and pending transitions without boilerplate.
-- The React Compiler automatically optimizes re-renders across deeply nested component trees.`,
-    author: 'Caner Aydin',
-    authorTitle: 'Staff Frontend Architect',
-    views: 5200,
-    likes: 790,
-    clapsCount: 790,
+\`\`\`json
+// MCP Tool Call Request Frame
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "query_vector_store",
+    "arguments": {
+      "semanticQuery": "memory leak virtual threads",
+      "limit": 5
+    }
+  },
+  "id": 42
+}
+\`\`\`
+
+## 2. Exposing Spring Boot 4 Services as MCP Servers
+Using Spring AI's official MCP server starter, Java services register tip-safe tool definitions with strict JSON Schema contracts and zero-trust parameter validation:
+
+\`\`\`java
+@Component
+public class DatabaseMcpTools {
+
+    @Autowired
+    private BlogVectorRepository vectorRepo;
+
+    @Tool(description = "Executes hybrid vector similarity search across engineering documentation")
+    public List<DocumentSnippet> queryVectorStore(
+            @ToolParam(description = "Semantic natural language search phrase") String semanticQuery,
+            @ToolParam(description = "Maximum results to retrieve (1-10)") int limit) {
+        
+        // Zero-trust boundary validation
+        if (limit > 10) limit = 10;
+        return vectorRepo.findSimilarSnippets(semanticQuery, limit);
+    }
+}
+\`\`\`
+
+## 3. Sandboxing & Isolation
+To prevent prompt-injection attacks from executing destructive commands, all filesystem and bash tools run inside ephemeral gVisor micro-containers with read-only root mounts.`,
+    author: 'Dr. Selin Demir',
+    authorUsername: 'selindemir',
+    authorTitle: 'AI Research Lead & Vector Architect',
+    views: 3100,
+    likes: 389,
+    clapsCount: 389,
+    commentCount: 11,
     isPublished: true,
-    publishedAt: '2026-11-19T11:00:00Z',
-    createdDate: '2026-11-19T10:30:00Z',
-    category: MOCK_CATEGORIES[3],
-    viaSource: 'React Dev Blog',
-    viaUrl: 'https://react.dev/blog',
-    editorialTake: 'Native optimistic UI primitives and compiler-level auto-memoization give skeuomorphic web applications physical tactile responsiveness without boilerplate.',
-    isBreaking: true,
-    readTimeMinutes: 4,
-    tags: ['react-19', 'actions', 'useoptimistic', 'react-compiler', 'web-perf'],
-    aiSummary: 'React 19 reaches general availability, introducing native optimistic updates, action state hooks, and automated memoization via the React Compiler.',
+    publishedAt: '2026-11-15T09:00:00Z',
+    createdDate: '2026-11-15T08:20:00Z',
+    category: MOCK_CATEGORIES[0],
+    tags: ['mcp', 'agentic-ai', 'spring-boot-4', 'json-rpc', 'zero-trust'],
+    aiSummary: 'Designing enterprise Model Context Protocol (MCP) servers with Spring Boot 4. Exposes pgvector and system tooling to autonomous agents over JSON-RPC 2.0 with zero-trust sandboxing.',
     hasVectorEmbedding: true,
+    isFeatured: true,
+    readTimeMinutes: 7,
     version: 1,
   },
+
+  // ==========================================
+  // PILLAR 3: MODERN FRONTEND & COMPILER SYSTEMS
+  // ==========================================
   {
-    id: 1012,
-    publicationType: 'dispatch',
-    header: 'BUNDLER ENGINE & NEXT.JS',
-    title: 'Next.js 15/16 and Turbopack Default: 76% Faster HMR Performance',
-    content: `Vercel has confirmed Turbopack as the default development and production bundler in Next.js 15 and 16, replacing legacy Webpack pipelines.
+    id: 7,
+    blogId: 7,
+    publicationType: 'article',
+    header: 'React 19 & Compiler Systems',
+    title: 'React 19 Compiler Architecture: Static Single Assignment (SSA) Control Flow Graphs and the End of Manual Memoization',
+    content: `For a decade, React developers have spent countless hours agonizing over reference equality, dependency arrays, and manual \`useMemo\`, \`useCallback\`, and \`React.memo\` guards. The **React 19 Compiler (Forget)** shifts this cognitive burden to Ahead-Of-Time (AOT) compiler analysis.
 
-Engineered in Rust, Turbopack utilizes incremental computation graphs to accelerate compilation across complex enterprise codebases.
+## 1. Static Single Assignment (SSA) and Control Flow Analysis
+The compiler parses JSX into an Abstract Syntax Tree (AST) and transforms component function bodies into **Static Single Assignment (SSA)** form:
+- Every variable is assigned exactly once.
+- The Control Flow Graph (CFG) traces mutable borrows and value lifetimes.
+- The compiler identifies exactly which subtrees depend on which inputs.
 
-### Key Architectural Gains:
-- Hot Module Replacement (HMR) speeds increased by up to 76% in projects with over 5,000 components.
-- Initial server startup latency reduced from 14 seconds to under 1.8 seconds.
-- Native async request cookies and headers API prevent accidental client-side data leaks.`,
+\`\`\`javascript
+// Raw Source Component
+function ArticleClapWidget({ claps, onClap }) {
+  const isMilestone = claps >= 1000;
+  return (
+    <button onClick={onClap} className={isMilestone ? 'badge-gold' : 'badge-silver'}>
+      <span>👏 {claps}</span>
+    </button>
+  );
+}
+
+// React 19 Compiler Output (Conceptual Bytecode Slot Allocation)
+function ArticleClapWidget_Compiled({ claps, onClap }) {
+  const $ = _c(4); // Fixed cache slot array allocated per component fiber
+  let t0;
+  if ($[0] !== claps || $[1] !== onClap) {
+    t0 = <button onClick={onClap} className={claps >= 1000 ? 'badge-gold' : 'badge-silver'}>
+           <span>👏 {claps}</span>
+         </button>;
+    $[0] = claps;
+    $[1] = onClap;
+    $[2] = t0;
+  } else {
+    t0 = $[2];
+  }
+  return t0;
+}
+\`\`\`
+
+## 2. Elimination of Cache Line Bouncing in the Virtual DOM
+By hoisting memoization slots directly into the fiber allocation table, React 19 eliminates unnecessary V8 garbage collection passes generated by transient object allocations. Component tree re-render time drops by up to 60%.`,
     author: 'Caner Aydin',
-    authorTitle: 'Staff Frontend Architect',
-    views: 3400,
-    likes: 470,
-    clapsCount: 470,
+    authorUsername: 'caneraydin',
+    authorTitle: 'Principal Security Architect & Cloud Native SRE',
+    views: 2750,
+    likes: 340,
+    clapsCount: 340,
+    commentCount: 12,
     isPublished: true,
-    publishedAt: '2026-11-18T17:15:00Z',
-    createdDate: '2026-11-18T16:45:00Z',
+    publishedAt: '2026-11-14T15:30:00Z',
+    createdDate: '2026-11-14T14:40:00Z',
     category: MOCK_CATEGORIES[3],
-    viaSource: 'Vercel News',
-    viaUrl: 'https://vercel.com/blog',
-    editorialTake: 'Rust-powered incremental bundler graphs make Turbopack an indispensable productivity engine for massive skeuomorphic desktop web apps.',
-    isBreaking: false,
-    readTimeMinutes: 3,
-    tags: ['nextjs-15', 'turbopack', 'rust', 'hmr', 'vercel'],
-    aiSummary: 'Turbopack becomes the default bundler in Next.js, achieving 76% faster hot module reloading and sub-2 second cold boot times in large codebases.',
+    tags: ['react-19', 'compiler', 'ast', 'usememo', 'frontend-architecture'],
+    aiSummary: 'Under the hood of the React 19 Compiler. How Control Flow Graphs and Static Single Assignment (SSA) eliminate useMemo and useCallback boilerplate while reducing V8 garbage collection overhead.',
     hasVectorEmbedding: true,
+    isFeatured: true,
+    readTimeMinutes: 6,
     version: 1,
   },
   {
-    id: 1013,
-    publicationType: 'dispatch',
-    header: 'STYLE ENGINE & TAILWIND V4',
-    title: 'Tailwind CSS v4 Transitions to CSS-First Architecture with Oxide Engine',
-    content: `Tailwind Labs has released Tailwind CSS v4, completely rewriting the styling engine from JavaScript into high-performance Rust (Oxide) and shifting to native \`@theme\` CSS configuration.
+    id: 8,
+    blogId: 8,
+    publicationType: 'article',
+    header: 'Distributed Client-Server Web',
+    title: 'Next.js App Router and the React Flight Protocol: Byte-Level RPC Streaming and Distributed Client-Server Boundaries',
+    content: `React Server Components (RSC) and Server Actions are not merely syntactic sugar over fetch calls; they represent an entirely new distributed client-server wire protocol: **The React Flight Protocol**.
 
-The build step is up to 10x faster with zero legacy JavaScript configuration files required.
+## 1. Flight Wire Format vs. Classical JSON
+Traditional SSR renders HTML and sends a redundant JSON data payload along with a heavy JavaScript bundle. React Flight streams a compact, newline-delimited line format where each component chunk is tagged:
 
-### Key Architectural Gains:
-- Full build passes execute in under 15 milliseconds thanks to the Rust-based Oxide compiler.
-- Direct CSS-first configuration via \`@theme\` removes the need for \`tailwind.config.js\`.
-- Native modern CSS features like \`@layer\`, CSS nesting, and \`color-mix()\` supported without preprocessors.`,
+\`\`\`text
+1:I{"id":"./src/components/BlogCard.tsx","chunks":["app/client.js"],"name":"BlogCard"}
+2:{"title":"Project Loom","claps":412,"author":"Abdullah Berke Ozder"}
+0:["$","$1","card-1",{"data":"$2"}]
+\`\`\`
+
+## 2. Server Actions and Zero-Latency Optimistic UI
+When a reader bookmarks an article or applauds in NovaBlog, waiting 300ms for a round-trip to PostgreSQL degrades perceived tactile responsiveness. Using React 19's \`useOptimistic\`, state mutates instantaneously on the client while the Server Action resolves asynchronously in the background:
+
+\`\`\`typescript
+'use client';
+import { useOptimistic, useTransition } from 'react';
+import { toggleArticleClapAction } from '@/actions/blogActions';
+
+export function ClapButton({ initialClaps, articleId }: { initialClaps: number; articleId: number }) {
+  const [isPending, startTransition] = useTransition();
+  const [optimisticClaps, setOptimisticClaps] = useOptimistic(
+    initialClaps,
+    (current, update: number) => current + update
+  );
+
+  const handleClick = () => {
+    startTransition(async () => {
+      setOptimisticClaps(1); // 0ms instantaneous UI update
+      await toggleArticleClapAction(articleId); // Asynchronous RPC
+    });
+  };
+
+  return (
+    <button onClick={handleClick} className="mac9-btn">
+      <span>👏 {optimisticClaps}</span>
+    </button>
+  );
+}
+\`\`\`
+
+## 3. Streaming and Time to First Byte (TTFB)
+With \`renderToPipeableStream\`, the outer layout and critical Mac OS 9 window frame arrive in 15ms over HTTP/2, while slower database telemetry cards resolve inside Suspense boundaries without blocking the main document.`,
     author: 'Caner Aydin',
-    authorTitle: 'Staff Frontend Architect',
-    views: 2800,
-    likes: 390,
-    clapsCount: 390,
+    authorUsername: 'caneraydin',
+    authorTitle: 'Principal Security Architect & Cloud Native SRE',
+    views: 2280,
+    likes: 295,
+    clapsCount: 295,
+    commentCount: 7,
     isPublished: true,
-    publishedAt: '2026-11-17T09:30:00Z',
-    createdDate: '2026-11-17T09:00:00Z',
+    publishedAt: '2026-11-13T10:15:00Z',
+    createdDate: '2026-11-13T09:40:00Z',
     category: MOCK_CATEGORIES[3],
-    viaSource: 'Tailwind Labs',
-    viaUrl: 'https://tailwindcss.com/blog',
-    editorialTake: 'The Oxide engine redefines build performance, compiling complex retro styling layers and color matrices in single-digit milliseconds.',
-    isBreaking: false,
-    readTimeMinutes: 3,
-    tags: ['tailwindcss', 'oxide', 'css4', 'frontend-build', 'ui-performance'],
-    aiSummary: 'Tailwind CSS v4 introduces the Rust Oxide engine and CSS-first @theme directive, accelerating stylesheet compilation by 10x.',
+    tags: ['nextjs-16', 'flight-protocol', 'server-actions', 'optimistic-ui', 'turbopack'],
+    aiSummary: 'Deep-dive into the React Flight Protocol and Next.js Server Actions. Combines byte-level RPC streaming with useOptimistic to deliver instantaneous zero-latency tactile feedback.',
     hasVectorEmbedding: true,
+    isFeatured: false,
+    readTimeMinutes: 5,
     version: 1,
   },
   {
-    id: 1014,
-    publicationType: 'dispatch',
-    header: 'WEB STANDARDS & BASELINE 2026',
-    title: 'Web Platform Baseline 2026: CSS Subgrid, Popover API, and View Transitions',
-    content: `The WebDX Community Group and major browser vendors have locked in Baseline 2026 standards, ensuring uniform cross-browser support for modern layout and transition APIs.
+    id: 9,
+    blogId: 9,
+    publicationType: 'article',
+    header: 'Apple HIG & Spatial UI',
+    title: 'Mac OS 9 Platinum HIG and Cognitive Ergonomics: Restoring Human Intent and Spatial Memory to the Digital Canvas',
+    content: `The 2010s "Flat Design" movement stripped interfaces of borders, shadows, and depth cues, creating what ergonomics literature calls **Mystery Meat Navigation**: users must hover or guess whether an element is a clickable button or a static label. 
 
-Desktop web applications can now utilize native browser primitives instead of bulky JavaScript polyfills.
+## 1. The 45-Degree Light Axiom
+The 1999 Mac OS 9 Platinum Human Interface Guidelines (HIG) were mathematically optimized for human perceptual psychology:
+- **Light Source Axiom:** All interactive widgets are illuminated by an imaginary 45-degree white light from the top-left.
+- **Affordance Mapping:** Raised buttons carry a 1px white highlight on top/left and a 1px shadow on bottom/right. Recessed data entry fields (inputs) reverse this geometry, communicating a physical indentation.
+- **The Result:** The human visual cortex decodes interactive depth within 30 milliseconds, incurring zero extraneous cognitive load.
 
-### Key Architectural Gains:
-- Native Popover API and \`<dialog>\` elements replace cumbersome third-party modal and floating UI libraries.
-- CSS View Transitions enable seamless fluid page navigation animations across multi-page workflows.
-- CSS Subgrid establishes perfectly aligned nested column hierarchies across complex dashboard layouts.`,
+\`\`\`css
+/* Authentic Mac OS 9 Platinum Button Bevel */
+.mac9-btn {
+  background: linear-gradient(180deg, #FFFFFF 0%, #EAEAEA 25%, #DDDDDD 50%, #CCCCCC 100%);
+  border: 1px solid #1F1F1F;
+  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #707070;
+  font-family: 'Charcoal', sans-serif;
+  cursor: pointer;
+}
+.mac9-btn:active {
+  background: #AFAFAF;
+  box-shadow: inset 1px 1px 1px #1F1F1F, inset -1px -1px 0px #FFFFFF;
+}
+\`\`\`
+
+## 2. Spatial Memory vs. Transient Tabs
+When users open 70 browser tabs, spatial orientation collapses. Classic Mac OS Finder windows opened at dedicated pixel coordinates with fixed dimensions, anchoring files to the user's hippocampal place cells. NovaBlog honors this principle by preserving desktop window coordinates and states across sessions.`,
+    author: 'Abdullah Berke Ozder',
+    authorUsername: 'berke.ozder',
+    authorTitle: 'Staff Platform Engineer',
+    views: 3870,
+    likes: 489,
+    clapsCount: 489,
+    commentCount: 19,
+    isPublished: true,
+    publishedAt: '2026-11-12T16:00:00Z',
+    createdDate: '2026-11-12T15:15:00Z',
+    category: MOCK_CATEGORIES[3],
+    tags: ['mac-os-9', 'platinum-hig', 'cognitive-load', 'skeuomorphism', 'spatial-memory'],
+    aiSummary: 'Why the 1999 Mac OS 9 Platinum design system remains an ergonomic masterclass. Explores the 45-degree light axiom, physical affordances, and spatial memory against the pitfalls of modern flat UI.',
+    hasVectorEmbedding: true,
+    isFeatured: true,
+    readTimeMinutes: 6,
+    version: 1,
+  },
+
+  // ==========================================
+  // PILLAR 4: ENTERPRISE STRATEGY, HISTORY & SRE
+  // ==========================================
+  {
+    id: 10,
+    blogId: 10,
+    publicationType: 'article',
+    header: 'Enterprise Architecture Strategy',
+    title: 'The Microservices Illusion: Consolidating Distributed Sprawl into High-Cohesion Modular Monoliths to Slash Cloud Egress by 65%',
+    content: `For a decade, engineering organizations with fewer than 100 engineers rushed to slice their systems into dozens of independent microservices. The result was rarely velocity; more often, it created a **Distributed Monolith**—all the network latency, serialized RPC failures, and debugging complexity of distributed systems with none of the independent deployment benefits.
+
+## 1. The Hidden Bill: The Distributed Computing Tax
+When a request hops across five microservices, organizations incur:
+- Serialization and deserialization CPU cycles.
+- Cloud inter-availability zone egress bandwidth charges.
+- Distributed tracing and telemetry ingestion bills that rival the primary compute invoice.
+- Inevitable data inconsistency and distributed saga orchestration failures.
+
+\`\`\`java
+// Spring Modulith: Enforcing domain module boundaries at compile time
+@ApplicationModule
+public class NovaBlogApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(NovaBlogApplication.class, args);
+    }
+}
+
+// Architectural fitness test verifying zero unauthorized cross-module coupling
+@Test
+void verifyModularArchitecture() {
+    ApplicationModules.of(NovaBlogApplication.class).verify();
+}
+\`\`\`
+
+## 2. The Modular Monolith Alternative
+Using **Spring Modulith**, domain boundaries are strictly verified during unit test execution. Modules communicate via internal event publications and clean in-memory interfaces, eliminating network hops entirely.
+
+## 3. Financial and Operational ROI
+Consolidating our secondary services back into a single modular Spring Boot deployment reduced our monthly AWS EC2 and inter-AZ data transit bills by 65%, while cutting Mean Time to Resolution (MTTR) on production defects in half.`,
+    author: 'Abdullah Berke Ozder',
+    authorUsername: 'berke.ozder',
+    authorTitle: 'Staff Platform Engineer',
+    views: 4560,
+    likes: 620,
+    clapsCount: 620,
+    commentCount: 24,
+    isPublished: true,
+    publishedAt: '2026-11-11T13:00:00Z',
+    createdDate: '2026-11-11T12:10:00Z',
+    category: MOCK_CATEGORIES[1],
+    tags: ['modular-monolith', 'microservices', 'cloud-finops', 'spring-modulith', 'architecture-roi'],
+    aiSummary: 'Strategic case study on reversing microservice sprawl into high-cohesion Spring Moduliths. Slashes AWS cloud egress and observability costs by 65% while accelerating feature delivery.',
+    hasVectorEmbedding: true,
+    isFeatured: true,
+    readTimeMinutes: 8,
+    version: 1,
+  },
+  {
+    id: 11,
+    blogId: 11,
+    publicationType: 'article',
+    header: 'Computing History & OS Evolution',
+    title: 'The Legacy of BeOS: From 1995 Pervasive Preemptive Threading to the 2026 Java Virtual Threading Renaissance',
+    content: `In 1995, former Apple executive Jean-Louis Gassée unveiled **BeOS**, the most advanced multimedia operating system of its generation. BeOS championed "Pervasive Multithreading": every window, audio track, and file query lived on its own preemptive thread.
+
+## 1. The Tragedy of Premature Multithreading
+While visionarily ahead of its time, BeOS collided with 1990s hardware constraints. Allocating a dedicated kernel thread for every UI widget exhausted CPU cache lines, while context-switch overhead overwhelmed single-core PowerPC 603 processors.
+
+\`\`\`text
+1995 BeOS Architecture:
+  GUI Widget -> Kernel Thread (1MB Stack) -> Heavy Context Switch -> Hardware Bottleneck
+
+2026 Java 22 Loom Architecture:
+  Task / Socket -> Virtual Thread (Heap Continuation) -> M:N Carrier Scheduler -> 1,000,000+ Concurrent Units
+\`\`\`
+
+## 2. The 30-Year Architectural Loop
+What BeOS attempted at the kernel level in 1995, modern runtimes have finally solved in 2026 by moving continuation scheduling into user-space:
+- Lightweight continuations parked on the heap.
+- Decoupling logical threads from operating system kernel stacks.
+- Restoring the clarity of synchronous imperative programming without blocking underlying silicons.
+
+Understanding computing history reveals that modern cloud engineering rarely invents new paradigms from scratch; it fulfills the unfulfilled architectural dreams of the 1990s with modern silicon.`,
+    author: 'Abdullah Berke Ozder',
+    authorUsername: 'berke.ozder',
+    authorTitle: 'Staff Platform Engineer',
+    views: 2940,
+    likes: 380,
+    clapsCount: 380,
+    commentCount: 15,
+    isPublished: true,
+    publishedAt: '2026-11-10T11:00:00Z',
+    createdDate: '2026-11-10T10:15:00Z',
+    category: MOCK_CATEGORIES[2],
+    tags: ['computing-history', 'beos', 'project-loom', 'os-architecture', 'multithreading'],
+    aiSummary: 'Historical and technical examination connecting BeOS 1995 pervasive multithreading to modern Java 22 Virtual Threads. How user-space continuations finally realized the 30-year-old dream.',
+    hasVectorEmbedding: true,
+    isFeatured: false,
+    readTimeMinutes: 7,
+    version: 1,
+  },
+  {
+    id: 12,
+    blogId: 12,
+    publicationType: 'article',
+    header: 'SRE & Fault Tolerance',
+    title: 'Resilience4j Circuit Breakers and RFC 7807: Transforming Distributed Network Failures into Deterministic Machine Contracts',
+    content: `In high-throughput microservices, treating network failures as generic HTTP 500 errors leaves frontend applications blind. Without structured machine contracts, clients cannot distinguish between an invalid payload, an overloaded database, or an active circuit breaker.
+
+## 1. The RFC 7807 Problem Details Standard
+Spring Boot 4 natively implements RFC 7807 (\`application/problem+json\`). Rather than custom error schemas, every abnormal execution returns a standardized envelope:
+
+\`\`\`json
+{
+  "type": "https://novablog.internal/errors/circuit-breaker-open",
+  "title": "Service Degraded - Circuit Breaker Open",
+  "status": 503,
+  "detail": "AI Vector Search is currently unavailable due to downstream timeouts. Please retry in 5 seconds.",
+  "instance": "/api/v1/blogs/search/semantic",
+  "traceId": "7f8b91a2-c3d4-4e5f-b6a7-8c9d0e1f2a3b",
+  "retryAfterSeconds": 5
+}
+\`\`\`
+
+## 2. Spring Boot 4 Global Error Handler Integration
+By intercepting Resilience4j \`CallNotPermittedException\` instances, we translate circuit breaker trips into deterministic HTTP 503 envelopes equipped with exact backoff directives:
+
+\`\`\`java
+@ExceptionHandler(CallNotPermittedException.class)
+public ProblemDetail handleCircuitBreakerOpen(CallNotPermittedException ex, HttpServletRequest request) {
+    ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+        HttpStatus.SERVICE_UNAVAILABLE, 
+        "Downstream dependency is isolated due to high error rates."
+    );
+    problem.setType(URI.create("https://novablog.internal/errors/circuit-breaker-open"));
+    problem.setProperty("traceId", Tracer.currentTraceId());
+    problem.setProperty("retryAfterSeconds", 5);
+    return problem;
+}
+\`\`\`
+
+## 3. Frontend Graceful Recovery
+Receiving this contract, our Next.js client reads the \`retryAfterSeconds\` property, disables retry buttons, and displays a friendly Mac OS 9 alert banner rather than crashing the interface.`,
     author: 'Caner Aydin',
-    authorTitle: 'Staff Frontend Architect',
-    views: 2150,
+    authorUsername: 'caneraydin',
+    authorTitle: 'Principal Security Architect & Cloud Native SRE',
+    views: 2410,
     likes: 310,
     clapsCount: 310,
+    commentCount: 10,
     isPublished: true,
-    publishedAt: '2026-11-16T14:40:00Z',
-    createdDate: '2026-11-16T14:10:00Z',
-    category: MOCK_CATEGORIES[3],
-    viaSource: 'Web.dev & Google Chrome',
-    viaUrl: 'https://web.dev',
-    editorialTake: 'Baseline 2026 allows complex windowing, popovers, and smooth view transitions to run entirely on native browser engines without heavy polyfills.',
-    isBreaking: false,
-    readTimeMinutes: 2,
-    tags: ['baseline-2026', 'view-transitions', 'popover-api', 'css-subgrid', 'standards'],
-    aiSummary: 'Baseline 2026 achieves universal browser support for Popover API, View Transitions, and CSS Subgrid, reducing frontend bundle weight.',
+    publishedAt: '2026-11-09T14:00:00Z',
+    createdDate: '2026-11-09T13:20:00Z',
+    category: MOCK_CATEGORIES[5],
+    tags: ['resilience4j', 'rfc-7807', 'problem-details', 'fault-tolerance', 'sre'],
+    aiSummary: 'Standardizing distributed error handling with RFC 7807 Problem Details and Resilience4j. Translates circuit breaker trips into machine-readable contracts with trace IDs and retry intervals.',
     hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 1015,
-    publicationType: 'dispatch',
-    header: 'STREAMING & REAL-TIME DATA',
-    title: 'Real-Time Event Streams with TanStack Query v5 and Server-Sent Events (SSE)',
-    content: `TanStack Query v5 has introduced standardized adapters for Server-Sent Events (SSE) and persistent reactive streams, bridging client caches with continuous backend event flows.
-
-Applications can subscribe to live telemetry feeds without maintaining expensive full-duplex WebSocket connections.
-
-### Key Architectural Gains:
-- Server-Sent Events consume negligible server overhead compared to long-lived WebSocket handshakes.
-- Automatic cache invalidation and query cache updates triggered directly by incoming server push events.
-- Built-in reconnection backoff and stream recovery over standard HTTP/2 and HTTP/3 multiplexed connections.`,
-    author: 'Caner Aydin',
-    authorTitle: 'Staff Frontend Architect',
-    views: 1980,
-    likes: 260,
-    clapsCount: 260,
-    isPublished: true,
-    publishedAt: '2026-11-15T13:10:00Z',
-    createdDate: '2026-11-15T12:40:00Z',
-    category: MOCK_CATEGORIES[3],
-    viaSource: 'Medium Frontend Engineering',
-    viaUrl: 'https://medium.com',
-    editorialTake: 'Server-Sent Events combined with TanStack Query provide lightweight real-time telemetry streaming over standard HTTP without WebSocket operational overhead.',
-    isBreaking: false,
-    readTimeMinutes: 3,
-    tags: ['tanstack-query', 'sse', 'realtime-data', 'react-state', 'medium'],
-    aiSummary: 'TanStack Query v5 integrates Server-Sent Events (SSE) for lightweight real-time data streaming and automatic reactive cache synchronization.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-
-  // === CATEGORY 4: BACKEND & DISTRIBUTED SYSTEMS (5 DISPATCHES) ===
-  {
-    id: 1016,
-    publicationType: 'dispatch',
-    header: 'JAVA RUNTIME & AMBER',
-    title: 'Java 23 and Project Amber: Pattern Matching for Primitives and Stream Gatherers',
-    content: `The OpenJDK community has shipped Java 23, finalizing Project Amber productivity enhancements including primitive pattern matching and flexible Stream Gatherers.
-
-Developers can now author concise, expressive domain logic with zero autoboxing performance penalties.
-
-### Key Architectural Gains:
-- Pattern matching across primitive types eliminates unnecessary wrapper object allocations in high-frequency data pipelines.
-- Stream Gatherers (JEP 473) allow custom intermediate stream operations like windowing, folding, and rate-limiting.
-- Markdown documentation comments in source code render beautifully directly inside IDE tooltips.`,
-    author: 'Abdullah Berke Ozder',
-    authorTitle: 'Senior Systems Architect',
-    views: 4100,
-    likes: 580,
-    clapsCount: 580,
-    isPublished: true,
-    publishedAt: '2026-11-20T08:00:00Z',
-    createdDate: '2026-11-20T07:30:00Z',
-    category: MOCK_CATEGORIES[1],
-    viaSource: 'Oracle Java Magazine',
-    viaUrl: 'https://blogs.oracle.com/java',
-    editorialTake: 'Stream Gatherers and primitive pattern matching give Java 23 developers expressive data pipeline abstractions without sacrificing CPU cache locality.',
-    isBreaking: true,
-    readTimeMinutes: 4,
-    tags: ['java-23', 'stream-gatherers', 'pattern-matching', 'jvm', 'amber'],
-    aiSummary: 'Java 23 introduces Stream Gatherers and primitive pattern matching, delivering expressive stream processing without autoboxing overhead.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 1017,
-    publicationType: 'dispatch',
-    header: 'NATIVE IMAGE & SPRING BOOT 3.4',
-    title: 'Spring Boot 3.4 and GraalVM Native Image: 80ms Cold Starts',
-    content: `The Spring Boot 3.4 release introduces refined Ahead-of-Time (AOT) compilation heuristics and deep GraalVM native image optimizations.
-
-Microservices compile into standalone native Linux binaries that boot in double-digit milliseconds with a fraction of the baseline memory footprint.
-
-### Key Architectural Gains:
-- Cold start bootstrap latency reduced from 2.5 seconds on the JVM to under 80 milliseconds in native images.
-- Base memory footprint drops from 280MB to 32MB, making serverless container scaling highly cost-efficient.
-- Native build times reduced by 40% through shared static analysis caching.`,
-    author: 'Abdullah Berke Ozder',
-    authorTitle: 'Senior Systems Architect',
-    views: 3350,
-    likes: 460,
-    clapsCount: 460,
-    isPublished: true,
-    publishedAt: '2026-11-19T15:20:00Z',
-    createdDate: '2026-11-19T14:50:00Z',
-    category: MOCK_CATEGORIES[1],
-    viaSource: 'Spring.io Release',
-    viaUrl: 'https://spring.io/blog',
-    editorialTake: 'Sub-100 millisecond cold starts make Spring Boot 3.4 native images a premier choice for autoscaling serverless microservices and edge nodes.',
-    isBreaking: false,
-    readTimeMinutes: 3,
-    tags: ['spring-boot-3-4', 'graalvm', 'native-image', 'aot', 'microservices'],
-    aiSummary: 'Spring Boot 3.4 and GraalVM Native Image achieve 80ms cold boots and 32MB baseline RAM consumption for elastic container workloads.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 1018,
-    publicationType: 'dispatch',
-    header: 'RELATIONAL ENGINES & POSTGRESQL 17',
-    title: 'PostgreSQL 17 Released: Enhanced Memory Management and Optimized Vacuum',
-    content: `The PostgreSQL Global Development Group has released PostgreSQL 17, delivering a ground-up redesign of memory management for VACUUM maintenance operations and native JSON_TABLE support.
-
-High-write production databases experience dramatically reduced vacuum lock overhead and disk thrashing.
-
-### Key Architectural Gains:
-- VACUUM operations consume up to 20x less memory while accelerating cleanup sweeps on high-write transaction tables.
-- Native SQL/JSON \`JSON_TABLE\` simplifies querying semi-structured documents into relational result sets.
-- Logical replication failover control ensures seamless failover promotion across high-availability clusters.`,
-    author: 'Abdullah Berke Ozder',
-    authorTitle: 'Senior Systems Architect',
-    views: 2900,
-    likes: 385,
-    clapsCount: 385,
-    isPublished: true,
-    publishedAt: '2026-11-18T12:00:00Z',
-    createdDate: '2026-11-18T11:30:00Z',
-    category: MOCK_CATEGORIES[1],
-    viaSource: 'PostgreSQL Community',
-    viaUrl: 'https://www.postgresql.org/about/news',
-    editorialTake: 'Redesigned VACUUM memory structures eliminate disk thrashing on write-heavy tables, preserving sub-millisecond query performance under sustained load.',
-    isBreaking: false,
-    readTimeMinutes: 3,
-    tags: ['postgresql-17', 'vacuum-optimization', 'json-table', 'sql-tuning', 'database'],
-    aiSummary: 'PostgreSQL 17 launches with a 20x memory-optimized VACUUM engine, native JSON_TABLE functions, and hardened high-availability replication.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 1019,
-    publicationType: 'dispatch',
-    header: 'IN-MEMORY CACHE & REDIS 7.4',
-    title: 'Redis 7.4 Community Edition: Hash Field Expiration and Multi-Vector Indexing',
-    content: `Redis 7.4 introduces long-awaited granular Hash Field Expiration (HEXPIRE) and multi-vector search index capabilities directly to the core in-memory engine.
-
-Engineers can now attach precise TTL policies to individual hash fields without deleting or duplicating parent key objects.
-
-### Key Architectural Gains:
-- \`HEXPIRE\` allows per-field TTL eviction inside Redis Hashes, dramatically simplifying user session and ephemeral token management.
-- Multi-vector indexing enables searching multiple embedding representations per record in a single memory lookup.
-- 15% reduction in memory overhead for high-density integer hash maps.`,
-    author: 'Abdullah Berke Ozder',
-    authorTitle: 'Senior Systems Architect',
-    views: 2450,
-    likes: 320,
-    clapsCount: 320,
-    isPublished: true,
-    publishedAt: '2026-11-17T14:15:00Z',
-    createdDate: '2026-11-17T13:45:00Z',
-    category: MOCK_CATEGORIES[1],
-    viaSource: 'Redis Ltd & Hacker News',
-    viaUrl: 'https://news.ycombinator.com',
-    editorialTake: 'Granular Hash Field Expiration (HEXPIRE) eliminates custom TTL workarounds, making Redis an even sharper tool for temporary session buffers.',
-    isBreaking: false,
-    readTimeMinutes: 3,
-    tags: ['redis-7-4', 'hash-field-expiration', 'in-memory', 'caching', 'hacker-news'],
-    aiSummary: 'Redis 7.4 adds Hash Field Expiration (HEXPIRE) and multi-vector search, optimizing per-field TTL management in memory-constrained environments.',
-    hasVectorEmbedding: true,
-    version: 1,
-  },
-  {
-    id: 1020,
-    publicationType: 'dispatch',
-    header: 'DISTRIBUTED DATA & CDC',
-    title: 'The Distributed Transaction Dilemma: Outbox Pattern and Debezium CDC Over 2PC',
-    content: `Modern cloud-native architectures are definitively retiring heavy Two-Phase Commit (2PC) protocols in favor of the Transactional Outbox Pattern paired with Debezium Change Data Capture (CDC).
-
-By decoupling database transactions from downstream event message dispatching, systems achieve true eventual consistency with zero distributed locking.
-
-### Key Architectural Gains:
-- Local database transactions atomically insert business records and outbox events in a single ACID commit.
-- Debezium tails PostgreSQL Write-Ahead Logs (WAL) with zero impact on active OLTP query throughput.
-- Eliminates distributed transaction deadlocks and guarantees at-least-once message delivery to Apache Kafka.`,
-    author: 'Abdullah Berke Ozder',
-    authorTitle: 'Senior Systems Architect',
-    views: 3600,
-    likes: 495,
-    clapsCount: 495,
-    isPublished: true,
-    publishedAt: '2026-11-16T10:45:00Z',
-    createdDate: '2026-11-16T10:15:00Z',
-    category: MOCK_CATEGORIES[1],
-    viaSource: 'InfoQ Software Architecture',
-    viaUrl: 'https://www.infoq.com',
-    editorialTake: 'Tailing the PostgreSQL WAL with Debezium replaces fragile distributed locks with rock-solid, high-throughput asynchronous event publishing.',
-    isBreaking: false,
-    readTimeMinutes: 4,
-    tags: ['transactional-outbox', 'debezium', 'event-driven', 'cdc', 'infoq'],
-    aiSummary: 'Adopting the Transactional Outbox Pattern and Debezium CDC over 2PC eliminates distributed locking while guaranteeing atomic event publication.',
-    hasVectorEmbedding: true,
+    isFeatured: false,
+    readTimeMinutes: 5,
     version: 1,
   },
 ];
@@ -902,18 +770,18 @@ export const MOCK_COMMENTS: Record<number, CommentResponseDto[]> = {
     {
       id: 101,
       blogId: 1,
-      content: 'The vector search and cosine similarity architecture is brilliantly executed! The hybrid RRF ranker delivers exceptional relevance.',
-      authorName: 'Caner Aydin (Senior AI Engineer)',
-      createdAt: '2026-11-05T12:30:00Z',
+      content: 'The carrier thread pinning analysis with JFR and ReentrantLock is deeply instructive. We had this exact issue with legacy synchronized DB drivers!',
+      authorName: 'Mehmet Kaya (Staff SRE)',
+      createdAt: '2026-11-20T11:30:00Z',
       isApproved: true,
       sentiment: 'POSITIVE',
     },
     {
       id: 102,
       blogId: 1,
-      content: 'Integrating Spring AI with pgvector is a game changer for enterprise architectures.',
-      authorName: 'Elif Yilmaz (Tech Lead)',
-      createdAt: '2026-11-05T14:10:00Z',
+      content: 'Scoped Values in Java 22 is a breath of fresh air. ThreadLocal memory leaks were plaguing our Kubernetes pods.',
+      authorName: 'Elif Yilmaz (Backend Lead)',
+      createdAt: '2026-11-20T14:10:00Z',
       isApproved: true,
       sentiment: 'POSITIVE',
     },
@@ -922,31 +790,64 @@ export const MOCK_COMMENTS: Record<number, CommentResponseDto[]> = {
     {
       id: 201,
       blogId: 2,
-      content: 'Virtual Threads bring Spring Boot 4 performance to an entirely new level; the Loom carrier thread unpinning analysis is deeply instructive.',
-      authorName: 'Mehmet Kaya (DevOps Lead)',
-      createdAt: '2026-11-04T16:00:00Z',
+      content: 'Debezium CDC over WAL is the only sane way to handle dual-writes. 2PC was causing endless lock contention in our database clusters.',
+      authorName: 'Arda Guler (Data Architect)',
+      createdAt: '2026-11-19T16:00:00Z',
       isApproved: true,
       sentiment: 'POSITIVE',
     },
   ],
-  1006: [
+  4: [
+    {
+      id: 401,
+      blogId: 4,
+      content: 'The Reciprocal Rank Fusion (RRF) formula with k=60 worked flawlessly for our technical docs search. Pure vector search was missing all our error codes!',
+      authorName: 'Zeynep Ak (AI Engineer)',
+      createdAt: '2026-11-17T10:20:00Z',
+      isApproved: true,
+      sentiment: 'POSITIVE',
+    },
+  ],
+  6: [
     {
       id: 601,
-      blogId: 1006,
-      content: 'Model Context Protocol (MCP) has the capability to unify the whole industry around one open protocol. Tested with Claude Desktop and works seamlessly.',
-      authorName: 'Arda Guler (DevOps Lead)',
-      createdAt: '2026-11-20T11:00:00Z',
+      blogId: 6,
+      content: 'Model Context Protocol (MCP) is standardizing agent tooling across the whole industry. Excellent walkthrough of the Spring AI MCP server setup.',
+      authorName: 'Cem Ozturk (Agentic Systems Lead)',
+      createdAt: '2026-11-15T12:00:00Z',
       isApproved: true,
       sentiment: 'POSITIVE',
     },
   ],
-  1011: [
+  7: [
     {
       id: 701,
-      blogId: 1011,
-      content: 'React 19 useOptimistic delivers that instantaneous tactile physical feedback we look for on skeuomorphic buttons without any boilerplate.',
-      authorName: 'Zeynep Ak (Frontend Specialist)',
-      createdAt: '2026-11-19T12:45:00Z',
+      blogId: 7,
+      content: 'React 19 Compiler finally kills useMemo and useCallback boilerplate. The SSA control flow analysis explanation is crystal clear!',
+      authorName: 'Bora Tan (Senior Frontend Architect)',
+      createdAt: '2026-11-14T17:45:00Z',
+      isApproved: true,
+      sentiment: 'POSITIVE',
+    },
+  ],
+  9: [
+    {
+      id: 901,
+      blogId: 9,
+      content: 'The 45-degree light source axiom and spatial memory explanation hit the nail on the head. Modern flat UI has made everything look like unclickable mystery meat.',
+      authorName: 'Emre Demir (HCI Researcher)',
+      createdAt: '2026-11-12T18:30:00Z',
+      isApproved: true,
+      sentiment: 'POSITIVE',
+    },
+  ],
+  10: [
+    {
+      id: 1001,
+      blogId: 10,
+      content: 'Our cloud egress bills dropped by over $8,000/month after moving from 15 microservices back to a Spring Modulith. Thank you for speaking truth to the microservice hype!',
+      authorName: 'Serkan Acar (VP of Engineering)',
+      createdAt: '2026-11-11T16:15:00Z',
       isApproved: true,
       sentiment: 'POSITIVE',
     },
@@ -955,38 +856,38 @@ export const MOCK_COMMENTS: Record<number, CommentResponseDto[]> = {
 
 export const MOCK_SEMANTIC_RESULTS: BlogSemanticSearchResultDto[] = [
   {
-    blog: MOCK_BLOGS[0],
-    similarityScore: 0.942,
-    matchedKeywords: ['spring-ai', 'vektor-arama', 'anlamsal-arama', 'yapay-zeka'],
-    searchMode: 'SEMANTIC',
-    explanation: '94.2% semantic convergence identified between user query concept and vector embedding space.',
-  },
-  {
-    blog: MOCK_BLOGS[1],
-    similarityScore: 0.815,
-    matchedKeywords: ['spring-boot-4', 'concurrency', 'threads'],
-    searchMode: 'HYBRID',
-    explanation: 'Ranked top tier in hybrid ranking under modern backend architecture and high scalability context.',
-  },
-  {
-    blog: MOCK_BLOGS[2],
-    similarityScore: 0.768,
-    matchedKeywords: ['redis', 'write-behind', 'performance'],
-    searchMode: 'SEMANTIC',
-    explanation: 'Strong semantic proximity identified across caching and distributed counter aggregation concepts.',
-  },
-  {
-    blog: MOCK_BLOGS[6], // 1001 (AWS & Cloudflare Egress)
-    similarityScore: 0.890,
-    matchedKeywords: ['cloud', 'egress', 'cloudflare', 'aws'],
-    searchMode: 'SEMANTIC',
-    explanation: 'High relevance detected regarding cloud storage egress optimization and distributed data transit.',
-  },
-  {
-    blog: MOCK_BLOGS[11], // 1006 (Anthropic MCP)
+    blog: MOCK_BLOGS[0], // Loom Pinning
     similarityScore: 0.965,
-    matchedKeywords: ['mcp', 'anthropic', 'agentic-ai'],
+    matchedKeywords: ['java-22', 'virtual-threads', 'loom', 'concurrency'],
     searchMode: 'SEMANTIC',
-    explanation: 'Flawless semantic match in Model Context Protocol and autonomous AI agent tool execution context.',
+    explanation: '96.5% semantic convergence identified between concurrency queries and Java 22 Loom carrier thread unpinning.',
+  },
+  {
+    blog: MOCK_BLOGS[3], // Hybrid RRF Search
+    similarityScore: 0.942,
+    matchedKeywords: ['spring-ai', 'pgvector', 'hnsw', 'semantic-search'],
+    searchMode: 'SEMANTIC',
+    explanation: 'High relevance detected in vector database indexing and Reciprocal Rank Fusion query routing.',
+  },
+  {
+    blog: MOCK_BLOGS[1], // Outbox & Debezium
+    similarityScore: 0.890,
+    matchedKeywords: ['debezium', 'outbox', 'cdc', 'redis'],
+    searchMode: 'HYBRID',
+    explanation: 'Ranked top tier in distributed transactional consistency and Write-Ahead Log replication.',
+  },
+  {
+    blog: MOCK_BLOGS[6], // React 19 Compiler
+    similarityScore: 0.845,
+    matchedKeywords: ['react-19', 'compiler', 'ast', 'usememo'],
+    searchMode: 'SEMANTIC',
+    explanation: 'Direct match for modern web compiler architecture and static single assignment analysis.',
+  },
+  {
+    blog: MOCK_BLOGS[9], // Modular Monolith
+    similarityScore: 0.815,
+    matchedKeywords: ['modular-monolith', 'microservices', 'cloud-finops'],
+    searchMode: 'SEMANTIC',
+    explanation: 'Strong semantic alignment regarding enterprise software economics and cloud egress reduction.',
   },
 ];

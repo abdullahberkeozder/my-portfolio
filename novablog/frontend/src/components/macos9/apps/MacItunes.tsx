@@ -4,10 +4,7 @@
 import React, { useState } from 'react';
 import { useMusicPlayer } from '@/lib/musicSystem';
 import { macSound } from '@/lib/retroAudioMac9';
-import { MacAudioVisualizer } from './MacAudioVisualizer';
 import { Search, X } from 'lucide-react';
-
-type ActiveView = 'playlist' | 'visualizer' | 'video';
 
 export const MacItunes: React.FC = () => {
   const {
@@ -27,7 +24,6 @@ export const MacItunes: React.FC = () => {
     seek,
   } = useMusicPlayer();
 
-  const [activeView, setActiveView] = useState<ActiveView>('playlist');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedPlaylist, setSelectedPlaylist] = useState<string>('library');
 
@@ -177,155 +173,82 @@ export const MacItunes: React.FC = () => {
             )}
           </div>
 
-          {/* Mode Switcher Tabs + Search Box */}
-          <div className="flex flex-col gap-1.5 items-end shrink-0">
-            {/* Mac OS 9 Segmented Control (Playlist / Visualizer / Video) */}
-            <div className="mac9-segmented-group h-[24px]">
-              <button
-                type="button"
-                onClick={() => {
-                  macSound.playMacClickUp();
-                  setActiveView('playlist');
-                }}
-                className={`mac9-segmented-item whitespace-nowrap !py-0.5 !px-2 !text-[10.5px] ${
-                  activeView === 'playlist' ? 'active' : ''
-                }`}
-              >
-                <span>🎵 Playlist</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  macSound.playMacClickUp();
-                  setActiveView('visualizer');
-                }}
-                className={`mac9-segmented-item whitespace-nowrap !py-0.5 !px-2 !text-[10.5px] ${
-                  activeView === 'visualizer' ? 'active' : ''
-                }`}
-              >
-                <span>🌊 Visualizer</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  macSound.playMacClickUp();
-                  setActiveView('video');
-                }}
-                className={`mac9-segmented-item whitespace-nowrap !py-0.5 !px-2 !text-[10.5px] ${
-                  activeView === 'video' ? 'active' : ''
-                }`}
-              >
-                <span>📺 Video</span>
-              </button>
+          {/* Top Right: Search Library Input (Streamlined, Authentic Mac OS 9 Player) */}
+          <div className="flex items-center shrink-0">
+            <div className="mac9-inset-box h-[24px] px-2 flex items-center gap-1.5 w-48 rounded-[2px]">
+              <Search className="w-3 h-3 text-[#666] shrink-0" />
+              <input
+                type="text"
+                placeholder="Search Library..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-transparent border-none text-[11px] font-['Geneva',sans-serif] text-[#262626] dark:text-[#E2E8F0] focus:outline-none"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="text-[#888] hover:text-[#262626] shrink-0 p-0"
+                >
+                  <X className="w-2.5 h-2.5" />
+                </button>
+              )}
             </div>
-
-            {/* Search Box (Mac OS 9 Inset Box) */}
-            {activeView === 'playlist' && (
-              <div className="mac9-inset-box h-[22px] px-1.5 flex items-center gap-1 w-40 rounded-[2px]">
-                <Search className="w-3 h-3 text-[#666] shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Search Library..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent border-none text-[10.5px] font-['Geneva',sans-serif] text-[#262626] dark:text-[#E2E8F0] focus:outline-none"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="text-[#888] hover:text-[#262626] shrink-0 p-0"
-                  >
-                    <X className="w-2.5 h-2.5" />
-                  </button>
-                )}
-              </div>
-            )}
           </div>
         </div>
       </div>
 
       {/* ================= 2. MAIN BODY (VIEW CONTAINER) ================= */}
       <div className="flex-1 flex overflow-hidden">
-        {/* VIEW A: PLAYLIST MODE */}
-        {activeView === 'playlist' && (
-          <>
-            {/* Source Sidebar */}
-            <div className="w-44 bg-[#E0E0E0] dark:bg-[#1E293B] border-r border-[#888] dark:border-[#334155] flex flex-col py-2 px-1 text-[11px]">
-              <span className="text-[10px] uppercase font-bold text-[#666] dark:text-gray-400 px-2 mb-1 tracking-wider font-mono">
-                Source
-              </span>
-              <button
-                onClick={() => setSelectedPlaylist('library')}
-                className={`w-full text-left px-2 py-1 rounded-[2px] flex items-center gap-1.5 transition-none ${
-                  selectedPlaylist === 'library'
-                    ? 'bg-[#333399] text-white font-bold shadow-sm'
-                    : 'hover:bg-[#D5D5D5] dark:hover:bg-[#2A374A] text-[#262626] dark:text-gray-200'
-                }`}
-              >
-                <span>🎵</span>
-                <span className="font-['Geneva',sans-serif]">Library</span>
-              </button>
-              <button
-                onClick={() => setSelectedPlaylist('weeknd')}
-                className={`w-full text-left px-2 py-1 rounded-[2px] flex items-center gap-1.5 transition-none ${
-                  selectedPlaylist === 'weeknd'
-                    ? 'bg-[#333399] text-white font-bold shadow-sm'
-                    : 'hover:bg-[#D5D5D5] dark:hover:bg-[#2A374A] text-[#262626] dark:text-gray-200'
-                }`}
-              >
-                <span>🎧</span>
-                <span className="font-['Geneva',sans-serif]">The Weeknd Hits</span>
-              </button>
-              <button
-                onClick={() => setSelectedPlaylist('synth')}
-                className={`w-full text-left px-2 py-1 rounded-[2px] flex items-center gap-1.5 transition-none ${
-                  selectedPlaylist === 'synth'
-                    ? 'bg-[#333399] text-white font-bold shadow-sm'
-                    : 'hover:bg-[#D5D5D5] dark:hover:bg-[#2A374A] text-[#262626] dark:text-gray-200'
-                }`}
-              >
-                <span>💿</span>
-                <span className="font-['Geneva',sans-serif]">Retro Synth &amp; Disco</span>
-              </button>
-              <button
-                onClick={() => setSelectedPlaylist('mac9')}
-                className={`w-full text-left px-2 py-1 rounded-[2px] flex items-center gap-1.5 transition-none ${
-                  selectedPlaylist === 'mac9'
-                    ? 'bg-[#333399] text-white font-bold shadow-sm'
-                    : 'hover:bg-[#D5D5D5] dark:hover:bg-[#2A374A] text-[#262626] dark:text-gray-200'
-                }`}
-              >
-                <span>🍎</span>
-                <span className="font-['Geneva',sans-serif]">Cupertino 1999</span>
-              </button>
-
-              <div className="h-px bg-[#B8B8B8] dark:bg-[#334155] my-2 mx-1" />
-
-              <span className="text-[10px] uppercase font-bold text-[#666] dark:text-gray-400 px-2 mb-1 tracking-wider font-mono">
-                Visualizer &amp; Video
-              </span>
-              <button
-                onClick={() => setActiveView('visualizer')}
-                className="w-full text-left px-2 py-1 rounded-[2px] flex items-center gap-1.5 hover:bg-[#D5D5D5] dark:hover:bg-[#2A374A] text-[#262626] dark:text-gray-200"
-              >
-                <span>🌊</span>
-                <span className="font-['Geneva',sans-serif]">Audio Visualizer</span>
-              </button>
-              <button
-                onClick={() => setActiveView('video')}
-                className="w-full text-left px-2 py-1 rounded-[2px] flex items-center gap-1.5 hover:bg-[#D5D5D5] dark:hover:bg-[#2A374A] text-[#262626] dark:text-gray-200"
-              >
-                <span>📺</span>
-                <span className="font-['Geneva',sans-serif]">YouTube Video</span>
-              </button>
-
-              {/* QuickTime Audio Inset Box */}
-              <div className="mac9-inset-box p-2 text-[10px] font-mono text-[#555] dark:text-gray-400 mt-auto mx-0.5 rounded-[2px]">
-                <div className="font-bold text-[#222] dark:text-gray-200 mb-0.5">QuickTime Audio</div>
-                <div>Stereo 44.1 kHz 16-Bit</div>
-                <div className="text-[#333399] dark:text-cyan-400 font-semibold">CoreAudio Platinum v2.1</div>
-              </div>
-            </div>
+        {/* Source Sidebar */}
+        <div className="w-44 bg-[#E0E0E0] dark:bg-[#1E293B] border-r border-[#888] dark:border-[#334155] flex flex-col py-2.5 px-1.5 text-[11px]">
+          <span className="text-[10px] uppercase font-bold text-[#666] dark:text-gray-400 px-2 mb-1.5 tracking-wider font-mono">
+            Source
+          </span>
+          <button
+            onClick={() => setSelectedPlaylist('library')}
+            className={`w-full text-left px-2.5 py-1.5 rounded-[2px] flex items-center gap-2 transition-none cursor-pointer ${
+              selectedPlaylist === 'library'
+                ? 'bg-[#333399] text-white font-bold shadow-sm'
+                : 'hover:bg-[#D5D5D5] dark:hover:bg-[#2A374A] text-[#262626] dark:text-gray-200'
+            }`}
+          >
+            <span>🎵</span>
+            <span className="font-['Geneva',sans-serif]">Library</span>
+          </button>
+          <button
+            onClick={() => setSelectedPlaylist('weeknd')}
+            className={`w-full text-left px-2.5 py-1.5 rounded-[2px] flex items-center gap-2 transition-none cursor-pointer ${
+              selectedPlaylist === 'weeknd'
+                ? 'bg-[#333399] text-white font-bold shadow-sm'
+                : 'hover:bg-[#D5D5D5] dark:hover:bg-[#2A374A] text-[#262626] dark:text-gray-200'
+            }`}
+          >
+            <span>🎧</span>
+            <span className="font-['Geneva',sans-serif]">The Weeknd Hits</span>
+          </button>
+          <button
+            onClick={() => setSelectedPlaylist('synth')}
+            className={`w-full text-left px-2.5 py-1.5 rounded-[2px] flex items-center gap-2 transition-none cursor-pointer ${
+              selectedPlaylist === 'synth'
+                ? 'bg-[#333399] text-white font-bold shadow-sm'
+                : 'hover:bg-[#D5D5D5] dark:hover:bg-[#2A374A] text-[#262626] dark:text-gray-200'
+            }`}
+          >
+            <span>💿</span>
+            <span className="font-['Geneva',sans-serif]">Retro Synth &amp; Disco</span>
+          </button>
+          <button
+            onClick={() => setSelectedPlaylist('mac9')}
+            className={`w-full text-left px-2.5 py-1.5 rounded-[2px] flex items-center gap-2 transition-none cursor-pointer ${
+              selectedPlaylist === 'mac9'
+                ? 'bg-[#333399] text-white font-bold shadow-sm'
+                : 'hover:bg-[#D5D5D5] dark:hover:bg-[#2A374A] text-[#262626] dark:text-gray-200'
+            }`}
+          >
+            <span>🍎</span>
+            <span className="font-['Geneva',sans-serif]">Cupertino 1999</span>
+          </button>
+        </div>
 
             {/* Track List Table */}
             <div className="flex-1 flex flex-col bg-white dark:bg-[#0B0F17] overflow-hidden">
@@ -396,33 +319,7 @@ export const MacItunes: React.FC = () => {
                 </table>
               </div>
             </div>
-          </>
-        )}
-
-        {/* VIEW B: INTEGRATED VISTA & MAC AUDIO VISUALIZER */}
-        {activeView === 'visualizer' && (
-          <div className="flex-1 p-2 bg-[#060A10] overflow-hidden flex flex-col">
-            <MacAudioVisualizer />
           </div>
-        )}
-
-        {/* VIEW C: EMBEDDED YOUTUBE VIDEO FEED */}
-        {activeView === 'video' && (
-          <div className="flex-1 bg-black flex flex-col relative">
-            <div className="bg-[#1E293B] text-gray-200 px-3 py-1 text-[11px] flex items-center justify-between font-mono">
-              <span>Streaming: {track.title} — {track.artist}</span>
-              <span className="text-cyan-400">YouTube 1080p HD Audio/Video</span>
-            </div>
-            <iframe
-              src={`https://www.youtube-nocookie.com/embed/${track.youtubeId}?autoplay=1&enablejsapi=1`}
-              title={track.title}
-              className="w-full flex-1 border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        )}
-      </div>
 
       {/* ================= 3. BOTTOM STATUS BAR ================= */}
       <div className="px-3 py-1 bg-[#DDDDDD] dark:bg-[#1E293B] border-t border-[#888888] dark:border-[#334155] text-[10px] font-mono text-[#444] dark:text-gray-300 flex items-center justify-between shadow-inner">

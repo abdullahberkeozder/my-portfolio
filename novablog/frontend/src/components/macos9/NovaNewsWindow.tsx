@@ -22,65 +22,121 @@ interface NewsItem {
 
 const NEWS_DATA: NewsItem[] = [
   {
-    id: 'react-19',
-    category: 'frontend',
-    categoryLabel: 'FRONTEND CORE',
-    badge: 'BREAKING',
-    title: 'React 19 Release: useActionState, useOptimistic & Automatic Memoization',
-    author: 'Caner Aydin',
-    date: 'Nov 19, 2026',
+    id: 'java-24-scoped-values',
+    category: 'backend',
+    categoryLabel: 'JAVA & RUNTIME CORE',
+    badge: 'DISPATCH',
+    title: 'Java 24 Early Access: Scoped Values and Structured Concurrency Nearing Finalization',
+    author: 'Abdullah Berke Ozder',
+    date: 'Nov 24, 2026',
     summary:
-      'Meta React core team released the general availability release of React 19. The compiler and asynchronous form actions are now standardized.',
+      'OpenJDK benchmarks confirm JEP 480 Scoped Values reduce per-virtual-thread memory allocations by 60% while accelerating context switching by 4x. Deprecation of legacy ThreadLocal has officially begun.',
     verdict:
-      'Zero-latency tactile user interactions for likes, claps, and bookmarks in NovaBlog via useOptimistic; manual useMemo declarations deprecated.',
-    tags: ['REACT & MODERN FRONTEND', '#REACT-19', '#ACTIONS', '#OPTIMISTIC'],
+      'Spring Boot 4 core completely eliminates thread-local memory leak hazards; cross-cutting security context propagation drops to sub-nanosecond scale.',
+    tags: ['JAVA CORE', '#JAVA-24', '#SCOPED-VALUES', '#VIRTUAL-THREADS'],
   },
   {
-    id: 'anthropic-mcp',
+    id: 'mcp-2-standard',
     category: 'ai',
     categoryLabel: 'AGENT PROTOCOLS & MCP',
-    badge: 'BREAKING',
-    title: 'Anthropic Model Context Protocol (MCP) Open Standard Adoption',
+    badge: 'STANDARDS',
+    title: 'Open Standard Victory: Anthropic and Linux Foundation Ratify Model Context Protocol (MCP) 2.0',
     author: 'Dr. Selin Demir',
-    date: 'Nov 20, 2026',
+    date: 'Nov 23, 2026',
     summary:
-      'Anthropic open-sourced the bidirectional Model Context Protocol standard connecting AI agents with real-world datasources (databases, IDEs, filesystems, and GitHub).',
+      'Updated with gRPC multiplexing, Zero-Knowledge cryptographic authentication, and asynchronous streaming, MCP 2.0 is ratified as the global industry standard for agentic tool execution.',
     verdict:
-      'Unified standard established for integrating microservices and PostgreSQL pgvector with autonomous agents; eliminates custom wrapper bloat.',
-    tags: ['ARTIFICIAL INTELLIGENCE', '#MCP', '#ANTHROPIC', '#LLM-INTEGRATION'],
+      'PostgreSQL pgvector and enterprise microservices now connect to autonomous agents directly with zero bespoke wrapper bloat.',
+    tags: ['ARTIFICIAL INTELLIGENCE', '#MCP-2', '#ANTHROPIC', '#STANDARDS'],
   },
   {
-    id: 'java-23-amber',
-    category: 'backend',
-    categoryLabel: 'JAVA EVOLUTION & AMBER',
+    id: 'pgvector-08-binary-quant',
+    category: 'ai',
+    categoryLabel: 'VECTOR INFRASTRUCTURE',
     badge: 'BREAKING',
-    title: 'Java 23 & Project Amber: Pattern Matching in Primitives & Stream Gatherers',
+    title: 'PostgreSQL pgvector 0.8.0 Released: 1-Bit Binary Quantization Cuts HNSW Memory Footprint by 75%',
+    author: 'Dr. Selin Demir',
+    date: 'Nov 22, 2026',
+    summary:
+      '1-bit binary vector quantization merges into the official pgvector repository. Scanning 128D and 1536D embeddings via Hamming distance slashes RAM requirements by 32x while preserving 98%+ Recall@K.',
+    verdict:
+      'Large-scale enterprise semantic search clusters run on standard commodity hardware without dedicated high-memory instances.',
+    tags: ['DATABASE & VECTOR', '#PGVECTOR', '#HNSW', '#QUANTIZATION'],
+  },
+  {
+    id: 'turbopack-v16-rolldown',
+    category: 'frontend',
+    categoryLabel: 'COMPILERS & BUILD TOOLS',
+    badge: 'BENCHMARK',
+    title: 'New Era in Bundlers: Turbopack v16 Reaches Stability, Rolldown Hits 10ms HMR Threshold',
+    author: 'Caner Aydin',
+    date: 'Nov 21, 2026',
+    summary:
+      'Webpack and Babel are officially deprecated. Rust-powered Turbopack v16 and Rolldown leverage memory-mapped files and multi-core parallelism to slash cold build times on 100,000-module monorepos down to 850ms.',
+    verdict:
+      'Enterprise monorepo CI/CD build duration dropped by 75%; developer HMR latency is imperceptible.',
+    tags: ['FRONTEND CORE', '#TURBOPACK', '#RUST', '#ROLLDOWN', '#COMPILERS'],
+  },
+  {
+    id: 'vmware-license-fallout',
+    category: 'architecture',
+    categoryLabel: 'ENTERPRISE STRATEGY',
+    badge: 'ANALYSIS',
+    title: 'Post-Broadcom VMware Licensing Crisis: Enterprise Migration to Kubernetes KubeVirt and KVM Accelerates',
     author: 'Abdullah Berke Ozder',
     date: 'Nov 20, 2026',
     summary:
-      'Oracle Java Platform Group announced Java 23 general availability. Project Amber brings primitive type switch pattern matching and custom intermediate Stream gatherers.',
+      'Following the elimination of perpetual licensing and forced subscription price hikes of 300%+, Fortune 500 infrastructure teams are shifting hypervisors directly onto Kubernetes KubeVirt and native KVM.',
     verdict:
-      'Eliminated heap allocations and boxing-unboxing overhead in Spring Boot telemetry transforms; increased pipeline throughput by 28%.',
-    tags: ['JAVA & SPRING CORE', '#JAVA-23', '#VIRTUAL-THREADS', '#AMBER'],
+      'Bare-metal container platforms have become the primary hedge against aggressive enterprise vendor lock-in.',
+    tags: ['CLOUD STRATEGY', '#VMWARE', '#KUBERNETES', '#KUBEVIRT', '#FINOPS'],
   },
   {
-    id: 'loom-concurrency',
+    id: 'cdn-outage-postmortem',
     category: 'architecture',
-    categoryLabel: 'ARCHITECTURE BENCHMARK',
-    badge: 'ANALYSIS',
-    title: 'Spring Boot 4.1.1 & Virtual Threads: 10,000+ Concurrent Requests Benchmark',
-    author: 'Nova Systems Team',
-    date: 'Nov 21, 2026',
+    categoryLabel: 'SRE FORENSIC AUTOPSY',
+    badge: 'POST-MORTEM',
+    title: 'Post-Mortem: Global CDN Outage Traced to Catastrophic Regex Backtracking and Cascading Health Check Failures',
+    author: 'Caner Aydin',
+    date: 'Nov 19, 2026',
     summary:
-      'Stress test using Tomcat with dedicated virtual threads per request alongside PostgreSQL pgvector and Redis Write-Behind buffer clocked 11,400+ req/sec.',
+      'A faulty WAF regex rule caused 100% CPU lockups across edge clusters, causing load balancers to mark all healthy origin servers as offline and triggering a cascading global outage.',
     verdict:
-      'Eliminated platform thread pool starvation completely; achieved enterprise-grade high throughput with sub-millisecond P99 latency.',
-    tags: ['SYSTEM ARCHITECTURE', '#LOOM', '#CONCURRENCY', '#REDIS'],
+      'Demonstrates the critical necessity of strict regex execution timeouts, canary stage deployments, and automated circuit breaking in edge infrastructure.',
+    tags: ['SRE & RELIABILITY', '#POST-MORTEM', '#CASCADING-FAILURE', '#WAF'],
+  },
+  {
+    id: 'platinum-renaissance',
+    category: 'frontend',
+    categoryLabel: 'HUMAN INTERFACE DESIGN',
+    badge: 'TRENDS',
+    title: "Design Systems 'Platinum Renaissance': The Return of Mac OS 9 Bevels Against Flat Design Fatigue",
+    author: 'Abdullah Berke Ozder',
+    date: 'Nov 18, 2026',
+    summary:
+      "Independent software communities are reviving Apple's 1999 Platinum HIG guidelines, re-introducing 45-degree 1px highlights, chiseled insets, and tactile affordances over indistinct flat UI cards.",
+    verdict:
+      'Usability benchmarks show a 34% increase in task completion speed and 50% fewer misclicks on tactile, bevelled interfaces.',
+    tags: ['ERGONOMICS', '#MAC-OS-9', '#PLATINUM-HIG', '#SKEUOMORPHISM', '#UI-DESIGN'],
+  },
+  {
+    id: 'next-cube-history',
+    category: 'backend',
+    categoryLabel: 'COMPUTING HISTORY',
+    badge: 'HISTORY',
+    title: 'This Day in Computing History: Steve Jobs Unveils the NeXT Computer — The Genesis of Modern Software Architecture',
+    author: 'Abdullah Berke Ozder',
+    date: 'Nov 17, 2026',
+    summary:
+      "Anniversary of the magnesium NeXT Cube workstation, where Tim Berners-Lee authored the original World Wide Web. NeXTSTEP's dynamic Objective-C messaging and Interface Builder laid the architectural foundation for modern Spring IoC and declarative UI frameworks.",
+    verdict:
+      "Yesterday's object-oriented microkernel experiments continue to govern today's distributed container paradigms.",
+    tags: ['COMPUTING HISTORY', '#NEXTSTEP', '#STEVE-JOBS', '#OBJECT-ORIENTED'],
   },
 ];
 
 export const NovaNewsWindow: React.FC<NovaNewsWindowProps> = ({ onOpenArticleInBlog }) => {
-  const [activeChannel, setActiveChannel] = useState<'all' | 'frontend' | 'backend' | 'ai'>('all');
+  const [activeChannel, setActiveChannel] = useState<'all' | 'frontend' | 'backend' | 'ai' | 'architecture'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredNews = NEWS_DATA.filter((item) => {
@@ -101,9 +157,10 @@ export const NovaNewsWindow: React.FC<NovaNewsWindowProps> = ({ onOpenArticleInB
         <div className="flex items-center gap-1">
           {[
             { id: 'all' as const, label: '✦ All Bulletins' },
-            { id: 'frontend' as const, label: 'Frontend & React' },
+            { id: 'frontend' as const, label: 'Frontend' },
             { id: 'backend' as const, label: 'Java & Loom' },
             { id: 'ai' as const, label: 'AI & MCP' },
+            { id: 'architecture' as const, label: 'Architecture & SRE' },
           ].map((ch) => (
             <button
               key={ch.id}

@@ -3,13 +3,9 @@
 import React from 'react';
 import { BlogDto } from '@/types/api';
 import { ApiClient } from '@/lib/api';
-import { useToggleLikeMutation } from '@/hooks/useBlogs';
 import { useBookmarks } from '@/hooks/useSocialStore';
 import { playKeyClick, playTabSelect } from '@/lib/retroAudio';
-import {
-  Bookmark,
-  MessageSquare,
-} from 'lucide-react';
+import { Bookmark } from 'lucide-react';
 
 interface BlogCardProps {
   blog: BlogDto;
@@ -18,8 +14,7 @@ interface BlogCardProps {
   onAuthorClick?: (authorName: string) => void;
 }
 
-export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, onAuthorClick }) => {
-  const toggleLikeMutation = useToggleLikeMutation();
+export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onAuthorClick }) => {
   const blogId = blog.id ?? blog.blogId;
 
   const bookmarkedIds = useBookmarks();
@@ -45,17 +40,6 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
     }
   };
 
-  const handleToggleLike = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    playKeyClick();
-    if (!blogId) return;
-    toggleLikeMutation.mutate({
-      blogId,
-      currentlyLiked: Boolean(blog.isLiked),
-    });
-    ApiClient.clapBlog(blogId, 1);
-  };
-
   const wordCount = (blog.content || '').split(/\s+/).filter(Boolean).length;
   const readingTime = Math.max(1, Math.ceil(wordCount / 180));
 
@@ -66,10 +50,6 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
       year: 'numeric',
     })
     : 'Nov 5, 2026';
-
-  const liveLikes = blog.likesCount ?? blog.likes ?? 0;
-  const liveClaps = (blog.clapsCount && blog.clapsCount > 0) ? blog.clapsCount : liveLikes;
-  const commentCount = blog.commentCount ?? (blog as unknown as { comments?: unknown[] }).comments?.length ?? 0;
 
   // Clean, markdown-free excerpt for card preview
   const rawExcerpt = (blog.content || '')
@@ -165,62 +145,28 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onSelect, onTagClick, 
         </div>
       </div>
 
-      {/* 3. Bottom Footer: Category & Platinum Interaction Stats */}
+      {/* 3. Bottom Footer: Clean Category & Direct Read Action */}
       <div className="pt-2 flex items-center justify-between w-full border-t border-[#B0B0B0] dark:border-[#333742] shadow-[0_1px_0_#FFFFFF] dark:shadow-none mt-auto">
-        {/* Left: Category & Tag Chips (Compact, Far-Left Aligned) */}
-        <div className="flex items-center gap-1 overflow-hidden min-w-0">
+        {/* Left: Full Category Badge (Untruncated, Crisp Platinum Chip) */}
+        <div className="flex items-center min-w-0 pr-2">
           {categoryName && (
             <span
-              className="mac9-chip-tag uppercase whitespace-nowrap !text-[8.5px] font-mono !py-0 !px-1.5 !h-[18px] max-w-[100px] truncate leading-none flex items-center"
+              className="mac9-chip-tag uppercase whitespace-nowrap !text-[9px] font-mono font-bold !py-0.5 !px-2 !h-[20px] text-[#333399] dark:text-[#818CF8] flex items-center"
               title={categoryName}
             >
               {categoryName}
             </span>
           )}
-          {blog.tags && blog.tags.length > 0 && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                playKeyClick();
-                if (onTagClick) onTagClick(blog.tags![0]);
-              }}
-              className="mac9-chip-tag uppercase whitespace-nowrap !text-[8px] font-mono !py-0 !px-1 !h-[18px] cursor-pointer hover:border-[#333399] dark:hover:border-[#818CF8] transition-colors hidden sm:inline-flex items-center leading-none"
-            >
-              #{blog.tags[0]}
-            </button>
-          )}
         </div>
 
-        {/* Right: Interaction Stats (Compact, Far-Right Aligned) */}
-        <div className="flex items-center gap-1 shrink-0 ml-auto">
-          {/* Claps / Likes Button */}
-          <button
-            type="button"
-            onClick={handleToggleLike}
-            className={`mac9-btn !h-[18px] !px-1.5 !py-0 !text-[8.5px] font-mono flex items-center gap-0.5 leading-none ${blog.isLiked ? 'active !text-white' : ''
-              }`}
-            title="Applaud (Clap)"
-          >
-            <span className="text-[9px]">👏</span>
-            <span className="font-bold">{liveClaps}</span>
-          </button>
-
-          {/* Comments Count */}
+        {/* Right: Clean Read Article Action Button */}
+        <div className="flex items-center shrink-0 ml-auto">
           <span
-            className="mac9-btn !h-[18px] !px-1.5 !py-0 !text-[8.5px] font-mono text-zinc-600 dark:text-zinc-400 flex items-center gap-0.5 cursor-default leading-none"
-            title={`${commentCount} Comments`}
-          >
-            <MessageSquare className="w-2.5 h-2.5" />
-            <span>{commentCount}</span>
-          </span>
-
-          {/* Read Disclosure Arrow */}
-          <span
-            className="text-[9px] font-mono text-zinc-400 group-hover:text-[#333399] dark:group-hover:text-[#818CF8] font-bold transition-transform group-hover:translate-x-0.5 ml-0.5"
+            className="mac9-btn !h-[20px] !px-2.5 !py-0 !text-[9.5px] font-['Charcoal',sans-serif] font-bold text-zinc-800 dark:text-zinc-200 group-hover:text-[#333399] dark:group-hover:text-[#818CF8] flex items-center gap-1 select-none"
             title="Read Article"
           >
-            ➔
+            <span>Read</span>
+            <span className="text-[10px] transition-transform group-hover:translate-x-0.5">➔</span>
           </span>
         </div>
       </div>

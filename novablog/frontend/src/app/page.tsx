@@ -386,147 +386,96 @@ export default function Home() {
         />
 
         {/* 2. Main Publication Feed (Explore / Following / Reading List) */}
-        <div id="articles-feed" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pb-36 sm:pb-44 space-y-4 scroll-mt-14">
-          {/* Mac OS 9 Platinum Scope & Control Bar (Structured 2-Tier Control Strip) */}
-          <div className="mac9-section-panel px-3 py-2 sm:px-4 flex flex-col gap-2">
-            {/* Tier 1: Primary Scope & Publication Mode + Telemetry Count */}
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#B0B0B0] dark:border-[#334155] pb-2">
-              <div className="flex flex-wrap items-center gap-2">
-                {/* View Mode (Mac OS 9 Segmented Control) */}
-                <div className="mac9-segmented-group h-[24px]">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playTabSelect();
-                      setFeedMode('explore');
-                    }}
-                    className={`mac9-segmented-item ${feedMode === 'explore' ? 'active' : ''}`}
-                  >
-                    <Compass className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                    <span>Explore ({blogs.length})</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playTabSelect();
-                      setFeedMode('following');
-                    }}
-                    className={`mac9-segmented-item ${feedMode === 'following' ? 'active' : ''}`}
-                  >
-                    <Users className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-                    <span>Following</span>
-                    {followedAuthors.length > 0 && (
-                      <span className="w-3.5 h-3.5 rounded bg-cyan-600 text-white text-[9px] font-mono flex items-center justify-center font-bold">
-                        {followedAuthors.length}
-                      </span>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playTabSelect();
-                      setFeedMode('bookmarks');
-                    }}
-                    className={`mac9-segmented-item ${feedMode === 'bookmarks' ? 'active' : ''}`}
-                  >
-                    <Bookmark className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                    <span>Reading List</span>
-                    {bookmarkedIds.length > 0 && (
-                      <span className="w-3.5 h-3.5 rounded bg-amber-600 text-white text-[9px] font-mono flex items-center justify-center font-bold">
-                        {bookmarkedIds.length}
-                      </span>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Right: Telemetry Counter Badge */}
-              <div className="flex items-center gap-1.5 font-mono text-[11px] text-zinc-600 dark:text-zinc-400">
-                <span className="mac9-chip-tag !py-0.5 !px-2 font-bold text-[10px]">
-                  {sortedBlogs.length} articles displayed
-                </span>
-                {hasActiveFilters && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playKeyClick();
-                      setSelectedTopic(null);
-                      setSelectedCategory(null);
-                      setSearchTerm('');
-                      setPublicationTypeFilter('all');
-                    }}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[2px] bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-400 hover:bg-rose-500 hover:text-white transition-colors cursor-pointer text-[10px] font-bold"
-                    title="Clear all active filters"
-                  >
-                    <X className="w-3 h-3" />
-                    <span>Reset</span>
-                  </button>
-                )}
+        <div id="articles-feed" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 pb-36 sm:pb-44 space-y-4 scroll-mt-14">
+          {/* Mac OS 9 Platinum Control Strip (Streamlined Single-Tier, Reduced Dimensions, Distributed Left & Right) */}
+          <div className="mac9-section-panel px-3 py-1.5 flex flex-wrap items-center justify-between gap-2.5">
+            {/* Left: View Mode (Explore / Following / Reading List) */}
+            <div className="flex items-center gap-2">
+              <div className="mac9-segmented-group h-[22px]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    playTabSelect();
+                    setFeedMode('explore');
+                  }}
+                  className={`mac9-segmented-item !py-0.5 !px-2.5 !text-[10px] ${feedMode === 'explore' ? 'active' : ''}`}
+                >
+                  <Compass className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                  <span>Explore ({blogs.length})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playTabSelect();
+                    setFeedMode('following');
+                  }}
+                  className={`mac9-segmented-item !py-0.5 !px-2.5 !text-[10px] ${feedMode === 'following' ? 'active' : ''}`}
+                >
+                  <Users className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                  <span>Following</span>
+                  {followedAuthors.length > 0 && (
+                    <span className="w-3 h-3 rounded bg-cyan-600 text-white text-[8px] font-mono flex items-center justify-center font-bold">
+                      {followedAuthors.length}
+                    </span>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playTabSelect();
+                    setFeedMode('bookmarks');
+                  }}
+                  className={`mac9-segmented-item !py-0.5 !px-2.5 !text-[10px] ${feedMode === 'bookmarks' ? 'active' : ''}`}
+                >
+                  <Bookmark className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                  <span>Reading List</span>
+                  {bookmarkedIds.length > 0 && (
+                    <span className="w-3 h-3 rounded bg-amber-600 text-white text-[8px] font-mono flex items-center justify-center font-bold">
+                      {bookmarkedIds.length}
+                    </span>
+                  )}
+                </button>
               </div>
             </div>
 
-            {/* Tier 2: Secondary Filters & Search Strip (Distributed Left & Right, Compact Dimensions) */}
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              {/* Left: Category & Sort Steppers (Compact, Far-Left Aligned) */}
-              <div className="flex flex-wrap items-center gap-2.5">
-                <div className="flex items-center gap-1">
-                  <span className="text-[9.5px] uppercase font-bold text-zinc-500 dark:text-zinc-400 font-mono tracking-wider">
-                    Category:
-                  </span>
-                  <select
-                    value={selectedCategory ?? ''}
-                    onChange={(e) => {
-                      playKeyClick();
-                      setSelectedCategory(e.target.value ? Number(e.target.value) : null);
-                    }}
-                    className="mac9-dropdown-stepper !h-[22px] !py-0 !pl-1.5 !pr-5 !text-[10px] cursor-pointer focus:outline-none"
-                    aria-label="Category"
-                  >
-                    <option value="">All Categories</option>
-                    {categories.map((c) => {
-                      const catId = c.categoryId ?? c.blogCategoryId;
-                      return (
-                        <option key={catId} value={catId}>
-                          {c.categoryName}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-
-                {feedMode === 'explore' && (
-                  <div className="flex items-center gap-1">
-                    <span className="text-[9.5px] uppercase font-bold text-zinc-500 dark:text-zinc-400 font-mono tracking-wider">
-                      Sort:
-                    </span>
-                    <select
-                      value={exploreSort}
-                      onChange={(e) => {
-                        playKeyClick();
-                        setExploreSort(e.target.value as 'trending' | 'featured' | 'latest');
-                      }}
-                      className="mac9-dropdown-stepper !h-[22px] !py-0 !pl-1.5 !pr-5 !text-[10px] cursor-pointer focus:outline-none"
-                      aria-label="Sort"
-                    >
-                      <option value="trending">🔥 Trending</option>
-                      <option value="featured">✨ Featured</option>
-                      <option value="latest">⏱️ Latest</option>
-                    </select>
-                  </div>
-                )}
+            {/* Right: Category Dropdown & Inset Filter Search (Distributed Far-Right, Compact 22px) */}
+            <div className="flex items-center gap-2 ml-auto">
+              <div className="flex items-center gap-1">
+                <span className="text-[9.5px] uppercase font-bold text-zinc-500 dark:text-zinc-400 font-mono tracking-wider">
+                  Category:
+                </span>
+                <select
+                  value={selectedCategory ?? ''}
+                  onChange={(e) => {
+                    playKeyClick();
+                    setSelectedCategory(e.target.value ? Number(e.target.value) : null);
+                  }}
+                  className="mac9-dropdown-stepper !h-[22px] !py-0 !pl-1.5 !pr-5 !text-[9.5px] cursor-pointer focus:outline-none"
+                  aria-label="Category"
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((c) => {
+                    const catId = c.categoryId ?? c.blogCategoryId;
+                    return (
+                      <option key={catId} value={catId}>
+                        {c.categoryName}
+                      </option>
+                    );
+                  })}
+                </select>
               </div>
 
-              {/* Right: Recessed Filter Search (Compact, Far-Right Aligned) */}
-              <div className="relative w-44 sm:w-56 shrink-0 ml-auto">
-                <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-zinc-500 pointer-events-none" />
+              {/* Filter Search Input */}
+              <div className="relative w-36 sm:w-48 shrink-0">
+                <Search className="absolute left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-zinc-500 pointer-events-none" />
                 <input
                   id="blog-search-input"
                   name="blogSearch"
                   type="text"
-                  placeholder="Filter articles... (⌘K)"
+                  placeholder="Filter... (⌘K)"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="mac9-inset-box !h-[22px] !text-[10px] !pl-6 !pr-5 w-full rounded-[2px] font-['Geneva',sans-serif] text-zinc-900 dark:text-zinc-100"
+                  className="mac9-inset-box !h-[22px] !text-[9.5px] !pl-5 !pr-5 w-full rounded-[2px] font-['Geneva',sans-serif] text-zinc-900 dark:text-zinc-100"
                 />
                 {searchTerm && (
                   <button
@@ -541,6 +490,24 @@ export default function Home() {
                   </button>
                 )}
               </div>
+
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    playKeyClick();
+                    setSelectedTopic(null);
+                    setSelectedCategory(null);
+                    setSearchTerm('');
+                    setPublicationTypeFilter('all');
+                  }}
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[2px] bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-400 hover:bg-rose-500 hover:text-white transition-colors cursor-pointer text-[9px] font-bold"
+                  title="Clear all active filters"
+                >
+                  <X className="w-2.5 h-2.5" />
+                  <span>Reset</span>
+                </button>
+              )}
             </div>
           </div>
 
